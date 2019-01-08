@@ -3,7 +3,7 @@ package gazetteer.osm.model;
 import java.util.List;
 import java.util.Map;
 
-public class Way {
+public class Way implements Entity {
 
     private final long id;
 
@@ -17,7 +17,7 @@ public class Way {
         this.tags = tags;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 

@@ -3,7 +3,7 @@ package gazetteer.osm.postgres;
 import de.bytefish.pgbulkinsert.mapping.AbstractMapping;
 import de.bytefish.pgbulkinsert.pgsql.model.geometric.Path;
 import de.bytefish.pgbulkinsert.pgsql.model.geometric.Point;
-import gazetteer.osm.leveldb.DataStore;
+import gazetteer.osm.leveldb.EntityStore;
 import gazetteer.osm.model.Node;
 import gazetteer.osm.model.Way;
 
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class WayMapping extends AbstractMapping<Way> {
 
-    public WayMapping(DataStore<Node> cache) {
+    public WayMapping(EntityStore<Node> cache) {
         super("public", "ways");
         mapLong("id", Way::getId);
         mapPath("geom", way -> {

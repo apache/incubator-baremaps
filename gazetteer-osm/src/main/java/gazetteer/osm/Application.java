@@ -4,14 +4,15 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import de.bytefish.pgbulkinsert.PgBulkInsert;
 import gazetteer.osm.model.FileBlock;
 import gazetteer.osm.model.Node;
-import gazetteer.osm.leveldb.DataStore;
+import gazetteer.osm.leveldb.EntityStore;
 import gazetteer.osm.leveldb.NodeDataType;
-import gazetteer.osm.leveldb.LdbBulkInsertConsumer;
+import gazetteer.osm.leveldb.NodeConsumer;
 import gazetteer.osm.postgres.NodeMapping;
 import gazetteer.osm.postgres.PgBulkInsertConsumer;
+import gazetteer.osm.postgres.PrimitiveBlockConsumer;
 import gazetteer.osm.util.FileBlockReader;
 import gazetteer.osm.util.FileBlockSpliterator;
-import gazetteer.osm.util.PrimitiveBlockDecoder;
+import gazetteer.osm.model.PrimitiveBlock;
 import org.apache.commons.dbcp2.*;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
@@ -22,7 +23,8 @@ import org.iq80.leveldb.Options;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
 import java.io.*;
-import java.util.Map;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
@@ -52,10 +54,10 @@ public class Application {
                     .map(Application::toHeaderBlock)
                     .findFirst().get();
 
-            DataStore<Node> cache = new DataStore<Node>(db, new NodeDataType());
+            EntityStore<Node> nodeStore = new EntityStore<Node>(db, new NodeDataType());
 
             //writeCache(file, cache);
-            writeDatabase(file, cache);
+            writeDatabase(file, nodeStore);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -68,22 +70,21 @@ public class Application {
         }
     }
 
-    public static void writeCache(String file, DataStore<Node> cache) throws ExecutionException, InterruptedException, FileNotFoundException {
-        LdbBulkInsertConsumer consumer = new LdbBulkInsertConsumer(cache);
-        Stream<Map<Long, Node>> stream = primitiveBlockDecoderStream(file).map(d -> d.getNodes());
-        ForkJoinPool forkJoinPool = new ForkJoinPool(16);
+    public static void writeCache(String file, EntityStore<Node> entityStore) throws ExecutionException, InterruptedException, FileNotFoundException {
+        NodeConsumer consumer = new NodeConsumer(entityStore);
+        Stream<List<Node>> stream = primitiveBlockStream(file).map(d -> d.getNodes());
+        ForkJoinPool forkJoinPool = new ForkJoinPool(1);
         forkJoinPool.submit(() -> stream.forEach(consumer)).get();
     }
 
-    public static void writeDatabase(String file, DataStore<Node> cache) throws FileNotFoundException, ExecutionException, InterruptedException {
+    public static void writeDatabase(String file, EntityStore<Node> nodeStore) throws FileNotFoundException, ExecutionException, InterruptedException {
         PoolingDataSource dataSource = dataSource("jdbc:postgresql://localhost:5432/osm?user=osm&password=osm");
-        PgBulkInsert bulkInsert = new PgBulkInsert<>(new NodeMapping());
-        PgBulkInsertConsumer consumer = new PgBulkInsertConsumer<>(bulkInsert, dataSource);
-        Stream<PrimitiveBlockDecoder> stream = primitiveBlockDecoderStream(file);
-        ForkJoinPool forkJoinPool = new ForkJoinPool(16);
+        //PrimitiveBlockConsumer consumer = new PrimitiveBlockConsumer(nodeStore, dataSource);
+        PgBulkInsertConsumer consumer = new PgBulkInsertConsumer(new PgBulkInsert(new NodeMapping()), dataSource);
+        Stream<Collection<Node>> stream = primitiveBlockStream(file).map(b -> b.getNodes());
+        ForkJoinPool forkJoinPool = new ForkJoinPool(1);
         forkJoinPool.submit(() -> stream.forEach(consumer)).get();
     }
-
 
     public static boolean filterHeaderBlock(FileBlock fileBlock) {
         return fileBlock.type.equals("OSMHeader");
@@ -115,12 +116,12 @@ public class Application {
         return StreamSupport.stream(new FileBlockSpliterator(reader), false);
     }
 
-    public static Stream<PrimitiveBlockDecoder> primitiveBlockDecoderStream(String file) throws FileNotFoundException {
+    public static Stream<PrimitiveBlock> primitiveBlockStream(String file) throws FileNotFoundException {
         return blockStream(file)
                 .parallel()
                 .filter(Application::filterDataBlock)
                 .map(Application::toPrimitiveBlock)
-                .map(PrimitiveBlockDecoder::new);
+                .map(PrimitiveBlock::new);
     }
 
     public static PoolingDataSource dataSource(String conn) {

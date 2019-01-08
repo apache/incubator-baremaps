@@ -1,15 +1,12 @@
-package gazetteer.osm.util;
+package gazetteer.osm.model;
 
 import gazetteer.osm.model.Node;
 import gazetteer.osm.model.Way;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class PrimitiveBlockDecoder {
+public class PrimitiveBlock {
 
     private Osmformat.PrimitiveBlock block;
 
@@ -19,7 +16,7 @@ public class PrimitiveBlockDecoder {
     private long lonOffset;
     private String stringTable[];
 
-    public PrimitiveBlockDecoder(Osmformat.PrimitiveBlock block) {
+    public PrimitiveBlock(Osmformat.PrimitiveBlock block) {
         this.block = block;
         this.granularity = block.getGranularity();
         this.latOffset = block.getLatOffset();
@@ -31,8 +28,8 @@ public class PrimitiveBlockDecoder {
         }
     }
 
-    public Map<Long, Node> getNodes() {
-        Map<Long, Node> nodes = new HashMap<>();
+    public List<Node> getNodes() {
+        ArrayList<Node> nodes = new ArrayList<>();
         for (Osmformat.PrimitiveGroup groupmessage : block.getPrimitivegroupList()) {
             Osmformat.DenseNodes dense = groupmessage.getDense();
             Osmformat.DenseInfo info = dense.getDenseinfo();
@@ -57,18 +54,18 @@ public class PrimitiveBlockDecoder {
                         tag += 2;
                     }
                 }
-                nodes.put(id, new Node(id, version,userId, timestamp, changeset,lon, lat, keys, vals));
+                nodes.add(new Node(id, version,userId, timestamp, changeset,lon, lat, keys, vals));
             }
         }
         return nodes;
     }
 
-    public Map<Long, Way> getWays() {
-        HashMap<Long, Way> ways = new HashMap<>();
-        for (Osmformat.PrimitiveGroup groupmessage : block.getPrimitivegroupList()) {
-            for (Osmformat.Way way : groupmessage.getWaysList()) {
+    public List<Way> getWays() {
+        List<Way> ways = new ArrayList<>();
+        for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
+            for (Osmformat.Way way : group.getWaysList()) {
                 Map<String, String> tags = new HashMap<>();
-                ways.put(way.getId(), new Way(way.getId(), way.getRefsList(), tags));
+                ways.add(new Way(way.getId(), way.getRefsList(), tags));
             }
         }
         return ways;

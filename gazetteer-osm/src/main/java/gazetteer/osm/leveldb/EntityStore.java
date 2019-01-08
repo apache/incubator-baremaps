@@ -1,40 +1,42 @@
 package gazetteer.osm.leveldb;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import gazetteer.osm.model.Entity;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.WriteBatch;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import static org.fusesource.leveldbjni.JniDBFactory.*;
 
-public class DataStore<T> {
+public class EntityStore<E extends Entity> {
 
     private final DB db;
 
-    private final DataType<T> dataType;
+    private final DataType<E> dataType;
 
-    public DataStore(DB db, DataType<T> dataType) {
+    public EntityStore(DB db, DataType<E> dataType) {
         this.db = db;
         this.dataType = dataType;
     }
 
-    public void add(Long key, T val) {
+    public void add(E entity) {
         try {
-            db.put(key(key), val(val));
+            db.put(key(entity.getId()), val(entity));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void addAll(Map<Long, T> entries) {
+    public void addAll(Collection<E> entities) {
         try {
             WriteBatch batch = db.createWriteBatch();
-            for (Map.Entry<Long, T> entry : entries.entrySet()) {
-                batch.put(key(entry.getKey()), val(entry.getValue()));
+            for (E entity : entities) {
+                batch.put(key(entity.getId()), val(entity));
             }
             db.write(batch);
         } catch (Exception e) {
@@ -42,18 +44,18 @@ public class DataStore<T> {
         }
     }
 
-    public T get(Long key) {
+    public E get(Long id) {
         try {
-            return val(db.get(key(key)));
+            return val(db.get(key(id)));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public List<T> getAll(List<Long> keys) {
+    public List<E> getAll(List<Long> keys) {
         try {
 
-            List<T> values = new ArrayList<>();
+            List<E> values = new ArrayList<>();
             for (Long key : keys) {
                 values.add(get(key));
             }
@@ -63,11 +65,11 @@ public class DataStore<T> {
         }
     }
 
-    private byte[] val(T value) throws IOException {
+    private byte[] val(E value) throws IOException {
         return dataType.serialize(value);
     }
 
-    private T val(byte[] value) throws InvalidProtocolBufferException {
+    private E val(byte[] value) throws InvalidProtocolBufferException {
         return dataType.deserialize(value);
     }
 

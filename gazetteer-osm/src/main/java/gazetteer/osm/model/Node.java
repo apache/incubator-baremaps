@@ -2,7 +2,7 @@ package gazetteer.osm.model;
 
 import java.util.List;
 
-public class Node {
+public class Node implements Entity {
 
     private final long id;
 
