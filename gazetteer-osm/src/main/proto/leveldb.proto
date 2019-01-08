@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "gazetteer.osm.rocksdb";
+
+message Node {
+  required sint64 id = 1;
+  optional uint32 version = 2;
+  optional uint32 userid = 3;
+  optional uint64 timestamp = 4;
+  optional uint64 changesetId = 5;
+  required double lat = 6;
+  required double lon = 7;
+  repeated string keys = 8;
+  repeated string vals = 9;
+}
