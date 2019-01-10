@@ -1,4 +1,4 @@
-package gazetteer.osm.leveldb;
+package gazetteer.osm.cache;
 
 import gazetteer.osm.model.Node;
 
@@ -7,15 +7,15 @@ import java.util.function.Consumer;
 
 public class NodeConsumer implements Consumer<Collection<Node>> {
 
-    private final EntityStore<Node> entityStore;
+    private final EntityCache<Node> entityCache;
 
-    public NodeConsumer(EntityStore<Node> entityStore) {
-        this.entityStore = entityStore;
+    public NodeConsumer(EntityCache<Node> entityCache) {
+        this.entityCache = entityCache;
     }
 
     @Override
     public void accept(Collection<Node> nodes) {
-        entityStore.addAll(nodes);
+        entityCache.addAll(nodes);
     }
 
 }

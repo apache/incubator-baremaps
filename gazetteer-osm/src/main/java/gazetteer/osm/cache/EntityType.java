@@ -1,10 +1,10 @@
-package gazetteer.osm.leveldb;
+package gazetteer.osm.cache;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.io.IOException;
 
-public interface DataType<T> {
+public interface EntityType<T> {
 
     byte[] serialize(T entity) throws IOException;
 

@@ -1,13 +1,12 @@
-package gazetteer.osm.postgres;
+package gazetteer.osm.database;
 
-import de.bytefish.pgbulkinsert.mapping.AbstractMapping;
-import de.bytefish.pgbulkinsert.pgsql.model.geometric.Point;
 import gazetteer.osm.model.Node;
+import mil.nga.sf.Point;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class NodeMapping extends AbstractMapping<Node> {
+public class NodeMapping extends GeometryMapping<Node> {
 
     public NodeMapping() {
         super("public", "nodes");
@@ -16,7 +15,6 @@ public class NodeMapping extends AbstractMapping<Node> {
         mapInteger("user_id", Node::getUserId);
         mapLong("tstamp", Node::getTimestamp);
         mapLong("changeset_id", Node::getChangesetId);
-        mapPoint("geom", node -> new Point(node.getLon(), node.getLat()));
         mapHstore("tags", node -> {
             Map<String, String> tags = new HashMap<>();
             for (int i = 0; i < node.getKeys().size(); i++) {
@@ -24,6 +22,7 @@ public class NodeMapping extends AbstractMapping<Node> {
             }
             return tags;
         });
+        mapGeometry("geom", node -> new Point(node.getLon(), node.getLat()));
     }
 
 }

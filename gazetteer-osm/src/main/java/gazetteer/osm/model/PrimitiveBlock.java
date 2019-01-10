@@ -1,7 +1,5 @@
 package gazetteer.osm.model;
 
-import gazetteer.osm.model.Node;
-import gazetteer.osm.model.Way;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
 import java.util.*;
@@ -30,8 +28,8 @@ public class PrimitiveBlock {
 
     public List<Node> getNodes() {
         ArrayList<Node> nodes = new ArrayList<>();
-        for (Osmformat.PrimitiveGroup groupmessage : block.getPrimitivegroupList()) {
-            Osmformat.DenseNodes dense = groupmessage.getDense();
+        for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
+            Osmformat.DenseNodes dense = group.getDense();
             Osmformat.DenseInfo info = dense.getDenseinfo();
             long id = 0;
             int tag = 0;
@@ -63,9 +61,21 @@ public class PrimitiveBlock {
     public List<Way> getWays() {
         List<Way> ways = new ArrayList<>();
         for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
+            long id = 0;
             for (Osmformat.Way way : group.getWaysList()) {
+                id += way.getId();
+                Osmformat.Info info = way.getInfo();
+                int version = info.getVersion();
+                int userId = info.getUid();
+                long timestamp = info.getTimestamp();
+                long changesetId = info.getChangeset();
                 Map<String, String> tags = new HashMap<>();
-                ways.add(new Way(way.getId(), way.getRefsList(), tags));
+                for (int i = 0; i < way.getKeysCount(); i++) {
+                    tags.put(getString(way.getKeys(i)), getString(way.getVals(i)));
+                }
+
+
+                ways.add(new Way(way.getId(), version, userId, timestamp, changesetId, way.getRefsList(), tags));
             }
         }
         return ways;

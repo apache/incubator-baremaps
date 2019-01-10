@@ -1,4 +1,4 @@
-package gazetteer.osm.postgres;
+package gazetteer.osm.database;
 
 import de.bytefish.pgbulkinsert.PgBulkInsert;
 import org.apache.commons.dbcp2.PoolingDataSource;
@@ -10,13 +10,13 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-public class PgBulkInsertConsumer<TEntity> implements Consumer<Collection<TEntity>> {
+public class BulkInsertConsumer<TEntity> implements Consumer<Collection<TEntity>> {
 
     private final PgBulkInsert<TEntity> bulkInsert;
 
     private final DataSource dataSource;
 
-    public PgBulkInsertConsumer(PgBulkInsert<TEntity> bulkInsert, PoolingDataSource dataSource) {
+    public BulkInsertConsumer(PgBulkInsert<TEntity> bulkInsert, PoolingDataSource dataSource) {
         this.bulkInsert = bulkInsert;
         this.dataSource = dataSource;
     }

@@ -1,4 +1,4 @@
-package gazetteer.osm.leveldb;
+package gazetteer.osm.cache;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import gazetteer.osm.model.Entity;
@@ -9,19 +9,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import static org.fusesource.leveldbjni.JniDBFactory.*;
 
-public class EntityStore<E extends Entity> {
+public class EntityCache<E extends Entity> {
 
     private final DB db;
 
-    private final DataType<E> dataType;
+    private final EntityType<E> entityType;
 
-    public EntityStore(DB db, DataType<E> dataType) {
+    public EntityCache(DB db, EntityType<E> entityType) {
         this.db = db;
-        this.dataType = dataType;
+        this.entityType = entityType;
     }
 
     public void add(E entity) {
@@ -52,12 +51,11 @@ public class EntityStore<E extends Entity> {
         }
     }
 
-    public List<E> getAll(List<Long> keys) {
+    public List<E> getAll(List<Long> ids) {
         try {
-
             List<E> values = new ArrayList<>();
-            for (Long key : keys) {
-                values.add(get(key));
+            for (Long id : ids) {
+                values.add(get(id));
             }
             return values;
         } catch (Exception e) {
@@ -65,20 +63,39 @@ public class EntityStore<E extends Entity> {
         }
     }
 
+    public void delete(Long id) {
+        try {
+            db.delete(key(id));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteAll(List<Long> ids) {
+        try {
+            List<E> values = new ArrayList<>();
+            for (Long id : ids) {
+                db.delete(key(id));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private byte[] val(E value) throws IOException {
-        return dataType.serialize(value);
+        return entityType.serialize(value);
     }
 
     private E val(byte[] value) throws InvalidProtocolBufferException {
-        return dataType.deserialize(value);
+        return entityType.deserialize(value);
     }
 
-    private byte[] key(long key) {
+    private byte[] key(long id) {
         return bytes(String.format("%019d", 1));
     }
 
-    private long key(byte[] key) {
-        return Long.parseLong(asString(key));
+    private long key(byte[] id) {
+        return Long.parseLong(asString(id));
     }
 
 }

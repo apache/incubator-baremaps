@@ -1,4 +1,4 @@
-package gazetteer.osm.leveldb;
+package gazetteer.osm.cache;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import gazetteer.osm.model.Node;
@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NodeDataType implements DataType<Node> {
+public class NodeEntityType implements EntityType<Node> {
 
     @Override
     public byte[] serialize(Node entity) throws IOException {
