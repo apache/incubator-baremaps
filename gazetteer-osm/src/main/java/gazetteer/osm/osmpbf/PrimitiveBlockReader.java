@@ -1,13 +1,10 @@
 package gazetteer.osm.osmpbf;
 
-import gazetteer.osm.model.Entity;
-import gazetteer.osm.model.Node;
-import gazetteer.osm.model.Way;
+import gazetteer.osm.model.*;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
-import java.util.*;
-
-import static gazetteer.osm.model.Node.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A adaptation of the OsmosisBinaryParser
@@ -34,16 +31,6 @@ public class PrimitiveBlockReader {
         }
     }
 
-    public List<Entity> getEntities() {
-        ArrayList<Entity> entities = new ArrayList<>();
-        for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
-            Osmformat.DenseNodes osmNodes = group.getDense();
-            entities.addAll(getDenseNodes(osmNodes));
-            entities.addAll(getWays());
-        }
-        return entities;
-    }
-
     public List<Node> getDenseNodes() {
         ArrayList<Node> nodes = new ArrayList<>();
         for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
@@ -67,6 +54,7 @@ public class PrimitiveBlockReader {
 
         for (int i = 0; i < osmNodes.getIdCount(); i++) {
             id = osmNodes.getId(i) + id;
+
             Osmformat.DenseInfo info = osmNodes.getDenseinfo();
             int version = info.getVersion(i);
             uid = info.getUid(i) + uid;
@@ -116,7 +104,6 @@ public class PrimitiveBlockReader {
             String user = getString(info.getUserSid());
             long changeset = info.getChangeset();
 
-
             List<String> keys = new ArrayList<>(0);
             List<String> vals = new ArrayList<>(0);
             for (int j = 0; j < w.getKeysCount(); j++) {
@@ -135,6 +122,58 @@ public class PrimitiveBlockReader {
         }
         return ways;
     }
+
+    public List<Relation> getRelations() {
+        List<Relation> relations = new ArrayList<>();
+        for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
+            List<Osmformat.Relation> osmWays = group.getRelationsList();
+            relations.addAll(getRelations(osmWays));
+        }
+        return relations;
+    }
+
+    protected List<Relation> getRelations(List<Osmformat.Relation> rels) {
+        List<Relation> relations = new ArrayList<>();
+        for (Osmformat.Relation r : rels) {
+            long id = r.getId();
+
+            Osmformat.Info info = r.getInfo();
+            long timestamp = getTimestamp(info.getTimestamp());
+            int version = info.getVersion();
+            int uid = info.getUid();
+            String user = getString(info.getUserSid());
+            long changeset = info.getChangeset();
+
+            List<String> keys = new ArrayList<>(0);
+            List<String> vals = new ArrayList<>(0);
+            for (int j = 0; j < r.getKeysCount(); j++) {
+                keys.add(getString(r.getKeys(j)));
+                vals.add(getString(r.getVals(j)));
+            }
+
+            long lastMid = 0;
+            List<Member> members = new ArrayList<>();
+            for (int j = 0; j < r.getMemidsCount(); j++) {
+                long mid = lastMid + r.getMemids(j);
+                lastMid = mid;
+                String role = getString(r.getRolesSid(j));
+                MemberType etype = null;
+                if (r.getTypes(j) == Osmformat.Relation.MemberType.NODE) {
+                    etype = MemberType.Node;
+                } else if (r.getTypes(j) == Osmformat.Relation.MemberType.WAY) {
+                    etype = MemberType.Way;
+                } else if (r.getTypes(j) == Osmformat.Relation.MemberType.RELATION) {
+                    etype = MemberType.Relation;
+                } else {
+                    assert false;
+                }
+                members.add(new Member(mid, etype, role));
+            }
+            relations.add(new Relation(id, version, uid, user, timestamp, changeset, members, keys, vals));
+        }
+        return relations;
+    }
+
 
     private String getString(int id) {
         return stringTable[id];

@@ -22,7 +22,14 @@ public class WayMapping extends GeometryMapping<Way> {
         mapHstore("tags", Way::getTags);
         mapGeometry("geom", way -> {
             List<Long> ids = way.getNodes();
-            if (ids.size() > 1) {
+            if (ids.get(0).equals(ids.get(ids.size() - 1)) && ids.size() > 3) {
+                List<Node> nodes = cache.getAll(ids);
+                List<Point> points = new ArrayList<>();
+                for (Node node : nodes) {
+                    points.add(new Point(node.getLon(), node.getLat()));
+                }
+                return new Polygon(new LineString(points));
+            } else if (ids.size() > 1) {
                 List<Node> nodes = cache.getAll(ids);
                 List<Point> points = new ArrayList<>();
                 for (Node node : nodes) {
