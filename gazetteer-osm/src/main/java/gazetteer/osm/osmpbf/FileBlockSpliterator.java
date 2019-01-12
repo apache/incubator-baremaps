@@ -1,6 +1,6 @@
-package gazetteer.osm.util;
+package gazetteer.osm.osmpbf;
 
-import gazetteer.osm.model.FileBlock;
+import gazetteer.osm.util.BatchSpliterator;
 
 import java.io.EOFException;
 import java.io.IOException;

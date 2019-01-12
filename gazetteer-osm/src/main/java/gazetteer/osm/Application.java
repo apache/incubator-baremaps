@@ -4,20 +4,17 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import gazetteer.osm.cache.EntityCache;
 import gazetteer.osm.cache.NodeConsumer;
 import gazetteer.osm.cache.NodeEntityType;
-import gazetteer.osm.model.FileBlock;
+import gazetteer.osm.osmpbf.PrimitiveBlockConsumer;
+import gazetteer.osm.osmpbf.FileBlock;
 import gazetteer.osm.model.Node;
-import gazetteer.osm.model.PrimitiveBlock;
-import gazetteer.osm.database.PrimitiveBlockConsumer;
-import gazetteer.osm.util.FileBlockReader;
-import gazetteer.osm.util.FileBlockSpliterator;
+import gazetteer.osm.osmpbf.PrimitiveBlockReader;
+import gazetteer.osm.osmpbf.FileBlockReader;
+import gazetteer.osm.osmpbf.FileBlockSpliterator;
 import org.apache.commons.dbcp2.*;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.fusesource.leveldbjni.JniDBFactory;
-import org.iq80.leveldb.CompressionType;
-import org.iq80.leveldb.DB;
-import org.iq80.leveldb.Options;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
+import org.rocksdb.*;
 
 import java.io.*;
 import java.util.List;
@@ -26,23 +23,23 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.fusesource.leveldbjni.JniDBFactory.factory;
 
 public class Application {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RocksDBException {
         final String file = "/home/bchapuis/Datasets/osm/switzerland-latest.osm.pbf";
         final String database = "/home/bchapuis/Desktop/nodes.db";
 
+
+        RocksDB.loadLibrary();
+
         final Options options = new Options()
-                .createIfMissing(true)
-                .blockSize(16 * 1024 * 1024)
-                .writeBufferSize(4 * 1024 * 1024)
-                .compressionType(CompressionType.NONE);
+                .setCreateIfMissing(true)
+                .setCompressionType(CompressionType.NO_COMPRESSION);
 
         //JniDBFactory.pushMemoryPool(1024 * 1024 * 1024);
 
-        try (final DB db = factory.open(new File(database), options)) {
+        try (final RocksDB db = RocksDB.open(options, database)) {
             //String file = "/home/bchapuis/Projects/resources/osm/planet-latest.osm.pbf";
             // read the OSMHeader block
             Osmformat.HeaderBlock osmHeader = blockStream(file)
@@ -53,7 +50,13 @@ public class Application {
             EntityCache<Node> cache = new EntityCache<Node>(db, new NodeEntityType());
 
             writeCache(file, cache);
+            db.flush(new FlushOptions().setWaitForFlush(true));
+
+            System.out.println("node cache ready");
+
             writeDatabase(file, cache);
+
+            System.out.println("Done!");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -62,21 +65,22 @@ public class Application {
         } catch (ExecutionException e) {
             e.printStackTrace();
         } finally {
+            System.out.println("Well done!");
             //JniDBFactory.popMemoryPool();
         }
     }
 
     public static void writeCache(String file, EntityCache<Node> entityCache) throws ExecutionException, InterruptedException, FileNotFoundException {
         NodeConsumer consumer = new NodeConsumer(entityCache);
-        Stream<List<Node>> stream = primitiveBlockStream(file).map(d -> d.getNodes());
-        ForkJoinPool forkJoinPool = new ForkJoinPool(16);
+        Stream<List<Node>> stream = primitiveBlockStream(file).map(d -> d.getDenseNodes());
+        ForkJoinPool forkJoinPool = new ForkJoinPool(8);
         forkJoinPool.submit(() -> stream.forEach(consumer)).get();
     }
 
-    public static void writeDatabase(String file, EntityCache<Node> nodeStore) throws FileNotFoundException, ExecutionException, InterruptedException {
+    public static void writeDatabase(String file, EntityCache<Node> cache) throws FileNotFoundException, ExecutionException, InterruptedException {
         PoolingDataSource dataSource = dataSource("jdbc:postgresql://localhost:5432/osm?user=osm&password=osm");
-        PrimitiveBlockConsumer consumer = new PrimitiveBlockConsumer(nodeStore, dataSource);
-        Stream<PrimitiveBlock> stream = primitiveBlockStream(file);
+        PrimitiveBlockConsumer consumer = new PrimitiveBlockConsumer(cache, dataSource);
+        Stream<PrimitiveBlockReader> stream = primitiveBlockStream(file);
         ForkJoinPool forkJoinPool = new ForkJoinPool(8);
         forkJoinPool.submit(() -> stream.forEach(consumer)).get();
     }
@@ -111,12 +115,12 @@ public class Application {
         return StreamSupport.stream(new FileBlockSpliterator(reader), false);
     }
 
-    public static Stream<PrimitiveBlock> primitiveBlockStream(String file) throws FileNotFoundException {
+    public static Stream<PrimitiveBlockReader> primitiveBlockStream(String file) throws FileNotFoundException {
         return blockStream(file)
                 .parallel()
                 .filter(Application::filterDataBlock)
                 .map(Application::toPrimitiveBlock)
-                .map(PrimitiveBlock::new);
+                .map(PrimitiveBlockReader::new);
     }
 
     public static PoolingDataSource dataSource(String conn) {

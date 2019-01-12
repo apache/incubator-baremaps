@@ -27,7 +27,6 @@
         </plugins>
     </build>
 
-
     <modules>
         <module>gazetteer-mbtiles</module>
         <module>gazetteer-tileserver</module>
@@ -35,6 +34,11 @@
     </modules>
 
     <dependencies>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

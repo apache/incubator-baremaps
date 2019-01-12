@@ -1,7 +1,6 @@
-package gazetteer.osm.util;
+package gazetteer.osm.osmpbf;
 
 import com.google.protobuf.ByteString;
-import gazetteer.osm.model.FileBlock;
 import org.openstreetmap.osmosis.osmbinary.Fileformat;
 
 import java.io.DataInputStream;

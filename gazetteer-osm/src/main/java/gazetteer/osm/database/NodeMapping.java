@@ -12,9 +12,9 @@ public class NodeMapping extends GeometryMapping<Node> {
         super("public", "nodes");
         mapLong("id", Node::getId);
         mapInteger("version", Node::getVersion);
-        mapInteger("user_id", Node::getUserId);
+        mapInteger("user_id", Node::getUid);
         mapLong("tstamp", Node::getTimestamp);
-        mapLong("changeset_id", Node::getChangesetId);
+        mapLong("changeset_id", Node::getChangeset);
         mapHstore("tags", node -> {
             Map<String, String> tags = new HashMap<>();
             for (int i = 0; i < node.getKeys().size(); i++) {

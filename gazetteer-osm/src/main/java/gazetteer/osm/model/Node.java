@@ -1,6 +1,8 @@
 package gazetteer.osm.model;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Node implements Entity {
 
@@ -8,11 +10,13 @@ public class Node implements Entity {
 
     private final int version;
 
-    private final int userId;
+    private final int uid;
+
+    private final String user;
 
     private final long timestamp;
 
-    private final long changesetId;
+    private final long changeset;
 
     private final double lon;
 
@@ -22,12 +26,13 @@ public class Node implements Entity {
 
     private final List<String> vals;
 
-    public Node(long id, int version, int userId, long timestamp, long changesetId, double lon, double lat, List<String> keys, List<String> vals) {
+    public Node(long id, int version, int uid, String user, long timestamp, long changeset, double lon, double lat, List<String> keys, List<String> vals) {
         this.id = id;
         this.version = version;
-        this.userId = userId;
+        this.uid = uid;
+        this.user = user;
         this.timestamp = timestamp;
-        this.changesetId = changesetId;
+        this.changeset = changeset;
         this.lon = lon;
         this.lat = lat;
         this.keys = keys;
@@ -42,16 +47,20 @@ public class Node implements Entity {
         return version;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getUid() {
+        return uid;
+    }
+
+    public String getUser() {
+        return user;
     }
 
     public long getTimestamp() {
         return timestamp;
     }
 
-    public long getChangesetId() {
-        return changesetId;
+    public long getChangeset() {
+        return changeset;
     }
 
     public double getLon() {
@@ -68,6 +77,14 @@ public class Node implements Entity {
 
     public List<String> getVals() {
         return vals;
+    }
+
+    public Map<String, String> getTags() {
+        Map<String, String> tags = new HashMap<>();
+        for (int t = 0; t < keys.size(); t++) {
+            tags.put(keys.get(t), vals.get(t));
+        }
+        return tags;
     }
 
 

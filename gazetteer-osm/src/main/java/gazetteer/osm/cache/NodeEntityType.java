@@ -2,6 +2,7 @@ package gazetteer.osm.cache;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import gazetteer.osm.model.Node;
+import gazetteer.osm.rocksdb.Leveldb;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,9 +17,10 @@ public class NodeEntityType implements EntityType<Node> {
         return Leveldb.Node.newBuilder()
                 .setId(entity.getId())
                 .setVersion(entity.getVersion())
-                .setUserid(entity.getUserId())
+                .setUid(entity.getUid())
+                .setUser(entity.getUser())
                 .setTimestamp(entity.getTimestamp())
-                .setChangesetId(entity.getChangesetId())
+                .setChangeset(entity.getChangeset())
                 .setLon(entity.getLon())
                 .setLat(entity.getLat())
                 .addAllKeys(entity.getKeys())
@@ -31,9 +33,10 @@ public class NodeEntityType implements EntityType<Node> {
         Leveldb.Node node = Leveldb.Node.parseFrom(data);
         return new Node(node.getId(),
                 node.getVersion(),
-                node.getUserid(),
+                node.getUid(),
+                node.getUser(),
                 node.getTimestamp(),
-                node.getChangesetId(),
+                node.getChangeset(),
                 node.getLon(), node.getLat(),
                 node.getKeysList(),
                 node.getValsList());

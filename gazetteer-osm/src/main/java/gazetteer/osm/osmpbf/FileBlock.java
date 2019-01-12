@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package gazetteer.osm.model;
+package gazetteer.osm.osmpbf;
 
 import com.google.protobuf.ByteString;
 

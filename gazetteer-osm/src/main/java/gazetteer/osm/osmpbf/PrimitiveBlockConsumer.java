@@ -1,18 +1,21 @@
-package gazetteer.osm.database;
+package gazetteer.osm.osmpbf;
 
 import de.bytefish.pgbulkinsert.PgBulkInsert;
 import gazetteer.osm.cache.EntityCache;
+import gazetteer.osm.database.NodeMapping;
+import gazetteer.osm.database.WayMapping;
 import gazetteer.osm.model.Node;
-import gazetteer.osm.model.PrimitiveBlock;
+import gazetteer.osm.osmpbf.PrimitiveBlockReader;
 import gazetteer.osm.model.Way;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.postgresql.PGConnection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.function.Consumer;
 
-public class PrimitiveBlockConsumer implements Consumer<PrimitiveBlock> {
+public class PrimitiveBlockConsumer implements Consumer<PrimitiveBlockReader> {
 
     private final EntityCache<Node> nodeStore;
     private final PoolingDataSource dataSource;
@@ -28,11 +31,13 @@ public class PrimitiveBlockConsumer implements Consumer<PrimitiveBlock> {
     }
 
     @Override
-    public void accept(PrimitiveBlock primitiveBlock) {
+    public void accept(PrimitiveBlockReader primitiveBlockReader) {
         try (Connection connection = dataSource.getConnection()) {
             PGConnection pgConnection = connection.unwrap(PGConnection.class);
-            dbNodes.saveAll(pgConnection, primitiveBlock.getNodes());
-            dbWays.saveAll(pgConnection, primitiveBlock.getWays());
+            //List<Node> nodes = primitiveBlockReader.getDenseNodes();
+            //dbNodes.saveAll(pgConnection, nodes);
+            List<Way> ways = primitiveBlockReader.getWays();
+            dbWays.saveAll(pgConnection, ways);
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -2,23 +2,23 @@ package gazetteer.osm.cache;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import gazetteer.osm.model.Entity;
-import org.iq80.leveldb.DB;
-import org.iq80.leveldb.WriteBatch;
+import org.rocksdb.RocksDB;
+import org.rocksdb.WriteBatch;
+import org.rocksdb.WriteOptions;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import static org.fusesource.leveldbjni.JniDBFactory.*;
+import java.util.Map;
 
 public class EntityCache<E extends Entity> {
 
-    private final DB db;
+    private final RocksDB db;
 
     private final EntityType<E> entityType;
 
-    public EntityCache(DB db, EntityType<E> entityType) {
+    public EntityCache(RocksDB db, EntityType<E> entityType) {
         this.db = db;
         this.entityType = entityType;
     }
@@ -32,12 +32,11 @@ public class EntityCache<E extends Entity> {
     }
 
     public void addAll(Collection<E> entities) {
-        try {
-            WriteBatch batch = db.createWriteBatch();
+        try (WriteBatch batch = new WriteBatch()) {
             for (E entity : entities) {
                 batch.put(key(entity.getId()), val(entity));
             }
-            db.write(batch);
+            db.write(new WriteOptions(), batch);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -53,9 +52,14 @@ public class EntityCache<E extends Entity> {
 
     public List<E> getAll(List<Long> ids) {
         try {
+            List<byte[]> keys = new ArrayList<>();
+            for (long id : ids) {
+                keys.add(key(id));
+            }
+            Map<byte[], byte[]> results = db.multiGet(keys);
             List<E> values = new ArrayList<>();
-            for (Long id : ids) {
-                values.add(get(id));
+            for (byte[] key : keys) {
+                values.add(val(results.get(key)));
             }
             return values;
         } catch (Exception e) {
@@ -91,11 +95,11 @@ public class EntityCache<E extends Entity> {
     }
 
     private byte[] key(long id) {
-        return bytes(String.format("%019d", 1));
+        return String.format("%019d", id).getBytes();
     }
 
     private long key(byte[] id) {
-        return Long.parseLong(asString(id));
+        return Long.parseLong(new String(id));
     }
 
 }
