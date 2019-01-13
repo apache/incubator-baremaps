@@ -18,13 +18,13 @@ public class FileBlockReader {
 
     public FileBlock read() throws IOException {
 
-        // parse the header
+        // read the header
         int headerSize = input.readInt();
         byte[] headerData = new byte[headerSize];
         input.readFully(headerData);
         Fileformat.BlobHeader header = Fileformat.BlobHeader.parseFrom(headerData);
 
-        // parse the blob
+        // read the blob
         int blobSize = header.getDatasize();
         byte[] blobData = new byte[blobSize];
         input.readFully(blobData);

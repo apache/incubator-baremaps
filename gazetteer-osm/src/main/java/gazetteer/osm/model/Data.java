@@ -2,7 +2,7 @@ package gazetteer.osm.model;
 
 import java.util.Map;
 
-public class EntityData {
+public class Data {
 
     private final long id;
     private final int version;
@@ -11,7 +11,7 @@ public class EntityData {
     private final User user;
     private final Map<String, String> tags;
 
-    public EntityData(long id, int version, long timestamp, long changeset, User user, Map<String, String> tags) {
+    public Data(long id, int version, long timestamp, long changeset, User user, Map<String, String> tags) {
         this.id = id;
         this.version = version;
         this.timestamp = timestamp;

@@ -4,22 +4,23 @@ import gazetteer.osm.model.*;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A adaptation of the OsmosisBinaryParser
  */
-public class PrimitiveBlockParser {
+public class PrimitiveBlockReader {
 
-    private Osmformat.PrimitiveBlock block;
+    private final Osmformat.PrimitiveBlock block;
+    private final int granularity;
+    private final int dateGranularity;
+    private final long latOffset;
+    private final long lonOffset;
+    private final String stringTable[];
 
-    private int granularity;
-    private int dateGranularity;
-    private long latOffset;
-    private long lonOffset;
-    private String stringTable[];
-
-    public PrimitiveBlockParser(Osmformat.PrimitiveBlock block) {
+    public PrimitiveBlockReader(Osmformat.PrimitiveBlock block) {
         this.block = block;
         this.granularity = block.getGranularity();
         this.latOffset = block.getLatOffset();
@@ -31,153 +32,149 @@ public class PrimitiveBlockParser {
         }
     }
 
-    public PrimitiveBlock parse() {
+    public PrimitiveBlock read() {
+        List<Node> nodes = new ArrayList<>();
+        List<Way> ways = new ArrayList<>();
+        List<Relation> relations = new ArrayList<>();
+        for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
+            readDenseNodes(group.getDense(), nodes);
+            readWays(group.getWaysList(), ways);
+            readRelations(group.getRelationsList(), relations);
+        }
         return new PrimitiveBlock(nodes, ways, relations);
     }
 
-
-
-    public List<Node> getDenseNodes() {
-        ArrayList<Node> nodes = new ArrayList<>();
+    public List<Node> readDenseNodes() {
+        List<Node> nodes = new ArrayList<>();
         for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
-            Osmformat.DenseNodes osmNodes = group.getDense();
-            nodes.addAll(getDenseNodes(osmNodes));
+            readDenseNodes(group.getDense(), nodes);
         }
         return nodes;
     }
-    
-    private List<Node> getDenseNodes(Osmformat.DenseNodes osmNodes) {
-        ArrayList<Node> nodes = new ArrayList<>();
 
+    private void readDenseNodes(Osmformat.DenseNodes input, List<Node> output) {
         long id = 0;
         long lat = 0;
         long lon = 0;
         long timestamp = 0;
         long changeset = 0;
-        int userSid = 0;
+        int sid = 0;
         int uid = 0;
         int j = 0; // Index into the keysvals array.
 
-        for (int i = 0; i < osmNodes.getIdCount(); i++) {
-            id = osmNodes.getId(i) + id;
+        for (int i = 0; i < input.getIdCount(); i++) {
+            id = input.getId(i) + id;
 
-            Osmformat.DenseInfo info = osmNodes.getDenseinfo();
+            Osmformat.DenseInfo info = input.getDenseinfo();
             int version = info.getVersion(i);
             uid = info.getUid(i) + uid;
-            userSid = info.getUserSid(i) + userSid;
+            sid = info.getUserSid(i) + sid;
             timestamp = info.getTimestamp(i) + timestamp;
             changeset = info.getChangeset(i) + changeset;
-            lat = osmNodes.getLat(i) + lat;
-            lon = osmNodes.getLon(i) + lon;
+            lat = input.getLat(i) + lat;
+            lon = input.getLon(i) + lon;
 
             // If empty, assume that nothing here has keys or vals.
-            List<String> keys = new ArrayList<>(0);
-            List<String> vals = new ArrayList<>(0);
-            if (osmNodes.getKeysValsCount() > 0) {
-                while (osmNodes.getKeysVals(j) != 0) {
-                    int keyid = osmNodes.getKeysVals(j++);
-                    int valid = osmNodes.getKeysVals(j++);
-                    keys.add(getString(keyid));
-                    vals.add(getString(valid));
+            Map<String, String> tags = new HashMap<>();
+            if (input.getKeysValsCount() > 0) {
+                while (input.getKeysVals(j) != 0) {
+                    int keyid = input.getKeysVals(j++);
+                    int valid = input.getKeysVals(j++);
+                    tags.put(getString(keyid), getString(valid));
                 }
                 j++; // Skip over the '0' delimiter.
             }
 
-            nodes.add(new Node(id, version, uid, getString(userSid), getTimestamp(timestamp), changeset, getLon(lon), getLat(lat), keys, vals));
+            Data data = new Data(id, version, getTimestamp(timestamp), changeset, new User(uid, getString(sid)), tags);
+            output.add(new Node(data, getLon(lon), getLat(lat)));
         }
+    }
 
+    public List<Node> readNodes() {
+        List<Node> nodes = new ArrayList<>();
+        for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
+            readNodes(group.getNodesList(), nodes);
+        }
         return nodes;
     }
 
-    public List<Way> getWays() {
+    private void readNodes(List<Osmformat.Node> input, List<Node> output) {
+        for (Osmformat.Node e : input) {
+            Data data = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
+            long lon = e.getLon();
+            long lat = e.getLat();
+            output.add(new Node(data, getLon(lon), getLat(lat)));
+        }
+    }
+
+    public List<Way> readWays() {
         List<Way> ways = new ArrayList<>();
         for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
-            List<Osmformat.Way> osmWays = group.getWaysList();
-            ways.addAll(getWays(osmWays));
+            readWays(group.getWaysList(), ways);
         }
         return ways;
     }
 
-    private List<Way> getWays(List<Osmformat.Way> osmWays) {
-        List<Way> ways = new ArrayList<>();
-        for (Osmformat.Way w : osmWays) {
-            long id = w.getId();
-
-            Osmformat.Info info = w.getInfo();
-            long timestamp = getTimestamp(info.getTimestamp());
-            int version = info.getVersion();
-            int uid = info.getUid();
-            String user = getString(info.getUserSid());
-            long changeset = info.getChangeset();
-
-            List<String> keys = new ArrayList<>(0);
-            List<String> vals = new ArrayList<>(0);
-            for (int j = 0; j < w.getKeysCount(); j++) {
-                keys.add(getString(w.getKeys(j)));
-                vals.add(getString(w.getVals(j)));
-            }
-
+    private void readWays(List<Osmformat.Way> input, List<Way> output) {
+        for (Osmformat.Way e : input) {
+            Data data = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
             long nid = 0;
             List<Long> nodes = new ArrayList<>();
-            for (int index = 0; index < w.getRefsCount(); index++) {
-                nid = nid + w.getRefs(index);
+            for (int index = 0; index < e.getRefsCount(); index++) {
+                nid = nid + e.getRefs(index);
                 nodes.add(nid);
             }
-
-            ways.add(new Way(id, version, uid, user, timestamp, changeset, nodes, keys, vals));
+            output.add(new Way(data, nodes));
         }
-        return ways;
     }
 
-    public List<Relation> getRelations() {
+    public List<Relation> readRelations() {
         List<Relation> relations = new ArrayList<>();
         for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
-            List<Osmformat.Relation> osmWays = group.getRelationsList();
-            relations.addAll(getRelations(osmWays));
+            readRelations(group.getRelationsList(), relations);
         }
         return relations;
     }
 
-    protected List<Relation> getRelations(List<Osmformat.Relation> rels) {
-        List<Relation> relations = new ArrayList<>();
-        for (Osmformat.Relation r : rels) {
-            long id = r.getId();
-
-            Osmformat.Info info = r.getInfo();
-            long timestamp = getTimestamp(info.getTimestamp());
-            int version = info.getVersion();
-            int uid = info.getUid();
-            String user = getString(info.getUserSid());
-            long changeset = info.getChangeset();
-
-            List<String> keys = new ArrayList<>(0);
-            List<String> vals = new ArrayList<>(0);
-            for (int j = 0; j < r.getKeysCount(); j++) {
-                keys.add(getString(r.getKeys(j)));
-                vals.add(getString(r.getVals(j)));
-            }
-
-            long lastMid = 0;
+    private void readRelations(List<Osmformat.Relation> input, List<Relation> output) {
+        for (Osmformat.Relation e : input) {
+            Data data = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
+            long mid = 0;
             List<Member> members = new ArrayList<>();
-            for (int j = 0; j < r.getMemidsCount(); j++) {
-                long mid = lastMid + r.getMemids(j);
-                lastMid = mid;
-                String role = getString(r.getRolesSid(j));
+            for (int j = 0; j < e.getMemidsCount(); j++) {
+                mid = mid + e.getMemids(j);
+                String role = getString(e.getRolesSid(j));
                 MemberType etype = null;
-                if (r.getTypes(j) == Osmformat.Relation.MemberType.NODE) {
+                if (e.getTypes(j) == Osmformat.Relation.MemberType.NODE) {
                     etype = MemberType.Node;
-                } else if (r.getTypes(j) == Osmformat.Relation.MemberType.WAY) {
+                } else if (e.getTypes(j) == Osmformat.Relation.MemberType.WAY) {
                     etype = MemberType.Way;
-                } else if (r.getTypes(j) == Osmformat.Relation.MemberType.RELATION) {
+                } else if (e.getTypes(j) == Osmformat.Relation.MemberType.RELATION) {
                     etype = MemberType.Relation;
                 } else {
-                    assert false;
+                    assert false; // TODO: throw an exception (invalid argument?)
                 }
                 members.add(new Member(mid, etype, role));
             }
-            relations.add(new Relation(id, version, uid, user, timestamp, changeset, members, keys, vals));
+            output.add(new Relation(data, members));
         }
-        return relations;
+    }
+
+    private Data createEntityData(long id, Osmformat.Info info, List<Integer> keys, List<Integer> vals) {
+        long timestamp = getTimestamp(info.getTimestamp());
+        int version = info.getVersion();
+        long changeset = info.getChangeset();
+
+        int uid = info.getUid();
+        String name = getString(info.getUserSid());
+        User user = new User(uid, name);
+
+        Map<String, String> tags = new HashMap<>();
+        for (int t = 0; t < keys.size(); t++) {
+            tags.put(getString(keys.get(t)), getString(vals.get(t)));
+        }
+
+        return new Data(id, version, timestamp, changeset, user, tags);
     }
 
 
@@ -195,10 +192,6 @@ public class PrimitiveBlockParser {
 
     private long getTimestamp(long timestamp) {
         return dateGranularity * timestamp;
-    }
-
-    public static PrimitiveBlock read(Osmformat.PrimitiveBlock block) {
-        return new PrimitiveBlockParser(block).read();
     }
 
 }

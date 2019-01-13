@@ -5,7 +5,6 @@ import gazetteer.osm.cache.EntityCache;
 import gazetteer.osm.database.NodeMapping;
 import gazetteer.osm.database.WayMapping;
 import gazetteer.osm.model.Node;
-import gazetteer.osm.osmpbf.PrimitiveBlockReader;
 import gazetteer.osm.model.Way;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.postgresql.PGConnection;
@@ -15,7 +14,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class PrimitiveBlockConsumer implements Consumer<PrimitiveBlockReader> {
+public class PrimitiveBlockConsumer implements Consumer<PrimitiveBlock> {
 
     private final EntityCache<Node> nodeStore;
     private final PoolingDataSource dataSource;
@@ -31,12 +30,10 @@ public class PrimitiveBlockConsumer implements Consumer<PrimitiveBlockReader> {
     }
 
     @Override
-    public void accept(PrimitiveBlockReader primitiveBlockReader) {
+    public void accept(PrimitiveBlock block) {
         try (Connection connection = dataSource.getConnection()) {
             PGConnection pgConnection = connection.unwrap(PGConnection.class);
-            //List<Node> nodes = primitiveBlockReader.getDenseNodes();
-            //dbNodes.saveAll(pgConnection, nodes);
-            List<Way> ways = primitiveBlockReader.getWays();
+            List<Way> ways = block.getWays();
             dbWays.saveAll(pgConnection, ways);
         } catch (SQLException e) {
             e.printStackTrace();

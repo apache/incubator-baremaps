@@ -5,17 +5,12 @@ import gazetteer.osm.cache.EntityCache;
 import gazetteer.osm.cache.EntityCacheException;
 import gazetteer.osm.cache.NodeConsumer;
 import gazetteer.osm.cache.NodeEntityType;
-import gazetteer.osm.osmpbf.PrimitiveBlockConsumer;
-import gazetteer.osm.osmpbf.FileBlock;
+import gazetteer.osm.osmpbf.*;
 import gazetteer.osm.model.Node;
-import gazetteer.osm.osmpbf.PrimitiveBlockReader;
-import gazetteer.osm.osmpbf.FileBlockReader;
-import gazetteer.osm.osmpbf.FileBlockSpliterator;
 import org.apache.commons.dbcp2.*;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
-import org.rocksdb.*;
 
 import java.io.*;
 import java.util.List;
@@ -55,7 +50,9 @@ public class Application {
 
     public static void writeCache(String file, EntityCache<Node> entityCache) throws ExecutionException, InterruptedException, FileNotFoundException {
         NodeConsumer consumer = new NodeConsumer(entityCache);
-        Stream<List<Node>> stream = primitiveBlockStream(file).map(d -> d.getDenseNodes());
+        Stream<List<Node>> stream = primitiveBlockStream(file)
+                .map(PrimitiveBlockReader::read)
+                .map(PrimitiveBlock::getNodes);
         ForkJoinPool forkJoinPool = new ForkJoinPool(8);
         forkJoinPool.submit(() -> stream.forEach(consumer)).get();
     }
@@ -63,7 +60,7 @@ public class Application {
     public static void writeDatabase(String file, EntityCache<Node> cache) throws FileNotFoundException, ExecutionException, InterruptedException {
         PoolingDataSource dataSource = dataSource("jdbc:postgresql://localhost:5432/osm?user=osm&password=osm");
         PrimitiveBlockConsumer consumer = new PrimitiveBlockConsumer(cache, dataSource);
-        Stream<PrimitiveBlockReader> stream = primitiveBlockStream(file);
+        Stream<PrimitiveBlock> stream = primitiveBlockStream(file).map(PrimitiveBlockReader::read);
         ForkJoinPool forkJoinPool = new ForkJoinPool(8);
         forkJoinPool.submit(() -> stream.forEach(consumer)).get();
     }
@@ -80,7 +77,7 @@ public class Application {
         try {
             return Osmformat.HeaderBlock.parseFrom(fileBlock.data);
         } catch (InvalidProtocolBufferException e) {
-            throw new Error("Unable to parse header block");
+            throw new Error("Unable to read header block");
         }
     }
 
@@ -88,7 +85,7 @@ public class Application {
         try {
             return Osmformat.PrimitiveBlock.parseFrom(fileBlock.data);
         } catch (InvalidProtocolBufferException e) {
-            throw new Error("Unable to parse primitive block");
+            throw new Error("Unable to read primitive block");
         }
     }
 

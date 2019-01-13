@@ -27,7 +27,7 @@ public class EntityCache<E extends Entity> implements AutoCloseable {
 
     public void add(E entity) throws EntityCacheException {
         try {
-            db.put(key(entity.getId()), val(entity));
+            db.put(key(entity.getData().getId()), val(entity));
         } catch (Exception e) {
             throw new EntityCacheException(e);
         }
@@ -36,7 +36,7 @@ public class EntityCache<E extends Entity> implements AutoCloseable {
     public void addAll(Collection<E> entities) throws EntityCacheException {
         try (WriteBatch batch = new WriteBatch()) {
             for (E entity : entities) {
-                batch.put(key(entity.getId()), val(entity));
+                batch.put(key(entity.getData().getId()), val(entity));
             }
             db.write(new WriteOptions(), batch);
         } catch (Exception e) {
