@@ -16,7 +16,7 @@ public class RelationMapping extends GeometryMapping<Relation> {
     private final ToIntFunction<Relation> getUserId = relation -> relation.getInfo().getUser().getId();
     private final Function<Relation, Map<String, String>> getTags = relation -> relation.getInfo().getTags();
 
-    protected RelationMapping() {
+    public RelationMapping() {
         super("public", "relations");
         mapLong("id", getId);
         mapInteger("version", getVersion);

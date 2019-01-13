@@ -1,6 +1,5 @@
 package io.gazetteer.osm.osmpbf;
 
-import gazetteer.osm.domain.*;
 import io.gazetteer.osm.domain.*;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 

@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-option optimize_for = LITE_RUNTIME;
-option java_package = "gazetteer.osm.rocksdb";
+option optimize_for = SPEED;
+option java_package = "io.gazetteer.osm.rocksdb";
 
 message Node {
   sint64 id = 1;
