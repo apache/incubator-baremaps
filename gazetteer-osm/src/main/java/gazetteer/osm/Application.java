@@ -2,6 +2,7 @@ package gazetteer.osm;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import gazetteer.osm.cache.EntityCache;
+import gazetteer.osm.cache.EntityCacheException;
 import gazetteer.osm.cache.NodeConsumer;
 import gazetteer.osm.cache.NodeEntityType;
 import gazetteer.osm.osmpbf.PrimitiveBlockConsumer;
@@ -26,37 +27,18 @@ import java.util.stream.StreamSupport;
 
 public class Application {
 
-    public static void main(String[] args) throws RocksDBException {
+    public static void main(String[] args)  {
         final String file = "/home/bchapuis/Datasets/osm/switzerland-latest.osm.pbf";
         final String database = "/home/bchapuis/Desktop/nodes.db";
 
 
-        RocksDB.loadLibrary();
-
-        final Options options = new Options()
-                .setCreateIfMissing(true)
-                .setCompressionType(CompressionType.NO_COMPRESSION);
-
-        //JniDBFactory.pushMemoryPool(1024 * 1024 * 1024);
-
-        try (final RocksDB db = RocksDB.open(options, database)) {
-            //String file = "/home/bchapuis/Projects/resources/osm/planet-latest.osm.pbf";
-            // read the OSMHeader block
+        try (final EntityCache<Node> cache = EntityCache.open(file, new NodeEntityType())) {
             Osmformat.HeaderBlock osmHeader = blockStream(file)
                     .filter(Application::filterHeaderBlock)
                     .map(Application::toHeaderBlock)
                     .findFirst().get();
-
-            EntityCache<Node> cache = new EntityCache<Node>(db, new NodeEntityType());
-
             writeCache(file, cache);
-            db.flush(new FlushOptions().setWaitForFlush(true));
-
-            System.out.println("node cache ready");
-
             writeDatabase(file, cache);
-
-            System.out.println("Done!");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -64,9 +46,10 @@ public class Application {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
+        } catch (EntityCacheException e) {
+            e.printStackTrace();
         } finally {
             System.out.println("Well done!");
-            //JniDBFactory.popMemoryPool();
         }
     }
 

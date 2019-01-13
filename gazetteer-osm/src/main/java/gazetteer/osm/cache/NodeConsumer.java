@@ -15,7 +15,11 @@ public class NodeConsumer implements Consumer<Collection<Node>> {
 
     @Override
     public void accept(Collection<Node> nodes) {
-        entityCache.addAll(nodes);
+        try {
+            entityCache.addAll(nodes);
+        } catch (EntityCacheException e) {
+            e.printStackTrace();
+        }
     }
 
 }

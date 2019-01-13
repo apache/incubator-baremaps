@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * A adaptation of the OsmosisBinaryParser
  */
-public class PrimitiveBlockReader {
+public class PrimitiveBlockParser {
 
     private Osmformat.PrimitiveBlock block;
 
@@ -19,7 +19,7 @@ public class PrimitiveBlockReader {
     private long lonOffset;
     private String stringTable[];
 
-    public PrimitiveBlockReader(Osmformat.PrimitiveBlock block) {
+    public PrimitiveBlockParser(Osmformat.PrimitiveBlock block) {
         this.block = block;
         this.granularity = block.getGranularity();
         this.latOffset = block.getLatOffset();
@@ -30,6 +30,12 @@ public class PrimitiveBlockReader {
             stringTable[i] = block.getStringtable().getS(i).toStringUtf8();
         }
     }
+
+    public PrimitiveBlock parse() {
+        return new PrimitiveBlock(nodes, ways, relations);
+    }
+
+
 
     public List<Node> getDenseNodes() {
         ArrayList<Node> nodes = new ArrayList<>();
@@ -189,6 +195,10 @@ public class PrimitiveBlockReader {
 
     private long getTimestamp(long timestamp) {
         return dateGranularity * timestamp;
+    }
+
+    public static PrimitiveBlock read(Osmformat.PrimitiveBlock block) {
+        return new PrimitiveBlockParser(block).read();
     }
 
 }
