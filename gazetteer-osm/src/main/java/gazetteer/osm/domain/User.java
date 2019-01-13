@@ -1,4 +1,4 @@
-package gazetteer.osm.model;
+package gazetteer.osm.domain;
 
 public class User {
 

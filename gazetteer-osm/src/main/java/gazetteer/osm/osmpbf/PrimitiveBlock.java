@@ -1,9 +1,8 @@
 package gazetteer.osm.osmpbf;
 
-import gazetteer.osm.model.Node;
-import gazetteer.osm.model.Relation;
-import gazetteer.osm.model.Way;
-import org.openstreetmap.osmosis.osmbinary.Osmformat;
+import gazetteer.osm.domain.Node;
+import gazetteer.osm.domain.Relation;
+import gazetteer.osm.domain.Way;
 
 import java.util.List;
 
@@ -33,24 +32,5 @@ public class PrimitiveBlock {
         return relations;
     }
 
-    public static PrimitiveBlock read(Osmformat.PrimitiveBlock block) {
-        return new PrimitiveBlockReader(block).read();
-    }
-
-    public static List<Node> readDenseNodes(Osmformat.PrimitiveBlock block) {
-        return new PrimitiveBlockReader(block).readDenseNodes();
-    }
-
-    public static List<Node> readNodes(Osmformat.PrimitiveBlock block) {
-        return new PrimitiveBlockReader(block).readNodes();
-    }
-
-    public static List<Way> readWays(Osmformat.PrimitiveBlock block) {
-        return new PrimitiveBlockReader(block).readWays();
-    }
-
-    public static List<Relation> readRelations(Osmformat.PrimitiveBlock block) {
-        return new PrimitiveBlockReader(block).readRelations();
-    }
 
 }

@@ -1,9 +1,10 @@
-package gazetteer.osm.cache;
+package gazetteer.osm.rocksdb;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import gazetteer.osm.model.Entity;
+import gazetteer.osm.domain.Entity;
 import org.rocksdb.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +28,7 @@ public class EntityCache<E extends Entity> implements AutoCloseable {
 
     public void add(E entity) throws EntityCacheException {
         try {
-            db.put(key(entity.getData().getId()), val(entity));
+            db.put(key(entity.getInfo().getId()), val(entity));
         } catch (Exception e) {
             throw new EntityCacheException(e);
         }
@@ -36,7 +37,7 @@ public class EntityCache<E extends Entity> implements AutoCloseable {
     public void addAll(Collection<E> entities) throws EntityCacheException {
         try (WriteBatch batch = new WriteBatch()) {
             for (E entity : entities) {
-                batch.put(key(entity.getData().getId()), val(entity));
+                batch.put(key(entity.getInfo().getId()), val(entity));
             }
             db.write(new WriteOptions(), batch);
         } catch (Exception e) {
@@ -108,13 +109,13 @@ public class EntityCache<E extends Entity> implements AutoCloseable {
         return Long.parseLong(new String(id));
     }
 
-    public static <E extends Entity> EntityCache<E> open(String database, EntityType<E> type) throws EntityCacheException {
+    public static <E extends Entity> EntityCache<E> open(File database, EntityType<E> type) throws EntityCacheException {
         try {
 
             final Options options = new Options()
                     .setCreateIfMissing(true)
                     .setCompressionType(CompressionType.NO_COMPRESSION);
-            final RocksDB db = RocksDB.open(options, database);
+            final RocksDB db = RocksDB.open(options, database.getPath());
             return new EntityCache<>(db, type);
         } catch (RocksDBException e) {
             throw new EntityCacheException(e);

@@ -1,4 +1,4 @@
-package gazetteer.osm.cache;
+package gazetteer.osm.rocksdb;
 
 public class EntityCacheException extends Exception {
 

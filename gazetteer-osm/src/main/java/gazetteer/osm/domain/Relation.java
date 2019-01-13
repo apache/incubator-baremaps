@@ -1,20 +1,20 @@
-package gazetteer.osm.model;
+package gazetteer.osm.domain;
 
 import java.util.List;
 
 public class Relation implements Entity {
 
-    private final Data data;
+    private final Info info;
 
     private final List<Member> members;
 
-    public Relation(Data data, List<Member> members) {
-        this.data = data;
+    public Relation(Info info, List<Member> members) {
+        this.info = info;
         this.members = members;
     }
 
     @Override
-    public Data getData() {
+    public Info getInfo() {
         return null;
     }
 

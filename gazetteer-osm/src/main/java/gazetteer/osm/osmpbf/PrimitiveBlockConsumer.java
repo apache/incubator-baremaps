@@ -1,11 +1,11 @@
 package gazetteer.osm.osmpbf;
 
 import de.bytefish.pgbulkinsert.PgBulkInsert;
-import gazetteer.osm.cache.EntityCache;
-import gazetteer.osm.database.NodeMapping;
-import gazetteer.osm.database.WayMapping;
-import gazetteer.osm.model.Node;
-import gazetteer.osm.model.Way;
+import gazetteer.osm.rocksdb.EntityCache;
+import gazetteer.osm.postgis.NodeMapping;
+import gazetteer.osm.postgis.WayMapping;
+import gazetteer.osm.domain.Node;
+import gazetteer.osm.domain.Way;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.postgresql.PGConnection;
 

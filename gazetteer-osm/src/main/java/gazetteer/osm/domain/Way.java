@@ -1,21 +1,21 @@
-package gazetteer.osm.model;
+package gazetteer.osm.domain;
 
 import java.util.List;
 
 public class Way implements Entity {
 
-    private final Data data;
+    private final Info info;
 
     private final List<Long> nodes;
 
-    public Way(Data data, List<Long> nodes) {
-        this.data = data;
+    public Way(Info info, List<Long> nodes) {
+        this.info = info;
         this.nodes = nodes;
     }
 
     @Override
-    public Data getData() {
-        return data;
+    public Info getInfo() {
+        return info;
     }
 
     public List<Long> getNodes() {

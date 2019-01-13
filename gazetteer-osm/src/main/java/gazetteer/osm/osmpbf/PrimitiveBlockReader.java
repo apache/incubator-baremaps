@@ -1,6 +1,6 @@
 package gazetteer.osm.osmpbf;
 
-import gazetteer.osm.model.*;
+import gazetteer.osm.domain.*;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
 import java.util.ArrayList;
@@ -85,7 +85,7 @@ public class PrimitiveBlockReader {
                 j++; // Skip over the '0' delimiter.
             }
 
-            Data data = new Data(id, version, getTimestamp(timestamp), changeset, new User(uid, getString(sid)), tags);
+            Info data = new Info(id, version, getTimestamp(timestamp), changeset, new User(uid, getString(sid)), tags);
             output.add(new Node(data, getLon(lon), getLat(lat)));
         }
     }
@@ -100,10 +100,10 @@ public class PrimitiveBlockReader {
 
     private void readNodes(List<Osmformat.Node> input, List<Node> output) {
         for (Osmformat.Node e : input) {
-            Data data = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
+            Info info = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
             long lon = e.getLon();
             long lat = e.getLat();
-            output.add(new Node(data, getLon(lon), getLat(lat)));
+            output.add(new Node(info, getLon(lon), getLat(lat)));
         }
     }
 
@@ -117,14 +117,14 @@ public class PrimitiveBlockReader {
 
     private void readWays(List<Osmformat.Way> input, List<Way> output) {
         for (Osmformat.Way e : input) {
-            Data data = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
+            Info info = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
             long nid = 0;
             List<Long> nodes = new ArrayList<>();
             for (int index = 0; index < e.getRefsCount(); index++) {
                 nid = nid + e.getRefs(index);
                 nodes.add(nid);
             }
-            output.add(new Way(data, nodes));
+            output.add(new Way(info, nodes));
         }
     }
 
@@ -138,7 +138,7 @@ public class PrimitiveBlockReader {
 
     private void readRelations(List<Osmformat.Relation> input, List<Relation> output) {
         for (Osmformat.Relation e : input) {
-            Data data = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
+            Info info = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
             long mid = 0;
             List<Member> members = new ArrayList<>();
             for (int j = 0; j < e.getMemidsCount(); j++) {
@@ -156,11 +156,11 @@ public class PrimitiveBlockReader {
                 }
                 members.add(new Member(mid, etype, role));
             }
-            output.add(new Relation(data, members));
+            output.add(new Relation(info, members));
         }
     }
 
-    private Data createEntityData(long id, Osmformat.Info info, List<Integer> keys, List<Integer> vals) {
+    private Info createEntityData(long id, Osmformat.Info info, List<Integer> keys, List<Integer> vals) {
         long timestamp = getTimestamp(info.getTimestamp());
         int version = info.getVersion();
         long changeset = info.getChangeset();
@@ -174,7 +174,7 @@ public class PrimitiveBlockReader {
             tags.put(getString(keys.get(t)), getString(vals.get(t)));
         }
 
-        return new Data(id, version, timestamp, changeset, user, tags);
+        return new Info(id, version, timestamp, changeset, user, tags);
     }
 
 

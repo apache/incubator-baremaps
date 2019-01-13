@@ -1,4 +1,4 @@
-package gazetteer.osm.cache;
+package gazetteer.osm.rocksdb;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 

@@ -1,22 +1,22 @@
-package gazetteer.osm.model;
+package gazetteer.osm.domain;
 
 public class Node implements Entity {
 
-    private final Data data;
+    private final Info info;
 
     private final double lon;
 
     private final double lat;
 
-    public Node(Data data, double lon, double lat) {
-        this.data = data;
+    public Node(Info info, double lon, double lat) {
+        this.info = info;
         this.lon = lon;
         this.lat = lat;
     }
 
     @Override
-    public Data getData() {
-        return data;
+    public Info getInfo() {
+        return info;
     }
 
     public double getLon() {

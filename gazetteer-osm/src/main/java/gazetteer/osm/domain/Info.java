@@ -1,8 +1,8 @@
-package gazetteer.osm.model;
+package gazetteer.osm.domain;
 
 import java.util.Map;
 
-public class Data {
+public class Info {
 
     private final long id;
     private final int version;
@@ -11,7 +11,7 @@ public class Data {
     private final User user;
     private final Map<String, String> tags;
 
-    public Data(long id, int version, long timestamp, long changeset, User user, Map<String, String> tags) {
+    public Info(long id, int version, long timestamp, long changeset, User user, Map<String, String> tags) {
         this.id = id;
         this.version = version;
         this.timestamp = timestamp;

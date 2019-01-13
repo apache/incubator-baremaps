@@ -18,24 +18,24 @@ public class FileBlockReader {
 
     public FileBlock read() throws IOException {
 
-        // read the header
+        // stream the header
         int headerSize = input.readInt();
         byte[] headerData = new byte[headerSize];
         input.readFully(headerData);
         Fileformat.BlobHeader header = Fileformat.BlobHeader.parseFrom(headerData);
 
-        // read the blob
+        // stream the blob
         int blobSize = header.getDatasize();
         byte[] blobData = new byte[blobSize];
         input.readFully(blobData);
         Fileformat.Blob blob = Fileformat.Blob.parseFrom(blobData);
 
-        // read the raw data
+        // stream the raw data
         if (blob.hasRaw()) {
             return new FileBlock(header.getType(), header.getIndexdata(), blob.getRaw());
         }
 
-        // read the compressed zlib data
+        // stream the compressed zlib data
         if (blob.hasZlibData()) {
             byte raw[] = new byte[blob.getRawSize()];
             Inflater inflater = new Inflater();

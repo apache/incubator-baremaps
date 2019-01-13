@@ -1,6 +1,6 @@
-package gazetteer.osm.cache;
+package gazetteer.osm.rocksdb;
 
-import gazetteer.osm.model.Node;
+import gazetteer.osm.domain.Node;
 
 import java.util.Collection;
 import java.util.function.Consumer;
