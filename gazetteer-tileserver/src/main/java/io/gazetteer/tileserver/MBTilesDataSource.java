@@ -42,13 +42,9 @@ public class MBTilesDataSource implements TileDataSource {
         return metadata.format.mimeType;
     }
 
-    private MBTilesTile loadTile(Coordinate coord) throws SQLException {
+    private MBTilesTile loadTile(Coordinate coordinate) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            GeometryEnvelope envelope = coord.envelope();
-
-            System.out.println(String.format(PGTilesDataSource.SELECT_MVT, envelope.getMinX(), envelope.getMinY(), envelope.getMaxX(), envelope.getMaxY()));
-
-            return MBTilesDatabase.getTile(connection, coord);
+            return MBTilesDatabase.getTile(connection, coordinate);
         }
     }
 
