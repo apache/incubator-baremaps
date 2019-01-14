@@ -61,8 +61,9 @@ public class TileServer {
     }
 
     public static void main(String[] args) throws Exception {
-        String mbtiles = "/home/bchapuis/Projects/github.com/gztr/data/2017-07-03_europe_switzerland.mbtiles";
-        TileServerConfig config = TileServerConfig.fromMBTilesFile(mbtiles);
+        String mbtiles = "/home/bchapuis/Datasets/osm/2017-07-03_europe_switzerland.mbtiles";
+        //TileServerConfig config = TileServerConfig.fromMBTilesFile(mbtiles);
+        TileServerConfig config = TileServerConfig.fromPGTiles();
         new TileServer(config).start();
     }
 

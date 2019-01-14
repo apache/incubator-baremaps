@@ -1,6 +1,6 @@
 package io.gazetteer.tileserver;
 
-import io.gazetteer.mbtiles.MBTilesCoordinate;
+import io.gazetteer.tiles.Coordinate;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -112,12 +112,12 @@ public class TileServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     }
 
     private void sendTile(ChannelHandlerContext ctx, int z, int x, int y) {
-        MBTilesCoordinate coord = new MBTilesCoordinate(z, x, y);
-        config.tileCache.getTile(coord).thenAccept(tile -> {
+        Coordinate coord = new Coordinate(z, x, y);
+        config.dataSource.getTile(coord).thenAccept(tile -> {
             if (tile != null) {
                 DefaultFullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(tile.bytes));
                 setDateHeader(response);
-                response.headers().set(CONTENT_TYPE, config.tileCache.metadata.format.mimeType);
+                response.headers().set(CONTENT_TYPE, config.dataSource.getMimeType());
                 response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
                 response.headers().set(CONTENT_ENCODING, ENCODING);
                 response.headers().set(CACHE_CONTROL, MAX_AGE);

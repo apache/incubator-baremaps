@@ -40,3 +40,19 @@ CREATE TABLE relations (
     members bigint[],
     geom geometry
 );
+
+CREATE INDEX nodes_gix ON nodes USING GIST (geom);
+CREATE INDEX ways_gix ON ways USING GIST (geom);
+CREATE INDEX relations_gix ON relations USING GIST (geom);
+
+
+
+SELECT ST_AsMVT(q, 'layer', 4096, 'geom')
+FROM (
+  SELECT ST_AsMVTGeom(geom, ST_MakeEnvelope(6.679688, 46.528635, 6.701660, 46.543750, 4326), 4096, 256, true) geom
+  FROM ways c
+  WHERE geom && ST_MakeEnvelope(6.679688, 46.528635, 6.701660, 46.543750, 4326)
+  AND tags -> 'building' = 'yes'
+) q
+
+

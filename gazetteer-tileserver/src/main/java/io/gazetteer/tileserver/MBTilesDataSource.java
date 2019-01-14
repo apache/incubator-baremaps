@@ -2,10 +2,11 @@ package io.gazetteer.tileserver;
 
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import io.gazetteer.mbtiles.MBTilesCoordinate;
+import io.gazetteer.tiles.Coordinate;
 import io.gazetteer.mbtiles.MBTilesDatabase;
 import io.gazetteer.mbtiles.MBTilesMetadata;
 import io.gazetteer.mbtiles.MBTilesTile;
+import mil.nga.sf.GeometryEnvelope;
 import org.sqlite.SQLiteDataSource;
 
 import java.sql.Connection;
@@ -14,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
-public class TileServerCache {
+public class MBTilesDataSource implements TileDataSource {
 
     public final SQLiteDataSource dataSource;
 
@@ -22,37 +23,47 @@ public class TileServerCache {
 
     public final int cacheSize;
 
-    private final AsyncLoadingCache<MBTilesCoordinate, MBTilesTile> cache = Caffeine.newBuilder()
+    private final AsyncLoadingCache<Coordinate, MBTilesTile> cache = Caffeine.newBuilder()
             .maximumSize(10000)
             .executor(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2))
             .buildAsync(coord -> loadTile(coord));
 
-    public TileServerCache(SQLiteDataSource dataSource, MBTilesMetadata metadata) {
+    public MBTilesDataSource(SQLiteDataSource dataSource, MBTilesMetadata metadata) {
         this(dataSource, metadata, 10000);
     }
 
-    public TileServerCache(SQLiteDataSource dataSource, MBTilesMetadata metadata, int cacheSize) {
+    public MBTilesDataSource(SQLiteDataSource dataSource, MBTilesMetadata metadata, int cacheSize) {
         this.dataSource = dataSource;
         this.metadata = metadata;
         this.cacheSize = cacheSize;
     }
 
-    private MBTilesTile loadTile(MBTilesCoordinate coord) throws SQLException {
+    public String getMimeType() {
+        return metadata.format.mimeType;
+    }
+
+    private MBTilesTile loadTile(Coordinate coord) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
+            GeometryEnvelope envelope = coord.envelope();
+
+            System.out.println(String.format(PGTilesDataSource.SELECT_MVT, envelope.getMinX(), envelope.getMinY(), envelope.getMaxX(), envelope.getMaxY()));
+
             return MBTilesDatabase.getTile(connection, coord);
         }
     }
 
-    public CompletableFuture<MBTilesTile> getTile(MBTilesCoordinate coord) {
-        return cache.get(coord);
+    @Override
+    public CompletableFuture<MBTilesTile> getTile(Coordinate coordinate) {
+        return cache.get(coordinate);
     }
 
-    public static TileServerCache fromDataSource(SQLiteDataSource dataSource) throws SQLException {
+    public static MBTilesDataSource fromDataSource(SQLiteDataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             Map<String, String> map = MBTilesDatabase.getMetadata(connection);
             MBTilesMetadata metadata = MBTilesMetadata.fromMap(map);
-            return new TileServerCache(dataSource, metadata);
+            return new MBTilesDataSource(dataSource, metadata);
         }
     }
+
 
 }
