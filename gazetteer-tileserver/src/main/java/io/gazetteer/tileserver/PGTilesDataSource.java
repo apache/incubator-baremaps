@@ -1,7 +1,7 @@
 package io.gazetteer.tileserver;
 
-import io.gazetteer.mbtiles.MBTilesTile;
-import io.gazetteer.tiles.Coordinate;
+import io.gazetteer.mbtiles.Tile;
+import io.gazetteer.mbtiles.Coordinate;
 import mil.nga.sf.GeometryEnvelope;
 
 import java.io.ByteArrayOutputStream;
@@ -28,7 +28,7 @@ public class PGTilesDataSource implements TileDataSource {
             "  FROM ways\n" +
             "  WHERE geom && ST_MakeEnvelope(?, ?, ?, ?)\n" +
             "  AND ST_Intersects(geom, ST_MakeEnvelope(?, ?, ?, ?))\n" +
-            "  AND tags -> 'building' = 'yes'" +
+
             ") AS q;";
     
     
@@ -38,7 +38,7 @@ public class PGTilesDataSource implements TileDataSource {
     }
 
     @Override
-    public CompletableFuture<MBTilesTile> getTile(Coordinate coordinate) {
+    public CompletableFuture<Tile> getTile(Coordinate coordinate) {
 
         try {
             try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/osm?user=osm&password=osm")) {
@@ -58,7 +58,7 @@ public class PGTilesDataSource implements TileDataSource {
                 statement.setDouble(12, envelope.getMaxY());
                 ResultSet result = statement.executeQuery();
                 result.next();
-                return CompletableFuture.completedFuture(new MBTilesTile(gzip(result.getBytes(1))));
+                return CompletableFuture.completedFuture(new Tile(gzip(result.getBytes(1))));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

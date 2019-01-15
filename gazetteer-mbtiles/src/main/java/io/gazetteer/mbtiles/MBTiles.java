@@ -1,7 +1,5 @@
 package io.gazetteer.mbtiles;
 
-import io.gazetteer.tiles.Coordinate;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,7 +7,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MBTilesDatabase {
+public class MBTiles {
 
     public static void createDatabase(Connection connection) throws SQLException {
         try(PreparedStatement metadata = connection.prepareStatement("CREATE TABLE metadata (name TEXT, value TEXT, PRIMARY KEY (name))");
@@ -34,11 +32,11 @@ public class MBTilesDatabase {
         }
     }
 
-    public static MBTilesTile getTile(Connection connection, Coordinate coord) throws SQLException {
+    public static Tile getTile(Connection connection, Coordinate coord) throws SQLException {
         try(PreparedStatement statement = getTileStatement(connection, coord);
             ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
-                return new MBTilesTile(resultSet.getBytes("tile_data"));
+                return new Tile(resultSet.getBytes("tile_data"));
             } else {
                 return null;
             }
@@ -63,7 +61,7 @@ public class MBTilesDatabase {
         }
     }
 
-    public static void setTile(Connection connection, Coordinate coord, MBTilesTile tile) throws SQLException {
+    public static void setTile(Connection connection, Coordinate coord, Tile tile) throws SQLException {
         try(PreparedStatement statement = connection.prepareStatement("INSERT INTO tiles (zoom_level, tile_column, tile_row, tile_data) VALUES (?, ?, ?, ?)")) {
             statement.setInt(1, coord.z);
             statement.setInt(2, coord.x);

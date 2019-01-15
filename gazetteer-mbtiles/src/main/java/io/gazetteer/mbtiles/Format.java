@@ -1,6 +1,7 @@
 package io.gazetteer.mbtiles;
 
-public enum MBTilesFormat {
+public enum Format {
+
     pbf("application/vnd.mapbox-vector-tile"),
     png("image/png"),
     jpg("image/jpeg"),
@@ -8,7 +9,8 @@ public enum MBTilesFormat {
 
     public String mimeType;
 
-    MBTilesFormat(String mime) {
+    Format(String mime) {
         this.mimeType = mime;
     }
+
 }

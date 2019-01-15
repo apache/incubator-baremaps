@@ -1,10 +1,10 @@
 package io.gazetteer.mbtiles;
 
-public class MBTilesTile {
+public class Tile {
 
     public final byte[] bytes;
 
-    public MBTilesTile(byte[] bytes) {
+    public Tile(byte[] bytes) {
         this.bytes = bytes;
     }
 

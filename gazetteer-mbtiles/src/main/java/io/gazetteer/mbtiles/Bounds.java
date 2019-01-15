@@ -1,10 +1,10 @@
 package io.gazetteer.mbtiles;
 
-public class MBTilesBounds {
+public class Bounds {
 
     public final double left, bottom, right, top;
 
-    public MBTilesBounds(double left, double bottom, double right, double top) {
+    public Bounds(double left, double bottom, double right, double top) {
         this.left = left;
         this.bottom = bottom;
         this.right = right;
@@ -16,7 +16,7 @@ public class MBTilesBounds {
         return String.format("%f,%f,%f,%f", left, bottom, right, top);
     }
 
-    public static MBTilesBounds fromString(String bounds) {
+    public static Bounds fromString(String bounds) {
         if (bounds == null) return null;
         String[] arr = bounds.split(",");
         if (arr.length != 4) return null;
@@ -25,7 +25,7 @@ public class MBTilesBounds {
             double bottom = Double.parseDouble(arr[1]);
             double right = Double.parseDouble(arr[2]);
             double top = Double.parseDouble(arr[3]);
-            return new MBTilesBounds(left, bottom, right, top);
+            return new Bounds(left, bottom, right, top);
         } catch (Exception e) {
             return null;
         }

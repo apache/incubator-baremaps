@@ -1,6 +1,6 @@
 package io.gazetteer.mbtiles;
 
-public enum MBTilesType {
+public enum Type {
 
     overlay, baselayer;
 

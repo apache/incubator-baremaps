@@ -1,4 +1,4 @@
-package io.gazetteer.tiles;
+package io.gazetteer.mbtiles;
 
 import mil.nga.sf.GeometryEnvelope;
 
@@ -38,11 +38,11 @@ public class Coordinate {
         return new GeometryEnvelope(west, south, east, north);
     }
 
-    static double tile2lon(int x, int z) {
+    public static double tile2lon(int x, int z) {
         return x / Math.pow(2.0, z) * 360.0 - 180;
     }
 
-    static double tile2lat(int y, int z) {
+    public static double tile2lat(int y, int z) {
         double n = Math.PI - (2.0 * Math.PI * y) / Math.pow(2.0, z);
         return Math.toDegrees(Math.atan(Math.sinh(n)));
     }

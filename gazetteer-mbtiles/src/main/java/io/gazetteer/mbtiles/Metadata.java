@@ -2,15 +2,15 @@ package io.gazetteer.mbtiles;
 
 import java.util.Map;
 
-public class MBTilesMetadata {
+public class Metadata {
 
     public final String name;
 
-    public final MBTilesFormat format;
+    public final Format format;
 
-    public final MBTilesBounds bounds;
+    public final Bounds bounds;
 
-    public final MBTilesCenter center;
+    public final Center center;
 
     public final int minZoom;
 
@@ -20,13 +20,13 @@ public class MBTilesMetadata {
 
     public final String description;
 
-    public final MBTilesType type;
+    public final Type type;
 
     public final String version;
 
     public final String json;
 
-    public MBTilesMetadata(String name, MBTilesFormat format, MBTilesBounds bounds, MBTilesCenter center, int minZoom, int maxZoom, String attribution, String description, MBTilesType type, String version, String json) {
+    public Metadata(String name, Format format, Bounds bounds, Center center, int minZoom, int maxZoom, String attribution, String description, Type type, String version, String json) {
         this.name = name;
         this.format = format;
         this.bounds = bounds;
@@ -40,18 +40,18 @@ public class MBTilesMetadata {
         this.json = json;
     }
 
-    public static MBTilesMetadata fromMap(Map<String, String> metadata) {
+    public static Metadata fromMap(Map<String, String> metadata) {
         String name = metadata.get("name");
-        MBTilesFormat format = MBTilesFormat.valueOf(metadata.get("format"));
-        MBTilesBounds bounds = MBTilesBounds.fromString(metadata.get("bounds"));
-        MBTilesCenter center = MBTilesCenter.fromString(metadata.get("center"));
+        Format format = Format.valueOf(metadata.get("format"));
+        Bounds bounds = Bounds.fromString(metadata.get("bounds"));
+        Center center = Center.fromString(metadata.get("center"));
         int minZoom = Integer.parseInt(metadata.get("minzoom"));
         int maxZoom = Integer.parseInt(metadata.get("maxzoom"));
         String attribution = metadata.get("attribution");
         String description = metadata.get("description");
-        MBTilesType type = MBTilesType.valueOf(metadata.getOrDefault("type", "baselayer"));
+        Type type = Type.valueOf(metadata.getOrDefault("type", "baselayer"));
         String version = metadata.get("version");
         String json = metadata.get("json");
-        return new MBTilesMetadata(name, format, bounds, center, minZoom, maxZoom, attribution, description, type, version, json);
+        return new Metadata(name, format, bounds, center, minZoom, maxZoom, attribution, description, type, version, json);
     }
 }
