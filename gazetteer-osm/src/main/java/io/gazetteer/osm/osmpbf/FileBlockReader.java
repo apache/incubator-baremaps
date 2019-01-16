@@ -37,7 +37,7 @@ public class FileBlockReader {
 
         // stream the compressed zlib data
         if (blob.hasZlibData()) {
-            byte raw[] = new byte[blob.getRawSize()];
+            byte[] raw = new byte[blob.getRawSize()];
             Inflater inflater = new Inflater();
             inflater.setInput(blob.getZlibData().toByteArray());
             try {

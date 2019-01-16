@@ -18,7 +18,7 @@ public class PrimitiveBlockReader {
     private final int dateGranularity;
     private final long latOffset;
     private final long lonOffset;
-    private final String stringTable[];
+    private final String[] stringTable;
 
     public PrimitiveBlockReader(Osmformat.PrimitiveBlock block) {
         this.block = block;

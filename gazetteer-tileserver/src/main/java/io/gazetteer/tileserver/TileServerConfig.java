@@ -42,11 +42,12 @@ public class TileServerConfig {
         dataSource.setPageSize(1024);
         dataSource.setCacheSize(10000);
         MBTilesDataSource cache = MBTilesDataSource.fromDataSource(dataSource);
-        Pattern tileUri =  Pattern.compile(String.format("/(\\d{1,2})/(\\d{1,6})/(\\d{1,6}).%s", cache.metadata.format.name()));
+        // todo: get the format from the metadata
+        Pattern tileUri =  Pattern.compile(String.format("/(\\d{1,2})/(\\d{1,6})/(\\d{1,6}).%s", "pbf"));
         return new TileServerConfig(host, port, null, cache, tileUri);
     }
 
-    public static TileServerConfig fromPGTiles() throws SQLException {
+    public static TileServerConfig fromPGTiles() {
         String host = "localhost";
         int port = 8081;
         List<PGLayer> layers = new ArrayList<>();

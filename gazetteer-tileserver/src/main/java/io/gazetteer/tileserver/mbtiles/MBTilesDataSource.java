@@ -2,13 +2,10 @@ package io.gazetteer.tileserver.mbtiles;
 
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import io.gazetteer.mbtiles.Coordinate;
+import io.gazetteer.mbtiles.XYZ;
 import io.gazetteer.mbtiles.MBTiles;
-import io.gazetteer.mbtiles.Metadata;
 import io.gazetteer.mbtiles.Tile;
 import io.gazetteer.tileserver.TileDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
 
 import java.sql.Connection;
@@ -19,19 +16,19 @@ import java.util.concurrent.Executors;
 
 public class MBTilesDataSource implements TileDataSource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MBTilesDataSource.class);
+    public static final String MIME_TYPE = "application/vnd.mapbox-vector-tile";
 
     public final SQLiteDataSource dataSource;
 
-    public final Metadata metadata;
+    public final Map<String, String> metadata;
 
-    private final AsyncLoadingCache<Coordinate, Tile> cache;
+    private final AsyncLoadingCache<XYZ, Tile> cache;
 
-    public MBTilesDataSource(SQLiteDataSource dataSource, Metadata metadata) {
+    public MBTilesDataSource(SQLiteDataSource dataSource, Map<String, String> metadata) {
         this(dataSource, metadata, 10000);
     }
 
-    public MBTilesDataSource(SQLiteDataSource dataSource, Metadata metadata, int cacheSize) {
+    public MBTilesDataSource(SQLiteDataSource dataSource, Map<String, String> metadata, int cacheSize) {
         this.dataSource = dataSource;
         this.metadata = metadata;
         this.cache = Caffeine.newBuilder()
@@ -41,24 +38,23 @@ public class MBTilesDataSource implements TileDataSource {
     }
 
     public String getMimeType() {
-        return metadata.format.mimeType;
+        return MIME_TYPE;
     }
 
-    private Tile loadTile(Coordinate coordinate) throws SQLException {
+    private Tile loadTile(XYZ coordinates) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            return MBTiles.getTile(connection, coordinate);
+            return MBTiles.getTile(connection, coordinates);
         }
     }
 
     @Override
-    public CompletableFuture<Tile> getTile(Coordinate coordinate) {
-        return cache.get(coordinate);
+    public CompletableFuture<Tile> getTile(XYZ coordinates) {
+        return cache.get(coordinates);
     }
 
     public static MBTilesDataSource fromDataSource(SQLiteDataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            Map<String, String> map = MBTiles.getMetadata(connection);
-            Metadata metadata = Metadata.fromMap(map);
+            Map<String, String> metadata = MBTiles.getMetadata(connection);
             return new MBTilesDataSource(dataSource, metadata);
         }
     }

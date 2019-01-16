@@ -2,7 +2,7 @@ package io.gazetteer.tileserver.postgis;
 
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import io.gazetteer.mbtiles.Coordinate;
+import io.gazetteer.mbtiles.XYZ;
 import io.gazetteer.mbtiles.Tile;
 import io.gazetteer.tileserver.TileDataSource;
 import mil.nga.sf.GeometryEnvelope;
@@ -23,7 +23,7 @@ public class PGDataSource implements TileDataSource {
 
     public static final String MIME_TYPE = "application/vnd.mapbox-vector-tile";
 
-    private final AsyncLoadingCache<Coordinate, Tile> cache;
+    private final AsyncLoadingCache<XYZ, Tile> cache;
 
     public final List<PGLayer> layers;
 
@@ -41,25 +41,25 @@ public class PGDataSource implements TileDataSource {
     }
 
     @Override
-    public CompletableFuture<Tile> getTile(Coordinate coordinate) {
-        return cache.get(coordinate);
+    public CompletableFuture<Tile> getTile(XYZ coordinates) {
+        return cache.get(coordinates);
     }
 
-    private Tile loadTile(Coordinate coordinate) throws IOException, SQLException {
+    private Tile loadTile(XYZ coordinates) throws IOException, SQLException {
         try (ByteArrayOutputStream data = new ByteArrayOutputStream();
              GZIPOutputStream tile = new GZIPOutputStream(data)) {
             for (PGLayer layer : layers) {
-                tile.write(loadLayer(coordinate, layer));
+                tile.write(loadLayer(coordinates, layer));
             }
             tile.close();
             return new Tile(data.toByteArray());
         }
     }
 
-    private byte[] loadLayer(Coordinate coordinate, PGLayer layer) throws SQLException {
+    private byte[] loadLayer(XYZ coordinates, PGLayer layer) throws SQLException {
         try (Connection connection = DriverManager.getConnection(layer.getDatabase())) {
             PreparedStatement statement = connection.prepareStatement(layer.getSql());
-            GeometryEnvelope envelope = coordinate.envelope();
+            GeometryEnvelope envelope = coordinates.envelope();
             statement.setDouble(1, envelope.getMinX());
             statement.setDouble(2, envelope.getMinY());
             statement.setDouble(3, envelope.getMaxX());
