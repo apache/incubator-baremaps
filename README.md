@@ -8,12 +8,12 @@ For now, the effort consists into creating a proof of concept that imports data 
 
 ## Useful links
 
-  - [How to make mvt with PostGIS](https://blog.jawg.io/how-to-make-mvt-with-postgis/)
+- [How to make mvt with PostGIS](https://blog.jawg.io/how-to-make-mvt-with-postgis/)
 
 ## Cool companies and startups
 
-  - [Camptocamp](http://camptocamp.com/)
-  - [Jawg](https://blog.jawg.io/)
-  - [Klokan](https://www.klokantech.com/)
-  - [Mapbox](https://www.mapbox.com/)
-  - [Omniscale](https://omniscale.com/)
+- [Camptocamp](http://camptocamp.com/)
+- [Jawg](https://blog.jawg.io/)
+- [Klokan](https://www.klokantech.com/)
+- [Mapbox](https://www.mapbox.com/)
+- [Omniscale](https://omniscale.com/)
