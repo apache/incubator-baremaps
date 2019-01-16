@@ -1,6 +1,6 @@
 # Gazetteer
 
-## Introduction
+[![Build Status](https://travis-ci.com/bchapuis/gazetteer.svg?branch=master)](https://travis-ci.com/bchapuis/gazetteer)
 
 Gazetteer is a work in progress aimed at simplifying the way we generate and publish vector tiles. 
 For now, the effort consists into creating a proof of concept that imports data from OpenStreetMap into postgresql, which is then used to create vector tiles.
