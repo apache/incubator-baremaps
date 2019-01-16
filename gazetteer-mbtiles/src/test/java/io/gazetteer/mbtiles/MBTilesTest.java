@@ -7,6 +7,8 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertTrue;
+
 public class MBTilesTest {
 
     @Test
@@ -15,11 +17,11 @@ public class MBTilesTest {
         MBTiles.createDatabase(connection);
         DatabaseMetaData md = connection.getMetaData();
         ResultSet rs1 = md.getTables(null, null, "metadata", null);
-        rs1.next();
-        Assert.assertTrue(rs1.getRow() > 0);
+        assertTrue(rs1.next());
+        assertTrue(rs1.getRow() > 0);
         ResultSet rs2 = md.getTables(null, null, "tiles", null);
-        rs2.next();
-        Assert.assertTrue(rs2.getRow() > 0);
+        assertTrue(rs2.next());
+        assertTrue(rs2.getRow() > 0);
     }
 
     @Test
@@ -27,7 +29,7 @@ public class MBTilesTest {
         String database = getClass().getClassLoader().getResource("schema.db").getPath();
         Connection connection = DriverManager.getConnection("jdbc:sqlite:" + database);
         Map<String, String> metadata = MBTiles.getMetadata(connection);
-        Assert.assertTrue(metadata.size() > 0);
+        assertTrue(metadata.size() > 0);
     }
 
     @Test
@@ -48,7 +50,7 @@ public class MBTilesTest {
         m1.put("test", "test");
         MBTiles.setMetadata(connection, m1);
         Map<String, String> m2 = MBTiles.getMetadata(connection);
-        Assert.assertTrue(m2.size() > 0);
+        assertTrue(m2.size() > 0);
     }
 
     @Test
