@@ -15,7 +15,7 @@ public class Relation implements Entity {
 
     @Override
     public Info getInfo() {
-        return null;
+        return info;
     }
 
     public List<Member> getMembers() {
