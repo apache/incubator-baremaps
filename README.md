@@ -2,6 +2,8 @@
 
 ## Introduction
 
+Gazetteer is a work in progress aimed at simplifying the way we generate and publish vector tiles.
+
 ## Useful links
 
 - [How to make mvt with PostGIS](https://blog.jawg.io/how-to-make-mvt-with-postgis/)
