@@ -10,9 +10,9 @@ import java.util.Map;
 public class MBTiles {
 
     public static void createDatabase(Connection connection) throws SQLException {
-        try(PreparedStatement metadata = connection.prepareStatement("CREATE TABLE metadata (name TEXT, value TEXT, PRIMARY KEY (name))");
-            PreparedStatement tiles = connection.prepareStatement("CREATE TABLE tiles (zoom_level INTEGER, tile_column INTEGER, tile_row INTEGER, tile_data BLOB)");
-            PreparedStatement coord = connection.prepareStatement("CREATE UNIQUE INDEX coord ON tiles (zoom_level, tile_column, tile_row)")) {
+        try (PreparedStatement metadata = connection.prepareStatement("CREATE TABLE metadata (name TEXT, value TEXT, PRIMARY KEY (name))");
+             PreparedStatement tiles = connection.prepareStatement("CREATE TABLE tiles (zoom_level INTEGER, tile_column INTEGER, tile_row INTEGER, tile_data BLOB)");
+             PreparedStatement coord = connection.prepareStatement("CREATE UNIQUE INDEX coord ON tiles (zoom_level, tile_column, tile_row)")) {
             metadata.executeUpdate();
             tiles.executeUpdate();
             coord.executeUpdate();
@@ -20,8 +20,8 @@ public class MBTiles {
     }
 
     public static Map<String, String> getMetadata(Connection connection) throws SQLException {
-        try(PreparedStatement statement = connection.prepareStatement("SELECT name, value FROM metadata;");
-            ResultSet resultSet = statement.executeQuery()) {
+        try (PreparedStatement statement = connection.prepareStatement("SELECT name, value FROM metadata;");
+             ResultSet resultSet = statement.executeQuery()) {
             Map<String, String> metadata = new HashMap<>();
             while (resultSet.next()) {
                 String name = resultSet.getString("name");
@@ -33,8 +33,8 @@ public class MBTiles {
     }
 
     public static Tile getTile(Connection connection, Coordinate coord) throws SQLException {
-        try(PreparedStatement statement = getTileStatement(connection, coord);
-            ResultSet resultSet = statement.executeQuery()) {
+        try (PreparedStatement statement = getTileStatement(connection, coord);
+             ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
                 return new Tile(resultSet.getBytes("tile_data"));
             } else {
@@ -52,7 +52,7 @@ public class MBTiles {
     }
 
     public static void setMetadata(Connection connection, Map<String, String> metadata) throws SQLException {
-        try(PreparedStatement statement = connection.prepareStatement("INSERT INTO metadata (name, value) VALUES (?, ?)")) {
+        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO metadata (name, value) VALUES (?, ?)")) {
             for (Map.Entry<String, String> entry : metadata.entrySet()) {
                 statement.setString(1, entry.getKey());
                 statement.setString(2, entry.getValue());
@@ -62,7 +62,7 @@ public class MBTiles {
     }
 
     public static void setTile(Connection connection, Coordinate coord, Tile tile) throws SQLException {
-        try(PreparedStatement statement = connection.prepareStatement("INSERT INTO tiles (zoom_level, tile_column, tile_row, tile_data) VALUES (?, ?, ?, ?)")) {
+        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO tiles (zoom_level, tile_column, tile_row, tile_data) VALUES (?, ?, ?, ?)")) {
             statement.setInt(1, coord.zoom);
             statement.setInt(2, coord.x);
             statement.setInt(3, coord.y);

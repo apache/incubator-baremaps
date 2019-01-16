@@ -7,7 +7,6 @@ import io.gazetteer.mbtiles.MBTiles;
 import io.gazetteer.mbtiles.Metadata;
 import io.gazetteer.mbtiles.Tile;
 import io.gazetteer.tileserver.TileDataSource;
-import io.gazetteer.tileserver.postgis.PGDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;

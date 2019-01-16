@@ -1,6 +1,8 @@
 package io.gazetteer.mbtiles;
 
-import com.google.common.base.*;
+import com.google.common.base.Joiner;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 
 import java.util.Arrays;
 

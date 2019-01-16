@@ -1,9 +1,9 @@
 package io.gazetteer.osm.util;
 
-import static java.util.Spliterators.spliterator;
-
 import java.util.*;
 import java.util.function.Consumer;
+
+import static java.util.Spliterators.spliterator;
 
 public class PartitioningSpliterator<T> implements Spliterator<Collection<T>> {
 

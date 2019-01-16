@@ -19,13 +19,6 @@ package io.gazetteer.osm.osmpbf;
 
 import com.google.protobuf.ByteString;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-
 
 public class FileBlock {
 

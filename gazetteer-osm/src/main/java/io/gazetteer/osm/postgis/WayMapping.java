@@ -1,9 +1,9 @@
 package io.gazetteer.osm.postgis;
 
-import io.gazetteer.osm.rocksdb.EntityStore;
-import io.gazetteer.osm.rocksdb.EntityStoreException;
 import io.gazetteer.osm.domain.Node;
 import io.gazetteer.osm.domain.Way;
+import io.gazetteer.osm.rocksdb.EntityStore;
+import io.gazetteer.osm.rocksdb.EntityStoreException;
 import mil.nga.sf.LineString;
 import mil.nga.sf.Point;
 import mil.nga.sf.Polygon;
