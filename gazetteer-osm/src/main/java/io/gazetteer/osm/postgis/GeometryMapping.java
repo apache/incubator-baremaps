@@ -6,7 +6,7 @@ import mil.nga.sf.Geometry;
 
 import java.util.function.Function;
 
-public class GeometryMapping<TEntity> extends AbstractMapping<TEntity> {
+public class GeometryMapping<T> extends AbstractMapping<T> {
 
     protected GeometryMapping(String schemaName, String tableName) {
         super(schemaName, tableName);
@@ -16,7 +16,7 @@ public class GeometryMapping<TEntity> extends AbstractMapping<TEntity> {
         super(provider, schemaName, tableName);
     }
 
-    public void mapGeometry(String columnName, Function<TEntity, Geometry> propertyGetter) {
+    public void mapGeometry(String columnName, Function<T, Geometry> propertyGetter) {
         map(columnName, new GeometryValueHandler(), propertyGetter);
     }
 
