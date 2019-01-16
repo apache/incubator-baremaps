@@ -75,7 +75,7 @@ public class MBTiles {
     /**
      * Invert a Y coordinate between TMS tile and Google tile origins.
      */
-    static int invertY(int y, int z) {
+    private static int invertY(int y, int z) {
         return (int) (Math.pow(2.0, z) - 1 - y);
     }
 
