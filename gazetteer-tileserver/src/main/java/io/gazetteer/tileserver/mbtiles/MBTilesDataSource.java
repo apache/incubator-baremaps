@@ -7,6 +7,9 @@ import io.gazetteer.mbtiles.MBTiles;
 import io.gazetteer.mbtiles.Metadata;
 import io.gazetteer.mbtiles.Tile;
 import io.gazetteer.tileserver.TileDataSource;
+import io.gazetteer.tileserver.postgis.PGDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
 
 import java.sql.Connection;
@@ -16,6 +19,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
 public class MBTilesDataSource implements TileDataSource {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MBTilesDataSource.class);
 
     public final SQLiteDataSource dataSource;
 
@@ -31,7 +36,7 @@ public class MBTilesDataSource implements TileDataSource {
         this.dataSource = dataSource;
         this.metadata = metadata;
         this.cache = Caffeine.newBuilder()
-                .maximumSize(10000)
+                .maximumSize(cacheSize)
                 .executor(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2))
                 .buildAsync(coord -> loadTile(coord));
     }

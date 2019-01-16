@@ -33,14 +33,19 @@ public class TileServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     private static final Logger LOGGER = LoggerFactory.getLogger(TileServerHandler.class);
 
     private static final AsciiString TYPE = AsciiString.cached("text/plain");
+
     private static final AsciiString ENCODING = AsciiString.cached("gzip");
 
     private static final long STARTUP_TIME = System.currentTimeMillis();
+
     private static final String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
+
     private static final String DATE_GMT_TIMEZONE = "GMT";
-    private static final AsciiString MAX_AGE = AsciiString.cached("public, max-age=86400, no-transform");
+
+    private static final AsciiString MAX_AGE = AsciiString.cached("public, max-age=0, no-transform"); // disable cache for now
 
     private static final String ROOT_URI = "/";
+
     private static final String ROOT_CONTENT = "Gazetteer Tile Server v0.1";
 
     private final TileServerConfig config;
