@@ -1,4 +1,4 @@
-package io.gazetteer.tileserver;
+package io.gazetteer.tileserver.mbtiles;
 
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -6,6 +6,7 @@ import io.gazetteer.mbtiles.Coordinate;
 import io.gazetteer.mbtiles.MBTiles;
 import io.gazetteer.mbtiles.Metadata;
 import io.gazetteer.mbtiles.Tile;
+import io.gazetteer.tileserver.TileDataSource;
 import org.sqlite.SQLiteDataSource;
 
 import java.sql.Connection;
@@ -20,12 +21,7 @@ public class MBTilesDataSource implements TileDataSource {
 
     public final Metadata metadata;
 
-    public final int cacheSize;
-
-    private final AsyncLoadingCache<Coordinate, Tile> cache = Caffeine.newBuilder()
-            .maximumSize(10000)
-            .executor(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2))
-            .buildAsync(coord -> loadTile(coord));
+    private final AsyncLoadingCache<Coordinate, Tile> cache;
 
     public MBTilesDataSource(SQLiteDataSource dataSource, Metadata metadata) {
         this(dataSource, metadata, 10000);
@@ -34,7 +30,10 @@ public class MBTilesDataSource implements TileDataSource {
     public MBTilesDataSource(SQLiteDataSource dataSource, Metadata metadata, int cacheSize) {
         this.dataSource = dataSource;
         this.metadata = metadata;
-        this.cacheSize = cacheSize;
+        this.cache = Caffeine.newBuilder()
+                .maximumSize(10000)
+                .executor(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2))
+                .buildAsync(coord -> loadTile(coord));
     }
 
     public String getMimeType() {

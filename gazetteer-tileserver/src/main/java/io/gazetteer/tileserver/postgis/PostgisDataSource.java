@@ -1,18 +1,32 @@
-package io.gazetteer.tileserver;
+package io.gazetteer.tileserver.postgis;
 
+import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import io.gazetteer.mbtiles.Tile;
 import io.gazetteer.mbtiles.Coordinate;
+import io.gazetteer.tileserver.TileDataSource;
 import mil.nga.sf.GeometryEnvelope;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.zip.GZIPOutputStream;
 
-public class PGTilesDataSource implements TileDataSource {
+public class PostgisDataSource implements TileDataSource {
 
     public static final String MIME_TYPE = "application/vnd.mapbox-vector-tile";
+
+    public final int cacheSize;
+
+    private final AsyncLoadingCache<Coordinate, Tile> cache = Caffeine.newBuilder()
+            .maximumSize(10000)
+            .executor(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2))
+            .buildAsync(coord -> loadTile(coord));
+
+    public final List<PostgisLayer> layers;
 
     public static final String SELECT_MVT =
             "SELECT ST_AsMVT(q, 'buildings', 4096, 'geom')\n" +
@@ -28,10 +42,12 @@ public class PGTilesDataSource implements TileDataSource {
             "  FROM ways\n" +
             "  WHERE geom && ST_MakeEnvelope(?, ?, ?, ?)\n" +
             "  AND ST_Intersects(geom, ST_MakeEnvelope(?, ?, ?, ?))\n" +
-
             ") AS q;";
-    
-    
+
+    public PostgisDataSource(List<PostgisLayer> layers) {
+        this.layers = layers;
+    }
+
     @Override
     public String getMimeType() {
         return MIME_TYPE;
@@ -39,6 +55,15 @@ public class PGTilesDataSource implements TileDataSource {
 
     @Override
     public CompletableFuture<Tile> getTile(Coordinate coordinate) {
+        try (GZIPOutputStream data = new GZIPOutputStream(new ByteArrayOutputStream())) {
+            for (PostgisLayer layer : layers) {
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
 
         try {
             try (Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/osm?user=osm&password=osm")) {
@@ -64,6 +89,8 @@ public class PGTilesDataSource implements TileDataSource {
             throw new RuntimeException(e);
         }
     }
+
+    public
 
     private static byte[] gzip(byte[] bytes) {
         byte[] result = new byte[]{};

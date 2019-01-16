@@ -1,5 +1,7 @@
 package io.gazetteer.tileserver;
 
+import io.gazetteer.tileserver.mbtiles.MBTilesDataSource;
+import io.gazetteer.tileserver.postgis.PostgisDataSource;
 import io.netty.handler.ssl.SslContext;
 import org.sqlite.SQLiteDataSource;
 
@@ -44,11 +46,9 @@ public class TileServerConfig {
     public static TileServerConfig fromPGTiles() throws SQLException {
         String host = "localhost";
         int port = 8081;
-        PGTilesDataSource cache = new PGTilesDataSource();
+        PostgisDataSource cache = new PostgisDataSource();
         Pattern tileUri =  Pattern.compile(String.format("/(\\d{1,2})/(\\d{1,6})/(\\d{1,6}).pbf"));
         return new TileServerConfig(host, port, null, cache, tileUri);
     }
-
-
 
 }
