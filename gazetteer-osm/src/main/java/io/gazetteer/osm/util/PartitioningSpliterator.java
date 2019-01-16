@@ -47,7 +47,7 @@ public class PartitioningSpliterator<T> implements Spliterator<Collection<T>> {
 
     static final class PartitionConsumer implements Consumer {
 
-        Object[] partition = new Object[1];
+        public final Object[] partition = new Object[1];
 
         @Override
         public void accept(Object o) {
