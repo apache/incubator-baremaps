@@ -43,8 +43,8 @@ public class Metadata {
     public static Metadata fromMap(Map<String, String> metadata) {
         String name = metadata.get("name");
         Format format = Format.valueOf(metadata.get("format"));
-        Bounds bounds = Bounds.fromString(metadata.get("bounds"));
-        Center center = Center.fromString(metadata.get("center"));
+        Bounds bounds = Bounds.deserialize(metadata.get("bounds"));
+        Center center = Center.deserialize(metadata.get("center"));
         int minZoom = Integer.parseInt(metadata.get("minzoom"));
         int maxZoom = Integer.parseInt(metadata.get("maxzoom"));
         String attribution = metadata.get("attribution");

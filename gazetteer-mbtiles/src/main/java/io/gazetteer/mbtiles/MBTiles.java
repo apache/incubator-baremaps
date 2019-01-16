@@ -45,9 +45,9 @@ public class MBTiles {
 
     private static PreparedStatement getTileStatement(Connection connection, Coordinate coord) throws SQLException {
         PreparedStatement statement = connection.prepareStatement("SELECT tile_data FROM tiles WHERE zoom_level = ? AND tile_column = ? AND tile_row = ?");
-        statement.setInt(1, coord.z);
+        statement.setInt(1, coord.zoom);
         statement.setInt(2, coord.x);
-        statement.setInt(3, invertY(coord.y, coord.z));
+        statement.setInt(3, invertY(coord.y, coord.zoom));
         return statement;
     }
 
@@ -63,7 +63,7 @@ public class MBTiles {
 
     public static void setTile(Connection connection, Coordinate coord, Tile tile) throws SQLException {
         try(PreparedStatement statement = connection.prepareStatement("INSERT INTO tiles (zoom_level, tile_column, tile_row, tile_data) VALUES (?, ?, ?, ?)")) {
-            statement.setInt(1, coord.z);
+            statement.setInt(1, coord.zoom);
             statement.setInt(2, coord.x);
             statement.setInt(3, coord.y);
             statement.setBytes(4, tile.bytes);
