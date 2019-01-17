@@ -105,10 +105,6 @@ public class Application implements Runnable {
         }
     }
 
-    public void init() throws IOException, SQLException {
-
-    }
-
     public static void main(String[] args)  {
         CommandLine.run(new Application(), args);
     }

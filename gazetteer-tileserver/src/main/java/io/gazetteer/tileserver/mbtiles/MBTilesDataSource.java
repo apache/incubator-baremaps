@@ -41,15 +41,15 @@ public class MBTilesDataSource implements TileDataSource {
         return MIME_TYPE;
     }
 
+    @Override
+    public CompletableFuture<Tile> getTile(XYZ coordinates) {
+        return cache.get(coordinates);
+    }
+
     private Tile loadTile(XYZ coordinates) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             return MBTiles.getTile(connection, coordinates);
         }
-    }
-
-    @Override
-    public CompletableFuture<Tile> getTile(XYZ coordinates) {
-        return cache.get(coordinates);
     }
 
     public static MBTilesDataSource fromDataSource(SQLiteDataSource dataSource) throws SQLException {
