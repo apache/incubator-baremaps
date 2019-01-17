@@ -84,7 +84,6 @@ public class EntityStore<E extends Entity> implements AutoCloseable {
 
     public void deleteAll(List<Long> ids) throws EntityStoreException {
         try {
-            List<E> values = new ArrayList<>();
             for (Long id : ids) {
                 db.delete(key(id));
             }

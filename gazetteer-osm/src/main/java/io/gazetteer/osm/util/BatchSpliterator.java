@@ -51,7 +51,7 @@ public abstract class BatchSpliterator<T> implements Spliterator<T> {
 
     static final class HoldingConsumer<T> implements Consumer<T> {
 
-        Object entity;
+        public Object entity;
 
         @Override
         public void accept(T value) {

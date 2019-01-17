@@ -72,12 +72,6 @@ public class Importer implements Runnable {
         try (final EntityStore<Node> cache = EntityStore.open(this.cache, new NodeEntityType())) {
             ForkJoinPool executor = new ForkJoinPool(threads);
 
-            Osmformat.HeaderBlock osmHeader = FileBlocks
-                    .stream(file)
-                    .filter(FileBlocks::isHeaderBlock)
-                    .map(FileBlocks::toHeaderBlock)
-                    .findFirst().get();
-
             NodeConsumer cacheConsumer = new NodeConsumer(cache);
             Stream<List<Node>> cacheStream = PrimitiveBlocks
                     .stream(file)

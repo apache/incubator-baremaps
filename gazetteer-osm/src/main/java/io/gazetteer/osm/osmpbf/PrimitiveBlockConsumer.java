@@ -19,7 +19,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class PrimitiveBlockConsumer implements Consumer<PrimitiveBlock> {
 
-    private final EntityStore<Node> cache;
     private final PoolingDataSource pool;
 
     private final PgBulkInsert<Node> nodes;
@@ -29,7 +28,6 @@ public class PrimitiveBlockConsumer implements Consumer<PrimitiveBlock> {
     public PrimitiveBlockConsumer(EntityStore<Node> cache, PoolingDataSource pool) {
         checkNotNull(cache);
         checkNotNull(pool);
-        this.cache = cache;
         this.pool = pool;
         this.nodes = new PgBulkInsert<>(new NodeMapping());
         this.ways = new PgBulkInsert<>(new WayMapping(cache));
@@ -43,7 +41,7 @@ public class PrimitiveBlockConsumer implements Consumer<PrimitiveBlock> {
             PGConnection pgConnection = connection.unwrap(PGConnection.class);
             nodes.saveAll(pgConnection, block.getNodes());
             ways.saveAll(pgConnection, block.getWays());
-            //relations.saveAll(pgConnection, block.getRelations());
+            relations.saveAll(pgConnection, block.getRelations());
         } catch (SQLException e) {
             e.printStackTrace();
         }

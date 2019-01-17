@@ -18,9 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.zip.GZIPOutputStream;
 
 public class PGDataSource implements TileDataSource {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(PGDataSource.class);
-
+    
     public static final String MIME_TYPE = "application/vnd.mapbox-vector-tile";
 
     private final AsyncLoadingCache<XYZ, Tile> cache;
