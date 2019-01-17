@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -31,7 +30,7 @@ import static picocli.CommandLine.Option;
 
 
 @Command(description = "Import OSM into Postgresql")
-public class Application implements Runnable {
+public class Importer implements Runnable {
 
     @Parameters(index = "0", paramLabel = "OSM_FILE", description="The OpenStreetMap PBF file.")
     private File file;
@@ -106,7 +105,7 @@ public class Application implements Runnable {
     }
 
     public static void main(String[] args)  {
-        CommandLine.run(new Application(), args);
+        CommandLine.run(new Importer(), args);
     }
 
 }

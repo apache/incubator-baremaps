@@ -15,16 +15,23 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
+import picocli.CommandLine;
 
-public class TileServer {
+@CommandLine.Command(description = "Start a tile server")
+public class TileServer implements Runnable {
 
     public final TileServerConfig config;
 
-    public TileServer(TileServerConfig config) {
-        this.config = config;
+    public TileServer() {
+        this.config = TileServerConfig.fromPGTiles();
     }
 
-    public void start() throws Exception {
+    public static void main(String[] args) {
+        CommandLine.run(new TileServer(), args);
+    }
+
+    @Override
+    public void run() {
         InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -54,17 +61,11 @@ public class TileServer {
                     });
             Channel ch = b.bind(config.host, config.port).sync().channel();
             ch.closeFuture().sync();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
     }
-
-    public static void main(String[] args) throws Exception {
-        String mbtiles = "/home/bchapuis/Datasets/osm/2017-07-03_europe_switzerland.mbtiles";
-        //TileServerConfig config = TileServerConfig.fromMBTilesFile(mbtiles);
-        TileServerConfig config = TileServerConfig.fromPGTiles();
-        new TileServer(config).start();
-    }
-
 }
