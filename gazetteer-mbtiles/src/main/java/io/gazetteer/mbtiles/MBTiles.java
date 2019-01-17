@@ -4,6 +4,8 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class MBTiles {
 
     private static final String CREATE_TABLE_METADATA = "CREATE TABLE metadata (name TEXT, value TEXT, PRIMARY KEY (name))";
@@ -21,6 +23,7 @@ public class MBTiles {
     private static final String INSERT_TILE = "INSERT INTO tiles (zoom_level, tile_column, tile_row, tile_data) VALUES (?, ?, ?, ?)";
 
     public static void createDatabase(Connection connection) throws SQLException {
+        checkNotNull(connection);
         try (Statement statement = connection.createStatement()) {
             statement.execute(CREATE_TABLE_METADATA);
             statement.execute(CREATE_TABLE_TILES);
@@ -29,6 +32,7 @@ public class MBTiles {
     }
 
     public static Map<String, String> getMetadata(Connection connection) throws SQLException {
+        checkNotNull(connection);
         try (PreparedStatement statement = connection.prepareStatement(SELECT_METADATA);
              ResultSet resultSet = statement.executeQuery()) {
             Map<String, String> metadata = new HashMap<>();
@@ -41,8 +45,10 @@ public class MBTiles {
         }
     }
 
-    public static Tile getTile(Connection connection, XYZ coordinates) throws SQLException {
-        try (PreparedStatement statement = getTileStatement(connection, coordinates);
+    public static Tile getTile(Connection connection, XYZ xyz) throws SQLException {
+        checkNotNull(connection);
+        checkNotNull(xyz);
+        try (PreparedStatement statement = getTileStatement(connection, xyz);
              ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
                 return new Tile(resultSet.getBytes("tile_data"));
@@ -52,15 +58,19 @@ public class MBTiles {
         }
     }
 
-    private static PreparedStatement getTileStatement(Connection connection, XYZ coordinates) throws SQLException {
+    private static PreparedStatement getTileStatement(Connection connection, XYZ xyz) throws SQLException {
+        checkNotNull(connection);
+        checkNotNull(xyz);
         PreparedStatement statement = connection.prepareStatement(SELECT_TILE);
-        statement.setInt(1, coordinates.getZ());
-        statement.setInt(2, coordinates.getX());
-        statement.setInt(3, reverseY(coordinates.getY(), coordinates.getZ()));
+        statement.setInt(1, xyz.getZ());
+        statement.setInt(2, xyz.getX());
+        statement.setInt(3, reverseY(xyz.getY(), xyz.getZ()));
         return statement;
     }
 
     public static void setMetadata(Connection connection, Map<String, String> metadata) throws SQLException {
+        checkNotNull(connection);
+        checkNotNull(metadata);
         try (PreparedStatement statement = connection.prepareStatement(INSERT_METADATA)) {
             for (Map.Entry<String, String> entry : metadata.entrySet()) {
                 statement.setString(1, entry.getKey());
@@ -70,11 +80,14 @@ public class MBTiles {
         }
     }
 
-    public static void setTile(Connection connection, XYZ coordinates, Tile tile) throws SQLException {
+    public static void setTile(Connection connection, XYZ xyz, Tile tile) throws SQLException {
+        checkNotNull(connection);
+        checkNotNull(xyz);
+        checkNotNull(tile);
         try (PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
-            statement.setInt(1, coordinates.getZ());
-            statement.setInt(2, coordinates.getX());
-            statement.setInt(3, coordinates.getY());
+            statement.setInt(1, xyz.getZ());
+            statement.setInt(2, xyz.getX());
+            statement.setInt(3, xyz.getY());
             statement.setBytes(4, tile.getBytes());
             statement.executeUpdate();
         }
