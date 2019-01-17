@@ -4,7 +4,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Relation implements Entity {
+public final class Relation implements Entity {
 
     private final Info info;
 

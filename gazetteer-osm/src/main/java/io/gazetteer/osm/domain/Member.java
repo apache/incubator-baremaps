@@ -2,15 +2,17 @@ package io.gazetteer.osm.domain;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Member {
+public final class Member {
+
+    public enum Type {Node, Way, Relation}
 
     private final long id;
 
-    private final MemberType type;
+    private final Type type;
 
     private final String role;
 
-    public Member(long id, MemberType type, String role) {
+    public Member(long id, Type type, String role) {
         checkNotNull(type);
         checkNotNull(role);
         this.id = id;
@@ -22,7 +24,7 @@ public class Member {
         return id;
     }
 
-    public MemberType getType() {
+    public Type getType() {
         return type;
     }
 

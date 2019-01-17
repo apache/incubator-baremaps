@@ -3,7 +3,7 @@ package io.gazetteer.mbtiles;
 import com.google.common.base.Objects;
 import mil.nga.sf.GeometryEnvelope;
 
-public class XYZ {
+public final class XYZ {
 
     private final int x, y, z;
 

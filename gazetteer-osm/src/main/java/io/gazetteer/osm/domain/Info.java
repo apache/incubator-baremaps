@@ -4,7 +4,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Info {
+public final class Info {
 
     private final long id;
     private final int version;

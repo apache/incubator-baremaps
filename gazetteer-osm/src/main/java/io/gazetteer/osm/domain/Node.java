@@ -2,7 +2,7 @@ package io.gazetteer.osm.domain;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Node implements Entity {
+public final class Node implements Entity {
 
     private final Info info;
 

@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Tile {
+public final class Tile {
 
     private final byte[] bytes;
 

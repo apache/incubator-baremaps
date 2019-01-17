@@ -2,7 +2,7 @@ package io.gazetteer.osm.domain;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class User {
+public final class User {
 
     private final int id;
     private final String name;

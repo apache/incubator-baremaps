@@ -1,6 +1,7 @@
 package io.gazetteer.mbtiles;
 
 import mil.nga.sf.GeometryEnvelope;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -16,20 +17,8 @@ public class XYZTest {
     }
 
     @Test
-    public void equalsTest() {
-        XYZ c1 = new XYZ(0,0,0);
-        XYZ c2 = new XYZ(0,0,0);
-        XYZ c3 = new XYZ(1,0,0);
-        assertEquals(c1, c2);
-        assertNotEquals(c1, c3);
+    public void equalsContract() {
+        EqualsVerifier.forClass(XYZ.class).verify();
     }
 
-    @Test
-    public void hashCodeTest() {
-        XYZ c1 = new XYZ(0,0,0);
-        XYZ c2 = new XYZ(0,0,0);
-        XYZ c3 = new XYZ(1,0,0);
-        assertTrue(c1.hashCode() == c2.hashCode());
-        assertFalse(c1.hashCode() == c3.hashCode());
-    }
 }

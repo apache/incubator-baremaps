@@ -1,6 +1,7 @@
 package io.gazetteer.osm.osmpbf;
 
 import io.gazetteer.osm.domain.*;
+import io.gazetteer.osm.domain.Member.Type;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
 import java.util.ArrayList;
@@ -147,13 +148,13 @@ public class PrimitiveBlockReader {
             for (int j = 0; j < e.getMemidsCount(); j++) {
                 mid = mid + e.getMemids(j);
                 String role = getString(e.getRolesSid(j));
-                MemberType etype = null;
+                Type etype = null;
                 if (e.getTypes(j) == Osmformat.Relation.MemberType.NODE) {
-                    etype = MemberType.Node;
+                    etype = Type.Node;
                 } else if (e.getTypes(j) == Osmformat.Relation.MemberType.WAY) {
-                    etype = MemberType.Way;
+                    etype = Type.Way;
                 } else if (e.getTypes(j) == Osmformat.Relation.MemberType.RELATION) {
-                    etype = MemberType.Relation;
+                    etype = Type.Relation;
                 } else {
                     assert false; // TODO: throw an exception (invalid argument?)
                 }

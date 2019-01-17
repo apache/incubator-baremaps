@@ -4,7 +4,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Way implements Entity {
+public final class Way implements Entity {
 
     private final Info info;
 
