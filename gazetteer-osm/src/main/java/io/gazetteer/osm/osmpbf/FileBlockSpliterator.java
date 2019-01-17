@@ -1,6 +1,7 @@
 package io.gazetteer.osm.osmpbf;
 
 import io.gazetteer.osm.util.BatchSpliterator;
+import io.gazetteer.osm.util.WrappedException;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class FileBlockSpliterator extends BatchSpliterator<FileBlock> {
         } catch (EOFException e) {
             return false;
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new WrappedException(e);
         }
     }
 
@@ -42,7 +43,7 @@ public class FileBlockSpliterator extends BatchSpliterator<FileBlock> {
         } catch (EOFException e) {
             // reached the end of the file
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new WrappedException(e);
         }
     }
 

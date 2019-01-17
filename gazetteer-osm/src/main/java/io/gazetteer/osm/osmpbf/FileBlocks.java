@@ -1,6 +1,7 @@
 package io.gazetteer.osm.osmpbf;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import io.gazetteer.osm.util.WrappedException;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
 import java.io.DataInputStream;
@@ -33,7 +34,7 @@ public class FileBlocks {
         try {
             return Osmformat.HeaderBlock.parseFrom(fileBlock.data);
         } catch (InvalidProtocolBufferException e) {
-            throw new RuntimeException(e);
+            throw new WrappedException(e);
         }
     }
 
@@ -41,7 +42,7 @@ public class FileBlocks {
         try {
             return Osmformat.PrimitiveBlock.parseFrom(fileBlock.data);
         } catch (InvalidProtocolBufferException e) {
-            throw new RuntimeException(e);
+            throw new WrappedException(e);
         }
     }
 

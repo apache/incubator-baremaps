@@ -1,10 +1,10 @@
 package io.gazetteer.osm.util;
 
-public class StreamException extends RuntimeException {
+public class WrappedException extends RuntimeException {
 
     private final Throwable cause;
 
-    public StreamException(Throwable cause) {
+    public WrappedException(Throwable cause) {
         this.cause = cause;
     }
 
@@ -12,5 +12,5 @@ public class StreamException extends RuntimeException {
     public Throwable getCause() {
         return cause;
     }
-    
+
 }
