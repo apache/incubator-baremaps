@@ -1,16 +1,13 @@
 package io.gazetteer.osm.osmpbf;
 
-import io.gazetteer.osm.util.WrappedException;
 import org.junit.Test;
-import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static io.gazetteer.osm.osmpbf.FileBlockConstants.TEN_BLOCKS;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class FileBlocksTest {
 

@@ -2,16 +2,14 @@ package io.gazetteer.osm.osmpbf;
 
 import org.junit.Test;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 import static io.gazetteer.osm.osmpbf.FileBlockConstants.TEN_BLOCKS;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class FileBlockSpliteratorTest {
 
