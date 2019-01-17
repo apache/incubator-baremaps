@@ -15,6 +15,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Consumer;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class PrimitiveBlockConsumer implements Consumer<PrimitiveBlock> {
 
     private final EntityStore<Node> cache;
@@ -25,6 +27,8 @@ public class PrimitiveBlockConsumer implements Consumer<PrimitiveBlock> {
     private final PgBulkInsert<Relation> relations;
 
     public PrimitiveBlockConsumer(EntityStore<Node> cache, PoolingDataSource pool) {
+        checkNotNull(cache);
+        checkNotNull(pool);
         this.cache = cache;
         this.pool = pool;
         this.nodes = new PgBulkInsert<>(new NodeMapping());
@@ -34,6 +38,7 @@ public class PrimitiveBlockConsumer implements Consumer<PrimitiveBlock> {
 
     @Override
     public void accept(PrimitiveBlock block) {
+        checkNotNull(block);
         try (Connection connection = pool.getConnection()) {
             PGConnection pgConnection = connection.unwrap(PGConnection.class);
             nodes.saveAll(pgConnection, block.getNodes());

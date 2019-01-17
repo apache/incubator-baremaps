@@ -6,6 +6,8 @@ import io.gazetteer.osm.domain.Way;
 
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class PrimitiveBlock {
 
     private final List<Node> nodes;
@@ -15,6 +17,9 @@ public class PrimitiveBlock {
     private final List<Relation> relations;
 
     public PrimitiveBlock(List<Node> nodes, List<Way> ways, List<Relation> relations) {
+        checkNotNull(nodes);
+        checkNotNull(ways);
+        checkNotNull(relations);
         this.nodes = nodes;
         this.ways = ways;
         this.relations = relations;

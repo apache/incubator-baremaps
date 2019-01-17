@@ -1,5 +1,7 @@
 package io.gazetteer.osm.domain;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class Member {
 
     private final long id;
@@ -9,6 +11,8 @@ public class Member {
     private final String role;
 
     public Member(long id, MemberType type, String role) {
+        checkNotNull(type);
+        checkNotNull(role);
         this.id = id;
         this.type = type;
         this.role = role;

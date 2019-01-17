@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class EntityStore<E extends Entity> implements AutoCloseable {
 
     static {
@@ -22,6 +24,8 @@ public class EntityStore<E extends Entity> implements AutoCloseable {
     private final EntityType<E> entityType;
 
     public EntityStore(RocksDB db, EntityType<E> entityType) {
+        checkNotNull(db);
+        checkNotNull(entityType);
         this.db = db;
         this.entityType = entityType;
     }

@@ -2,6 +2,8 @@ package io.gazetteer.osm.domain;
 
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class Info {
 
     private final long id;
@@ -12,6 +14,8 @@ public class Info {
     private final Map<String, String> tags;
 
     public Info(long id, int version, long timestamp, long changeset, User user, Map<String, String> tags) {
+        checkNotNull(user);
+        checkNotNull(tags);
         this.id = id;
         this.version = version;
         this.timestamp = timestamp;

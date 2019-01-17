@@ -1,5 +1,7 @@
 package io.gazetteer.osm.domain;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class Node implements Entity {
 
     private final Info info;
@@ -9,6 +11,7 @@ public class Node implements Entity {
     private final double lat;
 
     public Node(Info info, double lon, double lat) {
+        checkNotNull(info);
         this.info = info;
         this.lon = lon;
         this.lat = lat;

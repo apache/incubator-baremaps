@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * A adaptation of the OsmosisBinaryParser
  */
@@ -21,6 +23,7 @@ public class PrimitiveBlockReader {
     private final String[] stringTable;
 
     public PrimitiveBlockReader(Osmformat.PrimitiveBlock block) {
+        checkNotNull(block);
         this.block = block;
         this.granularity = block.getGranularity();
         this.latOffset = block.getLatOffset();

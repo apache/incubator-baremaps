@@ -5,11 +5,14 @@ import io.gazetteer.osm.domain.Node;
 import java.util.Collection;
 import java.util.function.Consumer;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class NodeConsumer implements Consumer<Collection<Node>> {
 
     private final EntityStore<Node> entityStore;
 
     public NodeConsumer(EntityStore<Node> entityStore) {
+        checkNotNull(entityStore);
         this.entityStore = entityStore;
     }
 

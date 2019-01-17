@@ -8,16 +8,18 @@ import java.io.IOException;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class FileBlockReader {
 
     private final DataInputStream input;
 
     public FileBlockReader(DataInputStream input) {
+        checkNotNull(input);
         this.input = input;
     }
 
     public FileBlock read() throws IOException {
-
         // stream the header
         int headerSize = input.readInt();
         byte[] headerData = new byte[headerSize];
