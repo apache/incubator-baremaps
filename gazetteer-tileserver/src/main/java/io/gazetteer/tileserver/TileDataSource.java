@@ -10,6 +10,6 @@ public interface TileDataSource {
 
     String getMimeType();
 
-    CompletableFuture<Tile> getTile(XYZ coordinates);
+    CompletableFuture<Tile> getTile(XYZ xyz);
 
 }

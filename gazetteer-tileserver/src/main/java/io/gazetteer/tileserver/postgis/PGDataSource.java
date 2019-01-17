@@ -28,7 +28,7 @@ public class PGDataSource implements TileDataSource {
         this.cache = Caffeine.newBuilder()
                 .maximumSize(10000)
                 .executor(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2))
-                .buildAsync(coord -> loadTile(coord));
+                .buildAsync(xyz -> loadTile(xyz));
     }
 
     @Override
@@ -37,25 +37,25 @@ public class PGDataSource implements TileDataSource {
     }
 
     @Override
-    public CompletableFuture<Tile> getTile(XYZ coordinates) {
-        return cache.get(coordinates);
+    public CompletableFuture<Tile> getTile(XYZ xyz) {
+        return cache.get(xyz);
     }
 
-    private Tile loadTile(XYZ coordinates) throws IOException, SQLException {
+    private Tile loadTile(XYZ xyz) throws IOException, SQLException {
         try (ByteArrayOutputStream data = new ByteArrayOutputStream();
              GZIPOutputStream tile = new GZIPOutputStream(data)) {
             for (PGLayer layer : layers) {
-                tile.write(loadLayer(coordinates, layer));
+                tile.write(loadLayer(xyz, layer));
             }
             tile.close();
             return new Tile(data.toByteArray());
         }
     }
 
-    private byte[] loadLayer(XYZ coordinates, PGLayer layer) throws SQLException {
+    private byte[] loadLayer(XYZ xyz, PGLayer layer) throws SQLException {
         try (Connection connection = DriverManager.getConnection(layer.getDatabase())) {
             PreparedStatement statement = connection.prepareStatement(layer.getSql());
-            GeometryEnvelope envelope = coordinates.envelope();
+            GeometryEnvelope envelope = xyz.envelope();
             statement.setDouble(1, envelope.getMinX());
             statement.setDouble(2, envelope.getMinY());
             statement.setDouble(3, envelope.getMaxX());

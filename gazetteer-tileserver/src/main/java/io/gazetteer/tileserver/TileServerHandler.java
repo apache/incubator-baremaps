@@ -111,8 +111,8 @@ public class TileServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     }
 
     private void sendTile(ChannelHandlerContext ctx, int z, int x, int y) {
-        XYZ coord = new XYZ(x, y, z);
-        config.dataSource.getTile(coord).thenAccept(tile -> {
+        XYZ xyz = new XYZ(x, y, z);
+        config.dataSource.getTile(xyz).thenAccept(tile -> {
             if (tile != null) {
                 DefaultFullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(tile.getBytes()));
                 setDateHeader(response);

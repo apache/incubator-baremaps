@@ -34,7 +34,7 @@ public class MBTilesDataSource implements TileDataSource {
         this.cache = Caffeine.newBuilder()
                 .maximumSize(cacheSize)
                 .executor(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2))
-                .buildAsync(coord -> loadTile(coord));
+                .buildAsync(xyz -> loadTile(xyz));
     }
 
     public String getMimeType() {
@@ -42,13 +42,13 @@ public class MBTilesDataSource implements TileDataSource {
     }
 
     @Override
-    public CompletableFuture<Tile> getTile(XYZ coordinates) {
-        return cache.get(coordinates);
+    public CompletableFuture<Tile> getTile(XYZ xyz) {
+        return cache.get(xyz);
     }
 
-    private Tile loadTile(XYZ coordinates) throws SQLException {
+    private Tile loadTile(XYZ xyz) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            return MBTiles.getTile(connection, coordinates);
+            return MBTiles.getTile(connection, xyz);
         }
     }
 
