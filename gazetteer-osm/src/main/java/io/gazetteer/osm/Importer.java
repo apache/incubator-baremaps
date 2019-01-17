@@ -1,14 +1,16 @@
 package io.gazetteer.osm;
 
 import io.gazetteer.osm.domain.Node;
-import io.gazetteer.osm.osmpbf.*;
+import io.gazetteer.osm.osmpbf.PrimitiveBlock;
+import io.gazetteer.osm.osmpbf.PrimitiveBlockConsumer;
+import io.gazetteer.osm.osmpbf.PrimitiveBlockReader;
+import io.gazetteer.osm.osmpbf.PrimitiveBlocks;
 import io.gazetteer.osm.postgis.Databases;
 import io.gazetteer.osm.rocksdb.EntityStore;
 import io.gazetteer.osm.rocksdb.EntityStoreException;
 import io.gazetteer.osm.rocksdb.NodeConsumer;
 import io.gazetteer.osm.rocksdb.NodeEntityType;
 import org.apache.commons.dbcp2.PoolingDataSource;
-import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
