@@ -34,7 +34,7 @@ public class FileBlockSpliteratorTest {
 
     @Test
     public void forEachRemaining() throws FileNotFoundException {
-        FileBlockSpliterator spliterator = FileBlocks.spliterator(TEN_BLOCKS);;
+        FileBlockSpliterator spliterator = FileBlocks.spliterator(TEN_BLOCKS);
         Accumulator accumulator = new Accumulator();
         spliterator.forEachRemaining(accumulator);
         assertTrue(accumulator.fileBlocks.size() == 10);
