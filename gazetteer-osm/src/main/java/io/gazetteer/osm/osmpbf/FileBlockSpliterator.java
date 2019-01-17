@@ -19,6 +19,7 @@ public class FileBlockSpliterator extends BatchSpliterator<FileBlock> {
         this(reader, 10);
     }
 
+
     @Override
     public boolean tryAdvance(Consumer<? super FileBlock> action) {
         try {
@@ -28,8 +29,7 @@ public class FileBlockSpliterator extends BatchSpliterator<FileBlock> {
         } catch (EOFException e) {
             return false;
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Parse Error");
+            throw new RuntimeException(e);
         }
     }
 
@@ -42,9 +42,9 @@ public class FileBlockSpliterator extends BatchSpliterator<FileBlock> {
         } catch (EOFException e) {
             // reached the end of the file
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Parse Error");
+            throw new RuntimeException(e);
         }
     }
+
 }
 

@@ -33,7 +33,7 @@ public class FileBlocks {
         try {
             return Osmformat.HeaderBlock.parseFrom(fileBlock.data);
         } catch (InvalidProtocolBufferException e) {
-            throw new Error("Unable to stream header block");
+            throw new RuntimeException(e);
         }
     }
 
@@ -41,7 +41,7 @@ public class FileBlocks {
         try {
             return Osmformat.PrimitiveBlock.parseFrom(fileBlock.data);
         } catch (InvalidProtocolBufferException e) {
-            throw new Error("Unable to stream primitive block");
+            throw new RuntimeException(e);
         }
     }
 

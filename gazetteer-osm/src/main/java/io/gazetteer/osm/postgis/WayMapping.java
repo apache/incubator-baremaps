@@ -56,7 +56,7 @@ public class WayMapping extends GeometryMapping<Way> {
                     return null;
                 }
             } catch (EntityStoreException e) {
-                throw new RuntimeException();
+                throw new RuntimeException(e);
             }
         });
     }
