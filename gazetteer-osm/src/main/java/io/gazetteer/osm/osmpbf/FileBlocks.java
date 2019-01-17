@@ -16,10 +16,17 @@ public class FileBlocks {
     public static final String HEADER = "OSMHeader";
     public static final String DATA = "OSMData";
 
-    public static Stream<FileBlock> stream(File file) throws FileNotFoundException {
+    public static FileBlockReader reader(File file) throws FileNotFoundException {
         DataInputStream input = new DataInputStream(new FileInputStream(file));
-        FileBlockReader reader = new FileBlockReader(input);
-        return StreamSupport.stream(new FileBlockSpliterator(reader), true);
+        return new FileBlockReader(input);
+    }
+
+    public static FileBlockSpliterator spliterator(File file) throws FileNotFoundException {
+        return new FileBlockSpliterator(reader(file));
+    }
+
+    public static Stream<FileBlock> stream(File file) throws FileNotFoundException {
+        return StreamSupport.stream(spliterator(file), true);
     }
 
     public static boolean isHeaderBlock(FileBlock fileBlock) {
