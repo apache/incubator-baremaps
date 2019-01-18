@@ -4,12 +4,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.stream.Stream;
 
-public class PrimitiveBlocks {
+public class PrimitiveBlockUtil {
 
     public static Stream<PrimitiveBlockReader> stream(File file) throws FileNotFoundException {
-        return FileBlocks.stream(file)
-                .filter(FileBlocks::isDataBlock)
-                .map(FileBlocks::toDataBlock)
+        return FileBlockUtil.stream(file)
+                .filter(FileBlockUtil::isDataBlock)
+                .map(FileBlockUtil::toDataBlock)
                 .map(PrimitiveBlockReader::new);
     }
 

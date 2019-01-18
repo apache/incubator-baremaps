@@ -4,8 +4,8 @@ import io.gazetteer.osm.domain.Node;
 import io.gazetteer.osm.osmpbf.PrimitiveBlock;
 import io.gazetteer.osm.osmpbf.PrimitiveBlockConsumer;
 import io.gazetteer.osm.osmpbf.PrimitiveBlockReader;
-import io.gazetteer.osm.osmpbf.PrimitiveBlocks;
-import io.gazetteer.osm.postgis.Databases;
+import io.gazetteer.osm.osmpbf.PrimitiveBlockUtil;
+import io.gazetteer.osm.postgis.DatabaseUtil;
 import io.gazetteer.osm.rocksdb.EntityStore;
 import io.gazetteer.osm.rocksdb.EntityStoreException;
 import io.gazetteer.osm.rocksdb.NodeConsumer;
@@ -58,12 +58,12 @@ public class Importer implements Runnable {
 
             // Reset the database
             try (Connection connection = DriverManager.getConnection(database)) {
-                connection.prepareStatement(Databases.DROP_TABLE_NODES).execute();
-                connection.prepareStatement(Databases.DROP_TABLE_WAYS).execute();
-                connection.prepareStatement(Databases.DROP_TABLE_RELATIONS).execute();
-                connection.prepareStatement(Databases.CREATE_TABLE_NODES).execute();
-                connection.prepareStatement(Databases.CREATE_TABLE_WAYS).execute();
-                connection.prepareStatement(Databases.CREATE_TABLE_RELATIONS).execute();
+                connection.prepareStatement(DatabaseUtil.DROP_TABLE_NODES).execute();
+                connection.prepareStatement(DatabaseUtil.DROP_TABLE_WAYS).execute();
+                connection.prepareStatement(DatabaseUtil.DROP_TABLE_RELATIONS).execute();
+                connection.prepareStatement(DatabaseUtil.CREATE_TABLE_NODES).execute();
+                connection.prepareStatement(DatabaseUtil.CREATE_TABLE_WAYS).execute();
+                connection.prepareStatement(DatabaseUtil.CREATE_TABLE_RELATIONS).execute();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -75,14 +75,14 @@ public class Importer implements Runnable {
             ForkJoinPool executor = new ForkJoinPool(threads);
 
             NodeConsumer cacheConsumer = new NodeConsumer(cache);
-            Stream<List<Node>> cacheStream = PrimitiveBlocks
+            Stream<List<Node>> cacheStream = PrimitiveBlockUtil
                     .stream(file)
                     .map(PrimitiveBlockReader::readDenseNodes);
             executor.submit(() -> cacheStream.forEach(cacheConsumer)).get();
 
-            PoolingDataSource pool = Databases.create(database);
+            PoolingDataSource pool = DatabaseUtil.create(database);
             PrimitiveBlockConsumer databaseConsumer = new PrimitiveBlockConsumer(cache, pool);
-            Stream<PrimitiveBlock> databaseStream = PrimitiveBlocks
+            Stream<PrimitiveBlock> databaseStream = PrimitiveBlockUtil
                     .stream(file)
                     .map(PrimitiveBlockReader::read);
             executor.submit(() -> databaseStream.forEach(databaseConsumer)).get();

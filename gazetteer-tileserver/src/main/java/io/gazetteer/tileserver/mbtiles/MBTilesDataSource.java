@@ -3,7 +3,7 @@ package io.gazetteer.tileserver.mbtiles;
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import io.gazetteer.mbtiles.XYZ;
-import io.gazetteer.mbtiles.MBTiles;
+import io.gazetteer.mbtiles.MBTilesUtil;
 import io.gazetteer.mbtiles.Tile;
 import io.gazetteer.tileserver.TileDataSource;
 import org.sqlite.SQLiteDataSource;
@@ -48,13 +48,13 @@ public class MBTilesDataSource implements TileDataSource {
 
     private Tile loadTile(XYZ xyz) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            return MBTiles.getTile(connection, xyz);
+            return MBTilesUtil.getTile(connection, xyz);
         }
     }
 
     public static MBTilesDataSource fromDataSource(SQLiteDataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
-            Map<String, String> metadata = MBTiles.getMetadata(connection);
+            Map<String, String> metadata = MBTilesUtil.getMetadata(connection);
             return new MBTilesDataSource(dataSource, metadata);
         }
     }

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class MBTiles {
+public final class MBTilesUtil {
 
     private static final String CREATE_TABLE_METADATA = "CREATE TABLE metadata (name TEXT, value TEXT, PRIMARY KEY (name))";
 

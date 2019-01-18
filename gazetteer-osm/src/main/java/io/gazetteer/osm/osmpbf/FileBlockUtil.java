@@ -11,7 +11,7 @@ import java.io.FileNotFoundException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class FileBlocks {
+public class FileBlockUtil {
 
     public static final String HEADER = "OSMHeader";
     public static final String DATA = "OSMData";

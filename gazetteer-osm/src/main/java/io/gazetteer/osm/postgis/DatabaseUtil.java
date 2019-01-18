@@ -4,7 +4,7 @@ import org.apache.commons.dbcp2.*;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 
-public class Databases {
+public class DatabaseUtil {
 
     public static final String DROP_TABLE_NODES = "DROP TABLE IF EXISTS nodes";
 

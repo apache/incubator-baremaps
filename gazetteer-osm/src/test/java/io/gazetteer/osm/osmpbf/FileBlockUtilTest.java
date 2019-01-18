@@ -1,6 +1,5 @@
 package io.gazetteer.osm.osmpbf;
 
-import com.google.protobuf.ByteString;
 import io.gazetteer.osm.util.WrappedException;
 import org.junit.Test;
 
@@ -12,57 +11,57 @@ import static io.gazetteer.osm.osmpbf.FileBlockConstants.INVALID_BLOCK;
 import static io.gazetteer.osm.osmpbf.FileBlockConstants.TEN_BLOCKS;
 import static org.junit.Assert.assertTrue;
 
-public class FileBlocksTest {
+public class FileBlockUtilTest {
 
     @Test
     public void stream() throws FileNotFoundException {
-        assertTrue(FileBlocks
+        assertTrue(FileBlockUtil
                 .stream(TEN_BLOCKS)
                 .count() == 10);
     }
 
     @Test
     public void isHeaderBlock() throws IOException {
-        assertTrue(FileBlocks
+        assertTrue(FileBlockUtil
                 .stream(TEN_BLOCKS)
-                .filter(FileBlocks::isHeaderBlock)
+                .filter(FileBlockUtil::isHeaderBlock)
                 .count() == 1);
     }
 
     @Test
     public void isDataBlock() throws IOException {
-        assertTrue(FileBlocks
+        assertTrue(FileBlockUtil
                 .stream(TEN_BLOCKS)
-                .filter(FileBlocks::isDataBlock)
+                .filter(FileBlockUtil::isDataBlock)
                 .count() == 9);
     }
 
     @Test
     public void toHeaderBlock() throws FileNotFoundException {
-        assertTrue(FileBlocks
+        assertTrue(FileBlockUtil
                 .stream(TEN_BLOCKS)
-                .filter(FileBlocks::isHeaderBlock)
-                .map(FileBlocks::toHeaderBlock)
+                .filter(FileBlockUtil::isHeaderBlock)
+                .map(FileBlockUtil::toHeaderBlock)
                 .count() == 1);
     }
 
     @Test(expected = WrappedException.class)
     public void toHeaderaBlockException() {
-        FileBlocks.toHeaderBlock(INVALID_BLOCK);
+        FileBlockUtil.toHeaderBlock(INVALID_BLOCK);
     }
 
     @Test
     public void toDataBlock() throws FileNotFoundException {
-        assertTrue(FileBlocks
+        assertTrue(FileBlockUtil
                 .stream(TEN_BLOCKS)
-                .filter(FileBlocks::isDataBlock)
-                .map(FileBlocks::toDataBlock)
+                .filter(FileBlockUtil::isDataBlock)
+                .map(FileBlockUtil::toDataBlock)
                 .collect(Collectors.toList()).size() == 9);
     }
 
     @Test(expected = WrappedException.class)
     public void toDataBlockException() {
-        FileBlocks.toDataBlock(INVALID_BLOCK);
+        FileBlockUtil.toDataBlock(INVALID_BLOCK);
     }
 
 }

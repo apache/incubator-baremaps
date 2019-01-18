@@ -9,12 +9,12 @@ import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
-public class MBTilesTest {
+public class MBTilesUtilTest {
 
     @Test
     public void createDatabase() throws SQLException {
         Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
-        MBTiles.createDatabase(connection);
+        MBTilesUtil.createDatabase(connection);
         DatabaseMetaData md = connection.getMetaData();
         ResultSet rs1 = md.getTables(null, null, "metadata", null);
         assertTrue(rs1.next());
@@ -28,7 +28,7 @@ public class MBTilesTest {
     public void getMetadata() throws SQLException {
         String database = getClass().getClassLoader().getResource("schema.db").getPath();
         Connection connection = DriverManager.getConnection("jdbc:sqlite:" + database);
-        Map<String, String> metadata = MBTiles.getMetadata(connection);
+        Map<String, String> metadata = MBTilesUtil.getMetadata(connection);
         assertTrue(metadata.size() > 0);
     }
 
@@ -36,28 +36,28 @@ public class MBTilesTest {
     public void getTile() throws SQLException {
         String database = getClass().getClassLoader().getResource("schema.db").getPath();
         Connection connection = DriverManager.getConnection("jdbc:sqlite:" + database);
-        Tile t1 = MBTiles.getTile(connection, new XYZ(0, 0, 0));
+        Tile t1 = MBTilesUtil.getTile(connection, new XYZ(0, 0, 0));
         Assert.assertNotNull(t1);
-        Tile t2 = MBTiles.getTile(connection, new XYZ(1, 1, 1));
+        Tile t2 = MBTilesUtil.getTile(connection, new XYZ(1, 1, 1));
         Assert.assertNull(t2);
     }
 
     @Test
     public void setMetadata() throws SQLException {
         Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
-        MBTiles.createDatabase(connection);
+        MBTilesUtil.createDatabase(connection);
         Map<String, String> m1 = new HashMap<>();
         m1.put("test", "test");
-        MBTiles.setMetadata(connection, m1);
-        Map<String, String> m2 = MBTiles.getMetadata(connection);
+        MBTilesUtil.setMetadata(connection, m1);
+        Map<String, String> m2 = MBTilesUtil.getMetadata(connection);
         assertTrue(m2.size() > 0);
     }
 
     @Test
     public void setTile() throws SQLException {
         Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
-        MBTiles.createDatabase(connection);
-        MBTiles.setTile(connection, new XYZ(0, 0, 0), new Tile("test".getBytes()));
-        Assert.assertNotNull(MBTiles.getTile(connection, new XYZ(0, 0, 0)));
+        MBTilesUtil.createDatabase(connection);
+        MBTilesUtil.setTile(connection, new XYZ(0, 0, 0), new Tile("test".getBytes()));
+        Assert.assertNotNull(MBTilesUtil.getTile(connection, new XYZ(0, 0, 0)));
     }
 }
