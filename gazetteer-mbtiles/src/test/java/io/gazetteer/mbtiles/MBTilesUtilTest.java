@@ -1,5 +1,7 @@
 package io.gazetteer.mbtiles;
 
+import io.gazetteer.core.Tile;
+import io.gazetteer.core.XYZ;
 import org.junit.Assert;
 import org.junit.Test;
 

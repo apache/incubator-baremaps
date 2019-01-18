@@ -2,6 +2,7 @@ package io.gazetteer.osm.osmpbf;
 
 import io.gazetteer.osm.util.WrappedException;
 import org.junit.Test;
+import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -43,11 +44,6 @@ public class FileBlockUtilTest {
                 .filter(FileBlockUtil::isHeaderBlock)
                 .map(FileBlockUtil::toHeaderBlock)
                 .count() == 1);
-    }
-
-    @Test(expected = WrappedException.class)
-    public void toHeaderaBlockException() {
-        FileBlockUtil.toHeaderBlock(INVALID_BLOCK);
     }
 
     @Test

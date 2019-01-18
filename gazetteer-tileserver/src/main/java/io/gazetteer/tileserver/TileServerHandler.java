@@ -1,6 +1,6 @@
 package io.gazetteer.tileserver;
 
-import io.gazetteer.mbtiles.XYZ;
+import io.gazetteer.core.XYZ;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;

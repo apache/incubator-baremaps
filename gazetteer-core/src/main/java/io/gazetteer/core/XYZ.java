@@ -1,4 +1,4 @@
-package io.gazetteer.mbtiles;
+package io.gazetteer.core;
 
 import com.google.common.base.Objects;
 import mil.nga.sf.GeometryEnvelope;

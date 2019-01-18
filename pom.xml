@@ -42,8 +42,9 @@
 
     <modules>
         <module>gazetteer-mbtiles</module>
-        <module>gazetteer-tileserver</module>
         <module>gazetteer-osm</module>
+        <module>gazetteer-tileserver</module>
+        <module>gazetteer-core</module>
     </modules>
 
     <dependencies>
@@ -76,12 +77,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>nl.jqno.equalsverifier</groupId>
-            <artifactId>equalsverifier</artifactId>
-            <version>3.1.4</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

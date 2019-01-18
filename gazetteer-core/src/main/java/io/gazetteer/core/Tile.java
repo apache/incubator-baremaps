@@ -1,4 +1,4 @@
-package io.gazetteer.mbtiles;
+package io.gazetteer.core;
 
 import java.util.Arrays;
 

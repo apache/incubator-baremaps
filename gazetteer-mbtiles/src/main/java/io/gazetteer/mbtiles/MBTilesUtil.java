@@ -1,5 +1,8 @@
 package io.gazetteer.mbtiles;
 
+import io.gazetteer.core.Tile;
+import io.gazetteer.core.XYZ;
+
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;

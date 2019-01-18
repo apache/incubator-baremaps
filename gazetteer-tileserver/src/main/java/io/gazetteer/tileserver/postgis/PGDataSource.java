@@ -2,9 +2,9 @@ package io.gazetteer.tileserver.postgis;
 
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import io.gazetteer.mbtiles.Tile;
-import io.gazetteer.mbtiles.XYZ;
-import io.gazetteer.tileserver.TileDataSource;
+import io.gazetteer.core.Tile;
+import io.gazetteer.core.TileDataSource;
+import io.gazetteer.core.XYZ;
 import mil.nga.sf.GeometryEnvelope;
 
 import java.io.ByteArrayOutputStream;

@@ -1,5 +1,6 @@
 package io.gazetteer.tileserver;
 
+import io.gazetteer.core.TileDataSource;
 import io.gazetteer.tileserver.mbtiles.MBTilesDataSource;
 import io.gazetteer.tileserver.postgis.PGDataSource;
 import io.gazetteer.tileserver.postgis.PGLayer;

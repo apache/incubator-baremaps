@@ -34,17 +34,17 @@ import static picocli.CommandLine.Option;
 @Command(description = "Import OSM into Postgresql")
 public class Importer implements Runnable {
 
-    @Parameters(index = "0", paramLabel = "OSM_FILE", description="The OpenStreetMap PBF file.")
+    @Parameters(index = "0", paramLabel = "OSM_FILE", description = "The OpenStreetMap PBF file.")
     private File file;
 
-    @Parameters(index = "1", paramLabel = "ROCKSDB_CACHE", description="The RocksDB cache.")
+    @Parameters(index = "1", paramLabel = "ROCKSDB_CACHE", description = "The RocksDB cache.")
     private File cache;
 
-    @Parameters(index = "2", paramLabel = "POSTGRES_DATABASE", description="The Postgres database.")
+    @Parameters(index = "2", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
     private String database;
 
     @Option(names = {"-t", "--threads"}, description = "MD5, SHA-1, SHA-256, ...")
-    private int threads =  Runtime.getRuntime().availableProcessors();
+    private int threads = Runtime.getRuntime().availableProcessors();
 
     @Override
     public void run() {
@@ -67,25 +67,24 @@ public class Importer implements Runnable {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        try (final EntityStore<Node> cache = EntityStore.open(this.cache, new NodeEntityType())) {
-            ForkJoinPool executor = new ForkJoinPool(threads);
+            // Create the database
+            try (final EntityStore<Node> cache = EntityStore.open(this.cache, new NodeEntityType())) {
+                ForkJoinPool executor = new ForkJoinPool(threads);
 
-            NodeConsumer cacheConsumer = new NodeConsumer(cache);
-            Stream<List<Node>> cacheStream = PrimitiveBlockUtil
-                    .stream(file)
-                    .map(PrimitiveBlockReader::readDenseNodes);
-            executor.submit(() -> cacheStream.forEach(cacheConsumer)).get();
+                NodeConsumer cacheConsumer = new NodeConsumer(cache);
+                Stream<List<Node>> cacheStream = PrimitiveBlockUtil
+                        .stream(file)
+                        .map(PrimitiveBlockReader::readDenseNodes);
+                executor.submit(() -> cacheStream.forEach(cacheConsumer)).get();
 
-            PoolingDataSource pool = DatabaseUtil.create(database);
-            PrimitiveBlockConsumer databaseConsumer = new PrimitiveBlockConsumer(cache, pool);
-            Stream<PrimitiveBlock> databaseStream = PrimitiveBlockUtil
-                    .stream(file)
-                    .map(PrimitiveBlockReader::read);
-            executor.submit(() -> databaseStream.forEach(databaseConsumer)).get();
+                PoolingDataSource pool = DatabaseUtil.create(database);
+                PrimitiveBlockConsumer databaseConsumer = new PrimitiveBlockConsumer(cache, pool);
+                Stream<PrimitiveBlock> databaseStream = PrimitiveBlockUtil
+                        .stream(file)
+                        .map(PrimitiveBlockReader::read);
+                executor.submit(() -> databaseStream.forEach(databaseConsumer)).get();
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -100,7 +99,7 @@ public class Importer implements Runnable {
         }
     }
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
         CommandLine.run(new Importer(), args);
     }
 

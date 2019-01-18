@@ -2,10 +2,10 @@ package io.gazetteer.tileserver.mbtiles;
 
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import io.gazetteer.mbtiles.XYZ;
+import io.gazetteer.core.Tile;
+import io.gazetteer.core.TileDataSource;
+import io.gazetteer.core.XYZ;
 import io.gazetteer.mbtiles.MBTilesUtil;
-import io.gazetteer.mbtiles.Tile;
-import io.gazetteer.tileserver.TileDataSource;
 import org.sqlite.SQLiteDataSource;
 
 import java.sql.Connection;
