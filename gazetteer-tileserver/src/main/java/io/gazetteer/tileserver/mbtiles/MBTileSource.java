@@ -3,7 +3,7 @@ package io.gazetteer.tileserver.mbtiles;
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import io.gazetteer.core.Tile;
-import io.gazetteer.core.TileDataSource;
+import io.gazetteer.core.TileSource;
 import io.gazetteer.core.XYZ;
 import io.gazetteer.mbtiles.MBTilesUtil;
 import org.sqlite.SQLiteDataSource;
@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 
-public class MBTilesDataSource implements TileDataSource {
+public class MBTileSource implements TileSource {
 
     public static final String MIME_TYPE = "application/vnd.mapbox-vector-tile";
 
@@ -24,11 +24,11 @@ public class MBTilesDataSource implements TileDataSource {
 
     private final AsyncLoadingCache<XYZ, Tile> cache;
 
-    public MBTilesDataSource(SQLiteDataSource dataSource, Map<String, String> metadata) {
+    public MBTileSource(SQLiteDataSource dataSource, Map<String, String> metadata) {
         this(dataSource, metadata, 10000);
     }
 
-    public MBTilesDataSource(SQLiteDataSource dataSource, Map<String, String> metadata, int cacheSize) {
+    public MBTileSource(SQLiteDataSource dataSource, Map<String, String> metadata, int cacheSize) {
         this.dataSource = dataSource;
         this.metadata = metadata;
         this.cache = Caffeine.newBuilder()
@@ -52,10 +52,10 @@ public class MBTilesDataSource implements TileDataSource {
         }
     }
 
-    public static MBTilesDataSource fromDataSource(SQLiteDataSource dataSource) throws SQLException {
+    public static MBTileSource fromDataSource(SQLiteDataSource dataSource) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             Map<String, String> metadata = MBTilesUtil.getMetadata(connection);
-            return new MBTilesDataSource(dataSource, metadata);
+            return new MBTileSource(dataSource, metadata);
         }
     }
 

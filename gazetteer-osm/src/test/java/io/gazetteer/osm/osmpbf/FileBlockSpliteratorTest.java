@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static io.gazetteer.osm.osmpbf.FileBlockConstants.TEN_BLOCKS;
+import static io.gazetteer.osm.osmpbf.FileBlockConstants.BLOCKS;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -25,7 +25,7 @@ public class FileBlockSpliteratorTest {
 
     @Test
     public void tryAdvance() throws FileNotFoundException {
-        FileBlockSpliterator spliterator = FileBlockUtil.spliterator(TEN_BLOCKS);
+        FileBlockSpliterator spliterator = FileBlockUtil.spliterator(BLOCKS);
         for (int i = 0; i < 10; i++) {
             assertTrue(spliterator.tryAdvance(block -> {}));
         }
@@ -34,7 +34,7 @@ public class FileBlockSpliteratorTest {
 
     @Test
     public void forEachRemaining() throws FileNotFoundException {
-        FileBlockSpliterator spliterator = FileBlockUtil.spliterator(TEN_BLOCKS);
+        FileBlockSpliterator spliterator = FileBlockUtil.spliterator(BLOCKS);
         Accumulator accumulator = new Accumulator();
         spliterator.forEachRemaining(accumulator);
         assertTrue(accumulator.fileBlocks.size() == 10);

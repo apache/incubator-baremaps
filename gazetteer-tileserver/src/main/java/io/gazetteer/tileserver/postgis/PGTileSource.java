@@ -3,7 +3,7 @@ package io.gazetteer.tileserver.postgis;
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import io.gazetteer.core.Tile;
-import io.gazetteer.core.TileDataSource;
+import io.gazetteer.core.TileSource;
 import io.gazetteer.core.XYZ;
 import mil.nga.sf.GeometryEnvelope;
 
@@ -15,15 +15,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.zip.GZIPOutputStream;
 
-public class PGDataSource implements TileDataSource {
+public class PGTileSource implements TileSource {
 
     public static final String MIME_TYPE = "application/vnd.mapbox-vector-tile";
 
     private final AsyncLoadingCache<XYZ, Tile> cache;
 
-    public final List<PGLayer> layers;
+    public final List<PGTileLayer> layers;
 
-    public PGDataSource(List<PGLayer> layers) {
+    public PGTileSource(List<PGTileLayer> layers) {
         this.layers = layers;
         this.cache = Caffeine.newBuilder()
                 .maximumSize(10000)
@@ -44,7 +44,7 @@ public class PGDataSource implements TileDataSource {
     private Tile loadTile(XYZ xyz) throws IOException, SQLException {
         try (ByteArrayOutputStream data = new ByteArrayOutputStream();
              GZIPOutputStream tile = new GZIPOutputStream(data)) {
-            for (PGLayer layer : layers) {
+            for (PGTileLayer layer : layers) {
                 tile.write(loadLayer(xyz, layer));
             }
             tile.close();
@@ -52,7 +52,7 @@ public class PGDataSource implements TileDataSource {
         }
     }
 
-    private byte[] loadLayer(XYZ xyz, PGLayer layer) throws SQLException {
+    private byte[] loadLayer(XYZ xyz, PGTileLayer layer) throws SQLException {
         try (Connection connection = DriverManager.getConnection(layer.getDatabase())) {
             PreparedStatement statement = connection.prepareStatement(layer.getSql());
             GeometryEnvelope envelope = xyz.envelope();
