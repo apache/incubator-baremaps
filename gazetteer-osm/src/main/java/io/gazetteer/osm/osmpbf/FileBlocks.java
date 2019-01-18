@@ -30,16 +30,16 @@ public class FileBlocks {
     }
 
     public static boolean isHeaderBlock(FileBlock fileBlock) {
-        return fileBlock.type.equals(HEADER);
+        return fileBlock.getType().equals(HEADER);
     }
 
     public static boolean isDataBlock(FileBlock fileBlock) {
-        return fileBlock.type.equals(DATA);
+        return fileBlock.getType().equals(DATA);
     }
 
     public static Osmformat.HeaderBlock toHeaderBlock(FileBlock fileBlock) {
         try {
-            return Osmformat.HeaderBlock.parseFrom(fileBlock.data);
+            return Osmformat.HeaderBlock.parseFrom(fileBlock.getData());
         } catch (InvalidProtocolBufferException e) {
             throw new WrappedException(e);
         }
@@ -47,7 +47,7 @@ public class FileBlocks {
 
     public static Osmformat.PrimitiveBlock toDataBlock(FileBlock fileBlock) {
         try {
-            return Osmformat.PrimitiveBlock.parseFrom(fileBlock.data);
+            return Osmformat.PrimitiveBlock.parseFrom(fileBlock.getData());
         } catch (InvalidProtocolBufferException e) {
             throw new WrappedException(e);
         }

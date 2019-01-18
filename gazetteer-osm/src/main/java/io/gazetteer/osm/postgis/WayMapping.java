@@ -20,11 +20,17 @@ import java.util.function.ToLongFunction;
 public class WayMapping extends GeometryMapping<Way> {
 
     private final ToLongFunction<Way> getId = way -> way.getInfo().getId();
+
     private final ToIntFunction<Way> getVersion = way -> way.getInfo().getVersion();
+
     private final ToLongFunction<Way> getTimestamp = way -> way.getInfo().getChangeset();
+
     private final ToLongFunction<Way> getChangeset = way -> way.getInfo().getChangeset();
+
     private final ToIntFunction<Way> getUserId = way -> way.getInfo().getUser().getId();
+
     private final Function<Way, Map<String, String>> getTags = way -> way.getInfo().getTags();
+
     private final Function<Way, Collection<Long>> getNodes = way -> way.getNodes();
 
     public WayMapping(EntityStore<Node> cache) {

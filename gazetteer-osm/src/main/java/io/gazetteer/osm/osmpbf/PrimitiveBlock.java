@@ -8,7 +8,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class PrimitiveBlock {
+public final class PrimitiveBlock {
 
     private final List<Node> nodes;
 

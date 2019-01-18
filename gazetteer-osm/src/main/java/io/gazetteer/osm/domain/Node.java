@@ -1,5 +1,7 @@
 package io.gazetteer.osm.domain;
 
+import com.google.common.base.Objects;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Node implements Entity {
@@ -30,6 +32,20 @@ public final class Node implements Entity {
         return lat;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Node node = (Node) o;
+        return Double.compare(node.lon, lon) == 0 &&
+                Double.compare(node.lat, lat) == 0 &&
+                Objects.equal(info, node.info);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(info, lon, lat);
+    }
 }
 
 

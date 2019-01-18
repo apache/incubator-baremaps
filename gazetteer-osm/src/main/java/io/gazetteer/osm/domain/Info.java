@@ -1,5 +1,7 @@
 package io.gazetteer.osm.domain;
 
+import com.google.common.base.Objects;
+
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -48,4 +50,21 @@ public final class Info {
         return tags;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Info info = (Info) o;
+        return id == info.id &&
+                version == info.version &&
+                timestamp == info.timestamp &&
+                changeset == info.changeset &&
+                Objects.equal(user, info.user) &&
+                Objects.equal(tags, info.tags);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id, version, timestamp, changeset, user, tags);
+    }
 }

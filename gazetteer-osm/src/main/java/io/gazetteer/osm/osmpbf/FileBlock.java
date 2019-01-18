@@ -22,13 +22,13 @@ import com.google.protobuf.ByteString;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
-public class FileBlock {
+public final class FileBlock {
 
-    public final String type;
+    private final String type;
 
-    public final ByteString indexdata;
+    private final ByteString indexdata;
 
-    public final ByteString data;
+    private final ByteString data;
 
     public FileBlock(String type, ByteString indexdata, ByteString blob) {
         checkNotNull(type);
@@ -50,6 +50,5 @@ public class FileBlock {
     public ByteString getData() {
         return data;
     }
-
 
 }

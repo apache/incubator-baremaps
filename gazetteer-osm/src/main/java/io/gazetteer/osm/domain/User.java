@@ -1,5 +1,7 @@
 package io.gazetteer.osm.domain;
 
+import com.google.common.base.Objects;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class User {
@@ -21,4 +23,17 @@ public final class User {
         return name;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.id &&
+                Objects.equal(name, user.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id, name);
+    }
 }
