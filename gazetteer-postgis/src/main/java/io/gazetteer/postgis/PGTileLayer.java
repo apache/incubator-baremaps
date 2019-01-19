@@ -1,4 +1,4 @@
-package io.gazetteer.tileserver.postgis;
+package io.gazetteer.postgis;
 
 public class PGTileLayer {
 

@@ -45,6 +45,7 @@
         <module>gazetteer-osm</module>
         <module>gazetteer-tileserver</module>
         <module>gazetteer-core</module>
+        <module>gazetteer-postgis</module>
     </modules>
 
     <dependencies>
@@ -57,6 +58,11 @@
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
             <version>3.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>2.6.2</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>

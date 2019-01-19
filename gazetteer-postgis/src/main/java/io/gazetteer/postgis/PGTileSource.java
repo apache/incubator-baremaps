@@ -1,4 +1,4 @@
-package io.gazetteer.tileserver.postgis;
+package io.gazetteer.postgis;
 
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Caffeine;

@@ -1,9 +1,9 @@
 package io.gazetteer.tileserver;
 
 import io.gazetteer.core.TileSource;
-import io.gazetteer.tileserver.mbtiles.MBTileSource;
-import io.gazetteer.tileserver.postgis.PGTileSource;
-import io.gazetteer.tileserver.postgis.PGTileLayer;
+import io.gazetteer.mbtiles.MBTilesDataSource;
+import io.gazetteer.postgis.PGTileSource;
+import io.gazetteer.postgis.PGTileLayer;
 import io.netty.handler.ssl.SslContext;
 import org.sqlite.SQLiteDataSource;
 
@@ -42,7 +42,7 @@ public class TileServerConfig {
         dataSource.setSharedCache(true);
         dataSource.setPageSize(1024);
         dataSource.setCacheSize(10000);
-        MBTileSource cache = MBTileSource.fromDataSource(dataSource);
+        MBTilesDataSource cache = MBTilesDataSource.fromDataSource(dataSource);
         // todo: get the format from the metadata
         Pattern tileUri =  Pattern.compile(String.format("/(\\d{1,2})/(\\d{1,6})/(\\d{1,6}).%s", "pbf"));
         return new TileServerConfig(host, port, null, cache, tileUri);
