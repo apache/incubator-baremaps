@@ -23,7 +23,7 @@ public class EntityStore<E extends Entity> implements AutoCloseable {
 
     private final EntityType<E> entityType;
 
-    public EntityStore(RocksDB db, EntityType<E> entityType) {
+    private EntityStore(RocksDB db, EntityType<E> entityType) {
         checkNotNull(db);
         checkNotNull(entityType);
         this.db = db;
@@ -49,7 +49,7 @@ public class EntityStore<E extends Entity> implements AutoCloseable {
         }
     }
 
-    public E get(Long id) throws EntityStoreException {
+    public E get(long id) throws EntityStoreException {
         try {
             return val(db.get(key(id)));
         } catch (Exception e) {
@@ -74,7 +74,7 @@ public class EntityStore<E extends Entity> implements AutoCloseable {
         }
     }
 
-    public void delete(Long id) throws EntityStoreException {
+    public void delete(long id) throws EntityStoreException {
         try {
             db.delete(key(id));
         } catch (Exception e) {
