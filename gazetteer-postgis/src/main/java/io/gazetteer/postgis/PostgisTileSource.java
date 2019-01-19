@@ -6,6 +6,8 @@ import io.gazetteer.core.Tile;
 import io.gazetteer.core.TileSource;
 import io.gazetteer.core.XYZ;
 import mil.nga.sf.GeometryEnvelope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -58,7 +60,7 @@ public class PostgisTileSource implements TileSource {
     private byte[] loadLayer(XYZ xyz, PostgisLayer layer) throws SQLException {
         try (Connection connection = DriverManager.getConnection(database)) {
             GeometryEnvelope envelope = xyz.envelope();
-            String sql = MessageFormat.format(layer.getSql(),
+            String sql = MessageFormat.format(layer.getSql().replace("'", "''"),
                     envelope.getMinX(), envelope.getMinY(),
                     envelope.getMaxX(), envelope.getMaxY());
             Statement statement = connection.createStatement();

@@ -51,8 +51,7 @@ public class TileServer implements Runnable {
                             p.addLast(new CorsHandler(
                                     CorsConfigBuilder.forOrigin("*")
                                             .allowedRequestMethods(HttpMethod.POST)
-                                            .build())
-                            );
+                                            .build()));
                             p.addLast(new HttpServerExpectContinueHandler());
                             p.addLast(new TileServerHandler(config));
                         }

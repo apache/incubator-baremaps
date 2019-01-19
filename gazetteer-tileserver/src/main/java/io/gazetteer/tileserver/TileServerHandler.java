@@ -147,5 +147,4 @@ public class TileServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
         response.headers().set(DATE, dateFormatter.format(time.getTime()));
     }
 
-
 }

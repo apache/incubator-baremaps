@@ -21,7 +21,7 @@ public class DatabaseUtil {
             "    changeset bigint NOT NULL," +
             "    tags hstore," +
             "    geom geometry(point)" +
-            ");";
+            ")";
 
     public static final String CREATE_TABLE_WAYS =
             "CREATE TABLE ways (" +
@@ -33,7 +33,7 @@ public class DatabaseUtil {
             "    tags hstore," +
             "    nodes bigint[]," +
             "    geom geometry" +
-            ");";
+            ")";
 
     public static final String CREATE_TABLE_RELATIONS = 
             "CREATE TABLE relations (" +
@@ -45,7 +45,10 @@ public class DatabaseUtil {
             "    tags hstore," +
             "    members bigint[]," +
             "    geom geometry" +
-            ");";
+            ")";
+
+    public static final String CREATE_INDEX_WAYS =
+            "CREATE INDEX ways_idx ON ways USING gist(geom)";
 
 
     public static PoolingDataSource create(String conn) {
