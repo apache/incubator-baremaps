@@ -10,20 +10,23 @@ import mil.nga.sf.GeometryEnvelope;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.*;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.zip.GZIPOutputStream;
 
-public class PGTileSource implements TileSource {
+public class PostgisTileSource implements TileSource {
 
     public static final String MIME_TYPE = "application/vnd.mapbox-vector-tile";
 
+    public final String database = "jdbc:postgresql://localhost:5432/osm?user=osm&password=osm";
+
     private final AsyncLoadingCache<XYZ, Tile> cache;
 
-    public final List<PGTileLayer> layers;
+    public final List<PostgisLayer> layers;
 
-    public PGTileSource(List<PGTileLayer> layers) {
+    public PostgisTileSource(List<PostgisLayer> layers) {
         this.layers = layers;
         this.cache = Caffeine.newBuilder()
                 .maximumSize(10000)
@@ -44,7 +47,7 @@ public class PGTileSource implements TileSource {
     private Tile loadTile(XYZ xyz) throws IOException, SQLException {
         try (ByteArrayOutputStream data = new ByteArrayOutputStream();
              GZIPOutputStream tile = new GZIPOutputStream(data)) {
-            for (PGTileLayer layer : layers) {
+            for (PostgisLayer layer : layers) {
                 tile.write(loadLayer(xyz, layer));
             }
             tile.close();
@@ -52,23 +55,14 @@ public class PGTileSource implements TileSource {
         }
     }
 
-    private byte[] loadLayer(XYZ xyz, PGTileLayer layer) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(layer.getDatabase())) {
-            PreparedStatement statement = connection.prepareStatement(layer.getSql());
+    private byte[] loadLayer(XYZ xyz, PostgisLayer layer) throws SQLException {
+        try (Connection connection = DriverManager.getConnection(database)) {
             GeometryEnvelope envelope = xyz.envelope();
-            statement.setDouble(1, envelope.getMinX());
-            statement.setDouble(2, envelope.getMinY());
-            statement.setDouble(3, envelope.getMaxX());
-            statement.setDouble(4, envelope.getMaxY());
-            statement.setDouble(5, envelope.getMinX());
-            statement.setDouble(6, envelope.getMinY());
-            statement.setDouble(7, envelope.getMaxX());
-            statement.setDouble(8, envelope.getMaxY());
-            statement.setDouble(9, envelope.getMinX());
-            statement.setDouble(10, envelope.getMinY());
-            statement.setDouble(11, envelope.getMaxX());
-            statement.setDouble(12, envelope.getMaxY());
-            ResultSet result = statement.executeQuery();
+            String sql = MessageFormat.format(layer.getSql(),
+                    envelope.getMinX(), envelope.getMinY(),
+                    envelope.getMaxX(), envelope.getMaxY());
+            Statement statement = connection.createStatement();
+            ResultSet result =  statement.executeQuery(sql);
             result.next();
             return result.getBytes(1);
         }

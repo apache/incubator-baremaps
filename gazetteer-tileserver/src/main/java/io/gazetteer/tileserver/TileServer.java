@@ -26,10 +26,6 @@ public class TileServer implements Runnable {
         this.config = TileServerConfig.fromPGTiles();
     }
 
-    public static void main(String[] args) {
-        CommandLine.run(new TileServer(), args);
-    }
-
     @Override
     public void run() {
         InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
@@ -67,5 +63,9 @@ public class TileServer implements Runnable {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
+    }
+
+    public static void main(String[] args) {
+        CommandLine.run(new TileServer(), args);
     }
 }

@@ -2,8 +2,8 @@ package io.gazetteer.tileserver;
 
 import io.gazetteer.core.TileSource;
 import io.gazetteer.mbtiles.MBTilesDataSource;
-import io.gazetteer.postgis.PGTileSource;
-import io.gazetteer.postgis.PGTileLayer;
+import io.gazetteer.postgis.PostgisTileSource;
+import io.gazetteer.postgis.PostgisLayer;
 import io.netty.handler.ssl.SslContext;
 import org.sqlite.SQLiteDataSource;
 
@@ -51,9 +51,8 @@ public class TileServerConfig {
     public static TileServerConfig fromPGTiles() {
         String host = "localhost";
         int port = 8081;
-        List<PGTileLayer> layers = new ArrayList<>();
-        layers.add(new PGTileLayer("buildings", "polygon",
-                "jdbc:postgresql://localhost:5432/osm?user=osm&password=osm",
+        List<PostgisLayer> layers = new ArrayList<>();
+        layers.add(new PostgisLayer("buildings", 0, 18,
                 "SELECT ST_AsMVT(q, 'buildings', 4096, 'geom')\n" +
                 "FROM (\n" +
                 "  SELECT id,\n" +
@@ -67,8 +66,8 @@ public class TileServerConfig {
                 "  FROM ways\n" +
                 "  WHERE geom && ST_MakeEnvelope(?, ?, ?, ?)\n" +
                 "  AND ST_Intersects(geom, ST_MakeEnvelope(?, ?, ?, ?))\n" +
-                ") AS q;", 0, 18));
-        PGTileSource cache = new PGTileSource(layers);
+                ") AS q;"));
+        PostgisTileSource cache = new PostgisTileSource(layers);
         Pattern tileUri =  Pattern.compile(String.format("/(\\d{1,2})/(\\d{1,6})/(\\d{1,6}).pbf"));
         return new TileServerConfig(host, port, null, cache, tileUri);
     }
