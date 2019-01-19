@@ -2,11 +2,16 @@ package io.gazetteer.tileserver;
 
 import io.gazetteer.core.TileSource;
 import io.gazetteer.mbtiles.MBTilesDataSource;
+import io.gazetteer.postgis.PostgisConfig;
 import io.gazetteer.postgis.PostgisTileSource;
 import io.gazetteer.postgis.PostgisLayer;
 import io.netty.handler.ssl.SslContext;
 import org.sqlite.SQLiteDataSource;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +37,10 @@ public class TileServerConfig {
         this.tileUri = tileUri;
     }
 
-    public static TileServerConfig fromMBTilesFile(String mbtiles) throws SQLException {
+    public static TileServerConfig fromMBTilesFile(File mbtiles) throws SQLException {
         String host = "localhost";
         int port = 8081;
-        String url = String.format("jdbc:sqlite:%s", mbtiles);
+        String url = String.format("jdbc:sqlite:%s", mbtiles.getPath());
         SQLiteDataSource dataSource = new SQLiteDataSource();
         dataSource.setUrl(url);
         dataSource.setReadOnly(true);
@@ -48,25 +53,10 @@ public class TileServerConfig {
         return new TileServerConfig(host, port, null, cache, tileUri);
     }
 
-    public static TileServerConfig fromPGTiles() {
+    public static TileServerConfig fromPGTiles(File file) throws FileNotFoundException {
         String host = "localhost";
         int port = 8081;
-        List<PostgisLayer> layers = new ArrayList<>();
-        layers.add(new PostgisLayer("buildings", 0, 18,
-                "SELECT ST_AsMVT(q, 'buildings', 4096, 'geom')\n" +
-                "FROM (\n" +
-                "  SELECT id,\n" +
-                "    ST_AsMvtGeom(\n" +
-                "      geom,\n" +
-                "      ST_MakeEnvelope(?, ?, ?, ?),\n" +
-                "      4096,\n" +
-                "      256,\n" +
-                "      true\n" +
-                "    ) AS geom\n" +
-                "  FROM ways\n" +
-                "  WHERE geom && ST_MakeEnvelope(?, ?, ?, ?)\n" +
-                "  AND ST_Intersects(geom, ST_MakeEnvelope(?, ?, ?, ?))\n" +
-                ") AS q;"));
+        List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(file)).getLayers();
         PostgisTileSource cache = new PostgisTileSource(layers);
         Pattern tileUri =  Pattern.compile(String.format("/(\\d{1,2})/(\\d{1,6})/(\\d{1,6}).pbf"));
         return new TileServerConfig(host, port, null, cache, tileUri);

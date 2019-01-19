@@ -17,21 +17,23 @@ import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
 import picocli.CommandLine;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+
 @CommandLine.Command(description = "Start a tile server")
 public class TileServer implements Runnable {
 
-    public final TileServerConfig config;
-
-    public TileServer() {
-        this.config = TileServerConfig.fromPGTiles();
-    }
+    @CommandLine.Parameters(index = "0", paramLabel = "CONFIG_FILE", description = "The YAML configuration file.")
+    private File file;
 
     @Override
     public void run() {
         InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
+
         try {
+            TileServerConfig config = TileServerConfig.fromPGTiles(file);
             ServerBootstrap b = new ServerBootstrap();
             b.option(ChannelOption.SO_BACKLOG, 1024);
             b.group(bossGroup, workerGroup)
@@ -57,6 +59,8 @@ public class TileServer implements Runnable {
                     });
             Channel ch = b.bind(config.host, config.port).sync().channel();
             ch.closeFuture().sync();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
