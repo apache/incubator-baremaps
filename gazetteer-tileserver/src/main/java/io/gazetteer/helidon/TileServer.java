@@ -30,9 +30,8 @@ public class TileServer implements Runnable {
             ServerConfiguration serverConfig = ServerConfiguration.builder()
                     .port(8081).build();
             Routing routing = Routing.builder()
-                    .register("/maps", StaticContentSupport.builder("/www", this.getClass().getClassLoader())
-                            .welcomeFileName("index.html")
-                            .build())
+                    .register("/", StaticContentSupport.builder("/www", this.getClass().getClassLoader())
+                            .welcomeFileName("index.html").build())
                     .register(new TileService(tileSource))
                     .build();
             WebServer.create(serverConfig, routing)
