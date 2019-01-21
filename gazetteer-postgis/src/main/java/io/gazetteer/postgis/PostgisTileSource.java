@@ -46,7 +46,9 @@ public class PostgisTileSource implements TileSource {
         try (ByteArrayOutputStream data = new ByteArrayOutputStream();
              GZIPOutputStream tile = new GZIPOutputStream(data)) {
             for (PostgisLayer layer : layers) {
-                tile.write(loadLayer(xyz, layer));
+                if (xyz.getZ() >= layer.getMinZoom() && xyz.getZ() <= layer.getMaxZoom()) {
+                    tile.write(loadLayer(xyz, layer));
+                }
             }
             tile.close();
             return new Tile(data.toByteArray());

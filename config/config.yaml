@@ -1,10 +1,10 @@
 layers:
   - name: "buildings"
     geometry: "geom"
-    minZoom: 0
+    minZoom: 14
     maxZoom: 18
     sql: >
-      SELECT id, tags::jsonb, geom
+      SELECT id, tags::jsonb as properties, geom as geometry
       FROM ways
       WHERE tags -> 'building' = 'yes'
   - name: "highways"
@@ -12,7 +12,7 @@ layers:
     minZoom: 0
     maxZoom: 18
     sql: >
-      SELECT id, tags::jsonb, geom
+      SELECT id, tags::jsonb as properties, geom as geometry
       FROM ways
       WHERE tags -> 'highway' = 'path'
   - name: "waterareas"
@@ -20,6 +20,6 @@ layers:
     minZoom: 0
     maxZoom: 18
     sql: >
-      SELECT id, tags::jsonb, geom
+      SELECT id, tags::jsonb as properties, geom as geometry
       FROM ways
       WHERE tags -> 'natural' = 'water'
