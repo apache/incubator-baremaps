@@ -10,7 +10,6 @@ import mil.nga.sf.GeometryEnvelope;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -25,9 +24,6 @@ public class PostgisTileSource implements TileSource {
     private final AsyncLoadingCache<XYZ, Tile> cache;
 
     private final List<PostgisLayer> layers;
-
-
-
 
     public PostgisTileSource(List<PostgisLayer> layers) {
         this.layers = layers;
@@ -63,7 +59,7 @@ public class PostgisTileSource implements TileSource {
             GeometryEnvelope envelope = xyz.envelope();
             String sql = PostgisQueryBuilder.build(xyz, layer);
             Statement statement = connection.createStatement();
-            ResultSet result =  statement.executeQuery(sql);
+            ResultSet result = statement.executeQuery(sql);
             result.next();
             return result.getBytes(1);
         }
