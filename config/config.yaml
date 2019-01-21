@@ -1,25 +1,17 @@
 layers:
   - name: "buildings"
+    geometry: "geom"
     minZoom: 0
     maxZoom: 18
     sql: >
-      SELECT ST_AsMVT(q, 'buildings', 4096, 'geom')
-      FROM (
-        SELECT id, ST_AsMvtGeom(geom, ST_MakeEnvelope({0}, {1}, {2}, {3}), 4096, 256, true) AS geom
-        FROM ways
-        WHERE tags -> 'building' = 'yes'
-        AND geom && ST_MakeEnvelope({0}, {1}, {2}, {3})
-        AND ST_Intersects(geom, ST_MakeEnvelope({0}, {1}, {2}, {3}))
-      ) AS q;
+      SELECT id, geom
+      FROM ways
+      WHERE tags -> 'building' = 'yes'
   - name: "highways"
+    geometry: "geom"
     minZoom: 0
     maxZoom: 18
     sql: >
-      SELECT ST_AsMVT(q, 'highways', 4096, 'geom')
-      FROM (
-        SELECT id, ST_AsMvtGeom(geom, ST_MakeEnvelope({0}, {1}, {2}, {3}), 4096, 256, true) AS geom
-        FROM ways
-        WHERE tags -> 'highway' = 'path'
-        AND geom && ST_MakeEnvelope({0}, {1}, {2}, {3})
-        AND ST_Intersects(geom, ST_MakeEnvelope({0}, {1}, {2}, {3}))
-      ) AS q;
+      SELECT id, geom
+      FROM ways
+      WHERE tags -> 'highway' = 'path'

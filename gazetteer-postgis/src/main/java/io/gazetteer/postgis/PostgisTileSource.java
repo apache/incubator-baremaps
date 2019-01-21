@@ -6,8 +6,6 @@ import io.gazetteer.core.Tile;
 import io.gazetteer.core.TileSource;
 import io.gazetteer.core.XYZ;
 import mil.nga.sf.GeometryEnvelope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,13 +18,16 @@ import java.util.zip.GZIPOutputStream;
 
 public class PostgisTileSource implements TileSource {
 
-    public static final String MIME_TYPE = "application/vnd.mapbox-vector-tile";
+    private static final String MIME_TYPE = "application/vnd.mapbox-vector-tile";
 
-    public final String database = "jdbc:postgresql://localhost:5432/osm?user=osm&password=osm";
+    private final String DATABASE = "jdbc:postgresql://localhost:5432/osm?user=osm&password=osm";
 
     private final AsyncLoadingCache<XYZ, Tile> cache;
 
-    public final List<PostgisLayer> layers;
+    private final List<PostgisLayer> layers;
+
+
+
 
     public PostgisTileSource(List<PostgisLayer> layers) {
         this.layers = layers;
@@ -58,11 +59,9 @@ public class PostgisTileSource implements TileSource {
     }
 
     private byte[] loadLayer(XYZ xyz, PostgisLayer layer) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(database)) {
+        try (Connection connection = DriverManager.getConnection(DATABASE)) {
             GeometryEnvelope envelope = xyz.envelope();
-            String sql = MessageFormat.format(layer.getSql().replace("'", "''"),
-                    envelope.getMinX(), envelope.getMinY(),
-                    envelope.getMaxX(), envelope.getMaxY());
+            String sql = PostgisQueryBuilder.build(xyz, layer);
             Statement statement = connection.createStatement();
             ResultSet result =  statement.executeQuery(sql);
             result.next();
