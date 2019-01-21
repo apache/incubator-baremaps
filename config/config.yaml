@@ -15,3 +15,11 @@ layers:
       SELECT id, geom
       FROM ways
       WHERE tags -> 'highway' = 'path'
+  - name: "waterareas"
+    geometry: "geom"
+    minZoom: 0
+    maxZoom: 18
+    sql: >
+      SELECT id, geom
+      FROM ways
+      WHERE tags -> 'natural' = 'water'

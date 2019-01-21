@@ -16,7 +16,6 @@
           "minzoom": 0,
           "maxzoom": 14,
           "bounds": [ 5.952882,45.81617,10.49584,47.81126]
-         
         }
       },
       "layers": [{
@@ -24,6 +23,17 @@
           "type": "background",
           "paint": {
             "background-color": "#e8e2dc"
+          }
+        },
+        {
+          "id": "waterareas",
+          "source": "osm",
+          "source-layer": "waterareas",
+          "type": "fill",
+          "paint": {
+            "fill-color": "#0000ff",
+            "fill-outline-color": "#0000ff",
+            "fill-opacity": 0.5
           }
         },
         {
@@ -52,12 +62,13 @@
             "line-opacity": 0.75
           }
         },
+
       ]
     }
     var map = new mapboxgl.Map({
       container: 'map',
       style: style,
-      center: [8.224361,46.813715],
+      center: [6.633597, 46.519962],
       zoom: 14
     });
   </script>
