@@ -5,7 +5,6 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import io.gazetteer.core.Tile;
 import io.gazetteer.core.TileSource;
 import io.gazetteer.core.XYZ;
-import mil.nga.sf.GeometryEnvelope;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

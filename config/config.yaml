@@ -4,7 +4,7 @@ layers:
     minZoom: 0
     maxZoom: 18
     sql: >
-      SELECT id, geom
+      SELECT id, tags::jsonb, geom
       FROM ways
       WHERE tags -> 'building' = 'yes'
   - name: "highways"
@@ -12,7 +12,7 @@ layers:
     minZoom: 0
     maxZoom: 18
     sql: >
-      SELECT id, geom
+      SELECT id, tags::jsonb, geom
       FROM ways
       WHERE tags -> 'highway' = 'path'
   - name: "waterareas"
@@ -20,6 +20,6 @@ layers:
     minZoom: 0
     maxZoom: 18
     sql: >
-      SELECT id, geom
+      SELECT id, tags::jsonb, geom
       FROM ways
       WHERE tags -> 'natural' = 'water'

@@ -12,7 +12,6 @@ public class PostgisQueryBuilderTest {
 
     private static final XYZ XYZ = new XYZ(8567, 5773, 14);
 
-
     private static final List<PostgisLayer> LAYERS = Arrays.asList(
             new PostgisLayer("buildings", "geom", 0, 20, "SELECT id, geom FROM ways WHERE tags -> 'building' = 'yes'"),
             new PostgisLayer("highways", "geom", 0, 20, " SELECT id, geom FROM ways WHERE tags -> 'highway' = 'path'")
@@ -65,7 +64,7 @@ public class PostgisQueryBuilderTest {
     public void buildSource() {
         String sql = PostgisQueryBuilder.buildSource(XYZ, LAYER);
         assertEquals(sql,
-                "(SELECT id, ST_AsMvtGeom(geom, ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845), 4096, 256, true) AS geom " +
+                "(SELECT id, tags, ST_AsMvtGeom(geom, ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845), 4096, 256, true) AS geom " +
                         "FROM (SELECT id, geom FROM ways WHERE tags -> 'building' = 'yes') AS layer " +
                         "WHERE geom && ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845) " +
                         "AND ST_Intersects(geom, ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845))) as buildings");

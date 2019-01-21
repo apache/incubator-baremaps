@@ -3,10 +3,7 @@ package io.gazetteer.helidon;
 import io.gazetteer.postgis.PostgisConfig;
 import io.gazetteer.postgis.PostgisLayer;
 import io.gazetteer.postgis.PostgisTileSource;
-import io.helidon.webserver.Routing;
-import io.helidon.webserver.ServerConfiguration;
-import io.helidon.webserver.StaticContentSupport;
-import io.helidon.webserver.WebServer;
+import io.helidon.webserver.*;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -29,9 +26,12 @@ public class TileServer implements Runnable {
             PostgisTileSource tileSource = new PostgisTileSource(layers);
             ServerConfiguration serverConfig = ServerConfiguration.builder()
                     .port(8081).build();
+            Service staticContent = StaticContentSupport
+                    .builder("/www", this.getClass().getClassLoader())
+                    .welcomeFileName("index.html")
+                    .build();
             Routing routing = Routing.builder()
-                    .register("/", StaticContentSupport.builder("/www", this.getClass().getClassLoader())
-                            .welcomeFileName("index.html").build())
+                    .register(staticContent)
                     .register(new TileService(tileSource))
                     .build();
             WebServer.create(serverConfig, routing)

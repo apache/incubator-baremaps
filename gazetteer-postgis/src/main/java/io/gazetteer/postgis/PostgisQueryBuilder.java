@@ -23,7 +23,7 @@ public class PostgisQueryBuilder {
 
     // {0} = name; {1} = sql; {2} = envelope
     private static final String SQL_SOURCE =
-            "(SELECT id, ST_AsMvtGeom(geom, {2}, 4096, 256, true) AS geom " +
+            "(SELECT id, tags, ST_AsMvtGeom(geom, {2}, 4096, 256, true) AS geom " +
                     "FROM ({1}) AS layer " +
                     "WHERE geom && {2} AND ST_Intersects(geom, {2})) as {0}";
 
