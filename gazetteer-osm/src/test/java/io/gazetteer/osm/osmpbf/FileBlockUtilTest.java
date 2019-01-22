@@ -15,48 +15,48 @@ public class FileBlockUtilTest {
 
     @Test
     public void stream() throws FileNotFoundException {
-        assertTrue(FileBlockUtil
+        assertTrue(PBFFileUtil
                 .stream(BLOCKS)
                 .count() == 10);
     }
 
     @Test
     public void isHeaderBlock() throws IOException {
-        assertTrue(FileBlockUtil
+        assertTrue(PBFFileUtil
                 .stream(BLOCKS)
-                .filter(FileBlockUtil::isHeaderBlock)
+                .filter(PBFFileUtil::isHeaderBlock)
                 .count() == 1);
     }
 
     @Test
     public void isDataBlock() throws IOException {
-        assertTrue(FileBlockUtil
+        assertTrue(PBFFileUtil
                 .stream(BLOCKS)
-                .filter(FileBlockUtil::isDataBlock)
+                .filter(PBFFileUtil::isDataBlock)
                 .count() == 9);
     }
 
     @Test
     public void toHeaderBlock() throws FileNotFoundException {
-        assertTrue(FileBlockUtil
+        assertTrue(PBFFileUtil
                 .stream(BLOCKS)
-                .filter(FileBlockUtil::isHeaderBlock)
-                .map(FileBlockUtil::toHeaderBlock)
+                .filter(PBFFileUtil::isHeaderBlock)
+                .map(PBFFileUtil::toHeaderBlock)
                 .count() == 1);
     }
 
     @Test
     public void toDataBlock() throws FileNotFoundException {
-        assertTrue(FileBlockUtil
+        assertTrue(PBFFileUtil
                 .stream(BLOCKS)
-                .filter(FileBlockUtil::isDataBlock)
-                .map(FileBlockUtil::toDataBlock)
+                .filter(PBFFileUtil::isDataBlock)
+                .map(PBFFileUtil::toDataBlock)
                 .collect(Collectors.toList()).size() == 9);
     }
 
     @Test(expected = WrappedException.class)
     public void toDataBlockException() {
-        FileBlockUtil.toDataBlock(INVALID_BLOCK);
+        PBFFileUtil.toDataBlock(INVALID_BLOCK);
     }
 
 }

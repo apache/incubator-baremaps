@@ -25,7 +25,7 @@ public class FileBlockSpliteratorTest {
 
     @Test
     public void tryAdvance() throws FileNotFoundException {
-        FileBlockSpliterator spliterator = FileBlockUtil.spliterator(BLOCKS);
+        PBFFileSpliterator spliterator = PBFFileUtil.spliterator(BLOCKS);
         for (int i = 0; i < 10; i++) {
             assertTrue(spliterator.tryAdvance(block -> {}));
         }
@@ -34,7 +34,7 @@ public class FileBlockSpliteratorTest {
 
     @Test
     public void forEachRemaining() throws FileNotFoundException {
-        FileBlockSpliterator spliterator = FileBlockUtil.spliterator(BLOCKS);
+        PBFFileSpliterator spliterator = PBFFileUtil.spliterator(BLOCKS);
         Accumulator accumulator = new Accumulator();
         spliterator.forEachRemaining(accumulator);
         assertTrue(accumulator.fileBlocks.size() == 10);

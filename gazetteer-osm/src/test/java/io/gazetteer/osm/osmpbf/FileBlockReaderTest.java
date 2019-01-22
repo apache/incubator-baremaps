@@ -57,7 +57,7 @@ public class FileBlockReaderTest {
 
     @Test
     public void testRead() throws IOException {
-        FileBlockReader reader = FileBlockUtil.reader(BLOCKS);
+        PBFFileReader reader = PBFFileUtil.reader(BLOCKS);
         for (int i = 0; i < 10; i ++) {
             FileBlock block = reader.read();
             assertNotNull(block);
@@ -66,7 +66,7 @@ public class FileBlockReaderTest {
 
     @Test(expected = EOFException.class)
     public void testEOF() throws IOException {
-        FileBlockReader reader = FileBlockUtil.reader(BLOCKS);
+        PBFFileReader reader = PBFFileUtil.reader(BLOCKS);
         for (int i = 0; i < 11; i ++) {
             reader.read();
         }

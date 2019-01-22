@@ -7,16 +7,16 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-public class PbfFileSpliterator extends BatchSpliterator<FileBlock> {
+public class PBFFileSpliterator extends BatchSpliterator<FileBlock> {
 
-    private final PbfFileReader reader;
+    private final PBFFileReader reader;
 
-    public PbfFileSpliterator(PbfFileReader reader, int batchSize) {
+    public PBFFileSpliterator(PBFFileReader reader, int batchSize) {
         super(batchSize, ORDERED | DISTINCT | NONNULL | IMMUTABLE);
         this.reader = reader;
     }
 
-    public PbfFileSpliterator(PbfFileReader reader) {
+    public PBFFileSpliterator(PBFFileReader reader) {
         this(reader, 10);
     }
 
