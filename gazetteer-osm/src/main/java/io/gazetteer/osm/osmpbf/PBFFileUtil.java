@@ -11,18 +11,18 @@ import java.io.FileNotFoundException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class FileBlockUtil {
+public class PbfFileUtil {
 
     public static final String HEADER = "OSMHeader";
     public static final String DATA = "OSMData";
 
-    public static FileBlockReader reader(File file) throws FileNotFoundException {
+    public static PbfFileReader reader(File file) throws FileNotFoundException {
         DataInputStream input = new DataInputStream(new FileInputStream(file));
-        return new FileBlockReader(input);
+        return new PbfFileReader(input);
     }
 
-    public static FileBlockSpliterator spliterator(File file) throws FileNotFoundException {
-        return new FileBlockSpliterator(reader(file));
+    public static PbfFileSpliterator spliterator(File file) throws FileNotFoundException {
+        return new PbfFileSpliterator(reader(file));
     }
 
     public static Stream<FileBlock> stream(File file) throws FileNotFoundException {

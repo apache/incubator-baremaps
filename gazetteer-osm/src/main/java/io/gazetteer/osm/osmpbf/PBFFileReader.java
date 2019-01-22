@@ -10,11 +10,11 @@ import java.util.zip.Inflater;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class FileBlockReader {
+public class PbfFileReader {
 
     private final DataInputStream input;
 
-    public FileBlockReader(DataInputStream input) {
+    public PbfFileReader(DataInputStream input) {
         checkNotNull(input);
         this.input = input;
     }
