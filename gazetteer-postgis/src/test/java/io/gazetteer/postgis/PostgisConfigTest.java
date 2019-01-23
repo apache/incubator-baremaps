@@ -4,7 +4,8 @@ import org.junit.Test;
 
 import java.io.InputStream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class PostgisConfigTest {
 

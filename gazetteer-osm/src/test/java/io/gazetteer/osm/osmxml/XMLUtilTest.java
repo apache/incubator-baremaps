@@ -11,7 +11,7 @@ import javax.xml.stream.events.XMLEvent;
 import java.util.Arrays;
 
 import static io.gazetteer.osm.OSMTestUtil.OSM_XML_DATA;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class XMLUtilTest {
 

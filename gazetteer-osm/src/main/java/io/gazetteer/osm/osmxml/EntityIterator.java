@@ -1,13 +1,13 @@
 package io.gazetteer.osm.osmxml;
 
-import io.gazetteer.osm.domain.*;
+import io.gazetteer.osm.domain.Entity;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class EntityIterator implements Iterator<Entity> {
 

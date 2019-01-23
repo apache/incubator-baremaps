@@ -7,8 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_INVALID_BLOCK;
 import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_DATA;
+import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_INVALID_BLOCK;
 import static org.junit.Assert.assertTrue;
 
 public class PBFUtilTest {

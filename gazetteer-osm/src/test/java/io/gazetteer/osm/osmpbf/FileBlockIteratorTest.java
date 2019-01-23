@@ -2,12 +2,6 @@ package io.gazetteer.osm.osmpbf;
 
 import org.junit.Test;
 
-import java.io.EOFException;
-import java.io.IOException;
-
-import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_DATA;
-import static org.junit.Assert.assertNotNull;
-
 public class FileBlockIteratorTest {
 
     @Test

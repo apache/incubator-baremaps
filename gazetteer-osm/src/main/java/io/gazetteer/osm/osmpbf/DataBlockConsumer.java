@@ -4,7 +4,6 @@ import de.bytefish.pgbulkinsert.PgBulkInsert;
 import io.gazetteer.osm.domain.Node;
 import io.gazetteer.osm.domain.Relation;
 import io.gazetteer.osm.domain.Way;
-import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.postgis.NodeMapping;
 import io.gazetteer.osm.postgis.RelationMapping;
 import io.gazetteer.osm.postgis.WayMapping;

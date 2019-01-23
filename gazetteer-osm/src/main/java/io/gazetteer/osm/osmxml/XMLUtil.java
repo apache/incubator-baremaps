@@ -1,7 +1,6 @@
 package io.gazetteer.osm.osmxml;
 
 import io.gazetteer.osm.domain.*;
-import io.gazetteer.osm.util.BatchSpliterator;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
