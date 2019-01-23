@@ -11,22 +11,29 @@ import java.io.FileNotFoundException;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-public class PBFFileUtil {
+public class PBFUtil {
 
     public static final String HEADER = "OSMHeader";
     public static final String DATA = "OSMData";
 
-    public static PBFFileReader reader(File file) throws FileNotFoundException {
+    public static FileBlockReader reader(File file) throws FileNotFoundException {
         DataInputStream input = new DataInputStream(new FileInputStream(file));
-        return new PBFFileReader(input);
+        return new FileBlockReader(input);
     }
 
-    public static PBFFileSpliterator spliterator(File file) throws FileNotFoundException {
-        return new PBFFileSpliterator(reader(file));
+    public static FileBlockSpliterator spliterator(File file) throws FileNotFoundException {
+        return new FileBlockSpliterator(reader(file));
     }
 
-    public static Stream<FileBlock> stream(File file) throws FileNotFoundException {
+    public static Stream<FileBlock> fileBlocks(File file) throws FileNotFoundException {
         return StreamSupport.stream(spliterator(file), true);
+    }
+
+    public static Stream<DataBlockReader> dataBlockReaders(File file) throws FileNotFoundException {
+        return PBFUtil.fileBlocks(file)
+                .filter(PBFUtil::isDataBlock)
+                .map(PBFUtil::toDataBlock)
+                .map(DataBlockReader::new);
     }
 
     public static boolean isHeaderBlock(FileBlock fileBlock) {
@@ -52,6 +59,8 @@ public class PBFFileUtil {
             throw new WrappedException(e);
         }
     }
+
+
 
 
 }

@@ -1,26 +1,39 @@
 package io.gazetteer.osm.osmxml;
 
-import io.gazetteer.osm.domain.Member;
-import io.gazetteer.osm.domain.Node;
-import io.gazetteer.osm.domain.Relation;
-import io.gazetteer.osm.domain.Way;
+import io.gazetteer.osm.domain.*;
 import org.junit.Test;
 
 import javax.xml.stream.XMLEventReader;
 
+import java.io.EOFException;
 import java.util.Arrays;
 
 import static io.gazetteer.osm.OSMTestUtil.XML_DATA;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-public class XMLFileReaderTest {
+public class EntityReaderTest {
+
+    @Test(expected = EOFException.class)
+    public void read() throws Exception {
+        EntityReader entityReader = new EntityReader(XMLUtil.xmlEventReader(XML_DATA));
+        for (int i = 0; i < 10; i++) {
+            assertNotNull(entityReader.read());
+        }
+        entityReader.read();
+    }
+
+    @Test
+    public void isElement() {
+    }
+
 
     @Test
     public void readNode() throws Exception {
-        XMLEventReader reader = XMLFileUtil.reader(XML_DATA);
+        XMLEventReader reader = XMLUtil.xmlEventReader(XML_DATA);
         while (reader.hasNext()) {
             if (reader.peek().isStartElement() && reader.peek().asStartElement().getName().getLocalPart().equals("node")) {
-                Node node = XMLFileReader.readNode(reader);
+                Node node = EntityReader.readNode(reader);
                 assertEquals(1, node.getInfo().getId());
                 assertEquals(10, node.getInfo().getVersion());
                 assertEquals(1199243045000l, node.getInfo().getTimestamp());
@@ -38,10 +51,10 @@ public class XMLFileReaderTest {
 
     @Test
     public void readWay() throws Exception {
-        XMLEventReader reader = XMLFileUtil.reader(XML_DATA);
+        XMLEventReader reader = XMLUtil.xmlEventReader(XML_DATA);
         while (reader.hasNext()) {
             if (reader.peek().isStartElement() && reader.peek().asStartElement().getName().getLocalPart().equals("way")) {
-                Way way = XMLFileReader.readWay(reader);
+                Way way = EntityReader.readWay(reader);
                 assertEquals(1, way.getInfo().getId());
                 assertEquals(10, way.getInfo().getVersion());
                 assertEquals(1199243045000l, way.getInfo().getTimestamp());
@@ -58,10 +71,10 @@ public class XMLFileReaderTest {
 
     @Test
     public void readRelation() throws Exception {
-        XMLEventReader reader = XMLFileUtil.reader(XML_DATA);
+        XMLEventReader reader = XMLUtil.xmlEventReader(XML_DATA);
         while (reader.hasNext()) {
             if (reader.peek().isStartElement() && reader.peek().asStartElement().getName().getLocalPart().equals("relation")) {
-                Relation relation = XMLFileReader.readRelation(reader);
+                Relation relation = EntityReader.readRelation(reader);
                 assertEquals(1, relation.getInfo().getId());
                 assertEquals(10, relation.getInfo().getVersion());
                 assertEquals(1199243045000l, relation.getInfo().getTimestamp());

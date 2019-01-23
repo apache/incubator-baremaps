@@ -9,7 +9,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class PrimitiveBlock {
+public final class DataBlock {
 
     private final List<Node> nodes;
 
@@ -17,7 +17,7 @@ public final class PrimitiveBlock {
 
     private final List<Relation> relations;
 
-    public PrimitiveBlock(List<Node> nodes, List<Way> ways, List<Relation> relations) {
+    public DataBlock(List<Node> nodes, List<Way> ways, List<Relation> relations) {
         checkNotNull(nodes);
         checkNotNull(ways);
         checkNotNull(relations);
@@ -42,7 +42,7 @@ public final class PrimitiveBlock {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PrimitiveBlock that = (PrimitiveBlock) o;
+        DataBlock that = (DataBlock) o;
         return Objects.equal(nodes, that.nodes) &&
                 Objects.equal(ways, that.ways) &&
                 Objects.equal(relations, that.relations);

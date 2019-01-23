@@ -1,14 +1,12 @@
-package io.gazetteer.osm.osmpbf;
+package io.gazetteer.osm.osmxml;
+
 
 import io.gazetteer.osm.domain.Node;
 import io.gazetteer.osm.postgis.DatabaseUtil;
 import io.gazetteer.osm.rocksdb.EntityStore;
 import io.gazetteer.osm.rocksdb.EntityStoreException;
 import io.gazetteer.osm.rocksdb.NodeEntityType;
-import org.apache.commons.dbcp2.PoolingDataSource;
 import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Parameters;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,27 +17,21 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
-import java.util.stream.Stream;
 
-import static picocli.CommandLine.Option;
+@CommandLine.Command(description = "Import OSM into Postgresql")
+public class XMLImporter implements Runnable {
 
-
-@Command(description = "Import OSM PBF into Postgresql")
-public class PBFImporter implements Runnable {
-
-    @Parameters(index = "0", paramLabel = "OSM_FILE", description = "The OpenStreetMap PBF file.")
+    @CommandLine.Parameters(index = "0", paramLabel = "OSM_FILE", description = "The OpenStreetMap PBF file.")
     private File file;
 
-    @Parameters(index = "1", paramLabel = "ROCKSDB_CACHE", description = "The RocksDB cache.")
+    @CommandLine.Parameters(index = "1", paramLabel = "ROCKSDB_CACHE", description = "The RocksDB cache.")
     private File cache;
 
-    @Parameters(index = "2", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
+    @CommandLine.Parameters(index = "2", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
     private String database;
 
-    @Option(names = {"-t", "--threads"}, description = "The size of the thread pool.")
+    @CommandLine.Option(names = {"-t", "--threads"}, description = "The size of the thread pool.")
     private int threads = Runtime.getRuntime().availableProcessors();
 
     @Override
@@ -65,29 +57,12 @@ public class PBFImporter implements Runnable {
             // Create the database
             try (EntityStore<Node> cache = EntityStore.open(this.cache, new NodeEntityType())) {
                 ForkJoinPool executor = new ForkJoinPool(threads);
-
-                NodeConsumer cacheConsumer = new NodeConsumer(cache);
-                Stream<List<Node>> cacheStream = PBFUtil
-                        .dataBlockReaders(file)
-                        .map(DataBlockReader::readDenseNodes);
-                executor.submit(() -> cacheStream.forEach(cacheConsumer)).get();
-
-                PoolingDataSource pool = DatabaseUtil.create(database);
-                DataBlockConsumer databaseConsumer = new DataBlockConsumer(cache, pool);
-                Stream<DataBlock> databaseStream = PBFUtil
-                        .dataBlockReaders(file)
-                        .map(DataBlockReader::read);
-                executor.submit(() -> databaseStream.forEach(databaseConsumer)).get();
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
         } catch (SQLException e) {
-            e.printStackTrace();
+                e.printStackTrace();
         } catch (EntityStoreException e) {
             e.printStackTrace();
         } finally {
@@ -96,7 +71,7 @@ public class PBFImporter implements Runnable {
     }
 
     public static void main(String[] args) {
-        CommandLine.run(new PBFImporter(), args);
+        CommandLine.run(new io.gazetteer.osm.osmpbf.PBFImporter(), args);
     }
 
 }

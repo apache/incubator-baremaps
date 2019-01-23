@@ -14,7 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A adaptation of the OsmosisBinaryParser
  */
-public class PrimitiveBlockReader {
+public class DataBlockReader {
 
     private final Osmformat.PrimitiveBlock block;
     private final int granularity;
@@ -23,7 +23,7 @@ public class PrimitiveBlockReader {
     private final long lonOffset;
     private final String[] stringTable;
 
-    public PrimitiveBlockReader(Osmformat.PrimitiveBlock block) {
+    public DataBlockReader(Osmformat.PrimitiveBlock block) {
         checkNotNull(block);
         this.block = block;
         this.granularity = block.getGranularity();
@@ -36,7 +36,7 @@ public class PrimitiveBlockReader {
         }
     }
 
-    public PrimitiveBlock read() {
+    public DataBlock read() {
         List<Node> nodes = new ArrayList<>();
         List<Way> ways = new ArrayList<>();
         List<Relation> relations = new ArrayList<>();
@@ -45,7 +45,7 @@ public class PrimitiveBlockReader {
             readWays(group.getWaysList(), ways);
             readRelations(group.getRelationsList(), relations);
         }
-        return new PrimitiveBlock(nodes, ways, relations);
+        return new DataBlock(nodes, ways, relations);
     }
 
     public List<Node> readDenseNodes() {

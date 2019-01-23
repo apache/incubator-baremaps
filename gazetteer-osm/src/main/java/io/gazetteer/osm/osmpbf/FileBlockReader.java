@@ -10,34 +10,34 @@ import java.util.zip.Inflater;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class PBFFileReader {
+public class FileBlockReader {
 
     private final DataInputStream input;
 
-    public PBFFileReader(DataInputStream input) {
+    public FileBlockReader(DataInputStream input) {
         checkNotNull(input);
         this.input = input;
     }
 
     public FileBlock read() throws IOException {
-        // read the header
+        // next the header
         int headerSize = input.readInt();
         byte[] headerData = new byte[headerSize];
         input.readFully(headerData);
         Fileformat.BlobHeader header = Fileformat.BlobHeader.parseFrom(headerData);
 
-        // read the blob
+        // next the blob
         int blobSize = header.getDatasize();
         byte[] blobData = new byte[blobSize];
         input.readFully(blobData);
         Fileformat.Blob blob = Fileformat.Blob.parseFrom(blobData);
 
-        // read the raw data
+        // next the raw data
         if (blob.hasRaw()) {
             return new FileBlock(header.getType(), header.getIndexdata(), blob.getRaw());
         }
 
-        // read the compressed zlib data
+        // next the compressed zlib data
         if (blob.hasZlibData()) {
             byte[] raw = new byte[blob.getRawSize()];
             Inflater inflater = new Inflater();

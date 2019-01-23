@@ -1,6 +1,8 @@
-package io.gazetteer.osm.rocksdb;
+package io.gazetteer.osm.osmpbf;
 
 import io.gazetteer.osm.domain.Node;
+import io.gazetteer.osm.rocksdb.EntityStore;
+import io.gazetteer.osm.rocksdb.EntityStoreException;
 
 import java.util.Collection;
 import java.util.function.Consumer;

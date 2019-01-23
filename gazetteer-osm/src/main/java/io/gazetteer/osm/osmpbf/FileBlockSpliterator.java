@@ -1,0 +1,50 @@
+package io.gazetteer.osm.osmpbf;
+
+import io.gazetteer.osm.util.BatchSpliterator;
+import io.gazetteer.osm.util.WrappedException;
+
+import java.io.EOFException;
+import java.io.IOException;
+import java.util.function.Consumer;
+
+public class FileBlockSpliterator extends BatchSpliterator<FileBlock> {
+
+    private final FileBlockReader reader;
+
+    public FileBlockSpliterator(FileBlockReader reader) {
+        this(reader, 10);
+    }
+
+    public FileBlockSpliterator(FileBlockReader reader, int batchSize) {
+        super(batchSize, ORDERED | DISTINCT | NONNULL | IMMUTABLE);
+        this.reader = reader;
+    }
+
+    @Override
+    public boolean tryAdvance(Consumer<? super FileBlock> consumer) {
+        try {
+            FileBlock block = reader.read();
+            consumer.accept(block);
+            return true;
+        } catch (EOFException e) {
+            return false;
+        } catch (Exception e) {
+            throw new WrappedException(e);
+        }
+    }
+
+    @Override
+    public void forEachRemaining(Consumer<? super FileBlock> consumer) {
+        try {
+            while (true) {
+                consumer.accept(reader.read());
+            }
+        } catch (EOFException e) {
+            // reached the end of the file
+        } catch (Exception e) {
+            throw new WrappedException(e);
+        }
+    }
+
+}
+

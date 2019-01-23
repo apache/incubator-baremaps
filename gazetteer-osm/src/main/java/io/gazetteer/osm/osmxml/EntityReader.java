@@ -7,6 +7,8 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import java.io.EOFException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -14,7 +16,7 @@ import java.util.*;
 import static com.google.common.base.Preconditions.checkState;
 import static io.gazetteer.osm.domain.User.NO_USER;
 
-public class XMLFileReader {
+public class EntityReader {
 
     private static final String NODE = "node";
     private static final String WAY = "way";
@@ -43,8 +45,36 @@ public class XMLFileReader {
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
+    private final XMLEventReader reader;
+
+    public EntityReader(XMLEventReader reader) {
+        this.reader = reader;
+    }
+
+    public Entity read() throws IOException, XMLStreamException, ParseException {
+        while (reader.hasNext()) {
+            XMLEvent event = reader.peek();
+            if (isElement(event, NODE)) {
+                return readNode(reader);
+            }
+            if (isElement(event, WAY)) {
+                return readWay(reader);
+            }
+            if (isElement(event, RELATION)) {
+                return readRelation(reader);
+            }
+            reader.nextEvent();
+        }
+
+        throw new EOFException();
+    }
+
+    public static boolean isElement(XMLEvent event, String element) throws XMLStreamException {
+        return event.isStartElement() &&
+                event.asStartElement().getName().getLocalPart().equals(element);
+    }
+
     public static Node readNode(XMLEventReader reader) throws XMLStreamException, ParseException {
-        checkState(checkReaderElement(reader, NODE));
         StartElement element = readElement(reader);
         List<StartElement> children = readChildren(element, reader);
         Info info = readInfo(element, children);
@@ -54,7 +84,6 @@ public class XMLFileReader {
     }
 
     public static Way readWay(XMLEventReader reader) throws XMLStreamException, ParseException {
-        checkState(checkReaderElement(reader, WAY));
         StartElement element = readElement(reader);
         List<StartElement> children = readChildren(element, reader);
         Info info = readInfo(element, children);
@@ -63,17 +92,11 @@ public class XMLFileReader {
     }
 
     public static Relation readRelation(XMLEventReader reader) throws XMLStreamException, ParseException {
-        checkState(checkReaderElement(reader, RELATION));
         StartElement element = readElement(reader);
         List<StartElement> children = readChildren(element, reader);
         Info info = readInfo(element, children);
         List<Member> members = readMembers(children);
         return new Relation(info, members);
-    }
-
-    private static boolean checkReaderElement(XMLEventReader reader, String element) throws XMLStreamException {
-        return reader.peek().isStartElement() &&
-                reader.peek().asStartElement().getName().getLocalPart().equals(element);
     }
 
     private static StartElement readElement(XMLEventReader reader) throws XMLStreamException {

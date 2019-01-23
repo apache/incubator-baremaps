@@ -12,14 +12,14 @@ import java.util.List;
 import static io.gazetteer.osm.OSMTestUtil.*;
 import static org.junit.Assert.*;
 
-public class PrimitiveBlockReaderTest {
+public class DataBlockReaderTest {
 
     @Test
     public void read() throws IOException {
-        PBFFileReader fileBlockReader = PBFFileUtil.reader(PBF_DATA);
+        FileBlockReader fileBlockReader = PBFUtil.reader(PBF_DATA);
         FileBlock headerBlock = fileBlockReader.read();
-        PrimitiveBlockReader primitiveBlockReader = new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(headerBlock.getData()));
-        PrimitiveBlock primitiveBlock = primitiveBlockReader.read();
+        DataBlockReader primitiveBlockReader = new DataBlockReader(Osmformat.PrimitiveBlock.parseFrom(headerBlock.getData()));
+        DataBlock primitiveBlock = primitiveBlockReader.read();
         assertNotNull(primitiveBlock);
         for (int i = 0; i < 9; i++) {
             primitiveBlock = primitiveBlockReader.read();
@@ -29,9 +29,9 @@ public class PrimitiveBlockReaderTest {
 
     @Test
     public void readDenseNodes() throws IOException {
-        PBFFileReader reader = PBFFileUtil.reader(PBF_DENSE_BLOCK);
+        FileBlockReader reader = PBFUtil.reader(PBF_DENSE_BLOCK);
         FileBlock block = reader.read();
-        PrimitiveBlockReader primitiveBlockReader = new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(block.getData()));
+        DataBlockReader primitiveBlockReader = new DataBlockReader(Osmformat.PrimitiveBlock.parseFrom(block.getData()));
         List<Node> nodes = primitiveBlockReader.readDenseNodes();
         assertNotNull(nodes);
         assertFalse(nodes.isEmpty());
@@ -39,9 +39,9 @@ public class PrimitiveBlockReaderTest {
 
     @Test
     public void readWays() throws IOException {
-        PBFFileReader reader = PBFFileUtil.reader(PBF_WAYS_BLOCK);
+        FileBlockReader reader = PBFUtil.reader(PBF_WAYS_BLOCK);
         FileBlock block = reader.read();
-        PrimitiveBlockReader primitiveBlockReader = new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(block.getData()));
+        DataBlockReader primitiveBlockReader = new DataBlockReader(Osmformat.PrimitiveBlock.parseFrom(block.getData()));
         List<Way> ways = primitiveBlockReader.readWays();
         assertNotNull(ways);
         assertFalse(ways.isEmpty());
@@ -49,9 +49,9 @@ public class PrimitiveBlockReaderTest {
 
     @Test
     public void readRelations() throws IOException {
-        PBFFileReader reader = PBFFileUtil.reader(PBF_RELATIONS_BLOCK);
+        FileBlockReader reader = PBFUtil.reader(PBF_RELATIONS_BLOCK);
         FileBlock block = reader.read();
-        PrimitiveBlockReader primitiveBlockReader = new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(block.getData()));
+        DataBlockReader primitiveBlockReader = new DataBlockReader(Osmformat.PrimitiveBlock.parseFrom(block.getData()));
         List<Relation> relations = primitiveBlockReader.readRelations();
         assertNotNull(relations);
         assertFalse(relations.isEmpty());
