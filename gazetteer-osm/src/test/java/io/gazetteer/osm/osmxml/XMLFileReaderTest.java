@@ -29,6 +29,7 @@ public class XMLFileReaderTest {
                 assertEquals(11, node.getInfo().getChangeset());
                 assertEquals(-1, node.getLat(), 0);
                 assertEquals(-2, node.getLon(), 0);
+                assertEquals("Me1", node.getInfo().getTags().get("created_by"));
                 break;
             }
             reader.nextEvent();
@@ -48,6 +49,7 @@ public class XMLFileReaderTest {
                 assertEquals("user10", way.getInfo().getUser().getName());
                 assertEquals(11, way.getInfo().getChangeset());
                 assertEquals(Arrays.asList(1l, 2l, 3l), way.getNodes());
+                assertEquals("Me1", way.getInfo().getTags().get("created_by"));
                 break;
             }
             reader.nextEvent();
@@ -73,10 +75,6 @@ public class XMLFileReaderTest {
             }
             reader.nextEvent();
         }
-    }
-
-    @Test
-    public void readTags() {
     }
 
 }

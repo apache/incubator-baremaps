@@ -16,24 +16,45 @@ import static io.gazetteer.osm.domain.User.NO_USER;
 
 public class XMLFileReader {
 
-    private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static final String NODE = "node";
+    private static final String WAY = "way";
+    private static final String RELATION = "relation";
+    private static final String LAT = "lat";
+    private static final String LON = "lon";
+    private static final String ID = "id";
+    private static final String VERSION = "version";
+    private static final String TIMESTAMP = "timestamp";
+    private static final String CHANGESET = "changeset";
+    private static final String UID = "uid";
+    private static final String USER = "user";
+    private static final String TAG = "tag";
+    private static final String KEY = "k";
+    private static final String VAL = "v";
+    private static final String ND = "nd";
+    private static final String REF = "ref";
+    private static final String MEMBER = "member";
+    private static final String TYPE = "type";
+    private static final String ROLE = "role";
+
+    private static final SimpleDateFormat format ;
 
     static {
+        format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
     public static Node readNode(XMLEventReader reader) throws XMLStreamException, ParseException {
-        checkState(checkReaderElement(reader,"node"));
+        checkState(checkReaderElement(reader, NODE));
         StartElement element = readElement(reader);
         List<StartElement> children = readChildren(element, reader);
         Info info = readInfo(element, children);
-        double lat = Double.parseDouble(element.getAttributeByName(QName.valueOf("lat")).getValue());
-        double lon = Double.parseDouble(element.getAttributeByName(QName.valueOf("lon")).getValue());
+        double lat = Double.parseDouble(element.getAttributeByName(QName.valueOf(LAT)).getValue());
+        double lon = Double.parseDouble(element.getAttributeByName(QName.valueOf(LON)).getValue());
         return new Node(info, lon, lat);
     }
 
     public static Way readWay(XMLEventReader reader) throws XMLStreamException, ParseException {
-        checkState(checkReaderElement(reader,"way"));
+        checkState(checkReaderElement(reader, WAY));
         StartElement element = readElement(reader);
         List<StartElement> children = readChildren(element, reader);
         Info info = readInfo(element, children);
@@ -42,7 +63,7 @@ public class XMLFileReader {
     }
 
     public static Relation readRelation(XMLEventReader reader) throws XMLStreamException, ParseException {
-        checkState(checkReaderElement(reader,"relation"));
+        checkState(checkReaderElement(reader, RELATION));
         StartElement element = readElement(reader);
         List<StartElement> children = readChildren(element, reader);
         Info info = readInfo(element, children);
@@ -73,19 +94,19 @@ public class XMLFileReader {
     }
 
     private static Info readInfo(StartElement element, List<StartElement> children) throws ParseException {
-        long id = Long.parseLong(element.getAttributeByName(QName.valueOf("id")).getValue());
-        int version = Integer.parseInt(element.getAttributeByName(QName.valueOf("version")).getValue());
-        long timestamp = format.parse(element.getAttributeByName(QName.valueOf("timestamp")).getValue()).getTime();
-        long changeset = Long.parseLong(element.getAttributeByName(QName.valueOf("changeset")).getValue());
+        long id = Long.parseLong(element.getAttributeByName(QName.valueOf(ID)).getValue());
+        int version = Integer.parseInt(element.getAttributeByName(QName.valueOf(VERSION)).getValue());
+        long timestamp = format.parse(element.getAttributeByName(QName.valueOf(TIMESTAMP)).getValue()).getTime();
+        long changeset = Long.parseLong(element.getAttributeByName(QName.valueOf(CHANGESET)).getValue());
         User user = readUser(element);
         Map<String, String> tags = readTags(children);
         return new Info(id, version, timestamp, changeset, user, tags);
     }
 
     private static User readUser(StartElement element) {
-        if (element.getAttributeByName(QName.valueOf("uid")) != null && element.getAttributeByName(QName.valueOf("user")) != null) {
-            int uid = Integer.parseInt(element.getAttributeByName(QName.valueOf("uid")).getValue());
-            String name = element.getAttributeByName(QName.valueOf("user")).getValue();
+        if (element.getAttributeByName(QName.valueOf(UID)) != null && element.getAttributeByName(QName.valueOf(USER)) != null) {
+            int uid = Integer.parseInt(element.getAttributeByName(QName.valueOf(UID)).getValue());
+            String name = element.getAttributeByName(QName.valueOf(USER)).getValue();
             return new User(uid, name);
         } else {
             return NO_USER;
@@ -95,9 +116,9 @@ public class XMLFileReader {
     private static Map<String, String> readTags(List<StartElement> elements) {
         Map<String, String> tags = new HashMap<>();
         for (StartElement element : elements) {
-            if (element.getName().getLocalPart().equals("tag")) {
-                String key = element.getAttributeByName(QName.valueOf("k")).getValue();
-                String val = element.getAttributeByName(QName.valueOf("v")).getValue();
+            if (element.getName().getLocalPart().equals(TAG)) {
+                String key = element.getAttributeByName(QName.valueOf(KEY)).getValue();
+                String val = element.getAttributeByName(QName.valueOf(VAL)).getValue();
                 tags.put(key, val);
             }
         }
@@ -107,8 +128,8 @@ public class XMLFileReader {
     private static List<Long> readNodes(List<StartElement> elements) {
         List<Long> nodes = new ArrayList<>();
         for (StartElement element : elements) {
-            if (element.getName().getLocalPart().equals("nd")) {
-                long ref = Long.parseLong(element.getAttributeByName(QName.valueOf("ref")).getValue());
+            if (element.getName().getLocalPart().equals(ND)) {
+                long ref = Long.parseLong(element.getAttributeByName(QName.valueOf(REF)).getValue());
                 nodes.add(ref);
             }
         }
@@ -118,15 +139,14 @@ public class XMLFileReader {
     private static List<Member> readMembers(List<StartElement> elements) {
         List<Member> nodes = new ArrayList<>();
         for (StartElement element : elements) {
-            if (element.getName().getLocalPart().equals("member")) {
-                long ref = Long.parseLong(element.getAttributeByName(QName.valueOf("ref")).getValue());
-                String type = element.getAttributeByName(QName.valueOf("type")).getValue();
-                String role = element.getAttributeByName(QName.valueOf("role")).getValue();
+            if (element.getName().getLocalPart().equals(MEMBER)) {
+                long ref = Long.parseLong(element.getAttributeByName(QName.valueOf(REF)).getValue());
+                String type = element.getAttributeByName(QName.valueOf(TYPE)).getValue();
+                String role = element.getAttributeByName(QName.valueOf(ROLE)).getValue();
                 nodes.add(new Member(ref, Member.Type.valueOf(type), role));
             }
         }
         return nodes;
     }
-
 
 }
