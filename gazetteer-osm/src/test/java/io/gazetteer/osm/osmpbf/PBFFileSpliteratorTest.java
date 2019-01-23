@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static io.gazetteer.osm.osmpbf.FileBlockConstants.BLOCKS;
+import static io.gazetteer.osm.OSMTestUtil.PBF_DATA;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class FileBlockSpliteratorTest {
+public class PBFFileSpliteratorTest {
 
     public static class Accumulator implements Consumer<FileBlock> {
 
@@ -25,7 +25,7 @@ public class FileBlockSpliteratorTest {
 
     @Test
     public void tryAdvance() throws FileNotFoundException {
-        PBFFileSpliterator spliterator = PBFFileUtil.spliterator(BLOCKS);
+        PBFFileSpliterator spliterator = PBFFileUtil.spliterator(PBF_DATA);
         for (int i = 0; i < 10; i++) {
             assertTrue(spliterator.tryAdvance(block -> {}));
         }
@@ -34,7 +34,7 @@ public class FileBlockSpliteratorTest {
 
     @Test
     public void forEachRemaining() throws FileNotFoundException {
-        PBFFileSpliterator spliterator = PBFFileUtil.spliterator(BLOCKS);
+        PBFFileSpliterator spliterator = PBFFileUtil.spliterator(PBF_DATA);
         Accumulator accumulator = new Accumulator();
         spliterator.forEachRemaining(accumulator);
         assertTrue(accumulator.fileBlocks.size() == 10);

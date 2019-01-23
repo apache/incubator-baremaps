@@ -6,7 +6,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Member {
 
-    public enum Type {Node, Way, Relation}
+    public enum Type {node, way, relation}
 
     private final long id;
 

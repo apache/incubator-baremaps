@@ -7,23 +7,23 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-import static io.gazetteer.osm.osmpbf.FileBlockConstants.INVALID_BLOCK;
-import static io.gazetteer.osm.osmpbf.FileBlockConstants.BLOCKS;
+import static io.gazetteer.osm.OSMTestUtil.PBF_INVALID_BLOCK;
+import static io.gazetteer.osm.OSMTestUtil.PBF_DATA;
 import static org.junit.Assert.assertTrue;
 
-public class FileBlockUtilTest {
+public class PBFFileUtilTest {
 
     @Test
     public void stream() throws FileNotFoundException {
         assertTrue(PBFFileUtil
-                .stream(BLOCKS)
+                .stream(PBF_DATA)
                 .count() == 10);
     }
 
     @Test
     public void isHeaderBlock() throws IOException {
         assertTrue(PBFFileUtil
-                .stream(BLOCKS)
+                .stream(PBF_DATA)
                 .filter(PBFFileUtil::isHeaderBlock)
                 .count() == 1);
     }
@@ -31,7 +31,7 @@ public class FileBlockUtilTest {
     @Test
     public void isDataBlock() throws IOException {
         assertTrue(PBFFileUtil
-                .stream(BLOCKS)
+                .stream(PBF_DATA)
                 .filter(PBFFileUtil::isDataBlock)
                 .count() == 9);
     }
@@ -39,7 +39,7 @@ public class FileBlockUtilTest {
     @Test
     public void toHeaderBlock() throws FileNotFoundException {
         assertTrue(PBFFileUtil
-                .stream(BLOCKS)
+                .stream(PBF_DATA)
                 .filter(PBFFileUtil::isHeaderBlock)
                 .map(PBFFileUtil::toHeaderBlock)
                 .count() == 1);
@@ -48,7 +48,7 @@ public class FileBlockUtilTest {
     @Test
     public void toDataBlock() throws FileNotFoundException {
         assertTrue(PBFFileUtil
-                .stream(BLOCKS)
+                .stream(PBF_DATA)
                 .filter(PBFFileUtil::isDataBlock)
                 .map(PBFFileUtil::toDataBlock)
                 .collect(Collectors.toList()).size() == 9);
@@ -56,7 +56,7 @@ public class FileBlockUtilTest {
 
     @Test(expected = WrappedException.class)
     public void toDataBlockException() {
-        PBFFileUtil.toDataBlock(INVALID_BLOCK);
+        PBFFileUtil.toDataBlock(PBF_INVALID_BLOCK);
     }
 
 }

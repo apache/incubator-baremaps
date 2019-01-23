@@ -9,14 +9,14 @@ import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import java.io.IOException;
 import java.util.List;
 
-import static io.gazetteer.osm.osmpbf.FileBlockConstants.*;
+import static io.gazetteer.osm.OSMTestUtil.*;
 import static org.junit.Assert.*;
 
 public class PrimitiveBlockReaderTest {
 
     @Test
     public void read() throws IOException {
-        PBFFileReader fileBlockReader = PBFFileUtil.reader(BLOCKS);
+        PBFFileReader fileBlockReader = PBFFileUtil.reader(PBF_DATA);
         FileBlock headerBlock = fileBlockReader.read();
         PrimitiveBlockReader primitiveBlockReader = new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(headerBlock.getData()));
         PrimitiveBlock primitiveBlock = primitiveBlockReader.read();
@@ -29,7 +29,7 @@ public class PrimitiveBlockReaderTest {
 
     @Test
     public void readDenseNodes() throws IOException {
-        PBFFileReader reader = PBFFileUtil.reader(DENSE_BLOCK);
+        PBFFileReader reader = PBFFileUtil.reader(PBF_DENSE_BLOCK);
         FileBlock block = reader.read();
         PrimitiveBlockReader primitiveBlockReader = new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(block.getData()));
         List<Node> nodes = primitiveBlockReader.readDenseNodes();
@@ -39,7 +39,7 @@ public class PrimitiveBlockReaderTest {
 
     @Test
     public void readWays() throws IOException {
-        PBFFileReader reader = PBFFileUtil.reader(WAYS_BLOCK);
+        PBFFileReader reader = PBFFileUtil.reader(PBF_WAYS_BLOCK);
         FileBlock block = reader.read();
         PrimitiveBlockReader primitiveBlockReader = new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(block.getData()));
         List<Way> ways = primitiveBlockReader.readWays();
@@ -49,7 +49,7 @@ public class PrimitiveBlockReaderTest {
 
     @Test
     public void readRelations() throws IOException {
-        PBFFileReader reader = PBFFileUtil.reader(RELATIONS_BLOCK);
+        PBFFileReader reader = PBFFileUtil.reader(PBF_RELATIONS_BLOCK);
         FileBlock block = reader.read();
         PrimitiveBlockReader primitiveBlockReader = new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(block.getData()));
         List<Relation> relations = primitiveBlockReader.readRelations();

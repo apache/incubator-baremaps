@@ -150,11 +150,11 @@ public class PrimitiveBlockReader {
                 String role = getString(e.getRolesSid(j));
                 Type etype = null;
                 if (e.getTypes(j) == Osmformat.Relation.MemberType.NODE) {
-                    etype = Type.Node;
+                    etype = Type.node;
                 } else if (e.getTypes(j) == Osmformat.Relation.MemberType.WAY) {
-                    etype = Type.Way;
+                    etype = Type.way;
                 } else if (e.getTypes(j) == Osmformat.Relation.MemberType.RELATION) {
-                    etype = Type.Relation;
+                    etype = Type.relation;
                 } else {
                     assert false; // TODO: throw an exception (invalid argument?)
                 }
