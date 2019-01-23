@@ -7,13 +7,13 @@ import java.util.function.Consumer;
 
 import static java.util.Spliterators.spliterator;
 
-public class IteratorSpliteror<T> implements Spliterator<T> {
+public final class BatchSpliterator<T> implements Spliterator<T> {
 
     private final Iterator<T> iterator;
 
     private final int batchSize;
 
-    public IteratorSpliteror(Iterator<T> iterator, int batchSize) {
+    public BatchSpliterator(Iterator<T> iterator, int batchSize) {
         this.iterator = iterator;
         this.batchSize = batchSize;
     }

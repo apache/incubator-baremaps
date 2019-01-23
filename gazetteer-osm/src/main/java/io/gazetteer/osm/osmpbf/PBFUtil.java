@@ -1,6 +1,7 @@
 package io.gazetteer.osm.osmpbf;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import io.gazetteer.osm.util.BatchSpliterator;
 import io.gazetteer.osm.util.WrappedException;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
@@ -8,6 +9,8 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Iterator;
+import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -16,13 +19,13 @@ public class PBFUtil {
     public static final String HEADER = "OSMHeader";
     public static final String DATA = "OSMData";
 
-    public static FileBlockReader reader(File file) throws FileNotFoundException {
+    public static Iterator<FileBlock> reader(File file) throws FileNotFoundException {
         DataInputStream input = new DataInputStream(new FileInputStream(file));
-        return new FileBlockReader(input);
+        return new FileBlockIterator(input);
     }
 
-    public static FileBlockSpliterator spliterator(File file) throws FileNotFoundException {
-        return new FileBlockSpliterator(reader(file));
+    public static Spliterator<FileBlock> spliterator(File file) throws FileNotFoundException {
+        return new BatchSpliterator<FileBlock>(reader(file), 10);
     }
 
     public static Stream<FileBlock> fileBlocks(File file) throws FileNotFoundException {
