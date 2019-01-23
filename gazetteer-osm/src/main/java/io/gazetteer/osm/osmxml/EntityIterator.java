@@ -15,7 +15,7 @@ import java.util.*;
 
 import static io.gazetteer.osm.domain.User.NO_USER;
 
-public class EntityReader {
+public class EntityReader implements Iterator<Entity> {
 
     protected static final String NODE = "node";
     protected static final String WAY = "way";
@@ -168,4 +168,41 @@ public class EntityReader {
         return nodes;
     }
 
+    @Override
+    public boolean hasNext() {
+        try {
+            while (reader.hasNext()) {
+                XMLEvent event = reader.peek();
+                if ( isElement(event, NODE) || isElement(event, WAY) || isElement(event, RELATION)) {
+                    return true;
+                } else  {
+                    reader.nextEvent();
+                }
+            }
+            return false;
+        } catch (XMLStreamException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public Entity next() {
+        try {
+            while (reader.hasNext()) {
+                XMLEvent event = reader.nextEvent();
+                if (isElement(event, NODE)) {
+                    return readNode(event.asStartElement(), reader);
+                } else if (isElement(event, WAY)) {
+                    return readWay(event.asStartElement(), reader);
+                } else if (isElement(event, RELATION)) {
+                    return readRelation(event.asStartElement(), reader);
+                }
+            }
+            throw new NoSuchElementException();
+        } catch (XMLStreamException e) {
+            throw new NoSuchElementException(e.getMessage());
+        } catch (ParseException e) {
+            throw new NoSuchElementException(e.getMessage());
+        }
+    }
 }
