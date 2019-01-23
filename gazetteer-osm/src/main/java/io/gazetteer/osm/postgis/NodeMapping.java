@@ -25,7 +25,7 @@ public class NodeMapping extends GeometryMapping<Node> {
     private final Function<Node, Geometry> getGeometry = node -> new Point(node.getLon(), node.getLat());
 
     public NodeMapping() {
-        super("public", "nodes");
+        super("public", "osm_nodes");
         mapLong("id", (ToLongFunction<Node>) NodeMapping::getId);
         mapInteger("version", getVersion);
         mapInteger("uid", getUserId);

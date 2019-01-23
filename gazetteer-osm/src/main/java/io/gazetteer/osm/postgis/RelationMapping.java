@@ -22,7 +22,7 @@ public class RelationMapping extends GeometryMapping<Relation> {
     private final Function<Relation, Map<String, String>> getTags = relation -> relation.getInfo().getTags();
 
     public RelationMapping() {
-        super("public", "relations");
+        super("public", "osm_relations");
         mapLong("id", getId);
         mapInteger("version", getVersion);
         mapInteger("uid", getUserId);

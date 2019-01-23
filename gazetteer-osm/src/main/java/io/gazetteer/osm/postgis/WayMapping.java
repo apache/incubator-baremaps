@@ -34,7 +34,7 @@ public class WayMapping extends GeometryMapping<Way> {
     private final Function<Way, Collection<Long>> getNodes = way -> way.getNodes();
 
     public WayMapping(EntityStore<Node> cache) {
-        super("public", "ways");
+        super("public", "osm_ways");
         mapLong("id", getId);
         mapInteger("version", getVersion);
         mapInteger("uid", getUserId);
