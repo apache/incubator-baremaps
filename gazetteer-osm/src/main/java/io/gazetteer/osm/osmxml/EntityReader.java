@@ -13,39 +13,38 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.google.common.base.Preconditions.checkState;
 import static io.gazetteer.osm.domain.User.NO_USER;
 
 public class EntityReader {
 
-    private static final String NODE = "node";
-    private static final String WAY = "way";
-    private static final String RELATION = "relation";
-    private static final String LAT = "lat";
-    private static final String LON = "lon";
-    private static final String ID = "id";
-    private static final String VERSION = "version";
-    private static final String TIMESTAMP = "timestamp";
-    private static final String CHANGESET = "changeset";
-    private static final String UID = "uid";
-    private static final String USER = "user";
-    private static final String TAG = "tag";
-    private static final String KEY = "k";
-    private static final String VAL = "v";
-    private static final String ND = "nd";
-    private static final String REF = "ref";
-    private static final String MEMBER = "member";
-    private static final String TYPE = "type";
-    private static final String ROLE = "role";
+    protected static final String NODE = "node";
+    protected static final String WAY = "way";
+    protected static final String RELATION = "relation";
+    protected static final String LAT = "lat";
+    protected static final String LON = "lon";
+    protected static final String ID = "id";
+    protected static final String VERSION = "version";
+    protected static final String TIMESTAMP = "timestamp";
+    protected static final String CHANGESET = "changeset";
+    protected static final String UID = "uid";
+    protected static final String USER = "user";
+    protected static final String TAG = "tag";
+    protected static final String KEY = "k";
+    protected static final String VAL = "v";
+    protected static final String ND = "nd";
+    protected static final String REF = "ref";
+    protected static final String MEMBER = "member";
+    protected static final String TYPE = "type";
+    protected static final String ROLE = "role";
 
-    private static final SimpleDateFormat format ;
+    protected static final SimpleDateFormat format;
 
     static {
         format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
-    private final XMLEventReader reader;
+    protected final XMLEventReader reader;
 
     public EntityReader(XMLEventReader reader) {
         this.reader = reader;
@@ -53,29 +52,24 @@ public class EntityReader {
 
     public Entity read() throws IOException, XMLStreamException, ParseException {
         while (reader.hasNext()) {
-            XMLEvent event = reader.peek();
+            XMLEvent event = reader.nextEvent();
             if (isElement(event, NODE)) {
-                return readNode(reader);
+                return readNode(event.asStartElement(), reader);
+            } else if (isElement(event, WAY)) {
+                return readWay(event.asStartElement(), reader);
+            } else if (isElement(event, RELATION)) {
+                return readRelation(event.asStartElement(), reader);
             }
-            if (isElement(event, WAY)) {
-                return readWay(reader);
-            }
-            if (isElement(event, RELATION)) {
-                return readRelation(reader);
-            }
-            reader.nextEvent();
         }
-
         throw new EOFException();
     }
 
-    public static boolean isElement(XMLEvent event, String element) throws XMLStreamException {
+    protected static boolean isElement(XMLEvent event, String element) throws XMLStreamException {
         return event.isStartElement() &&
                 event.asStartElement().getName().getLocalPart().equals(element);
     }
 
-    public static Node readNode(XMLEventReader reader) throws XMLStreamException, ParseException {
-        StartElement element = readElement(reader);
+    protected static Node readNode(StartElement element, XMLEventReader reader) throws XMLStreamException, ParseException {
         List<StartElement> children = readChildren(element, reader);
         Info info = readInfo(element, children);
         double lat = Double.parseDouble(element.getAttributeByName(QName.valueOf(LAT)).getValue());
@@ -83,28 +77,21 @@ public class EntityReader {
         return new Node(info, lon, lat);
     }
 
-    public static Way readWay(XMLEventReader reader) throws XMLStreamException, ParseException {
-        StartElement element = readElement(reader);
+    protected static Way readWay(StartElement element, XMLEventReader reader) throws XMLStreamException, ParseException {
         List<StartElement> children = readChildren(element, reader);
         Info info = readInfo(element, children);
         List<Long> nodes = readNodes(children);
         return new Way(info, nodes);
     }
 
-    public static Relation readRelation(XMLEventReader reader) throws XMLStreamException, ParseException {
-        StartElement element = readElement(reader);
+    protected static Relation readRelation(StartElement element, XMLEventReader reader) throws XMLStreamException, ParseException {
         List<StartElement> children = readChildren(element, reader);
         Info info = readInfo(element, children);
         List<Member> members = readMembers(children);
         return new Relation(info, members);
     }
 
-    private static StartElement readElement(XMLEventReader reader) throws XMLStreamException {
-        XMLEvent event = reader.nextEvent();
-        return event.asStartElement();
-    }
-
-    private static List<StartElement> readChildren(StartElement element, XMLEventReader reader) throws XMLStreamException {
+    protected static List<StartElement> readChildren(StartElement element, XMLEventReader reader) throws XMLStreamException {
         List<StartElement> children = new ArrayList<>();
         while (!(reader.peek().isEndElement()
                 && reader.peek().asEndElement().getName().getLocalPart().equals(element.getName().getLocalPart()))) {
@@ -116,17 +103,26 @@ public class EntityReader {
         return children;
     }
 
-    private static Info readInfo(StartElement element, List<StartElement> children) throws ParseException {
+    protected static Info readInfo(StartElement element, List<StartElement> children) throws ParseException {
         long id = Long.parseLong(element.getAttributeByName(QName.valueOf(ID)).getValue());
         int version = Integer.parseInt(element.getAttributeByName(QName.valueOf(VERSION)).getValue());
         long timestamp = format.parse(element.getAttributeByName(QName.valueOf(TIMESTAMP)).getValue()).getTime();
-        long changeset = Long.parseLong(element.getAttributeByName(QName.valueOf(CHANGESET)).getValue());
+        long changeset = readChangeset(element);
         User user = readUser(element);
         Map<String, String> tags = readTags(children);
         return new Info(id, version, timestamp, changeset, user, tags);
     }
 
-    private static User readUser(StartElement element) {
+    protected static long readChangeset(StartElement element) {
+        // todo: changesets are not present on geofabrik but described as mandatory in the doc
+        if (element.getAttributeByName(QName.valueOf(CHANGESET)) != null && element.getAttributeByName(QName.valueOf(CHANGESET)) != null) {
+            return Long.parseLong(element.getAttributeByName(QName.valueOf(CHANGESET)).getValue());
+        } else {
+            return -1;
+        }
+    }
+
+    protected static User readUser(StartElement element) {
         if (element.getAttributeByName(QName.valueOf(UID)) != null && element.getAttributeByName(QName.valueOf(USER)) != null) {
             int uid = Integer.parseInt(element.getAttributeByName(QName.valueOf(UID)).getValue());
             String name = element.getAttributeByName(QName.valueOf(USER)).getValue();
@@ -136,7 +132,7 @@ public class EntityReader {
         }
     }
 
-    private static Map<String, String> readTags(List<StartElement> elements) {
+    protected static Map<String, String> readTags(List<StartElement> elements) {
         Map<String, String> tags = new HashMap<>();
         for (StartElement element : elements) {
             if (element.getName().getLocalPart().equals(TAG)) {
@@ -148,7 +144,7 @@ public class EntityReader {
         return tags;
     }
 
-    private static List<Long> readNodes(List<StartElement> elements) {
+    protected static List<Long> readNodes(List<StartElement> elements) {
         List<Long> nodes = new ArrayList<>();
         for (StartElement element : elements) {
             if (element.getName().getLocalPart().equals(ND)) {
@@ -159,7 +155,7 @@ public class EntityReader {
         return nodes;
     }
 
-    private static List<Member> readMembers(List<StartElement> elements) {
+    protected static List<Member> readMembers(List<StartElement> elements) {
         List<Member> nodes = new ArrayList<>();
         for (StartElement element : elements) {
             if (element.getName().getLocalPart().equals(MEMBER)) {

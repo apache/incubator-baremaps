@@ -5,7 +5,7 @@ import org.junit.Test;
 import java.io.EOFException;
 import java.io.IOException;
 
-import static io.gazetteer.osm.OSMTestUtil.PBF_DATA;
+import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_DATA;
 import static org.junit.Assert.assertNotNull;
 
 public class FileBlockReaderTest {
@@ -57,7 +57,7 @@ public class FileBlockReaderTest {
 
     @Test
     public void testRead() throws IOException {
-        FileBlockReader reader = PBFUtil.reader(PBF_DATA);
+        FileBlockReader reader = PBFUtil.reader(OSM_PBF_DATA);
         for (int i = 0; i < 10; i ++) {
             FileBlock block = reader.read();
             assertNotNull(block);
@@ -66,7 +66,7 @@ public class FileBlockReaderTest {
 
     @Test(expected = EOFException.class)
     public void testEOF() throws IOException {
-        FileBlockReader reader = PBFUtil.reader(PBF_DATA);
+        FileBlockReader reader = PBFUtil.reader(OSM_PBF_DATA);
         for (int i = 0; i < 11; i ++) {
             reader.read();
         }

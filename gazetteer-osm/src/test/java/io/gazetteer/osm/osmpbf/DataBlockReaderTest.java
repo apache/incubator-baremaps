@@ -16,7 +16,7 @@ public class DataBlockReaderTest {
 
     @Test
     public void read() throws IOException {
-        FileBlockReader fileBlockReader = PBFUtil.reader(PBF_DATA);
+        FileBlockReader fileBlockReader = PBFUtil.reader(OSM_PBF_DATA);
         FileBlock headerBlock = fileBlockReader.read();
         DataBlockReader primitiveBlockReader = new DataBlockReader(Osmformat.PrimitiveBlock.parseFrom(headerBlock.getData()));
         DataBlock primitiveBlock = primitiveBlockReader.read();
@@ -29,7 +29,7 @@ public class DataBlockReaderTest {
 
     @Test
     public void readDenseNodes() throws IOException {
-        FileBlockReader reader = PBFUtil.reader(PBF_DENSE_BLOCK);
+        FileBlockReader reader = PBFUtil.reader(OSM_PBF_DENSE_BLOCK);
         FileBlock block = reader.read();
         DataBlockReader primitiveBlockReader = new DataBlockReader(Osmformat.PrimitiveBlock.parseFrom(block.getData()));
         List<Node> nodes = primitiveBlockReader.readDenseNodes();
@@ -39,7 +39,7 @@ public class DataBlockReaderTest {
 
     @Test
     public void readWays() throws IOException {
-        FileBlockReader reader = PBFUtil.reader(PBF_WAYS_BLOCK);
+        FileBlockReader reader = PBFUtil.reader(OSM_PBF_WAYS_BLOCK);
         FileBlock block = reader.read();
         DataBlockReader primitiveBlockReader = new DataBlockReader(Osmformat.PrimitiveBlock.parseFrom(block.getData()));
         List<Way> ways = primitiveBlockReader.readWays();
@@ -49,7 +49,7 @@ public class DataBlockReaderTest {
 
     @Test
     public void readRelations() throws IOException {
-        FileBlockReader reader = PBFUtil.reader(PBF_RELATIONS_BLOCK);
+        FileBlockReader reader = PBFUtil.reader(OSM_PBF_RELATIONS_BLOCK);
         FileBlock block = reader.read();
         DataBlockReader primitiveBlockReader = new DataBlockReader(Osmformat.PrimitiveBlock.parseFrom(block.getData()));
         List<Relation> relations = primitiveBlockReader.readRelations();

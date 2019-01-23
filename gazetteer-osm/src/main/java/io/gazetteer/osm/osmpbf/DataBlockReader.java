@@ -1,7 +1,6 @@
 package io.gazetteer.osm.osmpbf;
 
 import io.gazetteer.osm.domain.*;
-import io.gazetteer.osm.domain.Member.Type;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
 import java.util.ArrayList;
@@ -11,9 +10,6 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-/**
- * A adaptation of the OsmosisBinaryParser
- */
 public class DataBlockReader {
 
     private final Osmformat.PrimitiveBlock block;
@@ -148,17 +144,17 @@ public class DataBlockReader {
             for (int j = 0; j < e.getMemidsCount(); j++) {
                 mid = mid + e.getMemids(j);
                 String role = getString(e.getRolesSid(j));
-                Type etype = null;
+                Member.Type type = null;
                 if (e.getTypes(j) == Osmformat.Relation.MemberType.NODE) {
-                    etype = Type.node;
+                    type = Member.Type.node;
                 } else if (e.getTypes(j) == Osmformat.Relation.MemberType.WAY) {
-                    etype = Type.way;
+                    type = Member.Type.way;
                 } else if (e.getTypes(j) == Osmformat.Relation.MemberType.RELATION) {
-                    etype = Type.relation;
+                    type = Member.Type.relation;
                 } else {
-                    assert false; // TODO: throw an exception (invalid argument?)
+                    throw new IllegalArgumentException("Unsupported MemberType");
                 }
-                members.add(new Member(mid, etype, role));
+                members.add(new Member(mid, type, role));
             }
             output.add(new Relation(info, members));
         }

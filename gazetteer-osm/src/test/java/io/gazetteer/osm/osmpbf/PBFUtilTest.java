@@ -7,8 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-import static io.gazetteer.osm.OSMTestUtil.PBF_INVALID_BLOCK;
-import static io.gazetteer.osm.OSMTestUtil.PBF_DATA;
+import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_INVALID_BLOCK;
+import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_DATA;
 import static org.junit.Assert.assertTrue;
 
 public class PBFUtilTest {
@@ -16,14 +16,14 @@ public class PBFUtilTest {
     @Test
     public void stream() throws FileNotFoundException {
         assertTrue(PBFUtil
-                .fileBlocks(PBF_DATA)
+                .fileBlocks(OSM_PBF_DATA)
                 .count() == 10);
     }
 
     @Test
     public void isHeaderBlock() throws IOException {
         assertTrue(PBFUtil
-                .fileBlocks(PBF_DATA)
+                .fileBlocks(OSM_PBF_DATA)
                 .filter(PBFUtil::isHeaderBlock)
                 .count() == 1);
     }
@@ -31,7 +31,7 @@ public class PBFUtilTest {
     @Test
     public void isDataBlock() throws IOException {
         assertTrue(PBFUtil
-                .fileBlocks(PBF_DATA)
+                .fileBlocks(OSM_PBF_DATA)
                 .filter(PBFUtil::isDataBlock)
                 .count() == 9);
     }
@@ -39,7 +39,7 @@ public class PBFUtilTest {
     @Test
     public void toHeaderBlock() throws FileNotFoundException {
         assertTrue(PBFUtil
-                .fileBlocks(PBF_DATA)
+                .fileBlocks(OSM_PBF_DATA)
                 .filter(PBFUtil::isHeaderBlock)
                 .map(PBFUtil::toHeaderBlock)
                 .count() == 1);
@@ -48,7 +48,7 @@ public class PBFUtilTest {
     @Test
     public void toDataBlock() throws FileNotFoundException {
         assertTrue(PBFUtil
-                .fileBlocks(PBF_DATA)
+                .fileBlocks(OSM_PBF_DATA)
                 .filter(PBFUtil::isDataBlock)
                 .map(PBFUtil::toDataBlock)
                 .collect(Collectors.toList()).size() == 9);
@@ -56,7 +56,7 @@ public class PBFUtilTest {
 
     @Test(expected = WrappedException.class)
     public void toDataBlockException() {
-        PBFUtil.toDataBlock(PBF_INVALID_BLOCK);
+        PBFUtil.toDataBlock(OSM_PBF_INVALID_BLOCK);
     }
 
 }

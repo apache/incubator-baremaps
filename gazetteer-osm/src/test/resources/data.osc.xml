@@ -122,8 +122,8 @@
             <tag k="name" v="Alte Landstrasse"/>
             <tag k="tracktype" v="grade1"/>
         </way>
-    </create>
-    <modify>
+    </modify>
+    <create>
         <relation id="26970" version="69" timestamp="2019-01-22T17:37:47Z">
             <member type="node" ref="983971609" role="stop"/>
             <member type="node" ref="983971738" role="stop"/>

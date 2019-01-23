@@ -15,12 +15,19 @@ public class XMLUtil {
         return factory.createXMLEventReader(new FileInputStream(file));
     }
 
-    public static EntityReader reader(File file) throws Exception {
+    public static EntityReader entityReader(File file) throws Exception {
         return new EntityReader(xmlEventReader(file));
     }
 
-    public static EntitySpliterator spliterator(File file) throws Exception {
-        return new EntitySpliterator(reader(file));
+    public static ChangeReader changeReader(File file) throws Exception {
+        return new ChangeReader(xmlEventReader(file));
     }
 
+    public static EntitySpliterator entitySpliterator(File file) throws Exception {
+        return new EntitySpliterator(entityReader(file));
+    }
+
+    public static ChangeSpliterator changeSpliterator(File file) throws Exception {
+        return new ChangeSpliterator(changeReader(file));
+    }
 }
