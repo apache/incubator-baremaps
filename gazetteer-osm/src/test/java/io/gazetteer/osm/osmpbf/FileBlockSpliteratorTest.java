@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 
 public class FileBlockSpliteratorTest {
 
-
     @Test
     public void tryAdvance() throws FileNotFoundException {
         FileBlockSpliterator spliterator = PBFUtil.spliterator(PBF_DATA);

@@ -1,0 +1,241 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osmChange version="0.6" generator="osmium/1.8.0">
+    <delete>
+        <node id="26777671" version="3" timestamp="2012-04-05T16:57:09Z" lat="47.4589491" lon="8.5371652"/>
+    </delete>
+    <modify>
+        <node id="29775317" version="6" timestamp="2019-01-22T14:23:22Z" lat="47.4507512" lon="8.5606291"/>
+        <node id="29775318" version="5" timestamp="2019-01-22T14:23:22Z" lat="47.4498537" lon="8.5604925"/>
+        <node id="29775319" version="4" timestamp="2019-01-22T14:23:22Z" lat="47.4497821" lon="8.5614987"/>
+        <node id="29956423" version="5" timestamp="2019-01-22T16:23:21Z" lat="46.9375934" lon="7.4621914"/>
+        <node id="29956427" version="7" timestamp="2019-01-22T16:23:21Z" lat="46.9381704" lon="7.4628602"/>
+        <node id="30967522" version="3" timestamp="2019-01-21T22:14:22Z" lat="46.8281941" lon="7.1611855"/>
+        <node id="31084093" version="5" timestamp="2019-01-22T18:02:33Z" lat="47.5667693" lon="8.1248834"/>
+        <node id="31383300" version="9" timestamp="2019-01-22T16:23:21Z" lat="46.9376039" lon="7.4621537"/>
+        <node id="36161494" version="8" timestamp="2019-01-22T20:53:03Z" lat="47.0453644" lon="7.2778713"/>
+        <node id="75398260" version="12" timestamp="2019-01-22T10:30:42Z" lat="47.3288972" lon="8.8035606">
+            <tag k="bus" v="yes"/>
+            <tag k="highway" v="bus_stop"/>
+            <tag k="name" v="Wetzikon, Binzackerstrasse"/>
+            <tag k="public_transport" v="stop_position"/>
+        </node>
+        <node id="94572201" version="7" timestamp="2019-01-22T13:49:29Z" lat="47.4615358" lon="8.5517833"/>
+        <node id="94572202" version="6" timestamp="2019-01-22T13:49:29Z" lat="47.4610796" lon="8.5581789"/>
+        <node id="94572203" version="6" timestamp="2019-01-22T13:49:29Z" lat="47.4607835" lon="8.5581358"/>
+        <node id="94572204" version="6" timestamp="2019-01-22T13:49:29Z" lat="47.4612386" lon="8.5517357"/>
+        <node id="97532843" version="3" timestamp="2019-01-22T13:49:29Z" lat="47.4692619" lon="8.5571797"/>
+        <node id="97532858" version="4" timestamp="2019-01-22T13:49:29Z" lat="47.4630989" lon="8.5652757"/>
+        <node id="98043659" version="7" timestamp="2019-01-22T09:50:46Z" lat="47.4607239" lon="8.5346556"/>
+        <node id="98043660" version="7" timestamp="2019-01-22T09:50:46Z" lat="47.4607499" lon="8.5343517"/>
+        <node id="98043661" version="7" timestamp="2019-01-22T09:50:46Z" lat="47.460699" lon="8.5342116"/>
+        <node id="98043662" version="7" timestamp="2019-01-22T09:50:46Z" lat="47.4573104" lon="8.535719"/>
+        <node id="98043663" version="7" timestamp="2019-01-22T09:50:46Z" lat="47.4572326" lon="8.5357986"/>
+    </modify>
+    <create>
+        <node id="6225892430" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1763728" lon="7.786898"/>
+        <node id="6225892431" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1770692" lon="7.7869597"/>
+        <node id="6225892432" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1780455" lon="7.7895923"/>
+        <node id="6225892433" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1791741" lon="7.7872936"/>
+        <node id="6225892434" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1797739" lon="7.7873044"/>
+        <node id="6225892435" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1801631" lon="7.7872574"/>
+        <node id="6225892436" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1807529" lon="7.7869235"/>
+        <node id="6225892437" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1810509" lon="7.7868229"/>
+        <node id="6225892438" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1815185" lon="7.7869771"/>
+        <node id="6225892439" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1821867" lon="7.7876423"/>
+        <node id="6225892440" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1820572" lon="7.7875377"/>
+        <node id="6225892441" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1824082" lon="7.787873"/>
+        <node id="6225892442" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1826452" lon="7.7881064"/>
+        <node id="6225892443" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1831766" lon="7.7881895"/>
+        <node id="6225892444" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1838611" lon="7.7881466"/>
+        <node id="6225892445" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1867577" lon="7.7874371"/>
+        <node id="6225892446" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1872991" lon="7.7870643"/>
+        <node id="6225892447" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1874212" lon="7.7872843"/>
+        <node id="6225892448" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1890344" lon="7.7886516">
+            <tag k="railway" v="level_crossing"/>
+        </node>
+        <node id="6225892449" version="1" timestamp="2019-01-21T21:15:47Z" lat="47.1890588" lon="7.7887044">
+            <tag k="railway" v="level_crossing"/>
+        </node>
+    </create>
+    <modify>
+        <way id="4386418" version="20" timestamp="2019-01-22T09:50:52Z">
+            <nd ref="65113451"/>
+            <nd ref="4990745530"/>
+            <nd ref="4990745537"/>
+            <nd ref="6225339608"/>
+            <nd ref="1703035527"/>
+            <nd ref="451718768"/>
+            <nd ref="1703035521"/>
+            <nd ref="4990745289"/>
+            <nd ref="4990745302"/>
+            <nd ref="319193330"/>
+            <nd ref="4990745293"/>
+            <nd ref="4990745288"/>
+            <nd ref="1252165289"/>
+            <nd ref="319192460"/>
+            <nd ref="4990745498"/>
+            <nd ref="319192461"/>
+            <nd ref="26777672"/>
+            <nd ref="4990745516"/>
+            <tag k="aeroway" v="runway"/>
+            <tag k="layer" v="1"/>
+            <tag k="ref" v="10/28"/>
+        </way>
+        <way id="5184844" version="10" timestamp="2019-01-22T20:53:04Z">
+            <nd ref="36161494"/>
+            <nd ref="1025407484"/>
+            <nd ref="6228164063"/>
+            <nd ref="289443213"/>
+            <tag k="highway" v="residential"/>
+            <tag k="maxspeed" v="50"/>
+            <tag k="name" v="Stadtplatz"/>
+        </way>
+        <way id="665424804" version="1" timestamp="2019-01-22T20:59:03Z">
+            <nd ref="6228178954"/>
+            <nd ref="6228178955"/>
+            <nd ref="6228178956"/>
+            <nd ref="6228178957"/>
+            <nd ref="6228178958"/>
+            <nd ref="6228178959"/>
+            <nd ref="6228178960"/>
+            <nd ref="6228178954"/>
+            <tag k="building" v="yes"/>
+        </way>
+        <way id="665425302" version="1" timestamp="2019-01-22T21:00:27Z">
+            <nd ref="88917938"/>
+            <nd ref="88917939"/>
+            <nd ref="88917941"/>
+            <tag k="highway" v="tertiary"/>
+            <tag k="maxspeed" v="30"/>
+            <tag k="name" v="Dielsdorferstrasse"/>
+            <tag k="surface" v="asphalt"/>
+        </way>
+        <way id="665425307" version="1" timestamp="2019-01-22T21:00:27Z">
+            <nd ref="374501235"/>
+            <nd ref="374502294"/>
+            <nd ref="374502303"/>
+            <nd ref="374502309"/>
+            <nd ref="374502318"/>
+            <nd ref="374502324"/>
+            <nd ref="88917941"/>
+            <tag k="highway" v="track"/>
+            <tag k="name" v="Alte Landstrasse"/>
+            <tag k="tracktype" v="grade1"/>
+        </way>
+    </create>
+    <modify>
+        <relation id="26970" version="69" timestamp="2019-01-22T17:37:47Z">
+            <member type="node" ref="983971609" role="stop"/>
+            <member type="node" ref="983971738" role="stop"/>
+            <member type="node" ref="983971350" role="stop"/>
+            <member type="node" ref="983971330" role="stop"/>
+            <member type="node" ref="983971335" role="stop"/>
+            <member type="node" ref="983971818" role="stop"/>
+            <member type="node" ref="286525205" role="stop"/>
+            <member type="node" ref="286525309" role="stop"/>
+            <member type="node" ref="286525205" role="stop"/>
+            <member type="way" ref="26177526" role="backward"/>
+            <member type="way" ref="26177502" role="forward"/>
+            <member type="way" ref="301102843" role="forward"/>
+            <member type="way" ref="301102844" role="forward"/>
+            <member type="way" ref="26177500" role="forward"/>
+            <member type="way" ref="400500000" role="forward"/>
+            <member type="way" ref="70052752" role="forward"/>
+            <member type="way" ref="70052764" role="forward"/>
+            <member type="way" ref="27359037" role="forward"/>
+            <member type="way" ref="70052759" role="forward"/>
+            <member type="way" ref="38584697" role="forward"/>
+            <member type="way" ref="38584691" role="forward"/>
+            <member type="way" ref="70052761" role="forward"/>
+            <member type="way" ref="70052769" role="forward"/>
+            <member type="way" ref="70052773" role="forward"/>
+            <member type="way" ref="254664769" role="backward"/>
+            <member type="way" ref="70042572" role="forward"/>
+            <member type="way" ref="70042572" role="backward"/>
+            <member type="way" ref="26162931" role="forward"/>
+            <member type="way" ref="27359145" role="forward"/>
+            <member type="way" ref="70042531" role="forward"/>
+            <member type="way" ref="70068748" role="forward"/>
+            <member type="way" ref="70068750" role="forward"/>
+            <member type="way" ref="254664768" role="forward"/>
+            <member type="way" ref="81468326" role="forward"/>
+            <member type="way" ref="242849241" role="forward"/>
+            <member type="way" ref="254664770" role="backward"/>
+            <member type="way" ref="26177472" role="forward"/>
+            <member type="way" ref="26166129" role="backward"/>
+            <member type="way" ref="244157091" role="backward"/>
+            <member type="way" ref="81468330" role="backward"/>
+            <member type="way" ref="254664767" role="forward"/>
+            <member type="way" ref="70068750" role="backward"/>
+            <member type="way" ref="70068748" role="backward"/>
+            <member type="way" ref="70042531" role="backward"/>
+            <member type="way" ref="27359145" role="backward"/>
+            <member type="way" ref="26162931" role="backward"/>
+            <tag k="network" v="ch-direct"/>
+            <tag k="operator" v="PAG"/>
+            <tag k="operator:de" v="PostAuto Schweiz AG"/>
+            <tag k="operator:fr" v="CarPostal Suisse SA"/>
+            <tag k="operator:it" v="AutoPostale Svizzera SA"/>
+            <tag k="public_transport:version" v="1"/>
+            <tag k="ref" v="321"/>
+            <tag k="route" v="bus"/>
+            <tag k="type" v="route"/>
+        </relation>
+    </create>
+    <modify>
+        <relation id="9244499" version="2" timestamp="2019-01-22T21:00:30Z">
+            <member type="way" ref="69476816" role=""/>
+            <member type="way" ref="27838336" role=""/>
+            <member type="way" ref="27838335" role=""/>
+            <member type="way" ref="27838334" role=""/>
+            <member type="way" ref="22937502" role=""/>
+            <member type="way" ref="506460791" role=""/>
+            <member type="way" ref="665423581" role=""/>
+            <member type="way" ref="23126501" role=""/>
+            <member type="way" ref="35906556" role=""/>
+            <member type="way" ref="665425312" role=""/>
+            <member type="way" ref="665425315" role=""/>
+            <member type="way" ref="38620614" role=""/>
+            <member type="way" ref="136091908" role=""/>
+            <member type="way" ref="136091907" role=""/>
+            <member type="way" ref="665423576" role=""/>
+            <member type="way" ref="54071263" role=""/>
+            <tag k="name" v="Dielsdorf - Mötschen"/>
+            <tag k="network" v="lwn"/>
+            <tag k="operator" v="Zürcher Wanderwege ZAW"/>
+            <tag k="osmc:symbol" v="yellow::yellow_diamond"/>
+            <tag k="route" v="hiking"/>
+            <tag k="symbol" v="gelbe Raute"/>
+            <tag k="type" v="route"/>
+        </relation>
+    </modify>
+    <create>
+        <relation id="9244545" version="1" timestamp="2019-01-22T21:07:41Z">
+            <member type="way" ref="24512326" role=""/>
+            <member type="way" ref="210447146" role=""/>
+            <member type="way" ref="33153112" role=""/>
+            <tag k="name" v="Boppelsen - ?"/>
+            <tag k="network" v="lwn"/>
+            <tag k="operator" v="Zürcher Wanderwege ZAW"/>
+            <tag k="osmc:symbol" v="yellow::yellow_diamond"/>
+            <tag k="route" v="hiking"/>
+            <tag k="symbol" v="gelbe Raute"/>
+            <tag k="type" v="route"/>
+        </relation>
+        <relation id="9244546" version="1" timestamp="2019-01-22T21:07:41Z">
+            <member type="way" ref="665427733" role=""/>
+            <member type="way" ref="54071278" role=""/>
+            <member type="way" ref="453239622" role=""/>
+            <member type="way" ref="38616294" role=""/>
+            <member type="way" ref="665427731" role=""/>
+            <member type="way" ref="24512326" role=""/>
+            <tag k="name" v="Mötschen - Boppelsen"/>
+            <tag k="network" v="lwn"/>
+            <tag k="operator" v="Zürcher Wanderwege ZAW"/>
+            <tag k="osmc:symbol" v="yellow::yellow_diamond"/>
+            <tag k="route" v="hiking"/>
+            <tag k="symbol" v="gelbe Raute"/>
+            <tag k="type" v="route"/>
+        </relation>
+    </create>
+</osmChange>

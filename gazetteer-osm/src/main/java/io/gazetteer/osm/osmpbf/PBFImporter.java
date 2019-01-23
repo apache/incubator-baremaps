@@ -6,6 +6,7 @@ import io.gazetteer.osm.rocksdb.EntityStore;
 import io.gazetteer.osm.rocksdb.EntityStoreException;
 import io.gazetteer.osm.rocksdb.NodeEntityType;
 import org.apache.commons.dbcp2.PoolingDataSource;
+import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -65,6 +66,15 @@ public class PBFImporter implements Runnable {
             // Create the database
             try (EntityStore<Node> cache = EntityStore.open(this.cache, new NodeEntityType())) {
                 ForkJoinPool executor = new ForkJoinPool(threads);
+
+                Osmformat.HeaderBlock header = PBFUtil.fileBlocks(file)
+                        .findFirst()
+                        .map(PBFUtil::toHeaderBlock)
+                        .get();
+
+                System.out.println(header.getOsmosisReplicationBaseUrl());
+                System.out.println(header.getOsmosisReplicationSequenceNumber());
+                System.out.println(header.getOsmosisReplicationTimestamp());
 
                 NodeConsumer cacheConsumer = new NodeConsumer(cache);
                 Stream<List<Node>> cacheStream = PBFUtil
