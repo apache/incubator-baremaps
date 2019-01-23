@@ -5,7 +5,7 @@ layers:
     maxZoom: 18
     sql: >
       SELECT id, tags::jsonb as properties, geom as geometry
-      FROM ways
+      FROM osm_ways
       WHERE tags -> 'building' = 'yes'
   - name: "highways"
     geometry: "geom"
@@ -13,7 +13,7 @@ layers:
     maxZoom: 18
     sql: >
       SELECT id, tags::jsonb as properties, geom as geometry
-      FROM ways
+      FROM osm_ways
       WHERE tags -> 'highway' = 'path'
   - name: "waterareas"
     geometry: "geom"
@@ -21,5 +21,5 @@ layers:
     maxZoom: 18
     sql: >
       SELECT id, tags::jsonb as properties, geom as geometry
-      FROM ways
+      FROM osm_ways
       WHERE tags -> 'natural' = 'water'

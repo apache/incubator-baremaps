@@ -1,8 +1,6 @@
 package io.gazetteer.osm.osmxml;
 
-import io.gazetteer.osm.domain.Info;
-import io.gazetteer.osm.domain.Node;
-import io.gazetteer.osm.domain.User;
+import io.gazetteer.osm.domain.*;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
@@ -17,9 +15,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
+import static io.gazetteer.osm.domain.User.NO_USER;
+
 public class XMLFileReader {
 
-    static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+    private static String NODE = "node";
+
+    private static String WAY = "way";
+
+    private static String RELATION = "relation";
 
     static {
         format.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -27,29 +33,32 @@ public class XMLFileReader {
 
     static public void main(String[] args) throws Exception {
         String fileName = args[0];
-        XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-        xmlInputFactory.setProperty(XMLInputFactory.IS_COALESCING, false);
-        xmlInputFactory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false);
-        xmlInputFactory.setProperty(XMLInputFactory.IS_VALIDATING, false);
-        XMLEventReader xer = xmlInputFactory.createXMLEventReader(new FileInputStream(fileName));
-
-        while (xer.hasNext()) {
-            XMLEvent entity = xer.peek();
-            if (entity.isStartElement() && entity.asStartElement().getName().getLocalPart().equals("node")) {
-                Node node = readNode(xer);
-                if (node.getInfo().getTags().size() > 0) {
-                    System.out.println(node.getInfo().getId());
+        XMLInputFactory factory = XMLInputFactory.newInstance();
+        factory.setProperty(XMLInputFactory.IS_COALESCING, false);
+        factory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false);
+        factory.setProperty(XMLInputFactory.IS_VALIDATING, false);
+        XMLEventReader reader = factory.createXMLEventReader(new FileInputStream(fileName));
+        while (reader.hasNext()) {
+            XMLEvent event = reader.peek();
+            if (event.isStartElement()) {
+                String element = event.asStartElement().getName().getLocalPart();
+                if (element.equals(NODE)) {
+                    Node node = readNode(reader);
+                } else if (element.equals(WAY)) {
+                    readWay(reader);
+                } else if (element.equals(RELATION)) {
+                    readRelation(reader);
+                } else {
+                    reader.nextEvent();
                 }
             } else {
-                xer.nextEvent();
+                reader.nextEvent();
             }
         }
-
     }
 
-
-    public static Node readNode(XMLEventReader xer) throws XMLStreamException, ParseException {
-        XMLEvent event = xer.nextEvent();
+    public static Node readNode(XMLEventReader reader) throws XMLStreamException, ParseException {
+        XMLEvent event = reader.nextEvent();
         StartElement node = event.asStartElement();
         long id = Long.parseLong(node.getAttributeByName(QName.valueOf("id")).getValue());
         double lat = Double.parseDouble(node.getAttributeByName(QName.valueOf("lat")).getValue());
@@ -57,10 +66,10 @@ public class XMLFileReader {
         int version = Integer.parseInt(node.getAttributeByName(QName.valueOf("version")).getValue());
         long timestamp = format.parse(node.getAttributeByName(QName.valueOf("timestamp")).getValue()).getTime();
         long changeset = Long.parseLong(node.getAttributeByName(QName.valueOf("changeset")).getValue());
-        User user = new User(-1, "");
+        User user = NO_USER;
         Map<String, String> tags = new HashMap<>();
-        while (!(xer.peek().isEndElement() && xer.peek().asEndElement().getName().getLocalPart().equals("node"))) {
-            XMLEvent child = xer.nextEvent();
+        while (!(reader.peek().isEndElement() && reader.peek().asEndElement().getName().getLocalPart().equals("node"))) {
+            XMLEvent child = reader.nextEvent();
             if (child.isStartElement() && child.asStartElement().getName().getLocalPart().equals("tag")) {
                 StartElement tag = child.asStartElement();
                 String key = tag.getAttributeByName(QName.valueOf("k")).getValue();
@@ -69,6 +78,18 @@ public class XMLFileReader {
             }
         }
         return new Node(new Info(id, version, timestamp, changeset, user, tags), lon, lat);
+    }
+
+    public static Way readWay(XMLEventReader reader) throws XMLStreamException, ParseException {
+        return null;
+    }
+
+    public static Relation readRelation(XMLEventReader reader) throws XMLStreamException, ParseException {
+        return null;
+    }
+
+    public static HashMap<String, String> readTags(XMLEventReader reader) {
+        return null;
     }
 
 

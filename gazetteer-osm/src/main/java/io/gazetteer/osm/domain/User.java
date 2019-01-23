@@ -6,6 +6,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class User {
 
+    public static final User NO_USER = new User(-1, "");
+
     private final int id;
     private final String name;
 

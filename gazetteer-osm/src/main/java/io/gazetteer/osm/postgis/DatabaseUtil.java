@@ -6,14 +6,14 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 
 public class DatabaseUtil {
 
-    public static final String DROP_TABLE_NODES = "DROP TABLE IF EXISTS nodes";
+    public static final String DROP_TABLE_NODES = "DROP TABLE IF EXISTS osm_nodes";
 
-    public static final String DROP_TABLE_WAYS = "DROP TABLE IF EXISTS ways";
+    public static final String DROP_TABLE_WAYS = "DROP TABLE IF EXISTS osm_ways";
 
-    public static final String DROP_TABLE_RELATIONS = "DROP TABLE IF EXISTS relations";
+    public static final String DROP_TABLE_RELATIONS = "DROP TABLE IF EXISTS osm_relations";
 
     public static final String CREATE_TABLE_NODES =
-            "CREATE TABLE nodes (" +
+            "CREATE TABLE osm_nodes (" +
             "id bigint NOT NULL," +
             "version int NOT NULL," +
             "uid int NOT NULL," +
@@ -24,19 +24,19 @@ public class DatabaseUtil {
             ")";
 
     public static final String CREATE_TABLE_WAYS =
-            "CREATE TABLE ways (" +
+            "CREATE TABLE osm_ways (" +
             "id bigint NOT NULL," +
             "version int NOT NULL," +
             "uid int NOT NULL," +
             "timestamp timestamp without time zone NOT NULL," +
             "changeset bigint NOT NULL," +
             "tags hstore," +
-            "nodes bigint[]," +
+            "osm_nodes bigint[]," +
             "geom geometry" +
             ")";
 
     public static final String CREATE_TABLE_RELATIONS = 
-            "CREATE TABLE relations (" +
+            "CREATE TABLE osm_relations (" +
             "id bigint NOT NULL," +
             "version int NOT NULL," +
             "uid int NOT NULL," +
@@ -48,7 +48,7 @@ public class DatabaseUtil {
             ")";
 
     public static final String CREATE_INDEX_WAYS =
-            "CREATE INDEX ways_idx ON ways USING gist(geom)";
+            "CREATE INDEX osm_ways_idx ON osm_ways USING gist(geom)";
 
 
     public static PoolingDataSource create(String conn) {

@@ -114,7 +114,6 @@ public class EntityStore<E extends Entity> implements AutoCloseable {
 
     public static <E extends Entity> EntityStore<E> open(File database, EntityType<E> type) throws EntityStoreException {
         try {
-
             final Options options = new Options()
                     .setCreateIfMissing(true)
                     .setCompressionType(CompressionType.NO_COMPRESSION);

@@ -1,10 +1,6 @@
-package io.gazetteer.osm;
+package io.gazetteer.osm.osmpbf;
 
 import io.gazetteer.osm.domain.Node;
-import io.gazetteer.osm.osmpbf.PrimitiveBlock;
-import io.gazetteer.osm.osmpbf.PrimitiveBlockConsumer;
-import io.gazetteer.osm.osmpbf.PrimitiveBlockReader;
-import io.gazetteer.osm.osmpbf.PrimitiveBlockUtil;
 import io.gazetteer.osm.postgis.DatabaseUtil;
 import io.gazetteer.osm.rocksdb.EntityStore;
 import io.gazetteer.osm.rocksdb.EntityStoreException;
@@ -32,7 +28,7 @@ import static picocli.CommandLine.Option;
 
 
 @Command(description = "Import OSM into Postgresql")
-public class Importer implements Runnable {
+public class PBFImporter implements Runnable {
 
     @Parameters(index = "0", paramLabel = "OSM_FILE", description = "The OpenStreetMap PBF file.")
     private File file;
@@ -43,7 +39,7 @@ public class Importer implements Runnable {
     @Parameters(index = "2", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
     private String database;
 
-    @Option(names = {"-t", "--threads"}, description = "MD5, SHA-1, SHA-256, ...")
+    @Option(names = {"-t", "--threads"}, description = "The size of the thread pool.")
     private int threads = Runtime.getRuntime().availableProcessors();
 
     @Override
@@ -100,7 +96,7 @@ public class Importer implements Runnable {
     }
 
     public static void main(String[] args) {
-        CommandLine.run(new Importer(), args);
+        CommandLine.run(new PBFImporter(), args);
     }
 
 }
