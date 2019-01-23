@@ -20,7 +20,7 @@ import java.util.Comparator;
 import java.util.concurrent.ForkJoinPool;
 
 @CommandLine.Command(description = "Import OSM into Postgresql")
-public class XMLImporter implements Runnable {
+public class EntityImporter implements Runnable {
 
     @CommandLine.Parameters(index = "0", paramLabel = "OSM_FILE", description = "The OpenStreetMap PBF file.")
     private File file;

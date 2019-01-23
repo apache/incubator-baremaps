@@ -13,7 +13,7 @@ public class EntitySpliteratorTest {
 
     @Test
     public void tryAdvance() throws Exception {
-        Spliterator<Entity> spliterator = XMLUtil.entitySpliterator(OSM_XML_DATA);
+        Spliterator<Entity> spliterator = EntityUtil.spliterator(OSM_XML_DATA);
         for (int i = 0; i < 10; i++) {
             assertTrue(spliterator.tryAdvance(block -> {
             }));
@@ -24,7 +24,7 @@ public class EntitySpliteratorTest {
 
     @Test
     public void forEachRemaining() throws Exception {
-        Spliterator<Entity> spliterator = XMLUtil.entitySpliterator(OSM_XML_DATA);
+        Spliterator<Entity> spliterator = EntityUtil.spliterator(OSM_XML_DATA);
         Accumulator<Entity> accumulator = new Accumulator<>();
         spliterator.forEachRemaining(accumulator);
         assertEquals(accumulator.acc.size(), 10);

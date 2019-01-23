@@ -55,21 +55,8 @@ public class XMLUtil {
         return factory.createXMLEventReader(new FileInputStream(file));
     }
 
-    public static Iterator<Entity> entityReader(File file) throws Exception {
-        return new EntityIterator(xmlEventReader(file));
-    }
 
-    public static Iterator<Change> changeReader(File file) throws Exception {
-        return new ChangeIterator(xmlEventReader(file));
-    }
 
-    public static Spliterator<Entity> entitySpliterator(File file) throws Exception {
-        return new BatchSpliterator<>(entityReader(file), 10);
-    }
-
-    public static Spliterator<Change> changeSpliterator(File file) throws Exception {
-        return new BatchSpliterator<>(changeReader(file), 10);
-    }
 
     protected static boolean isElement(XMLEvent event, String element) throws XMLStreamException {
         return event.isStartElement() &&

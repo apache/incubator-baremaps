@@ -9,6 +9,7 @@ import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_DATA;
 import static org.junit.Assert.assertNotNull;
 
 public class FileBlockIteratorTest {
+
     @Test
     public void hasNext() {
     }

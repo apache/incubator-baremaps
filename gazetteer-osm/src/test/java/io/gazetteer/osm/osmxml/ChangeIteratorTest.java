@@ -6,6 +6,13 @@ import static io.gazetteer.osm.OSMTestUtil.OSC_XML_DATA;
 import static org.junit.Assert.assertNotNull;
 
 public class ChangeIteratorTest {
+    @Test
+    public void hasNext() {
+    }
+
+    @Test
+    public void next() {
+    }
 
 //    @Test
 //    public void read() throws Exception {

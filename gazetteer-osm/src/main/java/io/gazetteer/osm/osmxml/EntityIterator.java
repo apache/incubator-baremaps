@@ -11,9 +11,6 @@ import java.util.*;
 
 public class EntityIterator implements Iterator<Entity> {
 
-
-
-
     protected final XMLEventReader reader;
 
     public EntityIterator(XMLEventReader reader) {
