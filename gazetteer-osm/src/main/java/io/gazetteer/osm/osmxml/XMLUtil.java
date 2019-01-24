@@ -54,9 +54,6 @@ public class XMLUtil {
         return factory.createXMLEventReader(new FileInputStream(file));
     }
 
-
-
-
     protected static boolean isElement(XMLEvent event, String element) throws XMLStreamException {
         return event.isStartElement() &&
                 event.asStartElement().getName().getLocalPart().equals(element);

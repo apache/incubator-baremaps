@@ -16,11 +16,6 @@ import static org.junit.Assert.assertEquals;
 public class XMLUtilTest {
 
     @Test
-    public void isElement() {
-    }
-
-
-    @Test
     public void readNode() throws Exception {
         XMLEventReader reader = XMLUtil.xmlEventReader(OSM_XML_DATA);
         while (reader.hasNext()) {
