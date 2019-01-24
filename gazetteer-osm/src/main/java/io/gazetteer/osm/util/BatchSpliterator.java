@@ -51,10 +51,7 @@ public final class BatchSpliterator<T> implements Spliterator<T> {
 
     @Override
     public Comparator<? super T> getComparator() {
-        if (hasCharacteristics(SORTED)) {
-            return null;
-        }
-        throw new IllegalStateException();
+        return null;
     }
 
     @Override

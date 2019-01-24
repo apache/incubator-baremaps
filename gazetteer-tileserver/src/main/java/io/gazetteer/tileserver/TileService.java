@@ -1,4 +1,4 @@
-package io.gazetteer.helidon;
+package io.gazetteer.tileserver;
 
 import io.gazetteer.core.TileSource;
 import io.gazetteer.core.XYZ;

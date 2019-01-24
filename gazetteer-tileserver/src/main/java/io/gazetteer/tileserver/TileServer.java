@@ -1,4 +1,4 @@
-package io.gazetteer.helidon;
+package io.gazetteer.tileserver;
 
 import io.gazetteer.postgis.PostgisConfig;
 import io.gazetteer.postgis.PostgisLayer;
