@@ -1,26 +1,35 @@
 package io.gazetteer.osm.osmxml;
 
+import io.gazetteer.osm.domain.Entity;
 import org.junit.Test;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_DATA;
+import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertFalse;
+
 public class EntityIteratorTest {
-
-//    @Test(expected = EOFException.class)
-//    public void read() throws Exception {
-//        EntityIterator entityIterator = new EntityIterator(XMLUtil.xmlEventReader(OSM_XML_DATA));
-//        for (int i = 0; i < 10; i++) {
-//            assertNotNull(entityIterator.read());
-//        }
-//        entityIterator.read();
-//    }
-
-
-
+    
     @Test
-    public void hasNext() {
+    public void next() throws Exception {
+        Iterator<Entity> reader = EntityUtil.iterator(OSM_PBF_DATA);
+        while (reader.hasNext()) {
+            Entity block = reader.next();
+            assertNotNull(block);
+        }
+        assertFalse(reader.hasNext());
     }
 
-    @Test
-    public void next() {
+    @Test(expected = NoSuchElementException.class)
+    public void nextException() throws Exception {
+        Iterator<Entity> reader = EntityUtil.iterator(OSM_PBF_DATA);
+        while (reader.hasNext()) {
+            reader.next();
+        }
+        reader.next();
     }
+
 }
 

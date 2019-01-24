@@ -19,13 +19,13 @@ public class PBFUtil {
     public static final String HEADER = "OSMHeader";
     public static final String DATA = "OSMData";
 
-    public static Iterator<FileBlock> reader(File file) throws FileNotFoundException {
+    public static Iterator<FileBlock> iterator(File file) throws FileNotFoundException {
         DataInputStream input = new DataInputStream(new FileInputStream(file));
         return new FileBlockIterator(input);
     }
 
     public static Spliterator<FileBlock> spliterator(File file) throws FileNotFoundException {
-        return new BatchSpliterator<FileBlock>(reader(file), 10);
+        return new BatchSpliterator<FileBlock>(iterator(file), 10);
     }
 
     public static Stream<FileBlock> fileBlocks(File file) throws FileNotFoundException {

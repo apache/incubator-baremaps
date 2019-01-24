@@ -2,14 +2,33 @@ package io.gazetteer.osm.osmpbf;
 
 import org.junit.Test;
 
+import java.io.FileNotFoundException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_DATA;
+import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertFalse;
+
 public class FileBlockIteratorTest {
 
     @Test
-    public void hasNext() {
+    public void next() throws FileNotFoundException {
+        Iterator<FileBlock> reader = PBFUtil.iterator(OSM_PBF_DATA);
+        while (reader.hasNext()) {
+            FileBlock block = reader.next();
+            assertNotNull(block);
+        }
+        assertFalse(reader.hasNext());
     }
 
-    @Test
-    public void next() {
+    @Test(expected = NoSuchElementException.class)
+    public void nextException() throws FileNotFoundException {
+        Iterator<FileBlock> reader = PBFUtil.iterator(OSM_PBF_DATA);
+        while (reader.hasNext()) {
+            reader.next();
+        }
+        reader.next();
     }
 
     /*@Test
@@ -56,22 +75,5 @@ public class FileBlockIteratorTest {
         output.close();
     }*/
 
-
-//    @Test
-//    public void testRead() throws IOException {
-//        FileBlockIterator reader = (FileBlockIterator) PBFUtil.reader(OSM_PBF_DATA);
-//        for (int i = 0; i < 10; i ++) {
-//            FileBlock block = reader.read();
-//            assertNotNull(block);
-//        }
-//    }
-
-//    @Test(expected = EOFException.class)
-//    public void testEOF() throws IOException {
-//        FileBlockIterator reader = (FileBlockIterator) PBFUtil.reader(OSM_PBF_DATA);
-//        for (int i = 0; i < 11; i ++) {
-//            reader.read();
-//        }
-//    }
 
 }

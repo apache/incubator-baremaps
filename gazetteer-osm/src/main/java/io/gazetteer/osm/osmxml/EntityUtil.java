@@ -11,12 +11,12 @@ import static io.gazetteer.osm.osmxml.XMLUtil.xmlEventReader;
 
 public class EntityUtil {
 
-    public static Iterator<Entity> entityReader(File file) throws Exception {
+    public static Iterator<Entity> iterator(File file) throws Exception {
         return new EntityIterator(xmlEventReader(file));
     }
 
     public static Spliterator<Entity> spliterator(File file) throws Exception {
-        return new BatchSpliterator<>(entityReader(file), 10);
+        return new BatchSpliterator<>(iterator(file), 10);
     }
 
 }
