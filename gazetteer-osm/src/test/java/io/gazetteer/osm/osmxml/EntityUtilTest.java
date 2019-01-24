@@ -9,7 +9,7 @@ import java.util.Spliterator;
 import static io.gazetteer.osm.OSMTestUtil.OSM_XML_DATA;
 import static org.junit.Assert.*;
 
-public class EntitySpliteratorTest {
+public class EntityUtilTest {
 
     @Test
     public void tryAdvance() throws Exception {

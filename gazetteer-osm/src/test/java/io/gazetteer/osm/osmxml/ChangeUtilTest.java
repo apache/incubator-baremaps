@@ -10,7 +10,7 @@ import static io.gazetteer.osm.OSMTestUtil.OSC_XML_DATA;
 import static io.gazetteer.osm.osmxml.ChangeUtil.spliterator;
 import static org.junit.Assert.*;
 
-public class ChangeSpliteratorTest {
+public class ChangeUtilTest {
 
     @Test
     public void tryAdvance() throws Exception {
