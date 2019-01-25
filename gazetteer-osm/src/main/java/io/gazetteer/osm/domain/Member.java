@@ -12,22 +12,22 @@ public final class Member {
     relation
   }
 
-  private final long id;
+  private final long ref;
 
   private final Type type;
 
   private final String role;
 
-  public Member(long id, Type type, String role) {
+  public Member(long ref, Type type, String role) {
     checkNotNull(type);
     checkNotNull(role);
-    this.id = id;
+    this.ref = ref;
     this.type = type;
     this.role = role;
   }
 
-  public long getId() {
-    return id;
+  public long getRef() {
+    return ref;
   }
 
   public Type getType() {
@@ -43,11 +43,11 @@ public final class Member {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Member member = (Member) o;
-    return id == member.id && type == member.type && Objects.equal(role, member.role);
+    return ref == member.ref && type == member.type && Objects.equal(role, member.role);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(id, type, role);
+    return Objects.hashCode(ref, type, role);
   }
 }

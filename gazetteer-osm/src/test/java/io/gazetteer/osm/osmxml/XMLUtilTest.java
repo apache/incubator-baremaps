@@ -71,7 +71,7 @@ public class XMLUtilTest {
         assertEquals(10, relation.getInfo().getUser().getId());
         assertEquals("user10", relation.getInfo().getUser().getName());
         assertEquals(11, relation.getInfo().getChangeset());
-        assertEquals(6, relation.getMembers().get(0).getId());
+        assertEquals(6, relation.getMembers().get(0).getRef());
         assertEquals(Member.Type.node, relation.getMembers().get(0).getType());
         assertEquals("noderole", relation.getMembers().get(0).getRole());
         break;
