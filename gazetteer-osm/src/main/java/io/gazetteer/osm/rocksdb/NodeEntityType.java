@@ -9,7 +9,7 @@ public class NodeEntityType implements EntityType<Node> {
 
   @Override
   public byte[] serialize(Node entity) {
-    return Leveldb.Node.newBuilder()
+    return Rocksdb.Node.newBuilder()
         .setId(entity.getInfo().getId())
         .setVersion(entity.getInfo().getVersion())
         .setUid(entity.getInfo().getUser().getId())
@@ -25,7 +25,7 @@ public class NodeEntityType implements EntityType<Node> {
 
   @Override
   public Node deserialize(byte[] bytes) throws InvalidProtocolBufferException {
-    Leveldb.Node node = Leveldb.Node.parseFrom(bytes);
+    Rocksdb.Node node = Rocksdb.Node.parseFrom(bytes);
     User user = new User(node.getUid(), node.getUser());
     Info info =
         new Info(
