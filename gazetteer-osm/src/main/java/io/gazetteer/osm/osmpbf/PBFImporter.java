@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
@@ -55,14 +53,7 @@ public class PBFImporter implements Runnable {
           .forEach(File::delete);
 
       // Reset the database
-      try (Connection connection = DriverManager.getConnection(database)) {
-        connection.prepareStatement(DatabaseUtil.DROP_TABLE_NODES).execute();
-        connection.prepareStatement(DatabaseUtil.DROP_TABLE_WAYS).execute();
-        connection.prepareStatement(DatabaseUtil.DROP_TABLE_RELATIONS).execute();
-        connection.prepareStatement(DatabaseUtil.CREATE_TABLE_NODES).execute();
-        connection.prepareStatement(DatabaseUtil.CREATE_TABLE_WAYS).execute();
-        connection.prepareStatement(DatabaseUtil.CREATE_TABLE_RELATIONS).execute();
-      }
+      DatabaseUtil.createTables(database);
 
       // Create the database
       try (EntityStore<Node> cache = EntityStore.open(this.cache, new NodeEntityType())) {
@@ -80,7 +71,7 @@ public class PBFImporter implements Runnable {
             PBFUtil.dataBlockReaders(file).map(DataBlockReader::readDenseNodes);
         executor.submit(() -> cacheStream.forEach(cacheConsumer)).get();
 
-        PoolingDataSource pool = DatabaseUtil.create(database);
+        PoolingDataSource pool = DatabaseUtil.createPoolingDataSource(database);
         DataBlockConsumer databaseConsumer = new DataBlockConsumer(cache, pool);
         Stream<DataBlock> databaseStream =
             PBFUtil.dataBlockReaders(file).map(DataBlockReader::read);
