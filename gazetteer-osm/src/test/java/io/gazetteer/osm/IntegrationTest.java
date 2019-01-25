@@ -1,5 +1,3 @@
 package io.gazetteer.osm;
 
-public interface IntegrationTest {
-
-}
+public interface IntegrationTest {}
