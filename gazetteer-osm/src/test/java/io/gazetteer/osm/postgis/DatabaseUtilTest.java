@@ -17,6 +17,7 @@ public class DatabaseUtilTest {
   @Test
   public void resetDatabase() throws SQLException {
     try (Connection connection = DriverManager.getConnection(url)) {
+      DatabaseUtil.createExtensions(connection);
       DatabaseUtil.dropTables(connection);
       assertFalse(tableExists("osm_info"));
       assertFalse(tableExists("osm_users"));
