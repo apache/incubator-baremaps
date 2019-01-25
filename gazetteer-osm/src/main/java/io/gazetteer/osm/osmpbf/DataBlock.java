@@ -11,46 +11,45 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class DataBlock {
 
-    private final List<Node> nodes;
+  private final List<Node> nodes;
 
-    private final List<Way> ways;
+  private final List<Way> ways;
 
-    private final List<Relation> relations;
+  private final List<Relation> relations;
 
-    public DataBlock(List<Node> nodes, List<Way> ways, List<Relation> relations) {
-        checkNotNull(nodes);
-        checkNotNull(ways);
-        checkNotNull(relations);
-        this.nodes = nodes;
-        this.ways = ways;
-        this.relations = relations;
-    }
+  public DataBlock(List<Node> nodes, List<Way> ways, List<Relation> relations) {
+    checkNotNull(nodes);
+    checkNotNull(ways);
+    checkNotNull(relations);
+    this.nodes = nodes;
+    this.ways = ways;
+    this.relations = relations;
+  }
 
-    public List<Node> getNodes() {
-        return nodes;
-    }
+  public List<Node> getNodes() {
+    return nodes;
+  }
 
-    public List<Way> getWays() {
-        return ways;
-    }
+  public List<Way> getWays() {
+    return ways;
+  }
 
-    public List<Relation> getRelations() {
-        return relations;
-    }
+  public List<Relation> getRelations() {
+    return relations;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DataBlock that = (DataBlock) o;
-        return Objects.equal(nodes, that.nodes) &&
-                Objects.equal(ways, that.ways) &&
-                Objects.equal(relations, that.relations);
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    DataBlock that = (DataBlock) o;
+    return Objects.equal(nodes, that.nodes)
+        && Objects.equal(ways, that.ways)
+        && Objects.equal(relations, that.relations);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(nodes, ways, relations);
-    }
-
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(nodes, ways, relations);
+  }
 }

@@ -16,53 +16,53 @@ import java.util.zip.GZIPOutputStream;
 
 public class PostgisTileSource implements TileSource {
 
-    private static final String MIME_TYPE = "application/vnd.mapbox-vector-tile";
+  private static final String MIME_TYPE = "application/vnd.mapbox-vector-tile";
 
-    private final String DATABASE = "jdbc:postgresql://localhost:5432/osm?user=osm&password=osm";
+  private final String DATABASE = "jdbc:postgresql://localhost:5432/osm?user=osm&password=osm";
 
-    private final AsyncLoadingCache<XYZ, Tile> cache;
+  private final AsyncLoadingCache<XYZ, Tile> cache;
 
-    private final List<PostgisLayer> layers;
+  private final List<PostgisLayer> layers;
 
-    public PostgisTileSource(List<PostgisLayer> layers) {
-        this.layers = layers;
-        this.cache = Caffeine.newBuilder()
-                .maximumSize(10000)
-                .executor(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2))
-                .buildAsync(xyz -> loadTile(xyz));
-    }
+  public PostgisTileSource(List<PostgisLayer> layers) {
+    this.layers = layers;
+    this.cache =
+        Caffeine.newBuilder()
+            .maximumSize(10000)
+            .executor(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2))
+            .buildAsync(xyz -> loadTile(xyz));
+  }
 
-    @Override
-    public String getMimeType() {
-        return MIME_TYPE;
-    }
+  @Override
+  public String getMimeType() {
+    return MIME_TYPE;
+  }
 
-    @Override
-    public CompletableFuture<Tile> getTile(XYZ xyz) {
-        return cache.get(xyz);
-    }
+  @Override
+  public CompletableFuture<Tile> getTile(XYZ xyz) {
+    return cache.get(xyz);
+  }
 
-    private Tile loadTile(XYZ xyz) throws IOException, SQLException {
-        try (ByteArrayOutputStream data = new ByteArrayOutputStream();
-             GZIPOutputStream tile = new GZIPOutputStream(data)) {
-            for (PostgisLayer layer : layers) {
-                if (xyz.getZ() >= layer.getMinZoom() && xyz.getZ() <= layer.getMaxZoom()) {
-                    tile.write(loadLayer(xyz, layer));
-                }
-            }
-            tile.close();
-            return new Tile(data.toByteArray());
+  private Tile loadTile(XYZ xyz) throws IOException, SQLException {
+    try (ByteArrayOutputStream data = new ByteArrayOutputStream();
+        GZIPOutputStream tile = new GZIPOutputStream(data)) {
+      for (PostgisLayer layer : layers) {
+        if (xyz.getZ() >= layer.getMinZoom() && xyz.getZ() <= layer.getMaxZoom()) {
+          tile.write(loadLayer(xyz, layer));
         }
+      }
+      tile.close();
+      return new Tile(data.toByteArray());
     }
+  }
 
-    private byte[] loadLayer(XYZ xyz, PostgisLayer layer) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(DATABASE)) {
-            String sql = PostgisQueryBuilder.build(xyz, layer);
-            Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery(sql);
-            result.next();
-            return result.getBytes(1);
-        }
+  private byte[] loadLayer(XYZ xyz, PostgisLayer layer) throws SQLException {
+    try (Connection connection = DriverManager.getConnection(DATABASE)) {
+      String sql = PostgisQueryBuilder.build(xyz, layer);
+      Statement statement = connection.createStatement();
+      ResultSet result = statement.executeQuery(sql);
+      result.next();
+      return result.getBytes(1);
     }
-
+  }
 }

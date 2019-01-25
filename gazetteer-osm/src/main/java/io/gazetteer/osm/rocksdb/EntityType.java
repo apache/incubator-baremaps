@@ -6,8 +6,7 @@ import java.io.IOException;
 
 public interface EntityType<T> {
 
-    byte[] serialize(T entity) throws IOException;
+  byte[] serialize(T entity) throws IOException;
 
-    T deserialize(byte[] data) throws InvalidProtocolBufferException;
-
+  T deserialize(byte[] data) throws InvalidProtocolBufferException;
 }

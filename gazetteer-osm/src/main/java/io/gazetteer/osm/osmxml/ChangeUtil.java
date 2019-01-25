@@ -11,12 +11,11 @@ import static io.gazetteer.osm.osmxml.XMLUtil.xmlEventReader;
 
 public class ChangeUtil {
 
-    public static Iterator<Change> iterator(File file) throws Exception {
-        return new ChangeIterator(xmlEventReader(file));
-    }
+  public static Iterator<Change> iterator(File file) throws Exception {
+    return new ChangeIterator(xmlEventReader(file));
+  }
 
-    public static Spliterator<Change> spliterator(File file) throws Exception {
-        return new BatchSpliterator<>(iterator(file), 10);
-    }
-
+  public static Spliterator<Change> spliterator(File file) throws Exception {
+    return new BatchSpliterator<>(iterator(file), 10);
+  }
 }

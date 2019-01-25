@@ -12,23 +12,22 @@ import static org.junit.Assert.assertFalse;
 
 public class ChangeIteratorTest {
 
-    @Test
-    public void next() throws Exception {
-        Iterator<Change> reader = ChangeUtil.iterator(OSM_PBF_DATA);
-        while (reader.hasNext()) {
-            Change block = reader.next();
-            assertNotNull(block);
-        }
-        assertFalse(reader.hasNext());
+  @Test
+  public void next() throws Exception {
+    Iterator<Change> reader = ChangeUtil.iterator(OSM_PBF_DATA);
+    while (reader.hasNext()) {
+      Change block = reader.next();
+      assertNotNull(block);
     }
+    assertFalse(reader.hasNext());
+  }
 
-    @Test(expected = NoSuchElementException.class)
-    public void nextException() throws Exception {
-        Iterator<Change> reader = ChangeUtil.iterator(OSM_PBF_DATA);
-        while (reader.hasNext()) {
-            reader.next();
-        }
-        reader.next();
+  @Test(expected = NoSuchElementException.class)
+  public void nextException() throws Exception {
+    Iterator<Change> reader = ChangeUtil.iterator(OSM_PBF_DATA);
+    while (reader.hasNext()) {
+      reader.next();
     }
-
+    reader.next();
+  }
 }

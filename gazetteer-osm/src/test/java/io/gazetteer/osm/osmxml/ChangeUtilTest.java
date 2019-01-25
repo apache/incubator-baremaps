@@ -12,22 +12,20 @@ import static org.junit.Assert.*;
 
 public class ChangeUtilTest {
 
-    @Test
-    public void tryAdvance() throws Exception {
-        Spliterator<Change> spliterator = spliterator(OSC_XML_DATA);
-        for (int i = 0; i < 51; i++) {
-            assertTrue(spliterator.tryAdvance(block -> {
-            }));
-        }
-        assertFalse(spliterator.tryAdvance(block -> {
-        }));
+  @Test
+  public void tryAdvance() throws Exception {
+    Spliterator<Change> spliterator = spliterator(OSC_XML_DATA);
+    for (int i = 0; i < 51; i++) {
+      assertTrue(spliterator.tryAdvance(block -> {}));
     }
+    assertFalse(spliterator.tryAdvance(block -> {}));
+  }
 
-    @Test
-    public void forEachRemaining() throws Exception {
-        Spliterator<Change> spliterator = spliterator(OSC_XML_DATA);
-        Accumulator<Change> accumulator = new Accumulator<>();
-        spliterator.forEachRemaining(accumulator);
-        assertEquals(accumulator.acc.size(), 51);
-    }
+  @Test
+  public void forEachRemaining() throws Exception {
+    Spliterator<Change> spliterator = spliterator(OSC_XML_DATA);
+    Accumulator<Change> accumulator = new Accumulator<>();
+    spliterator.forEachRemaining(accumulator);
+    assertEquals(accumulator.acc.size(), 51);
+  }
 }

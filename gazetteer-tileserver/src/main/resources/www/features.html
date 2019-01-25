@@ -1,99 +1,101 @@
 <html>
 <head>
-  <link href='https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css' rel='stylesheet' />
-  <script src='https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.js'></script>
-  <style>
-    #features {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 300px;
-      overflow: auto;
-      background: rgba(255, 255, 255, 0.8);
-    }
-    #map {
-      width: 100%;
-      height: 100%;
-    }
-    #map canvas {
-      cursor: crosshair;
-    }
-  </style>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css' rel='stylesheet'/>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.js'></script>
+    <style>
+        #features {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 300px;
+            overflow: auto;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        #map canvas {
+            cursor: crosshair;
+        }
+    </style>
 </head>
 
 <body>
-  <div id='map'></div>
-  <pre id='features'></pre>
-  <script>
+<div id='map'></div>
+<pre id='features'></pre>
+<script>
     var style = {
-      "version": 8,
-      "sources": {
-        "osm": {
-          "type": "vector",
-          "tiles": ["http://localhost:8081/{z}/{x}/{y}.pbf"],
-          "minzoom": 0,
-          "maxzoom": 14,
-          "bounds": [ 5.952882,45.81617,10.49584,47.81126]
-        }
-      },
-      "layers": [{
-          "id": "background",
-          "type": "background",
-          "paint": {
-            "background-color": "#e8e2dc"
-          }
+        "version": 8,
+        "sources": {
+            "osm": {
+                "type": "vector",
+                "tiles": ["http://localhost:8081/{z}/{x}/{y}.pbf"],
+                "minzoom": 0,
+                "maxzoom": 14,
+                "bounds": [5.952882, 45.81617, 10.49584, 47.81126]
+            }
         },
-        {
-          "id": "waterareas",
-          "source": "osm",
-          "source-layer": "waterareas",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#0000ff",
-            "fill-outline-color": "#0000ff",
-            "fill-opacity": 0.5
-          }
+        "layers": [{
+            "id": "background",
+            "type": "background",
+            "paint": {
+                "background-color": "#e8e2dc"
+            }
         },
-        {
-          "id": "buildings",
-          "source": "osm",
-          "source-layer": "buildings",
-          "type": "fill",
-          "paint": {
-            "fill-color": "#D8CEC3",
-            "fill-outline-color": "#C5C0BB",
-            "fill-opacity": 1
-          }
-        },
-        {
-          "id": "highways",
-          "source": "osm",
-          "source-layer": "highways",
-          "type": "line",
-          "layout": {
-            "line-join": "round",
-            "line-cap": "round"
-          },
-          "paint": {
-            "line-color": "#888888",
-            "line-width": 1,
-            "line-opacity": 0.75
-          }
-        },
+            {
+                "id": "waterareas",
+                "source": "osm",
+                "source-layer": "waterareas",
+                "type": "fill",
+                "paint": {
+                    "fill-color": "#0000ff",
+                    "fill-outline-color": "#0000ff",
+                    "fill-opacity": 0.5
+                }
+            },
+            {
+                "id": "buildings",
+                "source": "osm",
+                "source-layer": "buildings",
+                "type": "fill",
+                "paint": {
+                    "fill-color": "#D8CEC3",
+                    "fill-outline-color": "#C5C0BB",
+                    "fill-opacity": 1
+                }
+            },
+            {
+                "id": "highways",
+                "source": "osm",
+                "source-layer": "highways",
+                "type": "line",
+                "layout": {
+                    "line-join": "round",
+                    "line-cap": "round"
+                },
+                "paint": {
+                    "line-color": "#888888",
+                    "line-width": 1,
+                    "line-opacity": 0.75
+                }
+            },
 
-      ]
+        ]
     }
     var map = new mapboxgl.Map({
-      container: 'map',
-      style: style,
-      center: [6.633597, 46.519962],
-      zoom: 14
+        container: 'map',
+        style: style,
+        center: [6.633597, 46.519962],
+        zoom: 14
     });
     map.on('click', function (e) {
-      var features = map.queryRenderedFeatures(e.point);
-      document.getElementById('features').innerHTML = JSON.stringify(features, null, 2);
+        var features = map.queryRenderedFeatures(e.point);
+        document.getElementById('features').innerHTML = JSON.stringify(features, null, 2);
     });
-  </script>
+</script>
 </body>
 </html>

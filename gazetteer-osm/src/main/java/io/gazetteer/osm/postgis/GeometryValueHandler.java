@@ -10,14 +10,13 @@ import java.nio.ByteOrder;
 
 public class GeometryValueHandler extends BaseValueHandler<Geometry> {
 
-    @Override
-    protected void internalHandle(DataOutputStream buffer, Geometry value) throws Exception {
-        ByteWriter writer = new ByteWriter();
-        writer.setByteOrder(ByteOrder.LITTLE_ENDIAN);
-        GeometryWriter.writeGeometry(writer, value);
-        byte[] wkb = writer.getBytes();
-        buffer.writeInt(wkb.length);
-        buffer.write(wkb);
-    }
-
+  @Override
+  protected void internalHandle(DataOutputStream buffer, Geometry value) throws Exception {
+    ByteWriter writer = new ByteWriter();
+    writer.setByteOrder(ByteOrder.LITTLE_ENDIAN);
+    GeometryWriter.writeGeometry(writer, value);
+    byte[] wkb = writer.getBytes();
+    buffer.writeInt(wkb.length);
+    buffer.write(wkb);
+  }
 }

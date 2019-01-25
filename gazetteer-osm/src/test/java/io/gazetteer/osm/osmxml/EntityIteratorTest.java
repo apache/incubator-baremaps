@@ -11,25 +11,23 @@ import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertFalse;
 
 public class EntityIteratorTest {
-    
-    @Test
-    public void next() throws Exception {
-        Iterator<Entity> reader = EntityUtil.iterator(OSM_PBF_DATA);
-        while (reader.hasNext()) {
-            Entity block = reader.next();
-            assertNotNull(block);
-        }
-        assertFalse(reader.hasNext());
-    }
 
-    @Test(expected = NoSuchElementException.class)
-    public void nextException() throws Exception {
-        Iterator<Entity> reader = EntityUtil.iterator(OSM_PBF_DATA);
-        while (reader.hasNext()) {
-            reader.next();
-        }
-        reader.next();
+  @Test
+  public void next() throws Exception {
+    Iterator<Entity> reader = EntityUtil.iterator(OSM_PBF_DATA);
+    while (reader.hasNext()) {
+      Entity block = reader.next();
+      assertNotNull(block);
     }
+    assertFalse(reader.hasNext());
+  }
 
+  @Test(expected = NoSuchElementException.class)
+  public void nextException() throws Exception {
+    Iterator<Entity> reader = EntityUtil.iterator(OSM_PBF_DATA);
+    while (reader.hasNext()) {
+      reader.next();
+    }
+    reader.next();
+  }
 }
-

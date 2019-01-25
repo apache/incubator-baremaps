@@ -6,11 +6,10 @@ import java.util.function.Consumer;
 
 public class Accumulator<E> implements Consumer<E> {
 
-    public List<E> acc = new ArrayList<>();
+  public List<E> acc = new ArrayList<>();
 
-    @Override
-    public void accept(E e) {
-        acc.add(e);
-    }
-
+  @Override
+  public void accept(E e) {
+    acc.add(e);
+  }
 }
