@@ -16,23 +16,24 @@ public class DatabaseUtilTest {
 
   @Test
   public void resetDatabase() throws SQLException {
-    DatabaseUtil.dropTables(url);
-    assertFalse(tableExists("osm_info"));
-    assertFalse(tableExists("osm_users"));
-    assertFalse(tableExists("osm_nodes"));
-    assertFalse(tableExists("osm_ways"));
-    assertFalse(tableExists("osm_way_nodes"));
-    assertFalse(tableExists("osm_relations"));
-    assertFalse(tableExists("osm_relation_members"));
-
-    DatabaseUtil.createTables(url);
-    assertTrue(tableExists("osm_info"));
-    assertTrue(tableExists("osm_users"));
-    assertTrue(tableExists("osm_nodes"));
-    assertTrue(tableExists("osm_ways"));
-    assertTrue(tableExists("osm_way_nodes"));
-    assertTrue(tableExists("osm_relations"));
-    assertTrue(tableExists("osm_relation_members"));
+    try (Connection connection = DriverManager.getConnection(url)) {
+      DatabaseUtil.dropTables(connection);
+      assertFalse(tableExists("osm_info"));
+      assertFalse(tableExists("osm_users"));
+      assertFalse(tableExists("osm_nodes"));
+      assertFalse(tableExists("osm_ways"));
+      assertFalse(tableExists("osm_way_nodes"));
+      assertFalse(tableExists("osm_relations"));
+      assertFalse(tableExists("osm_relation_members"));
+      DatabaseUtil.createTables(connection);
+      assertTrue(tableExists("osm_info"));
+      assertTrue(tableExists("osm_users"));
+      assertTrue(tableExists("osm_nodes"));
+      assertTrue(tableExists("osm_ways"));
+      assertTrue(tableExists("osm_way_nodes"));
+      assertTrue(tableExists("osm_relations"));
+      assertTrue(tableExists("osm_relation_members"));
+    }
   }
 
   public boolean tableExists(String table) throws SQLException {

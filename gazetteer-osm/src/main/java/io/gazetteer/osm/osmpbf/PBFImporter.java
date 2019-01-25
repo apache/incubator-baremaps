@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
@@ -52,8 +54,12 @@ public class PBFImporter implements Runnable {
           .map(Path::toFile)
           .forEach(File::delete);
 
-      // Reset the database
-      DatabaseUtil.createTables(database);
+      try (Connection connection = DriverManager.getConnection(database)) {
+        DatabaseUtil.createExtensions(connection);
+        DatabaseUtil.dropTables(connection);
+        DatabaseUtil.createTables(connection);
+      }
+
 
       // Create the database
       try (EntityStore<Node> cache = EntityStore.open(this.cache, new NodeEntityType())) {
