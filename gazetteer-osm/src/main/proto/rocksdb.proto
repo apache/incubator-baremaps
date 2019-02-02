@@ -10,7 +10,19 @@ message Node {
     string user = 4;
     uint64 timestamp = 5;
     uint64 changeset = 6;
-    double lat = 7;
-    double lon = 8;
-    map<string, string> tags = 9;
+    map<string, string> tags = 7;
+    double lat = 8;
+    double lon = 9;
+
+}
+
+message Way {
+    sint64 id = 1;
+    uint32 version = 2;
+    uint32 uid = 3;
+    string user = 4;
+    uint64 timestamp = 5;
+    uint64 changeset = 6;
+    map<string, string> tags = 7;
+    repeated uint64 nodes = 8;
 }

@@ -13,7 +13,6 @@ DROP TABLE IF EXISTS schema_info;
 -- Drop all stored procedures if they exist.
 DROP FUNCTION IF EXISTS osmosisUpdate();
 
-
 -- Create a table which will contain a single row defining the current schema version.
 CREATE TABLE schema_info (
     version integer NOT NULL

@@ -1,12 +1,18 @@
-package io.gazetteer.osm.osmpbf;
+package io.gazetteer.osm;
 
 import io.gazetteer.osm.domain.Node;
-import io.gazetteer.osm.postgis.DatabaseUtil;
-import io.gazetteer.osm.rocksdb.EntityStore;
-import io.gazetteer.osm.rocksdb.EntityStoreException;
-import io.gazetteer.osm.rocksdb.NodeEntityType;
+import io.gazetteer.osm.domain.Way;
+import io.gazetteer.osm.osmpbf.DataBlock;
+import io.gazetteer.osm.osmpbf.PBFUtil;
+import io.gazetteer.osm.postgis.PostgisConsumer;
+import io.gazetteer.osm.postgis.PostgisUtil;
+import io.gazetteer.osm.rocksdb.*;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
+import org.rocksdb.CompressionType;
+import org.rocksdb.Options;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -20,7 +26,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Comparator;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
@@ -28,16 +33,16 @@ import java.util.stream.Stream;
 import static picocli.CommandLine.Option;
 
 @Command(description = "Import OSM PBF into Postgresql")
-public class PBFImporter implements Runnable {
+public class Importer implements Runnable {
 
   @Parameters(index = "0", paramLabel = "OSM_FILE", description = "The OpenStreetMap PBF file.")
   private File file;
 
-  @Parameters(index = "1", paramLabel = "ROCKSDB_CACHE", description = "The RocksDB cache.")
-  private File cache;
+  @Parameters(index = "1", paramLabel = "ROCKSDB_DIRECTORY", description = "The RocksDB directory.")
+  private File rocksdb;
 
   @Parameters(index = "2", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
-  private String database;
+  private String postgres;
 
   @Option(
       names = {"-t", "--threads"},
@@ -47,22 +52,27 @@ public class PBFImporter implements Runnable {
   @Override
   public void run() {
     try {
-      // Delete the RocksDB cache
-      Path rootPath = Paths.get(cache.getPath());
-      Files.walk(rootPath)
+      Path rocksdbPath = Paths.get(rocksdb.getPath());
+
+      // Delete the RocksDB rocksdb
+      Files.walk(rocksdbPath)
           .sorted(Comparator.reverseOrder())
           .map(Path::toFile)
           .forEach(File::delete);
 
-      try (Connection connection = DriverManager.getConnection(database)) {
-        DatabaseUtil.createExtensions(connection);
-        DatabaseUtil.dropTables(connection);
-        DatabaseUtil.createTables(connection);
+      try (Connection connection = DriverManager.getConnection(postgres)) {
+        PostgisUtil.createExtensions(connection);
+        PostgisUtil.dropTables(connection);
+        PostgisUtil.createTables(connection);
       }
 
+      final Options options =
+          new Options().setCreateIfMissing(true).setCompressionType(CompressionType.NO_COMPRESSION);
 
-      // Create the database
-      try (EntityStore<Node> cache = EntityStore.open(this.cache, new NodeEntityType())) {
+      // Create the postgres
+      try (RocksDB db = RocksDB.open(options, rocksdb.getPath());
+          EntityStore<Node> nodeStore = EntityStore.open(db, "nodes", new NodeEntityType());
+          EntityStore<Way> wayStore = EntityStore.open(db, "ways", new WayEntityType())) {
         ForkJoinPool executor = new ForkJoinPool(threads);
 
         Osmformat.HeaderBlock header =
@@ -72,18 +82,17 @@ public class PBFImporter implements Runnable {
         System.out.println(header.getOsmosisReplicationSequenceNumber());
         System.out.println(header.getOsmosisReplicationTimestamp());
 
-        NodeConsumer cacheConsumer = new NodeConsumer(cache);
-        Stream<List<Node>> cacheStream =
-            PBFUtil.dataBlockReaders(file).map(DataBlockReader::readDenseNodes);
-        executor.submit(() -> cacheStream.forEach(cacheConsumer)).get();
+        RocksdbConsumer rocksdbConsumer = new RocksdbConsumer(nodeStore, wayStore);
+        Stream<DataBlock> rocksdbStream = PBFUtil.dataBlocks(file);
+        executor.submit(() -> rocksdbStream.forEach(rocksdbConsumer)).get();
 
-        PoolingDataSource pool = DatabaseUtil.createPoolingDataSource(database);
-        DataBlockConsumer databaseConsumer = new DataBlockConsumer(cache, pool);
-        Stream<DataBlock> databaseStream =
-            PBFUtil.dataBlockReaders(file).map(DataBlockReader::read);
-        executor.submit(() -> databaseStream.forEach(databaseConsumer)).get();
+        PoolingDataSource pool = PostgisUtil.createPoolingDataSource(postgres);
+        PostgisConsumer postgisConsumer = new PostgisConsumer(nodeStore, pool);
+        Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(file);
+        executor.submit(() -> postgisStream.forEach(postgisConsumer)).get();
       }
-
+    } catch (RocksDBException e) {
+      e.printStackTrace();
     } catch (IOException e) {
       e.printStackTrace();
     } catch (InterruptedException e) {
@@ -100,6 +109,6 @@ public class PBFImporter implements Runnable {
   }
 
   public static void main(String[] args) {
-    CommandLine.run(new PBFImporter(), args);
+    CommandLine.run(new Importer(), args);
   }
 }

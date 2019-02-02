@@ -1,5 +1,7 @@
 package io.gazetteer.postgis;
 
+import io.helidon.config.Config;
+import io.helidon.config.ConfigSources;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 

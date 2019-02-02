@@ -10,30 +10,28 @@ import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
 @Category(IntegrationTest.class)
-public class DatabaseUtilTest {
+public class PostgisUtilTest {
 
   public static final String url = "jdbc:postgresql://localhost:5432/osm?user=osm&password=osm";
 
   @Test
   public void resetDatabase() throws SQLException {
     try (Connection connection = DriverManager.getConnection(url)) {
-      DatabaseUtil.createExtensions(connection);
-      DatabaseUtil.dropTables(connection);
+      PostgisUtil.createExtensions(connection);
+
+      PostgisUtil.dropTables(connection);
       assertFalse(tableExists("osm_info"));
       assertFalse(tableExists("osm_users"));
       assertFalse(tableExists("osm_nodes"));
       assertFalse(tableExists("osm_ways"));
-      assertFalse(tableExists("osm_way_nodes"));
       assertFalse(tableExists("osm_relations"));
-      assertFalse(tableExists("osm_relation_members"));
-      DatabaseUtil.createTables(connection);
+
+      PostgisUtil.createTables(connection);
       assertTrue(tableExists("osm_info"));
       assertTrue(tableExists("osm_users"));
       assertTrue(tableExists("osm_nodes"));
       assertTrue(tableExists("osm_ways"));
-      assertTrue(tableExists("osm_way_nodes"));
       assertTrue(tableExists("osm_relations"));
-      assertTrue(tableExists("osm_relation_members"));
     }
   }
 

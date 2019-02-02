@@ -7,6 +7,8 @@ import io.gazetteer.osm.domain.User;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.rocksdb.Options;
+import org.rocksdb.RocksDB;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +26,8 @@ public class EntityStoreTest {
 
   @Before
   public void setUp() throws Exception {
-    entityStore = EntityStore.open(Files.createTempDir(), new NodeEntityType());
+    RocksDB db = RocksDB.open(new Options().setCreateIfMissing(true), Files.createTempDir().getPath());
+    entityStore = EntityStore.open(db, "nodes", new NodeEntityType());
   }
 
   @After

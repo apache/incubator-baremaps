@@ -50,4 +50,5 @@ public final class Member {
   public int hashCode() {
     return Objects.hashCode(ref, type, role);
   }
+
 }

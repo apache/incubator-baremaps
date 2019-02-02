@@ -7,7 +7,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class DatabaseUtil {
+public class PostgisUtil {
 
   public static final String CREATE_EXTENSION_HSTORE = "CREATE EXTENSION IF NOT EXISTS hstore";
 
@@ -21,12 +21,7 @@ public class DatabaseUtil {
 
   public static final String DROP_TABLE_WAYS = "DROP TABLE IF EXISTS osm_ways";
 
-  public static final String DROP_TABLE_WAY_NODES = "DROP TABLE IF EXISTS osm_way_nodes";
-
   public static final String DROP_TABLE_RELATIONS = "DROP TABLE IF EXISTS osm_relations";
-
-  public static final String DROP_TABLE_RELATION_MEMBERS =
-      "DROP TABLE IF EXISTS osm_relation_members";
 
   public static final String CREATE_TABLE_INFO =
       "CREATE TABLE IF NOT EXISTS osm_info (" + "version integer NOT NULL" + ");";
@@ -57,13 +52,6 @@ public class DatabaseUtil {
           + "geom geometry"
           + ")";
 
-  public static final String CREATE_TABLE_WAY_NODES =
-      "CREATE TABLE IF NOT EXISTS osm_way_nodes ("
-          + "way_id bigint NOT NULL,"
-          + "node_id bigint NOT NULL,"
-          + "sequence_id int NOT NULL"
-          + ");";
-
   public static final String CREATE_TABLE_RELATIONS =
       "CREATE TABLE IF NOT EXISTS osm_relations ("
           + "id bigint NOT NULL,"
@@ -72,18 +60,11 @@ public class DatabaseUtil {
           + "timestamp timestamp without time zone NOT NULL,"
           + "changeset bigint NOT NULL,"
           + "tags hstore,"
-          + "members bigint[],"
+          + "member_refs bigint[],"
+          + "member_types character(1)[],"
+          + "member_roles text[],"
           + "geom geometry"
           + ")";
-
-  public static final String CREATE_TABLE_RELATION_MEMBERS =
-      "CREATE TABLE IF NOT EXISTS osm_relation_members ("
-          + "relation_id bigint NOT NULL,"
-          + "member_id bigint NOT NULL,"
-          + "member_type character(1) NOT NULL,"
-          + "member_role text NOT NULL,"
-          + "sequence_id int NOT NULL"
-          + ");";
 
   public static final String CREATE_INDEX_NODES =
       "CREATE INDEX IF NOT EXISTS osm_nodes_idx ON osm_nodes USING gist(geom)";
@@ -145,9 +126,7 @@ public class DatabaseUtil {
     connection.prepareStatement(DROP_TABLE_USERS).execute();
     connection.prepareStatement(DROP_TABLE_NODES).execute();
     connection.prepareStatement(DROP_TABLE_WAYS).execute();
-    connection.prepareStatement(DROP_TABLE_WAY_NODES).execute();
     connection.prepareStatement(DROP_TABLE_RELATIONS).execute();
-    connection.prepareStatement(DROP_TABLE_RELATION_MEMBERS).execute();
   }
 
   public static void createTables(Connection connection) throws SQLException {
@@ -155,8 +134,6 @@ public class DatabaseUtil {
     connection.prepareStatement(CREATE_TABLE_USERS).execute();
     connection.prepareStatement(CREATE_TABLE_NODES).execute();
     connection.prepareStatement(CREATE_TABLE_WAYS).execute();
-    connection.prepareStatement(CREATE_TABLE_WAY_NODES).execute();
     connection.prepareStatement(CREATE_TABLE_RELATIONS).execute();
-    connection.prepareStatement(CREATE_TABLE_RELATION_MEMBERS).execute();
   }
 }

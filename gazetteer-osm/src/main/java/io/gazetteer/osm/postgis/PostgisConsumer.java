@@ -1,9 +1,10 @@
-package io.gazetteer.osm.osmpbf;
+package io.gazetteer.osm.postgis;
 
 import de.bytefish.pgbulkinsert.PgBulkInsert;
 import io.gazetteer.osm.domain.Node;
 import io.gazetteer.osm.domain.Relation;
 import io.gazetteer.osm.domain.Way;
+import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.postgis.NodeMapping;
 import io.gazetteer.osm.postgis.RelationMapping;
 import io.gazetteer.osm.postgis.WayMapping;
@@ -17,7 +18,7 @@ import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class DataBlockConsumer implements Consumer<DataBlock> {
+public class PostgisConsumer implements Consumer<DataBlock> {
 
   private final PoolingDataSource pool;
 
@@ -25,7 +26,7 @@ public class DataBlockConsumer implements Consumer<DataBlock> {
   private final PgBulkInsert<Way> ways;
   private final PgBulkInsert<Relation> relations;
 
-  public DataBlockConsumer(EntityStore<Node> cache, PoolingDataSource pool) {
+  public PostgisConsumer(EntityStore<Node> cache, PoolingDataSource pool) {
     checkNotNull(cache);
     checkNotNull(pool);
     this.pool = pool;
@@ -36,7 +37,6 @@ public class DataBlockConsumer implements Consumer<DataBlock> {
 
   @Override
   public void accept(DataBlock block) {
-    checkNotNull(block);
     try (Connection connection = pool.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       nodes.saveAll(pgConnection, block.getNodes());
@@ -46,4 +46,5 @@ public class DataBlockConsumer implements Consumer<DataBlock> {
       e.printStackTrace();
     }
   }
+
 }

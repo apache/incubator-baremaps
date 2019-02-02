@@ -39,6 +39,10 @@ public class PBFUtil {
         .map(DataBlockReader::new);
   }
 
+  public static Stream<DataBlock> dataBlocks(File file) throws FileNotFoundException {
+    return dataBlockReaders(file).map(DataBlockReader::read);
+  }
+
   public static boolean isHeaderBlock(FileBlock fileBlock) {
     return fileBlock.getType().equals(HEADER);
   }
