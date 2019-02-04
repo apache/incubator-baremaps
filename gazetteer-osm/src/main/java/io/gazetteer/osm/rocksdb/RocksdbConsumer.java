@@ -4,7 +4,6 @@ import io.gazetteer.osm.domain.Node;
 import io.gazetteer.osm.domain.Way;
 import io.gazetteer.osm.osmpbf.DataBlock;
 
-import java.util.Collection;
 import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
