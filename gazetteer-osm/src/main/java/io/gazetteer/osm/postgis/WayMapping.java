@@ -5,9 +5,7 @@ import io.gazetteer.osm.domain.Way;
 import io.gazetteer.osm.rocksdb.EntityStore;
 import io.gazetteer.osm.rocksdb.EntityStoreException;
 import io.gazetteer.osm.util.WrappedException;
-import mil.nga.sf.LineString;
-import mil.nga.sf.Point;
-import mil.nga.sf.Polygon;
+import org.locationtech.jts.geom.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,21 +44,22 @@ public class WayMapping extends GeometryMapping<Way> {
         "geom",
         way -> {
           try {
+            GeometryFactory geometryFactory = new GeometryFactory();
             List<Long> ids = way.getNodes();
             if (ids.get(0).equals(ids.get(ids.size() - 1)) && ids.size() > 3) {
               List<Node> nodes = cache.getAll(ids);
-              List<Point> points = new ArrayList<>();
+              List<Coordinate> points = new ArrayList<>();
               for (Node node : nodes) {
-                points.add(new Point(node.getLon(), node.getLat()));
+                points.add(new Coordinate(node.getLon(), node.getLat()));
               }
-              return new Polygon(new LineString(points));
+              return geometryFactory.createPolygon(points.toArray(new Coordinate[0]));
             } else if (ids.size() > 1) {
               List<Node> nodes = cache.getAll(ids);
-              List<Point> points = new ArrayList<>();
+              List<Coordinate> points = new ArrayList<>();
               for (Node node : nodes) {
-                points.add(new Point(node.getLon(), node.getLat()));
+                points.add(new Coordinate(node.getLon(), node.getLat()));
               }
-              return new LineString(points);
+              return geometryFactory.createLineString(points.toArray(new Coordinate[0]));
             } else {
               return null;
             }

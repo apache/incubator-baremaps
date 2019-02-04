@@ -2,8 +2,9 @@ package io.gazetteer.osm.postgis;
 
 import io.gazetteer.osm.domain.Entity;
 import io.gazetteer.osm.domain.Node;
-import mil.nga.sf.Geometry;
-import mil.nga.sf.Point;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -23,7 +24,7 @@ public class NodeMapping extends GeometryMapping<Node> {
   private final Function<Node, Map<String, String>> getTags = node -> node.getInfo().getTags();
 
   private final Function<Node, Geometry> getGeometry =
-      node -> new Point(node.getLon(), node.getLat());
+      node -> new GeometryFactory().createPoint(new Coordinate(node.getLon(), node.getLat()));
 
   public NodeMapping() {
     super("public", "osm_nodes");

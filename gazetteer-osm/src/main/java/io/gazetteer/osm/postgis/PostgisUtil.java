@@ -3,6 +3,7 @@ package io.gazetteer.osm.postgis;
 import org.apache.commons.dbcp2.*;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.locationtech.jts.geom.GeometryFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;

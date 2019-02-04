@@ -2,7 +2,7 @@ package io.gazetteer.tilesource.postgis;
 
 import com.google.common.base.Joiner;
 import io.gazetteer.tilesource.XYZ;
-import mil.nga.sf.GeometryEnvelope;
+import org.locationtech.jts.geom.Envelope;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -61,10 +61,14 @@ public class PostgisQueryBuilder {
   }
 
   protected static String buildSource(XYZ xyz, PostgisLayer layer) {
-    GeometryEnvelope bbox = xyz.envelope();
-    String envelope =
+    Envelope envelope = xyz.envelope();
+    String value =
         MessageFormat.format(
-            SQL_ENVELOPE, bbox.getMinX(), bbox.getMinY(), bbox.getMaxX(), bbox.getMaxY());
-    return MessageFormat.format(SQL_SOURCE, layer.getName(), layer.getSql(), envelope);
+            SQL_ENVELOPE,
+            envelope.getMinX(),
+            envelope.getMinY(),
+            envelope.getMaxX(),
+            envelope.getMaxY());
+    return MessageFormat.format(SQL_SOURCE, layer.getName(), layer.getSql(), value);
   }
 }

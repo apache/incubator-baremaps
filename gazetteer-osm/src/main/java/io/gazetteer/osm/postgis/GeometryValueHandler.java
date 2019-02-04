@@ -1,21 +1,20 @@
 package io.gazetteer.osm.postgis;
 
 import de.bytefish.pgbulkinsert.pgsql.handlers.BaseValueHandler;
-import mil.nga.sf.Geometry;
-import mil.nga.sf.util.ByteWriter;
-import mil.nga.sf.wkb.GeometryWriter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKBWriter;
 
 import java.io.DataOutputStream;
 import java.nio.ByteOrder;
+
+import static org.locationtech.jts.io.WKBConstants.wkbNDR;
 
 public class GeometryValueHandler extends BaseValueHandler<Geometry> {
 
   @Override
   protected void internalHandle(DataOutputStream buffer, Geometry value) throws Exception {
-    ByteWriter writer = new ByteWriter();
-    writer.setByteOrder(ByteOrder.LITTLE_ENDIAN);
-    GeometryWriter.writeGeometry(writer, value);
-    byte[] wkb = writer.getBytes();
+    WKBWriter writer = new WKBWriter(2, wkbNDR);
+    byte[] wkb = writer.write(value);
     buffer.writeInt(wkb.length);
     buffer.write(wkb);
   }

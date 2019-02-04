@@ -3,7 +3,7 @@ package io.gazetteer.osm.postgis;
 import de.bytefish.pgbulkinsert.mapping.AbstractMapping;
 import de.bytefish.pgbulkinsert.pgsql.handlers.IValueHandlerProvider;
 import de.bytefish.pgbulkinsert.pgsql.handlers.ValueHandlerProvider;
-import mil.nga.sf.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 import java.util.function.Function;
 

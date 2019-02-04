@@ -1,7 +1,7 @@
 package io.gazetteer.tilesource;
 
 import com.google.common.base.Objects;
-import mil.nga.sf.GeometryEnvelope;
+import org.locationtech.jts.geom.Envelope;
 
 public final class XYZ {
 
@@ -26,12 +26,12 @@ public final class XYZ {
     return z;
   }
 
-  public GeometryEnvelope envelope() {
+  public Envelope envelope() {
     double north = tile2lat(y, z);
     double south = tile2lat(y + 1, z);
     double west = tile2lon(x, z);
     double east = tile2lon(x + 1, z);
-    return new GeometryEnvelope(west, south, east, north);
+    return new Envelope(west, east, south, north);
   }
 
   /** {@inheritDoc} */
