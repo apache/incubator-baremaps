@@ -1,8 +1,9 @@
 package io.gazetteer.tileserver;
 
-import io.gazetteer.postgis.PostgisConfig;
-import io.gazetteer.postgis.PostgisLayer;
-import io.gazetteer.postgis.PostgisTileSource;
+import io.gazetteer.tilesource.TileSource;
+import io.gazetteer.tilesource.postgis.PostgisConfig;
+import io.gazetteer.tilesource.postgis.PostgisLayer;
+import io.gazetteer.tilesource.postgis.PostgisTileSource;
 import io.helidon.webserver.*;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -23,7 +24,7 @@ public class TileServer implements Runnable {
   public void run() {
     try {
       List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(file)).getLayers();
-      PostgisTileSource tileSource = new PostgisTileSource(layers);
+      TileSource tileSource = new PostgisTileSource(layers);
       ServerConfiguration serverConfig = ServerConfiguration.builder().port(8081).build();
       Service staticContent =
           StaticContentSupport.builder("/www", this.getClass().getClassLoader())

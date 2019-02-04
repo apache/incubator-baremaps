@@ -39,20 +39,9 @@
     <dependencies>
         <dependency>
             <groupId>io.gazetteer</groupId>
-            <artifactId>gazetteer-core</artifactId>
+            <artifactId>gazetteer-tilesource</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>io.gazetteer</groupId>
-            <artifactId>gazetteer-mbtiles</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>io.gazetteer</groupId>
-            <artifactId>gazetteer-postgis</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-
     </dependencies>
 
 
