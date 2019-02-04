@@ -3,15 +3,15 @@ package io.gazetteer.osm.osmpbf;
 import io.gazetteer.osm.domain.Node;
 import io.gazetteer.osm.domain.Relation;
 import io.gazetteer.osm.domain.Way;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
 import java.io.IOException;
 import java.util.List;
 
 import static io.gazetteer.osm.OSMTestUtil.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class DataBlockReaderTest {
 

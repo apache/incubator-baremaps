@@ -2,13 +2,13 @@ package io.gazetteer.osm.osmxml;
 
 import io.gazetteer.osm.domain.Change;
 import io.gazetteer.osm.util.Accumulator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Spliterator;
 
 import static io.gazetteer.osm.OSMTestUtil.OSC_XML_DATA;
 import static io.gazetteer.osm.osmxml.ChangeUtil.spliterator;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ChangeUtilTest {
 

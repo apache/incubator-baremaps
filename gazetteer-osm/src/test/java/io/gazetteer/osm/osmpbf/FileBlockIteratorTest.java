@@ -1,14 +1,13 @@
 package io.gazetteer.osm.osmpbf;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_DATA;
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FileBlockIteratorTest {
 
@@ -22,13 +21,15 @@ public class FileBlockIteratorTest {
     assertFalse(reader.hasNext());
   }
 
-  @Test(expected = NoSuchElementException.class)
+  @Test
   public void nextException() throws FileNotFoundException {
-    Iterator<FileBlock> reader = PBFUtil.iterator(OSM_PBF_DATA);
-    while (reader.hasNext()) {
+    assertThrows(NoSuchElementException.class, () -> {
+      Iterator<FileBlock> reader = PBFUtil.iterator(OSM_PBF_DATA);
+      while (reader.hasNext()) {
+        reader.next();
+      }
       reader.next();
-    }
-    reader.next();
+    });
   }
 
   /*@Test

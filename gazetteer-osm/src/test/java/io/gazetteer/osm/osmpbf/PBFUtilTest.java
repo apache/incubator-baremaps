@@ -2,7 +2,7 @@ package io.gazetteer.osm.osmpbf;
 
 import io.gazetteer.osm.util.Accumulator;
 import io.gazetteer.osm.util.WrappedException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,8 +11,7 @@ import java.util.stream.Collectors;
 
 import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_DATA;
 import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_INVALID_BLOCK;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PBFUtilTest {
 
@@ -52,9 +51,11 @@ public class PBFUtilTest {
             == 9);
   }
 
-  @Test(expected = WrappedException.class)
+  @Test
   public void toDataBlockException() {
-    PBFUtil.toDataBlock(OSM_PBF_INVALID_BLOCK);
+    assertThrows(WrappedException.class, () -> {
+      PBFUtil.toDataBlock(OSM_PBF_INVALID_BLOCK);
+    });
   }
 
   @Test

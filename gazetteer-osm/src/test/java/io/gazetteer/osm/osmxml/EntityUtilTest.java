@@ -2,12 +2,12 @@ package io.gazetteer.osm.osmxml;
 
 import io.gazetteer.osm.domain.Entity;
 import io.gazetteer.osm.util.Accumulator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Spliterator;
 
 import static io.gazetteer.osm.OSMTestUtil.OSM_XML_DATA;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EntityUtilTest {
 

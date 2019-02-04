@@ -2,14 +2,13 @@ package io.gazetteer.mbtiles;
 
 import io.gazetteer.core.Tile;
 import io.gazetteer.core.XYZ;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MBTilesUtilTest {
 
@@ -39,9 +38,9 @@ public class MBTilesUtilTest {
     String database = getClass().getClassLoader().getResource("schema.db").getPath();
     Connection connection = DriverManager.getConnection("jdbc:sqlite:" + database);
     Tile t1 = MBTilesUtil.getTile(connection, new XYZ(0, 0, 0));
-    Assert.assertNotNull(t1);
+    assertNotNull(t1);
     Tile t2 = MBTilesUtil.getTile(connection, new XYZ(1, 1, 1));
-    Assert.assertNull(t2);
+    assertNull(t2);
   }
 
   @Test
@@ -60,6 +59,6 @@ public class MBTilesUtilTest {
     Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
     MBTilesUtil.createDatabase(connection);
     MBTilesUtil.setTile(connection, new XYZ(0, 0, 0), new Tile("test".getBytes()));
-    Assert.assertNotNull(MBTilesUtil.getTile(connection, new XYZ(0, 0, 0)));
+    assertNotNull(MBTilesUtil.getTile(connection, new XYZ(0, 0, 0)));
   }
 }

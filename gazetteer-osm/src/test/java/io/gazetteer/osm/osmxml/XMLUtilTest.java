@@ -4,14 +4,14 @@ import io.gazetteer.osm.domain.Member;
 import io.gazetteer.osm.domain.Node;
 import io.gazetteer.osm.domain.Relation;
 import io.gazetteer.osm.domain.Way;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.events.XMLEvent;
 import java.util.Arrays;
 
 import static io.gazetteer.osm.OSMTestUtil.OSM_XML_DATA;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class XMLUtilTest {
 
@@ -29,8 +29,8 @@ public class XMLUtilTest {
         assertEquals(10, node.getInfo().getUser().getId());
         assertEquals("user10", node.getInfo().getUser().getName());
         assertEquals(11, node.getInfo().getChangeset());
-        assertEquals(-1, node.getLat(), 0);
-        assertEquals(-2, node.getLon(), 0);
+        assertEquals(-1, node.getLat());
+        assertEquals(-2, node.getLon());
         assertEquals("Me1", node.getInfo().getTags().get("created_by"));
         break;
       }

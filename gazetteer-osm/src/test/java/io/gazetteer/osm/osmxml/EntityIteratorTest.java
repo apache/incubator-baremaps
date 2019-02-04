@@ -1,14 +1,13 @@
 package io.gazetteer.osm.osmxml;
 
 import io.gazetteer.osm.domain.Entity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_DATA;
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EntityIteratorTest {
 
@@ -22,12 +21,14 @@ public class EntityIteratorTest {
     assertFalse(reader.hasNext());
   }
 
-  @Test(expected = NoSuchElementException.class)
+  @Test
   public void nextException() throws Exception {
-    Iterator<Entity> reader = EntityUtil.iterator(OSM_PBF_DATA);
-    while (reader.hasNext()) {
+    assertThrows(NoSuchElementException.class, () -> {
+      Iterator<Entity> reader = EntityUtil.iterator(OSM_PBF_DATA);
+      while (reader.hasNext()) {
+        reader.next();
+      }
       reader.next();
-    }
-    reader.next();
+    });
   }
 }

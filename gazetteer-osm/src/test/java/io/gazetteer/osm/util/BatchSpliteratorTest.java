@@ -1,15 +1,14 @@
 package io.gazetteer.osm.util;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Spliterator;
 
 import static java.util.Spliterator.*;
-import static junit.framework.TestCase.assertNotNull;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BatchSpliteratorTest {
 
@@ -62,7 +61,7 @@ public class BatchSpliteratorTest {
         spliterator.characteristics(), ORDERED | DISTINCT | NONNULL | IMMUTABLE | SUBSIZED);
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
     List<Integer> ints = new ArrayList<>();
     for (int i = 0; i < spliteratorSize; i++) {

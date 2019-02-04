@@ -1,15 +1,14 @@
 package io.gazetteer.osm.postgis;
 
-import io.gazetteer.osm.IntegrationTest;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.sql.*;
 
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Category(IntegrationTest.class)
+@Tag("integration")
 public class PostgisUtilTest {
 
   public static final String url = "jdbc:postgresql://localhost:5432/osm?user=osm&password=osm";
