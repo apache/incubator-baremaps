@@ -22,7 +22,7 @@
 
     <profiles>
         <profile>
-            <id>IT</id>
+            <id>integration</id>
             <build>
                 <plugins>
                     <plugin>
@@ -71,7 +71,7 @@
                     <includes>
                         <include>**/*.class</include>
                     </includes>
-                    <excludedGroups>io.gazetteer.osm.IntegrationTest</excludedGroups>
+                    <excludedGroups>integration</excludedGroups>
                 </configuration>
                 <dependencies>
                     <dependency>
