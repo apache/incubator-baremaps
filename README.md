@@ -1,9 +1,9 @@
 # Gazetteer
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Build Status](https://travis-ci.com/bchapuis/gazetteer.svg?branch=master)](https://travis-ci.com/bchapuis/gazetteer)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9bb5efb0bea54a868cc70b0d9e564767)](https://app.codacy.com/app/bchapuis/gazetteer?utm_source=github.com&utm_medium=referral&utm_content=bchapuis/gazetteer&utm_campaign=Badge_Grade_Dashboard)
+[![CircleCI](https://circleci.com/gh/gazetteerio/gazetteer.svg?style=svg)](https://circleci.com/gh/gazetteerio/gazetteer)
+[![Codacy](https://api.codacy.com/project/badge/Grade/9bb5efb0bea54a868cc70b0d9e564767)](https://app.codacy.com/app/bchapuis/gazetteer?utm_source=github.com&utm_medium=referral&utm_content=bchapuis/gazetteer&utm_campaign=Badge_Grade_Dashboard)
 [![codecov](https://codecov.io/gh/bchapuis/gazetteer/branch/master/graph/badge.svg)](https://codecov.io/gh/bchapuis/gazetteer)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fgazetteerio%2Fgazetteer.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fgazetteerio%2Fgazetteer?ref=badge_shield)
 
 Gazetteer is a work in progress aimed at simplifying the way we generate and publish vector tiles. 
