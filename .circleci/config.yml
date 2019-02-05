@@ -32,16 +32,13 @@ jobs:
 
       - run: mvn install
 
+      - run: mvn test
+
+      - run: "mvn cobertura:cobertura"
+
+      - run: "bash <(curl -s https://codecov.io/bash)"
+
       - save_cache:
           paths:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
-
-      # run tests
-      - run: mvn test
-
-      # run code coverage
-      - run: "mvn cobertura:cobertura"
-
-      # send code coverage to codacy
-      - run: "bash <(curl -s https://codecov.io/bash)"
