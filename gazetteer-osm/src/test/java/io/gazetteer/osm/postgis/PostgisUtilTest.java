@@ -8,12 +8,12 @@ import java.sql.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Tag("integration")
 public class PostgisUtilTest {
 
   public static final String url = "jdbc:postgresql://localhost:5432/osm?user=osm&password=osm";
 
   @Test
+  @Tag("integration")
   public void resetDatabase() throws SQLException {
     try (Connection connection = DriverManager.getConnection(url)) {
       PostgisUtil.createExtensions(connection);

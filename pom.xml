@@ -39,8 +39,9 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
-                            <!-- An empty element doesn't overwrite, so we exclude Serializable -->
-                            <excludedGroups>java.io.Serializable</excludedGroups>
+                            <properties>
+                                <excludeTags>none</excludeTags>
+                            </properties>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -81,7 +82,9 @@
                     <includes>
                         <include>**/*.class</include>
                     </includes>
-                    <excludedGroups>integration</excludedGroups>
+                    <properties>
+                        <excludeTags>integration</excludeTags>
+                    </properties>
                 </configuration>
                 <dependencies>
                     <dependency>
