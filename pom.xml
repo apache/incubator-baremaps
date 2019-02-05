@@ -18,6 +18,16 @@
 
         <version.lib.junit>5.1.0</version.lib.junit>
         <version.lib.testng>6.13.1</version.lib.testng>
+        <version.lib.slf4j>1.7.25</version.lib.slf4j>
+        <version.lib.logback>1.2.3</version.lib.logback>
+        <version.lib.jts>1.16.0</version.lib.jts>
+        <version.lib.dbcp2>2.5.0</version.lib.dbcp2>
+        <version.lib.postgresql>42.2.5</version.lib.postgresql>
+        <version.lib.sqlite>3.21.0</version.lib.sqlite>
+        <version.lib.caffeine>2.6.2</version.lib.caffeine>
+        <version.lib.helidon>0.11.0</version.lib.helidon>
+        <version.lib.guava>27.0.1-jre</version.lib.guava>
+        <version.lib.picocli>3.9.1</version.lib.picocli>
     </properties>
 
     <profiles>
@@ -99,77 +109,77 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>27.0.1-jre</version>
+            <version>${version.lib.guava}</version>
         </dependency>
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
-            <version>3.9.1</version>
+            <version>${version.lib.picocli}</version>
         </dependency>
         <dependency>
             <groupId>io.helidon.webserver</groupId>
             <artifactId>helidon-webserver</artifactId>
-            <version>0.11.0</version>
+            <version>${version.lib.helidon}</version>
         </dependency>
         <dependency>
             <groupId>io.helidon.config</groupId>
             <artifactId>helidon-config</artifactId>
-            <version>0.11.0</version>
+            <version>${version.lib.helidon}</version>
         </dependency>
         <dependency>
             <groupId>io.helidon.config</groupId>
             <artifactId>helidon-config-yaml</artifactId>
-            <version>0.11.0</version>
+            <version>${version.lib.helidon}</version>
         </dependency>
         <dependency>
             <groupId>io.helidon.config</groupId>
             <artifactId>helidon-config-object-mapping</artifactId>
-            <version>0.11.0</version>
+            <version>${version.lib.helidon}</version>
         </dependency>
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>2.6.2</version>
+            <version>${version.lib.caffeine}</version>
         </dependency>
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.21.0</version>
+            <version>${version.lib.sqlite}</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.5</version>
+            <version>${version.lib.postgresql}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
-            <version>2.5.0</version>
+            <version>${version.lib.dbcp2}</version>
         </dependency>
         <dependency>
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
-            <version>1.16.0</version>
+            <version>${version.lib.jts}</version>
         </dependency>
         <dependency>
             <groupId>org.locationtech.jts.io</groupId>
             <artifactId>jts-io-common</artifactId>
-            <version>1.16.0</version>
+            <version>${version.lib.jts}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.2.3</version>
+            <version>${version.lib.logback}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <version>${version.lib.logback}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
+            <version>${version.lib.slf4j}</version>
         </dependency>
 
         <!-- Testing libraries -->
