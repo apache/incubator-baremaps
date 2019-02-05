@@ -37,6 +37,11 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
-      # run tests!
+      # run tests
       - run: mvn test
 
+      # run code coverage
+      - run: "mvn cobertura:cobertura"
+
+      # send code coverage to codacy
+      - run: "bash <(curl -s https://codecov.io/bash)"
