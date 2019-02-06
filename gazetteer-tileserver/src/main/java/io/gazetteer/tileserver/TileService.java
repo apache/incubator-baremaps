@@ -1,7 +1,7 @@
 package io.gazetteer.tileserver;
 
-import io.gazetteer.tilesource.XYZ;
 import io.gazetteer.tilesource.TileSource;
+import io.gazetteer.tilesource.XYZ;
 import io.helidon.webserver.Routing;
 import io.helidon.webserver.ServerRequest;
 import io.helidon.webserver.ServerResponse;

@@ -5,7 +5,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKBWriter;
 
 import java.io.DataOutputStream;
-import java.nio.ByteOrder;
 
 import static org.locationtech.jts.io.WKBConstants.wkbNDR;
 

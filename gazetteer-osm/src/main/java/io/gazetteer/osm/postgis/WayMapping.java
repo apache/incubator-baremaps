@@ -5,7 +5,8 @@ import io.gazetteer.osm.domain.Way;
 import io.gazetteer.osm.rocksdb.EntityStore;
 import io.gazetteer.osm.rocksdb.EntityStoreException;
 import io.gazetteer.osm.util.WrappedException;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
