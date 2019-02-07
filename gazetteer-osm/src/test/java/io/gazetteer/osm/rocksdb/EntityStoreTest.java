@@ -27,7 +27,7 @@ public class EntityStoreTest {
   @BeforeEach
   public void setUp() throws Exception {
     RocksDB db = RocksDB.open(new Options().setCreateIfMissing(true), Files.createTempDir().getPath());
-    entityStore = RocksdbEntityStore.open(db, "nodes", new NodeEntityType());
+    entityStore = RocksdbEntityStore.open(db, "nodes", new NodeType());
   }
 
   @AfterEach

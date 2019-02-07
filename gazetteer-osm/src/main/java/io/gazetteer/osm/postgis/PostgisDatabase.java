@@ -7,7 +7,10 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class PostgisUtil {
+import static io.gazetteer.osm.postgis.NodeTable.CREATE_TABLE_NODES;
+import static io.gazetteer.osm.postgis.NodeTable.DROP_TABLE_NODES;
+
+public class PostgisDatabase {
 
   public static final String CREATE_EXTENSION_HSTORE = "CREATE EXTENSION IF NOT EXISTS hstore";
 
@@ -16,8 +19,6 @@ public class PostgisUtil {
   public static final String DROP_TABLE_INFO = "DROP TABLE IF EXISTS osm_info";
 
   public static final String DROP_TABLE_USERS = "DROP TABLE IF EXISTS osm_users";
-
-  public static final String DROP_TABLE_NODES = "DROP TABLE IF EXISTS osm_nodes";
 
   public static final String DROP_TABLE_WAYS = "DROP TABLE IF EXISTS osm_ways";
 
@@ -28,17 +29,6 @@ public class PostgisUtil {
 
   public static final String CREATE_TABLE_USERS =
       "CREATE TABLE IF NOT EXISTS osm_users (" + "id int NOT NULL," + "name text NOT NULL" + ");";
-
-  public static final String CREATE_TABLE_NODES =
-      "CREATE TABLE IF NOT EXISTS osm_nodes ("
-          + "id bigint NOT NULL,"
-          + "version int NOT NULL,"
-          + "uid int NOT NULL,"
-          + "timestamp timestamp without time zone NOT NULL,"
-          + "changeset bigint NOT NULL,"
-          + "tags hstore,"
-          + "geom geometry(point)"
-          + ")";
 
   public static final String CREATE_TABLE_WAYS =
       "CREATE TABLE IF NOT EXISTS osm_ways ("
@@ -66,25 +56,12 @@ public class PostgisUtil {
           + "geom geometry"
           + ")";
 
-  public static final String CREATE_INDEX_NODES =
-      "CREATE INDEX IF NOT EXISTS osm_nodes_idx ON osm_nodes USING gist(geom)";
-
   public static final String CREATE_INDEX_WAYS =
       "CREATE INDEX IF NOT EXISTS osm_ways_idx ON osm_ways USING gist(geom)";
 
   public static final String CREATE_INDEX_RELATIONS =
       "CREATE INDEX IF NOT EXISTS osm_relations_idx ON osm_relations USING gist(geom)";
 
-  public static final String SELECT_NODE =
-      "SELECT id, version, uid, timestamp, changeset, tags, st_asbinary(geom) FROM osm_nodes WHERE id = ?";
-
-  public static final String INSERT_NODE =
-      "INSERT INTO osm_nodes (id, version, uid, timestamp, changeset, tags, geom) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-  public static final String UPDATE_NODE =
-      "UPDATE osm_nodes SET version = ?, uid = ?, timestamp = ?, changeset = ?, tags = ?, geom = ? WHERE id = ?";
-
-  public static final String DELETE_NODE = "DELETE FROM osm_nodes WHERE id = ?";
 
   public static final String SELECT_WAY =
       "SELECT id, version, uid, timestamp, changeset, tags, osm_nodes, st_asbinary(geom) FROM osm_ways WHERE id = ?";

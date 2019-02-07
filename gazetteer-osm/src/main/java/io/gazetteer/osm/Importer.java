@@ -6,11 +6,11 @@ import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
 import io.gazetteer.osm.postgis.PostgisConsumer;
-import io.gazetteer.osm.postgis.PostgisUtil;
-import io.gazetteer.osm.rocksdb.NodeEntityType;
+import io.gazetteer.osm.postgis.PostgisDatabase;
+import io.gazetteer.osm.rocksdb.NodeType;
 import io.gazetteer.osm.rocksdb.RocksdbConsumer;
 import io.gazetteer.osm.rocksdb.RocksdbEntityStore;
-import io.gazetteer.osm.rocksdb.WayEntityType;
+import io.gazetteer.osm.rocksdb.WayType;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import org.rocksdb.CompressionType;
@@ -65,9 +65,9 @@ public class Importer implements Runnable {
           .forEach(File::delete);
 
       try (Connection connection = DriverManager.getConnection(postgres)) {
-        PostgisUtil.createExtensions(connection);
-        PostgisUtil.dropTables(connection);
-        PostgisUtil.createTables(connection);
+        PostgisDatabase.createExtensions(connection);
+        PostgisDatabase.dropTables(connection);
+        PostgisDatabase.createTables(connection);
       }
 
       final Options options =
@@ -75,8 +75,8 @@ public class Importer implements Runnable {
 
       // Create the postgres
       try (RocksDB db = RocksDB.open(options, rocksdb.getPath());
-           RocksdbEntityStore<Node> nodeStore = RocksdbEntityStore.open(db, "nodes", new NodeEntityType());
-           RocksdbEntityStore<Way> wayStore = RocksdbEntityStore.open(db, "ways", new WayEntityType())) {
+           RocksdbEntityStore<Node> nodeStore = RocksdbEntityStore.open(db, "nodes", new NodeType());
+           RocksdbEntityStore<Way> wayStore = RocksdbEntityStore.open(db, "ways", new WayType())) {
         ForkJoinPool executor = new ForkJoinPool(threads);
 
         Osmformat.HeaderBlock header =
@@ -90,7 +90,7 @@ public class Importer implements Runnable {
         Stream<DataBlock> rocksdbStream = PBFUtil.dataBlocks(file);
         executor.submit(() -> rocksdbStream.forEach(rocksdbConsumer)).get();
 
-        PoolingDataSource pool = PostgisUtil.createPoolingDataSource(postgres);
+        PoolingDataSource pool = PostgisDatabase.createPoolingDataSource(postgres);
         PostgisConsumer postgisConsumer = new PostgisConsumer(nodeStore, pool);
         Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(file);
         executor.submit(() -> postgisStream.forEach(postgisConsumer)).get();

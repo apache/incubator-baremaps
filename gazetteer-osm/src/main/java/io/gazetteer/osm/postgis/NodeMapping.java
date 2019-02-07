@@ -2,9 +2,6 @@ package io.gazetteer.osm.postgis;
 
 import io.gazetteer.osm.model.Entity;
 import io.gazetteer.osm.model.Node;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -23,9 +20,6 @@ public class NodeMapping extends GeometryMapping<Node> {
 
   private final Function<Node, Map<String, String>> getTags = node -> node.getInfo().getTags();
 
-  private final Function<Node, Geometry> getGeometry =
-      node -> new GeometryFactory().createPoint(new Coordinate(node.getLon(), node.getLat()));
-
   public NodeMapping() {
     super("public", "osm_nodes");
     mapLong("id", (ToLongFunction<Node>) NodeMapping::getId);
@@ -34,7 +28,7 @@ public class NodeMapping extends GeometryMapping<Node> {
     mapLong("timestamp", getTimestamp);
     mapLong("changeset", getChangeset);
     mapHstore("tags", getTags);
-    mapGeometry("geom", getGeometry);
+    mapGeometry("geom", GeometryUtil::asGeometry);
   }
 
   public static final <E extends Entity> Long getId(E entity) {

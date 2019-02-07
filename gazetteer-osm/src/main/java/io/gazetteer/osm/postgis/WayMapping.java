@@ -5,12 +5,8 @@ import io.gazetteer.osm.model.EntityStoreException;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.util.WrappedException;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
@@ -45,25 +41,7 @@ public class WayMapping extends GeometryMapping<Way> {
         "geom",
         way -> {
           try {
-            GeometryFactory geometryFactory = new GeometryFactory();
-            List<Long> ids = way.getNodes();
-            if (ids.get(0).equals(ids.get(ids.size() - 1)) && ids.size() > 3) {
-              List<Node> nodes = cache.getAll(ids);
-              List<Coordinate> points = new ArrayList<>();
-              for (Node node : nodes) {
-                points.add(new Coordinate(node.getLon(), node.getLat()));
-              }
-              return geometryFactory.createPolygon(points.toArray(new Coordinate[0]));
-            } else if (ids.size() > 1) {
-              List<Node> nodes = cache.getAll(ids);
-              List<Coordinate> points = new ArrayList<>();
-              for (Node node : nodes) {
-                points.add(new Coordinate(node.getLon(), node.getLat()));
-              }
-              return geometryFactory.createLineString(points.toArray(new Coordinate[0]));
-            } else {
-              return null;
-            }
+            return GeometryUtil.asGeometry(way, cache);
           } catch (EntityStoreException e) {
             throw new WrappedException(e);
           }

@@ -5,7 +5,7 @@ import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.User;
 import io.gazetteer.osm.model.Way;
 
-public class WayEntityType implements EntityType<Way> {
+public class WayType implements EntityType<Way> {
 
   @Override
   public byte[] serialize(Way entity) {

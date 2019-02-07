@@ -5,7 +5,7 @@ import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.User;
 
-public class NodeEntityType implements EntityType<Node> {
+public class NodeType implements EntityType<Node> {
 
   @Override
   public byte[] serialize(Node entity) {
