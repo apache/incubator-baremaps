@@ -20,8 +20,8 @@ public class GeometryUtil {
     return new GeometryFactory().createPoint(new Coordinate(node.getLon(), node.getLat()));
   }
 
-  public static Geometry asGeometry(Way way, EntityStore<Node> nodeStore)
-      throws EntityStoreException {
+  public static Geometry asGeometry(Way way, DataStore<Long, Node> nodeStore)
+      throws DataStoreException {
     GeometryFactory geometryFactory = new GeometryFactory();
     List<Long> ids = way.getNodes();
     List<Node> nodes = nodeStore.getAll(ids);
@@ -40,10 +40,10 @@ public class GeometryUtil {
   }
 
   public static Geometry asGeometryWithWrappedException(
-      Way way, EntityStore<Node> nodeEntityStore) {
+      Way way, DataStore<Long, Node> nodeEntityStore) {
     try {
       return GeometryUtil.asGeometry(way, nodeEntityStore);
-    } catch (EntityStoreException e) {
+    } catch (DataStoreException e) {
       throw new WrappedException(e);
     }
   }

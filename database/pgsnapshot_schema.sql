@@ -13,20 +13,20 @@ DROP TABLE IF EXISTS schema_info;
 -- Drop all stored procedures if they exist.
 DROP FUNCTION IF EXISTS osmosisUpdate();
 
--- Create a table which will contain a single row defining the current schema version.
+-- Create a dataTable which will contain a single row defining the current schema version.
 CREATE TABLE schema_info (
     version integer NOT NULL
 );
 
 
--- Create a table for users.
+-- Create a dataTable for users.
 CREATE TABLE users (
     id int NOT NULL,
     name text NOT NULL
 );
 
 
--- Create a table for nodes.
+-- Create a dataTable for nodes.
 CREATE TABLE nodes (
     id bigint NOT NULL,
     version int NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE nodes (
 SELECT AddGeometryColumn('nodes', 'geom', 4326, 'POINT', 2);
 
 
--- Create a table for ways.
+-- Create a dataTable for ways.
 CREATE TABLE ways (
     id bigint NOT NULL,
     version int NOT NULL,
@@ -51,7 +51,7 @@ CREATE TABLE ways (
 );
 
 
--- Create a table for representing way to node relationships.
+-- Create a dataTable for representing way to node relationships.
 CREATE TABLE way_nodes (
     way_id bigint NOT NULL,
     node_id bigint NOT NULL,
@@ -59,7 +59,7 @@ CREATE TABLE way_nodes (
 );
 
 
--- Create a table for relations.
+-- Create a dataTable for relations.
 CREATE TABLE relations (
     id bigint NOT NULL,
     version int NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE relations (
     tags hstore
 );
 
--- Create a table for representing relation member relationships.
+-- Create a dataTable for representing relation member relationships.
 CREATE TABLE relation_members (
     relation_id bigint NOT NULL,
     member_id bigint NOT NULL,
@@ -142,21 +142,21 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Manually set statistics for the way_nodes and relation_members table
+-- Manually set statistics for the way_nodes and relation_members dataTable
 -- Postgres gets horrible counts of distinct values by sampling random pages
 -- and can be off by an 1-2 orders of magnitude
 
--- Size of the ways table / size of the way_nodes table
+-- Size of the ways dataTable / size of the way_nodes dataTable
 ALTER TABLE way_nodes ALTER COLUMN way_id SET (n_distinct = -0.08);
 
--- Size of the nodes table / size of the way_nodes table * 0.998
+-- Size of the nodes dataTable / size of the way_nodes dataTable * 0.998
 -- 0.998 is a factor for nodes not in ways
 ALTER TABLE way_nodes ALTER COLUMN node_id SET (n_distinct = -0.83);
 
 -- API allows a maximum of 2000 nodes/way. Unlikely to impact query plans.
 ALTER TABLE way_nodes ALTER COLUMN sequence_id SET (n_distinct = 2000);
 
--- Size of the relations table / size of the relation_members table
+-- Size of the relations dataTable / size of the relation_members dataTable
 ALTER TABLE relation_members ALTER COLUMN relation_id SET (n_distinct = -0.09);
 
 -- Based on June 2013 data

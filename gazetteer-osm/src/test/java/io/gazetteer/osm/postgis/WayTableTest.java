@@ -25,10 +25,10 @@ public class WayTableTest {
   @BeforeEach
   public void createTable() throws SQLException {
     connection = DriverManager.getConnection(URL);
-    table = new WayTable(new EntityStore<Node>() {
+    table = new WayTable(new DataStore<Long, Node>() {
 
       @Override
-      public void add(Node entity) {
+      public void add(Node object) {
 
       }
 
@@ -38,7 +38,7 @@ public class WayTableTest {
       }
 
       @Override
-      public Node get(long id) {
+      public Node get(Long id) {
         return new Node(new Info(id, 1, 1, 1, 1, new HashMap<>()), 1, 1);
       }
 
@@ -50,7 +50,7 @@ public class WayTableTest {
       }
 
       @Override
-      public void delete(long id) {
+      public void delete(Long id) {
 
       }
 

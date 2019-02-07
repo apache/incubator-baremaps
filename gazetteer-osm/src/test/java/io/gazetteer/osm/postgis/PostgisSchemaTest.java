@@ -16,16 +16,16 @@ public class PostgisSchemaTest {
   @Tag("integration")
   public void resetDatabase() throws SQLException {
     try (Connection connection = DriverManager.getConnection(url)) {
-      PostgisDatabase.createExtensions(connection);
+      PostgisSchema.createExtensions(connection);
 
-      PostgisDatabase.dropTables(connection);
+      PostgisSchema.dropTables(connection);
       assertFalse(tableExists("osm_info"));
       assertFalse(tableExists("osm_users"));
       assertFalse(tableExists("osm_nodes"));
       assertFalse(tableExists("osm_ways"));
       assertFalse(tableExists("osm_relations"));
 
-      PostgisDatabase.createTables(connection);
+      PostgisSchema.createTables(connection);
       assertTrue(tableExists("osm_info"));
       assertTrue(tableExists("osm_users"));
       assertTrue(tableExists("osm_nodes"));

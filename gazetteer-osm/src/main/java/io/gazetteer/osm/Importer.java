@@ -1,15 +1,15 @@
 package io.gazetteer.osm;
 
-import io.gazetteer.osm.model.EntityStoreException;
+import io.gazetteer.osm.model.DataStoreException;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
 import io.gazetteer.osm.postgis.PostgisConsumer;
-import io.gazetteer.osm.postgis.PostgisDatabase;
+import io.gazetteer.osm.postgis.PostgisSchema;
 import io.gazetteer.osm.rocksdb.NodeType;
 import io.gazetteer.osm.rocksdb.RocksdbConsumer;
-import io.gazetteer.osm.rocksdb.RocksdbEntityStore;
+import io.gazetteer.osm.rocksdb.RocksdbStore;
 import io.gazetteer.osm.rocksdb.WayType;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
@@ -65,9 +65,9 @@ public class Importer implements Runnable {
           .forEach(File::delete);
 
       try (Connection connection = DriverManager.getConnection(postgres)) {
-        PostgisDatabase.createExtensions(connection);
-        PostgisDatabase.dropTables(connection);
-        PostgisDatabase.createTables(connection);
+        PostgisSchema.createExtensions(connection);
+        PostgisSchema.dropTables(connection);
+        PostgisSchema.createTables(connection);
       }
 
       final Options options =
@@ -75,8 +75,8 @@ public class Importer implements Runnable {
 
       // Create the postgres
       try (RocksDB db = RocksDB.open(options, rocksdb.getPath());
-           RocksdbEntityStore<Node> nodeStore = RocksdbEntityStore.open(db, "nodes", new NodeType());
-           RocksdbEntityStore<Way> wayStore = RocksdbEntityStore.open(db, "ways", new WayType())) {
+           RocksdbStore<Long, Node> nodeStore = RocksdbStore.open(db, "nodes", new NodeType());
+           RocksdbStore<Long, Way> wayStore = RocksdbStore.open(db, "ways", new WayType())) {
         ForkJoinPool executor = new ForkJoinPool(threads);
 
         Osmformat.HeaderBlock header =
@@ -90,7 +90,7 @@ public class Importer implements Runnable {
         Stream<DataBlock> rocksdbStream = PBFUtil.dataBlocks(file);
         executor.submit(() -> rocksdbStream.forEach(rocksdbConsumer)).get();
 
-        PoolingDataSource pool = PostgisDatabase.createPoolingDataSource(postgres);
+        PoolingDataSource pool = PostgisSchema.createPoolingDataSource(postgres);
         PostgisConsumer postgisConsumer = new PostgisConsumer(nodeStore, pool);
         Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(file);
         executor.submit(() -> postgisStream.forEach(postgisConsumer)).get();
@@ -105,7 +105,7 @@ public class Importer implements Runnable {
       e.printStackTrace();
     } catch (SQLException e) {
       e.printStackTrace();
-    } catch (EntityStoreException e) {
+    } catch (DataStoreException e) {
       e.printStackTrace();
     } finally {
       System.out.println("Well done!");

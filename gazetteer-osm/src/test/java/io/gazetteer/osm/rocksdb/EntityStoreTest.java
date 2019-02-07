@@ -1,10 +1,9 @@
 package io.gazetteer.osm.rocksdb;
 
 import com.google.common.io.Files;
-import io.gazetteer.osm.model.EntityStoreException;
+import io.gazetteer.osm.model.DataStoreException;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
-import io.gazetteer.osm.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,12 +21,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class EntityStoreTest {
 
-  private RocksdbEntityStore<Node> entityStore;
+  private RocksdbStore<Long, Node> entityStore;
 
   @BeforeEach
   public void setUp() throws Exception {
     RocksDB db = RocksDB.open(new Options().setCreateIfMissing(true), Files.createTempDir().getPath());
-    entityStore = RocksdbEntityStore.open(db, "nodes", new NodeType());
+    entityStore = RocksdbStore.open(db, "nodes", new NodeType());
   }
 
   @AfterEach
@@ -36,7 +35,7 @@ public class EntityStoreTest {
   }
 
   @Test
-  public void testAddGet() throws EntityStoreException {
+  public void testAddGet() throws DataStoreException {
     Random random = new Random();
     List<Long> ids = LongStream.range(0, 1000).boxed().collect(Collectors.toList());
     List<Node> nodes = ids.stream().map(id -> createNode(id, random)).collect(Collectors.toList());
@@ -47,7 +46,7 @@ public class EntityStoreTest {
   }
 
   @Test
-  public void testAddAllGetAll() throws EntityStoreException {
+  public void testAddAllGetAll() throws DataStoreException {
     Random random = new Random();
     List<Long> ids = LongStream.range(0, 1000).boxed().collect(Collectors.toList());
     List<Node> nodes = ids.stream().map(id -> createNode(id, random)).collect(Collectors.toList());
@@ -58,18 +57,18 @@ public class EntityStoreTest {
 
   @Test
   public void delete() {
-    assertThrows(EntityStoreException.class, () -> {
+    assertThrows(DataStoreException.class, () -> {
       Node node = createNode(1, new Random(1));
       entityStore.add(node);
-      assertNotNull(entityStore.get(1));
-      entityStore.delete(1);
-      entityStore.get(1);
+      assertNotNull(entityStore.get(1l));
+      entityStore.delete(1l);
+      entityStore.get(1l);
     });
   }
 
   @Test
   public void deleteAll() {
-    assertThrows( EntityStoreException.class, () -> {
+    assertThrows( DataStoreException.class, () -> {
       Random random = new Random();
       List<Long> ids = LongStream.range(0, 1000).boxed().collect(Collectors.toList());
       List<Node> nodes = ids.stream().map(id -> createNode(id, random)).collect(Collectors.toList());

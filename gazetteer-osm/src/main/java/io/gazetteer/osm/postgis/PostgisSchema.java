@@ -7,7 +7,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class PostgisDatabase {
+public class PostgisSchema {
 
   public static final String CREATE_EXTENSION_HSTORE = "CREATE EXTENSION IF NOT EXISTS hstore";
 

@@ -1,6 +1,6 @@
 package io.gazetteer.osm.postgis;
 
-import io.gazetteer.osm.model.EntityStore;
+import io.gazetteer.osm.model.DataStore;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Way;
 
@@ -28,7 +28,7 @@ public class WayMapping extends GeometryMapping<Way> {
 
   private final Function<Way, Collection<Long>> getNodes = way -> way.getNodes();
 
-  public WayMapping(EntityStore<Node> nodeStore) {
+  public WayMapping(DataStore<Long, Node> nodeStore) {
     super("public", "osm_ways");
     mapLong("id", getId);
     mapInteger("version", getVersion);

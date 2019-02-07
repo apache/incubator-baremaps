@@ -1,6 +1,6 @@
 package io.gazetteer.osm.postgis;
 
-import io.gazetteer.osm.model.EntityStore;
+import io.gazetteer.osm.model.DataStore;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Way;
@@ -14,7 +14,7 @@ import java.util.Map;
 import static io.gazetteer.osm.postgis.GeometryUtil.asGeometryWithWrappedException;
 import static io.gazetteer.osm.postgis.GeometryUtil.asWKB;
 
-public class WayTable implements EntityTable<Way> {
+public class WayTable implements DataTable<Long, Way> {
 
   public static final String DROP_TABLE = "DROP TABLE IF EXISTS osm_ways";
 
@@ -46,9 +46,9 @@ public class WayTable implements EntityTable<Way> {
 
   public static final String DELETE = "DELETE FROM osm_ways WHERE id = ?";
 
-  private final EntityStore<Node> nodeStore;
+  public final DataStore<Long, Node> nodeStore;
 
-  public WayTable(EntityStore<Node> nodeStore) {
+  public WayTable(DataStore<Long, Node> nodeStore) {
     this.nodeStore = nodeStore;
   }
 
@@ -75,7 +75,6 @@ public class WayTable implements EntityTable<Way> {
   @Override
   public void insert(Connection connection, Way way) throws SQLException {
     Array nodes = connection.createArrayOf("bigint", way.getNodes().toArray());
-
     PreparedStatement statement = connection.prepareStatement(INSERT);
     statement.setLong(1, way.getInfo().getId());
     statement.setInt(2, way.getInfo().getVersion());
@@ -106,7 +105,7 @@ public class WayTable implements EntityTable<Way> {
   }
 
   @Override
-  public Way select(Connection connection, long id) throws SQLException {
+  public Way select(Connection connection, Long id) throws SQLException {
     PreparedStatement statement = connection.prepareStatement(SELECT);
     statement.setLong(1, id);
     ResultSet result = statement.executeQuery();
@@ -130,7 +129,7 @@ public class WayTable implements EntityTable<Way> {
   }
 
   @Override
-  public void delete(Connection connection, long id) throws SQLException {
+  public void delete(Connection connection, Long id) throws SQLException {
     PreparedStatement statement = connection.prepareStatement(DELETE);
     statement.setLong(1, id);
     statement.execute();

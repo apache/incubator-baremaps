@@ -1,7 +1,7 @@
 package io.gazetteer.osm.postgis;
 
 import de.bytefish.pgbulkinsert.PgBulkInsert;
-import io.gazetteer.osm.model.EntityStore;
+import io.gazetteer.osm.model.DataStore;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
@@ -23,7 +23,7 @@ public class PostgisConsumer implements Consumer<DataBlock> {
   private final PgBulkInsert<Way> ways;
   private final PgBulkInsert<Relation> relations;
 
-  public PostgisConsumer(EntityStore<Node> cache, PoolingDataSource pool) {
+  public PostgisConsumer(DataStore<Long, Node> cache, PoolingDataSource pool) {
     checkNotNull(cache);
     checkNotNull(pool);
     this.pool = pool;

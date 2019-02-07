@@ -10,7 +10,7 @@ import java.util.Map;
 import static io.gazetteer.osm.postgis.GeometryUtil.asGeometry;
 import static io.gazetteer.osm.postgis.GeometryUtil.asWKB;
 
-public class NodeTable implements EntityTable<Node> {
+public class NodeTable implements DataTable<Long, Node> {
 
   public static final String DROP_TABLE = "DROP TABLE IF EXISTS osm_nodes";
 
@@ -88,7 +88,7 @@ public class NodeTable implements EntityTable<Node> {
   }
 
   @Override
-  public Node select(Connection connection, long id) throws SQLException {
+  public Node select(Connection connection, Long id) throws SQLException {
     PreparedStatement statement = connection.prepareStatement(SELECT);
     statement.setLong(1, id);
     ResultSet result = statement.executeQuery();
@@ -107,7 +107,7 @@ public class NodeTable implements EntityTable<Node> {
   }
 
   @Override
-  public void delete(Connection connection, long id) throws SQLException {
+  public void delete(Connection connection, Long id) throws SQLException {
     PreparedStatement statement = connection.prepareStatement(DELETE);
     statement.setLong(1, id);
     statement.execute();
