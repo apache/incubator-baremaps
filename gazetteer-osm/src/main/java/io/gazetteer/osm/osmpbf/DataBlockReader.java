@@ -85,9 +85,7 @@ public class DataBlockReader {
         j++; // Skip over the '0' delimiter.
       }
 
-      Info data =
-          new Info(
-              id, version, getTimestamp(timestamp), changeset, new User(uid, getString(sid)), tags);
+      Info data = new Info(id, version, getTimestamp(timestamp), changeset, uid, tags);
       output.add(new Node(data, getLon(lon), getLat(lat)));
     }
   }
@@ -167,17 +165,14 @@ public class DataBlockReader {
     long timestamp = getTimestamp(info.getTimestamp());
     int version = info.getVersion();
     long changeset = info.getChangeset();
-
     int uid = info.getUid();
-    String name = getString(info.getUserSid());
-    User user = new User(uid, name);
 
     Map<String, String> tags = new HashMap<>();
     for (int t = 0; t < keys.size(); t++) {
       tags.put(getString(keys.get(t)), getString(vals.get(t)));
     }
 
-    return new Info(id, version, timestamp, changeset, user, tags);
+    return new Info(id, version, timestamp, changeset, uid, tags);
   }
 
   private String getString(int id) {

@@ -2,7 +2,6 @@ package io.gazetteer.osm.postgis;
 
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
-import io.gazetteer.osm.model.User;
 import org.locationtech.jts.geom.Point;
 
 import java.sql.*;
@@ -67,7 +66,7 @@ public class NodeTable implements EntityTable<Node> {
     PreparedStatement statement = connection.prepareStatement(INSERT);
     statement.setLong(1, node.getInfo().getId());
     statement.setInt(2, node.getInfo().getVersion());
-    statement.setInt(3, node.getInfo().getUser().getId());
+    statement.setInt(3, node.getInfo().getUid());
     statement.setTimestamp(4, new Timestamp(node.getInfo().getTimestamp()));
     statement.setLong(5, node.getInfo().getChangeset());
     statement.setObject(6, node.getInfo().getTags());
@@ -79,7 +78,7 @@ public class NodeTable implements EntityTable<Node> {
   public void update(Connection connection, Node node) throws SQLException {
     PreparedStatement statement = connection.prepareStatement(UPDATE);
     statement.setInt(1, node.getInfo().getVersion());
-    statement.setInt(2, node.getInfo().getUser().getId());
+    statement.setInt(2, node.getInfo().getUid());
     statement.setTimestamp(3, new Timestamp(node.getInfo().getTimestamp()));
     statement.setLong(4, node.getInfo().getChangeset());
     statement.setObject(5, node.getInfo().getTags());
@@ -101,9 +100,7 @@ public class NodeTable implements EntityTable<Node> {
       Map<String, String> tags = (Map<String, String>) result.getObject(5);
       Point point = (Point) asGeometry(result.getBytes(6));
       return new Node(
-          new Info(id, version, timestamp, changeset, new User(uid, null), tags),
-          point.getX(),
-          point.getY());
+          new Info(id, version, timestamp, changeset, uid, tags), point.getX(), point.getY());
     } else {
       throw new IllegalArgumentException();
     }

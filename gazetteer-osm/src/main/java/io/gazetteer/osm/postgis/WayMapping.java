@@ -22,7 +22,7 @@ public class WayMapping extends GeometryMapping<Way> {
 
   private final ToLongFunction<Way> getChangeset = way -> way.getInfo().getChangeset();
 
-  private final ToIntFunction<Way> getUserId = way -> way.getInfo().getUser().getId();
+  private final ToIntFunction<Way> getUserId = way -> way.getInfo().getUid();
 
   private final Function<Way, Map<String, String>> getTags = way -> way.getInfo().getTags();
 

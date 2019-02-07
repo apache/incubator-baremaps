@@ -7,7 +7,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ public class GeometryUtil {
   }
 
   public static Geometry asGeometry(Relation relation) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   public static Geometry asGeometry(byte[] wkb) {

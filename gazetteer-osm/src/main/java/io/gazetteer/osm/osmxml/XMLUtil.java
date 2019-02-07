@@ -110,7 +110,7 @@ public class XMLUtil {
     long changeset = readChangeset(element);
     User user = readUser(element);
     Map<String, String> tags = readTags(children);
-    return new Info(id, version, timestamp, changeset, user, tags);
+    return new Info(id, version, timestamp, changeset, user.getId(), tags);
   }
 
   protected static long readChangeset(StartElement element) {

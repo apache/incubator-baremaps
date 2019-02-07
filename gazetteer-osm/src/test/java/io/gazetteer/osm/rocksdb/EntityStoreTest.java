@@ -83,8 +83,7 @@ public class EntityStoreTest {
   private Node createNode(long id, Random random) {
     Map<String, String> tags = new HashMap<>();
     tags.put(randomString(random), randomString(random));
-    User user = new User(random.nextInt(), randomString(random));
-    Info info = new Info(id, random.nextInt(), random.nextInt(), random.nextInt(), user, tags);
+    Info info = new Info(id, random.nextInt(), random.nextInt(), random.nextInt(), random.nextInt(), tags);
     return new Node(info, random.nextDouble(), random.nextDouble());
   }
 

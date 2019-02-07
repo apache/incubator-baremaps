@@ -12,8 +12,7 @@ public class WayType implements EntityType<Way> {
     return Rocksdb.Way.newBuilder()
         .setId(entity.getInfo().getId())
         .setVersion(entity.getInfo().getVersion())
-        .setUid(entity.getInfo().getUser().getId())
-        .setUser(entity.getInfo().getUser().getName())
+        .setUid(entity.getInfo().getUid())
         .setTimestamp(entity.getInfo().getTimestamp())
         .setChangeset(entity.getInfo().getChangeset())
         .putAllTags(entity.getInfo().getTags())
@@ -25,14 +24,13 @@ public class WayType implements EntityType<Way> {
   @Override
   public Way deserialize(byte[] bytes) throws InvalidProtocolBufferException {
     Rocksdb.Way way = Rocksdb.Way.parseFrom(bytes);
-    User user = new User(way.getUid(), way.getUser());
     Info info =
         new Info(
             way.getId(),
             way.getVersion(),
             way.getTimestamp(),
             way.getChangeset(),
-            user,
+            way.getUid(),
             way.getTagsMap());
     return new Way(info, way.getNodesList());
   }
