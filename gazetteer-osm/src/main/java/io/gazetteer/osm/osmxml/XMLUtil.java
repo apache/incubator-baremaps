@@ -1,6 +1,6 @@
 package io.gazetteer.osm.osmxml;
 
-import io.gazetteer.osm.domain.*;
+import io.gazetteer.osm.model.*;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
@@ -14,7 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static io.gazetteer.osm.domain.User.NO_USER;
+import static io.gazetteer.osm.model.User.NO_USER;
 
 public class XMLUtil {
 

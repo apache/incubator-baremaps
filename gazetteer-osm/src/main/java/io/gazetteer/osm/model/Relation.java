@@ -1,4 +1,4 @@
-package io.gazetteer.osm.domain;
+package io.gazetteer.osm.model;
 
 import com.google.common.base.Objects;
 
@@ -6,17 +6,17 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class Way implements Entity {
+public final class Relation implements Entity {
 
   private final Info info;
 
-  private final List<Long> nodes;
+  private final List<Member> members;
 
-  public Way(Info info, List<Long> nodes) {
+  public Relation(Info info, List<Member> members) {
     checkNotNull(info);
-    checkNotNull(nodes);
+    checkNotNull(members);
     this.info = info;
-    this.nodes = nodes;
+    this.members = members;
   }
 
   @Override
@@ -24,20 +24,20 @@ public final class Way implements Entity {
     return info;
   }
 
-  public List<Long> getNodes() {
-    return nodes;
+  public List<Member> getMembers() {
+    return members;
   }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    Way way = (Way) o;
-    return Objects.equal(info, way.info) && Objects.equal(nodes, way.nodes);
+    Relation relation = (Relation) o;
+    return Objects.equal(info, relation.info) && Objects.equal(members, relation.members);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(info, nodes);
+    return Objects.hashCode(info, members);
   }
 }

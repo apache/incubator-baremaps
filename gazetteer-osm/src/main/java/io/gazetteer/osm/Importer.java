@@ -1,12 +1,16 @@
 package io.gazetteer.osm;
 
-import io.gazetteer.osm.domain.Node;
-import io.gazetteer.osm.domain.Way;
+import io.gazetteer.osm.model.EntityStoreException;
+import io.gazetteer.osm.model.Node;
+import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
 import io.gazetteer.osm.postgis.PostgisConsumer;
 import io.gazetteer.osm.postgis.PostgisUtil;
-import io.gazetteer.osm.rocksdb.*;
+import io.gazetteer.osm.rocksdb.NodeEntityType;
+import io.gazetteer.osm.rocksdb.RocksdbConsumer;
+import io.gazetteer.osm.rocksdb.RocksdbEntityStore;
+import io.gazetteer.osm.rocksdb.WayEntityType;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import org.rocksdb.CompressionType;
@@ -71,8 +75,8 @@ public class Importer implements Runnable {
 
       // Create the postgres
       try (RocksDB db = RocksDB.open(options, rocksdb.getPath());
-          EntityStore<Node> nodeStore = EntityStore.open(db, "nodes", new NodeEntityType());
-          EntityStore<Way> wayStore = EntityStore.open(db, "ways", new WayEntityType())) {
+           RocksdbEntityStore<Node> nodeStore = RocksdbEntityStore.open(db, "nodes", new NodeEntityType());
+           RocksdbEntityStore<Way> wayStore = RocksdbEntityStore.open(db, "ways", new WayEntityType())) {
         ForkJoinPool executor = new ForkJoinPool(threads);
 
         Osmformat.HeaderBlock header =

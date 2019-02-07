@@ -1,7 +1,8 @@
 package io.gazetteer.osm.rocksdb;
 
-import io.gazetteer.osm.domain.Node;
-import io.gazetteer.osm.domain.Way;
+import io.gazetteer.osm.model.EntityStoreException;
+import io.gazetteer.osm.model.Node;
+import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.osmpbf.DataBlock;
 
 import java.util.function.Consumer;
@@ -10,10 +11,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class RocksdbConsumer implements Consumer<DataBlock> {
 
-  private final EntityStore<Node> nodeStore;
-  private final EntityStore<Way> wayStore;
+  private final RocksdbEntityStore<Node> nodeStore;
+  private final RocksdbEntityStore<Way> wayStore;
 
-  public RocksdbConsumer(EntityStore<Node> nodeStore, EntityStore<Way> wayStore) {
+  public RocksdbConsumer(RocksdbEntityStore<Node> nodeStore, RocksdbEntityStore<Way> wayStore) {
     checkNotNull(nodeStore);
     checkNotNull(wayStore);
     this.nodeStore = nodeStore;

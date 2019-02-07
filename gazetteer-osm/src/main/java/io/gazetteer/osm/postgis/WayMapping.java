@@ -1,9 +1,9 @@
 package io.gazetteer.osm.postgis;
 
-import io.gazetteer.osm.domain.Node;
-import io.gazetteer.osm.domain.Way;
-import io.gazetteer.osm.rocksdb.EntityStore;
-import io.gazetteer.osm.rocksdb.EntityStoreException;
+import io.gazetteer.osm.model.EntityStore;
+import io.gazetteer.osm.model.EntityStoreException;
+import io.gazetteer.osm.model.Node;
+import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.util.WrappedException;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;

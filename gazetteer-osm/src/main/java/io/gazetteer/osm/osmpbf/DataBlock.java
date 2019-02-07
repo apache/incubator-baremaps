@@ -1,9 +1,9 @@
 package io.gazetteer.osm.osmpbf;
 
 import com.google.common.base.Objects;
-import io.gazetteer.osm.domain.Node;
-import io.gazetteer.osm.domain.Relation;
-import io.gazetteer.osm.domain.Way;
+import io.gazetteer.osm.model.Node;
+import io.gazetteer.osm.model.Relation;
+import io.gazetteer.osm.model.Way;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
 package io.gazetteer.osm.postgis;
 
-import io.gazetteer.osm.domain.Entity;
-import io.gazetteer.osm.domain.Node;
+import io.gazetteer.osm.model.Entity;
+import io.gazetteer.osm.model.Node;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;

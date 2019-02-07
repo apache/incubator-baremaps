@@ -1,9 +1,9 @@
 package io.gazetteer.osm.rocksdb;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import io.gazetteer.osm.domain.Info;
-import io.gazetteer.osm.domain.User;
-import io.gazetteer.osm.domain.Way;
+import io.gazetteer.osm.model.Info;
+import io.gazetteer.osm.model.User;
+import io.gazetteer.osm.model.Way;
 
 public class WayEntityType implements EntityType<Way> {
 

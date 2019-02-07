@@ -1,6 +1,6 @@
 package io.gazetteer.osm.osmxml;
 
-import io.gazetteer.osm.domain.Entity;
+import io.gazetteer.osm.model.Entity;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;

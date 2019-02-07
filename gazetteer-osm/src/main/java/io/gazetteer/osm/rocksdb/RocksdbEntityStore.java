@@ -1,7 +1,9 @@
 package io.gazetteer.osm.rocksdb;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import io.gazetteer.osm.domain.Entity;
+import io.gazetteer.osm.model.Entity;
+import io.gazetteer.osm.model.EntityStore;
+import io.gazetteer.osm.model.EntityStoreException;
 import org.rocksdb.*;
 
 import java.io.IOException;
@@ -12,7 +14,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class EntityStore<E extends Entity> implements AutoCloseable {
+public class RocksdbEntityStore<E extends Entity> implements EntityStore<E> {
 
   static {
     RocksDB.loadLibrary();
@@ -24,7 +26,7 @@ public class EntityStore<E extends Entity> implements AutoCloseable {
 
   private final EntityType<E> entityType;
 
-  private EntityStore(RocksDB database, ColumnFamilyHandle column, EntityType<E> entityType) {
+  private RocksdbEntityStore(RocksDB database, ColumnFamilyHandle column, EntityType<E> entityType) {
     checkNotNull(database);
     checkNotNull(entityType);
     this.database = database;
@@ -32,6 +34,7 @@ public class EntityStore<E extends Entity> implements AutoCloseable {
     this.entityType = entityType;
   }
 
+  @Override
   public void add(E entity) throws EntityStoreException {
     try {
       database.put(column, key(entity.getInfo().getId()), val(entity));
@@ -40,6 +43,7 @@ public class EntityStore<E extends Entity> implements AutoCloseable {
     }
   }
 
+  @Override
   public void addAll(Collection<E> entities) throws EntityStoreException {
     if (entities.size() > 0) {
       try (WriteBatch batch = new WriteBatch()) {
@@ -53,6 +57,7 @@ public class EntityStore<E extends Entity> implements AutoCloseable {
     }
   }
 
+  @Override
   public E get(long id) throws EntityStoreException {
     try {
       return val(database.get(column, key(id)));
@@ -61,6 +66,7 @@ public class EntityStore<E extends Entity> implements AutoCloseable {
     }
   }
 
+  @Override
   public List<E> getAll(List<Long> ids) throws EntityStoreException {
     try {
       List<ColumnFamilyHandle> columns = new ArrayList<>();
@@ -80,6 +86,7 @@ public class EntityStore<E extends Entity> implements AutoCloseable {
     }
   }
 
+  @Override
   public void delete(long id) throws EntityStoreException {
     try {
       database.delete(column, key(id));
@@ -88,12 +95,14 @@ public class EntityStore<E extends Entity> implements AutoCloseable {
     }
   }
 
+  @Override
   public void deleteAll(List<Long> ids) throws EntityStoreException {
     for (Long id : ids) {
       delete(id);
     }
   }
 
+  @Override
   public void close() {
     database.close();
   }
@@ -114,11 +123,11 @@ public class EntityStore<E extends Entity> implements AutoCloseable {
     return Long.parseLong(new String(id));
   }
 
-  public static <E extends Entity> EntityStore<E> open(RocksDB database, String column, EntityType<E> type)
+  public static <E extends Entity> RocksdbEntityStore<E> open(RocksDB database, String column, EntityType<E> type)
       throws EntityStoreException {
     try {
       final ColumnFamilyHandle handle = database.createColumnFamily(new ColumnFamilyDescriptor(column.getBytes()));
-      return new EntityStore<>(database, handle, type);
+      return new RocksdbEntityStore<>(database, handle, type);
     } catch (RocksDBException e) {
       throw new EntityStoreException(e);
     }

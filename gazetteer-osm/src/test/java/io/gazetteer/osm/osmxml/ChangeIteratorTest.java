@@ -1,6 +1,6 @@
 package io.gazetteer.osm.osmxml;
 
-import io.gazetteer.osm.domain.Change;
+import io.gazetteer.osm.model.Change;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;

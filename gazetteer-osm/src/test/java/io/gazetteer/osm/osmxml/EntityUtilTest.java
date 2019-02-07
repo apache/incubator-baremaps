@@ -1,6 +1,6 @@
 package io.gazetteer.osm.osmxml;
 
-import io.gazetteer.osm.domain.Entity;
+import io.gazetteer.osm.model.Entity;
 import io.gazetteer.osm.util.Accumulator;
 import org.junit.jupiter.api.Test;
 

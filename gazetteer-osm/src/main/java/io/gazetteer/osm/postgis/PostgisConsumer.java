@@ -1,11 +1,11 @@
 package io.gazetteer.osm.postgis;
 
 import de.bytefish.pgbulkinsert.PgBulkInsert;
-import io.gazetteer.osm.domain.Node;
-import io.gazetteer.osm.domain.Relation;
-import io.gazetteer.osm.domain.Way;
+import io.gazetteer.osm.model.EntityStore;
+import io.gazetteer.osm.model.Node;
+import io.gazetteer.osm.model.Relation;
+import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.osmpbf.DataBlock;
-import io.gazetteer.osm.rocksdb.EntityStore;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.postgresql.PGConnection;
 

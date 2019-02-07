@@ -1,4 +1,4 @@
-package io.gazetteer.osm.domain;
+package io.gazetteer.osm.model;
 
 public final class Change {
 

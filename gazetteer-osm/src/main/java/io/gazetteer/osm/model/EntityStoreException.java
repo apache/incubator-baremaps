@@ -1,4 +1,4 @@
-package io.gazetteer.osm.rocksdb;
+package io.gazetteer.osm.model;
 
 public class EntityStoreException extends Exception {
 

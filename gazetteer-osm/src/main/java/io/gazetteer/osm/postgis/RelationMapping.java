@@ -1,6 +1,6 @@
 package io.gazetteer.osm.postgis;
 
-import io.gazetteer.osm.domain.Relation;
+import io.gazetteer.osm.model.Relation;
 
 import java.util.Map;
 import java.util.function.Function;

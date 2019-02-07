@@ -1,4 +1,4 @@
-package io.gazetteer.osm.domain;
+package io.gazetteer.osm.model;
 
 import com.google.common.base.Objects;
 

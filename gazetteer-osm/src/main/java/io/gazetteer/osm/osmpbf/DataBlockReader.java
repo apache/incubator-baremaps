@@ -1,6 +1,6 @@
 package io.gazetteer.osm.osmpbf;
 
-import io.gazetteer.osm.domain.*;
+import io.gazetteer.osm.model.*;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
 import java.util.ArrayList;

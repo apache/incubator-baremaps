@@ -1,9 +1,10 @@
 package io.gazetteer.osm.rocksdb;
 
 import com.google.common.io.Files;
-import io.gazetteer.osm.domain.Info;
-import io.gazetteer.osm.domain.Node;
-import io.gazetteer.osm.domain.User;
+import io.gazetteer.osm.model.EntityStoreException;
+import io.gazetteer.osm.model.Info;
+import io.gazetteer.osm.model.Node;
+import io.gazetteer.osm.model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,12 +22,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class EntityStoreTest {
 
-  private EntityStore<Node> entityStore;
+  private RocksdbEntityStore<Node> entityStore;
 
   @BeforeEach
   public void setUp() throws Exception {
     RocksDB db = RocksDB.open(new Options().setCreateIfMissing(true), Files.createTempDir().getPath());
-    entityStore = EntityStore.open(db, "nodes", new NodeEntityType());
+    entityStore = RocksdbEntityStore.open(db, "nodes", new NodeEntityType());
   }
 
   @AfterEach
