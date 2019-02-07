@@ -20,7 +20,8 @@ public class GeometryUtil {
     return new GeometryFactory().createPoint(new Coordinate(node.getLon(), node.getLat()));
   }
 
-  public static Geometry asGeometry(Way way, EntityStore<Node> nodeStore) throws EntityStoreException {
+  public static Geometry asGeometry(Way way, EntityStore<Node> nodeStore)
+      throws EntityStoreException {
     GeometryFactory geometryFactory = new GeometryFactory();
     List<Long> ids = way.getNodes();
     List<Node> nodes = nodeStore.getAll(ids);
@@ -34,18 +35,12 @@ public class GeometryUtil {
     } else if (ids.size() > 1) {
       return geometryFactory.createLineString(coordinates);
     } else {
-      return null;
+      throw new IllegalArgumentException();
     }
   }
 
-
   public static Geometry asGeometry(Relation relation) {
     throw new NotImplementedException();
-  }
-
-  public static byte[] asWKB(Geometry geometry) {
-    WKBWriter writer = new WKBWriter(2, wkbNDR);
-    return writer.write(geometry);
   }
 
   public static Geometry asGeometry(byte[] wkb) {
@@ -57,4 +52,8 @@ public class GeometryUtil {
     }
   }
 
+  public static byte[] asWKB(Geometry geometry) {
+    WKBWriter writer = new WKBWriter(2, wkbNDR);
+    return writer.write(geometry);
+  }
 }

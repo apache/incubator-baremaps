@@ -7,6 +7,12 @@ import java.sql.SQLException;
 
 public interface EntityTable<E extends Entity> {
 
+  void createTable(Connection connection) throws SQLException;
+
+  void createIndex(Connection connection) throws SQLException;
+
+  void dropTable(Connection connection) throws SQLException;
+
   void insert(Connection connection, E entity) throws SQLException;
 
   void update(Connection connection, E entity) throws SQLException;

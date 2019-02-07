@@ -7,8 +7,8 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import static io.gazetteer.osm.postgis.NodeTable.CREATE_TABLE_NODES;
-import static io.gazetteer.osm.postgis.NodeTable.DROP_TABLE_NODES;
+import static io.gazetteer.osm.postgis.NodeTable.CREATE_TABLE;
+import static io.gazetteer.osm.postgis.NodeTable.DROP_TABLE;
 
 public class PostgisDatabase {
 
@@ -101,7 +101,7 @@ public class PostgisDatabase {
   public static void dropTables(Connection connection) throws SQLException {
     connection.prepareStatement(DROP_TABLE_INFO).execute();
     connection.prepareStatement(DROP_TABLE_USERS).execute();
-    connection.prepareStatement(DROP_TABLE_NODES).execute();
+    connection.prepareStatement(DROP_TABLE).execute();
     connection.prepareStatement(DROP_TABLE_WAYS).execute();
     connection.prepareStatement(DROP_TABLE_RELATIONS).execute();
   }
@@ -109,7 +109,7 @@ public class PostgisDatabase {
   public static void createTables(Connection connection) throws SQLException {
     connection.prepareStatement(CREATE_TABLE_INFO).execute();
     connection.prepareStatement(CREATE_TABLE_USERS).execute();
-    connection.prepareStatement(CREATE_TABLE_NODES).execute();
+    connection.prepareStatement(CREATE_TABLE).execute();
     connection.prepareStatement(CREATE_TABLE_WAYS).execute();
     connection.prepareStatement(CREATE_TABLE_RELATIONS).execute();
   }

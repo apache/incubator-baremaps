@@ -12,7 +12,6 @@ public final class User {
   private final String name;
 
   public User(int id, String name) {
-    checkNotNull(name);
     this.id = id;
     this.name = name;
   }
