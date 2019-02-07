@@ -66,7 +66,7 @@ public class NodeTable implements EntityTable<Node> {
     PreparedStatement statement = connection.prepareStatement(INSERT);
     statement.setLong(1, node.getInfo().getId());
     statement.setInt(2, node.getInfo().getVersion());
-    statement.setInt(3, node.getInfo().getUid());
+    statement.setInt(3, node.getInfo().getUserId());
     statement.setTimestamp(4, new Timestamp(node.getInfo().getTimestamp()));
     statement.setLong(5, node.getInfo().getChangeset());
     statement.setObject(6, node.getInfo().getTags());
@@ -78,7 +78,7 @@ public class NodeTable implements EntityTable<Node> {
   public void update(Connection connection, Node node) throws SQLException {
     PreparedStatement statement = connection.prepareStatement(UPDATE);
     statement.setInt(1, node.getInfo().getVersion());
-    statement.setInt(2, node.getInfo().getUid());
+    statement.setInt(2, node.getInfo().getUserId());
     statement.setTimestamp(3, new Timestamp(node.getInfo().getTimestamp()));
     statement.setLong(4, node.getInfo().getChangeset());
     statement.setObject(5, node.getInfo().getTags());

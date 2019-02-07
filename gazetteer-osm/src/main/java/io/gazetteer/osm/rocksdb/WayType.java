@@ -2,7 +2,6 @@ package io.gazetteer.osm.rocksdb;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.gazetteer.osm.model.Info;
-import io.gazetteer.osm.model.User;
 import io.gazetteer.osm.model.Way;
 
 public class WayType implements EntityType<Way> {
@@ -12,7 +11,7 @@ public class WayType implements EntityType<Way> {
     return Rocksdb.Way.newBuilder()
         .setId(entity.getInfo().getId())
         .setVersion(entity.getInfo().getVersion())
-        .setUid(entity.getInfo().getUid())
+        .setUid(entity.getInfo().getUserId())
         .setTimestamp(entity.getInfo().getTimestamp())
         .setChangeset(entity.getInfo().getChangeset())
         .putAllTags(entity.getInfo().getTags())

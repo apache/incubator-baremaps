@@ -20,7 +20,7 @@ public class RelationMapping extends GeometryMapping<Relation> {
       relation -> relation.getInfo().getChangeset();
 
   private final ToIntFunction<Relation> getUserId =
-      relation -> relation.getInfo().getUid();
+      relation -> relation.getInfo().getUserId();
 
   private final Function<Relation, Map<String, String>> getTags =
       relation -> relation.getInfo().getTags();

@@ -3,7 +3,6 @@ package io.gazetteer.osm.rocksdb;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
-import io.gazetteer.osm.model.User;
 
 public class NodeType implements EntityType<Node> {
 
@@ -12,7 +11,7 @@ public class NodeType implements EntityType<Node> {
     return Rocksdb.Node.newBuilder()
         .setId(entity.getInfo().getId())
         .setVersion(entity.getInfo().getVersion())
-        .setUid(entity.getInfo().getUid())
+        .setUid(entity.getInfo().getUserId())
         .setTimestamp(entity.getInfo().getTimestamp())
         .setChangeset(entity.getInfo().getChangeset())
         .setLon(entity.getLon())

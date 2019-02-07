@@ -26,7 +26,7 @@ public class XMLUtilTest {
         assertEquals(1, node.getInfo().getId());
         assertEquals(10, node.getInfo().getVersion());
         assertEquals(1199243045000l, node.getInfo().getTimestamp());
-        assertEquals(10, node.getInfo().getUid());
+        assertEquals(10, node.getInfo().getUserId());
         assertEquals(11, node.getInfo().getChangeset());
         assertEquals(-1, node.getLat());
         assertEquals(-2, node.getLon());
@@ -46,7 +46,7 @@ public class XMLUtilTest {
         assertEquals(1, way.getInfo().getId());
         assertEquals(10, way.getInfo().getVersion());
         assertEquals(1199243045000l, way.getInfo().getTimestamp());
-        assertEquals(10, way.getInfo().getUid());
+        assertEquals(10, way.getInfo().getUserId());
         assertEquals(11, way.getInfo().getChangeset());
         assertEquals(Arrays.asList(1l, 2l, 3l), way.getNodes());
         assertEquals("Me1", way.getInfo().getTags().get("created_by"));
@@ -66,7 +66,7 @@ public class XMLUtilTest {
         assertEquals(1, relation.getInfo().getId());
         assertEquals(10, relation.getInfo().getVersion());
         assertEquals(1199243045000l, relation.getInfo().getTimestamp());
-        assertEquals(10, relation.getInfo().getUid());
+        assertEquals(10, relation.getInfo().getUserId());
         assertEquals(11, relation.getInfo().getChangeset());
         assertEquals(6, relation.getMembers().get(0).getRef());
         assertEquals(Member.Type.node, relation.getMembers().get(0).getType());
