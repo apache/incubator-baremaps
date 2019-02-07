@@ -1,6 +1,7 @@
 package io.gazetteer.osm.postgis;
 
 import io.gazetteer.osm.model.*;
+import io.gazetteer.osm.util.WrappedException;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -35,6 +36,15 @@ public class GeometryUtil {
       return geometryFactory.createLineString(coordinates);
     } else {
       throw new IllegalArgumentException();
+    }
+  }
+
+  public static Geometry asGeometryWithWrappedException(
+      Way way, EntityStore<Node> nodeEntityStore) {
+    try {
+      return GeometryUtil.asGeometry(way, nodeEntityStore);
+    } catch (EntityStoreException e) {
+      throw new WrappedException(e);
     }
   }
 

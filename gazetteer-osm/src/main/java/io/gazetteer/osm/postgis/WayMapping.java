@@ -1,16 +1,16 @@
 package io.gazetteer.osm.postgis;
 
 import io.gazetteer.osm.model.EntityStore;
-import io.gazetteer.osm.model.EntityStoreException;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Way;
-import io.gazetteer.osm.util.WrappedException;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
+
+import static io.gazetteer.osm.postgis.GeometryUtil.asGeometryWithWrappedException;
 
 public class WayMapping extends GeometryMapping<Way> {
 
@@ -28,7 +28,7 @@ public class WayMapping extends GeometryMapping<Way> {
 
   private final Function<Way, Collection<Long>> getNodes = way -> way.getNodes();
 
-  public WayMapping(EntityStore<Node> cache) {
+  public WayMapping(EntityStore<Node> nodeStore) {
     super("public", "osm_ways");
     mapLong("id", getId);
     mapInteger("version", getVersion);
@@ -37,14 +37,6 @@ public class WayMapping extends GeometryMapping<Way> {
     mapLong("changeset", getChangeset);
     mapHstore("tags", getTags);
     mapLongArray("nodes", getNodes);
-    mapGeometry(
-        "geom",
-        way -> {
-          try {
-            return GeometryUtil.asGeometry(way, cache);
-          } catch (EntityStoreException e) {
-            throw new WrappedException(e);
-          }
-        });
+    mapGeometry("geom", way -> asGeometryWithWrappedException(way, nodeStore));
   }
 }
