@@ -13,6 +13,8 @@ public interface EntityTable<E extends Entity> {
 
   void dropTable(Connection connection) throws SQLException;
 
+  void dropIndex(Connection connection) throws SQLException;
+
   void insert(Connection connection, E entity) throws SQLException;
 
   void update(Connection connection, E entity) throws SQLException;

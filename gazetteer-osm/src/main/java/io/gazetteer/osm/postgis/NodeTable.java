@@ -10,6 +10,7 @@ import java.util.Map;
 
 import static io.gazetteer.osm.postgis.GeometryUtil.asGeometry;
 import static io.gazetteer.osm.postgis.GeometryUtil.asWKB;
+
 public class NodeTable implements EntityTable<Node> {
 
   public static final String DROP_TABLE = "DROP TABLE IF EXISTS osm_nodes";
@@ -27,6 +28,8 @@ public class NodeTable implements EntityTable<Node> {
 
   public static final String CREATE_INDEX =
       "CREATE INDEX IF NOT EXISTS osm_nodes_idx ON osm_nodes USING gist(geom)";
+
+  public static final String DROP_INDEX = "DROP INDEX IF EXISTS osm_nodes_idx";
 
   public static final String SELECT =
       "SELECT version, uid, timestamp, changeset, tags, st_asbinary(geom) FROM osm_nodes WHERE id = ?";
@@ -52,6 +55,11 @@ public class NodeTable implements EntityTable<Node> {
   @Override
   public void dropTable(Connection connection) throws SQLException {
     connection.prepareStatement(DROP_TABLE).execute();
+  }
+
+  @Override
+  public void dropIndex(Connection connection) throws SQLException {
+    connection.prepareStatement(DROP_INDEX).execute();
   }
 
   @Override
