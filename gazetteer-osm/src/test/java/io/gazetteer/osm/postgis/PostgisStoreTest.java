@@ -32,8 +32,7 @@ public class PostgisStoreTest {
     pool = PostgisSchema.createPoolingDataSource(URL);
     table = new NodeTable();
     try (Connection connection = pool.getConnection()) {
-
-      table.createTable(connection);
+      PostgisSchema.createTables(connection);
       store = new PostgisStore<>(pool, table, new CopyManager<>(new NodeMapping()));
     }
   }
@@ -41,7 +40,7 @@ public class PostgisStoreTest {
   @AfterEach
   public void deleteTable() throws SQLException {
     try (Connection connection = pool.getConnection()) {
-      table.dropTable(connection);
+      PostgisSchema.dropTables(connection);
     }
   }
 
@@ -53,20 +52,25 @@ public class PostgisStoreTest {
   }
 
   @Test
+  @Tag("integration")
   public void addAll() throws DataStoreException {
     store.addAll(Arrays.asList(new Node(new Info(1, 1, 1, 1, 1, new HashMap<>()), 1, 1)));
     assertNotNull(store.get(1l));
   }
 
   @Test
+  @Tag("integration")
   public void get() {}
 
   @Test
+  @Tag("integration")
   public void getAll() {}
 
   @Test
+  @Tag("integration")
   public void delete() {}
 
   @Test
+  @Tag("integration")
   public void deleteAll() {}
 }

@@ -16,25 +16,6 @@ import static io.gazetteer.osm.postgis.GeometryUtil.asWKB;
 
 public class WayTable implements DataTable<Long, Way> {
 
-  public static final String DROP_TABLE = "DROP TABLE IF EXISTS osm_ways";
-
-  public static final String CREATE_TABLE =
-      "CREATE TABLE IF NOT EXISTS osm_ways ("
-          + "id bigint NOT NULL,"
-          + "version int NOT NULL,"
-          + "uid int NOT NULL,"
-          + "timestamp timestamp without time zone NOT NULL,"
-          + "changeset bigint NOT NULL,"
-          + "tags hstore,"
-          + "nodes bigint[],"
-          + "geom geometry"
-          + ")";
-
-  public static final String CREATE_INDEX =
-      "CREATE INDEX IF NOT EXISTS osm_ways_idx ON osm_ways USING gist(geom)";
-
-  public static final String DROP_INDEX = "DROP INDEX IF EXISTS osm_ways_idx";
-
   public static final String SELECT =
       "SELECT version, uid, timestamp, changeset, tags, nodes FROM osm_ways WHERE id = ?";
 
@@ -50,26 +31,6 @@ public class WayTable implements DataTable<Long, Way> {
 
   public WayTable(DataStore<Long, Node> nodeStore) {
     this.nodeStore = nodeStore;
-  }
-
-  @Override
-  public void createTable(Connection connection) throws SQLException {
-    connection.prepareStatement(CREATE_TABLE).execute();
-  }
-
-  @Override
-  public void createIndex(Connection connection) throws SQLException {
-    connection.prepareStatement(CREATE_INDEX).execute();
-  }
-
-  @Override
-  public void dropTable(Connection connection) throws SQLException {
-    connection.prepareStatement(DROP_TABLE).execute();
-  }
-
-  @Override
-  public void dropIndex(Connection connection) throws SQLException {
-    connection.prepareStatement(DROP_INDEX).execute();
   }
 
   @Override

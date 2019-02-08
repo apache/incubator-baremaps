@@ -12,24 +12,6 @@ import static io.gazetteer.osm.postgis.GeometryUtil.asWKB;
 
 public class NodeTable implements DataTable<Long, Node> {
 
-  public static final String DROP_TABLE = "DROP TABLE IF EXISTS osm_nodes";
-
-  public static final String CREATE_TABLE =
-      "CREATE TABLE IF NOT EXISTS osm_nodes ("
-          + "id bigint NOT NULL,"
-          + "version int NOT NULL,"
-          + "uid int NOT NULL,"
-          + "timestamp timestamp without time zone NOT NULL,"
-          + "changeset bigint NOT NULL,"
-          + "tags hstore,"
-          + "geom geometry(point)"
-          + ")";
-
-  public static final String CREATE_INDEX =
-      "CREATE INDEX IF NOT EXISTS osm_nodes_idx ON osm_nodes USING gist(geom)";
-
-  public static final String DROP_INDEX = "DROP INDEX IF EXISTS osm_nodes_idx";
-
   public static final String SELECT =
       "SELECT version, uid, timestamp, changeset, tags, st_asbinary(geom) FROM osm_nodes WHERE id = ?";
 
@@ -40,26 +22,6 @@ public class NodeTable implements DataTable<Long, Node> {
       "UPDATE osm_nodes SET version = ?, uid = ?, timestamp = ?, changeset = ?, tags = ?, geom = ? WHERE id = ?";
 
   public static final String DELETE = "DELETE FROM osm_nodes WHERE id = ?";
-
-  @Override
-  public void createTable(Connection connection) throws SQLException {
-    connection.prepareStatement(CREATE_TABLE).execute();
-  }
-
-  @Override
-  public void createIndex(Connection connection) throws SQLException {
-    connection.prepareStatement(CREATE_INDEX).execute();
-  }
-
-  @Override
-  public void dropTable(Connection connection) throws SQLException {
-    connection.prepareStatement(DROP_TABLE).execute();
-  }
-
-  @Override
-  public void dropIndex(Connection connection) throws SQLException {
-    connection.prepareStatement(DROP_INDEX).execute();
-  }
 
   @Override
   public void insert(Connection connection, Node node) throws SQLException {

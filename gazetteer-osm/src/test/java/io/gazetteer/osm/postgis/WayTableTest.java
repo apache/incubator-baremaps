@@ -64,12 +64,12 @@ public class WayTableTest {
 
       }
     });
-    table.createTable(connection);
+    PostgisSchema.createTables(connection);
   }
 
   @AfterEach
   public void deleteTable() throws SQLException {
-    table.dropTable(connection);
+    PostgisSchema.dropTables(connection);
   }
 
   @Test

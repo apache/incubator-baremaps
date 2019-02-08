@@ -28,13 +28,13 @@ public class NodeTableTest {
   @BeforeEach
   public void createTable() throws SQLException {
     connection = DriverManager.getConnection(URL);
+    PostgisSchema.createTables(connection);
     table = new NodeTable();
-    table.createTable(connection);
   }
 
   @AfterEach
   public void deleteTable() throws SQLException {
-    table.dropTable(connection);
+    PostgisSchema.dropTables(connection);
   }
 
   @Test
@@ -44,7 +44,12 @@ public class NodeTableTest {
     for (int i = 0; i < 100; i++) {
       Map<String, String> map = new HashMap<>();
       map.put("key", "val");
-      Node insert = new Node(new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map), rnd.nextDouble(), rnd.nextDouble());
+      Node insert =
+          new Node(
+              new Info(
+                  rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
+              rnd.nextDouble(),
+              rnd.nextDouble());
       table.insert(connection, insert);
       assertEquals(insert, table.select(connection, insert.getInfo().getId()));
     }
@@ -57,9 +62,24 @@ public class NodeTableTest {
     for (int i = 0; i < 100; i++) {
       Map<String, String> map = new HashMap<>();
       map.put("key", "val");
-      Node insert = new Node(new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map), rnd.nextDouble(), rnd.nextDouble());
+      Node insert =
+          new Node(
+              new Info(
+                  rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
+              rnd.nextDouble(),
+              rnd.nextDouble());
       table.insert(connection, insert);
-      Node update = new Node(new Info(insert.getInfo().getId(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map), rnd.nextDouble(), rnd.nextDouble());
+      Node update =
+          new Node(
+              new Info(
+                  insert.getInfo().getId(),
+                  rnd.nextInt(),
+                  rnd.nextInt(),
+                  rnd.nextLong(),
+                  rnd.nextInt(),
+                  map),
+              rnd.nextDouble(),
+              rnd.nextDouble());
       table.update(connection, update);
       assertEquals(update, table.select(connection, insert.getInfo().getId()));
     }
@@ -72,10 +92,16 @@ public class NodeTableTest {
     for (int i = 0; i < 100; i++) {
       Map<String, String> map = new HashMap<>();
       map.put("key", "val");
-      Node insert = new Node(new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map), rnd.nextDouble(), rnd.nextDouble());
+      Node insert =
+          new Node(
+              new Info(
+                  rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
+              rnd.nextDouble(),
+              rnd.nextDouble());
       table.insert(connection, insert);
       table.delete(connection, insert.getInfo().getId());
-      assertThrows(IllegalArgumentException.class, () -> table.select(connection, insert.getInfo().getId()));
+      assertThrows(
+          IllegalArgumentException.class, () -> table.select(connection, insert.getInfo().getId()));
     }
   }
 }

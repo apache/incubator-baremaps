@@ -36,7 +36,7 @@ jobs:
 
       - run: mvn install
 
-      - run: mvn test
+      - run: mvn test -P integration
 
       - run: "mvn cobertura:cobertura"
 
