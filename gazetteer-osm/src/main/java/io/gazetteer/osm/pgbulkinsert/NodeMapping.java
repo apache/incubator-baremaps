@@ -1,7 +1,8 @@
-package io.gazetteer.osm.postgis;
+package io.gazetteer.osm.pgbulkinsert;
 
 import io.gazetteer.osm.model.Entity;
 import io.gazetteer.osm.model.Node;
+import io.gazetteer.osm.postgis.GeometryUtil;
 
 import java.util.Map;
 import java.util.function.Function;

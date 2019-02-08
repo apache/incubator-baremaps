@@ -3,7 +3,6 @@ package io.gazetteer.osm.postgis;
 import io.gazetteer.osm.model.DataStore;
 import io.gazetteer.osm.model.DataStoreException;
 import org.apache.commons.dbcp2.PoolingDataSource;
-import org.postgresql.PGConnection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,20 +14,17 @@ public class PostgisStore<K, V> implements DataStore<K, V> {
 
     private final PoolingDataSource pool;
 
-    private final DataTable<K, V> dataTable;
+    private final PostgisTable<K, V> postgisTable;
 
-    private final CopyManager<V> copyManager;
-
-    public PostgisStore(PoolingDataSource pool, DataTable<K, V> dataTable, CopyManager<V> copyManager) {
+    public PostgisStore(PoolingDataSource pool, PostgisTable<K, V> postgisTable) {
         this.pool = pool;
-        this.dataTable = dataTable;
-        this.copyManager = copyManager;
+        this.postgisTable = postgisTable;
     }
 
     @Override
     public void add(V value) throws DataStoreException {
         try (Connection connection = pool.getConnection()) {
-            dataTable.insert(connection, value);
+            postgisTable.insert(connection, value);
         } catch (SQLException e) {
             throw new DataStoreException(e);
         }
@@ -37,8 +33,9 @@ public class PostgisStore<K, V> implements DataStore<K, V> {
     @Override
     public void addAll(Collection<V> values) throws DataStoreException {
         try (Connection connection = pool.getConnection()) {
-            PGConnection pgConnection = connection.unwrap(PGConnection.class);
-            copyManager.saveAll(pgConnection, values);
+            for(V value : values) {
+                postgisTable.insert(connection, value);
+            }
         } catch (SQLException e) {
             throw new DataStoreException(e);
         }
@@ -47,7 +44,7 @@ public class PostgisStore<K, V> implements DataStore<K, V> {
     @Override
     public V get(K id) throws DataStoreException {
         try (Connection connection = pool.getConnection()) {
-            return dataTable.select(connection, id);
+            return postgisTable.select(connection, id);
         } catch (SQLException e) {
             throw new DataStoreException(e);
         }
@@ -58,7 +55,7 @@ public class PostgisStore<K, V> implements DataStore<K, V> {
         try (Connection connection = pool.getConnection()) {
             List<V> entities = new ArrayList<>();
             for (K id : ids) {
-                entities.add(dataTable.select(connection, id));
+                entities.add(postgisTable.select(connection, id));
             }
             return entities;
         } catch (SQLException e) {
@@ -69,7 +66,7 @@ public class PostgisStore<K, V> implements DataStore<K, V> {
     @Override
     public void delete(K id) throws DataStoreException {
         try (Connection connection = pool.getConnection()) {
-            dataTable.delete(connection, id);
+            postgisTable.delete(connection, id);
         } catch (SQLException e) {
             throw new DataStoreException(e);
         }
@@ -79,7 +76,7 @@ public class PostgisStore<K, V> implements DataStore<K, V> {
     public void deleteAll(List<K> ids) throws DataStoreException {
         try (Connection connection = pool.getConnection()) {
             for (K id : ids) {
-                dataTable.delete(connection, id);
+                postgisTable.delete(connection, id);
             }
         } catch (SQLException e) {
             throw new DataStoreException(e);

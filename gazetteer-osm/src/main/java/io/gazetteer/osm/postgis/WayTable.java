@@ -14,7 +14,7 @@ import java.util.Map;
 import static io.gazetteer.osm.postgis.GeometryUtil.asGeometryWithWrappedException;
 import static io.gazetteer.osm.postgis.GeometryUtil.asWKB;
 
-public class WayTable implements DataTable<Long, Way> {
+public class WayTable implements PostgisTable<Long, Way> {
 
   public static final String SELECT =
       "SELECT version, uid, timestamp, changeset, tags, nodes FROM osm_ways WHERE id = ?";

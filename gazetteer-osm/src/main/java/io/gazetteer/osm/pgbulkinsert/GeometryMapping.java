@@ -1,4 +1,4 @@
-package io.gazetteer.osm.postgis;
+package io.gazetteer.osm.pgbulkinsert;
 
 import de.bytefish.pgbulkinsert.mapping.AbstractMapping;
 import de.bytefish.pgbulkinsert.pgsql.handlers.IValueHandlerProvider;

@@ -1,8 +1,10 @@
 package io.gazetteer.osm.postgis;
 
+import de.bytefish.pgbulkinsert.PgBulkInsert;
 import io.gazetteer.osm.model.DataStoreException;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
+import io.gazetteer.osm.pgbulkinsert.NodeMapping;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +36,7 @@ public class PostgisStoreTest {
     try (Connection connection = pool.getConnection()) {
       PostgisSchema.createExtensions(connection);
       PostgisSchema.createTables(connection);
-      store = new PostgisStore<>(pool, table, new CopyManager<>(new NodeMapping()));
+      store = new PostgisStore<>(pool, table);
     }
   }
 

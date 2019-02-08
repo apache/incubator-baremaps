@@ -10,7 +10,7 @@ import java.util.Map;
 import static io.gazetteer.osm.postgis.GeometryUtil.asGeometry;
 import static io.gazetteer.osm.postgis.GeometryUtil.asWKB;
 
-public class NodeTable implements DataTable<Long, Node> {
+public class NodeTable implements PostgisTable<Long, Node> {
 
   public static final String SELECT =
       "SELECT version, uid, timestamp, changeset, tags, st_asbinary(geom) FROM osm_nodes WHERE id = ?";

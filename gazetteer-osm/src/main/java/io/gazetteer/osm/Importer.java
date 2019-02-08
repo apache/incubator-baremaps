@@ -4,7 +4,7 @@ import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
-import io.gazetteer.osm.postgis.PostgisConsumer;
+import io.gazetteer.osm.pgbulkinsert.PgBulkInsertConsumer;
 import io.gazetteer.osm.postgis.PostgisSchema;
 import io.gazetteer.osm.rocksdb.NodeType;
 import io.gazetteer.osm.rocksdb.RocksdbConsumer;
@@ -112,9 +112,9 @@ public class Importer implements Runnable {
         System.out.println("rocksdb done!");
 
         PoolingDataSource pool = PostgisSchema.createPoolingDataSource(postgres);
-        PostgisConsumer postgisConsumer = new PostgisConsumer(nodeStore, pool);
+        PgBulkInsertConsumer copyManagerConsumer = new PgBulkInsertConsumer(nodeStore, pool);
         Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(file);
-        executor.submit(() -> postgisStream.forEach(postgisConsumer)).get();
+        executor.submit(() -> postgisStream.forEach(copyManagerConsumer)).get();
         System.out.println("--------------");
         System.out.println("postgis done!");
 

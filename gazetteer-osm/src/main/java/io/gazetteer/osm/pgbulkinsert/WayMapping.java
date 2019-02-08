@@ -1,4 +1,4 @@
-package io.gazetteer.osm.postgis;
+package io.gazetteer.osm.pgbulkinsert;
 
 import io.gazetteer.osm.model.DataStore;
 import io.gazetteer.osm.model.Node;

@@ -1,5 +1,6 @@
-package io.gazetteer.osm.postgis;
+package io.gazetteer.osm.pgbulkinsert;
 
+import de.bytefish.pgbulkinsert.PgBulkInsert;
 import io.gazetteer.osm.model.DataStore;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
@@ -14,21 +15,21 @@ import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class PostgisConsumer implements Consumer<DataBlock> {
+public class PgBulkInsertConsumer implements Consumer<DataBlock> {
 
   private final PoolingDataSource pool;
 
-  private final CopyManager<Node> nodes;
-  private final CopyManager<Way> ways;
-  private final CopyManager<Relation> relations;
+  private final PgBulkInsert<Node> nodes;
+  private final PgBulkInsert<Way> ways;
+  private final PgBulkInsert<Relation> relations;
 
-  public PostgisConsumer(DataStore<Long, Node> cache, PoolingDataSource pool) {
+  public PgBulkInsertConsumer(DataStore<Long, Node> cache, PoolingDataSource pool) {
     checkNotNull(cache);
     checkNotNull(pool);
     this.pool = pool;
-    this.nodes = new CopyManager<>(new NodeMapping());
-    this.ways = new CopyManager<>(new WayMapping(cache));
-    this.relations = new CopyManager<>(new RelationMapping());
+    this.nodes = new PgBulkInsert<>(new NodeMapping());
+    this.ways = new PgBulkInsert<>(new WayMapping(cache));
+    this.relations = new PgBulkInsert<>(new RelationMapping());
   }
 
   @Override

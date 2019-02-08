@@ -1,6 +1,7 @@
-package io.gazetteer.osm.postgis;
+package io.gazetteer.osm.pgbulkinsert;
 
 import de.bytefish.pgbulkinsert.pgsql.handlers.BaseValueHandler;
+import io.gazetteer.osm.postgis.GeometryUtil;
 import org.locationtech.jts.geom.Geometry;
 
 import java.io.DataOutputStream;
