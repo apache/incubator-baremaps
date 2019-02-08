@@ -7,6 +7,8 @@ import io.gazetteer.osm.model.Node;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.rocksdb.ColumnFamilyDescriptor;
+import org.rocksdb.ColumnFamilyHandle;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 
@@ -26,7 +28,8 @@ public class EntityStoreTest {
   @BeforeEach
   public void setUp() throws Exception {
     RocksDB db = RocksDB.open(new Options().setCreateIfMissing(true), Files.createTempDir().getPath());
-    entityStore = RocksdbStore.open(db, "nodes", new NodeType());
+    ColumnFamilyHandle nodes = db.createColumnFamily(new ColumnFamilyDescriptor("nodes".getBytes()));
+    entityStore = RocksdbStore.open(db, nodes, new NodeType());
   }
 
   @AfterEach

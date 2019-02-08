@@ -2,7 +2,10 @@ package io.gazetteer.osm.rocksdb;
 
 import io.gazetteer.osm.model.DataStore;
 import io.gazetteer.osm.model.DataStoreException;
-import org.rocksdb.*;
+import org.rocksdb.ColumnFamilyHandle;
+import org.rocksdb.RocksDB;
+import org.rocksdb.WriteBatch;
+import org.rocksdb.WriteOptions;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -103,16 +106,11 @@ public class RocksdbStore<K, V> implements DataStore<K, V> {
 
   @Override
   public void close() {
-    database.close();
+
   }
 
-  public static <K, V> RocksdbStore<K, V> open(RocksDB database, String column, ObjectType<K, V> type)
-      throws DataStoreException {
-    try {
-      final ColumnFamilyHandle handle = database.createColumnFamily(new ColumnFamilyDescriptor(column.getBytes()));
-      return new RocksdbStore<>(database, handle, type);
-    } catch (RocksDBException e) {
-      throw new DataStoreException(e);
-    }
+  public static <K, V> RocksdbStore<K, V> open(
+      RocksDB database, ColumnFamilyHandle handle, ObjectType<K, V> type) {
+    return new RocksdbStore<>(database, handle, type);
   }
 }

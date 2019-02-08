@@ -5,12 +5,11 @@ import io.gazetteer.osm.util.BatchSpliterator;
 import io.gazetteer.osm.util.WrappedException;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.Iterator;
 import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -18,6 +17,17 @@ public class PBFUtil {
 
   public static final String HEADER = "OSMHeader";
   public static final String DATA = "OSMData";
+
+  public static long countFileBlocks(File file) throws IOException {
+    DataInputStream input = new DataInputStream(new FileInputStream(file));
+    long count = 0;
+    while (input.available() > 0) {
+      int size = input.readInt();
+      input.skipBytes(size);
+      count += 1;
+    }
+    return count;
+  }
 
   public static Iterator<FileBlock> iterator(File file) throws FileNotFoundException {
     DataInputStream input = new DataInputStream(new FileInputStream(file));

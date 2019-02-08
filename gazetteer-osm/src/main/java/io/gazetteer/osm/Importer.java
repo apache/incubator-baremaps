@@ -1,6 +1,5 @@
 package io.gazetteer.osm;
 
-import io.gazetteer.osm.model.DataStoreException;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.osmpbf.DataBlock;
@@ -13,10 +12,7 @@ import io.gazetteer.osm.rocksdb.RocksdbStore;
 import io.gazetteer.osm.rocksdb.WayType;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
-import org.rocksdb.CompressionType;
-import org.rocksdb.Options;
-import org.rocksdb.RocksDB;
-import org.rocksdb.RocksDBException;
+import org.rocksdb.*;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -29,7 +25,9 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Stream;
@@ -59,10 +57,14 @@ public class Importer implements Runnable {
       Path rocksdbPath = Paths.get(rocksdb.getPath());
 
       // Delete the RocksDB rocksdb
-      Files.walk(rocksdbPath)
-          .sorted(Comparator.reverseOrder())
-          .map(Path::toFile)
-          .forEach(File::delete);
+      if (Files.exists(rocksdbPath))
+        Files.walk(rocksdbPath)
+            // .sorted(Comparator.reverseOrder())
+            .map(Path::toFile)
+            .forEach(File::delete);
+
+      Options opt = new Options();
+      opt.prepareForBulkLoad();
 
       try (Connection connection = DriverManager.getConnection(postgres)) {
         PostgisSchema.createExtensions(connection);
@@ -70,18 +72,35 @@ public class Importer implements Runnable {
         PostgisSchema.createTables(connection);
       }
 
-      final Options options =
-          new Options().setCreateIfMissing(true).setCompressionType(CompressionType.NO_COMPRESSION);
+      final DBOptions databaseOptions =
+          new DBOptions().setCreateIfMissing(true).setCreateMissingColumnFamilies(true);
+
+      final ColumnFamilyOptions columnOptions =
+          new ColumnFamilyOptions().optimizeUniversalStyleCompaction();
+      final ColumnFamilyDescriptor defaultColumnDescriptor =
+          new ColumnFamilyDescriptor("default".getBytes(), columnOptions);
+      final ColumnFamilyDescriptor nodesColumnDescriptor =
+          new ColumnFamilyDescriptor("nodes".getBytes(), columnOptions);
+      final ColumnFamilyDescriptor waysColumnDescriptor =
+          new ColumnFamilyDescriptor("ways".getBytes(), columnOptions);
+      final List<ColumnFamilyDescriptor> columnFamilyDescriptors =
+          Arrays.asList(defaultColumnDescriptor, nodesColumnDescriptor, waysColumnDescriptor);
+      final List<ColumnFamilyHandle> columnFamilyHandles = new ArrayList<>();
 
       // Create the postgres
-      try (RocksDB db = RocksDB.open(options, rocksdb.getPath());
-           RocksdbStore<Long, Node> nodeStore = RocksdbStore.open(db, "nodes", new NodeType());
-           RocksdbStore<Long, Way> wayStore = RocksdbStore.open(db, "ways", new WayType())) {
+      try (RocksDB database =
+          RocksDB.open(
+              databaseOptions, rocksdb.getPath(), columnFamilyDescriptors, columnFamilyHandles)) {
+
+        RocksdbStore<Long, Node> nodeStore =
+            RocksdbStore.open(database, columnFamilyHandles.get(1), new NodeType());
+        RocksdbStore<Long, Way> wayStore =
+            RocksdbStore.open(database, columnFamilyHandles.get(2), new WayType());
+
         ForkJoinPool executor = new ForkJoinPool(threads);
 
         Osmformat.HeaderBlock header =
             PBFUtil.fileBlocks(file).findFirst().map(PBFUtil::toHeaderBlock).get();
-
         System.out.println(header.getOsmosisReplicationBaseUrl());
         System.out.println(header.getOsmosisReplicationSequenceNumber());
         System.out.println(header.getOsmosisReplicationTimestamp());
@@ -89,26 +108,29 @@ public class Importer implements Runnable {
         RocksdbConsumer rocksdbConsumer = new RocksdbConsumer(nodeStore, wayStore);
         Stream<DataBlock> rocksdbStream = PBFUtil.dataBlocks(file);
         executor.submit(() -> rocksdbStream.forEach(rocksdbConsumer)).get();
+        System.out.println("--------------");
+        System.out.println("rocksdb done!");
 
         PoolingDataSource pool = PostgisSchema.createPoolingDataSource(postgres);
         PostgisConsumer postgisConsumer = new PostgisConsumer(nodeStore, pool);
         Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(file);
         executor.submit(() -> postgisStream.forEach(postgisConsumer)).get();
+        System.out.println("--------------");
+        System.out.println("postgis done!");
+
+        for (ColumnFamilyHandle handle : columnFamilyHandles) handle.close();
       }
-    } catch (RocksDBException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
     } catch (InterruptedException e) {
       e.printStackTrace();
     } catch (ExecutionException e) {
       e.printStackTrace();
+    } catch (RocksDBException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+
     } catch (SQLException e) {
       e.printStackTrace();
-    } catch (DataStoreException e) {
-      e.printStackTrace();
-    } finally {
-      System.out.println("Well done!");
     }
   }
 
