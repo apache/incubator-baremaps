@@ -32,6 +32,7 @@ public class PostgisStoreTest {
     pool = PostgisSchema.createPoolingDataSource(URL);
     table = new NodeTable();
     try (Connection connection = pool.getConnection()) {
+      PostgisSchema.createExtensions(connection);
       PostgisSchema.createTables(connection);
       store = new PostgisStore<>(pool, table, new CopyManager<>(new NodeMapping()));
     }

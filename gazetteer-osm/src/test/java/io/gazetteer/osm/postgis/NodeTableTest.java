@@ -28,6 +28,7 @@ public class NodeTableTest {
   @BeforeEach
   public void createTable() throws SQLException {
     connection = DriverManager.getConnection(URL);
+    PostgisSchema.createExtensions(connection);
     PostgisSchema.createTables(connection);
     table = new NodeTable();
   }

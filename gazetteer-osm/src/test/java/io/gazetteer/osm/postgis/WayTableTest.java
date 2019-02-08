@@ -25,6 +25,7 @@ public class WayTableTest {
   @BeforeEach
   public void createTable() throws SQLException {
     connection = DriverManager.getConnection(URL);
+    PostgisSchema.createExtensions(connection);
     table = new WayTable(new DataStore<Long, Node>() {
 
       @Override
