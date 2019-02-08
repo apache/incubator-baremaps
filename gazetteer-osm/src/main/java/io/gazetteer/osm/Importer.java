@@ -59,7 +59,6 @@ public class Importer implements Runnable {
       // Delete the RocksDB rocksdb
       if (Files.exists(rocksdbPath))
         Files.walk(rocksdbPath)
-            // .sorted(Comparator.reverseOrder())
             .map(Path::toFile)
             .forEach(File::delete);
 
@@ -101,6 +100,7 @@ public class Importer implements Runnable {
 
         Osmformat.HeaderBlock header =
             PBFUtil.fileBlocks(file).findFirst().map(PBFUtil::toHeaderBlock).get();
+
         System.out.println(header.getOsmosisReplicationBaseUrl());
         System.out.println(header.getOsmosisReplicationSequenceNumber());
         System.out.println(header.getOsmosisReplicationTimestamp());
@@ -128,7 +128,6 @@ public class Importer implements Runnable {
       e.printStackTrace();
     } catch (IOException e) {
       e.printStackTrace();
-
     } catch (SQLException e) {
       e.printStackTrace();
     }
