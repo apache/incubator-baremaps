@@ -1,7 +1,6 @@
-package io.gazetteer.osm.postgis;
+package io.gazetteer.osm.util;
 
 import io.gazetteer.osm.model.*;
-import io.gazetteer.osm.util.WrappedException;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;

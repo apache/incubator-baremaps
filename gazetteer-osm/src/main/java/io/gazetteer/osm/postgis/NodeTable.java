@@ -7,8 +7,8 @@ import org.locationtech.jts.geom.Point;
 import java.sql.*;
 import java.util.Map;
 
-import static io.gazetteer.osm.postgis.GeometryUtil.asGeometry;
-import static io.gazetteer.osm.postgis.GeometryUtil.asWKB;
+import static io.gazetteer.osm.util.GeometryUtil.asGeometry;
+import static io.gazetteer.osm.util.GeometryUtil.asWKB;
 
 public class NodeTable implements PostgisTable<Long, Node> {
 

@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 
-import static io.gazetteer.osm.postgis.GeometryUtil.asGeometryWithWrappedException;
+import static io.gazetteer.osm.util.GeometryUtil.asGeometryWithWrappedException;
 
 public class WayMapping extends GeometryMapping<Way> {
 

@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static io.gazetteer.osm.postgis.GeometryUtil.asGeometryWithWrappedException;
-import static io.gazetteer.osm.postgis.GeometryUtil.asWKB;
+import static io.gazetteer.osm.util.GeometryUtil.asGeometryWithWrappedException;
+import static io.gazetteer.osm.util.GeometryUtil.asWKB;
 
 public class WayTable implements PostgisTable<Long, Way> {
 
