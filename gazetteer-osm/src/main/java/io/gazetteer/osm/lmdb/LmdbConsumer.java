@@ -1,4 +1,4 @@
-package io.gazetteer.osm.rocksdb;
+package io.gazetteer.osm.lmdb;
 
 import io.gazetteer.osm.model.DataStoreException;
 import io.gazetteer.osm.model.Node;
@@ -9,12 +9,12 @@ import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class RocksdbConsumer implements Consumer<DataBlock> {
+public class LmdbConsumer implements Consumer<DataBlock> {
 
-  private final RocksdbStore<Long, Node> nodeStore;
-  private final RocksdbStore<Long, Way> wayStore;
+  private final LmdbStore<Long, Node> nodeStore;
+  private final LmdbStore<Long, Way> wayStore;
 
-  public RocksdbConsumer(RocksdbStore<Long, Node> nodeStore, RocksdbStore<Long, Way> wayStore) {
+  public LmdbConsumer(LmdbStore<Long, Node> nodeStore, LmdbStore<Long, Way> wayStore) {
     checkNotNull(nodeStore);
     checkNotNull(wayStore);
     this.nodeStore = nodeStore;

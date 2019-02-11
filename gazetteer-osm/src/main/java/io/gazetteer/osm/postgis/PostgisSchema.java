@@ -58,7 +58,7 @@ public class PostgisSchema {
           + "changeset bigint NOT NULL,"
           + "tags hstore,"
           + "member_refs bigint[],"
-          + "member_types character(1)[],"
+          + "member_types text[],"
           + "member_roles text[],"
           + "geom geometry"
           + ")";

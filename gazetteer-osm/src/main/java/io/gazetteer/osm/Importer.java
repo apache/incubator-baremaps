@@ -1,37 +1,35 @@
 package io.gazetteer.osm;
 
+import io.gazetteer.osm.lmdb.LmdbStore;
+import io.gazetteer.osm.lmdb.NodeType;
+import io.gazetteer.osm.lmdb.WayType;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
 import io.gazetteer.osm.pgbulkinsert.PgBulkInsertConsumer;
 import io.gazetteer.osm.postgis.PostgisSchema;
-import io.gazetteer.osm.rocksdb.NodeType;
-import io.gazetteer.osm.rocksdb.RocksdbConsumer;
-import io.gazetteer.osm.rocksdb.RocksdbStore;
-import io.gazetteer.osm.rocksdb.WayType;
 import org.apache.commons.dbcp2.PoolingDataSource;
+import org.lmdbjava.Env;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
-import org.rocksdb.*;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import static org.lmdbjava.DbiFlags.MDB_CREATE;
 import static picocli.CommandLine.Option;
 
 @Command(description = "Import OSM PBF into Postgresql")
@@ -53,17 +51,22 @@ public class Importer implements Runnable {
 
   @Override
   public void run() {
+    ForkJoinPool executor = new ForkJoinPool(threads);
     try {
-      Path rocksdbPath = Paths.get(rocksdb.getPath());
+      Path lmdbPath = Paths.get(rocksdb.getPath());
 
       // Delete the RocksDB rocksdb
-      if (Files.exists(rocksdbPath))
-        Files.walk(rocksdbPath)
-            .map(Path::toFile)
-            .forEach(File::delete);
+      //      if (Files.exists(lmdbPath))
+      // Files.walk(lmdbPath).map(Path::toFile).forEach(File::delete);
+      //      lmdbPath.toFile().mkdirs();
 
-      Options opt = new Options();
-      opt.prepareForBulkLoad();
+      final Env<ByteBuffer> env =
+          Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(2).open(lmdbPath.toFile());
+
+      final LmdbStore<Long, Node> nodeStore =
+          new LmdbStore<>(env, env.openDbi("nodes", MDB_CREATE), new NodeType());
+      final LmdbStore<Long, Way> wayStore =
+          new LmdbStore<>(env, env.openDbi("ways", MDB_CREATE), new WayType());
 
       try (Connection connection = DriverManager.getConnection(postgres)) {
         PostgisSchema.createExtensions(connection);
@@ -71,65 +74,41 @@ public class Importer implements Runnable {
         PostgisSchema.createTables(connection);
       }
 
-      final DBOptions databaseOptions =
-          new DBOptions().setCreateIfMissing(true).setCreateMissingColumnFamilies(true);
+      Osmformat.HeaderBlock header =
+          PBFUtil.fileBlocks(file).findFirst().map(PBFUtil::toHeaderBlock).get();
 
-      final ColumnFamilyOptions columnOptions =
-          new ColumnFamilyOptions().optimizeUniversalStyleCompaction();
-      final ColumnFamilyDescriptor defaultColumnDescriptor =
-          new ColumnFamilyDescriptor("default".getBytes(), columnOptions);
-      final ColumnFamilyDescriptor nodesColumnDescriptor =
-          new ColumnFamilyDescriptor("nodes".getBytes(), columnOptions);
-      final ColumnFamilyDescriptor waysColumnDescriptor =
-          new ColumnFamilyDescriptor("ways".getBytes(), columnOptions);
-      final List<ColumnFamilyDescriptor> columnFamilyDescriptors =
-          Arrays.asList(defaultColumnDescriptor, nodesColumnDescriptor, waysColumnDescriptor);
-      final List<ColumnFamilyHandle> columnFamilyHandles = new ArrayList<>();
+      System.out.println(header.getOsmosisReplicationBaseUrl());
+      System.out.println(header.getOsmosisReplicationSequenceNumber());
+      System.out.println(header.getOsmosisReplicationTimestamp());
 
-      // Create the postgres
-      try (RocksDB database =
-          RocksDB.open(
-              databaseOptions, rocksdb.getPath(), columnFamilyDescriptors, columnFamilyHandles)) {
+      //      LmdbConsumer lmdbConsumer = new LmdbConsumer(nodeStore, wayStore);
+      //      Stream<DataBlock> rocksdbStream = PBFUtil.dataBlocks(file);
+      //      executor.submit(() -> rocksdbStream.forEach(lmdbConsumer)).get();
+      //      System.out.println("--------------");
+      //      System.out.println("rocksdb done!");
 
-        RocksdbStore<Long, Node> nodeStore =
-            RocksdbStore.open(database, columnFamilyHandles.get(1), new NodeType());
-        RocksdbStore<Long, Way> wayStore =
-            RocksdbStore.open(database, columnFamilyHandles.get(2), new WayType());
+      PoolingDataSource pool = PostgisSchema.createPoolingDataSource(postgres);
+      PgBulkInsertConsumer copyManagerConsumer = new PgBulkInsertConsumer(nodeStore, pool);
+      Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(file);
+      executor.submit(() -> postgisStream.forEach(copyManagerConsumer)).get();
+      System.out.println("--------------");
+      System.out.println("postgis done!");
 
-        ForkJoinPool executor = new ForkJoinPool(threads);
-
-        Osmformat.HeaderBlock header =
-            PBFUtil.fileBlocks(file).findFirst().map(PBFUtil::toHeaderBlock).get();
-
-        System.out.println(header.getOsmosisReplicationBaseUrl());
-        System.out.println(header.getOsmosisReplicationSequenceNumber());
-        System.out.println(header.getOsmosisReplicationTimestamp());
-
-        RocksdbConsumer rocksdbConsumer = new RocksdbConsumer(nodeStore, wayStore);
-        Stream<DataBlock> rocksdbStream = PBFUtil.dataBlocks(file);
-        executor.submit(() -> rocksdbStream.forEach(rocksdbConsumer)).get();
-        System.out.println("--------------");
-        System.out.println("rocksdb done!");
-
-        PoolingDataSource pool = PostgisSchema.createPoolingDataSource(postgres);
-        PgBulkInsertConsumer copyManagerConsumer = new PgBulkInsertConsumer(nodeStore, pool);
-        Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(file);
-        executor.submit(() -> postgisStream.forEach(copyManagerConsumer)).get();
-        System.out.println("--------------");
-        System.out.println("postgis done!");
-
-        for (ColumnFamilyHandle handle : columnFamilyHandles) handle.close();
-      }
     } catch (InterruptedException e) {
       e.printStackTrace();
     } catch (ExecutionException e) {
-      e.printStackTrace();
-    } catch (RocksDBException e) {
       e.printStackTrace();
     } catch (IOException e) {
       e.printStackTrace();
     } catch (SQLException e) {
       e.printStackTrace();
+    } finally {
+      executor.shutdown();
+      try {
+        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
     }
   }
 

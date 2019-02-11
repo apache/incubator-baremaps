@@ -1,10 +1,11 @@
-package io.gazetteer.osm.rocksdb;
+package io.gazetteer.osm.lmdb;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Way;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public class WayType implements ObjectType<Long, Way> {
 
@@ -14,18 +15,21 @@ public class WayType implements ObjectType<Long, Way> {
   }
 
   @Override
-  public byte[] key(Long key) {
-    return String.format("%019d", key).getBytes();
+  public ByteBuffer key(Long key) {
+    ByteBuffer buffer = ByteBuffer.allocateDirect(19);
+    buffer.put(String.format("%019d", key).getBytes()).flip();
+    return buffer;
   }
 
   @Override
-  public Long key(byte[] bytes) {
-    return Long.parseLong(new String(bytes));
+  public Long key(ByteBuffer bytes) {
+    return Long.parseLong(new String(bytes.array()));
   }
 
   @Override
-  public byte[] val(Way val) throws IOException {
-    return Rocksdb.Way.newBuilder()
+  public ByteBuffer val(Way val) {
+    Rocksdb.Way way =
+        Rocksdb.Way.newBuilder()
             .setId(val.getInfo().getId())
             .setVersion(val.getInfo().getVersion())
             .setUid(val.getInfo().getUserId())
@@ -33,12 +37,14 @@ public class WayType implements ObjectType<Long, Way> {
             .setChangeset(val.getInfo().getChangeset())
             .putAllTags(val.getInfo().getTags())
             .addAllNodes(val.getNodes())
-            .build()
-            .toByteArray();
+            .build();
+    ByteBuffer buffer = ByteBuffer.allocateDirect(way.getSerializedSize());
+    buffer.put(way.toByteString().asReadOnlyByteBuffer()).flip();
+    return buffer;
   }
 
   @Override
-  public Way val(byte[] bytes) throws InvalidProtocolBufferException {
+  public Way val(ByteBuffer bytes) throws InvalidProtocolBufferException {
     Rocksdb.Way way = Rocksdb.Way.parseFrom(bytes);
     Info info =
         new Info(
