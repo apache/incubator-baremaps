@@ -64,9 +64,9 @@
             <version>3.3</version>
         </dependency>
         <dependency>
-            <groupId>org.rocksdb</groupId>
-            <artifactId>rocksdbjni</artifactId>
-            <version>5.17.2</version>
+            <groupId>org.lmdbjava</groupId>
+            <artifactId>lmdbjava</artifactId>
+            <version>0.6.3</version>
         </dependency>
     </dependencies>
 </project>
