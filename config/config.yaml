@@ -14,7 +14,15 @@ layers:
     sql: >
       SELECT id, tags::jsonb as properties, geom as geometry
       FROM osm_ways
-      WHERE tags -> 'highway' = 'path'
+      WHERE tags ? 'highway'
+  - name: "waterways"
+    geometry: "geom"
+    minZoom: 0
+    maxZoom: 18
+    sql: >
+      SELECT id, tags::jsonb as properties, geom as geometry
+      FROM osm_ways
+      WHERE tags ? 'waterway'
   - name: "waterareas"
     geometry: "geom"
     minZoom: 0
@@ -23,15 +31,15 @@ layers:
       SELECT id, tags::jsonb as properties, geom as geometry
       FROM osm_ways
       WHERE tags -> 'natural' = 'water'
+      UNION
+      SELECT id, tags::jsonb as properties, geom as geometry
+      FROM osm_relations
+      WHERE tags -> 'natural' = 'water'
   - name: "forests"
     geometry: "geom"
     minZoom: 0
     maxZoom: 18
     sql: >
-      SELECT r.id, r.tags::jsonb as properties, (st_dump(st_polygonize(w.geom))).geom as geometry
-      FROM (
-        SELECT r.id as id, r.tags as tags, unnest(r.member_refs) as m
-        FROM osm_relations r
-      ) r JOIN osm_ways w ON r.m = w.id
-      GROUP BY r.id, r.tags
-      HAVING r.tags -> 'landuse' = 'forest'
+      SELECT id, tags::jsonb as properties, geom as geometry
+      FROM osm_relations
+      WHERE tags -> 'type' = 'multipolygon' AND tags -> 'landuse' = 'forest'
