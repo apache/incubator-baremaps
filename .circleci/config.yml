@@ -38,8 +38,6 @@ jobs:
 
       - run: mvn test -P integration
 
-      - run: "mvn cobertura:cobertura"
-
       - run: "bash <(curl -s https://codecov.io/bash)"
 
       - save_cache:
