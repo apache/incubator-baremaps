@@ -1,10 +1,8 @@
 package io.gazetteer.osm.postgis;
 
-import de.bytefish.pgbulkinsert.PgBulkInsert;
 import io.gazetteer.osm.model.DataStoreException;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
-import io.gazetteer.osm.pgbulkinsert.NodeMapping;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +15,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class PostgisStoreTest {
 

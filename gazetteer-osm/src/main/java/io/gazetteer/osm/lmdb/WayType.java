@@ -4,7 +4,6 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Way;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class WayType implements ObjectType<Long, Way> {

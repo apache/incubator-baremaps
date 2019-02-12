@@ -1,6 +1,9 @@
 package io.gazetteer.osm.postgis;
 
-import io.gazetteer.osm.model.*;
+import io.gazetteer.osm.model.DataStore;
+import io.gazetteer.osm.model.Info;
+import io.gazetteer.osm.model.Node;
+import io.gazetteer.osm.model.Way;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
