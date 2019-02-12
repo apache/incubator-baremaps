@@ -27,8 +27,8 @@ public class WayType implements ObjectType<Long, Way> {
 
   @Override
   public ByteBuffer val(Way val) {
-    Rocksdb.Way way =
-        Rocksdb.Way.newBuilder()
+    Lmdb.Way way =
+        Lmdb.Way.newBuilder()
             .setId(val.getInfo().getId())
             .setVersion(val.getInfo().getVersion())
             .setUid(val.getInfo().getUserId())
@@ -44,7 +44,7 @@ public class WayType implements ObjectType<Long, Way> {
 
   @Override
   public Way val(ByteBuffer bytes) throws InvalidProtocolBufferException {
-    Rocksdb.Way way = Rocksdb.Way.parseFrom(bytes);
+    Lmdb.Way way = Lmdb.Way.parseFrom(bytes);
     Info info =
         new Info(
             way.getId(),

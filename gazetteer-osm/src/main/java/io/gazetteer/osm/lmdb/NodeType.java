@@ -27,7 +27,7 @@ public class NodeType implements ObjectType<Long, Node> {
 
   @Override
   public ByteBuffer val(Node val) {
-    Rocksdb.Node node = Rocksdb.Node.newBuilder()
+    Lmdb.Node node = Lmdb.Node.newBuilder()
             .setId(val.getInfo().getId())
             .setVersion(val.getInfo().getVersion())
             .setUid(val.getInfo().getUserId())
@@ -44,7 +44,7 @@ public class NodeType implements ObjectType<Long, Node> {
 
   @Override
   public Node val(ByteBuffer bytes) throws InvalidProtocolBufferException {
-    Rocksdb.Node node = Rocksdb.Node.parseFrom(bytes);
+    Lmdb.Node node = Lmdb.Node.parseFrom(bytes);
     Info info =
         new Info(
             node.getId(),
