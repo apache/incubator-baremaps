@@ -25,9 +25,10 @@
         <version.lib.postgresql>42.2.5</version.lib.postgresql>
         <version.lib.sqlite>3.21.0</version.lib.sqlite>
         <version.lib.caffeine>2.6.2</version.lib.caffeine>
-        <version.lib.helidon>0.11.0</version.lib.helidon>
         <version.lib.guava>27.0.1-jre</version.lib.guava>
         <version.lib.picocli>3.9.1</version.lib.picocli>
+        <version.lib.netty>4.1.30.Final</version.lib.netty>
+        <version.lib.snakeyaml>1.23</version.lib.snakeyaml>
     </properties>
 
     <profiles>
@@ -128,24 +129,9 @@
             <version>${version.lib.picocli}</version>
         </dependency>
         <dependency>
-            <groupId>io.helidon.webserver</groupId>
-            <artifactId>helidon-webserver</artifactId>
-            <version>${version.lib.helidon}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.helidon.config</groupId>
-            <artifactId>helidon-config</artifactId>
-            <version>${version.lib.helidon}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.helidon.config</groupId>
-            <artifactId>helidon-config-yaml</artifactId>
-            <version>${version.lib.helidon}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.helidon.config</groupId>
-            <artifactId>helidon-config-object-mapping</artifactId>
-            <version>${version.lib.helidon}</version>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${version.lib.netty}</version>
         </dependency>
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
@@ -192,6 +178,12 @@
             <artifactId>slf4j-api</artifactId>
             <version>${version.lib.slf4j}</version>
         </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${version.lib.snakeyaml}</version>
+        </dependency>
+
 
         <!-- Testing libraries -->
         <dependency>
