@@ -12,7 +12,6 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.util.AsciiString;
-import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,10 +38,6 @@ public class TileServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TileServerHandler.class);
 
-  private static final AsciiString TEXT_TYPE = AsciiString.cached("text/plain");
-
-  private static final AsciiString HTML_TYPE = AsciiString.cached("text/html");
-
   private static final AsciiString ENCODING = AsciiString.cached("gzip");
 
   private static final long STARTUP_TIME = System.currentTimeMillis();
@@ -52,11 +47,7 @@ public class TileServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
   private static final String DATE_GMT_TIMEZONE = "GMT";
 
   private static final AsciiString MAX_AGE =
-      AsciiString.cached("public, max-age=0, no-transform"); // disable cache for now
-
-  private static final String ROOT_URI = "/";
-
-  private static final String ROOT_CONTENT = "Gazetteer Tile Server v0.1";
+      AsciiString.cached("public, max-age=0, no-transform"); // todo: disable cache for now
 
   private static final Pattern TILE_URI =
       Pattern.compile(String.format("/(\\d{1,2})/(\\d{1,6})/(\\d{1,6}).pbf"));
