@@ -16,8 +16,6 @@ import java.util.zip.GZIPOutputStream;
 
 public class PostgisTileSource implements TileSource {
 
-  private static final String MIME_TYPE = "application/vnd.mapbox-vector-tile";
-
   private final String DATABASE = "jdbc:postgresql://localhost:5432/osm?user=osm&password=osm";
 
   private final AsyncLoadingCache<XYZ, Tile> cache;
@@ -34,8 +32,8 @@ public class PostgisTileSource implements TileSource {
   }
 
   @Override
-  public String getMimeType() {
-    return MIME_TYPE;
+  public String getStyle() {
+    return null;
   }
 
   @Override

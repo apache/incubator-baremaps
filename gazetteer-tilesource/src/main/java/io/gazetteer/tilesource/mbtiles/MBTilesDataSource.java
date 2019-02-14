@@ -38,8 +38,9 @@ public class MBTilesDataSource implements TileSource {
             .buildAsync(xyz -> loadTile(xyz));
   }
 
-  public String getMimeType() {
-    return MIME_TYPE;
+  @Override
+  public String getStyle() {
+    return "";
   }
 
   @Override

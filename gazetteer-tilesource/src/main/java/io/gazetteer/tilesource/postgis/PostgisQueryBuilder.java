@@ -23,10 +23,13 @@ public class PostgisQueryBuilder {
   private static final String SQL_SOURCE =
       "(SELECT id, properties, ST_AsMvtGeom(geometry, {2}, 4096, 256, true) AS geometry "
           + "FROM ({1}) AS layer "
-          + "WHERE geometry && {2} AND ST_Intersects(geometry, {2})) as {0}";
+          + "WHERE geometry && {2} AND ST_Intersects(geometry, {2})" // todo: AND ST_Area(geometry) > {3}
+          + ") as {0}";
 
   // {0} = minX; {1} = minY; {2} = maxX; {3} = maxY
   private static final String SQL_ENVELOPE = "ST_MakeEnvelope({0}, {1}, {2}, {3})";
+
+  private static final double EARTH_CIRCUMFERENCE = 40075016.686;
 
   public static String build(XYZ xyz, PostgisLayer layer) {
     String value = buildValue(layer);
@@ -69,6 +72,7 @@ public class PostgisQueryBuilder {
             envelope.getMinY(),
             envelope.getMaxX(),
             envelope.getMaxY());
-    return MessageFormat.format(SQL_SOURCE, layer.getName(), layer.getSql(), value);
+    double minArea = Math.pow(EARTH_CIRCUMFERENCE * Math.cos(XYZ.tile2lat(xyz.getY(), xyz.getZ())) / Math.pow(2, xyz.getZ()) / 256, 2);
+    return MessageFormat.format(SQL_SOURCE, layer.getName(), layer.getSql(), value, minArea);
   }
 }

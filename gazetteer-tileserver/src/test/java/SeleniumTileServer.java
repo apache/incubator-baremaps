@@ -18,9 +18,9 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.yaml.snakeyaml.error.YAMLException;
 import picocli.CommandLine;
 
 import java.io.FileInputStream;
@@ -32,7 +32,10 @@ import java.util.List;
 @CommandLine.Command(description = "Start a selenium tile server")
 public class SeleniumTileServer implements Runnable {
 
-  @CommandLine.Parameters(index = "0", paramLabel = "CONFIG_FILE", description = "The YAML configuration path.")
+  @CommandLine.Parameters(
+      index = "0",
+      paramLabel = "CONFIG_FILE",
+      description = "The YAML configuration path.")
   private Path path;
 
   private EventLoopGroup bossGroup;
@@ -45,7 +48,13 @@ public class SeleniumTileServer implements Runnable {
 
   @Override
   public void run() {
-    start();
+    try {
+      start();
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
 
     WebDriver driver = new ChromeDriver();
     driver.manage().window().maximize();
@@ -58,10 +67,17 @@ public class SeleniumTileServer implements Runnable {
         for (WatchEvent<?> event : wk.pollEvents()) {
           final Path changed = (Path) event.context();
           if (path.getFileName().equals(changed.getFileName())) {
-            System.out.println(changed.getFileName());
-            stop();
-            start();
-            driver.get(url);
+            try {
+              stop();
+              start();
+              driver.get(url);
+            } catch (YAMLException e) {
+              e.printStackTrace();
+            } catch (FileNotFoundException e) {
+              e.printStackTrace();
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
           }
         }
         wk.reset();
@@ -71,51 +87,39 @@ public class SeleniumTileServer implements Runnable {
     } catch (IOException e) {
       e.printStackTrace();
     }
-
   }
 
-  private void startClient() {
-
-  }
-
-  public void start() {
+  public void start() throws FileNotFoundException, InterruptedException {
     InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
     bossGroup = new NioEventLoopGroup(1);
     workerGroup = new NioEventLoopGroup();
-    try {
-      List<PostgisLayer> layers =
-          PostgisConfig.load(new FileInputStream(path.toFile())).getLayers();
-      TileSource tileSource = new PostgisTileSource(layers);
-      ServerBootstrap b = new ServerBootstrap();
-      b.option(ChannelOption.SO_BACKLOG, 1024);
-      b.group(bossGroup, workerGroup)
-          .channel(NioServerSocketChannel.class)
-          .handler(new LoggingHandler(LogLevel.INFO))
-          .childHandler(
-              new ChannelInitializer<SocketChannel>() {
-                @Override
-                public void initChannel(SocketChannel ch) throws FileNotFoundException {
-                  ChannelPipeline p = ch.pipeline();
-                  p.addLast(new HttpServerCodec());
-                  p.addLast(new HttpObjectAggregator(512 * 1024));
-                  p.addLast(
-                      new CorsHandler(
-                          CorsConfigBuilder.forOrigin("*")
-                              .allowedRequestMethods(HttpMethod.POST)
-                              .build()));
-                  p.addLast(new HttpServerExpectContinueHandler());
-                  p.addLast(new TileServerHandler(tileSource));
-                }
-              });
-      channel = b.bind("localhost", 8081).sync().channel();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    }
+    List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(path.toFile())).getLayers();
+    TileSource tileSource = new PostgisTileSource(layers);
+    ServerBootstrap b = new ServerBootstrap();
+    b.option(ChannelOption.SO_BACKLOG, 1024);
+    b.group(bossGroup, workerGroup)
+        .channel(NioServerSocketChannel.class)
+        .handler(new LoggingHandler(LogLevel.INFO))
+        .childHandler(
+            new ChannelInitializer<SocketChannel>() {
+              @Override
+              public void initChannel(SocketChannel ch) throws FileNotFoundException {
+                ChannelPipeline p = ch.pipeline();
+                p.addLast(new HttpServerCodec());
+                p.addLast(new HttpObjectAggregator(512 * 1024));
+                p.addLast(
+                    new CorsHandler(
+                        CorsConfigBuilder.forOrigin("*")
+                            .allowedRequestMethods(HttpMethod.POST)
+                            .build()));
+                p.addLast(new HttpServerExpectContinueHandler());
+                p.addLast(new TileServerHandler(tileSource));
+              }
+            });
+    channel = b.bind("localhost", 8081).sync().channel();
   }
 
-  public void stop() throws InterruptedException {
+  public void stop() {
     channel.close();
     bossGroup.shutdownGracefully();
     workerGroup.shutdownGracefully();

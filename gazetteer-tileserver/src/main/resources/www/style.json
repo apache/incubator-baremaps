@@ -3,19 +3,42 @@
   "sources": {
     "osm": {
       "type": "vector",
-      "tiles": ["http://localhost:8081/{z}/{x}/{y}.pbf"],
+      "tiles": [
+        "http://localhost:8081/{z}/{x}/{y}.pbf"
+      ],
       "minzoom": 0,
       "maxzoom": 14,
-      "bounds": [5.952882, 45.81617, 10.49584, 47.81126]
+      "bounds": [
+        5.952882,
+        45.81617,
+        10.49584,
+        47.81126
+      ]
     }
   },
-  "layers": [{
-    "id": "background",
-    "type": "background",
-    "paint": {
-      "background-color": "#e8e2dc"
-    }
-  },
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "#e8e2dc"
+      }
+    },
+    {
+      "id": "landuses",
+      "source": "osm",
+      "source-layer": "landuses",
+      "type": "line",
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#ff0000",
+        "line-width": 1,
+        "line-opacity": 0.75
+      }
+    },
     {
       "id": "waterways",
       "source": "osm",

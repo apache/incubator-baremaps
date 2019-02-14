@@ -4,7 +4,8 @@ import java.util.concurrent.CompletableFuture;
 
 public interface TileSource {
 
-  String getMimeType();
+  String getStyle();
 
   CompletableFuture<Tile> getTile(XYZ xyz);
+
 }

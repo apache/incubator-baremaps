@@ -40,6 +40,8 @@ public class TileServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
 
   private static final AsciiString ENCODING = AsciiString.cached("gzip");
 
+  private static final AsciiString MIME_TYPE = AsciiString.cached("application/vnd.mapbox-vector-tile");
+
   private static final long STARTUP_TIME = System.currentTimeMillis();
 
   private static final String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
@@ -135,7 +137,7 @@ public class TileServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
                     new DefaultFullHttpResponse(
                         HTTP_1_1, OK, Unpooled.wrappedBuffer(tile.getBytes()));
                 setDateHeader(response);
-                response.headers().set(CONTENT_TYPE, tileSource.getMimeType());
+                response.headers().set(CONTENT_TYPE, MIME_TYPE);
                 response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
                 response.headers().set(CONTENT_ENCODING, ENCODING);
                 response.headers().set(CACHE_CONTROL, MAX_AGE);

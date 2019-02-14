@@ -29,6 +29,7 @@
         <version.lib.picocli>3.9.1</version.lib.picocli>
         <version.lib.netty>4.1.30.Final</version.lib.netty>
         <version.lib.snakeyaml>1.23</version.lib.snakeyaml>
+        <version.lib.gson>2.8.5</version.lib.gson>
     </properties>
 
     <profiles>
@@ -122,6 +123,11 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${version.lib.guava}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${version.lib.gson}</version>
         </dependency>
         <dependency>
             <groupId>info.picocli</groupId>
