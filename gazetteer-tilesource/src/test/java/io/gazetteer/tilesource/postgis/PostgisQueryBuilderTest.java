@@ -33,11 +33,7 @@ public class PostgisQueryBuilderTest {
   public void buildLayer() {
     String sql = PostgisQueryBuilder.build(XYZ, LAYER);
     assertEquals(
-        "SELECT ST_AsMVT(buildings, 'buildings', 4096, 'geometry') "
-            + "FROM (SELECT id, properties, ST_AsMvtGeom(geometry, ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845), 4096, 256, true) AS geometry "
-            + "FROM (SELECT id, geom FROM ways WHERE tags -> 'building' = 'yes') AS layer "
-            + "WHERE geometry && ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845) "
-            + "AND ST_Intersects(geometry, ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845))) as buildings",
+        "SELECT ST_AsMVT(buildings, 'buildings', 4096, 'geometry') FROM (SELECT id, properties, ST_AsMvtGeom(geometry, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922), 4096, 256, true) AS geometry FROM (SELECT id, geom FROM ways WHERE tags -> 'building' = 'yes') AS layer WHERE geometry && ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922) AND ST_Intersects(geometry, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922)) AND ST_Area(ST_Envelope(geometry)) > 843.8049931026018) as buildings",
         sql);
   }
 
@@ -45,15 +41,7 @@ public class PostgisQueryBuilderTest {
   public void buildLayers() {
     String sql = PostgisQueryBuilder.build(XYZ, LAYERS);
     assertEquals(
-        "SELECT ST_AsMVT(buildings, 'buildings', 4096, 'geometry') || ST_AsMVT(highways, 'highways', 4096, 'geometry') FROM "
-            + "(SELECT id, properties, ST_AsMvtGeom(geometry, ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845), 4096, 256, true) AS geometry "
-            + "FROM (SELECT id, geom FROM ways WHERE tags -> 'building' = 'yes') AS layer "
-            + "WHERE geometry && ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845) "
-            + "AND ST_Intersects(geometry, ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845))) as buildings, "
-            + "(SELECT id, properties, ST_AsMvtGeom(geometry, ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845), 4096, 256, true) AS geometry "
-            + "FROM ( SELECT id, geom FROM ways WHERE tags -> 'highway' = 'path') AS layer "
-            + "WHERE geometry && ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845) "
-            + "AND ST_Intersects(geometry, ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845))) as highways",
+        "SELECT ST_AsMVT(buildings, 'buildings', 4096, 'geometry') || ST_AsMVT(highways, 'highways', 4096, 'geometry') FROM (SELECT id, properties, ST_AsMvtGeom(geometry, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922), 4096, 256, true) AS geometry FROM (SELECT id, geom FROM ways WHERE tags -> 'building' = 'yes') AS layer WHERE geometry && ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922) AND ST_Intersects(geometry, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922)) AND ST_Area(ST_Envelope(geometry)) > 843.8049931026018) as buildings, (SELECT id, properties, ST_AsMvtGeom(geometry, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922), 4096, 256, true) AS geometry FROM ( SELECT id, geom FROM ways WHERE tags -> 'highway' = 'path') AS layer WHERE geometry && ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922) AND ST_Intersects(geometry, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922)) AND ST_Area(ST_Envelope(geometry)) > 843.8049931026018) as highways",
         sql);
   }
 
@@ -81,10 +69,7 @@ public class PostgisQueryBuilderTest {
   public void buildSource() {
     String sql = PostgisQueryBuilder.buildSource(XYZ, LAYER);
     assertEquals(
-        "(SELECT id, properties, ST_AsMvtGeom(geometry, ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845), 4096, 256, true) AS geometry "
-            + "FROM (SELECT id, geom FROM ways WHERE tags -> 'building' = 'yes') AS layer "
-            + "WHERE geometry && ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845) "
-            + "AND ST_Intersects(geometry, ST_MakeEnvelope(8.24, 46.83, 8.262, 46.845))) as buildings",
+        "(SELECT id, properties, ST_AsMvtGeom(geometry, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922), 4096, 256, true) AS geometry FROM (SELECT id, geom FROM ways WHERE tags -> 'building' = 'yes') AS layer WHERE geometry && ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922) AND ST_Intersects(geometry, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922)) AND ST_Area(ST_Envelope(geometry)) > 843.8049931026018) as buildings",
         sql);
   }
 }
