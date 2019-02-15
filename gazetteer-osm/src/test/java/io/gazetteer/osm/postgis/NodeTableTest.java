@@ -52,7 +52,8 @@ public class NodeTableTest {
               rnd.nextDouble(),
               rnd.nextDouble());
       table.insert(connection, insert);
-      assertEquals(insert, table.select(connection, insert.getInfo().getId()));
+      Node select = table.select(connection, insert.getInfo().getId());
+      assertEquals(insert.getInfo(), select.getInfo());
     }
   }
 
@@ -82,7 +83,8 @@ public class NodeTableTest {
               rnd.nextDouble(),
               rnd.nextDouble());
       table.update(connection, update);
-      assertEquals(update, table.select(connection, insert.getInfo().getId()));
+      Node select = table.select(connection, insert.getInfo().getId());
+      assertEquals(update.getInfo(), select.getInfo());
     }
   }
 

@@ -22,7 +22,6 @@ public class GeometryUtil {
   private static final CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");
   private static final CoordinateTransformFactory ctFactory = new CoordinateTransformFactory();
 
-
   public static Coordinate coordinate(double x, double y) {
     CoordinateTransform ct = ctFactory.createTransform(epsg4326, epsg3857);
     ProjCoordinate coordinate =
@@ -78,7 +77,7 @@ public class GeometryUtil {
   }
 
   public static byte[] asWKB(Geometry geometry) {
-    WKBWriter writer = new WKBWriter(2, wkbNDR);
+    WKBWriter writer = new WKBWriter(2, wkbNDR, true);
     return writer.write(geometry);
   }
 }

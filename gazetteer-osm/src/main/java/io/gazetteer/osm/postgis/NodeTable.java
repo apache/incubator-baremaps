@@ -13,7 +13,7 @@ import static io.gazetteer.osm.util.GeometryUtil.asWKB;
 public class NodeTable implements PostgisTable<Long, Node> {
 
   public static final String SELECT =
-      "SELECT version, uid, timestamp, changeset, tags, st_asbinary(geom) FROM osm_nodes WHERE id = ?";
+      "SELECT version, uid, timestamp, changeset, tags, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ?";
 
   public static final String INSERT =
       "INSERT INTO osm_nodes (id, version, uid, timestamp, changeset, tags, geom) VALUES (?, ?, ?, ?, ?, ?, ?)";
