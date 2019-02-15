@@ -3,23 +3,14 @@ layers:
     minZoom: 0
     maxZoom: 18
     sql: >
-      SELECT ST_AsMVT(q, 'buildings', 4096, 'geom')
-      FROM (
-        SELECT id, ST_AsMvtGeom(geom, ST_MakeEnvelope({1}, {2}, {3}, {4}), 4096, 256, true) AS geom
-        FROM ways
-        WHERE tags -> 'building' = 'yes'
-        AND geom && ST_MakeEnvelope({1}, {2}, {3}, {4})
-        AND ST_Intersects(geom, ST_MakeEnvelope({1}, {2}, {3}, {4}))
-      ) AS q;
+      SELECT id, tags::jsonb, geom
+      FROM osm_ways
+      WHERE tags -> 'building' = 'yes'
+      AND ST_Area(ST_Envelope(geom)) > {pixelArea}
   - name: "highways"
     minZoom: 0
     maxZoom: 18
     sql: >
-      SELECT ST_AsMVT(q, 'highways', 4096, 'geom')
-      FROM (
-        SELECT id, ST_AsMvtGeom(geom, ST_MakeEnvelope({1}, {2}, {3}, {4}), 4096, 256, true) AS geom
-        FROM ways
-        WHERE tags -> 'highway' = 'path'
-        AND geom && ST_MakeEnvelope({1}, {2}, {3}, {4})
-        AND ST_Intersects(geom, ST_MakeEnvelope({1}, {2}, {3}, {4}))
-      ) AS q;
+      SELECT id, tags::jsonb, geom
+      FROM osm_ways
+      WHERE tags ? 'highway'

@@ -25,7 +25,7 @@ public class PostgisQueryBuilder {
   private static final String SQL_SOURCE =
       "(SELECT id, properties, ST_AsMvtGeom(geometry, {2}, 4096, 256, true) AS geometry "
           + "FROM ({1}) AS layer "
-          + "WHERE geometry && {2} AND ST_Intersects(geometry, {2}) AND ST_Area(ST_Envelope(geometry)) > {3}"
+          + "WHERE geometry && {2} AND ST_Intersects(geometry, {2})"
           + ") as {0}";
 
   // {0} = minX; {1} = minY; {2} = maxX; {3} = maxY
@@ -43,6 +43,25 @@ public class PostgisQueryBuilder {
     List<String> values = buildValues(layers);
     List<String> sources = buildSources(xyz, layers);
     return MessageFormat.format(SQL_LAYERS, JOIN_VALUES.join(values), JOIN_SOURCES.join(sources));
+  }
+
+  protected static String interpolateVariables(XYZ xyz, String sql) {
+    // tile coordinates
+    sql = sql.replace("{x}", Integer.toString(xyz.getX()));
+    sql = sql.replace("{y}", Integer.toString(xyz.getY()));
+    sql = sql.replace("{z}", Integer.toString(xyz.getZ()));
+
+    // pixel area
+    double pixelArea =
+        Math.pow(
+            EARTH_CIRCUMFERENCE
+                * Math.cos(XYZ.tile2lat(xyz.getY(), xyz.getZ()))
+                / Math.pow(2, xyz.getZ())
+                / 256,
+            2);
+    sql = sql.replace("{pixelArea}", Double.toString(pixelArea));
+
+    return sql;
   }
 
   protected static List<String> buildValues(List<PostgisLayer> layers) {
@@ -76,13 +95,7 @@ public class PostgisQueryBuilder {
             Double.toString(min.getY()),
             Double.toString(max.getX()),
             Double.toString(max.getY()));
-    double minArea =
-        Math.pow(
-            EARTH_CIRCUMFERENCE
-                * Math.cos(XYZ.tile2lat(xyz.getY(), xyz.getZ()))
-                / Math.pow(2, xyz.getZ())
-                / 256,
-            2) * 10;
-    return MessageFormat.format(SQL_SOURCE, layer.getName(), layer.getSql(), value, Double.toString(minArea));
+    String sql = MessageFormat.format(SQL_SOURCE, layer.getName(), layer.getSql(), value);
+    return interpolateVariables(xyz, sql);
   }
 }
