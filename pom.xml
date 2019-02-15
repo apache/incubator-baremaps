@@ -30,6 +30,7 @@
         <version.lib.netty>4.1.30.Final</version.lib.netty>
         <version.lib.snakeyaml>1.23</version.lib.snakeyaml>
         <version.lib.gson>2.8.5</version.lib.gson>
+        <version.lib.proj4j>1.0.0</version.lib.proj4j>
     </properties>
 
     <profiles>
@@ -163,6 +164,11 @@
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
             <version>${version.lib.jts}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.locationtech.proj4j</groupId>
+            <artifactId>proj4j</artifactId>
+            <version>${version.lib.proj4j}</version>
         </dependency>
         <dependency>
             <groupId>org.locationtech.jts.io</groupId>

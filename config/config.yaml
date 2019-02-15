@@ -1,13 +1,5 @@
 layers:
-  - name: "landuses"
-    minZoom: 5
-    maxZoom: 9
-    sql: >
-      SELECT id, tags::jsonb as properties, geom as geometry
-      FROM osm_ways
-      WHERE tags ? 'landuse'
   - name: "buildings"
-    minZoom: 14
     maxZoom: 18
     sql: >
       SELECT id, tags::jsonb as properties, geom as geometry

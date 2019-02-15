@@ -1,7 +1,9 @@
 package io.gazetteer.tilesource.postgis;
 
 import com.google.common.base.Joiner;
+import io.gazetteer.osm.util.GeometryUtil;
 import io.gazetteer.tilesource.XYZ;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 
 import java.text.MessageFormat;
@@ -23,7 +25,7 @@ public class PostgisQueryBuilder {
   private static final String SQL_SOURCE =
       "(SELECT id, properties, ST_AsMvtGeom(geometry, {2}, 4096, 256, true) AS geometry "
           + "FROM ({1}) AS layer "
-          + "WHERE geometry && {2} AND ST_Intersects(geometry, {2})" // todo: AND ST_Area(geometry) > {3}
+          + "WHERE geometry && {2} AND ST_Intersects(geometry, {2}) AND ST_Area(ST_Envelope(geometry)) > {3}"
           + ") as {0}";
 
   // {0} = minX; {1} = minY; {2} = maxX; {3} = maxY
@@ -65,14 +67,22 @@ public class PostgisQueryBuilder {
 
   protected static String buildSource(XYZ xyz, PostgisLayer layer) {
     Envelope envelope = xyz.envelope();
+    Coordinate min = GeometryUtil.coordinate(envelope.getMinX(), envelope.getMinY());
+    Coordinate max = GeometryUtil.coordinate(envelope.getMaxX(), envelope.getMaxY());
     String value =
         MessageFormat.format(
             SQL_ENVELOPE,
-            envelope.getMinX(),
-            envelope.getMinY(),
-            envelope.getMaxX(),
-            envelope.getMaxY());
-    double minArea = Math.pow(EARTH_CIRCUMFERENCE * Math.cos(XYZ.tile2lat(xyz.getY(), xyz.getZ())) / Math.pow(2, xyz.getZ()) / 256, 2);
-    return MessageFormat.format(SQL_SOURCE, layer.getName(), layer.getSql(), value, minArea);
+            Double.toString(min.getX()),
+            Double.toString(min.getY()),
+            Double.toString(max.getX()),
+            Double.toString(max.getY()));
+    double minArea =
+        Math.pow(
+            EARTH_CIRCUMFERENCE
+                * Math.cos(XYZ.tile2lat(xyz.getY(), xyz.getZ()))
+                / Math.pow(2, xyz.getZ())
+                / 256,
+            2) * 10;
+    return MessageFormat.format(SQL_SOURCE, layer.getName(), layer.getSql(), value, Double.toString(minArea));
   }
 }
