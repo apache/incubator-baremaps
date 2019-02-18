@@ -70,6 +70,7 @@ public class Importer implements Runnable {
 
       try (Connection connection = DriverManager.getConnection(postgres)) {
         PostgisSchema.createExtensions(connection);
+        PostgisSchema.dropIndices(connection);
         PostgisSchema.dropTables(connection);
         PostgisSchema.createTables(connection);
       }
@@ -91,6 +92,12 @@ public class Importer implements Runnable {
       PgBulkInsertConsumer copyManagerConsumer = new PgBulkInsertConsumer(nodeStore, pool);
       Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(file);
       executor.submit(() -> postgisStream.forEach(copyManagerConsumer)).get();
+
+      try (Connection connection = DriverManager.getConnection(postgres)) {
+        PostgisSchema.createIndices(connection);
+        PostgisSchema.updateGeometryColumns(connection);
+      }
+
       System.out.println("--------------");
       System.out.println("postgis done!");
 
