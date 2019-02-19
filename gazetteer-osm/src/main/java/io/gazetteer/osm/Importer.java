@@ -53,20 +53,6 @@ public class Importer implements Runnable {
   public void run() {
     ForkJoinPool executor = new ForkJoinPool(threads);
     try {
-      Path lmdbPath = Paths.get(rocksdb.getPath());
-
-      // Delete the RocksDB rocksdb
-      //      if (Files.exists(lmdbPath))
-      // Files.walk(lmdbPath).map(Path::toFile).forEach(File::delete);
-      //      lmdbPath.toFile().mkdirs();
-
-      final Env<ByteBuffer> env =
-          Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(2).open(lmdbPath.toFile());
-
-      final LmdbStore<Long, Node> nodeStore =
-          new LmdbStore<>(env, env.openDbi("nodes", MDB_CREATE), new NodeType());
-      final LmdbStore<Long, Way> wayStore =
-          new LmdbStore<>(env, env.openDbi("ways", MDB_CREATE), new WayType());
 
       try (Connection connection = DriverManager.getConnection(postgres)) {
         PostgisSchema.createExtensions(connection);
@@ -82,14 +68,8 @@ public class Importer implements Runnable {
       System.out.println(header.getOsmosisReplicationSequenceNumber());
       System.out.println(header.getOsmosisReplicationTimestamp());
 
-      //      LmdbConsumer lmdbConsumer = new LmdbConsumer(nodeStore, wayStore);
-      //      Stream<DataBlock> rocksdbStream = PBFUtil.dataBlocks(file);
-      //      executor.submit(() -> rocksdbStream.forEach(lmdbConsumer)).get();
-      //      System.out.println("--------------");
-      //      System.out.println("rocksdb done!");
-
       PoolingDataSource pool = PostgisSchema.createPoolingDataSource(postgres);
-      PgBulkInsertConsumer copyManagerConsumer = new PgBulkInsertConsumer(nodeStore, pool);
+      PgBulkInsertConsumer copyManagerConsumer = new PgBulkInsertConsumer(pool);
       Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(file);
       executor.submit(() -> postgisStream.forEach(copyManagerConsumer)).get();
 

@@ -47,6 +47,5 @@ public class RelationMapping extends GeometryMapping<Relation> {
     mapLongArray("member_refs", getMemberRefs);
     mapTextArray("member_types", getMemberTypes);
     mapTextArray("member_roles", getMemberRoles);
-
   }
 }

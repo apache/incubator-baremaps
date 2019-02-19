@@ -28,7 +28,7 @@ public class WayMapping extends GeometryMapping<Way> {
 
   private final Function<Way, Collection<Long>> getNodes = way -> way.getNodes();
 
-  public WayMapping(DataStore<Long, Node> nodeStore) {
+  public WayMapping() {
     super("public", "osm_ways");
     mapLong("id", getId);
     mapInteger("version", getVersion);
@@ -37,6 +37,5 @@ public class WayMapping extends GeometryMapping<Way> {
     mapLong("changeset", getChangeset);
     mapHstore("tags", getTags);
     mapLongArray("nodes", getNodes);
-    mapGeometry("geom", way -> asGeometryWithWrappedException(way, nodeStore));
   }
 }

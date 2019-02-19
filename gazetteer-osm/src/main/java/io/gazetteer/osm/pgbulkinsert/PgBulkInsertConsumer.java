@@ -23,12 +23,11 @@ public class PgBulkInsertConsumer implements Consumer<DataBlock> {
   private final PgBulkInsert<Way> ways;
   private final PgBulkInsert<Relation> relations;
 
-  public PgBulkInsertConsumer(DataStore<Long, Node> cache, PoolingDataSource pool) {
-    checkNotNull(cache);
+  public PgBulkInsertConsumer(PoolingDataSource pool) {
     checkNotNull(pool);
     this.pool = pool;
     this.nodes = new PgBulkInsert<>(new NodeMapping());
-    this.ways = new PgBulkInsert<>(new WayMapping(cache));
+    this.ways = new PgBulkInsert<>(new WayMapping());
     this.relations = new PgBulkInsert<>(new RelationMapping());
   }
 

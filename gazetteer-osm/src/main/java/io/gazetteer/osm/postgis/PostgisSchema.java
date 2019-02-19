@@ -67,17 +67,19 @@ public class PostgisSchema {
           + ")";
 
   public static final String UPDATE_RELATIONS_GEOMETRY_COLUMN =
-      "UPDATE osm_relations SET geom = r2.geom "
+      "UPDATE osm_relations "
+          + "SET geom = r1.geom "
           + "FROM ("
-          + "SELECT r3.id as id, st_buildarea(st_makevalid(st_collect(w.geom))) as geom "
+          + "SELECT r2.id as id, st_buildarea(st_makevalid(st_collect(w.geom))) as geom "
           + "FROM ("
-          + "SELECT r4.id as id, unnest(r4.member_refs) as m "
-          + "FROM osm_relations r4 "
-          + "WHERE r4.tags -> 'type' = 'multipolygon'"
-          + ") r3 JOIN osm_ways w ON r3.m = w.id "
-          + "GROUP BY r3.id"
+          + "SELECT r3.id as id, unnest(r3.member_refs) as m "
+          + "FROM osm_relations r3 "
+          + "WHERE r3.tags -> 'type' = 'multipolygon' "
           + ") r2 "
-          + "WHERE osm_relations.id = r2.id";
+          + "JOIN osm_ways w ON r2.m = w.id "
+          + "GROUP BY r2.id "
+          + ") r1 "
+          + "WHERE osm_relations.id = r1.id";
 
   public static final String DROP_INDEX_NODES = "DROP INDEX IF EXISTS osm_nodes_idx";
 
