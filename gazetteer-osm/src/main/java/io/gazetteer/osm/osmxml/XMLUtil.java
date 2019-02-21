@@ -8,8 +8,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -45,15 +44,15 @@ public class XMLUtil {
   protected static final String RELATION = "relation";
   protected static final String LAT = "lat";
 
-  public static XMLEventReader xmlEventReader(File file) throws Exception {
+  public static XMLEventReader xmlEventReader(InputStream file) throws XMLStreamException {
     XMLInputFactory factory = XMLInputFactory.newInstance();
     factory.setProperty(XMLInputFactory.IS_COALESCING, false);
     factory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false);
     factory.setProperty(XMLInputFactory.IS_VALIDATING, false);
-    return factory.createXMLEventReader(new FileInputStream(file));
+    return factory.createXMLEventReader(file);
   }
 
-  protected static boolean isElement(XMLEvent event, String element) throws XMLStreamException {
+  protected static boolean isElement(XMLEvent event, String element) {
     return event.isStartElement()
         && event.asStartElement().getName().getLocalPart().equals(element);
   }

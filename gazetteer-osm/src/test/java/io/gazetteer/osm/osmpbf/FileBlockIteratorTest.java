@@ -6,14 +6,14 @@ import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import static io.gazetteer.osm.OSMTestUtil.OSM_PBF_DATA;
+import static io.gazetteer.osm.OSMTestUtil.osmPbfData;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FileBlockIteratorTest {
 
   @Test
   public void next() throws FileNotFoundException {
-    Iterator<FileBlock> reader = PBFUtil.iterator(OSM_PBF_DATA);
+    Iterator<FileBlock> reader = PBFUtil.iterator(osmPbfData());
     while (reader.hasNext()) {
       FileBlock block = reader.next();
       assertNotNull(block);
@@ -24,7 +24,7 @@ public class FileBlockIteratorTest {
   @Test
   public void nextException() throws FileNotFoundException {
     assertThrows(NoSuchElementException.class, () -> {
-      Iterator<FileBlock> reader = PBFUtil.iterator(OSM_PBF_DATA);
+      Iterator<FileBlock> reader = PBFUtil.iterator(osmPbfData());
       while (reader.hasNext()) {
         reader.next();
       }

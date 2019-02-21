@@ -1,9 +1,9 @@
-package io.gazetteer.osm;
+package io.gazetteer.osm.util;
 
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-public class Progress {
+public class ProgressWriter {
 
   public static void main(String[] args) {
     long total = 235;

@@ -27,28 +27,28 @@ public class PBFUtil {
     return count;
   }
 
-  public static Iterator<FileBlock> iterator(File file) throws FileNotFoundException {
-    DataInputStream input = new DataInputStream(new FileInputStream(file));
-    return new FileBlockIterator(input);
+  public static Iterator<FileBlock> iterator(InputStream input) {
+    DataInputStream data = new DataInputStream(input);
+    return new FileBlockIterator(data);
   }
 
-  public static Spliterator<FileBlock> spliterator(File file) throws FileNotFoundException {
-    return new BatchSpliterator<FileBlock>(iterator(file), 10);
+  public static Spliterator<FileBlock> spliterator(InputStream input) {
+    return new BatchSpliterator<>(iterator(input), 10);
   }
 
-  public static Stream<FileBlock> fileBlocks(File file) throws FileNotFoundException {
-    return StreamSupport.stream(spliterator(file), true);
+  public static Stream<FileBlock> fileBlocks(InputStream input) {
+    return StreamSupport.stream(spliterator(input), true);
   }
 
-  public static Stream<DataBlockReader> dataBlockReaders(File file) throws FileNotFoundException {
-    return PBFUtil.fileBlocks(file)
+  public static Stream<DataBlockReader> dataBlockReaders(InputStream input) {
+    return PBFUtil.fileBlocks(input)
         .filter(PBFUtil::isDataBlock)
         .map(PBFUtil::toDataBlock)
         .map(DataBlockReader::new);
   }
 
-  public static Stream<DataBlock> dataBlocks(File file) throws FileNotFoundException {
-    return dataBlockReaders(file).map(DataBlockReader::read);
+  public static Stream<DataBlock> dataBlocks(InputStream input) {
+    return dataBlockReaders(input).map(DataBlockReader::read);
   }
 
   public static boolean isHeaderBlock(FileBlock fileBlock) {

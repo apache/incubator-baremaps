@@ -10,14 +10,14 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.events.XMLEvent;
 import java.util.Arrays;
 
-import static io.gazetteer.osm.OSMTestUtil.OSM_XML_DATA;
+import static io.gazetteer.osm.OSMTestUtil.osmXmlData;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class XMLUtilTest {
 
   @Test
   public void readNode() throws Exception {
-    XMLEventReader reader = XMLUtil.xmlEventReader(OSM_XML_DATA);
+    XMLEventReader reader = XMLUtil.xmlEventReader(osmXmlData());
     while (reader.hasNext()) {
       XMLEvent event = reader.nextEvent();
       if (event.isStartElement()
@@ -38,7 +38,7 @@ public class XMLUtilTest {
 
   @Test
   public void readWay() throws Exception {
-    XMLEventReader reader = XMLUtil.xmlEventReader(OSM_XML_DATA);
+    XMLEventReader reader = XMLUtil.xmlEventReader(osmXmlData());
     while (reader.hasNext()) {
       XMLEvent event = reader.nextEvent();
       if (event.isStartElement() && event.asStartElement().getName().getLocalPart().equals("way")) {
@@ -57,7 +57,7 @@ public class XMLUtilTest {
 
   @Test
   public void readRelation() throws Exception {
-    XMLEventReader reader = XMLUtil.xmlEventReader(OSM_XML_DATA);
+    XMLEventReader reader = XMLUtil.xmlEventReader(osmXmlData());
     while (reader.hasNext()) {
       XMLEvent event = reader.nextEvent();
       if (event.isStartElement()

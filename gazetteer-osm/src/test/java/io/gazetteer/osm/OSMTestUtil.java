@@ -3,28 +3,35 @@ package io.gazetteer.osm;
 import com.google.protobuf.ByteString;
 import io.gazetteer.osm.osmpbf.FileBlock;
 
-import java.io.File;
+import java.io.InputStream;
 
 public class OSMTestUtil {
 
-  public static final File OSM_PBF_DATA =
-      new File(OSMTestUtil.class.getClassLoader().getResource("data.osm.pbf").getFile());
+  public static InputStream osmPbfData() {
+    return OSMTestUtil.class.getClassLoader().getResourceAsStream("data.osm.pbf");
+  }
 
-  public static final File OSM_PBF_DENSE_BLOCK =
-      new File(OSMTestUtil.class.getClassLoader().getResource("dense.osm.pbf").getFile());
+  public static InputStream osmPbfDenseBlock() {
+    return OSMTestUtil.class.getClassLoader().getResourceAsStream("dense.osm.pbf");
+  }
 
-  public static final File OSM_PBF_WAYS_BLOCK =
-      new File(OSMTestUtil.class.getClassLoader().getResource("ways.osm.pbf").getFile());
+  public static InputStream osmPbfWaysBlock() {
+    return OSMTestUtil.class.getClassLoader().getResourceAsStream("ways.osm.pbf");
+  }
 
-  public static final File OSM_PBF_RELATIONS_BLOCK =
-      new File(OSMTestUtil.class.getClassLoader().getResource("relations.osm.pbf").getFile());
+  public static InputStream osmPbfRelationsBlock() {
+    return OSMTestUtil.class.getClassLoader().getResourceAsStream("relations.osm.pbf");
+  }
 
-  public static final FileBlock OSM_PBF_INVALID_BLOCK =
-      new FileBlock("", ByteString.copyFromUtf8(""), ByteString.copyFromUtf8(""));
+  public static FileBlock osmPbfInvalidBlock() {
+    return new FileBlock("", ByteString.copyFromUtf8(""), ByteString.copyFromUtf8(""));
+  }
 
-  public static final File OSM_XML_DATA =
-      new File(OSMTestUtil.class.getClassLoader().getResource("data.osm.xml").getFile());
+  public static InputStream osmXmlData() {
+    return OSMTestUtil.class.getClassLoader().getResourceAsStream("data.osm.xml");
+  }
 
-  public static final File OSC_XML_DATA =
-      new File(OSMTestUtil.class.getClassLoader().getResource("data.osc.xml").getFile());
+  public static InputStream oscXmlData() {
+    return OSMTestUtil.class.getClassLoader().getResourceAsStream("data.osc.xml");
+  }
 }

@@ -1,14 +1,14 @@
 package io.gazetteer.osm;
 
-import io.gazetteer.osm.lmdb.LmdbStore;
-import io.gazetteer.osm.lmdb.NodeType;
-import io.gazetteer.osm.lmdb.WayType;
+import io.gazetteer.osm.lmdb.*;
 import io.gazetteer.osm.model.Node;
+import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
 import io.gazetteer.osm.pgbulkinsert.PgBulkInsertConsumer;
 import io.gazetteer.osm.postgis.PostgisSchema;
+import io.gazetteer.osm.util.StopWatch;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.lmdbjava.Env;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
@@ -17,8 +17,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -54,32 +56,59 @@ public class Importer implements Runnable {
     ForkJoinPool executor = new ForkJoinPool(threads);
     try {
 
+      StopWatch stopWatch = new StopWatch();
+
+      System.out.println("Printing OSM headers.");
+      Osmformat.HeaderBlock header =
+          PBFUtil.fileBlocks(new FileInputStream(file)).findFirst().map(PBFUtil::toHeaderBlock).get();
+      System.out.println(header.getOsmosisReplicationBaseUrl());
+      System.out.println(header.getOsmosisReplicationSequenceNumber());
+      System.out.println(header.getOsmosisReplicationTimestamp());
+      System.out.println(String.format("-> %dms", stopWatch.lap()));
+
+      System.out.println("Creating LMDB cache.");
+      Path lmdbPath = Paths.get(lmdb.getPath());
+      if (Files.exists(lmdbPath)) Files.walk(lmdbPath).map(Path::toFile).forEach(File::delete);
+      lmdbPath.toFile().mkdirs();
+      final Env<ByteBuffer> env =
+          Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(lmdbPath.toFile());
+      final LmdbStore<Long, Node> nodes =
+          new LmdbStore<>(env, env.openDbi("nodes", MDB_CREATE), new NodeType());
+      final LmdbStore<Long, Way> ways =
+          new LmdbStore<>(env, env.openDbi("ways", MDB_CREATE), new WayType());
+      final LmdbStore<Long, Relation> relations =
+          new LmdbStore<>(env, env.openDbi("ways", MDB_CREATE), new RelationType());
+      System.out.println(String.format("-> %dms", stopWatch.lap()));
+
+      System.out.println("Populating the LMDB cache.");
+      LmdbConsumer lmdbConsumer = new LmdbConsumer(nodes, ways, relations);
+      Stream<DataBlock> lmdbStream = PBFUtil.dataBlocks(new FileInputStream(file));
+      executor.submit(() -> lmdbStream.forEach(lmdbConsumer)).get();
+      System.out.println(String.format("-> %dms", stopWatch.lap()));
+
+      System.out.println("Creating postgis database.");
       try (Connection connection = DriverManager.getConnection(postgres)) {
         PostgisSchema.createExtensions(connection);
         PostgisSchema.dropIndices(connection);
         PostgisSchema.dropTables(connection);
         PostgisSchema.createTables(connection);
+        System.out.println(String.format("-> %dms", stopWatch.lap()));
       }
 
-      Osmformat.HeaderBlock header =
-          PBFUtil.fileBlocks(file).findFirst().map(PBFUtil::toHeaderBlock).get();
-
-      System.out.println(header.getOsmosisReplicationBaseUrl());
-      System.out.println(header.getOsmosisReplicationSequenceNumber());
-      System.out.println(header.getOsmosisReplicationTimestamp());
-
+      System.out.println("Populating postgis database.");
       PoolingDataSource pool = PostgisSchema.createPoolingDataSource(postgres);
-      PgBulkInsertConsumer copyManagerConsumer = new PgBulkInsertConsumer(pool);
-      Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(file);
-      executor.submit(() -> postgisStream.forEach(copyManagerConsumer)).get();
+      PgBulkInsertConsumer pgBulkInsertConsumer = new PgBulkInsertConsumer(pool);
+      Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(new FileInputStream(file));
+      executor.submit(() -> postgisStream.forEach(pgBulkInsertConsumer)).get();
+      System.out.println(String.format("-> %dms", stopWatch.lap()));
 
+      System.out.println("Optimizing postgis cache.");
       try (Connection connection = DriverManager.getConnection(postgres)) {
         PostgisSchema.createIndices(connection);
-        PostgisSchema.updateGeometryColumns(connection);
       }
+      System.out.println(String.format("-> %dms", stopWatch.lap()));
 
-      System.out.println("--------------");
-      System.out.println("postgis done!");
+      System.out.println("Done!");
 
     } catch (InterruptedException e) {
       e.printStackTrace();
