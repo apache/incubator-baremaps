@@ -137,19 +137,19 @@ public class DataBlockReader {
   }
 
   private void readRelations(List<Osmformat.Relation> input, List<Relation> output) {
-    for (Osmformat.Relation e : input) {
-      Info info = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
+    for (Osmformat.Relation r : input) {
+      Info info = createEntityData(r.getId(), r.getInfo(), r.getKeysList(), r.getValsList());
       long mid = 0;
       List<Member> members = new ArrayList<>();
-      for (int j = 0; j < e.getMemidsCount(); j++) {
-        mid = mid + e.getMemids(j);
-        String role = getString(e.getRolesSid(j));
+      for (int j = 0; j < r.getMemidsCount(); j++) {
+        mid = mid + r.getMemids(j);
+        String role = getString(r.getRolesSid(j));
         Member.Type type = null;
-        if (e.getTypes(j) == Osmformat.Relation.MemberType.NODE) {
+        if (r.getTypes(j) == Osmformat.Relation.MemberType.NODE) {
           type = Member.Type.node;
-        } else if (e.getTypes(j) == Osmformat.Relation.MemberType.WAY) {
+        } else if (r.getTypes(j) == Osmformat.Relation.MemberType.WAY) {
           type = Member.Type.way;
-        } else if (e.getTypes(j) == Osmformat.Relation.MemberType.RELATION) {
+        } else if (r.getTypes(j) == Osmformat.Relation.MemberType.RELATION) {
           type = Member.Type.relation;
         } else {
           throw new IllegalArgumentException("Unsupported MemberType");

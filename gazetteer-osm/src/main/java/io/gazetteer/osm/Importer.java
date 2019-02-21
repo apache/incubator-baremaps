@@ -38,8 +38,8 @@ public class Importer implements Runnable {
   @Parameters(index = "0", paramLabel = "OSM_FILE", description = "The OpenStreetMap PBF file.")
   private File file;
 
-  @Parameters(index = "1", paramLabel = "ROCKSDB_DIRECTORY", description = "The RocksDB directory.")
-  private File rocksdb;
+  @Parameters(index = "1", paramLabel = "LMDB_DIRECTORY", description = "The LMDB directory.")
+  private File lmdb;
 
   @Parameters(index = "2", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
   private String postgres;

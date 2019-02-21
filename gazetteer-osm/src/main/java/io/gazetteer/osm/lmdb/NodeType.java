@@ -27,16 +27,9 @@ public class NodeType implements ObjectType<Long, Node> {
 
   @Override
   public ByteBuffer val(Node val) {
-    Lmdb.Node node = Lmdb.Node.newBuilder()
-            .setId(val.getInfo().getId())
-            .setVersion(val.getInfo().getVersion())
-            .setUid(val.getInfo().getUserId())
-            .setTimestamp(val.getInfo().getTimestamp())
-            .setChangeset(val.getInfo().getChangeset())
-            .setLon(val.getLon())
-            .setLat(val.getLat())
-            .putAllTags(val.getInfo().getTags())
-            .build();
+    Lmdb.Info info = InfoUtil.info(val.getInfo());
+    Lmdb.Node node =
+        Lmdb.Node.newBuilder().setInfo(info).setLon(val.getLon()).setLat(val.getLat()).build();
     ByteBuffer buffer = ByteBuffer.allocateDirect(node.getSerializedSize());
     buffer.put(node.toByteString().asReadOnlyByteBuffer()).flip();
     return buffer;
@@ -45,14 +38,7 @@ public class NodeType implements ObjectType<Long, Node> {
   @Override
   public Node val(ByteBuffer bytes) throws InvalidProtocolBufferException {
     Lmdb.Node node = Lmdb.Node.parseFrom(bytes);
-    Info info =
-        new Info(
-            node.getId(),
-            node.getVersion(),
-            node.getTimestamp(),
-            node.getChangeset(),
-            node.getUid(),
-            node.getTagsMap());
+    Info info = InfoUtil.info(node.getInfo());
     return new Node(info, node.getLon(), node.getLat());
   }
 }

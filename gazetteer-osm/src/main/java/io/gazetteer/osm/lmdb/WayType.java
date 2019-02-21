@@ -27,16 +27,8 @@ public class WayType implements ObjectType<Long, Way> {
 
   @Override
   public ByteBuffer val(Way val) {
-    Lmdb.Way way =
-        Lmdb.Way.newBuilder()
-            .setId(val.getInfo().getId())
-            .setVersion(val.getInfo().getVersion())
-            .setUid(val.getInfo().getUserId())
-            .setTimestamp(val.getInfo().getTimestamp())
-            .setChangeset(val.getInfo().getChangeset())
-            .putAllTags(val.getInfo().getTags())
-            .addAllNodes(val.getNodes())
-            .build();
+    Lmdb.Info info = InfoUtil.info(val.getInfo());
+    Lmdb.Way way = Lmdb.Way.newBuilder().setInfo(info).addAllNodes(val.getNodes()).build();
     ByteBuffer buffer = ByteBuffer.allocateDirect(way.getSerializedSize());
     buffer.put(way.toByteString().asReadOnlyByteBuffer()).flip();
     return buffer;
@@ -45,14 +37,7 @@ public class WayType implements ObjectType<Long, Way> {
   @Override
   public Way val(ByteBuffer bytes) throws InvalidProtocolBufferException {
     Lmdb.Way way = Lmdb.Way.parseFrom(bytes);
-    Info info =
-        new Info(
-            way.getId(),
-            way.getVersion(),
-            way.getTimestamp(),
-            way.getChangeset(),
-            way.getUid(),
-            way.getTagsMap());
+    Info info = InfoUtil.info(way.getInfo());
     return new Way(info, way.getNodesList());
   }
 }
