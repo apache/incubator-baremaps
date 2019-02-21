@@ -34,7 +34,7 @@ public class OsmBenchmark {
     final LmdbStore<Long, Relation> relations =
         new LmdbStore<>(env, env.openDbi("ways", MDB_CREATE), new RelationType());
     LmdbConsumer lmdbConsumer = new LmdbConsumer(nodes, ways, relations);
-    InputStream input = OsmBenchmark.class.getResourceAsStream("liechtenstein.osm.pbf");
+    InputStream input = getClass().getClassLoader().getResourceAsStream("liechtenstein.osm.pbf");
     Stream<DataBlock> lmdbStream = PBFUtil.dataBlocks(input);
     ForkJoinPool executor = new ForkJoinPool(1);
     executor.submit(() -> lmdbStream.forEach(lmdbConsumer)).get();
