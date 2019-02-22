@@ -10,3 +10,6 @@
 log/
 target/
 
+# JMH
+jmh-result.json
+

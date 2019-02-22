@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -19,6 +20,8 @@ import static io.gazetteer.Constants.PBF_FILE;
 import static io.gazetteer.Constants.TEMP_PREFIX;
 
 @State(Scope.Benchmark)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@Fork(1)
 public class LmdbConsumerBenchmark {
 
   public Path temp;
@@ -42,6 +45,8 @@ public class LmdbConsumerBenchmark {
 
   @Benchmark
   @BenchmarkMode(Mode.AverageTime)
+  @Warmup(iterations = 10)
+  @Measurement(iterations = 10)
   public void processStream() throws ExecutionException, InterruptedException {
     ForkJoinPool executor = new ForkJoinPool(1);
     executor.submit(() -> stream.forEach(consumer)).get();

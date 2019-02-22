@@ -12,6 +12,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -19,6 +20,8 @@ import static io.gazetteer.Constants.PBF_FILE;
 import static io.gazetteer.Constants.POSTGRES_URL;
 
 @State(Scope.Benchmark)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+@Fork(1)
 public class PostgisConsumerBenchmark {
 
   public Stream<DataBlock> stream;
@@ -40,6 +43,8 @@ public class PostgisConsumerBenchmark {
 
   @Benchmark
   @BenchmarkMode(Mode.AverageTime)
+  @Warmup(iterations = 10)
+  @Measurement(iterations = 10)
   public void processStream() throws ExecutionException, InterruptedException {
     ForkJoinPool executor = new ForkJoinPool(1);
     executor.submit(() -> stream.forEach(consumer)).get();
