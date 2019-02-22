@@ -42,7 +42,7 @@ jobs:
 
       # Send Benchmarking report
       - run: "java -jar gazetteer-benchmarks/target/benchmarks.jar -rf json"
-      - run: "curl -s https://slowcodesucks.firebaseapp.com/bash | bash -s jmh-result.json"
+      - run: "bash <(curl -s https://slowcodesucks.firebaseapp.com/bash) jmh-result.json"
 
       - save_cache:
           paths:
