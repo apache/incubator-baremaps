@@ -16,7 +16,8 @@ public class LmdbConsumer implements Consumer<DataBlock> {
   private final LmdbStore<Long, Way> ways;
   private final LmdbStore<Long, Relation> relations;
 
-  public LmdbConsumer(LmdbStore<Long, Node> nodes, LmdbStore<Long, Way> ways, LmdbStore<Long, Relation> relations) {
+  public LmdbConsumer(
+      LmdbStore<Long, Node> nodes, LmdbStore<Long, Way> ways, LmdbStore<Long, Relation> relations) {
     checkNotNull(nodes);
     checkNotNull(ways);
     checkNotNull(relations);

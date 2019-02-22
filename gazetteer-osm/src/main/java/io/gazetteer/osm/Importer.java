@@ -7,6 +7,7 @@ import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
 import io.gazetteer.osm.pgbulkinsert.PgBulkInsertConsumer;
+import io.gazetteer.osm.pgbulkinsert.PgBulkInsertUtil;
 import io.gazetteer.osm.postgis.PostgisSchema;
 import io.gazetteer.osm.util.StopWatch;
 import org.apache.commons.dbcp2.PoolingDataSource;
@@ -66,22 +67,14 @@ public class Importer implements Runnable {
       System.out.println(header.getOsmosisReplicationTimestamp());
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 
-      System.out.println("Creating LMDB cache.");
+      System.out.println("Cleaning LMDB cache.");
       Path lmdbPath = Paths.get(lmdb.getPath());
       if (Files.exists(lmdbPath)) Files.walk(lmdbPath).map(Path::toFile).forEach(File::delete);
       lmdbPath.toFile().mkdirs();
-      final Env<ByteBuffer> env =
-          Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(lmdbPath.toFile());
-      final LmdbStore<Long, Node> nodes =
-          new LmdbStore<>(env, env.openDbi("nodes", MDB_CREATE), new NodeType());
-      final LmdbStore<Long, Way> ways =
-          new LmdbStore<>(env, env.openDbi("ways", MDB_CREATE), new WayType());
-      final LmdbStore<Long, Relation> relations =
-          new LmdbStore<>(env, env.openDbi("ways", MDB_CREATE), new RelationType());
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 
-      System.out.println("Populating the LMDB cache.");
-      LmdbConsumer lmdbConsumer = new LmdbConsumer(nodes, ways, relations);
+      System.out.println("Populating LMDB cache.");
+      LmdbConsumer lmdbConsumer = LmdbUtil.consumer(lmdbPath);
       Stream<DataBlock> lmdbStream = PBFUtil.dataBlocks(new FileInputStream(file));
       executor.submit(() -> lmdbStream.forEach(lmdbConsumer)).get();
       System.out.println(String.format("-> %dms", stopWatch.lap()));
@@ -96,8 +89,7 @@ public class Importer implements Runnable {
       }
 
       System.out.println("Populating postgis database.");
-      PoolingDataSource pool = PostgisSchema.createPoolingDataSource(postgres);
-      PgBulkInsertConsumer pgBulkInsertConsumer = new PgBulkInsertConsumer(pool);
+      PgBulkInsertConsumer pgBulkInsertConsumer = PgBulkInsertUtil.consumer(postgres);
       Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(new FileInputStream(file));
       executor.submit(() -> postgisStream.forEach(pgBulkInsertConsumer)).get();
       System.out.println(String.format("-> %dms", stopWatch.lap()));
