@@ -36,11 +36,13 @@ jobs:
 
       - run: mvn install
 
+      # Send code coverage report
       - run: mvn test -P integration
-
       - run: "bash <(curl -s https://codecov.io/bash)"
 
-      - run: "bash <(curl -s https://slowcodesucks.firebaseapp.com/bash)"
+      # Send Benchmarking report
+      - run: "java -jar gazetteer-benchmarks/target/benchmarks.jar -rf json"
+      - run: "curl -s https://slowcodesucks.firebaseapp.com/bash | bash -s jmh-result.json"
 
       - save_cache:
           paths:
