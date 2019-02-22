@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import static io.gazetteer.Constants.PBF_FILE;
 import static io.gazetteer.Constants.POSTGRES_URL;
 
+@State(Scope.Benchmark)
 public class PostgisConsumerBenchmark {
 
   public Stream<DataBlock> stream;

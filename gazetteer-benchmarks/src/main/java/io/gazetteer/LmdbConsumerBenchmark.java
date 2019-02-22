@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import static io.gazetteer.Constants.PBF_FILE;
 import static io.gazetteer.Constants.TEMP_PREFIX;
 
+@State(Scope.Benchmark)
 public class LmdbConsumerBenchmark {
 
   public Path temp;
