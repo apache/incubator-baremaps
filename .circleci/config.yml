@@ -6,8 +6,8 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:8u181-jdk
-      - image: circleci/postgres:10.6-postgis-ram
+      - image: circleci/openjdk:8-jdk
+      - image: circleci/postgres:10.6-postgis
         environment:
           POSTGRES_USER: osm
           POSTGRES_DB: osm
