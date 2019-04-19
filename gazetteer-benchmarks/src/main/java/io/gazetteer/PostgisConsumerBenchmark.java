@@ -21,7 +21,7 @@ import static io.gazetteer.Constants.POSTGRES_URL;
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Fork(1)
+@Fork(0)
 public class PostgisConsumerBenchmark {
 
   public Stream<DataBlock> stream;

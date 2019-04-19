@@ -21,7 +21,7 @@ import static io.gazetteer.Constants.TEMP_PREFIX;
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Fork(1)
+@Fork(0)
 public class LmdbConsumerBenchmark {
 
   public Path temp;
