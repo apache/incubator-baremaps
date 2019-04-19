@@ -21,7 +21,7 @@ import static io.gazetteer.Constants.POSTGRES_URL;
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Fork(0)
+@Fork(1)
 public class PostgisConsumerBenchmark {
 
   public Stream<DataBlock> stream;
@@ -43,8 +43,8 @@ public class PostgisConsumerBenchmark {
 
   @Benchmark
   @BenchmarkMode(Mode.AverageTime)
-  @Warmup(iterations = 10)
-  @Measurement(iterations = 10)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
   public void processStream() throws ExecutionException, InterruptedException {
     ForkJoinPool executor = new ForkJoinPool(1);
     executor.submit(() -> stream.forEach(consumer)).get();

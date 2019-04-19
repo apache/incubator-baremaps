@@ -21,7 +21,7 @@ import static io.gazetteer.Constants.TEMP_PREFIX;
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Fork(0)
+@Fork(1)
 public class LmdbConsumerBenchmark {
 
   public Path temp;
@@ -45,8 +45,8 @@ public class LmdbConsumerBenchmark {
 
   @Benchmark
   @BenchmarkMode(Mode.AverageTime)
-  @Warmup(iterations = 10)
-  @Measurement(iterations = 10)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
   public void processStream() throws ExecutionException, InterruptedException {
     ForkJoinPool executor = new ForkJoinPool(1);
     executor.submit(() -> stream.forEach(consumer)).get();
