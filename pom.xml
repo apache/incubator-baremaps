@@ -160,6 +160,8 @@
         <module>gazetteer-tileserver</module>
         <module>gazetteer-tilesource</module>
         <module>gazetteer-benchmarks</module>
+        <module>gazetteer-postgis</module>
+        <module>gazetteer-boilerplate</module>
     </modules>
 
     <dependencies>
