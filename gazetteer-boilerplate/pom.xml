@@ -27,6 +27,11 @@
       <artifactId>postgresql</artifactId>
       <version>42.2.5</version>
     </dependency>
+    <dependency>
+      <groupId>info.picocli</groupId>
+      <artifactId>picocli</artifactId>
+      <version>3.9.3</version>
+    </dependency>
   </dependencies>
 
 </project>
