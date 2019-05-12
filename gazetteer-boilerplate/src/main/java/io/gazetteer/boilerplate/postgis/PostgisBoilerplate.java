@@ -5,6 +5,8 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import io.gazetteer.postgis.PGHStore;
@@ -66,7 +68,7 @@ public class PostgisBoilerplate implements Runnable {
       // Initialize the connection
       try (Connection connection = DriverManager.getConnection(databaseUrl)) {
         PGConnection pgConnection = (PGConnection) connection;
-        pgConnection.addDataType("hstore", PGHStore.class);
+        //pgConnection.addDataType("hstore", PGHStore.class);
 
         // Iterate over the tables corresponding to the table pattern
         for (Table tableMetadata : MetadataUtil.getTables(connection, null, databaseSchema, databaseTable)) {
@@ -276,7 +278,7 @@ public class PostgisBoilerplate implements Runnable {
     for (StatementColumn column : columns) {
       String columnName = column.getColumnName();
       String variableName = Conversions.variableName(columnName);
-      Class<?> variableType = getColumnType(column);
+      TypeName variableType = getColumnType(column);
       rowClassBuilder.addField(variableType, variableName, Modifier.PUBLIC, Modifier.FINAL);
       rowConstructorBuilder
           .addParameter(variableType, variableName)
@@ -288,24 +290,25 @@ public class PostgisBoilerplate implements Runnable {
     tableClassBuilder.addType(rowClassBuilder.build());
   }
 
-  private static Class<?> getColumnType(StatementColumn column) throws ClassNotFoundException {
-    Class<?> variableType;
-    if (column.getColumnTypeName().equals("_text") || column.getColumnTypeName().equals("_varchar")) {
-      variableType = String[].class;
-    } else if (column.getColumnTypeName().equals("_int2")) {
-      variableType = Short[].class;
-    } else if (column.getColumnTypeName().equals("_int4")) {
-      variableType = Integer[].class;
-    } else if (column.getColumnTypeName().equals("_int8")) {
-      variableType = Long[].class;
-    } else if (column.getColumnTypeName().equals("_float4")) {
-      variableType = Float[].class;
-    } else if (column.getColumnTypeName().equals("_float8")) {
-      variableType = Double[].class;
-    } else if (column.getColumnTypeName().equals("_bool")) {
-      variableType = Boolean[].class;
-    } else {
-      variableType = Class.forName(column.getColumnClassName());
+  private static TypeName getColumnType(StatementColumn column) throws ClassNotFoundException {
+    String type = column.getColumnTypeName();
+    TypeName variableType = TypeVariableName.get(column.getColumnClassName());
+    if (type.equals("hstore")) {
+      variableType  = ParameterizedTypeName.get(Map.class, String.class, String.class);
+    } else if (type.equals("_text") || type.equals("_varchar")) {
+      variableType = TypeVariableName.get(String[].class.getCanonicalName());
+    } else if (type.equals("_int2")) {
+      variableType = TypeVariableName.get(Short[].class.getCanonicalName());
+    } else if (type.equals("_int4")) {
+      variableType = TypeVariableName.get(Integer[].class.getCanonicalName());
+    } else if (type.equals("_int8")) {
+      variableType = TypeVariableName.get(Long[].class.getCanonicalName());
+    } else if (type.equals("_float4")) {
+      variableType = TypeVariableName.get(Float[].class.getCanonicalName());
+    } else if (type.equals("_float8")) {
+      variableType = TypeVariableName.get(Double[].class.getCanonicalName());
+    } else if (type.equals("_bool")) {
+      variableType = TypeVariableName.get(Boolean[].class.getCanonicalName());
     }
     return variableType;
   }

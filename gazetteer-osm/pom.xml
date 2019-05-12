@@ -43,7 +43,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>boilerplate-generate-jdbc-source</id>
+                        <id>gazetteer-generate-jdbc-source</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>java</goal>
@@ -55,10 +55,10 @@
                                 <argument><![CDATA[--databaseSchema=public]]></argument>
                                 <argument><![CDATA[--databaseTable=osm_%]]></argument>
                                 <argument><![CDATA[--outputPackage=io.gazetteer.osm.postgis]]></argument>
-                                <argument><![CDATA[--outputDirectory=${basedir}/target/boilerplate-src/main/java]]></argument>
+                                <argument><![CDATA[--outputDirectory=${basedir}/target/gazetteer-src/main/java]]></argument>
                             </arguments>
                             <classpathScope>runtime</classpathScope>
-                            <sourceRoot>${basedir}/target/boilerplate-src</sourceRoot>
+                            <sourceRoot>${basedir}/target/gazetteer-src</sourceRoot>
                         </configuration>
                     </execution>
                 </executions>
@@ -68,14 +68,14 @@
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>boilerplate-include-jdbc-source</id>
+                        <id>gazetteer-include-jdbc-source</id>
                         <phase>process-sources</phase>
                         <goals>
                             <goal>add-source</goal>
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${basedir}/target/boilerplate-src/main/java</source>
+                                <source>${basedir}/target/gazetteer-src/main/java</source>
                             </sources>
                         </configuration>
                     </execution>
