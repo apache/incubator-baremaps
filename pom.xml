@@ -13,11 +13,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <version.plugin.surefire.provider.junit>1.0.3</version.plugin.surefire.provider.junit>
         <version.plugin.surefire>2.19.1</version.plugin.surefire>
         <version.plugin.compiler>3.8.0</version.plugin.compiler>
-
         <version.lib.junit>5.1.0</version.lib.junit>
         <version.lib.testng>6.13.1</version.lib.testng>
         <version.lib.slf4j>1.7.25</version.lib.slf4j>

@@ -7,6 +7,7 @@ import com.squareup.javapoet.MethodSpec.Builder;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import io.gazetteer.postgis.PGHStore;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,6 +19,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
 import org.postgresql.PGConnection;
@@ -63,8 +65,8 @@ public class PostgisBoilerplate implements Runnable {
 
       // Initialize the connection
       try (Connection connection = DriverManager.getConnection(databaseUrl)) {
-
-        //((PGConnection)connection).addDataType("hstore", Geometry.class);
+        PGConnection pgConnection = (PGConnection) connection;
+        pgConnection.addDataType("hstore", PGHStore.class);
 
         // Iterate over the tables corresponding to the table pattern
         for (Table tableMetadata : MetadataUtil.getTables(connection, null, databaseSchema, databaseTable)) {
@@ -231,23 +233,20 @@ public class PostgisBoilerplate implements Runnable {
           }
 
           // Check wether the database is Postgresql before leveraging the CopyManager
-          if (connection instanceof PGConnection) {
-            PGConnection pg = (PGConnection) connection;
-            CopyManager copyManager = pg.getCopyAPI();
+          CopyManager copyManager = pgConnection.getCopyAPI();
 
-            // Add constant for delete query
-            addConstant(classBuilder, "COPY_IN", QueryUtil.copyIn(tableName, columnNames));
+          // Add constant for delete query
+          addConstant(classBuilder, "COPY_IN", QueryUtil.copyIn(tableName, columnNames));
 
-            // Add copyIn method
-            Builder copyInBuilder = MethodSpec.methodBuilder("copyIn")
-                .returns(CopyIn.class)
-                .addException(SQLException.class)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .addParameter(PGConnection.class, "connection");
-            copyInBuilder.addStatement("$T copyManager = connection.getCopyAPI()", CopyManager.class);
-            copyInBuilder.addStatement("return copyManager.copyIn(COPY_IN)");
-            classBuilder.addMethod(copyInBuilder.build());
-          }
+          // Add copyIn method
+          Builder copyInBuilder = MethodSpec.methodBuilder("copyIn")
+              .returns(CopyIn.class)
+              .addException(SQLException.class)
+              .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+              .addParameter(PGConnection.class, "connection");
+          copyInBuilder.addStatement("$T copyManager = connection.getCopyAPI()", CopyManager.class);
+          copyInBuilder.addStatement("return copyManager.copyIn(COPY_IN)");
+          classBuilder.addMethod(copyInBuilder.build());
 
           // Build the class and write it to the output directory
           TypeSpec entity = classBuilder.build();
@@ -277,16 +276,38 @@ public class PostgisBoilerplate implements Runnable {
     for (StatementColumn column : columns) {
       String columnName = column.getColumnName();
       String variableName = Conversions.variableName(columnName);
-      Class<?> type = Class.forName(column.getColumnClassName());
-      rowClassBuilder.addField(type, variableName, Modifier.PUBLIC, Modifier.FINAL);
+      Class<?> variableType = getColumnType(column);
+      rowClassBuilder.addField(variableType, variableName, Modifier.PUBLIC, Modifier.FINAL);
       rowConstructorBuilder
-          .addParameter(type, variableName)
+          .addParameter(variableType, variableName)
           .addStatement("this.$1L = $1L", variableName);
     }
     rowClassBuilder.addMethod(rowConstructorBuilder.build());
 
     // Add the class to the table class
     tableClassBuilder.addType(rowClassBuilder.build());
+  }
+
+  private static Class<?> getColumnType(StatementColumn column) throws ClassNotFoundException {
+    Class<?> variableType;
+    if (column.getColumnTypeName().equals("_text") || column.getColumnTypeName().equals("_varchar")) {
+      variableType = String[].class;
+    } else if (column.getColumnTypeName().equals("_int2")) {
+      variableType = Short[].class;
+    } else if (column.getColumnTypeName().equals("_int4")) {
+      variableType = Integer[].class;
+    } else if (column.getColumnTypeName().equals("_int8")) {
+      variableType = Long[].class;
+    } else if (column.getColumnTypeName().equals("_float4")) {
+      variableType = Float[].class;
+    } else if (column.getColumnTypeName().equals("_float8")) {
+      variableType = Double[].class;
+    } else if (column.getColumnTypeName().equals("_bool")) {
+      variableType = Boolean[].class;
+    } else {
+      variableType = Class.forName(column.getColumnClassName());
+    }
+    return variableType;
   }
 
   private static void addConstant(TypeSpec.Builder classBuilder, String constantName, String constantValue) {
@@ -303,14 +324,6 @@ public class PostgisBoilerplate implements Runnable {
         .returns(PreparedStatement.class)
         .addStatement("return connection.prepareStatement($L)", constantName)
         .build());
-  }
-
-  private static void addColumnParameters(MethodSpec.Builder methodBuilder, List<StatementColumn> columns) throws ClassNotFoundException {
-    for (StatementColumn column : columns) {
-      String variableName = Conversions.variableName(column.getColumnName());
-      Class variableType = Class.forName(column.getColumnClassName());
-      methodBuilder.addParameter(variableType, variableName);
-    }
   }
 
   private static void addColumnSetters(MethodSpec.Builder methodBuilder, List<StatementColumn> columns, String variablePrefix,
