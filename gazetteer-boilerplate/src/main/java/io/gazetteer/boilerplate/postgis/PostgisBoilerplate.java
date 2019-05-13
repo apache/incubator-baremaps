@@ -9,7 +9,6 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
-import io.gazetteer.postgis.PGHStore;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
