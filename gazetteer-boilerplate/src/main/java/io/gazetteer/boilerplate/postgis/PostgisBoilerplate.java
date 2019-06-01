@@ -9,6 +9,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import io.gazetteer.postgis.PGGeometry;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
+import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyIn;
 import org.postgresql.copy.CopyManager;
@@ -160,8 +162,13 @@ public class PostgisBoilerplate implements Runnable {
             int selectResultIdx = 1;
             for (StatementColumn column : columns) {
               String suffix = selectResultIdx < columns.size() ? ",\n" : "\n";
-              selectBuilder
-                  .addCode("  ($T) result.getObject($L)$L", Class.forName(column.getColumnClassName()), selectResultIdx++, suffix);
+              if (column.getColumnTypeName().equals("geometry")) {
+                selectBuilder
+                    .addCode("  (($T) result.getObject($L)).getGeometry()$L", PGGeometry.class, selectResultIdx++, suffix);
+              } else {
+                selectBuilder
+                    .addCode("  ($T) result.getObject($L)$L", Class.forName(column.getColumnClassName()), selectResultIdx++, suffix);
+              }
             }
             selectBuilder.addCode(");\n");
             selectBuilder.endControlFlow();
@@ -233,9 +240,6 @@ public class PostgisBoilerplate implements Runnable {
             classBuilder.addMethod(batchDeleteBuilder.build());
           }
 
-          // Check wether the database is Postgresql before leveraging the CopyManager
-          CopyManager copyManager = pgConnection.getCopyAPI();
-
           // Add constant for delete query
           addConstant(classBuilder, "COPY_IN", QueryUtil.copyIn(tableName, columnNames));
 
@@ -293,7 +297,9 @@ public class PostgisBoilerplate implements Runnable {
     String type = column.getColumnTypeName();
     TypeName variableType = TypeVariableName.get(column.getColumnClassName());
     if (type.equals("hstore")) {
-      variableType  = ParameterizedTypeName.get(Map.class, String.class, String.class);
+      variableType = ParameterizedTypeName.get(Map.class, String.class, String.class);
+    } else if (type.equals("geometry")) {
+      variableType = TypeVariableName.get(Geometry.class.getCanonicalName());
     } else if (type.equals("_text") || type.equals("_varchar")) {
       variableType = TypeVariableName.get(String[].class.getCanonicalName());
     } else if (type.equals("_int2")) {
@@ -336,7 +342,6 @@ public class PostgisBoilerplate implements Runnable {
       methodBuilder.addStatement("statement.setObject($1L, $2L$3L, $4L)", start++, variablePrefix, variableName, columnType);
     }
   }
-
 
 }
 
