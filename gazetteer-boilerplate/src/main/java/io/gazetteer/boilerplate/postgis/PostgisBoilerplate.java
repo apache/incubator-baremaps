@@ -9,7 +9,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
-import io.gazetteer.postgis.PGGeometry;
+import io.gazetteer.postgis.BinaryUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -69,7 +69,6 @@ public class PostgisBoilerplate implements Runnable {
       // Initialize the connection
       try (Connection connection = DriverManager.getConnection(databaseUrl)) {
         PGConnection pgConnection = (PGConnection) connection;
-        //pgConnection.addDataType("hstore", PGHStore.class);
 
         // Iterate over the tables corresponding to the table pattern
         for (Table tableMetadata : MetadataUtil.getTables(connection, null, databaseSchema, databaseTable)) {
@@ -140,7 +139,9 @@ public class PostgisBoilerplate implements Runnable {
             addInternalClass(classBuilder, "PrimaryKey", primaryKey);
 
             // Add constant for select query
-            addConstant(classBuilder, "SELECT", QueryUtil.select(tableName, columnNames, QueryUtil.where(primaryKeyColumnNames)));
+            List<String> selectNames = columnsMetadata
+                .stream().map(c -> c.getTypeName().equals("geometry") ? "st_asbinary(" + c.getColumnName() + ")" : c.getColumnName()).collect(Collectors.toList());
+            addConstant(classBuilder, "SELECT", QueryUtil.select(tableName, selectNames, QueryUtil.where(primaryKeyColumnNames)));
 
             // Add method that init select statement
             addCreateStatementMethod(classBuilder, "createSelect", "SELECT");
@@ -162,12 +163,14 @@ public class PostgisBoilerplate implements Runnable {
             int selectResultIdx = 1;
             for (StatementColumn column : columns) {
               String suffix = selectResultIdx < columns.size() ? ",\n" : "\n";
-              if (column.getColumnTypeName().equals("geometry")) {
+              String type = column.getColumnTypeName();
+              if (type.equals("geometry")) {
                 selectBuilder
-                    .addCode("  (($T) result.getObject($L)).getGeometry()$L", PGGeometry.class, selectResultIdx++, suffix);
+                    .addCode("  $T.readGeometry(result.getBytes($L))$L", TypeVariableName.get(BinaryUtil.class),
+                        selectResultIdx++, suffix);
               } else {
                 selectBuilder
-                    .addCode("  ($T) result.getObject($L)$L", Class.forName(column.getColumnClassName()), selectResultIdx++, suffix);
+                    .addCode("  ($T) result.getObject($L)$L", getColumnType(column), selectResultIdx++, suffix);
               }
             }
             selectBuilder.addCode(");\n");
@@ -244,7 +247,7 @@ public class PostgisBoilerplate implements Runnable {
           addConstant(classBuilder, "COPY_IN", QueryUtil.copyIn(tableName, columnNames));
 
           // Add copyIn method
-          Builder copyInBuilder = MethodSpec.methodBuilder("copyIn")
+          Builder copyInBuilder = MethodSpec.methodBuilder("createCopy")
               .returns(CopyIn.class)
               .addException(SQLException.class)
               .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
@@ -252,6 +255,14 @@ public class PostgisBoilerplate implements Runnable {
           copyInBuilder.addStatement("$T copyManager = connection.getCopyAPI()", CopyManager.class);
           copyInBuilder.addStatement("return copyManager.copyIn(COPY_IN)");
           classBuilder.addMethod(copyInBuilder.build());
+
+          // Add write method
+          Builder writeBuilder = MethodSpec.methodBuilder("copyIn")
+              .addException(SQLException.class)
+              .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+              .addParameter(CopyIn.class, "copy")
+              .addParameter(ParameterSpec.builder(TypeVariableName.get("Row"), "row").build());
+          classBuilder.addMethod(writeBuilder.build());
 
           // Build the class and write it to the output directory
           TypeSpec entity = classBuilder.build();
@@ -338,8 +349,13 @@ public class PostgisBoilerplate implements Runnable {
       int start) {
     for (StatementColumn column : columns) {
       String variableName = Conversions.variableName(column.getColumnName());
-      Integer columnType = column.getColumnType();
-      methodBuilder.addStatement("statement.setObject($1L, $2L$3L, $4L)", start++, variablePrefix, variableName, columnType);
+      String type = column.getColumnTypeName();
+      if (type.equals("geometry")) {
+        methodBuilder.addStatement("statement.setBytes($1L, $2L.writeGeometry($3L$4L))", start++, TypeVariableName.get(BinaryUtil.class),
+            variablePrefix, variableName);
+      } else {
+        methodBuilder.addStatement("statement.setObject($1L, $2L$3L, $4L)", start++, variablePrefix, variableName, column.getColumnType());
+      }
     }
   }
 
