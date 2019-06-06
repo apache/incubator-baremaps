@@ -1,4 +1,4 @@
-package io.gazetteer.boilerplate.postgis;
+package io.gazetteer.codegen.postgis;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

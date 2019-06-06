@@ -1,4 +1,4 @@
-package io.gazetteer.boilerplate.postgis;
+package io.gazetteer.codegen.postgis;
 
 public class StatementParameter {
 

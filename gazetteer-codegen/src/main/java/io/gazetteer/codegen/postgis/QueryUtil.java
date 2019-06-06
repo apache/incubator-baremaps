@@ -1,4 +1,4 @@
-package io.gazetteer.boilerplate.postgis;
+package io.gazetteer.codegen.postgis;
 
 import com.google.common.base.Joiner;
 import java.util.List;

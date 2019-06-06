@@ -1,4 +1,4 @@
-package io.gazetteer.boilerplate.postgis;
+package io.gazetteer.codegen.postgis;
 
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -9,7 +9,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
-import io.gazetteer.postgis.BinaryUtil;
+import io.gazetteer.postgis.GeometryUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -166,7 +166,7 @@ public class PostgisBoilerplate implements Runnable {
               String type = column.getColumnTypeName();
               if (type.equals("geometry")) {
                 selectBuilder
-                    .addCode("  $T.readGeometry(result.getBytes($L))$L", TypeVariableName.get(BinaryUtil.class),
+                    .addCode("  $T.readGeometry(result.getBytes($L))$L", TypeVariableName.get(GeometryUtil.class),
                         selectResultIdx++, suffix);
               } else {
                 selectBuilder
@@ -351,7 +351,7 @@ public class PostgisBoilerplate implements Runnable {
       String variableName = Conversions.variableName(column.getColumnName());
       String type = column.getColumnTypeName();
       if (type.equals("geometry")) {
-        methodBuilder.addStatement("statement.setBytes($1L, $2L.writeGeometry($3L$4L))", start++, TypeVariableName.get(BinaryUtil.class),
+        methodBuilder.addStatement("statement.setBytes($1L, $2L.writeGeometry($3L$4L))", start++, TypeVariableName.get(GeometryUtil.class),
             variablePrefix, variableName);
       } else {
         methodBuilder.addStatement("statement.setObject($1L, $2L$3L, $4L)", start++, variablePrefix, variableName, column.getColumnType());
@@ -360,5 +360,3 @@ public class PostgisBoilerplate implements Runnable {
   }
 
 }
-
-

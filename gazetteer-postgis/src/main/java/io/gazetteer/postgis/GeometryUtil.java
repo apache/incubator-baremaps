@@ -8,7 +8,7 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
 
-public class BinaryUtil {
+public class GeometryUtil {
 
   public static Geometry readGeometry(byte[] bytes) throws SQLException {
     if (bytes == null) {

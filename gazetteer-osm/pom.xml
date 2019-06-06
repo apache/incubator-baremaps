@@ -49,7 +49,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>io.gazetteer.boilerplate.postgis.PostgisBoilerplate</mainClass>
+                            <mainClass>io.gazetteer.codegen.postgis.PostgisBoilerplate</mainClass>
                             <arguments>
                                 <argument><![CDATA[--databaseUrl=jdbc:postgresql://localhost:5432/osm?user=osm&password=osm]]></argument>
                                 <argument><![CDATA[--databaseSchema=public]]></argument>
@@ -87,7 +87,7 @@
     <dependencies>
         <dependency>
             <groupId>io.gazetteer</groupId>
-            <artifactId>gazetteer-boilerplate</artifactId>
+            <artifactId>gazetteer-codegen</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>runtime</scope>
         </dependency>

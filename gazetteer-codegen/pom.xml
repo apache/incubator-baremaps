@@ -9,7 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>gazetteer-boilerplate</artifactId>
+  <artifactId>gazetteer-codegen</artifactId>
 
   <dependencies>
     <dependency>
