@@ -49,7 +49,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>io.gazetteer.codegen.postgis.PostgisBoilerplate</mainClass>
+                            <mainClass>io.gazetteer.codegen.PostgisCodegen</mainClass>
                             <arguments>
                                 <argument><![CDATA[--databaseUrl=jdbc:postgresql://localhost:5432/osm?user=osm&password=osm]]></argument>
                                 <argument><![CDATA[--databaseSchema=public]]></argument>

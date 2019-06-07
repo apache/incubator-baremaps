@@ -1,5 +1,6 @@
-package io.gazetteer.codegen.postgis;
+package io.gazetteer.codegen;
 
+import com.google.common.base.CaseFormat;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -10,6 +11,12 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import io.gazetteer.postgis.GeometryUtil;
+import io.gazetteer.postgis.MetadataUtil;
+import io.gazetteer.postgis.PrimaryKeyColumn;
+import io.gazetteer.postgis.QueryUtil;
+import io.gazetteer.postgis.StatementColumn;
+import io.gazetteer.postgis.Table;
+import io.gazetteer.postgis.TableColumn;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,10 +40,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 @Command(name = "postgis")
-public class PostgisBoilerplate implements Runnable {
+public class PostgisCodegen implements Runnable {
 
   public static void main(String[] args) {
-    CommandLine.run(new PostgisBoilerplate(), System.err, args);
+    CommandLine.run(new PostgisCodegen(), System.err, args);
   }
 
   @Option(names = {"-u", "--databaseUrl"}, required = true, description = "The database url")
@@ -86,7 +93,7 @@ public class PostgisBoilerplate implements Runnable {
 
           // Create class that correspond to the table
           TypeSpec.Builder classBuilder = TypeSpec
-              .classBuilder(Conversions.className(tableMetadata.getTableName()))
+              .classBuilder(className(tableMetadata.getTableName()))
               .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
 
           // Add internal class to wrap rows
@@ -246,7 +253,7 @@ public class PostgisBoilerplate implements Runnable {
           // Add constant for delete query
           addConstant(classBuilder, "COPY_IN", QueryUtil.copyIn(tableName, columnNames));
 
-          // Add copyIn method
+          // Add create copy method
           Builder copyInBuilder = MethodSpec.methodBuilder("createCopy")
               .returns(CopyIn.class)
               .addException(SQLException.class)
@@ -256,7 +263,7 @@ public class PostgisBoilerplate implements Runnable {
           copyInBuilder.addStatement("return copyManager.copyIn(COPY_IN)");
           classBuilder.addMethod(copyInBuilder.build());
 
-          // Add write method
+          // Add copy method
           Builder writeBuilder = MethodSpec.methodBuilder("copyIn")
               .addException(SQLException.class)
               .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
@@ -291,7 +298,7 @@ public class PostgisBoilerplate implements Runnable {
     Builder rowConstructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
     for (StatementColumn column : columns) {
       String columnName = column.getColumnName();
-      String variableName = Conversions.variableName(columnName);
+      String variableName = variableName(columnName);
       TypeName variableType = getColumnType(column);
       rowClassBuilder.addField(variableType, variableName, Modifier.PUBLIC, Modifier.FINAL);
       rowConstructorBuilder
@@ -348,7 +355,7 @@ public class PostgisBoilerplate implements Runnable {
   private static void addColumnSetters(MethodSpec.Builder methodBuilder, List<StatementColumn> columns, String variablePrefix,
       int start) {
     for (StatementColumn column : columns) {
-      String variableName = Conversions.variableName(column.getColumnName());
+      String variableName = variableName(column.getColumnName());
       String type = column.getColumnTypeName();
       if (type.equals("geometry")) {
         methodBuilder.addStatement("statement.setBytes($1L, $2L.writeGeometry($3L$4L))", start++, TypeVariableName.get(GeometryUtil.class),
@@ -357,6 +364,14 @@ public class PostgisBoilerplate implements Runnable {
         methodBuilder.addStatement("statement.setObject($1L, $2L$3L, $4L)", start++, variablePrefix, variableName, column.getColumnType());
       }
     }
+  }
+
+  public static String className(String tableName) {
+    return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, tableName);
+  }
+
+  public static String variableName(String columnName) {
+    return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, columnName);
   }
 
 }

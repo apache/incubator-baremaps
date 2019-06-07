@@ -1,4 +1,4 @@
-package io.gazetteer.codegen.postgis;
+package io.gazetteer.postgis;
 
 public class PrimaryKeyColumn {
 

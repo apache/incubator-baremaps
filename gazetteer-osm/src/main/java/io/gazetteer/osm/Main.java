@@ -5,6 +5,8 @@ import io.gazetteer.postgis.GeometryUtil;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.HashMap;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 
@@ -15,8 +17,8 @@ public class Main {
     GeometryFactory gf = new GeometryFactory();
     byte[] b = GeometryUtil.writeGeometry(gf.createPoint(new Coordinate(1, 1)));
 
-    //OsmNodes.insert(connection, new OsmNodes.Row(3l, 1, 1, new Timestamp(2), 1l, new HashMap<>(), gf.createPoint(new Coordinate(1, 1))));
-    //OsmNodes.insert(connection, new OsmNodes.Row(4l, 1, 1, new Timestamp(2), 1l, new HashMap<>(), null));
+    OsmNodes.insert(connection, new OsmNodes.Row(3l, 1, 1, new Timestamp(2), 1l, new HashMap<>(), gf.createPoint(new Coordinate(1, 1))));
+    OsmNodes.insert(connection, new OsmNodes.Row(4l, 1, 1, new Timestamp(2), 1l, new HashMap<>(), null));
     OsmNodes.Row row = OsmNodes.select(connection, new OsmNodes.PrimaryKey(4l));
     System.out.println(row);
   }
