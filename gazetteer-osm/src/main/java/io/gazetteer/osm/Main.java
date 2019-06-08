@@ -1,7 +1,7 @@
 package io.gazetteer.osm;
 
 import io.gazetteer.osm.postgis.OsmNodes;
-import io.gazetteer.postgis.GeometryUtil;
+import io.gazetteer.postgis.util.GeometryUtil;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;

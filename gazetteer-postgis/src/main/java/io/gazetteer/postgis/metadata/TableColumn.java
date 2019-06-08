@@ -1,4 +1,4 @@
-package io.gazetteer.postgis;
+package io.gazetteer.postgis.metadata;
 
 public final class TableColumn {
 

@@ -1,4 +1,4 @@
-package io.gazetteer.postgis;
+package io.gazetteer.postgis.util;
 
 import static org.locationtech.jts.io.WKBConstants.wkbNDR;
 

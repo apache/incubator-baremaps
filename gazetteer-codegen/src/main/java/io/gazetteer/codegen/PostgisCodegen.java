@@ -10,13 +10,14 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
-import io.gazetteer.postgis.GeometryUtil;
-import io.gazetteer.postgis.MetadataUtil;
-import io.gazetteer.postgis.PrimaryKeyColumn;
-import io.gazetteer.postgis.QueryUtil;
-import io.gazetteer.postgis.StatementColumn;
-import io.gazetteer.postgis.Table;
-import io.gazetteer.postgis.TableColumn;
+import io.gazetteer.postgis.metadata.MetadataUtil;
+import io.gazetteer.postgis.metadata.PrimaryKeyColumn;
+import io.gazetteer.postgis.metadata.QueryUtil;
+import io.gazetteer.postgis.metadata.StatementColumn;
+import io.gazetteer.postgis.metadata.Table;
+import io.gazetteer.postgis.metadata.TableColumn;
+import io.gazetteer.postgis.util.CopyWriter;
+import io.gazetteer.postgis.util.GeometryUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,7 +35,7 @@ import javax.lang.model.element.Modifier;
 import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.CopyIn;
-import org.postgresql.copy.CopyManager;
+import org.postgresql.copy.PGCopyOutputStream;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -93,7 +94,7 @@ public class PostgisCodegen implements Runnable {
 
           // Create class that correspond to the table
           TypeSpec.Builder classBuilder = TypeSpec
-              .classBuilder(className(tableMetadata.getTableName()))
+              .classBuilder(getClassName(tableMetadata.getTableName()))
               .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
 
           // Add internal class to wrap rows
@@ -113,7 +114,7 @@ public class PostgisCodegen implements Runnable {
               .addParameter(Connection.class, "connection")
               .addParameter(ParameterSpec.builder(TypeVariableName.get("Row"), "row").build());
           insertBuilder.beginControlFlow("try ($T statement = connection.prepareStatement(INSERT))", PreparedStatement.class);
-          addColumnSetters(insertBuilder, columns, "row.", 1);
+          addStatementSetters(insertBuilder, columns, "row.", 1);
           insertBuilder.addStatement("return statement.executeUpdate()");
           insertBuilder.endControlFlow();
           classBuilder.addMethod(insertBuilder.build());
@@ -125,7 +126,7 @@ public class PostgisCodegen implements Runnable {
               .addParameter(PreparedStatement.class, "statement")
               .addParameter(ParameterSpec.builder(TypeVariableName.get("Row"), "row").build());
           batchInsertBuilder.addStatement("statement.clearParameters()");
-          addColumnSetters(batchInsertBuilder, columns, "row.", 1);
+          addStatementSetters(batchInsertBuilder, columns, "row.", 1);
           batchInsertBuilder.addStatement("statement.addBatch()");
           classBuilder.addMethod(batchInsertBuilder.build());
 
@@ -147,7 +148,8 @@ public class PostgisCodegen implements Runnable {
 
             // Add constant for select query
             List<String> selectNames = columnsMetadata
-                .stream().map(c -> c.getTypeName().equals("geometry") ? "st_asbinary(" + c.getColumnName() + ")" : c.getColumnName()).collect(Collectors.toList());
+                .stream().map(c -> c.getTypeName().equals("geometry") ? "st_asbinary(" + c.getColumnName() + ")" : c.getColumnName())
+                .collect(Collectors.toList());
             addConstant(classBuilder, "SELECT", QueryUtil.select(tableName, selectNames, QueryUtil.where(primaryKeyColumnNames)));
 
             // Add method that init select statement
@@ -161,26 +163,12 @@ public class PostgisCodegen implements Runnable {
                 .addParameter(Connection.class, "connection")
                 .addParameter(ParameterSpec.builder(TypeVariableName.get("PrimaryKey"), "primaryKey").build());
             selectBuilder.beginControlFlow("try($T statement = connection.prepareStatement(SELECT))", PreparedStatement.class);
-            addColumnSetters(selectBuilder, primaryKey, "primaryKey.", 1);
+            addStatementSetters(selectBuilder, primaryKey, "primaryKey.", 1);
             selectBuilder.addStatement("$T result = statement.executeQuery()", ResultSet.class);
             selectBuilder.beginControlFlow("if (!result.next())");
             selectBuilder.addStatement("return null");
             selectBuilder.nextControlFlow("else");
-            selectBuilder.addCode("return new Row(\n");
-            int selectResultIdx = 1;
-            for (StatementColumn column : columns) {
-              String suffix = selectResultIdx < columns.size() ? ",\n" : "\n";
-              String type = column.getColumnTypeName();
-              if (type.equals("geometry")) {
-                selectBuilder
-                    .addCode("  $T.readGeometry(result.getBytes($L))$L", TypeVariableName.get(GeometryUtil.class),
-                        selectResultIdx++, suffix);
-              } else {
-                selectBuilder
-                    .addCode("  ($T) result.getObject($L)$L", getColumnType(column), selectResultIdx++, suffix);
-              }
-            }
-            selectBuilder.addCode(");\n");
+            addStatementGetters(selectBuilder, columns, 1);
             selectBuilder.endControlFlow();
             selectBuilder.endControlFlow();
             classBuilder.addMethod(selectBuilder.build());
@@ -200,8 +188,8 @@ public class PostgisCodegen implements Runnable {
                 .addParameter(ParameterSpec.builder(TypeVariableName.get("Row"), "row").build())
                 .addParameter(ParameterSpec.builder(TypeVariableName.get("PrimaryKey"), "primaryKey").build());
             updateBuilder.beginControlFlow("try ($T statement = connection.prepareStatement(UPDATE))", PreparedStatement.class);
-            addColumnSetters(updateBuilder, columns, "row.", 1);
-            addColumnSetters(updateBuilder, primaryKey, "primaryKey.", 1 + columns.size());
+            addStatementSetters(updateBuilder, columns, "row.", 1);
+            addStatementSetters(updateBuilder, primaryKey, "primaryKey.", 1 + columns.size());
             updateBuilder.addStatement("return statement.executeUpdate()");
             updateBuilder.endControlFlow();
             classBuilder.addMethod(updateBuilder.build());
@@ -214,8 +202,8 @@ public class PostgisCodegen implements Runnable {
                 .addParameter(ParameterSpec.builder(TypeVariableName.get("Row"), "row").build())
                 .addParameter(ParameterSpec.builder(TypeVariableName.get("PrimaryKey"), "primaryKey").build())
                 .addStatement("statement.clearParameters()");
-            addColumnSetters(batchUpdateBuilder, columns, "row.", 1);
-            addColumnSetters(batchUpdateBuilder, primaryKey, "primaryKey.", 1 + columns.size());
+            addStatementSetters(batchUpdateBuilder, columns, "row.", 1);
+            addStatementSetters(batchUpdateBuilder, primaryKey, "primaryKey.", 1 + columns.size());
             batchUpdateBuilder.addStatement("statement.addBatch()");
             classBuilder.addMethod(batchUpdateBuilder.build());
 
@@ -233,7 +221,7 @@ public class PostgisCodegen implements Runnable {
                 .addParameter(Connection.class, "connection")
                 .addParameter(ParameterSpec.builder(TypeVariableName.get("PrimaryKey"), "primaryKey").build());
             deleteBuilder.beginControlFlow("try ($T statement = connection.prepareStatement(DELETE))", PreparedStatement.class);
-            addColumnSetters(deleteBuilder, primaryKey, "primaryKey.", 1);
+            addStatementSetters(deleteBuilder, primaryKey, "primaryKey.", 1);
             deleteBuilder.addStatement("return statement.executeUpdate()");
             deleteBuilder.endControlFlow();
             classBuilder.addMethod(deleteBuilder.build());
@@ -245,7 +233,7 @@ public class PostgisCodegen implements Runnable {
                 .addParameter(PreparedStatement.class, "statement")
                 .addParameter(ParameterSpec.builder(TypeVariableName.get("PrimaryKey"), "primaryKey").build());
             batchDeleteBuilder.addStatement("statement.clearParameters()");
-            addColumnSetters(batchDeleteBuilder, primaryKey, "primaryKey.", 1);
+            addStatementSetters(batchDeleteBuilder, primaryKey, "primaryKey.", 1);
             batchDeleteBuilder.addStatement("statement.addBatch()");
             classBuilder.addMethod(batchDeleteBuilder.build());
           }
@@ -254,22 +242,27 @@ public class PostgisCodegen implements Runnable {
           addConstant(classBuilder, "COPY_IN", QueryUtil.copyIn(tableName, columnNames));
 
           // Add create copy method
-          Builder copyInBuilder = MethodSpec.methodBuilder("createCopy")
-              .returns(CopyIn.class)
+          Builder createCopyBuilder = MethodSpec.methodBuilder("createCopy")
+              .returns(CopyWriter.class)
               .addException(SQLException.class)
+              .addException(IOException.class)
               .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
               .addParameter(PGConnection.class, "connection");
-          copyInBuilder.addStatement("$T copyManager = connection.getCopyAPI()", CopyManager.class);
-          copyInBuilder.addStatement("return copyManager.copyIn(COPY_IN)");
-          classBuilder.addMethod(copyInBuilder.build());
+          createCopyBuilder.addStatement("$T copyOutputStream = new PGCopyOutputStream(connection, COPY_IN)", PGCopyOutputStream.class);
+          createCopyBuilder.addStatement("$T copyWriter = new CopyWriter(copyOutputStream)", CopyWriter.class);
+          createCopyBuilder.addStatement("copyWriter.writeHeader()");
+          createCopyBuilder.addStatement("return copyWriter");
+          classBuilder.addMethod(createCopyBuilder.build());
 
           // Add copy method
-          Builder writeBuilder = MethodSpec.methodBuilder("copyIn")
-              .addException(SQLException.class)
+          Builder copyBuilder = MethodSpec.methodBuilder("copy")
+              .addException(IOException.class)
               .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-              .addParameter(CopyIn.class, "copy")
+              .addParameter(CopyWriter.class, "copyWriter")
               .addParameter(ParameterSpec.builder(TypeVariableName.get("Row"), "row").build());
-          classBuilder.addMethod(writeBuilder.build());
+          copyBuilder.addStatement("copyWriter.startRow($L)", columns.size());
+          addCopySetters(copyBuilder, columns);
+          classBuilder.addMethod(copyBuilder.build());
 
           // Build the class and write it to the output directory
           TypeSpec entity = classBuilder.build();
@@ -298,8 +291,8 @@ public class PostgisCodegen implements Runnable {
     Builder rowConstructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
     for (StatementColumn column : columns) {
       String columnName = column.getColumnName();
-      String variableName = variableName(columnName);
-      TypeName variableType = getColumnType(column);
+      String variableName = getVariableName(columnName);
+      TypeName variableType = getTypeName(column);
       rowClassBuilder.addField(variableType, variableName, Modifier.PUBLIC, Modifier.FINAL);
       rowConstructorBuilder
           .addParameter(variableType, variableName)
@@ -311,7 +304,7 @@ public class PostgisCodegen implements Runnable {
     tableClassBuilder.addType(rowClassBuilder.build());
   }
 
-  private static TypeName getColumnType(StatementColumn column) throws ClassNotFoundException {
+  private static TypeName getTypeName(StatementColumn column) {
     String type = column.getColumnTypeName();
     TypeName variableType = TypeVariableName.get(column.getColumnClassName());
     if (type.equals("hstore")) {
@@ -352,10 +345,10 @@ public class PostgisCodegen implements Runnable {
         .build());
   }
 
-  private static void addColumnSetters(MethodSpec.Builder methodBuilder, List<StatementColumn> columns, String variablePrefix,
+  private static void addStatementSetters(MethodSpec.Builder methodBuilder, List<StatementColumn> columns, String variablePrefix,
       int start) {
     for (StatementColumn column : columns) {
-      String variableName = variableName(column.getColumnName());
+      String variableName = getVariableName(column.getColumnName());
       String type = column.getColumnTypeName();
       if (type.equals("geometry")) {
         methodBuilder.addStatement("statement.setBytes($1L, $2L.writeGeometry($3L$4L))", start++, TypeVariableName.get(GeometryUtil.class),
@@ -366,11 +359,35 @@ public class PostgisCodegen implements Runnable {
     }
   }
 
-  public static String className(String tableName) {
+  private static void addStatementGetters(MethodSpec.Builder methodBuilder, List<StatementColumn> columns,
+      int start) throws ClassNotFoundException {
+    methodBuilder.addCode("return new Row(\n");
+    for (StatementColumn column : columns) {
+      String suffix = start < columns.size() ? ",\n" : "\n";
+      String type = column.getColumnTypeName();
+      if (type.equals("geometry")) {
+        methodBuilder
+            .addCode("  $T.readGeometry(result.getBytes($L))$L", TypeVariableName.get(GeometryUtil.class),
+                start++, suffix);
+      } else {
+        methodBuilder
+            .addCode("  ($T) result.getObject($L)$L", getTypeName(column), start++, suffix);
+      }
+    }
+    methodBuilder.addCode(");\n");
+  }
+
+  private static void addCopySetters(MethodSpec.Builder methodBuilder, List<StatementColumn> columns) {
+    for (StatementColumn column : columns) {
+      //methodBuilder.addStatement("writer.");
+    }
+  }
+
+  public static String getClassName(String tableName) {
     return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, tableName);
   }
 
-  public static String variableName(String columnName) {
+  public static String getVariableName(String columnName) {
     return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, columnName);
   }
 
