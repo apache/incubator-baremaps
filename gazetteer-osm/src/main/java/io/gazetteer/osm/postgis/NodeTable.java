@@ -1,15 +1,22 @@
 package io.gazetteer.osm.postgis;
 
-import io.gazetteer.osm.model.Info;
-import io.gazetteer.osm.model.Node;
-import java.util.List;
-import org.locationtech.jts.geom.Point;
-
-import java.sql.*;
-import java.util.Map;
-
 import static io.gazetteer.osm.util.GeometryUtil.asGeometry;
 import static io.gazetteer.osm.util.GeometryUtil.asWKB;
+
+import io.gazetteer.osm.model.Info;
+import io.gazetteer.osm.model.Node;
+import io.gazetteer.postgis.util.PGCopyWriter;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
+import org.locationtech.jts.geom.Point;
+import org.postgresql.PGConnection;
+import org.postgresql.copy.PGCopyOutputStream;
 
 public class NodeTable implements PostgisTable<Long, Node> {
 
@@ -23,6 +30,8 @@ public class NodeTable implements PostgisTable<Long, Node> {
       "UPDATE osm_nodes SET version = ?, uid = ?, timestamp = ?, changeset = ?, tags = ?, geom = ? WHERE id = ?";
 
   public static final String DELETE = "DELETE FROM osm_nodes WHERE id = ?";
+
+  public static final String COPY = "";
 
   @Override
   public void insert(Connection connection, Node node) throws SQLException {
@@ -67,6 +76,17 @@ public class NodeTable implements PostgisTable<Long, Node> {
     } else {
       throw new IllegalArgumentException();
     }
+  }
+
+  public void copy(Connection connection, List<Node> nodes) throws Exception {
+    PGCopyOutputStream output = new PGCopyOutputStream((PGConnection) connection, COPY);
+    PGCopyWriter writer = new PGCopyWriter(output);
+    writer.writeHeader();
+    for (Node node : nodes) {
+      writer.startRow(7);
+
+    }
+    writer.close();
   }
 
   @Override

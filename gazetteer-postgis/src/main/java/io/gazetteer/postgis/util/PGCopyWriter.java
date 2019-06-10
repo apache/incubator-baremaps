@@ -11,13 +11,13 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKBWriter;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class CopyWriter implements AutoCloseable {
+public class PGCopyWriter implements AutoCloseable {
 
   private static final Charset UTF8 = Charset.forName("UTF-8");
 
   private final DataOutputStream data;
 
-  public CopyWriter(PGCopyOutputStream data) {
+  public PGCopyWriter(PGCopyOutputStream data) {
     this.data = new DataOutputStream(new BufferedOutputStream(data));
   }
 
@@ -39,75 +39,75 @@ public class CopyWriter implements AutoCloseable {
   }
 
   public void writeString(String value) throws IOException {
-    nullableWriter(CopyWriter::stringWriter).write(data, value);
+    nullableWriter(PGCopyWriter::stringWriter).write(data, value);
   }
 
   public void writeStringArray(String[] value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.Text, CopyWriter::stringWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.Text, PGCopyWriter::stringWriter)).write(data, value);
   }
 
   public void writeBoolean(Boolean value) throws IOException {
-    nullableWriter(CopyWriter::booleanWriter).write(data, value);
+    nullableWriter(PGCopyWriter::booleanWriter).write(data, value);
   }
 
   public void writeBooleanArray(Boolean[] value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.Boolean, CopyWriter::booleanWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.Boolean, PGCopyWriter::booleanWriter)).write(data, value);
   }
 
   public void writeByte(Byte value) throws IOException {
-    nullableWriter(CopyWriter::byteWriter).write(data, value);
+    nullableWriter(PGCopyWriter::byteWriter).write(data, value);
   }
 
   public void writeByteArray(byte[] value) throws IOException {
-    nullableWriter(CopyWriter::byteArrayWriter).write(data, value);
+    nullableWriter(PGCopyWriter::byteArrayWriter).write(data, value);
   }
 
   public void writeShort(Short value) throws IOException {
-    nullableWriter(CopyWriter::shortWriter).write(data, value);
+    nullableWriter(PGCopyWriter::shortWriter).write(data, value);
   }
 
   public void writeShortArray(Short[] value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.Int4, CopyWriter::shortWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.Int4, PGCopyWriter::shortWriter)).write(data, value);
   }
 
   public void writeInteger(Integer value) throws IOException {
-    nullableWriter(CopyWriter::integerWriter).write(data, value);
+    nullableWriter(PGCopyWriter::integerWriter).write(data, value);
   }
 
   public void writeIntegerArray(Integer[] value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.Int4, CopyWriter::integerWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.Int4, PGCopyWriter::integerWriter)).write(data, value);
   }
 
   public void writeLong(Long value) throws IOException {
-    nullableWriter(CopyWriter::longWriter).write(data, value);
+    nullableWriter(PGCopyWriter::longWriter).write(data, value);
   }
 
   public void writeLongArray(Long[] value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.Int8, CopyWriter::longWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.Int8, PGCopyWriter::longWriter)).write(data, value);
   }
 
   public void writeFloat(Float value) throws IOException {
-    nullableWriter(CopyWriter::floatWriter).write(data, value);
+    nullableWriter(PGCopyWriter::floatWriter).write(data, value);
   }
 
   public void writeFloatArray(Float[] value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.Int8, CopyWriter::floatWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.Int8, PGCopyWriter::floatWriter)).write(data, value);
   }
 
   public void writeDouble(Double value) throws IOException {
-    nullableWriter(CopyWriter::doubleWriter).write(data, value);
+    nullableWriter(PGCopyWriter::doubleWriter).write(data, value);
   }
 
   public void writeDoubleArray(Double[] value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.Int8, CopyWriter::doubleWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.Int8, PGCopyWriter::doubleWriter)).write(data, value);
   }
 
   public void writeHstore(Map<String, String> value) throws IOException {
-    nullableWriter(CopyWriter::hstoreWriter).write(data, value);
+    nullableWriter(PGCopyWriter::hstoreWriter).write(data, value);
   }
 
   public void writeGeometry(Geometry value) throws IOException {
-    nullableWriter(CopyWriter::byteArrayWriter).write(data, new WKBWriter().write(value));
+    nullableWriter(PGCopyWriter::byteArrayWriter).write(data, new WKBWriter().write(value));
   }
 
   public void writeObject(Object value) throws IOException {

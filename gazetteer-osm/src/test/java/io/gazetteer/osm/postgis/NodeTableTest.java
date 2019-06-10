@@ -1,21 +1,20 @@
 package io.gazetteer.osm.postgis;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 public class NodeTableTest {
 
@@ -47,8 +46,7 @@ public class NodeTableTest {
       map.put("key", "val");
       Node insert =
           new Node(
-              new Info(
-                  rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
+              new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
       table.insert(connection, insert);
@@ -66,20 +64,13 @@ public class NodeTableTest {
       map.put("key", "val");
       Node insert =
           new Node(
-              new Info(
-                  rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
+              new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
       table.insert(connection, insert);
       Node update =
           new Node(
-              new Info(
-                  insert.getInfo().getId(),
-                  rnd.nextInt(),
-                  rnd.nextInt(),
-                  rnd.nextLong(),
-                  rnd.nextInt(),
-                  map),
+              new Info(insert.getInfo().getId(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
       table.update(connection, update);
@@ -97,8 +88,7 @@ public class NodeTableTest {
       map.put("key", "val");
       Node insert =
           new Node(
-              new Info(
-                  rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
+              new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
       table.insert(connection, insert);
