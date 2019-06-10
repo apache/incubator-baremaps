@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 import javax.lang.model.element.Modifier;
 import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
-import org.postgresql.copy.CopyIn;
 import org.postgresql.copy.PGCopyOutputStream;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -360,7 +359,7 @@ public class PostgisCodegen implements Runnable {
   }
 
   private static void addStatementGetters(MethodSpec.Builder methodBuilder, List<StatementColumn> columns,
-      int start) throws ClassNotFoundException {
+      int start) {
     methodBuilder.addCode("return new Row(\n");
     for (StatementColumn column : columns) {
       String suffix = start < columns.size() ? ",\n" : "\n";
@@ -379,7 +378,8 @@ public class PostgisCodegen implements Runnable {
 
   private static void addCopySetters(MethodSpec.Builder methodBuilder, List<StatementColumn> columns) {
     for (StatementColumn column : columns) {
-      //methodBuilder.addStatement("writer.");
+      String variableName = getVariableName(column.getColumnName());
+      methodBuilder.addStatement("copyWriter.writeObject(row.$L)", variableName);
     }
   }
 
