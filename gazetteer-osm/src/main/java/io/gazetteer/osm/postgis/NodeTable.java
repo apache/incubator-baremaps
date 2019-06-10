@@ -2,6 +2,7 @@ package io.gazetteer.osm.postgis;
 
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
+import java.util.List;
 import org.locationtech.jts.geom.Point;
 
 import java.sql.*;

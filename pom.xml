@@ -154,7 +154,6 @@
     </build>
 
     <modules>
-        <module>gazetteer-codegen</module>
         <module>gazetteer-osm</module>
         <module>gazetteer-tileserver</module>
         <module>gazetteer-tilesource</module>
