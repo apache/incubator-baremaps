@@ -1,9 +1,14 @@
 package io.gazetteer;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
-import io.gazetteer.osm.pgbulkinsert.PgBulkInsertUtil;
-import io.gazetteer.osm.postgis.PostgisSchema;
+import io.gazetteer.osm.postgis.PostgisEntityConsumer;
+import io.gazetteer.osm.postgis.PostgisUtil;
+import java.io.IOException;
+import java.net.URL;
+import org.apache.commons.dbcp2.PoolingDataSource;
 import org.openjdk.jmh.annotations.*;
 
 import java.io.InputStream;
@@ -29,14 +34,14 @@ public class PostgisConsumerBenchmark {
   public Consumer consumer;
 
   @Setup(Level.Invocation)
-  public void prepare() throws SQLException {
+  public void prepare() throws SQLException, IOException {
     try (Connection connection = DriverManager.getConnection(POSTGRES_URL)) {
-      PostgisSchema.createExtensions(connection);
-      PostgisSchema.dropIndices(connection);
-      PostgisSchema.dropTables(connection);
-      PostgisSchema.createTables(connection);
+      URL url = Resources.getResource("osm_create_tables.sql");
+      String sql = Resources.toString(url, Charsets.UTF_8);
+      connection.createStatement().execute(sql);
     }
-    consumer = PgBulkInsertUtil.consumer(POSTGRES_URL);
+    PoolingDataSource pool = PostgisUtil.createPoolingDataSource(POSTGRES_URL);
+    consumer = new PostgisEntityConsumer(pool);
     InputStream input = getClass().getClassLoader().getResourceAsStream(PBF_FILE);
     stream = PBFUtil.dataBlocks(input);
   }

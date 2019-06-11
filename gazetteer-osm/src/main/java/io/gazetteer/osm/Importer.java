@@ -1,17 +1,15 @@
 package io.gazetteer.osm;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import io.gazetteer.osm.lmdb.*;
-import io.gazetteer.osm.model.Node;
-import io.gazetteer.osm.model.Relation;
-import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
-import io.gazetteer.osm.pgbulkinsert.PgBulkInsertConsumer;
-import io.gazetteer.osm.pgbulkinsert.PgBulkInsertUtil;
-import io.gazetteer.osm.postgis.PostgisSchema;
+import io.gazetteer.osm.postgis.PostgisEntityConsumer;
+import io.gazetteer.osm.postgis.PostgisUtil;
 import io.gazetteer.osm.util.StopWatch;
+import java.net.URL;
 import org.apache.commons.dbcp2.PoolingDataSource;
-import org.lmdbjava.Env;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -20,7 +18,6 @@ import picocli.CommandLine.Parameters;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,7 +29,6 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import static org.lmdbjava.DbiFlags.MDB_CREATE;
 import static picocli.CommandLine.Option;
 
 @Command(description = "Import OSM PBF into Postgresql")
@@ -81,22 +77,24 @@ public class Importer implements Runnable {
 
       System.out.println("Creating postgis database.");
       try (Connection connection = DriverManager.getConnection(postgres)) {
-        PostgisSchema.createExtensions(connection);
-        PostgisSchema.dropIndices(connection);
-        PostgisSchema.dropTables(connection);
-        PostgisSchema.createTables(connection);
+        PostgisUtil.executeScript(connection, "osm_create_extensions.sql");
+        PostgisUtil.executeScript(connection, "osm_drop_tables.sql");
+        PostgisUtil.executeScript(connection, "osm_create_tables.sql");
         System.out.println(String.format("-> %dms", stopWatch.lap()));
       }
 
       System.out.println("Populating postgis database.");
-      PgBulkInsertConsumer pgBulkInsertConsumer = PgBulkInsertUtil.consumer(postgres);
+      PoolingDataSource pool = PostgisUtil.createPoolingDataSource(postgres);
+      PostgisEntityConsumer pgBulkInsertConsumer = new PostgisEntityConsumer(pool);
       Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(new FileInputStream(file));
       executor.submit(() -> postgisStream.forEach(pgBulkInsertConsumer)).get();
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 
       System.out.println("Optimizing postgis cache.");
       try (Connection connection = DriverManager.getConnection(postgres)) {
-        PostgisSchema.createIndices(connection);
+        URL url = Resources.getResource("osm_create_indexes.sql");
+        String sql = Resources.toString(url, Charsets.UTF_8);
+        connection.createStatement().execute(sql);
       }
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 

@@ -5,8 +5,7 @@ import static io.gazetteer.osm.util.GeometryUtil.asWKB;
 
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
-import io.gazetteer.postgis.util.PGCopyWriter;
-import java.io.IOException;
+import io.gazetteer.postgis.util.CopyWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,70 +28,80 @@ public class NodeTable implements PostgisTable<Long, Node> {
   public static final String UPDATE =
       "UPDATE osm_nodes SET version = ?, uid = ?, timestamp = ?, changeset = ?, tags = ?, geom = ? WHERE id = ?";
 
-  public static final String DELETE = "DELETE FROM osm_nodes WHERE id = ?";
+  public static final String DELETE =
+      "DELETE FROM osm_nodes WHERE id = ?";
 
-  public static final String COPY = "";
+  public static final String COPY =
+      "COPY osm_nodes (id, version, uid, timestamp, changeset, tags, geom) FROM STDIN BINARY";
 
   @Override
   public void insert(Connection connection, Node node) throws SQLException {
-    PreparedStatement statement = connection.prepareStatement(INSERT);
-    statement.setLong(1, node.getInfo().getId());
-    statement.setInt(2, node.getInfo().getVersion());
-    statement.setInt(3, node.getInfo().getUserId());
-    statement.setTimestamp(4, new Timestamp(node.getInfo().getTimestamp()));
-    statement.setLong(5, node.getInfo().getChangeset());
-    statement.setObject(6, node.getInfo().getTags());
-    statement.setBytes(7, asWKB(asGeometry(node)));
-    statement.execute();
+    try (PreparedStatement statement = connection.prepareStatement(INSERT)) {
+      statement.setLong(1, node.getInfo().getId());
+      statement.setInt(2, node.getInfo().getVersion());
+      statement.setInt(3, node.getInfo().getUserId());
+      statement.setTimestamp(4, new Timestamp(node.getInfo().getTimestamp()));
+      statement.setLong(5, node.getInfo().getChangeset());
+      statement.setObject(6, node.getInfo().getTags());
+      statement.setBytes(7, asWKB(asGeometry(node)));
+      statement.execute();
+    }
   }
 
   @Override
   public void update(Connection connection, Node node) throws SQLException {
-    PreparedStatement statement = connection.prepareStatement(UPDATE);
-    statement.setInt(1, node.getInfo().getVersion());
-    statement.setInt(2, node.getInfo().getUserId());
-    statement.setTimestamp(3, new Timestamp(node.getInfo().getTimestamp()));
-    statement.setLong(4, node.getInfo().getChangeset());
-    statement.setObject(5, node.getInfo().getTags());
-    statement.setBytes(6, asWKB(asGeometry(node)));
-    statement.setLong(7, node.getInfo().getId());
-    statement.execute();
+    try (PreparedStatement statement = connection.prepareStatement(UPDATE)) {
+      statement.setInt(1, node.getInfo().getVersion());
+      statement.setInt(2, node.getInfo().getUserId());
+      statement.setTimestamp(3, new Timestamp(node.getInfo().getTimestamp()));
+      statement.setLong(4, node.getInfo().getChangeset());
+      statement.setObject(5, node.getInfo().getTags());
+      statement.setBytes(6, asWKB(asGeometry(node)));
+      statement.setLong(7, node.getInfo().getId());
+      statement.execute();
+    }
   }
 
   @Override
   public Node select(Connection connection, Long id) throws SQLException {
-    PreparedStatement statement = connection.prepareStatement(SELECT);
-    statement.setLong(1, id);
-    ResultSet result = statement.executeQuery();
-    if (result.next()) {
-      int version = result.getInt(1);
-      int uid = result.getInt(2);
-      long timestamp = result.getTimestamp(3).getTime();
-      long changeset = result.getLong(4);
-      Map<String, String> tags = (Map<String, String>) result.getObject(5);
-      Point point = (Point) asGeometry(result.getBytes(6));
-      return new Node(
-          new Info(id, version, timestamp, changeset, uid, tags), point.getX(), point.getY());
-    } else {
-      throw new IllegalArgumentException();
+    try (PreparedStatement statement = connection.prepareStatement(SELECT)) {
+      statement.setLong(1, id);
+      ResultSet result = statement.executeQuery();
+      if (result.next()) {
+        int version = result.getInt(1);
+        int uid = result.getInt(2);
+        long timestamp = result.getTimestamp(3).getTime();
+        long changeset = result.getLong(4);
+        Map<String, String> tags = (Map<String, String>) result.getObject(5);
+        Point point = (Point) asGeometry(result.getBytes(6));
+        return new Node(new Info(id, version, timestamp, changeset, uid, tags), point.getX(), point.getY());
+      } else {
+        throw new IllegalArgumentException();
+      }
     }
   }
 
-  public void copy(Connection connection, List<Node> nodes) throws Exception {
-    PGCopyOutputStream output = new PGCopyOutputStream((PGConnection) connection, COPY);
-    PGCopyWriter writer = new PGCopyWriter(output);
-    writer.writeHeader();
-    for (Node node : nodes) {
-      writer.startRow(7);
-
+  public void copy(PGConnection connection, List<Node> nodes) throws Exception {
+    try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(connection, COPY))) {
+      writer.writeHeader();
+      for (Node node : nodes) {
+        writer.startRow(7);
+        writer.writeLong(node.getInfo().getId());
+        writer.writeInteger(node.getInfo().getVersion());
+        writer.writeInteger(node.getInfo().getUserId());
+        writer.writeLong(node.getInfo().getTimestamp());
+        writer.writeLong(node.getInfo().getChangeset());
+        writer.writeHstore(node.getInfo().getTags());
+        writer.writeGeometry(asGeometry(node));
+      }
     }
-    writer.close();
   }
 
   @Override
   public void delete(Connection connection, Long id) throws SQLException {
-    PreparedStatement statement = connection.prepareStatement(DELETE);
-    statement.setLong(1, id);
-    statement.execute();
+    try (PreparedStatement statement = connection.prepareStatement(DELETE)) {
+      statement.setLong(1, id);
+      statement.execute();
+    }
   }
 }

@@ -3,15 +3,17 @@ package io.gazetteer.osm.postgis;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -25,16 +27,12 @@ public class NodeTableTest {
   public NodeTable table;
 
   @BeforeEach
-  public void createTable() throws SQLException {
+  public void createTable() throws SQLException, IOException {
     connection = DriverManager.getConnection(URL);
-    PostgisSchema.createExtensions(connection);
-    PostgisSchema.createTables(connection);
+    java.net.URL url = Resources.getResource("osm_create_tables.sql");
+    String sql = Resources.toString(url, Charsets.UTF_8);
+    connection.createStatement().execute(sql);
     table = new NodeTable();
-  }
-
-  @AfterEach
-  public void deleteTable() throws SQLException {
-    PostgisSchema.dropTables(connection);
   }
 
   @Test
