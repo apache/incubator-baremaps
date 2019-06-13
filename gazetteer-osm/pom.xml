@@ -63,11 +63,6 @@
             <version>1.18</version>
         </dependency>
         <dependency>
-            <groupId>de.bytefish</groupId>
-            <artifactId>pgbulkinsert</artifactId>
-            <version>3.3</version>
-        </dependency>
-        <dependency>
             <groupId>org.lmdbjava</groupId>
             <artifactId>lmdbjava</artifactId>
             <version>0.6.3</version>

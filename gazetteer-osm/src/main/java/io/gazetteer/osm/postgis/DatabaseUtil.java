@@ -11,7 +11,7 @@ import org.apache.commons.pool2.impl.GenericObjectPool;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class PostgisUtil {
+public class DatabaseUtil {
 
   public static PoolingDataSource createPoolingDataSource(String url) {
     ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(url, null);
@@ -23,8 +23,6 @@ public class PostgisUtil {
     PoolingDataSource<PoolableConnection> dataSource = new PoolingDataSource<>(connectionPool);
     return dataSource;
   }
-
-
 
   public static void executeScript(Connection connection, String script) throws IOException, SQLException {
     URL url = Resources.getResource(script);

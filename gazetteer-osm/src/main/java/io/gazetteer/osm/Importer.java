@@ -5,8 +5,8 @@ import com.google.common.io.Resources;
 import io.gazetteer.osm.lmdb.*;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
-import io.gazetteer.osm.postgis.PostgisEntityConsumer;
-import io.gazetteer.osm.postgis.PostgisUtil;
+import io.gazetteer.osm.postgis.EntityConsumer;
+import io.gazetteer.osm.postgis.DatabaseUtil;
 import io.gazetteer.osm.util.StopWatch;
 import java.net.URL;
 import org.apache.commons.dbcp2.PoolingDataSource;
@@ -77,15 +77,15 @@ public class Importer implements Runnable {
 
       System.out.println("Creating postgis database.");
       try (Connection connection = DriverManager.getConnection(postgres)) {
-        PostgisUtil.executeScript(connection, "osm_create_extensions.sql");
-        PostgisUtil.executeScript(connection, "osm_drop_tables.sql");
-        PostgisUtil.executeScript(connection, "osm_create_tables.sql");
+        DatabaseUtil.executeScript(connection, "osm_create_extensions.sql");
+        DatabaseUtil.executeScript(connection, "osm_drop_tables.sql");
+        DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
         System.out.println(String.format("-> %dms", stopWatch.lap()));
       }
 
       System.out.println("Populating postgis database.");
-      PoolingDataSource pool = PostgisUtil.createPoolingDataSource(postgres);
-      PostgisEntityConsumer pgBulkInsertConsumer = new PostgisEntityConsumer(pool);
+      PoolingDataSource pool = DatabaseUtil.createPoolingDataSource(postgres);
+      EntityConsumer pgBulkInsertConsumer = new EntityConsumer(pool);
       Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(new FileInputStream(file));
       executor.submit(() -> postgisStream.forEach(pgBulkInsertConsumer)).get();
       System.out.println(String.format("-> %dms", stopWatch.lap()));

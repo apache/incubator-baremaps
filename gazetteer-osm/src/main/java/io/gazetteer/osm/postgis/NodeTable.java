@@ -17,25 +17,23 @@ import org.locationtech.jts.geom.Point;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class NodeTable implements PostgisTable<Long, Node> {
+public class NodeTable {
 
-  public static final String SELECT =
+  private static final String SELECT =
       "SELECT version, uid, timestamp, changeset, tags, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ?";
 
-  public static final String INSERT =
+  private static final String INSERT =
       "INSERT INTO osm_nodes (id, version, uid, timestamp, changeset, tags, geom) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-  public static final String UPDATE =
+  private static final String UPDATE =
       "UPDATE osm_nodes SET version = ?, uid = ?, timestamp = ?, changeset = ?, tags = ?, geom = ? WHERE id = ?";
 
-  public static final String DELETE =
+  private static final String DELETE =
       "DELETE FROM osm_nodes WHERE id = ?";
 
-  public static final String COPY =
-      "COPY osm_nodes (id, version, uid, timestamp, changeset, tags, geom) FROM STDIN BINARY";
+  private static final String COPY_NODES = "COPY osm_nodes (id, version, uid, timestamp, changeset, tags, geom) FROM STDIN BINARY";
 
-  @Override
-  public void insert(Connection connection, Node node) throws SQLException {
+  public static void insert(Connection connection, Node node) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(INSERT)) {
       statement.setLong(1, node.getInfo().getId());
       statement.setInt(2, node.getInfo().getVersion());
@@ -48,8 +46,7 @@ public class NodeTable implements PostgisTable<Long, Node> {
     }
   }
 
-  @Override
-  public void update(Connection connection, Node node) throws SQLException {
+  public static void update(Connection connection, Node node) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(UPDATE)) {
       statement.setInt(1, node.getInfo().getVersion());
       statement.setInt(2, node.getInfo().getUserId());
@@ -62,8 +59,7 @@ public class NodeTable implements PostgisTable<Long, Node> {
     }
   }
 
-  @Override
-  public Node select(Connection connection, Long id) throws SQLException {
+  public static Node select(Connection connection, Long id) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
       ResultSet result = statement.executeQuery();
@@ -81,8 +77,15 @@ public class NodeTable implements PostgisTable<Long, Node> {
     }
   }
 
-  public void copy(PGConnection connection, List<Node> nodes) throws Exception {
-    try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(connection, COPY))) {
+  public static void delete(Connection connection, Long id) throws SQLException {
+    try (PreparedStatement statement = connection.prepareStatement(DELETE)) {
+      statement.setLong(1, id);
+      statement.execute();
+    }
+  }
+
+  public static void copy(PGConnection connection, List<Node> nodes) throws Exception {
+    try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(connection, COPY_NODES))) {
       writer.writeHeader();
       for (Node node : nodes) {
         writer.startRow(7);
@@ -97,11 +100,4 @@ public class NodeTable implements PostgisTable<Long, Node> {
     }
   }
 
-  @Override
-  public void delete(Connection connection, Long id) throws SQLException {
-    try (PreparedStatement statement = connection.prepareStatement(DELETE)) {
-      statement.setLong(1, id);
-      statement.execute();
-    }
-  }
 }

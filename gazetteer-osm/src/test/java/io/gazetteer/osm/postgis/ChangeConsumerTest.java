@@ -18,13 +18,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class NodeTableTest {
+public class ChangeConsumerTest {
 
   public static final String URL = "jdbc:postgresql://localhost:5432/osm?user=osm&password=osm";
 
   public Connection connection;
 
-  public NodeTable table;
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
@@ -32,7 +31,6 @@ public class NodeTableTest {
     java.net.URL url = Resources.getResource("osm_create_tables.sql");
     String sql = Resources.toString(url, Charsets.UTF_8);
     connection.createStatement().execute(sql);
-    table = new NodeTable();
   }
 
   @Test
@@ -47,8 +45,8 @@ public class NodeTableTest {
               new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
-      table.insert(connection, insert);
-      Node select = table.select(connection, insert.getInfo().getId());
+      NodeTable.insert(connection, insert);
+      Node select = NodeTable.select(connection, insert.getInfo().getId());
       assertEquals(insert.getInfo(), select.getInfo());
     }
   }
@@ -65,14 +63,14 @@ public class NodeTableTest {
               new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
-      table.insert(connection, insert);
+      NodeTable.insert(connection, insert);
       Node update =
           new Node(
               new Info(insert.getInfo().getId(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
-      table.update(connection, update);
-      Node select = table.select(connection, insert.getInfo().getId());
+      NodeTable.update(connection, update);
+      Node select = NodeTable.select(connection, insert.getInfo().getId());
       assertEquals(update.getInfo(), select.getInfo());
     }
   }
@@ -89,10 +87,10 @@ public class NodeTableTest {
               new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
-      table.insert(connection, insert);
-      table.delete(connection, insert.getInfo().getId());
+      NodeTable.insert(connection, insert);
+      NodeTable.delete(connection, insert.getInfo().getId());
       assertThrows(
-          IllegalArgumentException.class, () -> table.select(connection, insert.getInfo().getId()));
+          IllegalArgumentException.class, () -> NodeTable.select(connection, insert.getInfo().getId()));
     }
   }
 }

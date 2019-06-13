@@ -4,8 +4,8 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
-import io.gazetteer.osm.postgis.PostgisEntityConsumer;
-import io.gazetteer.osm.postgis.PostgisUtil;
+import io.gazetteer.osm.postgis.EntityConsumer;
+import io.gazetteer.osm.postgis.DatabaseUtil;
 import java.io.IOException;
 import java.net.URL;
 import org.apache.commons.dbcp2.PoolingDataSource;
@@ -40,8 +40,8 @@ public class PostgisConsumerBenchmark {
       String sql = Resources.toString(url, Charsets.UTF_8);
       connection.createStatement().execute(sql);
     }
-    PoolingDataSource pool = PostgisUtil.createPoolingDataSource(POSTGRES_URL);
-    consumer = new PostgisEntityConsumer(pool);
+    PoolingDataSource pool = DatabaseUtil.createPoolingDataSource(POSTGRES_URL);
+    consumer = new EntityConsumer(pool);
     InputStream input = getClass().getClassLoader().getResourceAsStream(PBF_FILE);
     stream = PBFUtil.dataBlocks(input);
   }

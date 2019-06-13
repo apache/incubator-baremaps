@@ -60,8 +60,9 @@ public class DataBlockReader {
     long changeset = 0;
     int sid = 0;
     int uid = 0;
-    int j = 0; // Index into the keysvals array.
 
+    // Index into the keysvals array.
+    int j = 0;
     for (int i = 0; i < input.getIdCount(); i++) {
       id = input.getId(i) + id;
 
