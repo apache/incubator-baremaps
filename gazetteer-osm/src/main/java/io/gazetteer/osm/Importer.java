@@ -1,14 +1,10 @@
 package io.gazetteer.osm;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
-import io.gazetteer.osm.lmdb.*;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
 import io.gazetteer.osm.postgis.EntityConsumer;
 import io.gazetteer.osm.postgis.DatabaseUtil;
 import io.gazetteer.osm.util.StopWatch;
-import java.net.URL;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import picocli.CommandLine;
@@ -18,9 +14,6 @@ import picocli.CommandLine.Parameters;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -37,10 +30,7 @@ public class Importer implements Runnable {
   @Parameters(index = "0", paramLabel = "OSM_FILE", description = "The OpenStreetMap PBF file.")
   private File file;
 
-  @Parameters(index = "1", paramLabel = "LMDB_DIRECTORY", description = "The LMDB directory.")
-  private File lmdb;
-
-  @Parameters(index = "2", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
+  @Parameters(index = "1", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
   private String postgres;
 
   @Option(
@@ -52,7 +42,6 @@ public class Importer implements Runnable {
   public void run() {
     ForkJoinPool executor = new ForkJoinPool(threads);
     try {
-
       StopWatch stopWatch = new StopWatch();
 
       System.out.println("Printing OSM headers.");
@@ -79,7 +68,7 @@ public class Importer implements Runnable {
 
       System.out.println("Creating postgis geometries.");
       try (Connection connection = DriverManager.getConnection(postgres)) {
-        DatabaseUtil.executeScript(connection, "osm_create_secondary_tables.sql");
+        DatabaseUtil.executeScript(connection, "osm_create_geoms.sql");
       }
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 

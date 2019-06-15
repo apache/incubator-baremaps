@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS osm_info (
 
 DROP TABLE IF EXISTS osm_users;
 CREATE TABLE IF NOT EXISTS osm_users (
-    id int NOT NULL, name text NOT NULL
+    id int NOT NULL,
+    name text NOT NULL
 );
 
 DROP TABLE IF EXISTS osm_nodes;

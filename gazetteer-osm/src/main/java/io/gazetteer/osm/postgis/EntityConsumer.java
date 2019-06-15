@@ -29,7 +29,7 @@ public class EntityConsumer implements Consumer<DataBlock> {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       NodeTable.copy(pgConnection, block.getNodes());
       WayTable.copy(pgConnection, block.getWays());
-      //relations.saveAll(pgConnection, block.getRelations());
+      RelationTable.copy(pgConnection, block.getRelations());
     } catch (Exception e) {
       e.printStackTrace();
     }
