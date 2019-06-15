@@ -63,7 +63,7 @@ public class DataBlockReader {
 
     // Index into the keysvals array.
     int j = 0;
-    for (int i = 0; i < input.getIdCount(); i++) {
+    for (int i   = 0; i < input.getIdCount(); i++) {
       id = input.getId(i) + id;
 
       Osmformat.DenseInfo info = input.getDenseinfo();

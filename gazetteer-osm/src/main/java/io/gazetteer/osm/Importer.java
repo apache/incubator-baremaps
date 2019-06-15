@@ -63,22 +63,9 @@ public class Importer implements Runnable {
       System.out.println(header.getOsmosisReplicationTimestamp());
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 
-      System.out.println("Cleaning LMDB cache.");
-      Path lmdbPath = Paths.get(lmdb.getPath());
-      if (Files.exists(lmdbPath)) Files.walk(lmdbPath).map(Path::toFile).forEach(File::delete);
-      lmdbPath.toFile().mkdirs();
-      System.out.println(String.format("-> %dms", stopWatch.lap()));
-
-      System.out.println("Populating LMDB cache.");
-      LmdbConsumer lmdbConsumer = LmdbUtil.consumer(lmdbPath);
-      Stream<DataBlock> lmdbStream = PBFUtil.dataBlocks(new FileInputStream(file));
-      executor.submit(() -> lmdbStream.forEach(lmdbConsumer)).get();
-      System.out.println(String.format("-> %dms", stopWatch.lap()));
-
       System.out.println("Creating postgis database.");
       try (Connection connection = DriverManager.getConnection(postgres)) {
         DatabaseUtil.executeScript(connection, "osm_create_extensions.sql");
-        DatabaseUtil.executeScript(connection, "osm_drop_tables.sql");
         DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
         System.out.println(String.format("-> %dms", stopWatch.lap()));
       }
@@ -90,11 +77,9 @@ public class Importer implements Runnable {
       executor.submit(() -> postgisStream.forEach(pgBulkInsertConsumer)).get();
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 
-      System.out.println("Optimizing postgis cache.");
+      System.out.println("Creating postgis geometries.");
       try (Connection connection = DriverManager.getConnection(postgres)) {
-        URL url = Resources.getResource("osm_create_indexes.sql");
-        String sql = Resources.toString(url, Charsets.UTF_8);
-        connection.createStatement().execute(sql);
+        DatabaseUtil.executeScript(connection, "osm_create_secondary_tables.sql");
       }
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 

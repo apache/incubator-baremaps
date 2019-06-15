@@ -27,15 +27,16 @@ public class WayTable {
       "SELECT version, uid, timestamp, changeset, tags, nodes FROM osm_ways WHERE id = ?";
 
   private static final String INSERT =
-      "INSERT INTO osm_ways (id, version, uid, timestamp, changeset, tags, nodes, geom) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO osm_ways (id, version, uid, timestamp, changeset, tags, nodes) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
   private static final String UPDATE =
-      "UPDATE osm_ways SET version = ?, uid = ?, timestamp = ?, changeset = ?, tags = ?, nodes = ?, geom = ? WHERE id = ?";
+      "UPDATE osm_ways SET version = ?, uid = ?, timestamp = ?, changeset = ?, tags = ?, nodes = ? WHERE id = ?";
 
   private static final String DELETE =
       "DELETE FROM osm_ways WHERE id = ?";
 
-  private static final String COPY_WAYS = "COPY osm_ways (id, version, uid, timestamp, changeset, tags, nodes) FROM STDIN BINARY";
+  private static final String COPY_WAYS =
+      "COPY osm_ways (id, version, uid, timestamp, changeset, tags, nodes) FROM STDIN BINARY";
 
   private final DataStore<Long, Node> nodeStore;
 
@@ -52,7 +53,6 @@ public class WayTable {
       statement.setLong(5, way.getInfo().getChangeset());
       statement.setObject(6, way.getInfo().getTags());
       statement.setObject(7, way.getNodes().toArray(new Long[0]));
-      statement.setBytes(8, asWKB(asGeometryWithWrappedException(way, nodeStore)));
       statement.execute();
     }
   }
@@ -65,8 +65,7 @@ public class WayTable {
       statement.setLong(4, way.getInfo().getChangeset());
       statement.setObject(5, way.getInfo().getTags());
       statement.setObject(6, way.getNodes().toArray(new Long[0]));
-      statement.setBytes(7, asWKB(asGeometryWithWrappedException(way, nodeStore)));
-      statement.setLong(8, way.getInfo().getId());
+      statement.setLong(7, way.getInfo().getId());
       statement.execute();
     }
   }

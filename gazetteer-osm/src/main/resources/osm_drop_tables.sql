@@ -1,5 +1,0 @@
-DROP TABLE IF EXISTS osm_info;
-DROP TABLE IF EXISTS osm_users;
-DROP TABLE IF EXISTS osm_nodes;
-DROP TABLE IF EXISTS osm_ways;
-DROP TABLE IF EXISTS osm_relations;
