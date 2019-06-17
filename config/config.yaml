@@ -19,6 +19,13 @@ layers:
       SELECT id, tags::jsonb as properties, geom as geometry
       FROM osm_ways
       WHERE tags ? 'waterway'
+  - name: "forests"
+    minZoom: 0
+    maxZoom: 18
+    sql: >
+      SELECT id, tags::jsonb as properties, geom as geometry
+      FROM osm_relations
+      WHERE tags -> 'type' = 'multipolygon' AND tags -> 'landuse' = 'forest'
   - name: "waterareas"
     minZoom: 0
     maxZoom: 18
@@ -30,10 +37,3 @@ layers:
       SELECT id, tags::jsonb as properties, geom as geometry
       FROM osm_relations
       WHERE tags -> 'natural' = 'water'
-  - name: "forests"
-    minZoom: 0
-    maxZoom: 18
-    sql: >
-      SELECT id, tags::jsonb as properties, geom as geometry
-      FROM osm_relations
-      WHERE tags -> 'type' = 'multipolygon' AND tags -> 'landuse' = 'forest'

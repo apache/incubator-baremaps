@@ -57,6 +57,7 @@ public class PostgisTileSource implements TileSource {
   private byte[] loadLayer(XYZ xyz, PostgisLayer layer) throws SQLException {
     try (Connection connection = DriverManager.getConnection(DATABASE)) {
       String sql = PostgisQueryBuilder.build(xyz, layer);
+      System.out.println(sql);
       Statement statement = connection.createStatement();
       ResultSet result = statement.executeQuery(sql);
       result.next();

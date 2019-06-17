@@ -32,8 +32,7 @@
                             <goal>test-compile</goal>
                         </goals>
                         <configuration>
-                            <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}
-                            </protocArtifact>
+                            <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
                         </configuration>
                     </execution>
                 </executions>
@@ -61,11 +60,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <version>1.18</version>
-        </dependency>
-        <dependency>
-            <groupId>org.lmdbjava</groupId>
-            <artifactId>lmdbjava</artifactId>
-            <version>0.6.3</version>
         </dependency>
     </dependencies>
 </project>
