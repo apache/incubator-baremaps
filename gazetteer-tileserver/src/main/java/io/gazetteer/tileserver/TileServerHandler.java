@@ -1,5 +1,18 @@
 package io.gazetteer.tileserver;
 
+import static io.netty.handler.codec.http.HttpHeaderNames.CACHE_CONTROL;
+import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_ENCODING;
+import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_LENGTH;
+import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
+import static io.netty.handler.codec.http.HttpHeaderNames.DATE;
+import static io.netty.handler.codec.http.HttpHeaderNames.IF_MODIFIED_SINCE;
+import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
+import static io.netty.handler.codec.http.HttpResponseStatus.NOT_FOUND;
+import static io.netty.handler.codec.http.HttpResponseStatus.NOT_MODIFIED;
+import static io.netty.handler.codec.http.HttpResponseStatus.OK;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+
+import io.gazetteer.tilesource.Tile;
 import io.gazetteer.tilesource.TileSource;
 import io.gazetteer.tilesource.XYZ;
 import io.netty.buffer.ByteBuf;
@@ -12,9 +25,6 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.util.AsciiString;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -28,10 +38,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static io.netty.handler.codec.http.HttpHeaderNames.*;
-import static io.netty.handler.codec.http.HttpResponseStatus.*;
-import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ChannelHandler.Sharable
 public class TileServerHandler extends SimpleChannelInboundHandler<HttpRequest> {
@@ -126,27 +134,22 @@ public class TileServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
     ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
   }
 
+
   private void sendTile(ChannelHandlerContext ctx, int z, int x, int y) {
     XYZ xyz = new XYZ(x, y, z);
-    tileSource
-        .getTile(xyz)
-        .thenAccept(
-            tile -> {
-              if (tile != null) {
-                DefaultFullHttpResponse response =
-                    new DefaultFullHttpResponse(
-                        HTTP_1_1, OK, Unpooled.wrappedBuffer(tile.getBytes()));
-                setDateHeader(response);
-                response.headers().set(CONTENT_TYPE, MIME_TYPE);
-                response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
-                response.headers().set(CONTENT_ENCODING, ENCODING);
-                response.headers().set(CACHE_CONTROL, MAX_AGE);
-                ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-              } else {
-                DefaultFullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND);
-                ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
-              }
-            });
+    try {
+      Tile tile = tileSource.getTile(xyz);
+      DefaultFullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(tile.getBytes()));
+      setDateHeader(response);
+      response.headers().set(CONTENT_TYPE, MIME_TYPE);
+      response.headers().setInt(CONTENT_LENGTH, response.content().readableBytes());
+      response.headers().set(CONTENT_ENCODING, ENCODING);
+      response.headers().set(CACHE_CONTROL, MAX_AGE);
+      ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    } catch (Exception e) {
+      DefaultFullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, NOT_FOUND);
+      ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    }
   }
 
   private void sendError(ChannelHandlerContext ctx) {

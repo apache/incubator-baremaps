@@ -1,9 +1,7 @@
 package io.gazetteer.tilesource;
 
-import java.util.concurrent.CompletableFuture;
-
 public interface TileSource {
 
-  CompletableFuture<Tile> getTile(XYZ xyz);
+  Tile getTile(XYZ xyz) throws TileException;
 
 }

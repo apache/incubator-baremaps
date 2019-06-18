@@ -1,5 +1,7 @@
 package io.gazetteer.tilesource;
 
-public class TileStore {
+public interface TileTarget {
+
+  void setTile(XYZ xyz, Tile tile) throws TileException;
 
 }
