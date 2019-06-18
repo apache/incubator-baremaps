@@ -70,9 +70,8 @@ public class WayTableTest {
 
       }
     });
-    URL url = Resources.getResource("osm_create_tables.sql");
-    String sql = Resources.toString(url, Charsets.UTF_8);
-    connection.createStatement().execute(sql);
+    DatabaseUtil.executeScript(connection, "osm_create_extensions.sql");
+    DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
   }
 
   @Test

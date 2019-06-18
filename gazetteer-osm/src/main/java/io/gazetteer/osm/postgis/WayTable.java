@@ -52,7 +52,7 @@ public class WayTable {
       statement.setTimestamp(4, new Timestamp(way.getInfo().getTimestamp()));
       statement.setLong(5, way.getInfo().getChangeset());
       statement.setObject(6, way.getInfo().getTags());
-      statement.setObject(7, way.getNodes().toArray(new Long[0]));
+      statement.setObject(7, way.getNodes().stream().mapToLong(Long::longValue).toArray());
       statement.execute();
     }
   }
@@ -64,7 +64,7 @@ public class WayTable {
       statement.setTimestamp(3, new Timestamp(way.getInfo().getTimestamp()));
       statement.setLong(4, way.getInfo().getChangeset());
       statement.setObject(5, way.getInfo().getTags());
-      statement.setObject(6, way.getNodes().toArray(new Long[0]));
+      statement.setObject(6, way.getNodes().stream().mapToLong(Long::longValue).toArray());
       statement.setLong(7, way.getInfo().getId());
       statement.execute();
     }

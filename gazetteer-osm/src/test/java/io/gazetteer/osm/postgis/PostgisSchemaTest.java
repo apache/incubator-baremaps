@@ -14,15 +14,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PostgisSchemaTest {
 
-  public static final String url = "jdbc:postgresql://localhost:5432/osm?user=osm&password=osm";
+  public static final String url = "jdbc:postgresql://localhost:5432/osm?allowMultiQueries=true&user=osm&password=osm";
 
   @Test
   @Tag("integration")
   public void resetDatabase() throws SQLException, IOException {
     try (Connection connection = DriverManager.getConnection(url)) {
-      URL url = Resources.getResource("osm_create_tables.sql");
-      String sql = Resources.toString(url, Charsets.UTF_8);
-      connection.createStatement().execute(sql);
+      DatabaseUtil.executeScript(connection, "osm_create_extensions.sql");
+      DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
       assertTrue(tableExists("osm_info"));
       assertTrue(tableExists("osm_users"));
       assertTrue(tableExists("osm_nodes"));

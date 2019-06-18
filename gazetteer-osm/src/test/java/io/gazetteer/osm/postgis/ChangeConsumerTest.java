@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 
 public class ChangeConsumerTest {
 
-  public static final String URL = "jdbc:postgresql://localhost:5432/osm?user=osm&password=osm";
+  public static final String URL = "jdbc:postgresql://localhost:5432/osm?allowMultiQueries=true&user=osm&password=osm";
 
   public Connection connection;
 
@@ -28,9 +28,8 @@ public class ChangeConsumerTest {
   @BeforeEach
   public void createTable() throws SQLException, IOException {
     connection = DriverManager.getConnection(URL);
-    java.net.URL url = Resources.getResource("osm_create_tables.sql");
-    String sql = Resources.toString(url, Charsets.UTF_8);
-    connection.createStatement().execute(sql);
+    DatabaseUtil.executeScript(connection, "osm_create_extensions.sql");
+    DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
   }
 
   @Test
