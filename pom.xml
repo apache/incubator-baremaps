@@ -176,7 +176,7 @@
     <modules>
         <module>gazetteer-osm</module>
         <module>gazetteer-tileserver</module>
-        <module>gazetteer-tilesource</module>
+        <module>gazetteer-tilestore</module>
         <module>gazetteer-benchmarks</module>
         <module>gazetteer-postgis</module>
     </modules>

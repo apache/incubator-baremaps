@@ -39,7 +39,7 @@
     <dependencies>
         <dependency>
             <groupId>io.gazetteer</groupId>
-            <artifactId>gazetteer-tilesource</artifactId>
+            <artifactId>gazetteer-tilestore</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>

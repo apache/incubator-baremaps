@@ -1,8 +1,8 @@
 import io.gazetteer.tileserver.TileServerHandler;
-import io.gazetteer.tilesource.TileReader;
-import io.gazetteer.tilesource.postgis.PostgisConfig;
-import io.gazetteer.tilesource.postgis.PostgisLayer;
-import io.gazetteer.tilesource.postgis.PostgisTileReader;
+import io.gazetteer.tilestore.TileReader;
+import io.gazetteer.tilestore.postgis.PostgisConfig;
+import io.gazetteer.tilestore.postgis.PostgisLayer;
+import io.gazetteer.tilestore.postgis.PostgisTileReader;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;

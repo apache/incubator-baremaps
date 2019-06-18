@@ -12,9 +12,9 @@ import static io.netty.handler.codec.http.HttpResponseStatus.NOT_MODIFIED;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
-import io.gazetteer.tilesource.Tile;
-import io.gazetteer.tilesource.TileReader;
-import io.gazetteer.tilesource.XYZ;
+import io.gazetteer.tilestore.Tile;
+import io.gazetteer.tilestore.TileReader;
+import io.gazetteer.tilestore.XYZ;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
