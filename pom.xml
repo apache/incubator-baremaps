@@ -2,14 +2,34 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
     <groupId>io.gazetteer</groupId>
     <artifactId>gazetteer</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>bchapuis</id>
+            <name>Bertil Chapuis</name>
+            <email>bchapuis@gmail.com</email>
+        </developer>
+    </developers>
+
+    <organization>
+        <name>Gazetteer</name>
+        <url>https://www.gazetteer.io/</url>
+    </organization>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
