@@ -39,11 +39,6 @@ public class MBTilesDataSource implements TileSource {
   }
 
   @Override
-  public String getStyle() {
-    return "";
-  }
-
-  @Override
   public CompletableFuture<Tile> getTile(XYZ xyz) {
     return cache.get(xyz);
   }

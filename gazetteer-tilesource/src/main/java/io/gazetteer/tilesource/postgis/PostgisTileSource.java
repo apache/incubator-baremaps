@@ -32,11 +32,6 @@ public class PostgisTileSource implements TileSource {
   }
 
   @Override
-  public String getStyle() {
-    return null;
-  }
-
-  @Override
   public CompletableFuture<Tile> getTile(XYZ xyz) {
     return cache.get(xyz);
   }
