@@ -66,7 +66,6 @@ public class Importer implements Runnable {
       executor.submit(() -> postgisStream.forEach(pgBulkInsertConsumer)).get();
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 
-
       try (Connection connection = DriverManager.getConnection(postgres)) {
         System.out.println("Creating postgis geometries.");
         DatabaseUtil.executeScript(connection, "osm_create_geoms.sql");

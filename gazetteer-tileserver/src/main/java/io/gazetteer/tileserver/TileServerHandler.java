@@ -13,7 +13,7 @@ import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 import io.gazetteer.tilesource.Tile;
-import io.gazetteer.tilesource.TileSource;
+import io.gazetteer.tilesource.TileReader;
 import io.gazetteer.tilesource.XYZ;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -62,10 +62,10 @@ public class TileServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
   private static final Pattern TILE_URI =
       Pattern.compile(String.format("/(\\d{1,2})/(\\d{1,6})/(\\d{1,6}).pbf"));
 
-  private final TileSource tileSource;
+  private final TileReader tileReader;
 
-  public TileServerHandler(TileSource tileSource) {
-    this.tileSource = tileSource;
+  public TileServerHandler(TileReader tileReader) {
+    this.tileReader = tileReader;
   }
 
   @Override
@@ -138,7 +138,7 @@ public class TileServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
   private void sendTile(ChannelHandlerContext ctx, int z, int x, int y) {
     XYZ xyz = new XYZ(x, y, z);
     try {
-      Tile tile = tileSource.getTile(xyz);
+      Tile tile = tileReader.read(xyz);
       DefaultFullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(tile.getBytes()));
       setDateHeader(response);
       response.headers().set(CONTENT_TYPE, MIME_TYPE);

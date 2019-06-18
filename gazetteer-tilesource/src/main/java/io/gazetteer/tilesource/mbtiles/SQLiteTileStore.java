@@ -1,30 +1,26 @@
 package io.gazetteer.tilesource.mbtiles;
 
-import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import io.gazetteer.tilesource.Tile;
 import io.gazetteer.tilesource.TileException;
-import io.gazetteer.tilesource.TileSource;
-import io.gazetteer.tilesource.TileTarget;
+import io.gazetteer.tilesource.TileReader;
+import io.gazetteer.tilesource.TileWriter;
 import io.gazetteer.tilesource.XYZ;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
 
-public class SQLiteDataStore implements TileSource, TileTarget {
+public class SQLiteTileStore implements TileReader, TileWriter {
 
   public final org.sqlite.SQLiteDataSource dataSource;
 
   public final Map<String, String> metadata;
 
-  public SQLiteDataStore(org.sqlite.SQLiteDataSource dataSource, Map<String, String> metadata) {
+  public SQLiteTileStore(org.sqlite.SQLiteDataSource dataSource, Map<String, String> metadata) {
     this(dataSource, metadata, 10000);
   }
 
-  public SQLiteDataStore(
+  public SQLiteTileStore(
       org.sqlite.SQLiteDataSource dataSource, Map<String, String> metadata, int cacheSize) {
     this.dataSource = dataSource;
     this.metadata = metadata;
@@ -32,7 +28,7 @@ public class SQLiteDataStore implements TileSource, TileTarget {
   }
 
   @Override
-  public Tile getTile(XYZ xyz) throws TileException {
+  public Tile read(XYZ xyz) throws TileException {
     try (Connection connection = dataSource.getConnection()) {
       return SQLiteUtil.getTile(connection, xyz);
     } catch (SQLException e) {
@@ -40,15 +36,15 @@ public class SQLiteDataStore implements TileSource, TileTarget {
     }
   }
 
-  public static SQLiteDataStore fromDataSource(org.sqlite.SQLiteDataSource dataSource) throws SQLException {
+  public static SQLiteTileStore fromDataSource(org.sqlite.SQLiteDataSource dataSource) throws SQLException {
     try (Connection connection = dataSource.getConnection()) {
       Map<String, String> metadata = SQLiteUtil.getMetadata(connection);
-      return new SQLiteDataStore(dataSource, metadata);
+      return new SQLiteTileStore(dataSource, metadata);
     }
   }
 
   @Override
-  public void setTile(XYZ xyz, Tile tile) throws TileException {
+  public void write(XYZ xyz, Tile tile) throws TileException {
     try (Connection connection = dataSource.getConnection()) {
       SQLiteUtil.setTile(connection, xyz, tile);
     } catch (SQLException e) {

@@ -1,8 +1,8 @@
 import io.gazetteer.tileserver.TileServerHandler;
-import io.gazetteer.tilesource.TileSource;
+import io.gazetteer.tilesource.TileReader;
 import io.gazetteer.tilesource.postgis.PostgisConfig;
 import io.gazetteer.tilesource.postgis.PostgisLayer;
-import io.gazetteer.tilesource.postgis.PostgisTileSource;
+import io.gazetteer.tilesource.postgis.PostgisTileReader;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -94,7 +94,7 @@ public class SeleniumTileServer implements Runnable {
     bossGroup = new NioEventLoopGroup(1);
     workerGroup = new NioEventLoopGroup();
     List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(path.toFile())).getLayers();
-    TileSource tileSource = new PostgisTileSource(layers);
+    TileReader tileReader = new PostgisTileReader(layers);
     ServerBootstrap b = new ServerBootstrap();
     b.option(ChannelOption.SO_BACKLOG, 1024);
     b.group(bossGroup, workerGroup)
@@ -113,7 +113,7 @@ public class SeleniumTileServer implements Runnable {
                             .allowedRequestMethods(HttpMethod.POST)
                             .build()));
                 p.addLast(new HttpServerExpectContinueHandler());
-                p.addLast(new TileServerHandler(tileSource));
+                p.addLast(new TileServerHandler(tileReader));
               }
             });
     channel = b.bind("localhost", 8081).sync().channel();
