@@ -1,13 +1,12 @@
 package io.gazetteer.osm.postgis;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
+import io.gazetteer.osm.OSMTestUtil;
 import io.gazetteer.osm.model.DataStore;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Way;
 import java.io.IOException;
-import java.net.URL;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -22,15 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class WayTableTest {
 
-  public static final String URL = "jdbc:postgresql://localhost:5432/osm?allowMultiQueries=true&user=osm&password=osm";
-
   public Connection connection;
 
   public WayTable table;
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    connection = DriverManager.getConnection(URL);
+    connection = DriverManager.getConnection(OSMTestUtil.DATABASE_URL);
     table = new WayTable(new DataStore<Long, Node>() {
 
       @Override

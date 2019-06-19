@@ -1,12 +1,12 @@
 package io.gazetteer.osm.postgis;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
+import io.gazetteer.osm.OSMTestUtil;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,20 +14,18 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ChangeConsumerTest {
-
-  public static final String URL = "jdbc:postgresql://localhost:5432/osm?allowMultiQueries=true&user=osm&password=osm";
 
   public Connection connection;
 
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    connection = DriverManager.getConnection(URL);
+    connection = DriverManager.getConnection(OSMTestUtil.DATABASE_URL);
     DatabaseUtil.executeScript(connection, "osm_create_extensions.sql");
     DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
   }

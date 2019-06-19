@@ -7,6 +7,8 @@ import java.io.InputStream;
 
 public class OSMTestUtil {
 
+  public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/osm?allowMultiQueries=true&user=osm&password=osm";
+
   public static InputStream osmPbfData() {
     return OSMTestUtil.class.getClassLoader().getResourceAsStream("data.osm.pbf");
   }
