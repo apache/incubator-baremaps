@@ -1,16 +1,15 @@
 package io.gazetteer.osm;
 
+import static picocli.CommandLine.Option;
+
+import io.gazetteer.osm.model.Change;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
-import io.gazetteer.osm.postgis.EntityConsumer;
+import io.gazetteer.osm.osmxml.ChangeUtil;
+import io.gazetteer.osm.postgis.ChangeConsumer;
 import io.gazetteer.osm.postgis.DatabaseUtil;
+import io.gazetteer.osm.postgis.EntityConsumer;
 import io.gazetteer.osm.util.StopWatch;
-import org.apache.commons.dbcp2.PoolingDataSource;
-import org.openstreetmap.osmosis.osmbinary.Osmformat;
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Parameters;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,8 +20,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
-
-import static picocli.CommandLine.Option;
+import java.util.zip.GZIPInputStream;
+import org.apache.commons.dbcp2.PoolingDataSource;
+import org.openstreetmap.osmosis.osmbinary.Osmformat;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
+import picocli.CommandLine.Parameters;
 
 @Command(description = "Import OSM PBF into Postgresql")
 public class Importer implements Runnable {
@@ -45,8 +48,7 @@ public class Importer implements Runnable {
       StopWatch stopWatch = new StopWatch();
 
       System.out.println("Printing OSM headers.");
-      Osmformat.HeaderBlock header =
-          PBFUtil.fileBlocks(new FileInputStream(file)).findFirst().map(PBFUtil::toHeaderBlock).get();
+      Osmformat.HeaderBlock header = PBFUtil.fileBlocks(new FileInputStream(file)).findFirst().map(PBFUtil::toHeaderBlock).get();
       System.out.println(header.getOsmosisReplicationBaseUrl());
       System.out.println(header.getOsmosisReplicationSequenceNumber());
       System.out.println(header.getOsmosisReplicationTimestamp());
@@ -77,6 +79,18 @@ public class Importer implements Runnable {
         DatabaseUtil.executeScript(connection, "osm_create_indexes.sql");
         System.out.println(String.format("-> %dms", stopWatch.lap()));
       }
+
+      /*
+      try {
+        System.out.println("Updating OSM database");
+        ChangeConsumer changeConsumer = new ChangeConsumer(pool);
+        Stream<Change> changeStream = ChangeUtil.stream(new GZIPInputStream(new FileInputStream("/home/bchapuis/Projects/github.com/gazetteerio/gazetteer/gazetteer-benchmarks/src/main/resources/liechtenstein.osc.gz")));
+        executor.submit(() -> changeStream.forEach(changeConsumer)).get();
+        System.out.println(String.format("-> %dms", stopWatch.lap()));
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+       */
 
       System.out.println("Done!");
 

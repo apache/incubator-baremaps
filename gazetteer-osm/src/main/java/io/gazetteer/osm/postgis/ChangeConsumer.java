@@ -5,6 +5,7 @@ import io.gazetteer.osm.model.Entity;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
+import io.gazetteer.osm.postgis.NodeTable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Consumer;
