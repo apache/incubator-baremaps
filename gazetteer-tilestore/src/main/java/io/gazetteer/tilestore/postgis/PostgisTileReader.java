@@ -14,17 +14,18 @@ import java.util.zip.GZIPOutputStream;
 
 public class PostgisTileReader implements TileReader {
 
-  private final String DATABASE = "jdbc:postgresql://localhost:5432/osm?user=osm&password=osm";
+  private final String database;
 
   private final List<PostgisLayer> layers;
 
-  public PostgisTileReader(List<PostgisLayer> layers) {
+  public PostgisTileReader(String database, List<PostgisLayer> layers) {
+    this.database = database;
     this.layers = layers;
   }
 
   @Override
   public Tile read(XYZ xyz) throws TileException {
-    try (Connection connection = DriverManager.getConnection(DATABASE);
+    try (Connection connection = DriverManager.getConnection(database);
         ByteArrayOutputStream data = new ByteArrayOutputStream();
         GZIPOutputStream tile = new GZIPOutputStream(data)) {
       for (PostgisLayer layer : layers) {

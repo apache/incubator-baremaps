@@ -32,11 +32,11 @@ import java.util.List;
 @CommandLine.Command(description = "Start a selenium tile server")
 public class SeleniumTileServer implements Runnable {
 
-  @CommandLine.Parameters(
-      index = "0",
-      paramLabel = "CONFIG_FILE",
-      description = "The YAML configuration path.")
-  private Path path;
+  @CommandLine.Parameters(index = "0", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
+  private String database;
+
+  @CommandLine.Parameters(index = "1", paramLabel = "CONFIG_FILE", description = "The YAML configuration config.")
+  private Path config;
 
   private EventLoopGroup bossGroup;
 
@@ -61,12 +61,12 @@ public class SeleniumTileServer implements Runnable {
     driver.get(url);
 
     try (final WatchService watchService = FileSystems.getDefault().newWatchService()) {
-      path.getParent().register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+      config.getParent().register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
       while (true) {
         final WatchKey wk = watchService.take();
         for (WatchEvent<?> event : wk.pollEvents()) {
           final Path changed = (Path) event.context();
-          if (path.getFileName().equals(changed.getFileName())) {
+          if (config.getFileName().equals(changed.getFileName())) {
             try {
               stop();
               start();
@@ -93,8 +93,8 @@ public class SeleniumTileServer implements Runnable {
     InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
     bossGroup = new NioEventLoopGroup(1);
     workerGroup = new NioEventLoopGroup();
-    List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(path.toFile())).getLayers();
-    TileReader tileReader = new PostgisTileReader(layers);
+    List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(config.toFile())).getLayers();
+    TileReader tileReader = new PostgisTileReader(database, layers);
     ServerBootstrap b = new ServerBootstrap();
     b.option(ChannelOption.SO_BACKLOG, 1024);
     b.group(bossGroup, workerGroup)

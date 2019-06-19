@@ -31,8 +31,11 @@ import java.util.List;
 @Command(description = "Start a tile server")
 public class TileServer implements Runnable {
 
-  @Parameters(index = "0", paramLabel = "CONFIG_FILE", description = "The YAML configuration path.")
-  private Path path;
+  @Parameters(index = "0", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
+  private String database;
+
+  @Parameters(index = "1", paramLabel = "CONFIG_FILE", description = "The YAML configuration config.")
+  private Path config;
 
   @Override
   public void run() {
@@ -41,8 +44,8 @@ public class TileServer implements Runnable {
     EventLoopGroup workerGroup = new NioEventLoopGroup();
     try {
       List<PostgisLayer> layers =
-          PostgisConfig.load(new FileInputStream(path.toFile())).getLayers();
-      TileReader tileReader = new PostgisTileReader(layers);
+          PostgisConfig.load(new FileInputStream(config.toFile())).getLayers();
+      TileReader tileReader = new PostgisTileReader(database, layers);
       ServerBootstrap b = new ServerBootstrap();
       b.option(ChannelOption.SO_BACKLOG, 1024);
       b.group(bossGroup, workerGroup)
