@@ -46,8 +46,8 @@
         <version.lib.sqlite>3.21.0</version.lib.sqlite>
         <version.lib.caffeine>2.6.2</version.lib.caffeine>
         <version.lib.guava>27.0.1-jre</version.lib.guava>
-        <version.lib.picocli>3.9.1</version.lib.picocli>
-        <version.lib.netty>4.1.30.Final</version.lib.netty>
+        <version.lib.picocli>3.9.6</version.lib.picocli>
+        <version.lib.netty>4.1.36.Final</version.lib.netty>
         <version.lib.snakeyaml>1.23</version.lib.snakeyaml>
         <version.lib.gson>2.8.5</version.lib.gson>
         <version.lib.proj4j>1.0.0</version.lib.proj4j>

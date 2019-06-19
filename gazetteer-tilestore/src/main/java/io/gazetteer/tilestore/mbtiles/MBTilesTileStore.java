@@ -10,17 +10,17 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-public class SQLiteTileStore implements TileReader, TileWriter {
+public class MBTilesTileStore implements TileReader, TileWriter {
 
   public final org.sqlite.SQLiteDataSource dataSource;
 
   public final Map<String, String> metadata;
 
-  public SQLiteTileStore(org.sqlite.SQLiteDataSource dataSource, Map<String, String> metadata) {
+  public MBTilesTileStore(org.sqlite.SQLiteDataSource dataSource, Map<String, String> metadata) {
     this(dataSource, metadata, 10000);
   }
 
-  public SQLiteTileStore(
+  public MBTilesTileStore(
       org.sqlite.SQLiteDataSource dataSource, Map<String, String> metadata, int cacheSize) {
     this.dataSource = dataSource;
     this.metadata = metadata;
@@ -30,23 +30,23 @@ public class SQLiteTileStore implements TileReader, TileWriter {
   @Override
   public Tile read(XYZ xyz) throws TileException {
     try (Connection connection = dataSource.getConnection()) {
-      return SQLiteUtil.getTile(connection, xyz);
+      return MBTilesUtil.getTile(connection, xyz);
     } catch (SQLException e) {
       throw new TileException(e);
     }
   }
 
-  public static SQLiteTileStore fromDataSource(org.sqlite.SQLiteDataSource dataSource) throws SQLException {
+  public static MBTilesTileStore fromDataSource(org.sqlite.SQLiteDataSource dataSource) throws SQLException {
     try (Connection connection = dataSource.getConnection()) {
-      Map<String, String> metadata = SQLiteUtil.getMetadata(connection);
-      return new SQLiteTileStore(dataSource, metadata);
+      Map<String, String> metadata = MBTilesUtil.getMetadata(connection);
+      return new MBTilesTileStore(dataSource, metadata);
     }
   }
 
   @Override
   public void write(XYZ xyz, Tile tile) throws TileException {
     try (Connection connection = dataSource.getConnection()) {
-      SQLiteUtil.setTile(connection, xyz, tile);
+      MBTilesUtil.setTile(connection, xyz, tile);
     } catch (SQLException e) {
       throw new TileException(e);
     }
