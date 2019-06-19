@@ -52,14 +52,14 @@ public class Importer implements Runnable {
       System.out.println(header.getOsmosisReplicationTimestamp());
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 
-      System.out.println("Creating postgis database.");
+      System.out.println("Creating OSM database.");
       try (Connection connection = DriverManager.getConnection(postgres)) {
         DatabaseUtil.executeScript(connection, "osm_create_extensions.sql");
         DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
         System.out.println(String.format("-> %dms", stopWatch.lap()));
       }
 
-      System.out.println("Populating postgis database.");
+      System.out.println("Populating OSM database.");
       PoolingDataSource pool = DatabaseUtil.createPoolingDataSource(postgres);
       EntityConsumer pgBulkInsertConsumer = new EntityConsumer(pool);
       Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(new FileInputStream(file));
@@ -67,13 +67,13 @@ public class Importer implements Runnable {
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 
       try (Connection connection = DriverManager.getConnection(postgres)) {
-        System.out.println("Creating postgis geometries.");
+        System.out.println("Updating OSM geometries.");
         DatabaseUtil.executeScript(connection, "osm_create_geoms.sql");
         System.out.println(String.format("-> %dms", stopWatch.lap()));
       }
 
       try (Connection connection = DriverManager.getConnection(postgres)) {
-        System.out.println("Creating postgis geometries.");
+        System.out.println("Indexing OSM geometries.");
         DatabaseUtil.executeScript(connection, "osm_create_indexes.sql");
         System.out.println(String.format("-> %dms", stopWatch.lap()));
       }
