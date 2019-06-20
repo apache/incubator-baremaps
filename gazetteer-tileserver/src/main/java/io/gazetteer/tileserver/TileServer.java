@@ -1,7 +1,7 @@
 package io.gazetteer.tileserver;
 
-import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_ENCODING;
-import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
+import static io.vertx.core.http.HttpHeaders.CONTENT_ENCODING;
+import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
 import io.gazetteer.tilestore.Tile;
 import io.gazetteer.tilestore.TileException;
@@ -10,7 +10,6 @@ import io.gazetteer.tilestore.XYZ;
 import io.gazetteer.tilestore.postgis.PostgisConfig;
 import io.gazetteer.tilestore.postgis.PostgisLayer;
 import io.gazetteer.tilestore.postgis.PostgisTileReader;
-import io.netty.util.AsciiString;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
@@ -27,9 +26,9 @@ import picocli.CommandLine.Parameters;
 @Command(description = "Start a tile server")
 public class TileServer implements Runnable {
 
-  public static final AsciiString TILE_ENCODING = AsciiString.cached("gzip");
+  public static final String TILE_ENCODING = "gzip";
 
-  public static final AsciiString TILE_MIME_TYPE = AsciiString.cached("application/vnd.mapbox-vector-tile");
+  public static final String TILE_MIME_TYPE = "application/vnd.mapbox-vector-tile";
 
   @Parameters(index = "0", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
   private String database;

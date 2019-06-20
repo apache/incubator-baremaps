@@ -9,36 +9,27 @@ import io.gazetteer.tilestore.XYZ;
 import io.gazetteer.tilestore.postgis.PostgisConfig;
 import io.gazetteer.tilestore.postgis.PostgisLayer;
 import io.gazetteer.tilestore.postgis.PostgisTileReader;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
-import io.netty.handler.codec.http.cors.CorsConfigBuilder;
-import io.netty.handler.codec.http.cors.CorsHandler;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
-import io.netty.util.internal.logging.InternalLoggerFactory;
-import io.netty.util.internal.logging.Slf4JLoggerFactory;
+import io.netty.channel.Channel;
+import io.netty.channel.EventLoopGroup;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.util.List;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.yaml.snakeyaml.error.YAMLException;
 import picocli.CommandLine;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.*;
-import java.util.List;
 
 @CommandLine.Command(description = "Start a selenium tile server")
 public class SeleniumTileServer implements Runnable {

@@ -190,12 +190,12 @@
       <dependency>
         <groupId>io.gazetteer</groupId>
         <artifactId>gazetteer-postgis</artifactId>
-        <version>${parent.version}</version>
+        <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <groupId>io.gazetteer</groupId>
         <artifactId>gazetteer-osm</artifactId>
-        <version>${parent.version}</version>
+        <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
