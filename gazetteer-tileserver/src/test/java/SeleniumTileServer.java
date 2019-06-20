@@ -1,5 +1,11 @@
-import io.gazetteer.tileserver.TileServerHandler;
+import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_ENCODING;
+import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
+
+import io.gazetteer.tileserver.TileServer;
+import io.gazetteer.tilestore.Tile;
+import io.gazetteer.tilestore.TileException;
 import io.gazetteer.tilestore.TileReader;
+import io.gazetteer.tilestore.XYZ;
 import io.gazetteer.tilestore.postgis.PostgisConfig;
 import io.gazetteer.tilestore.postgis.PostgisLayer;
 import io.gazetteer.tilestore.postgis.PostgisTileReader;
@@ -18,6 +24,11 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
+import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpServer;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.StaticHandler;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.yaml.snakeyaml.error.YAMLException;
@@ -52,8 +63,6 @@ public class SeleniumTileServer implements Runnable {
       start();
     } catch (FileNotFoundException e) {
       e.printStackTrace();
-    } catch (InterruptedException e) {
-      e.printStackTrace();
     }
 
     WebDriver driver = new ChromeDriver();
@@ -75,8 +84,6 @@ public class SeleniumTileServer implements Runnable {
               e.printStackTrace();
             } catch (FileNotFoundException e) {
               e.printStackTrace();
-            } catch (InterruptedException e) {
-              e.printStackTrace();
             }
           }
         }
@@ -89,34 +96,36 @@ public class SeleniumTileServer implements Runnable {
     }
   }
 
-  public void start() throws FileNotFoundException, InterruptedException {
-    InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
-    bossGroup = new NioEventLoopGroup(1);
-    workerGroup = new NioEventLoopGroup();
+  public void start() throws FileNotFoundException {
+    // Initialize Vertx
+    Vertx vertx = Vertx.vertx();
+    HttpServer server = vertx.createHttpServer();
+
+    // Read the configuration file
     List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(config.toFile())).getLayers();
     TileReader tileReader = new PostgisTileReader(database, layers);
-    ServerBootstrap b = new ServerBootstrap();
-    b.option(ChannelOption.SO_BACKLOG, 1024);
-    b.group(bossGroup, workerGroup)
-        .channel(NioServerSocketChannel.class)
-        .handler(new LoggingHandler(LogLevel.INFO))
-        .childHandler(
-            new ChannelInitializer<SocketChannel>() {
-              @Override
-              public void initChannel(SocketChannel ch) throws FileNotFoundException {
-                ChannelPipeline p = ch.pipeline();
-                p.addLast(new HttpServerCodec());
-                p.addLast(new HttpObjectAggregator(512 * 1024));
-                p.addLast(
-                    new CorsHandler(
-                        CorsConfigBuilder.forOrigin("*")
-                            .allowedRequestMethods(HttpMethod.POST)
-                            .build()));
-                p.addLast(new HttpServerExpectContinueHandler());
-                p.addLast(new TileServerHandler(tileReader));
-              }
-            });
-    channel = b.bind("localhost", 8081).sync().channel();
+
+    // Create the Vertx router
+    Router router = Router.router(vertx);
+    router.get("/:z/:x/:y.pbf").blockingHandler(routingContext -> {
+      try {
+        Integer z = Integer.parseInt(routingContext.request().getParam("z"));
+        Integer x = Integer.parseInt(routingContext.request().getParam("x"));
+        Integer y = Integer.parseInt(routingContext.request().getParam("y"));
+        XYZ xyz = new XYZ(x, y, z);
+        Tile tile = tileReader.read(xyz);
+        routingContext.response()
+            .putHeader(CONTENT_TYPE, TileServer.TILE_MIME_TYPE)
+            .putHeader(CONTENT_ENCODING,  TileServer.TILE_ENCODING)
+            .end(Buffer.buffer(tile.getBytes()));
+      } catch (TileException e) {
+        routingContext.response().setStatusCode(404);
+      }
+    });
+    router.route("/*").handler(StaticHandler.create());
+
+    // Start the Vertx server
+    server.requestHandler(router).listen(8081);
   }
 
   public void stop() {
