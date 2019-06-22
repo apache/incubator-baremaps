@@ -13,20 +13,57 @@ For now, the effort consists into creating a pipeline that imports data from Ope
 
 ![State of the map](https://github.com/gazetteerio/gazetteer/raw/master/screenshots/1550007544903.png)
 
-## More robust tools
+## Installation
 
--   [osmosis](https://github.com/openstreetmap/osmosis/)
--   [osm2pgsql](https://github.com/openstreetmap/osm2pgsql)
--   [imposm3](https://github.com/omniscale/imposm3)
+Install postgresql 11 and postgis 2.5:
 
-## Useful links
+```
+sudo apt-get install postgresql-11-postgis-2.5
+```
 
--   [How to make mvt with PostGIS](https://blog.jawg.io/how-to-make-mvt-with-postgis/)
+Connect to postgresql with the psql shell:
 
-## Cool companies and startups
+```
+sudo -u postgres psql
+```
 
--   [Camptocamp](http://camptocamp.com/)
--   [Jawg](https://blog.jawg.io/)
--   [Klokan](https://www.klokantech.com/)
--   [Mapbox](https://www.mapbox.com/)
--   [Omniscale](https://omniscale.com/)
+From the psql shell, create the database, the username and the extensions:
+
+```
+createuser gazetteer -W
+CREATE DATABASE gazetteer;
+CREATE USER gazetteer WITH ENCRYPTED PASSWORD 'gazetteer'; 
+GRANT ALL PRIVILEGES ON DATABASE gazetteer TO gazetteer;
+\c gazetteer 
+CREATE EXTENSION IF NOT EXISTS hstore;
+CREATE EXTENSION IF NOT EXISTS postgis;
+\q
+```
+
+Clone and build the repository:
+
+```
+git clone git@github.com:gazetteerio/gazetteer.git
+cd gazetteer
+mvn clean install
+```
+
+Populate the database with the liechtenstein data:
+
+```
+mvn -pl gazetteer-osm exec:java \
+  -Dexec.mainClass="io.gazetteer.osm.Importer" \
+  -Dexec.args="gazetteer-benchmarks/src/main/resources/liechtenstein.osm.pbf jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer"
+```
+
+Start the tile server:
+
+```
+mvn -pl gazetteer-tileserver exec:java \
+  -Dexec.mainClass="io.gazetteer.tileserver.TileServer" \
+  -Dexec.args="config/config.yaml jdbc:postgresql://localhost:5432/gazetteer?user=gazetteer&password=gazetteer"
+```
+
+Well done, open your [browser](http://localhost:8081/), a map of liechtenstein should appear!
+
+

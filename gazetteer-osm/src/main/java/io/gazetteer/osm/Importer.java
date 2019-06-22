@@ -53,7 +53,6 @@ public class Importer implements Runnable {
 
       System.out.println("Creating OSM database.");
       try (Connection connection = DriverManager.getConnection(postgres)) {
-        DatabaseUtil.executeScript(connection, "osm_create_extensions.sql");
         DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
         System.out.println(String.format("-> %dms", stopWatch.lap()));
       }

@@ -30,11 +30,11 @@ public class TileServer implements Runnable {
 
   public static final String TILE_MIME_TYPE = "application/vnd.mapbox-vector-tile";
 
-  @Parameters(index = "0", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
-  private String database;
-
-  @Parameters(index = "1", paramLabel = "CONFIG_FILE", description = "The YAML configuration config.")
+  @Parameters(index = "0", paramLabel = "CONFIG_FILE", description = "The YAML configuration config.")
   private Path config;
+
+  @Parameters(index = "1", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
+  private String database;
 
   @Override
   public void run() {
