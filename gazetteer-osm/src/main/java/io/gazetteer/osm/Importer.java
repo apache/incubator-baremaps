@@ -2,13 +2,10 @@ package io.gazetteer.osm;
 
 import static picocli.CommandLine.Option;
 
-import io.gazetteer.osm.model.Change;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
-import io.gazetteer.osm.osmxml.ChangeUtil;
-import io.gazetteer.osm.postgis.ChangeConsumer;
 import io.gazetteer.osm.postgis.DatabaseUtil;
-import io.gazetteer.osm.postgis.EntityConsumer;
+import io.gazetteer.osm.osmpbf.DataBlockConsumer;
 import io.gazetteer.osm.util.StopWatch;
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +17,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
-import java.util.zip.GZIPInputStream;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import picocli.CommandLine;
@@ -52,6 +48,7 @@ public class Importer implements Runnable {
       System.out.println(header.getOsmosisReplicationBaseUrl());
       System.out.println(header.getOsmosisReplicationSequenceNumber());
       System.out.println(header.getOsmosisReplicationTimestamp());
+      System.out.println(header.getBbox());
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 
       System.out.println("Creating OSM database.");
@@ -63,7 +60,7 @@ public class Importer implements Runnable {
 
       System.out.println("Populating OSM database.");
       PoolingDataSource pool = DatabaseUtil.createPoolingDataSource(postgres);
-      EntityConsumer pgBulkInsertConsumer = new EntityConsumer(pool);
+      DataBlockConsumer pgBulkInsertConsumer = new DataBlockConsumer(pool);
       Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(new FileInputStream(file));
       executor.submit(() -> postgisStream.forEach(pgBulkInsertConsumer)).get();
       System.out.println(String.format("-> %dms", stopWatch.lap()));

@@ -4,7 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
-import io.gazetteer.osm.postgis.EntityConsumer;
+import io.gazetteer.osm.osmpbf.DataBlockConsumer;
 import io.gazetteer.osm.postgis.DatabaseUtil;
 import java.io.IOException;
 import java.net.URL;
@@ -41,7 +41,7 @@ public class PostgisConsumerBenchmark {
       connection.createStatement().execute(sql);
     }
     PoolingDataSource pool = DatabaseUtil.createPoolingDataSource(POSTGRES_URL);
-    consumer = new EntityConsumer(pool);
+    consumer = new DataBlockConsumer(pool);
     InputStream input = getClass().getClassLoader().getResourceAsStream(PBF_FILE);
     stream = PBFUtil.dataBlocks(input);
   }

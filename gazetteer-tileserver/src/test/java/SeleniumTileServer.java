@@ -107,7 +107,7 @@ public class SeleniumTileServer implements Runnable {
         Tile tile = tileReader.read(xyz);
         routingContext.response()
             .putHeader(CONTENT_TYPE, TileServer.TILE_MIME_TYPE)
-            .putHeader(CONTENT_ENCODING,  TileServer.TILE_ENCODING)
+            .putHeader(CONTENT_ENCODING, TileServer.TILE_ENCODING)
             .end(Buffer.buffer(tile.getBytes()));
       } catch (TileException e) {
         routingContext.response().setStatusCode(404);
