@@ -6,8 +6,10 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fgazetteerio%2Fgazetteer.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fgazetteerio%2Fgazetteer?ref=badge_shield)
 
-Gazetteer is a work in progress aimed at creating an opensource cloud native geographic information system. 
+Gazetteer aims at creating high quality and open source vector tiles for web mapping.
 For now, the effort consists into creating a pipeline that imports data from OpenStreetMap into postgresql, which is then used to create vector tiles.
+On the longer run, the project will include other data sources and be deployable as cloud native components.
+
 
 ## State of the map
 
