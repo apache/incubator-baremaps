@@ -55,7 +55,7 @@ Populate the database with the liechtenstein data:
 ```
 mvn -pl gazetteer-osm exec:java \
   -Dexec.mainClass="io.gazetteer.osm.Importer" \
-  -Dexec.args="gazetteer-benchmarks/src/main/resources/liechtenstein.osm.pbf jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer"
+  -Dexec.args="data/liechtenstein.osm.pbf jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer"
 ```
 
 Start the tile server:
