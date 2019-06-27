@@ -18,7 +18,9 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.apache.commons.dbcp2.PoolingDataSource;
+import org.locationtech.jts.geom.Envelope;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
+import org.openstreetmap.osmosis.osmbinary.Osmformat.HeaderBBox;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -48,7 +50,18 @@ public class Importer implements Runnable {
       System.out.println(header.getOsmosisReplicationBaseUrl());
       System.out.println(header.getOsmosisReplicationSequenceNumber());
       System.out.println(header.getOsmosisReplicationTimestamp());
+
+      HeaderBBox bbox = header.getBbox();
       System.out.println(header.getBbox());
+
+      Envelope envelope = new Envelope(
+          bbox.getLeft() * .000000001,
+          bbox.getRight() * .000000001,
+          bbox.getBottom() * .000000001,
+          bbox.getTop() * .000000001);
+
+      System.out.println(envelope);
+
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 
       System.out.println("Creating OSM database.");

@@ -1,5 +1,6 @@
 package io.gazetteer.tilestore;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import org.locationtech.jts.geom.Envelope;
 
@@ -8,7 +9,6 @@ public final class XYZ {
   private final int x, y, z;
 
   public XYZ(int x, int y, int z) {
-
     this.x = x;
     this.y = y;
     this.z = z;
@@ -56,5 +56,14 @@ public final class XYZ {
   public static double tile2lat(int y, int z) {
     double n = Math.PI - (2.0 * Math.PI * y) / Math.pow(2.0, z);
     return Math.toDegrees(Math.atan(Math.sinh(n)));
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("x", x)
+        .add("y", y)
+        .add("z", z)
+        .toString();
   }
 }
