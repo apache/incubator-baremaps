@@ -3,19 +3,16 @@ package io.gazetteer.tilestore.util;
 import io.gazetteer.tilestore.XYZ;
 import java.util.ArrayList;
 import java.util.List;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 
 public class TileUtil {
 
-  public static List<XYZ> overlappingXYZ(Geometry geometry, int minZ, int maxZ) {
-    Envelope envelope = geometry.getEnvelopeInternal();
+  public static List<XYZ> overlappingXYZ(Envelope envelope, int minZ, int maxZ) {
     ArrayList<XYZ> coordinates = new ArrayList<>();
     for (int z = minZ; z <= maxZ; z++) {
-      XYZ min = xyz(envelope.getMinX(), envelope.getMinY(), z);
-      XYZ max = xyz(envelope.getMaxX(), envelope.getMaxY(), z);
+      XYZ min = xyz(envelope.getMinX(), envelope.getMaxY(), z);
+      XYZ max = xyz(envelope.getMaxX(), envelope.getMinY(), z);
       for (int x = min.getX(); x <= max.getX(); x++) {
         for (int y = min.getY(); y <= max.getY(); y++) {
           XYZ xyz = new XYZ(x, y, z);
@@ -34,9 +31,8 @@ public class TileUtil {
 
   public static void main(String[] args) {
     GeometryFactory factory = new GeometryFactory();
-    List<XYZ> coordinates = overlappingXYZ(factory.createPoint(new Coordinate(1,1)), 12, 14);
+    List<XYZ> coordinates = overlappingXYZ(new Envelope(1,2,1,2), 12, 14);
     for (XYZ c : coordinates) {
-
       System.out.println(c);
     }
   }
