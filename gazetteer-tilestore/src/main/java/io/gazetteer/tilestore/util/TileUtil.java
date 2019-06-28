@@ -1,12 +1,29 @@
 package io.gazetteer.tilestore.util;
 
 import io.gazetteer.tilestore.XYZ;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBReader;
 
 public class TileUtil {
+
+  public static final String BBOX = "SELECT st_asewkb(ST_SetSRID(ST_Extent(geom), 4326)) as table_extent FROM osm_nodes;";
+
+  public static Geometry bbox(Connection connection) throws SQLException, ParseException {
+    try (PreparedStatement statement = connection.prepareStatement(BBOX)) {
+      ResultSet result = statement.executeQuery();
+      Geometry bbox = new WKBReader().read(result.getBytes(1));
+      return bbox;
+    }
+  }
 
   public static List<XYZ> overlappingXYZ(Envelope envelope, int minZ, int maxZ) {
     ArrayList<XYZ> coordinates = new ArrayList<>();
@@ -30,11 +47,11 @@ public class TileUtil {
   }
 
   public static void main(String[] args) {
-    GeometryFactory factory = new GeometryFactory();
-    List<XYZ> coordinates = overlappingXYZ(new Envelope(1,2,1,2), 12, 14);
-    for (XYZ c : coordinates) {
-      System.out.println(c);
-    }
-  }
 
+
+
+    GeometryFactory factory = new GeometryFactory();
+    List<XYZ> coordinates = overlappingXYZ(new Envelope(1, 3, 1, 3), 12, 18);
+    System.out.println(coordinates.size());
+  }
 }
