@@ -9,24 +9,27 @@ import java.util.ArrayList;
 import java.util.List;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 
 public class TileUtil {
 
-  public static final String BBOX = "SELECT st_asewkb(ST_SetSRID(ST_Extent(geom), 4326)) as table_extent FROM osm_nodes;";
+  public static final String BBOX = "SELECT st_asewkb(st_transform(st_setsrid(st_extent(geom), 3857), 4326)) as table_extent FROM osm_nodes;";
 
   public static Geometry bbox(Connection connection) throws SQLException, ParseException {
     try (PreparedStatement statement = connection.prepareStatement(BBOX)) {
       ResultSet result = statement.executeQuery();
-      Geometry bbox = new WKBReader().read(result.getBytes(1));
-      return bbox;
+      if (result.next()) {
+        return new WKBReader().read(result.getBytes(1));
+      } else {
+        return null;
+      }
     }
   }
 
-  public static List<XYZ> overlappingXYZ(Envelope envelope, int minZ, int maxZ) {
+  public static List<XYZ> overlappingXYZ(Geometry geometry, int minZ, int maxZ) {
     ArrayList<XYZ> coordinates = new ArrayList<>();
+    Envelope envelope = geometry.getEnvelopeInternal();
     for (int z = minZ; z <= maxZ; z++) {
       XYZ min = xyz(envelope.getMinX(), envelope.getMaxY(), z);
       XYZ max = xyz(envelope.getMaxX(), envelope.getMinY(), z);
@@ -46,12 +49,4 @@ public class TileUtil {
     return new XYZ(x, y, z);
   }
 
-  public static void main(String[] args) {
-
-
-
-    GeometryFactory factory = new GeometryFactory();
-    List<XYZ> coordinates = overlappingXYZ(new Envelope(1, 3, 1, 3), 12, 18);
-    System.out.println(coordinates.size());
-  }
 }

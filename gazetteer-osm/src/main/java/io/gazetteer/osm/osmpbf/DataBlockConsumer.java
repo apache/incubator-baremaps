@@ -1,21 +1,14 @@
 package io.gazetteer.osm.osmpbf;
 
-import io.gazetteer.osm.model.Relation;
-import io.gazetteer.osm.osmpbf.DataBlock;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import io.gazetteer.osm.postgis.NodeTable;
 import io.gazetteer.osm.postgis.RelationTable;
 import io.gazetteer.osm.postgis.WayTable;
-import io.gazetteer.postgis.util.CopyWriter;
-import java.util.List;
-import org.apache.commons.dbcp2.PoolingDataSource;
-import org.postgresql.PGConnection;
-
 import java.sql.Connection;
 import java.util.function.Consumer;
-import org.postgresql.copy.PGCopyOutputStream;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static io.gazetteer.osm.util.GeometryUtil.asGeometry;
+import org.apache.commons.dbcp2.PoolingDataSource;
+import org.postgresql.PGConnection;
 
 public class DataBlockConsumer implements Consumer<DataBlock> {
 

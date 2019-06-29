@@ -31,10 +31,11 @@ public class PostgisTileReader implements TileReader {
       for (PostgisLayer layer : layers) {
         if (xyz.getZ() >= layer.getMinZoom() && xyz.getZ() <= layer.getMaxZoom()) {
           String sql = PostgisQueryBuilder.build(xyz, layer);
-          Statement statement = connection.createStatement();
-          ResultSet result = statement.executeQuery(sql);
-          result.next();
-          tile.write(result.getBytes(1));
+          try (Statement statement = connection.createStatement()) {
+            ResultSet result = statement.executeQuery(sql);
+            result.next();
+            tile.write(result.getBytes(1));
+          }
         }
       }
       tile.close();

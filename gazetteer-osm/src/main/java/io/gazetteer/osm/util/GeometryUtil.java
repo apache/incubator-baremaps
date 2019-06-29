@@ -24,8 +24,7 @@ public class GeometryUtil {
 
   public static Coordinate coordinate(double x, double y) {
     CoordinateTransform ct = ctFactory.createTransform(epsg4326, epsg3857);
-    ProjCoordinate coordinate =
-            ct.transform(new ProjCoordinate(x, y), new ProjCoordinate());
+    ProjCoordinate coordinate = ct.transform(new ProjCoordinate(x, y), new ProjCoordinate());
     return new Coordinate(coordinate.x, coordinate.y);
   }
 

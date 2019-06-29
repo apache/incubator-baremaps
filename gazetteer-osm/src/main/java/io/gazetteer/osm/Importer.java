@@ -3,9 +3,9 @@ package io.gazetteer.osm;
 import static picocli.CommandLine.Option;
 
 import io.gazetteer.osm.osmpbf.DataBlock;
+import io.gazetteer.osm.osmpbf.DataBlockConsumer;
 import io.gazetteer.osm.osmpbf.PBFUtil;
 import io.gazetteer.osm.postgis.DatabaseUtil;
-import io.gazetteer.osm.osmpbf.DataBlockConsumer;
 import io.gazetteer.osm.util.StopWatch;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,7 +32,7 @@ public class Importer implements Runnable {
   private File file;
 
   @Parameters(index = "1", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
-  private String postgres;
+  private String database;
 
   @Option(
       names = {"-t", "--threads"},
@@ -45,45 +45,33 @@ public class Importer implements Runnable {
     try {
       StopWatch stopWatch = new StopWatch();
 
-      System.out.println("Printing OSM headers.");
+      System.out.println("Parsing OSM headers.");
       Osmformat.HeaderBlock header = PBFUtil.fileBlocks(new FileInputStream(file)).findFirst().map(PBFUtil::toHeaderBlock).get();
       System.out.println(header.getOsmosisReplicationBaseUrl());
       System.out.println(header.getOsmosisReplicationSequenceNumber());
       System.out.println(header.getOsmosisReplicationTimestamp());
-
-      HeaderBBox bbox = header.getBbox();
-      System.out.println(header.getBbox());
-
-      Envelope envelope = new Envelope(
-          bbox.getLeft() * .000000001,
-          bbox.getRight() * .000000001,
-          bbox.getBottom() * .000000001,
-          bbox.getTop() * .000000001);
-
-      System.out.println(envelope);
-
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 
       System.out.println("Creating OSM database.");
-      try (Connection connection = DriverManager.getConnection(postgres)) {
+      try (Connection connection = DriverManager.getConnection(database)) {
         DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
         System.out.println(String.format("-> %dms", stopWatch.lap()));
       }
 
       System.out.println("Populating OSM database.");
-      PoolingDataSource pool = DatabaseUtil.createPoolingDataSource(postgres);
+      PoolingDataSource pool = DatabaseUtil.createPoolingDataSource(database);
       DataBlockConsumer pgBulkInsertConsumer = new DataBlockConsumer(pool);
       Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(new FileInputStream(file));
       executor.submit(() -> postgisStream.forEach(pgBulkInsertConsumer)).get();
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 
-      try (Connection connection = DriverManager.getConnection(postgres)) {
+      try (Connection connection = DriverManager.getConnection(database)) {
         System.out.println("Updating OSM geometries.");
-        DatabaseUtil.executeScript(connection, "osm_create_geoms.sql");
+        DatabaseUtil.executeScript(connection, "osm_create_geometries.sql");
         System.out.println(String.format("-> %dms", stopWatch.lap()));
       }
 
-      try (Connection connection = DriverManager.getConnection(postgres)) {
+      try (Connection connection = DriverManager.getConnection(database)) {
         System.out.println("Indexing OSM geometries.");
         DatabaseUtil.executeScript(connection, "osm_create_indexes.sql");
         System.out.println(String.format("-> %dms", stopWatch.lap()));

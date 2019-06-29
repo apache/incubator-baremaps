@@ -66,6 +66,15 @@ mvn -pl gazetteer-tileserver exec:java \
   -Dexec.args="config/config.yaml jdbc:postgresql://localhost:5432/gazetteer?user=gazetteer&password=gazetteer"
 ```
 
+Generate a tile directory:
+
+```
+mvn -pl gazetteer-tilestore exec:java \
+  -Dexec.mainClass="io.gazetteer.tilestore.Generator" \
+  -Dexec.args="config/config.yaml jdbc:postgresql://localhost:5432/osm?allowMultiQueries=true&user=osm&password=osm /tmp/tiles"
+```
+
+
 Well done, open your [browser](http://localhost:8081/), a map of liechtenstein should appear!
 
 
