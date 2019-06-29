@@ -1,5 +1,6 @@
 package io.gazetteer.osm.postgis;
 
+import io.gazetteer.postgis.util.DatabaseUtil;
 import java.io.IOException;
 
 import io.gazetteer.osm.OSMTestUtil;

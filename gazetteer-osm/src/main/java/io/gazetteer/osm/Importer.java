@@ -5,8 +5,8 @@ import static picocli.CommandLine.Option;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.DataBlockConsumer;
 import io.gazetteer.osm.osmpbf.PBFUtil;
-import io.gazetteer.osm.postgis.DatabaseUtil;
 import io.gazetteer.osm.util.StopWatch;
+import io.gazetteer.postgis.util.DatabaseUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,9 +18,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.apache.commons.dbcp2.PoolingDataSource;
-import org.locationtech.jts.geom.Envelope;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
-import org.openstreetmap.osmosis.osmbinary.Osmformat.HeaderBBox;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -59,7 +57,7 @@ public class Importer implements Runnable {
       }
 
       System.out.println("Populating OSM database.");
-      PoolingDataSource pool = DatabaseUtil.createPoolingDataSource(database);
+      PoolingDataSource pool = DatabaseUtil.poolingDataSource(database);
       DataBlockConsumer pgBulkInsertConsumer = new DataBlockConsumer(pool);
       Stream<DataBlock> postgisStream = PBFUtil.dataBlocks(new FileInputStream(file));
       executor.submit(() -> postgisStream.forEach(pgBulkInsertConsumer)).get();

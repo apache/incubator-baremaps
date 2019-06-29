@@ -5,7 +5,7 @@ import com.google.common.io.Resources;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
 import io.gazetteer.osm.osmpbf.DataBlockConsumer;
-import io.gazetteer.osm.postgis.DatabaseUtil;
+import io.gazetteer.postgis.util.DatabaseUtil;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -42,7 +42,7 @@ public class PostgisConsumerBenchmark {
       String sql = Resources.toString(url, Charsets.UTF_8);
       connection.createStatement().execute(sql);
     }
-    PoolingDataSource pool = DatabaseUtil.createPoolingDataSource(POSTGRES_URL);
+    PoolingDataSource pool = DatabaseUtil.poolingDataSource(POSTGRES_URL);
     consumer = new DataBlockConsumer(pool);
     InputStream input = Files.newInputStream(Paths.get(PBF_FILE));
     stream = PBFUtil.dataBlocks(input);

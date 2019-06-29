@@ -1,6 +1,6 @@
 package io.gazetteer.tilestore;
 
-import io.gazetteer.osm.postgis.DatabaseUtil;
+import io.gazetteer.postgis.util.DatabaseUtil;
 import io.gazetteer.tilestore.postgis.PostgisConfig;
 import io.gazetteer.tilestore.postgis.PostgisLayer;
 import io.gazetteer.tilestore.postgis.PostgisTileReader;
@@ -44,12 +44,12 @@ public class Generator implements Runnable {
     try {
       // Read the configuration file
       List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(config.toFile())).getLayers();
-      PoolingDataSource datasource = DatabaseUtil.createPoolingDataSource(database);
+      PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
       TileReader tileReader = new PostgisTileReader(datasource, layers);
 
       try (Connection connection = datasource.getConnection()) {
         Geometry geometry = TileUtil.bbox(connection);
-        Stream<XYZ> coords = TileUtil.xyzStream(geometry, 1, 14);
+        Stream<XYZ> coords = TileUtil.stream(geometry, 1, 14);
         executor.submit(() -> coords.forEach(xyz -> {
           try {
             Tile tile = tileReader.read(xyz);

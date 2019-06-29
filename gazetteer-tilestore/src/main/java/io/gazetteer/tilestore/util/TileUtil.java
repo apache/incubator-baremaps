@@ -27,7 +27,7 @@ public class TileUtil {
     }
   }
 
-  public static Stream<XYZ> xyzStream(Geometry geometry, int minZ, int maxZ) {
+  public static Stream<XYZ> stream(Geometry geometry, int minZ, int maxZ) {
     Envelope envelope = geometry.getEnvelopeInternal();
     return IntStream.rangeClosed(minZ, maxZ).mapToObj(z -> z).flatMap(z -> {
       XYZ min = xyz(envelope.getMinX(), envelope.getMaxY(), z);
@@ -35,7 +35,6 @@ public class TileUtil {
       return IntStream.rangeClosed(min.getX(), max.getX()).mapToObj(i -> i)
           .flatMap(x -> IntStream.rangeClosed(min.getY(), max.getY()).mapToObj(i -> i).map(y -> new XYZ(x, y, z)));
     });
-
   }
 
   public static XYZ xyz(double lon, double lat, int z) {
