@@ -6,26 +6,26 @@ import io.gazetteer.tilestore.TileReader;
 import io.gazetteer.tilestore.XYZ;
 import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
+import org.apache.commons.dbcp2.PoolingDataSource;
 
 public class PostgisTileReader implements TileReader {
 
-  private final String database;
+  private final PoolingDataSource datasource;
 
   private final List<PostgisLayer> layers;
 
-  public PostgisTileReader(String database, List<PostgisLayer> layers) {
-    this.database = database;
+  public PostgisTileReader(PoolingDataSource datasource, List<PostgisLayer> layers) {
+    this.datasource = datasource;
     this.layers = layers;
   }
 
   @Override
   public Tile read(XYZ xyz) throws TileException {
-    try (Connection connection = DriverManager.getConnection(database);
+    try (Connection connection = datasource.getConnection();
         ByteArrayOutputStream data = new ByteArrayOutputStream();
         GZIPOutputStream tile = new GZIPOutputStream(data)) {
       for (PostgisLayer layer : layers) {

@@ -1,5 +1,6 @@
 package io.gazetteer.tilestore;
 
+import io.gazetteer.osm.postgis.DatabaseUtil;
 import io.gazetteer.tilestore.postgis.PostgisConfig;
 import io.gazetteer.tilestore.postgis.PostgisLayer;
 import io.gazetteer.tilestore.postgis.PostgisTileReader;
@@ -9,11 +10,15 @@ import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
+import org.apache.commons.dbcp2.PoolingDataSource;
 import org.locationtech.jts.geom.Geometry;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 @Command(description = "Generate vector tiles from Postgresql")
@@ -28,27 +33,46 @@ public class Generator implements Runnable {
   @Parameters(index = "2", paramLabel = "TILE_DIRECTORY", description = "The tile directory.")
   private File directory;
 
+  @Option(
+      names = {"-t", "--threads"},
+      description = "The size of the thread pool.")
+  private int threads = Runtime.getRuntime().availableProcessors();
+
   @Override
   public void run() {
+    ForkJoinPool executor = new ForkJoinPool(threads);
     try {
       // Read the configuration file
       List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(config.toFile())).getLayers();
-      TileReader tileReader = new PostgisTileReader(database, layers);
-      try (Connection connection = DriverManager.getConnection(database)) {
+      PoolingDataSource datasource = DatabaseUtil.createPoolingDataSource(database);
+      TileReader tileReader = new PostgisTileReader(datasource, layers);
+
+      try (Connection connection = datasource.getConnection()) {
         Geometry geometry = TileUtil.bbox(connection);
-        List<XYZ> coords = TileUtil.overlappingXYZ(geometry, 1, 14);
-        for (XYZ xyz : coords) {
-          Tile tile = tileReader.read(xyz);
-          Path path = directory.toPath()
-              .resolve(Integer.toString(xyz.getZ()))
-              .resolve(Integer.toString(xyz.getX()));
-          Files.createDirectories(path);
-          Path file = path.resolve(Integer.toString(xyz.getY()));
-          Files.write(file, tile.getBytes());
-        }
+        Stream<XYZ> coords = TileUtil.xyzStream(geometry, 1, 14);
+        executor.submit(() -> coords.forEach(xyz -> {
+          try {
+            Tile tile = tileReader.read(xyz);
+            Path path = directory.toPath()
+                .resolve(Integer.toString(xyz.getZ()))
+                .resolve(Integer.toString(xyz.getX()));
+            Files.createDirectories(path);
+            Path file = path.resolve(Integer.toString(xyz.getY()));
+            Files.write(file, tile.getBytes());
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }));
       }
     } catch (Exception e) {
       e.printStackTrace();
+    } finally {
+      executor.shutdown();
+      try {
+        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
     }
   }
 

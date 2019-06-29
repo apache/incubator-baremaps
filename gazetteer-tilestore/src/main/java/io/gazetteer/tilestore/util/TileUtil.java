@@ -5,8 +5,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
@@ -27,20 +27,15 @@ public class TileUtil {
     }
   }
 
-  public static List<XYZ> overlappingXYZ(Geometry geometry, int minZ, int maxZ) {
-    ArrayList<XYZ> coordinates = new ArrayList<>();
+  public static Stream<XYZ> xyzStream(Geometry geometry, int minZ, int maxZ) {
     Envelope envelope = geometry.getEnvelopeInternal();
-    for (int z = minZ; z <= maxZ; z++) {
+    return IntStream.rangeClosed(minZ, maxZ).mapToObj(z -> z).flatMap(z -> {
       XYZ min = xyz(envelope.getMinX(), envelope.getMaxY(), z);
       XYZ max = xyz(envelope.getMaxX(), envelope.getMinY(), z);
-      for (int x = min.getX(); x <= max.getX(); x++) {
-        for (int y = min.getY(); y <= max.getY(); y++) {
-          XYZ xyz = new XYZ(x, y, z);
-          coordinates.add(xyz);
-        }
-      }
-    }
-    return coordinates;
+      return IntStream.rangeClosed(min.getX(), max.getX()).mapToObj(i -> i)
+          .flatMap(x -> IntStream.rangeClosed(min.getY(), max.getY()).mapToObj(i -> i).map(y -> new XYZ(x, y, z)));
+    });
+
   }
 
   public static XYZ xyz(double lon, double lat, int z) {
