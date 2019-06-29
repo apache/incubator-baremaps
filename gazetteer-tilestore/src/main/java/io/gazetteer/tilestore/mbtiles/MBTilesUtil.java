@@ -1,7 +1,7 @@
 package io.gazetteer.tilestore.mbtiles;
 
-import io.gazetteer.tilestore.Tile;
-import io.gazetteer.tilestore.XYZ;
+import io.gazetteer.tilestore.model.Tile;
+import io.gazetteer.tilestore.model.XYZ;
 
 import java.sql.*;
 import java.util.HashMap;

@@ -1,6 +1,6 @@
 package io.gazetteer.tilestore.util;
 
-import io.gazetteer.tilestore.XYZ;
+import io.gazetteer.tilestore.model.XYZ;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

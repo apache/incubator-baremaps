@@ -1,6 +1,6 @@
 package io.gazetteer.tilestore.postgis;
 
-import io.gazetteer.tilestore.XYZ;
+import io.gazetteer.tilestore.model.XYZ;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

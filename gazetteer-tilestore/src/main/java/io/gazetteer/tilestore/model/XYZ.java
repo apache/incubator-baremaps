@@ -1,4 +1,4 @@
-package io.gazetteer.tilestore;
+package io.gazetteer.tilestore.model;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;

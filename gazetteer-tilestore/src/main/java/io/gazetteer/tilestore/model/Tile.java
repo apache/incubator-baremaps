@@ -1,4 +1,4 @@
-package io.gazetteer.tilestore;
+package io.gazetteer.tilestore.model;
 
 import java.util.Arrays;
 

@@ -3,10 +3,11 @@ package io.gazetteer.tileserver;
 import static io.vertx.core.http.HttpHeaders.CONTENT_ENCODING;
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
-import io.gazetteer.tilestore.Tile;
-import io.gazetteer.tilestore.TileException;
-import io.gazetteer.tilestore.TileReader;
-import io.gazetteer.tilestore.XYZ;
+import io.gazetteer.postgis.util.DatabaseUtil;
+import io.gazetteer.tilestore.model.Tile;
+import io.gazetteer.tilestore.model.TileException;
+import io.gazetteer.tilestore.model.TileReader;
+import io.gazetteer.tilestore.model.XYZ;
 import io.gazetteer.tilestore.postgis.PostgisConfig;
 import io.gazetteer.tilestore.postgis.PostgisLayer;
 import io.gazetteer.tilestore.postgis.PostgisTileReader;
@@ -19,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.util.List;
+import org.apache.commons.dbcp2.PoolingDataSource;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -45,7 +47,8 @@ public class TileServer implements Runnable {
 
       // Read the configuration file
       List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(config.toFile())).getLayers();
-      TileReader tileReader = new PostgisTileReader(database, layers);
+      PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
+      TileReader tileReader = new PostgisTileReader(datasource, layers);
 
       // Create the Vertx router
       Router router = Router.router(vertx);

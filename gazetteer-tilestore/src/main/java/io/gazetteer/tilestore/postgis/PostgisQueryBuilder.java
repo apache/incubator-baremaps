@@ -2,7 +2,7 @@ package io.gazetteer.tilestore.postgis;
 
 import com.google.common.base.Joiner;
 import io.gazetteer.osm.util.GeometryUtil;
-import io.gazetteer.tilestore.XYZ;
+import io.gazetteer.tilestore.model.XYZ;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 

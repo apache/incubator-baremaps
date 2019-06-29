@@ -1,6 +1,9 @@
 package io.gazetteer.tilestore;
 
 import io.gazetteer.postgis.util.DatabaseUtil;
+import io.gazetteer.tilestore.model.Tile;
+import io.gazetteer.tilestore.model.TileReader;
+import io.gazetteer.tilestore.model.XYZ;
 import io.gazetteer.tilestore.postgis.PostgisConfig;
 import io.gazetteer.tilestore.postgis.PostgisLayer;
 import io.gazetteer.tilestore.postgis.PostgisTileReader;

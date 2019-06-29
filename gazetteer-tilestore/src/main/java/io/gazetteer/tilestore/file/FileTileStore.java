@@ -1,10 +1,10 @@
 package io.gazetteer.tilestore.file;
 
-import io.gazetteer.tilestore.Tile;
-import io.gazetteer.tilestore.TileException;
-import io.gazetteer.tilestore.TileReader;
-import io.gazetteer.tilestore.TileWriter;
-import io.gazetteer.tilestore.XYZ;
+import io.gazetteer.tilestore.model.Tile;
+import io.gazetteer.tilestore.model.TileException;
+import io.gazetteer.tilestore.model.TileReader;
+import io.gazetteer.tilestore.model.TileWriter;
+import io.gazetteer.tilestore.model.XYZ;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

@@ -1,4 +1,4 @@
-package io.gazetteer.tilestore;
+package io.gazetteer.tilestore.model;
 
 public class TileException extends Exception {
 
