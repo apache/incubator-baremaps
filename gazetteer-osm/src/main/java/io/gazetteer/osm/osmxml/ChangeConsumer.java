@@ -6,6 +6,7 @@ import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.postgis.NodeTable;
+import io.gazetteer.osm.postgis.RelationTable;
 import io.gazetteer.osm.postgis.WayTable;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,20 +42,26 @@ public class ChangeConsumer implements Consumer<Change> {
         Way way = (Way) entity;
         switch (change.getType()) {
           case create:
+            WayTable.insert(connection, way);
             break;
           case modify:
+            WayTable.update(connection, way);
             break;
           case delete:
+            WayTable.delete(connection, way.getInfo().getId());
             break;
         }
       } else if (entity instanceof Relation) {
         Relation relation = (Relation) entity;
         switch (change.getType()) {
           case create:
-            break;
-          case delete:
+            RelationTable.insert(connection, relation);
             break;
           case modify:
+            RelationTable.update(connection, relation);
+            break;
+          case delete:
+            RelationTable.delete(connection, relation.getInfo().getId());
             break;
         }
       }

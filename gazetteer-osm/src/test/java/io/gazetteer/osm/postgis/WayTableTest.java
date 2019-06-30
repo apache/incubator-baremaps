@@ -24,50 +24,10 @@ public class WayTableTest {
 
   public Connection connection;
 
-  public WayTable table;
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
     connection = DriverManager.getConnection(OSMTestUtil.DATABASE_URL);
-    table = new WayTable(new DataStore<Long, Node>() {
-
-      @Override
-      public void add(Node object) {
-
-      }
-
-      @Override
-      public void addAll(Collection<Node> entities) {
-
-      }
-
-      @Override
-      public Node get(Long id) {
-        return new Node(new Info(id, 1, 1, 1, 1, new HashMap<>()), 1, 1);
-      }
-
-      @Override
-      public List<Node> getAll(List<Long> ids) {
-        List<Node> nodes = new ArrayList<>();
-        for (Long id : ids) nodes.add(get(id));
-        return nodes;
-      }
-
-      @Override
-      public void delete(Long id) {
-
-      }
-
-      @Override
-      public void deleteAll(List<Long> ids) {
-
-      }
-
-      @Override
-      public void close() {
-
-      }
-    });
     DatabaseUtil.executeScript(connection, "osm_create_extensions.sql");
     DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
   }
@@ -80,8 +40,8 @@ public class WayTableTest {
       Map<String, String> map = new HashMap<>();
       map.put("key", "val");
       Way insert = new Way(new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map), Arrays.asList(1l, 2l, 3l));
-      table.insert(connection, insert);
-      assertEquals(insert, table.select(connection, insert.getInfo().getId()));
+      WayTable.insert(connection, insert);
+      assertEquals(insert, WayTable.select(connection, insert.getInfo().getId()));
     }
   }
 
@@ -93,10 +53,10 @@ public class WayTableTest {
       Map<String, String> map = new HashMap<>();
       map.put("key", "val");
       Way insert = new Way(new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map), Arrays.asList(1l, 2l, 3l));
-      table.insert(connection, insert);
+      WayTable.insert(connection, insert);
       Way update = new Way(new Info(insert.getInfo().getId(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map), Arrays.asList(1l, 2l, 3l));
-      table.update(connection, update);
-      assertEquals(update, table.select(connection, insert.getInfo().getId()));
+      WayTable.update(connection, update);
+      assertEquals(update, WayTable.select(connection, insert.getInfo().getId()));
     }
   }
 
@@ -108,9 +68,9 @@ public class WayTableTest {
       Map<String, String> map = new HashMap<>();
       map.put("key", "val");
       Way insert = new Way(new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map), Arrays.asList(1l, 2l, 3l));
-      table.insert(connection, insert);
-      table.delete(connection, insert.getInfo().getId());
-      assertThrows(IllegalArgumentException.class, () -> table.select(connection, insert.getInfo().getId()));
+      WayTable.insert(connection, insert);
+      WayTable.delete(connection, insert.getInfo().getId());
+      assertThrows(IllegalArgumentException.class, () -> WayTable.select(connection, insert.getInfo().getId()));
     }
   }
 }

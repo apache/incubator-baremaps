@@ -1,11 +1,6 @@
 package io.gazetteer.osm.postgis;
 
-import static io.gazetteer.osm.util.GeometryUtil.asGeometryWithWrappedException;
-import static io.gazetteer.osm.util.GeometryUtil.asWKB;
-
-import io.gazetteer.osm.model.DataStore;
 import io.gazetteer.osm.model.Info;
-import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Way;
 import io.gazetteer.postgis.util.CopyWriter;
 import java.sql.Array;
@@ -35,16 +30,10 @@ public class WayTable {
   private static final String DELETE =
       "DELETE FROM osm_ways WHERE id = ?";
 
-  private static final String COPY_WAYS =
+  private static final String COPY =
       "COPY osm_ways (id, version, uid, timestamp, changeset, tags, nodes) FROM STDIN BINARY";
 
-  private final DataStore<Long, Node> nodeStore;
-
-  public WayTable(DataStore<Long, Node> nodeStore) {
-    this.nodeStore = nodeStore;
-  }
-
-  public void insert(Connection connection, Way way) throws SQLException {
+  public static void insert(Connection connection, Way way) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(INSERT)) {
       statement.setLong(1, way.getInfo().getId());
       statement.setInt(2, way.getInfo().getVersion());
@@ -57,7 +46,7 @@ public class WayTable {
     }
   }
 
-  public void update(Connection connection, Way way) throws SQLException {
+  public static void update(Connection connection, Way way) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(UPDATE)) {
       statement.setInt(1, way.getInfo().getVersion());
       statement.setInt(2, way.getInfo().getUserId());
@@ -70,7 +59,7 @@ public class WayTable {
     }
   }
 
-  public Way select(Connection connection, Long id) throws SQLException {
+  public static Way select(Connection connection, Long id) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
       ResultSet result = statement.executeQuery();
@@ -80,12 +69,10 @@ public class WayTable {
         long timestamp = result.getTimestamp(3).getTime();
         long changeset = result.getLong(4);
         Map<String, String> tags = (Map<String, String>) result.getObject(5);
+        List<Long> nodes = new ArrayList<>();
         Array array = result.getArray(6);
-        List<Long> nodes = null;
         if (array != null) {
           nodes = Arrays.asList((Long[]) array.getArray());
-        } else {
-          nodes = new ArrayList<>();
         }
         return new Way(new Info(id, version, timestamp, changeset, uid, tags), nodes);
       } else {
@@ -94,7 +81,7 @@ public class WayTable {
     }
   }
 
-  public void delete(Connection connection, Long id) throws SQLException {
+  public static void delete(Connection connection, Long id) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(DELETE)) {
       statement.setLong(1, id);
       statement.execute();
@@ -102,7 +89,7 @@ public class WayTable {
   }
 
   public static void copy(PGConnection connection, List<Way> ways) throws Exception {
-    try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(connection, COPY_WAYS))) {
+    try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(connection, COPY))) {
       writer.writeHeader();
       for (Way way : ways) {
         writer.startRow(7);

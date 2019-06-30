@@ -31,7 +31,7 @@ public class NodeTable {
   private static final String DELETE =
       "DELETE FROM osm_nodes WHERE id = ?";
 
-  private static final String COPY_NODES = "COPY osm_nodes (id, version, uid, timestamp, changeset, tags, geom) FROM STDIN BINARY";
+  private static final String COPY = "COPY osm_nodes (id, version, uid, timestamp, changeset, tags, geom) FROM STDIN BINARY";
 
   public static void insert(Connection connection, Node node) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(INSERT)) {
@@ -85,7 +85,7 @@ public class NodeTable {
   }
 
   public static void copy(PGConnection connection, List<Node> nodes) throws Exception {
-    try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(connection, COPY_NODES))) {
+    try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(connection, COPY))) {
       writer.writeHeader();
       for (Node node : nodes) {
         writer.startRow(7);
