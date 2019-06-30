@@ -2,7 +2,9 @@ package io.gazetteer.osm;
 
 import static picocli.CommandLine.Option;
 
+import io.gazetteer.osm.database.HeaderTable;
 import io.gazetteer.osm.model.Change;
+import io.gazetteer.osm.model.Header;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.DataBlockConsumer;
 import io.gazetteer.osm.osmpbf.PBFUtil;
@@ -47,16 +49,23 @@ public class Importer implements Runnable {
     try {
       StopWatch stopWatch = new StopWatch();
 
-      System.out.println("Parsing OSM headers.");
-      Osmformat.HeaderBlock header = PBFUtil.fileBlocks(new FileInputStream(file)).findFirst().map(PBFUtil::toHeaderBlock).get();
-      System.out.println(header.getOsmosisReplicationBaseUrl());
-      System.out.println(header.getOsmosisReplicationSequenceNumber());
-      System.out.println(header.getOsmosisReplicationTimestamp());
-      System.out.println(String.format("-> %dms", stopWatch.lap()));
-
       System.out.println("Creating OSM database.");
       try (Connection connection = DriverManager.getConnection(database)) {
         DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
+        System.out.println(String.format("-> %dms", stopWatch.lap()));
+      }
+
+      System.out.println("Parsing OSM headers.");
+      try (Connection connection = DriverManager.getConnection(database)) {
+        Osmformat.HeaderBlock headerBlock = PBFUtil.fileBlocks(new FileInputStream(file)).findFirst().map(PBFUtil::toHeaderBlock).get();
+        long replicationTimestamp = headerBlock.getOsmosisReplicationTimestamp();
+        long replicationSequenceNumber = headerBlock.getOsmosisReplicationSequenceNumber();
+        String replicationUrl = headerBlock.getOsmosisReplicationBaseUrl();
+        String source = headerBlock.getSource();
+        String writingProgram = headerBlock.getWritingprogram();
+        String bbox = ""; //headerBlock.getBbox();
+        Header header = new Header(replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram, bbox);
+        HeaderTable.insert(connection, header);
         System.out.println(String.format("-> %dms", stopWatch.lap()));
       }
 

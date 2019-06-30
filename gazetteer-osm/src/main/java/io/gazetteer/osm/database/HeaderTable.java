@@ -11,10 +11,10 @@ import java.util.List;
 public class HeaderTable {
 
   private static final String SELECT =
-      "SELECT replication_timestamp, replication_sequence_number, replication_url, bbox FROM osm_header ORDER BY replication_timestamp DESC";
+      "SELECT replication_timestamp, replication_sequence_number, replication_url, source, writing_program, bbox FROM osm_header ORDER BY replication_timestamp DESC";
 
   private static final String INSERT =
-      "INSERT INTO osm_header (replication_timestamp, replication_sequence_number, replication_url, bbox) VALUES (?, ?, ?, ?)";
+      "INSERT INTO osm_header (replication_timestamp, replication_sequence_number, replication_url, source, writing_program, bbox) VALUES (?, ?, ?, ?, ?, ?)";
 
 
   public static List<Header> select(Connection connection) throws SQLException {
@@ -25,8 +25,10 @@ public class HeaderTable {
         long replicationTimestamp = result.getLong(1);
         long replicationSequenceNumber = result.getLong(2);
         String replicationUrl = result.getString(3);
-        String bbox = result.getString(4);
-        headers.add(new Header(replicationTimestamp, replicationSequenceNumber, replicationUrl, bbox));
+        String source = result.getString(4);
+        String writingProgram = result.getString(5);
+        String bbox = result.getString(6);
+        headers.add(new Header(replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram, bbox));
       }
       return headers;
     }
@@ -37,7 +39,9 @@ public class HeaderTable {
       statement.setLong(1, header.getReplicationTimestamp());
       statement.setLong(2, header.getReplicationSequenceNumber());
       statement.setString(3, header.getReplicationUrl());
-      statement.setString(4, header.getBbox());
+      statement.setString(4, header.getSource());
+      statement.setString(5, header.getWritingProgram());
+      statement.setString(6, header.getBbox());
       statement.execute();
     }
   }

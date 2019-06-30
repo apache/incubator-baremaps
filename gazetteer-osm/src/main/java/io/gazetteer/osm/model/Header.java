@@ -5,12 +5,17 @@ public class Header {
   private final long replicationTimestamp;
   private final long replicationSequenceNumber;
   private final String replicationUrl;
+  private final String source;
+  private final String writingProgram;
   private final String bbox;
 
-  public Header(long replicationTimestamp, long replicationSequenceNumber, String replicationUrl, String bbox) {
+  public Header(long replicationTimestamp, long replicationSequenceNumber, String replicationUrl, String source, String writingProgram,
+      String bbox) {
     this.replicationTimestamp = replicationTimestamp;
     this.replicationSequenceNumber = replicationSequenceNumber;
     this.replicationUrl = replicationUrl;
+    this.source = source;
+    this.writingProgram = writingProgram;
     this.bbox = bbox;
   }
 
@@ -24,6 +29,14 @@ public class Header {
 
   public String getReplicationUrl() {
     return replicationUrl;
+  }
+
+  public String getSource() {
+    return source;
+  }
+
+  public String getWritingProgram() {
+    return writingProgram;
   }
 
   public String getBbox() {
