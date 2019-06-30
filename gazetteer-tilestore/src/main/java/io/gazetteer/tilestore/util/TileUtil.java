@@ -27,17 +27,17 @@ public class TileUtil {
     }
   }
 
-  public static Stream<XYZ> stream(Geometry geometry, int minZ, int maxZ) {
+  public static Stream<XYZ> getOverlappingXYZ(Geometry geometry, int minZ, int maxZ) {
     Envelope envelope = geometry.getEnvelopeInternal();
     return IntStream.rangeClosed(minZ, maxZ).mapToObj(z -> z).flatMap(z -> {
-      XYZ min = xyz(envelope.getMinX(), envelope.getMaxY(), z);
-      XYZ max = xyz(envelope.getMaxX(), envelope.getMinY(), z);
+      XYZ min = getOverlappingXYZ(envelope.getMinX(), envelope.getMaxY(), z);
+      XYZ max = getOverlappingXYZ(envelope.getMaxX(), envelope.getMinY(), z);
       return IntStream.rangeClosed(min.getX(), max.getX()).mapToObj(i -> i)
           .flatMap(x -> IntStream.rangeClosed(min.getY(), max.getY()).mapToObj(i -> i).map(y -> new XYZ(x, y, z)));
     });
   }
 
-  public static XYZ xyz(double lon, double lat, int z) {
+  public static XYZ getOverlappingXYZ(double lon, double lat, int z) {
     int x = (int) ((lon + 180.0) / 360.0 * (1 << z));
     int y = (int) ((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat))) / Math.PI) / 2.0 * (1 << z));
     return new XYZ(x, y, z);

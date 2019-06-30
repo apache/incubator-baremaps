@@ -52,7 +52,7 @@ public class Generator implements Runnable {
 
       try (Connection connection = datasource.getConnection()) {
         Geometry geometry = TileUtil.bbox(connection);
-        Stream<XYZ> coords = TileUtil.stream(geometry, 1, 14);
+        Stream<XYZ> coords = TileUtil.getOverlappingXYZ(geometry, 1, 14);
         executor.submit(() -> coords.forEach(xyz -> {
           try {
             Tile tile = tileReader.read(xyz);

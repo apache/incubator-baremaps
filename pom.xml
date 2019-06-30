@@ -183,6 +183,7 @@
     <module>gazetteer-tilestore</module>
     <module>gazetteer-benchmarks</module>
     <module>gazetteer-postgis</module>
+    <module>gazetteer-geoip</module>
   </modules>
 
   <dependencyManagement>

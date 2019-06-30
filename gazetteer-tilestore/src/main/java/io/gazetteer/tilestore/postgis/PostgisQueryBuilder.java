@@ -46,7 +46,7 @@ public class PostgisQueryBuilder {
   }
 
   protected static String interpolateVariables(XYZ xyz, String sql) {
-    // tile xyz
+    // tile getOverlappingXYZ
     sql = sql.replace("{x}", Integer.toString(xyz.getX()));
     sql = sql.replace("{y}", Integer.toString(xyz.getY()));
     sql = sql.replace("{z}", Integer.toString(xyz.getZ()));
