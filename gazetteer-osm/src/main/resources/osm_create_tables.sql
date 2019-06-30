@@ -1,12 +1,9 @@
-DROP TABLE IF EXISTS osm_info;
-CREATE TABLE IF NOT EXISTS osm_info (
-    version integer NOT NULL
-);
-
-DROP TABLE IF EXISTS osm_users;
-CREATE TABLE IF NOT EXISTS osm_users (
-    id int NOT NULL,
-    name text NOT NULL
+DROP TABLE IF EXISTS osm_header;
+CREATE TABLE IF NOT EXISTS osm_header (
+    replication_timestamp bigint NOT NULL,
+    replication_sequence_number bigint NOT NULL,
+    replication_url text NOT NULL,
+    bbox text
 );
 
 DROP TABLE IF EXISTS osm_nodes;

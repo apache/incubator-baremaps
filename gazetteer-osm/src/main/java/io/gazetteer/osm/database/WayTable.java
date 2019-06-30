@@ -1,4 +1,4 @@
-package io.gazetteer.osm.postgis;
+package io.gazetteer.osm.database;
 
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Way;

@@ -2,9 +2,9 @@ package io.gazetteer.osm.osmpbf;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import io.gazetteer.osm.postgis.NodeTable;
-import io.gazetteer.osm.postgis.RelationTable;
-import io.gazetteer.osm.postgis.WayTable;
+import io.gazetteer.osm.database.NodeTable;
+import io.gazetteer.osm.database.RelationTable;
+import io.gazetteer.osm.database.WayTable;
 import java.sql.Connection;
 import java.util.function.Consumer;
 import org.apache.commons.dbcp2.PoolingDataSource;

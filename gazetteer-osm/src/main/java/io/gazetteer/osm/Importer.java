@@ -2,9 +2,12 @@ package io.gazetteer.osm;
 
 import static picocli.CommandLine.Option;
 
+import io.gazetteer.osm.model.Change;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.DataBlockConsumer;
 import io.gazetteer.osm.osmpbf.PBFUtil;
+import io.gazetteer.osm.osmxml.ChangeConsumer;
+import io.gazetteer.osm.osmxml.ChangeUtil;
 import io.gazetteer.osm.util.StopWatch;
 import io.gazetteer.postgis.util.DatabaseUtil;
 import java.io.File;
@@ -17,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import picocli.CommandLine;
@@ -75,17 +79,15 @@ public class Importer implements Runnable {
         System.out.println(String.format("-> %dms", stopWatch.lap()));
       }
 
-      /*
       try {
         System.out.println("Updating OSM database");
         ChangeConsumer changeConsumer = new ChangeConsumer(pool);
-        Stream<Change> changeStream = ChangeUtil.stream(new GZIPInputStream(new FileInputStream("/home/bchapuis/Projects/github.com/gazetteerio/gazetteer/gazetteer-benchmarks/src/main/resources/liechtenstein.osc.gz")));
+        Stream<Change> changeStream = ChangeUtil.stream(new GZIPInputStream(new FileInputStream("/home/bchapuis/Projects/github.com/gazetteerio/gazetteer/data/liechtenstein.osc.gz")));
         executor.submit(() -> changeStream.forEach(changeConsumer)).get();
         System.out.println(String.format("-> %dms", stopWatch.lap()));
       } catch (Exception e) {
         e.printStackTrace();
       }
-       */
 
       System.out.println("Done!");
 

@@ -1,19 +1,16 @@
-package io.gazetteer.osm.postgis;
+package io.gazetteer.osm.database;
 
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Member.Type;
 import io.gazetteer.osm.model.Relation;
-import io.gazetteer.osm.model.Way;
 import io.gazetteer.postgis.util.CopyWriter;
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

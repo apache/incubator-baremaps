@@ -1,4 +1,4 @@
-package io.gazetteer.osm.postgis;
+package io.gazetteer.osm.database;
 
 import static io.gazetteer.osm.util.GeometryUtil.asGeometry;
 import static io.gazetteer.osm.util.GeometryUtil.asWKB;
