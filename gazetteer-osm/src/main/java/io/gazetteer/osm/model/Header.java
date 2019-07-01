@@ -1,5 +1,7 @@
 package io.gazetteer.osm.model;
 
+import org.locationtech.jts.geom.Geometry;
+
 public class Header {
 
   private final long replicationTimestamp;
@@ -7,10 +9,9 @@ public class Header {
   private final String replicationUrl;
   private final String source;
   private final String writingProgram;
-  private final String bbox;
+  private final Geometry bbox;
 
-  public Header(long replicationTimestamp, long replicationSequenceNumber, String replicationUrl, String source, String writingProgram,
-      String bbox) {
+  public Header(long replicationTimestamp, long replicationSequenceNumber, String replicationUrl, String source, String writingProgram, Geometry bbox) {
     this.replicationTimestamp = replicationTimestamp;
     this.replicationSequenceNumber = replicationSequenceNumber;
     this.replicationUrl = replicationUrl;
@@ -39,7 +40,7 @@ public class Header {
     return writingProgram;
   }
 
-  public String getBbox() {
+  public Geometry getBbox() {
     return bbox;
   }
 }

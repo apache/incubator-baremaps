@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS osm_header (
     replication_url text NOT NULL,
     source text,
     writing_program text,
-    bbox text
+    bbox geometry
 );
 
 DROP TABLE IF EXISTS osm_nodes;

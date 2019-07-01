@@ -1,12 +1,15 @@
 package io.gazetteer.osm.database;
 
 import io.gazetteer.osm.model.Header;
+import io.gazetteer.osm.util.GeometryUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKBWriter;
 
 public class HeaderTable {
 
@@ -27,7 +30,7 @@ public class HeaderTable {
         String replicationUrl = result.getString(3);
         String source = result.getString(4);
         String writingProgram = result.getString(5);
-        String bbox = result.getString(6);
+        Geometry bbox = GeometryUtil.asGeometry(result.getBytes(6));
         headers.add(new Header(replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram, bbox));
       }
       return headers;
@@ -41,7 +44,7 @@ public class HeaderTable {
       statement.setString(3, header.getReplicationUrl());
       statement.setString(4, header.getSource());
       statement.setString(5, header.getWritingProgram());
-      statement.setString(6, header.getBbox());
+      statement.setBytes(6, GeometryUtil.asWKB(header.getBbox()));
       statement.execute();
     }
   }
