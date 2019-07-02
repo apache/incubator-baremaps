@@ -20,8 +20,7 @@ public class PostgisSchemaTest {
     try (Connection connection = DriverManager.getConnection(OSMTestUtil.DATABASE_URL)) {
       DatabaseUtil.executeScript(connection, "osm_create_extensions.sql");
       DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
-      assertTrue(tableExists("osm_info"));
-      assertTrue(tableExists("osm_users"));
+      assertTrue(tableExists("osm_headers"));
       assertTrue(tableExists("osm_nodes"));
       assertTrue(tableExists("osm_ways"));
       assertTrue(tableExists("osm_relations"));

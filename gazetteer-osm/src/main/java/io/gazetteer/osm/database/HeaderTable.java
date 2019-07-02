@@ -9,15 +9,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.WKBWriter;
 
 public class HeaderTable {
 
   private static final String SELECT =
-      "SELECT replication_timestamp, replication_sequence_number, replication_url, source, writing_program, bbox FROM osm_header ORDER BY replication_timestamp DESC";
+      "SELECT replication_timestamp, replication_sequence_number, replication_url, source, writing_program, bbox FROM osm_headers ORDER BY replication_timestamp DESC";
 
   private static final String INSERT =
-      "INSERT INTO osm_header (replication_timestamp, replication_sequence_number, replication_url, source, writing_program, bbox) VALUES (?, ?, ?, ?, ?, ?)";
+      "INSERT INTO osm_headers (replication_timestamp, replication_sequence_number, replication_url, source, writing_program, bbox) VALUES (?, ?, ?, ?, ?, ?)";
 
 
   public static List<Header> select(Connection connection) throws SQLException {

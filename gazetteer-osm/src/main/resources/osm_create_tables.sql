@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS osm_header;
-CREATE TABLE IF NOT EXISTS osm_header (
+DROP TABLE IF EXISTS osm_headers;
+CREATE TABLE IF NOT EXISTS osm_headers (
     replication_timestamp bigint NOT NULL,
     replication_sequence_number bigint NOT NULL,
     replication_url text NOT NULL,
