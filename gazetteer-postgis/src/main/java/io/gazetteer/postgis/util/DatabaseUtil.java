@@ -42,8 +42,7 @@ public class DatabaseUtil {
     ObjectPool<PoolableConnection> connectionPool =
         new GenericObjectPool<>(poolableConnectionFactory);
     poolableConnectionFactory.setPool(connectionPool);
-    PoolingDataSource<PoolableConnection> dataSource = new PoolingDataSource<>(connectionPool);
-    return dataSource;
+    return new PoolingDataSource<>(connectionPool);
   }
 
   public static void executeScript(Connection connection, String script) throws IOException, SQLException {

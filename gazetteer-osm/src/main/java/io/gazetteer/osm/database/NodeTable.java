@@ -1,6 +1,7 @@
 package io.gazetteer.osm.database;
 
 import static io.gazetteer.osm.util.GeometryUtil.asGeometry;
+import static io.gazetteer.osm.util.GeometryUtil.point;
 import static io.gazetteer.osm.util.GeometryUtil.asWKB;
 
 import io.gazetteer.osm.model.Info;
@@ -41,7 +42,7 @@ public class NodeTable {
       statement.setTimestamp(4, new Timestamp(node.getInfo().getTimestamp()));
       statement.setLong(5, node.getInfo().getChangeset());
       statement.setObject(6, node.getInfo().getTags());
-      statement.setBytes(7, asWKB(asGeometry(node)));
+      statement.setBytes(7, asWKB(point(node.getLon(), node.getLat())));
       statement.execute();
     }
   }
@@ -53,7 +54,7 @@ public class NodeTable {
       statement.setTimestamp(3, new Timestamp(node.getInfo().getTimestamp()));
       statement.setLong(4, node.getInfo().getChangeset());
       statement.setObject(5, node.getInfo().getTags());
-      statement.setBytes(6, asWKB(asGeometry(node)));
+      statement.setBytes(6, asWKB(point(node.getLon(), node.getLat())));
       statement.setLong(7, node.getInfo().getId());
       statement.execute();
     }
@@ -95,9 +96,11 @@ public class NodeTable {
         writer.writeLong(node.getInfo().getTimestamp());
         writer.writeLong(node.getInfo().getChangeset());
         writer.writeHstore(node.getInfo().getTags());
-        writer.writeGeometry(asGeometry(node));
+        writer.writeGeometry(point(node.getLon(), node.getLat()));
       }
     }
   }
+
+
 
 }

@@ -28,8 +28,8 @@ public class GeometryUtil {
     return new Coordinate(coordinate.x, coordinate.y);
   }
 
-  public static Geometry asGeometry(Node node) {
-    Coordinate coordinate = coordinate(node.getLon(), node.getLat());
+  public static Geometry point(double lon, double lat) {
+    Coordinate coordinate = coordinate(lon, lat);
     return new GeometryFactory(new PrecisionModel(), 3857).createPoint(coordinate);
   }
 
