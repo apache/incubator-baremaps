@@ -22,9 +22,9 @@ public class GeometryUtil {
   private static final CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");
   private static final CoordinateTransformFactory ctFactory = new CoordinateTransformFactory();
 
-  public static Coordinate coordinate(double x, double y) {
+  public static Coordinate coordinate(double lon, double lat) {
     CoordinateTransform ct = ctFactory.createTransform(epsg4326, epsg3857);
-    ProjCoordinate coordinate = ct.transform(new ProjCoordinate(x, y), new ProjCoordinate());
+    ProjCoordinate coordinate = ct.transform(new ProjCoordinate(lon, lat), new ProjCoordinate());
     return new Coordinate(coordinate.x, coordinate.y);
   }
 
