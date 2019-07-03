@@ -45,7 +45,7 @@ public class FileTileStore implements TileReader, TileWriter {
     return directory
         .resolve(Integer.toString(xyz.getZ()))
         .resolve(Integer.toString(xyz.getX()))
-        .resolve(Integer.toString(xyz.getY()));
+        .resolve(xyz.getY() + ".pbf");
   }
 
 }
