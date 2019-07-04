@@ -3,6 +3,7 @@ package io.gazetteer.tilestore.s3;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.google.common.io.ByteStreams;
 import io.gazetteer.tilestore.model.Tile;
 import io.gazetteer.tilestore.model.TileException;
 import io.gazetteer.tilestore.model.TileReader;
@@ -25,7 +26,8 @@ public class S3TileStore implements TileReader, TileWriter {
   @Override
   public Tile read(XYZ xyz) throws TileException {
     try {
-      return new Tile(s3.getObject(bucket, path(xyz)).getObjectContent().readAllBytes());
+      byte[] bytes = ByteStreams.toByteArray(s3.getObject(bucket, path(xyz)).getObjectContent());
+      return new Tile(bytes);
     } catch (IOException e) {
       throw new TileException(e);
     }
