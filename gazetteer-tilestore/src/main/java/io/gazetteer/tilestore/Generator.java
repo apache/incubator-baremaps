@@ -1,8 +1,10 @@
 package io.gazetteer.tilestore;
 
 import io.gazetteer.postgis.util.DatabaseUtil;
+import io.gazetteer.tilestore.file.FileTileStore;
 import io.gazetteer.tilestore.model.Tile;
 import io.gazetteer.tilestore.model.TileReader;
+import io.gazetteer.tilestore.model.TileWriter;
 import io.gazetteer.tilestore.model.XYZ;
 import io.gazetteer.tilestore.postgis.PostgisConfig;
 import io.gazetteer.tilestore.postgis.PostgisLayer;
@@ -49,6 +51,7 @@ public class Generator implements Runnable {
       List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(config.toFile())).getLayers();
       PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
       TileReader tileReader = new PostgisTileReader(datasource, layers);
+      TileWriter tileWriter = new FileTileStore(directory.toPath());
 
       try (Connection connection = datasource.getConnection()) {
         Geometry geometry = TileUtil.bbox(connection);
@@ -56,12 +59,7 @@ public class Generator implements Runnable {
         executor.submit(() -> coords.forEach(xyz -> {
           try {
             Tile tile = tileReader.read(xyz);
-            Path path = directory.toPath()
-                .resolve(Integer.toString(xyz.getZ()))
-                .resolve(Integer.toString(xyz.getX()));
-            Files.createDirectories(path);
-            Path file = path.resolve(Integer.toString(xyz.getY()));
-            Files.write(file, tile.getBytes());
+            tileWriter.write(xyz, tile);
           } catch (Exception e) {
             e.printStackTrace();
           }

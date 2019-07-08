@@ -33,9 +33,13 @@ public class FileTileStore implements TileReader, TileWriter {
 
   @Override
   public void write(XYZ xyz, Tile tile) throws TileException {
-    Path path = path(xyz);
+    Path file = path(xyz);
+    Path directory = file.getParent();
     try {
-      Files.write(path, tile.getBytes(), StandardOpenOption.CREATE_NEW, StandardOpenOption.TRUNCATE_EXISTING);
+      if (!Files.exists(directory)) {
+        Files.createDirectories(directory);
+      }
+      Files.write(file, tile.getBytes(), StandardOpenOption.CREATE);
     } catch (IOException e) {
       throw new TileException(e);
     }
