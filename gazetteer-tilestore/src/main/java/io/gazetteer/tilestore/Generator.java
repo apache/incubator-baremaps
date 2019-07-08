@@ -9,6 +9,7 @@ import io.gazetteer.tilestore.model.XYZ;
 import io.gazetteer.tilestore.postgis.PostgisConfig;
 import io.gazetteer.tilestore.postgis.PostgisLayer;
 import io.gazetteer.tilestore.postgis.PostgisTileReader;
+import io.gazetteer.tilestore.s3.S3TileStore;
 import io.gazetteer.tilestore.util.TileUtil;
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,11 +52,11 @@ public class Generator implements Runnable {
       List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(config.toFile())).getLayers();
       PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
       TileReader tileReader = new PostgisTileReader(datasource, layers);
-      TileWriter tileWriter = new FileTileStore(directory.toPath());
+      TileWriter tileWriter = new S3TileStore("gazetteer-tilestore");
 
       try (Connection connection = datasource.getConnection()) {
         Geometry geometry = TileUtil.bbox(connection);
-        Stream<XYZ> coords = TileUtil.getOverlappingXYZ(geometry, 1, 14);
+        Stream<XYZ> coords = TileUtil.getOverlappingXYZ(geometry, 1, 10);
         executor.submit(() -> coords.forEach(xyz -> {
           try {
             Tile tile = tileReader.read(xyz);

@@ -34,12 +34,15 @@ public class S3TileStore implements TileReader, TileWriter {
   }
 
   @Override
-  public void write(XYZ xyz, Tile tile) throws TileException {
-    s3.putObject(bucket, path(xyz), new ByteArrayInputStream(tile.getBytes()), new ObjectMetadata());
+  public void write(XYZ xyz, Tile tile) {
+    byte[] bytes = tile.getBytes();
+    ObjectMetadata metadata = new ObjectMetadata();
+    metadata.setContentLength(bytes.length);
+    s3.putObject(bucket, path(xyz), new ByteArrayInputStream(bytes), metadata);
   }
 
   private String path(XYZ xyz) {
-    return "/" + xyz.getZ() +
+    return xyz.getZ() +
         "/" + xyz.getX() +
         "/" + xyz.getY() + ".pbf";
   }
