@@ -1,7 +1,6 @@
 package io.gazetteer.tilestore.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.google.common.io.ByteStreams;
 import io.gazetteer.tilestore.model.Tile;
@@ -14,19 +13,19 @@ import java.io.IOException;
 
 public class S3TileStore implements TileReader, TileWriter {
 
+  private final AmazonS3 client;
+
   private final String bucket;
 
-  private final AmazonS3 s3;
-
-  public S3TileStore(String bucket) {
-    this.s3 = AmazonS3ClientBuilder.standard().defaultClient();
+  public S3TileStore(AmazonS3 client, String bucket) {
+    this.client = client;
     this.bucket = bucket;
   }
 
   @Override
   public Tile read(XYZ xyz) throws TileException {
     try {
-      byte[] bytes = ByteStreams.toByteArray(s3.getObject(bucket, path(xyz)).getObjectContent());
+      byte[] bytes = ByteStreams.toByteArray(client.getObject(bucket, path(xyz)).getObjectContent());
       return new Tile(bytes);
     } catch (IOException e) {
       throw new TileException(e);
@@ -38,7 +37,7 @@ public class S3TileStore implements TileReader, TileWriter {
     byte[] bytes = tile.getBytes();
     ObjectMetadata metadata = new ObjectMetadata();
     metadata.setContentLength(bytes.length);
-    s3.putObject(bucket, path(xyz), new ByteArrayInputStream(bytes), metadata);
+    client.putObject(bucket, path(xyz), new ByteArrayInputStream(bytes), metadata);
   }
 
   private String path(XYZ xyz) {

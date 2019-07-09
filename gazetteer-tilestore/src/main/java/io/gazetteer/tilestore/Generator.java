@@ -1,5 +1,7 @@
 package io.gazetteer.tilestore;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import io.gazetteer.postgis.util.DatabaseUtil;
 import io.gazetteer.tilestore.file.FileTileStore;
 import io.gazetteer.tilestore.model.Tile;
@@ -52,7 +54,8 @@ public class Generator implements Runnable {
       List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(config.toFile())).getLayers();
       PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
       TileReader tileReader = new PostgisTileReader(datasource, layers);
-      TileWriter tileWriter = new S3TileStore("gazetteer-tilestore");
+      AmazonS3 client = AmazonS3ClientBuilder.standard().defaultClient();
+      TileWriter tileWriter = new S3TileStore(client, "gazetteer-tilestore");
 
       try (Connection connection = datasource.getConnection()) {
         Geometry geometry = TileUtil.bbox(connection);
