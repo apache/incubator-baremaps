@@ -17,7 +17,7 @@ CREATE TABLE osm_relations_geom AS (
     FROM osm_relations r JOIN (
         SELECT r.id, st_collect(w.geom ORDER BY ordinality) as geom
         FROM osm_relations r, unnest(r.member_refs) WITH ORDINALITY as way JOIN osm_ways w ON way = w.id
-        WHERE r.tags -> 'type' = 'multipolygon' -- TODO: find a way to remove this limitation
+        -- WHERE r.tags -> 'type' = 'multipolygon' -- TODO: find a way to remove this limitation
         GROUP BY r.id
     ) AS g ON r.id = g.id
 );

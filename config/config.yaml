@@ -36,4 +36,4 @@ layers:
       UNION
       SELECT id, tags::jsonb as properties, geom as geometry
       FROM osm_relations
-      WHERE tags -> 'natural' = 'water'
+      WHERE tags -> 'type' = 'multipolygon' AND tags -> 'natural' = 'water'
