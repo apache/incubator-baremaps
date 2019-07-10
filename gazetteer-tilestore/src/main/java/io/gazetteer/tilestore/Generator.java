@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
@@ -55,11 +56,12 @@ public class Generator implements Runnable {
       PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
       TileReader tileReader = new PostgisTileReader(datasource, layers);
       AmazonS3 client = AmazonS3ClientBuilder.standard().defaultClient();
-      TileWriter tileWriter = new S3TileStore(client, "gazetteer-tilestore");
+      //TileWriter tileWriter = new S3TileStore(client, "gazetteer-tilestore");
+      TileWriter tileWriter = new FileTileStore(Paths.get("/tmp/tiles"));
 
       try (Connection connection = datasource.getConnection()) {
         Geometry geometry = TileUtil.bbox(connection);
-        Stream<XYZ> coords = TileUtil.getOverlappingXYZ(geometry, 1, 10);
+        Stream<XYZ> coords = TileUtil.getOverlappingXYZ(geometry, 1, 14);
         executor.submit(() -> coords.forEach(xyz -> {
           try {
             Tile tile = tileReader.read(xyz);

@@ -1,5 +1,6 @@
 package io.gazetteer.tilestore.util;
 
+import io.gazetteer.osm.util.BatchSpliterator;
 import io.gazetteer.tilestore.model.XYZ;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
@@ -29,12 +31,12 @@ public class TileUtil {
 
   public static Stream<XYZ> getOverlappingXYZ(Geometry geometry, int minZ, int maxZ) {
     Envelope envelope = geometry.getEnvelopeInternal();
-    return IntStream.rangeClosed(minZ, maxZ).mapToObj(z -> z).flatMap(z -> {
+    return StreamSupport.stream(new BatchSpliterator<XYZ>(IntStream.rangeClosed(minZ, maxZ).mapToObj(z -> z).flatMap(z -> {
       XYZ min = getOverlappingXYZ(envelope.getMinX(), envelope.getMaxY(), z);
       XYZ max = getOverlappingXYZ(envelope.getMaxX(), envelope.getMinY(), z);
       return IntStream.rangeClosed(min.getX(), max.getX()).mapToObj(i -> i)
           .flatMap(x -> IntStream.rangeClosed(min.getY(), max.getY()).mapToObj(i -> i).map(y -> new XYZ(x, y, z)));
-    });
+    }).iterator(), 10), true);
   }
 
   public static XYZ getOverlappingXYZ(double lon, double lat, int z) {

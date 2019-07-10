@@ -182,7 +182,7 @@
     <module>gazetteer-tileserver</module>
     <module>gazetteer-tilestore</module>
     <module>gazetteer-benchmarks</module>
-    <module>gazetteer-postgis</module>
+    <module>gazetteer-common</module>
     <module>gazetteer-geoip</module>
   </modules>
 
@@ -190,7 +190,7 @@
     <dependencies>
       <dependency>
         <groupId>io.gazetteer</groupId>
-        <artifactId>gazetteer-postgis</artifactId>
+        <artifactId>gazetteer-common</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>

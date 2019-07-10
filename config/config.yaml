@@ -1,34 +1,7 @@
 layers:
-  - name: "buildings"
-    maxZoom: 18
-    sql: >
-      SELECT id, tags::jsonb as properties, geom as geometry
-      FROM osm_ways
-      WHERE tags -> 'building' = 'yes'
-  - name: "highways"
-    minZoom: 0
-    maxZoom: 18
-    sql: >
-      SELECT id, tags::jsonb as properties, geom as geometry
-      FROM osm_ways
-      WHERE tags ? 'highway'
-  - name: "waterways"
-    minZoom: 0
-    maxZoom: 18
-    sql: >
-      SELECT id, tags::jsonb as properties, geom as geometry
-      FROM osm_ways
-      WHERE tags ? 'waterway'
-  - name: "forests"
-    minZoom: 0
-    maxZoom: 18
-    sql: >
-      SELECT id, tags::jsonb as properties, geom as geometry
-      FROM osm_relations
-      WHERE tags -> 'type' = 'multipolygon' AND tags -> 'landuse' = 'forest'
   - name: "waterareas"
     minZoom: 0
-    maxZoom: 18
+    maxZoom: 14
     sql: >
       SELECT id, tags::jsonb as properties, geom as geometry
       FROM osm_ways
@@ -37,3 +10,33 @@ layers:
       SELECT id, tags::jsonb as properties, geom as geometry
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags -> 'natural' = 'water'
+  - name: "waterways"
+    minZoom: 0
+    maxZoom: 14
+    sql: >
+      SELECT id, tags::jsonb as properties, geom as geometry
+      FROM osm_ways
+      WHERE tags ? 'waterway'
+  - name: "forests"
+    minZoom: 0
+    maxZoom: 14
+    sql: >
+      SELECT id, tags::jsonb as properties, geom as geometry
+      FROM osm_relations
+      WHERE tags -> 'type' = 'multipolygon' AND tags -> 'landuse' = 'forest'
+  - name: "highways"
+    minZoom: 0
+    maxZoom: 14
+    sql: >
+      SELECT id, tags::jsonb as properties, geom as geometry
+      FROM osm_ways
+      WHERE tags ? 'highway'
+  - name: "buildings"
+    maxZoom: 14
+    sql: >
+      SELECT id, tags::jsonb as properties, geom as geometry
+      FROM osm_ways
+      WHERE tags -> 'building' = 'yes'
+
+
+

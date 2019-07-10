@@ -24,8 +24,7 @@ public class GeoipServer {
 
     InetAddress ipAddress = InetAddress.getByName("128.101.101.101");
 
-    // Replace "city" with the appropriate method for your database, e.g.,
-    // "country".
+    // Replace "city" with the appropriate method for your database, e.g., "country".
     CityResponse response = reader.city(ipAddress);
 
     Country country = response.getCountry();
