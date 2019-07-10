@@ -1,6 +1,6 @@
-package io.gazetteer.postgis.util;
+package io.gazetteer.common.postgis.util;
 
-import io.gazetteer.postgis.metadata.ObjectIdentifier;
+import io.gazetteer.common.postgis.metadata.ObjectIdentifier;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

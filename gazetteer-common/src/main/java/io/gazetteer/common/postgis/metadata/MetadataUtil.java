@@ -1,4 +1,4 @@
-package io.gazetteer.postgis.metadata;
+package io.gazetteer.common.postgis.metadata;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

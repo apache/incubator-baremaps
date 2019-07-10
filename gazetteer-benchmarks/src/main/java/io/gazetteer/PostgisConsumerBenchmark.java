@@ -5,7 +5,7 @@ import com.google.common.io.Resources;
 import io.gazetteer.osm.osmpbf.DataBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
 import io.gazetteer.osm.osmpbf.DataBlockConsumer;
-import io.gazetteer.postgis.util.DatabaseUtil;
+import io.gazetteer.common.postgis.util.DatabaseUtil;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;

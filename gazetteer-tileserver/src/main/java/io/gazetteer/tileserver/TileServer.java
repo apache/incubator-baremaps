@@ -3,7 +3,7 @@ package io.gazetteer.tileserver;
 import static io.vertx.core.http.HttpHeaders.CONTENT_ENCODING;
 import static io.vertx.core.http.HttpHeaders.CONTENT_TYPE;
 
-import io.gazetteer.postgis.util.DatabaseUtil;
+import io.gazetteer.common.postgis.util.DatabaseUtil;
 import io.gazetteer.tilestore.model.Tile;
 import io.gazetteer.tilestore.model.TileException;
 import io.gazetteer.tilestore.model.TileReader;

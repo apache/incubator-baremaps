@@ -6,7 +6,7 @@ import static io.gazetteer.osm.util.GeometryUtil.asWKB;
 
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
-import io.gazetteer.postgis.util.CopyWriter;
+import io.gazetteer.common.postgis.util.CopyWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -2,7 +2,7 @@ package io.gazetteer.osm.database;
 
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Way;
-import io.gazetteer.postgis.util.CopyWriter;
+import io.gazetteer.common.postgis.util.CopyWriter;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

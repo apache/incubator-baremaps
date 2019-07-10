@@ -4,7 +4,7 @@ import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Member.Type;
 import io.gazetteer.osm.model.Relation;
-import io.gazetteer.postgis.util.CopyWriter;
+import io.gazetteer.common.postgis.util.CopyWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

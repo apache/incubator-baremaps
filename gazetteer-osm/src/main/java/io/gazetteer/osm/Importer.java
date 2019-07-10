@@ -11,7 +11,7 @@ import io.gazetteer.osm.osmpbf.PBFUtil;
 import io.gazetteer.osm.osmxml.ChangeConsumer;
 import io.gazetteer.osm.osmxml.ChangeUtil;
 import io.gazetteer.osm.util.StopWatch;
-import io.gazetteer.postgis.util.DatabaseUtil;
+import io.gazetteer.common.postgis.util.DatabaseUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
