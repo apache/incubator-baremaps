@@ -7,19 +7,19 @@ import java.net.URL;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
-public class DownloadUtil {
+public class Downloads {
 
-  public static InputStream download(String url) throws IOException {
+  public static InputStream file(String url) throws IOException {
     InputStream input = new URL(url).openConnection().getInputStream();
     return new BufferedInputStream(input);
   }
 
-  public static InputStream downloadGZip(String url) throws IOException {
-    return new GZIPInputStream(download(url));
+  public static InputStream gzip(String url) throws IOException {
+    return new GZIPInputStream(file(url));
   }
 
-  public static InputStream downloadZip(String url) throws IOException {
-    return new ZipInputStream(download(url));
+  public static InputStream zip(String url) throws IOException {
+    return new ZipInputStream(file(url));
   }
 
 }
