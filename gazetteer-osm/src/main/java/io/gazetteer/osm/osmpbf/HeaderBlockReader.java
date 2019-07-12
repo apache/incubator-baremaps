@@ -7,15 +7,15 @@ import org.locationtech.jts.geom.Point;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import org.openstreetmap.osmosis.osmbinary.Osmformat.HeaderBBox;
 
-public class HeaderReader {
+public class HeaderBlockReader {
 
   private final Osmformat.HeaderBlock header;
 
-  public HeaderReader(Osmformat.HeaderBlock header) {
+  public HeaderBlockReader(Osmformat.HeaderBlock header) {
     this.header = header;
   }
 
-  public Header read() {
+  public Header readHeader() {
     long replicationTimestamp = header.getOsmosisReplicationTimestamp();
     long replicationSequenceNumber = header.getOsmosisReplicationSequenceNumber();
     String replicationUrl = header.getOsmosisReplicationBaseUrl();
