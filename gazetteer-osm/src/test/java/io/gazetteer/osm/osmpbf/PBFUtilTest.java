@@ -25,7 +25,7 @@ public class PBFUtilTest {
 
     @Test
     public void isDataBlock() {
-        assertTrue(PBFUtil.stream(osmPbfData()).filter(PBFUtil::isDataBlock).count() == 9);
+        assertTrue(PBFUtil.stream(osmPbfData()).filter(PBFUtil::isPrimitiveBlock).count() == 9);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class PBFUtilTest {
     public void toDataBlock() {
         assertTrue(
                 PBFUtil.stream(osmPbfData())
-                        .filter(PBFUtil::isDataBlock)
+                        .filter(PBFUtil::isPrimitiveBlock)
                         .map(PBFUtil::toPrimitiveBlock)
                         .collect(Collectors.toList())
                         .size()

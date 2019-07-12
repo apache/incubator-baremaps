@@ -9,19 +9,19 @@ import org.openstreetmap.osmosis.osmbinary.Osmformat.HeaderBBox;
 
 public class HeaderBlockReader {
 
-  private final Osmformat.HeaderBlock header;
+  private final Osmformat.HeaderBlock headerBlock;
 
-  public HeaderBlockReader(Osmformat.HeaderBlock header) {
-    this.header = header;
+  public HeaderBlockReader(Osmformat.HeaderBlock headerBlock) {
+    this.headerBlock = headerBlock;
   }
 
-  public Header readHeader() {
-    long replicationTimestamp = header.getOsmosisReplicationTimestamp();
-    long replicationSequenceNumber = header.getOsmosisReplicationSequenceNumber();
-    String replicationUrl = header.getOsmosisReplicationBaseUrl();
-    String source = header.getSource();
-    String writingProgram = header.getWritingprogram();
-    HeaderBBox headerBBox = header.getBbox();
+  public HeaderBlock readHeaderBlock() {
+    long replicationTimestamp = headerBlock.getOsmosisReplicationTimestamp();
+    long replicationSequenceNumber = headerBlock.getOsmosisReplicationSequenceNumber();
+    String replicationUrl = headerBlock.getOsmosisReplicationBaseUrl();
+    String source = headerBlock.getSource();
+    String writingProgram = headerBlock.getWritingprogram();
+    HeaderBBox headerBBox = headerBlock.getBbox();
     double x1 = headerBBox.getLeft() * .000000001;
     double x2 = headerBBox.getRight() * .000000001;
     double y1 = headerBBox.getBottom() * .000000001;
@@ -30,7 +30,7 @@ public class HeaderBlockReader {
     Point p1 = geometryFactory.createPoint(new Coordinate(x1, y1));
     Point p2 = geometryFactory.createPoint(new Coordinate(x2, y2));
     Geometry bbox = geometryFactory.createMultiPoint(new Point[]{p1, p2}).getEnvelope();
-    return new Header(replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram, bbox);
+    return new HeaderBlock(replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram, bbox);
   }
 
 }

@@ -16,7 +16,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
-public class DataBlockParserTest {
+public class PrimitiveBlockBlockParserTest {
 
   @Test
   public void read() throws IOException {
@@ -25,10 +25,10 @@ public class DataBlockParserTest {
     fileBlockIterator.tryAdvance(consumer);
     PrimitiveBlockReader primitiveBlockReader =
         new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(consumer.value.getData()));
-    Data primitiveBlock = primitiveBlockReader.readData();
+    PrimitiveBlock primitiveBlock = primitiveBlockReader.readPrimitiveBlock();
     assertNotNull(primitiveBlock);
     for (int i = 0; i < 9; i++) {
-      primitiveBlock = primitiveBlockReader.readData();
+      primitiveBlock = primitiveBlockReader.readPrimitiveBlock();
       assertNotNull(primitiveBlock);
     }
   }

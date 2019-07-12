@@ -12,13 +12,13 @@ import java.net.URL;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import org.openstreetmap.osmosis.osmbinary.Osmformat.HeaderBlock;
-import org.openstreetmap.osmosis.osmbinary.Osmformat.PrimitiveBlock;
 
 public class PBFUtil {
 
-  public static final String HEADER = "OSMHeader";
-  public static final String DATA = "OSMData";
+  public static final String HEADER_BLOCK = "OSMHeader";
+  public static final String PRIMITIVE_BLOCK = "OSMData";
 
   public static InputStream read(File file) throws IOException {
     return new BufferedInputStream(new FileInputStream(file));
@@ -40,33 +40,33 @@ public class PBFUtil {
     return blocks.findFirst().map(PBFUtil::toHeaderBlock).get();
   }
 
-  public static Stream<Data> toPrimitiveBlock(Stream<FileBlock> blocks) {
+  public static Stream<PrimitiveBlock> toPrimitiveBlock(Stream<FileBlock> blocks) {
     return blocks
-        .filter(PBFUtil::isDataBlock)
+        .filter(PBFUtil::isPrimitiveBlock)
         .map(PBFUtil::toPrimitiveBlock)
         .map(PrimitiveBlockReader::new)
-        .map(PrimitiveBlockReader::readData);
+        .map(PrimitiveBlockReader::readPrimitiveBlock);
   }
 
   public static boolean isHeaderBlock(FileBlock block) {
-    return block.getType().equals(HEADER);
+    return block.getType().equals(HEADER_BLOCK);
   }
 
-  public static boolean isDataBlock(FileBlock block) {
-    return block.getType().equals(DATA);
+  public static boolean isPrimitiveBlock(FileBlock block) {
+    return block.getType().equals(PRIMITIVE_BLOCK);
   }
 
-  public static HeaderBlock toHeaderBlock(FileBlock fileBlock) {
+  public static Osmformat.HeaderBlock toHeaderBlock(FileBlock fileBlock) {
     try {
-      return HeaderBlock.parseFrom(fileBlock.getData());
+      return Osmformat.HeaderBlock.parseFrom(fileBlock.getData());
     } catch (InvalidProtocolBufferException e) {
       throw new StreamException(e);
     }
   }
 
-  public static PrimitiveBlock toPrimitiveBlock(FileBlock fileBlock) {
+  public static Osmformat.PrimitiveBlock toPrimitiveBlock(FileBlock fileBlock) {
     try {
-      return PrimitiveBlock.parseFrom(fileBlock.getData());
+      return Osmformat.PrimitiveBlock.parseFrom(fileBlock.getData());
     } catch (InvalidProtocolBufferException e) {
       throw new StreamException(e);
     }

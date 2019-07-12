@@ -2,9 +2,9 @@ package io.gazetteer;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import io.gazetteer.osm.osmpbf.Data;
+import io.gazetteer.osm.osmpbf.PrimitiveBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
-import io.gazetteer.osm.postgis.DataBlockConsumer;
+import io.gazetteer.osm.postgis.BlockConsumer;
 import io.gazetteer.common.postgis.util.DatabaseUtil;
 import java.io.IOException;
 import java.net.URL;
@@ -31,7 +31,7 @@ import static io.gazetteer.Constants.POSTGRES_URL;
 @Fork(1)
 public class PostgisConsumerBenchmark {
 
-  public Stream<Data> stream;
+  public Stream<PrimitiveBlock> stream;
 
   public Consumer consumer;
 
@@ -43,7 +43,7 @@ public class PostgisConsumerBenchmark {
       connection.createStatement().execute(sql);
     }
     PoolingDataSource pool = DatabaseUtil.poolingDataSource(POSTGRES_URL);
-    consumer = new DataBlockConsumer(pool);
+    consumer = new BlockConsumer(pool);
     InputStream input = Files.newInputStream(Paths.get(PBF_FILE));
     stream = PBFUtil.toPrimitiveBlock(PBFUtil.stream(input));
   }

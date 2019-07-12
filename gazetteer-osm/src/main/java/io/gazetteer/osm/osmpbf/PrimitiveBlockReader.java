@@ -17,32 +17,32 @@ import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
 public class PrimitiveBlockReader {
 
-  private final Osmformat.PrimitiveBlock data;
+  private final Osmformat.PrimitiveBlock primitiveBlock;
   private final int granularity;
   private final int dateGranularity;
   private final long latOffset;
   private final long lonOffset;
   private final String[] stringTable;
 
-  public PrimitiveBlockReader(Osmformat.PrimitiveBlock data) {
-    checkNotNull(data);
-    this.data = data;
-    this.granularity = data.getGranularity();
-    this.latOffset = data.getLatOffset();
-    this.lonOffset = data.getLonOffset();
-    this.dateGranularity = data.getDateGranularity();
-    this.stringTable = new String[data.getStringtable().getSCount()];
+  public PrimitiveBlockReader(Osmformat.PrimitiveBlock primitiveBlock) {
+    checkNotNull(primitiveBlock);
+    this.primitiveBlock = primitiveBlock;
+    this.granularity = primitiveBlock.getGranularity();
+    this.latOffset = primitiveBlock.getLatOffset();
+    this.lonOffset = primitiveBlock.getLonOffset();
+    this.dateGranularity = primitiveBlock.getDateGranularity();
+    this.stringTable = new String[primitiveBlock.getStringtable().getSCount()];
     for (int i = 0; i < stringTable.length; i++) {
-      stringTable[i] = data.getStringtable().getS(i).toStringUtf8();
+      stringTable[i] = primitiveBlock.getStringtable().getS(i).toStringUtf8();
     }
   }
 
-  public Data readData() {
-    return new Data(readDenseNodes(), readWays(), readRelations());
+  public PrimitiveBlock readPrimitiveBlock() {
+    return new PrimitiveBlock(readDenseNodes(), readWays(), readRelations());
   }
 
   public List<Node> readDenseNodes() {
-    return data.getPrimitivegroupList()
+    return primitiveBlock.getPrimitivegroupList()
         .stream()
         .flatMap(group -> readDenseNodes(group.getDense()))
         .collect(Collectors.toList());
@@ -90,7 +90,7 @@ public class PrimitiveBlockReader {
   }
 
   public List<Node> readNodes() {
-    return data.getPrimitivegroupList()
+    return primitiveBlock.getPrimitivegroupList()
         .stream()
         .flatMap(group -> readNodes(group.getNodesList()))
         .collect(Collectors.toList());
@@ -108,7 +108,7 @@ public class PrimitiveBlockReader {
   }
 
   public List<Way> readWays() {
-    return data.getPrimitivegroupList()
+    return primitiveBlock.getPrimitivegroupList()
         .stream()
         .flatMap(group -> readWays(group.getWaysList()))
         .collect(Collectors.toList());
@@ -130,7 +130,7 @@ public class PrimitiveBlockReader {
   }
 
   public List<Relation> readRelations() {
-    return data.getPrimitivegroupList()
+    return primitiveBlock.getPrimitivegroupList()
         .stream()
         .flatMap(group -> readRelations(group.getRelationsList()))
         .collect(Collectors.toList());
