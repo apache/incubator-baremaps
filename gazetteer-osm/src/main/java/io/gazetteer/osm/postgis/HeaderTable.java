@@ -1,6 +1,6 @@
-package io.gazetteer.osm.database;
+package io.gazetteer.osm.postgis;
 
-import io.gazetteer.osm.osmpbf.HeaderBlock;
+import io.gazetteer.osm.osmpbf.Header;
 import io.gazetteer.osm.util.GeometryUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,10 +19,10 @@ public class HeaderTable {
       "INSERT INTO osm_headers (replication_timestamp, replication_sequence_number, replication_url, source, writing_program, bbox) VALUES (?, ?, ?, ?, ?, ?)";
 
 
-  public static List<HeaderBlock> select(Connection connection) throws SQLException {
+  public static List<Header> select(Connection connection) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(SELECT)) {
       ResultSet result = statement.executeQuery();
-      List<HeaderBlock> headers = new ArrayList<>();
+      List<Header> headers = new ArrayList<>();
       while (result.next()) {
         long replicationTimestamp = result.getLong(1);
         long replicationSequenceNumber = result.getLong(2);
@@ -30,13 +30,13 @@ public class HeaderTable {
         String source = result.getString(4);
         String writingProgram = result.getString(5);
         Geometry bbox = GeometryUtil.asGeometry(result.getBytes(6));
-        headers.add(new HeaderBlock(replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram, bbox));
+        headers.add(new Header(replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram, bbox));
       }
       return headers;
     }
   }
 
-  public static void insert(Connection connection, HeaderBlock header) throws SQLException {
+  public static void insert(Connection connection, Header header) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(INSERT)) {
       statement.setLong(1, header.getReplicationTimestamp());
       statement.setLong(2, header.getReplicationSequenceNumber());

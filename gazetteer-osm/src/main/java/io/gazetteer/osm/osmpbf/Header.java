@@ -2,7 +2,7 @@ package io.gazetteer.osm.osmpbf;
 
 import org.locationtech.jts.geom.Geometry;
 
-public class HeaderBlock {
+public class Header {
 
   private final long replicationTimestamp;
   private final long replicationSequenceNumber;
@@ -11,7 +11,7 @@ public class HeaderBlock {
   private final String writingProgram;
   private final Geometry bbox;
 
-  public HeaderBlock(long replicationTimestamp, long replicationSequenceNumber, String replicationUrl, String source, String writingProgram, Geometry bbox) {
+  public Header(long replicationTimestamp, long replicationSequenceNumber, String replicationUrl, String source, String writingProgram, Geometry bbox) {
     this.replicationTimestamp = replicationTimestamp;
     this.replicationSequenceNumber = replicationSequenceNumber;
     this.replicationUrl = replicationUrl;

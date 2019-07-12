@@ -43,7 +43,7 @@ public class PBFUtilTest {
         assertTrue(
                 PBFUtil.stream(osmPbfData())
                         .filter(PBFUtil::isDataBlock)
-                        .map(PBFUtil::toDataBlock)
+                        .map(PBFUtil::toPrimitiveBlock)
                         .collect(Collectors.toList())
                         .size()
                         == 9);
@@ -52,7 +52,7 @@ public class PBFUtilTest {
     @Test
     public void toDataBlockException() {
         assertThrows(StreamException.class, () -> {
-            PBFUtil.toDataBlock(osmPbfInvalidBlock());
+            PBFUtil.toPrimitiveBlock(osmPbfInvalidBlock());
         });
     }
 

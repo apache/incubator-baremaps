@@ -12,8 +12,8 @@ import java.net.URL;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import org.openstreetmap.osmosis.osmbinary.Osmformat.HeaderBlock;
+import org.openstreetmap.osmosis.osmbinary.Osmformat.PrimitiveBlock;
 
 public class PBFUtil {
 
@@ -40,12 +40,12 @@ public class PBFUtil {
     return blocks.findFirst().map(PBFUtil::toHeaderBlock).get();
   }
 
-  public static Stream<DataBlock> data(Stream<FileBlock> blocks) {
+  public static Stream<Data> toPrimitiveBlock(Stream<FileBlock> blocks) {
     return blocks
         .filter(PBFUtil::isDataBlock)
-        .map(PBFUtil::toDataBlock)
-        .map(DataBlockBuilder::new)
-        .map(DataBlockBuilder::build);
+        .map(PBFUtil::toPrimitiveBlock)
+        .map(PrimitiveBlockReader::new)
+        .map(PrimitiveBlockReader::readData);
   }
 
   public static boolean isHeaderBlock(FileBlock block) {
@@ -58,15 +58,15 @@ public class PBFUtil {
 
   public static HeaderBlock toHeaderBlock(FileBlock fileBlock) {
     try {
-      return Osmformat.HeaderBlock.parseFrom(fileBlock.getData());
+      return HeaderBlock.parseFrom(fileBlock.getData());
     } catch (InvalidProtocolBufferException e) {
       throw new StreamException(e);
     }
   }
 
-  public static Osmformat.PrimitiveBlock toDataBlock(FileBlock fileBlock) {
+  public static PrimitiveBlock toPrimitiveBlock(FileBlock fileBlock) {
     try {
-      return Osmformat.PrimitiveBlock.parseFrom(fileBlock.getData());
+      return PrimitiveBlock.parseFrom(fileBlock.getData());
     } catch (InvalidProtocolBufferException e) {
       throw new StreamException(e);
     }

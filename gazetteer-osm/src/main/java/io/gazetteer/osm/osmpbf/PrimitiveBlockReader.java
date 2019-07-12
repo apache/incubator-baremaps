@@ -11,51 +11,45 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
-public class DataBlockBuilder {
+public class PrimitiveBlockReader {
 
-  private final Osmformat.PrimitiveBlock block;
+  private final Osmformat.PrimitiveBlock data;
   private final int granularity;
   private final int dateGranularity;
   private final long latOffset;
   private final long lonOffset;
   private final String[] stringTable;
 
-  public DataBlockBuilder(Osmformat.PrimitiveBlock block) {
-    checkNotNull(block);
-    this.block = block;
-    this.granularity = block.getGranularity();
-    this.latOffset = block.getLatOffset();
-    this.lonOffset = block.getLonOffset();
-    this.dateGranularity = block.getDateGranularity();
-    this.stringTable = new String[block.getStringtable().getSCount()];
+  public PrimitiveBlockReader(Osmformat.PrimitiveBlock data) {
+    checkNotNull(data);
+    this.data = data;
+    this.granularity = data.getGranularity();
+    this.latOffset = data.getLatOffset();
+    this.lonOffset = data.getLonOffset();
+    this.dateGranularity = data.getDateGranularity();
+    this.stringTable = new String[data.getStringtable().getSCount()];
     for (int i = 0; i < stringTable.length; i++) {
-      stringTable[i] = block.getStringtable().getS(i).toStringUtf8();
+      stringTable[i] = data.getStringtable().getS(i).toStringUtf8();
     }
   }
 
-  public DataBlock build() {
+  public Data readData() {
+    return new Data(readDenseNodes(), readWays(), readRelations());
+  }
+
+  public List<Node> readDenseNodes() {
+    return data.getPrimitivegroupList()
+        .stream()
+        .flatMap(group -> readDenseNodes(group.getDense()))
+        .collect(Collectors.toList());
+  }
+
+  private Stream<Node> readDenseNodes(Osmformat.DenseNodes input) {
     List<Node> nodes = new ArrayList<>();
-    List<Way> ways = new ArrayList<>();
-    List<Relation> relations = new ArrayList<>();
-    for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
-      readDenseNodes(group.getDense(), nodes);
-      readWays(group.getWaysList(), ways);
-      readRelations(group.getRelationsList(), relations);
-    }
-    return new DataBlock(nodes, ways, relations);
-  }
-
-  protected List<Node> readDenseNodes() {
-    List<Node> nodes = new ArrayList<>();
-    for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
-      readDenseNodes(group.getDense(), nodes);
-    }
-    return nodes;
-  }
-
-  protected void readDenseNodes(Osmformat.DenseNodes input, List<Node> output) {
     long id = 0;
     long lat = 0;
     long lon = 0;
@@ -66,7 +60,7 @@ public class DataBlockBuilder {
 
     // Index into the keysvals array.
     int j = 0;
-    for (int i   = 0; i < input.getIdCount(); i++) {
+    for (int i = 0; i < input.getIdCount(); i++) {
       id = input.getId(i) + id;
 
       Osmformat.DenseInfo info = input.getDenseinfo();
@@ -90,36 +84,38 @@ public class DataBlockBuilder {
       }
 
       Info data = new Info(id, version, getTimestamp(timestamp), changeset, uid, tags);
-      output.add(new Node(data, getLon(lon), getLat(lat)));
+      nodes.add(new Node(data, getLon(lon), getLat(lat)));
     }
+    return nodes.stream();
   }
 
-  protected List<Node> readNodes() {
+  public List<Node> readNodes() {
+    return data.getPrimitivegroupList()
+        .stream()
+        .flatMap(group -> readNodes(group.getNodesList()))
+        .collect(Collectors.toList());
+  }
+
+  private Stream<Node> readNodes(List<Osmformat.Node> input) {
     List<Node> nodes = new ArrayList<>();
-    for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
-      readNodes(group.getNodesList(), nodes);
-    }
-    return nodes;
-  }
-
-  protected void readNodes(List<Osmformat.Node> input, List<Node> output) {
     for (Osmformat.Node e : input) {
       Info info = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
       long lon = e.getLon();
       long lat = e.getLat();
-      output.add(new Node(info, getLon(lon), getLat(lat)));
+      nodes.add(new Node(info, getLon(lon), getLat(lat)));
     }
+    return nodes.stream();
   }
 
-  protected List<Way> readWays() {
+  public List<Way> readWays() {
+    return data.getPrimitivegroupList()
+        .stream()
+        .flatMap(group -> readWays(group.getWaysList()))
+        .collect(Collectors.toList());
+  }
+
+  private Stream<Way> readWays(List<Osmformat.Way> input) {
     List<Way> ways = new ArrayList<>();
-    for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
-      readWays(group.getWaysList(), ways);
-    }
-    return ways;
-  }
-
-  private void readWays(List<Osmformat.Way> input, List<Way> output) {
     for (Osmformat.Way e : input) {
       Info info = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
       long nid = 0;
@@ -128,19 +124,20 @@ public class DataBlockBuilder {
         nid = nid + e.getRefs(index);
         nodes.add(nid);
       }
-      output.add(new Way(info, nodes));
+      ways.add(new Way(info, nodes));
     }
+    return ways.stream();
   }
 
-  protected List<Relation> readRelations() {
+  public List<Relation> readRelations() {
+    return data.getPrimitivegroupList()
+        .stream()
+        .flatMap(group -> readRelations(group.getRelationsList()))
+        .collect(Collectors.toList());
+  }
+
+  protected Stream<Relation> readRelations(List<Osmformat.Relation> input) {
     List<Relation> relations = new ArrayList<>();
-    for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
-      readRelations(group.getRelationsList(), relations);
-    }
-    return relations;
-  }
-
-  protected void readRelations(List<Osmformat.Relation> input, List<Relation> output) {
     for (Osmformat.Relation r : input) {
       Info info = createEntityData(r.getId(), r.getInfo(), r.getKeysList(), r.getValsList());
       long mid = 0;
@@ -160,8 +157,9 @@ public class DataBlockBuilder {
         }
         members.add(new Member(mid, type, role));
       }
-      output.add(new Relation(info, members));
+      relations.add(new Relation(info, members));
     }
+    return relations.stream();
   }
 
   protected Info createEntityData(

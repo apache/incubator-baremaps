@@ -1,4 +1,4 @@
-package io.gazetteer.osm.database;
+package io.gazetteer.osm.postgis;
 
 import io.gazetteer.common.postgis.util.DatabaseUtil;
 import java.io.IOException;

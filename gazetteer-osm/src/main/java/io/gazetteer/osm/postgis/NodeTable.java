@@ -1,4 +1,4 @@
-package io.gazetteer.osm.database;
+package io.gazetteer.osm.postgis;
 
 import static io.gazetteer.osm.util.GeometryUtil.asGeometry;
 import static io.gazetteer.osm.util.GeometryUtil.point;

@@ -1,4 +1,4 @@
-package io.gazetteer.osm.database;
+package io.gazetteer.osm.postgis;
 
 import io.gazetteer.osm.OSMTestUtil;
 import io.gazetteer.osm.model.Info;

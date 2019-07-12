@@ -64,7 +64,7 @@ public class FileBlockSpliterator implements Spliterator<FileBlock> {
       inflater.end();
       return ByteString.copyFrom(bytes);
     } else {
-      throw new DataFormatException("Unsupported data format");
+      throw new DataFormatException("Unsupported toPrimitiveBlock format");
     }
   }
 

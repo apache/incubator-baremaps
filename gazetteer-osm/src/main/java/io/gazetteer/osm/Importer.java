@@ -2,11 +2,8 @@ package io.gazetteer.osm;
 
 import static picocli.CommandLine.Option;
 
-import io.gazetteer.osm.database.HeaderTable;
 import io.gazetteer.osm.model.Change;
-import io.gazetteer.osm.osmpbf.HeaderBlock;
-import io.gazetteer.osm.osmpbf.DataBlock;
-import io.gazetteer.osm.osmpbf.DataBlockConsumer;
+import io.gazetteer.osm.postgis.DataBlockConsumer;
 import io.gazetteer.osm.osmpbf.FileBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
 import io.gazetteer.osm.osmxml.ChangeConsumer;
@@ -25,12 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import org.apache.commons.dbcp2.PoolingDataSource;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
-import org.openstreetmap.osmosis.osmbinary.Osmformat;
-import org.openstreetmap.osmosis.osmbinary.Osmformat.HeaderBBox;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -61,35 +52,11 @@ public class Importer implements Runnable {
         System.out.println(String.format("-> %dms", stopWatch.lap()));
       }
 
-      Stream<FileBlock> headerblocks = PBFUtil.stream(PBFUtil.read(file));
-      System.out.println("Parsing OSM headers.");
-      try (Connection connection = DriverManager.getConnection(database)) {
-        Osmformat.HeaderBlock headerBlock =  PBFUtil.header(headerblocks);
-        long replicationTimestamp = headerBlock.getOsmosisReplicationTimestamp();
-        long replicationSequenceNumber = headerBlock.getOsmosisReplicationSequenceNumber();
-        String replicationUrl = headerBlock.getOsmosisReplicationBaseUrl();
-        String source = headerBlock.getSource();
-        String writingProgram = headerBlock.getWritingprogram();
-        HeaderBBox headerBBox = headerBlock.getBbox();
-        double x1 = headerBBox.getLeft() * .000000001;
-        double x2 = headerBBox.getRight() * .000000001;
-        double y1 = headerBBox.getBottom() * .000000001;
-        double y2 = headerBBox.getTop() * .000000001;
-        GeometryFactory geometryFactory = new GeometryFactory();
-        Point p1 = geometryFactory.createPoint(new Coordinate(x1, y1));
-        Point p2 = geometryFactory.createPoint(new Coordinate(x2, y2));
-        Geometry bbox = geometryFactory.createMultiPoint(new Point[]{p1, p2}).getEnvelope();
-        HeaderBlock header = new HeaderBlock(replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram, bbox);
-        HeaderTable.insert(connection, header);
-        System.out.println(String.format("-> %dms", stopWatch.lap()));
-      }
-
-      Stream<FileBlock> contentblocks = PBFUtil.stream(PBFUtil.read(file));
       System.out.println("Populating OSM database.");
+      Stream<FileBlock> blocks = PBFUtil.stream(PBFUtil.read(file));
       PoolingDataSource pool = DatabaseUtil.poolingDataSource(database);
       DataBlockConsumer pgBulkInsertConsumer = new DataBlockConsumer(pool);
-      Stream<DataBlock> data = PBFUtil.data(contentblocks);
-      executor.submit(() -> data.forEach(pgBulkInsertConsumer)).get();
+      executor.submit(() -> blocks.forEach(pgBulkInsertConsumer)).get();
       System.out.println(String.format("-> %dms", stopWatch.lap()));
 
       try (Connection connection = DriverManager.getConnection(database)) {
