@@ -1,16 +1,19 @@
 package io.gazetteer.osm.osmpbf;
 
-import io.gazetteer.osm.model.*;
-import org.openstreetmap.osmosis.osmbinary.Osmformat;
+import static com.google.common.base.Preconditions.checkNotNull;
 
+import io.gazetteer.osm.model.Info;
+import io.gazetteer.osm.model.Member;
+import io.gazetteer.osm.model.Node;
+import io.gazetteer.osm.model.Relation;
+import io.gazetteer.osm.model.Way;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-public class DataBlockReader {
+public class DataBlockBuilder {
 
   private final Osmformat.PrimitiveBlock block;
   private final int granularity;
@@ -19,7 +22,7 @@ public class DataBlockReader {
   private final long lonOffset;
   private final String[] stringTable;
 
-  public DataBlockReader(Osmformat.PrimitiveBlock block) {
+  public DataBlockBuilder(Osmformat.PrimitiveBlock block) {
     checkNotNull(block);
     this.block = block;
     this.granularity = block.getGranularity();
@@ -32,7 +35,7 @@ public class DataBlockReader {
     }
   }
 
-  public DataBlock read() {
+  public DataBlock build() {
     List<Node> nodes = new ArrayList<>();
     List<Way> ways = new ArrayList<>();
     List<Relation> relations = new ArrayList<>();
@@ -44,7 +47,7 @@ public class DataBlockReader {
     return new DataBlock(nodes, ways, relations);
   }
 
-  public List<Node> readDenseNodes() {
+  protected List<Node> readDenseNodes() {
     List<Node> nodes = new ArrayList<>();
     for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
       readDenseNodes(group.getDense(), nodes);
@@ -52,7 +55,7 @@ public class DataBlockReader {
     return nodes;
   }
 
-  private void readDenseNodes(Osmformat.DenseNodes input, List<Node> output) {
+  protected void readDenseNodes(Osmformat.DenseNodes input, List<Node> output) {
     long id = 0;
     long lat = 0;
     long lon = 0;
@@ -91,7 +94,7 @@ public class DataBlockReader {
     }
   }
 
-  public List<Node> readNodes() {
+  protected List<Node> readNodes() {
     List<Node> nodes = new ArrayList<>();
     for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
       readNodes(group.getNodesList(), nodes);
@@ -99,7 +102,7 @@ public class DataBlockReader {
     return nodes;
   }
 
-  private void readNodes(List<Osmformat.Node> input, List<Node> output) {
+  protected void readNodes(List<Osmformat.Node> input, List<Node> output) {
     for (Osmformat.Node e : input) {
       Info info = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
       long lon = e.getLon();
@@ -108,7 +111,7 @@ public class DataBlockReader {
     }
   }
 
-  public List<Way> readWays() {
+  protected List<Way> readWays() {
     List<Way> ways = new ArrayList<>();
     for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
       readWays(group.getWaysList(), ways);
@@ -129,7 +132,7 @@ public class DataBlockReader {
     }
   }
 
-  public List<Relation> readRelations() {
+  protected List<Relation> readRelations() {
     List<Relation> relations = new ArrayList<>();
     for (Osmformat.PrimitiveGroup group : block.getPrimitivegroupList()) {
       readRelations(group.getRelationsList(), relations);
@@ -137,7 +140,7 @@ public class DataBlockReader {
     return relations;
   }
 
-  private void readRelations(List<Osmformat.Relation> input, List<Relation> output) {
+  protected void readRelations(List<Osmformat.Relation> input, List<Relation> output) {
     for (Osmformat.Relation r : input) {
       Info info = createEntityData(r.getId(), r.getInfo(), r.getKeysList(), r.getValsList());
       long mid = 0;
@@ -161,7 +164,7 @@ public class DataBlockReader {
     }
   }
 
-  private Info createEntityData(
+  protected Info createEntityData(
       long id, Osmformat.Info info, List<Integer> keys, List<Integer> vals) {
     long timestamp = getTimestamp(info.getTimestamp());
     int version = info.getVersion();
@@ -176,19 +179,20 @@ public class DataBlockReader {
     return new Info(id, version, timestamp, changeset, uid, tags);
   }
 
-  private String getString(int id) {
+  protected String getString(int id) {
     return stringTable[id];
   }
 
-  private double getLat(long lat) {
+  protected double getLat(long lat) {
     return (granularity * lat + latOffset) * .000000001;
   }
 
-  private double getLon(long lon) {
+  protected double getLon(long lon) {
     return (granularity * lon + lonOffset) * .000000001;
   }
 
-  private long getTimestamp(long timestamp) {
+  protected long getTimestamp(long timestamp) {
     return dateGranularity * timestamp;
   }
+
 }

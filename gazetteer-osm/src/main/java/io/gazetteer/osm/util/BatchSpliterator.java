@@ -44,7 +44,7 @@ public final class BatchSpliterator<T> implements Spliterator<T> {
     final Object[] batch = new Object[batchSize];
     int j = 0;
     do {
-      batch[j] = consumer.entity;
+      batch[j] = consumer.value;
     } while (++j < batchSize && tryAdvance(consumer));
     return spliterator(batch, 0, j, characteristics() | SIZED);
   }
@@ -64,13 +64,4 @@ public final class BatchSpliterator<T> implements Spliterator<T> {
     return ORDERED | DISTINCT | NONNULL | IMMUTABLE | SUBSIZED;
   }
 
-  static final class HoldingConsumer<T> implements Consumer<T> {
-
-    public Object entity;
-
-    @Override
-    public void accept(T value) {
-      this.entity = value;
-    }
-  }
 }

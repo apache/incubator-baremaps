@@ -4,7 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import io.gazetteer.osm.model.State;
 
-public class OsmDownloadUtil {
+public class DownloadUtil {
 
   public static void next(State state) {
     long sequenceNumber = state.sequenceNumber + 1;

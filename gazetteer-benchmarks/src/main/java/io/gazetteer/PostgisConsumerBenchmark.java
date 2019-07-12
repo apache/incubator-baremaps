@@ -45,7 +45,7 @@ public class PostgisConsumerBenchmark {
     PoolingDataSource pool = DatabaseUtil.poolingDataSource(POSTGRES_URL);
     consumer = new DataBlockConsumer(pool);
     InputStream input = Files.newInputStream(Paths.get(PBF_FILE));
-    stream = PBFUtil.dataBlocks(input);
+    stream = PBFUtil.data(PBFUtil.stream(input));
   }
 
   @Benchmark

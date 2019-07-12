@@ -1,7 +1,7 @@
 package io.gazetteer.osm.osmpbf;
 
 import io.gazetteer.osm.util.Accumulator;
-import io.gazetteer.osm.util.WrappedException;
+import io.gazetteer.osm.util.StreamException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Spliterator;
@@ -15,23 +15,23 @@ public class PBFUtilTest {
 
     @Test
     public void stream() {
-        assertTrue(PBFUtil.fileBlocks(osmPbfData()).count() == 10);
+        assertTrue(PBFUtil.stream(osmPbfData()).count() == 10);
     }
 
     @Test
     public void isHeaderBlock() {
-        assertTrue(PBFUtil.fileBlocks(osmPbfData()).filter(PBFUtil::isHeaderBlock).count() == 1);
+        assertTrue(PBFUtil.stream(osmPbfData()).filter(PBFUtil::isHeaderBlock).count() == 1);
     }
 
     @Test
     public void isDataBlock() {
-        assertTrue(PBFUtil.fileBlocks(osmPbfData()).filter(PBFUtil::isDataBlock).count() == 9);
+        assertTrue(PBFUtil.stream(osmPbfData()).filter(PBFUtil::isDataBlock).count() == 9);
     }
 
     @Test
     public void toHeaderBlock() {
         assertTrue(
-                PBFUtil.fileBlocks(osmPbfData())
+                PBFUtil.stream(osmPbfData())
                         .filter(PBFUtil::isHeaderBlock)
                         .map(PBFUtil::toHeaderBlock)
                         .count()
@@ -41,7 +41,7 @@ public class PBFUtilTest {
     @Test
     public void toDataBlock() {
         assertTrue(
-                PBFUtil.fileBlocks(osmPbfData())
+                PBFUtil.stream(osmPbfData())
                         .filter(PBFUtil::isDataBlock)
                         .map(PBFUtil::toDataBlock)
                         .collect(Collectors.toList())
@@ -51,7 +51,7 @@ public class PBFUtilTest {
 
     @Test
     public void toDataBlockException() {
-        assertThrows(WrappedException.class, () -> {
+        assertThrows(StreamException.class, () -> {
             PBFUtil.toDataBlock(osmPbfInvalidBlock());
         });
     }

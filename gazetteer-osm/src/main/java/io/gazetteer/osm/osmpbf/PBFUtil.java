@@ -1,69 +1,66 @@
 package io.gazetteer.osm.osmpbf;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import io.gazetteer.osm.util.BatchSpliterator;
-import io.gazetteer.osm.util.WrappedException;
-import org.openstreetmap.osmosis.osmbinary.Osmformat;
-
-import java.io.*;
-import java.util.Iterator;
+import io.gazetteer.osm.util.StreamException;
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import org.openstreetmap.osmosis.osmbinary.Osmformat;
+import org.openstreetmap.osmosis.osmbinary.Osmformat.HeaderBlock;
 
 public class PBFUtil {
 
   public static final String HEADER = "OSMHeader";
   public static final String DATA = "OSMData";
 
-  public static long countFileBlocks(File file) throws IOException {
-    DataInputStream input = new DataInputStream(new FileInputStream(file));
-    long count = 0;
-    while (input.available() > 0) {
-      int size = input.readInt();
-      input.skipBytes(size);
-      count += 1;
-    }
-    return count;
+  public static InputStream read(File file) throws IOException {
+    return new BufferedInputStream(new FileInputStream(file));
   }
 
-  public static Iterator<FileBlock> iterator(InputStream input) {
-    DataInputStream data = new DataInputStream(input);
-    return new FileBlockIterator(data);
+  public static InputStream read(URL url) throws IOException {
+    return new BufferedInputStream(url.openConnection().getInputStream());
   }
 
   public static Spliterator<FileBlock> spliterator(InputStream input) {
-    return new BatchSpliterator<>(iterator(input), 10);
+    return new FileBlockSpliterator(new DataInputStream(input));
   }
 
-  public static Stream<FileBlock> fileBlocks(InputStream input) {
+  public static Stream<FileBlock> stream(InputStream input) {
     return StreamSupport.stream(spliterator(input), true);
   }
 
-  public static Stream<DataBlockReader> dataBlockReaders(InputStream input) {
-    return PBFUtil.fileBlocks(input)
+  public static HeaderBlock header(Stream<FileBlock> blocks) {
+    return blocks.findFirst().map(PBFUtil::toHeaderBlock).get();
+  }
+
+  public static Stream<DataBlock> data(Stream<FileBlock> blocks) {
+    return blocks
         .filter(PBFUtil::isDataBlock)
         .map(PBFUtil::toDataBlock)
-        .map(DataBlockReader::new);
+        .map(DataBlockBuilder::new)
+        .map(DataBlockBuilder::build);
   }
 
-  public static Stream<DataBlock> dataBlocks(InputStream input) {
-    return dataBlockReaders(input).map(DataBlockReader::read);
+  public static boolean isHeaderBlock(FileBlock block) {
+    return block.getType().equals(HEADER);
   }
 
-  public static boolean isHeaderBlock(FileBlock fileBlock) {
-    return fileBlock.getType().equals(HEADER);
+  public static boolean isDataBlock(FileBlock block) {
+    return block.getType().equals(DATA);
   }
 
-  public static boolean isDataBlock(FileBlock fileBlock) {
-    return fileBlock.getType().equals(DATA);
-  }
-
-  public static Osmformat.HeaderBlock toHeaderBlock(FileBlock fileBlock) {
+  public static HeaderBlock toHeaderBlock(FileBlock fileBlock) {
     try {
       return Osmformat.HeaderBlock.parseFrom(fileBlock.getData());
     } catch (InvalidProtocolBufferException e) {
-      throw new WrappedException(e);
+      throw new StreamException(e);
     }
   }
 
@@ -71,7 +68,7 @@ public class PBFUtil {
     try {
       return Osmformat.PrimitiveBlock.parseFrom(fileBlock.getData());
     } catch (InvalidProtocolBufferException e) {
-      throw new WrappedException(e);
+      throw new StreamException(e);
     }
   }
 }
