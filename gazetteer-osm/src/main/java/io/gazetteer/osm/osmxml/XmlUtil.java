@@ -17,33 +17,6 @@ import static io.gazetteer.osm.model.User.NO_USER;
 
 public class XmlUtil {
 
-  protected static final SimpleDateFormat format;
-
-  static {
-    format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    format.setTimeZone(TimeZone.getTimeZone("GMT"));
-  }
-
-  protected static final String LON = "lon";
-  protected static final String ID = "id";
-  protected static final String VERSION = "version";
-  protected static final String TIMESTAMP = "timestamp";
-  protected static final String CHANGESET = "changeset";
-  protected static final String UID = "uid";
-  protected static final String USER = "user";
-  protected static final String TAG = "tag";
-  protected static final String KEY = "k";
-  protected static final String VAL = "v";
-  protected static final String ND = "nd";
-  protected static final String REF = "ref";
-  protected static final String MEMBER = "member";
-  protected static final String TYPE = "type";
-  protected static final String ROLE = "role";
-  protected static final String NODE = "node";
-  protected static final String WAY = "way";
-  protected static final String RELATION = "relation";
-  protected static final String LAT = "lat";
-
   public static XMLEventReader xmlEventReader(InputStream file) throws XMLStreamException {
     XMLInputFactory factory = XMLInputFactory.newInstance();
     factory.setProperty(XMLInputFactory.IS_COALESCING, false);
@@ -61,8 +34,8 @@ public class XmlUtil {
       throws XMLStreamException, ParseException {
     List<StartElement> children = readChildren(element, reader);
     Info info = readInfo(element, children);
-    double lat = Double.parseDouble(element.getAttributeByName(QName.valueOf(LAT)).getValue());
-    double lon = Double.parseDouble(element.getAttributeByName(QName.valueOf(LON)).getValue());
+    double lat = Double.parseDouble(element.getAttributeByName(QName.valueOf(XMLConstants.LAT)).getValue());
+    double lon = Double.parseDouble(element.getAttributeByName(QName.valueOf(XMLConstants.LON)).getValue());
     return new Node(info, lon, lat);
   }
 
@@ -102,10 +75,10 @@ public class XmlUtil {
 
   protected static Info readInfo(StartElement element, List<StartElement> children)
       throws ParseException {
-    long id = Long.parseLong(element.getAttributeByName(QName.valueOf(ID)).getValue());
-    int version = Integer.parseInt(element.getAttributeByName(QName.valueOf(VERSION)).getValue());
+    long id = Long.parseLong(element.getAttributeByName(QName.valueOf(XMLConstants.ID)).getValue());
+    int version = Integer.parseInt(element.getAttributeByName(QName.valueOf(XMLConstants.VERSION)).getValue());
     long timestamp =
-        format.parse(element.getAttributeByName(QName.valueOf(TIMESTAMP)).getValue()).getTime();
+        XMLConstants.format.parse(element.getAttributeByName(QName.valueOf(XMLConstants.TIMESTAMP)).getValue()).getTime();
     long changeset = readChangeset(element);
     User user = readUser(element);
     Map<String, String> tags = readTags(children);
@@ -114,19 +87,19 @@ public class XmlUtil {
 
   protected static long readChangeset(StartElement element) {
     // todo: changesets are not present on geofabrik but described as mandatory in the doc
-    if (element.getAttributeByName(QName.valueOf(CHANGESET)) != null
-        && element.getAttributeByName(QName.valueOf(CHANGESET)) != null) {
-      return Long.parseLong(element.getAttributeByName(QName.valueOf(CHANGESET)).getValue());
+    if (element.getAttributeByName(QName.valueOf(XMLConstants.CHANGESET)) != null
+        && element.getAttributeByName(QName.valueOf(XMLConstants.CHANGESET)) != null) {
+      return Long.parseLong(element.getAttributeByName(QName.valueOf(XMLConstants.CHANGESET)).getValue());
     } else {
       return -1;
     }
   }
 
   protected static User readUser(StartElement element) {
-    if (element.getAttributeByName(QName.valueOf(UID)) != null
-        && element.getAttributeByName(QName.valueOf(USER)) != null) {
-      int uid = Integer.parseInt(element.getAttributeByName(QName.valueOf(UID)).getValue());
-      String name = element.getAttributeByName(QName.valueOf(USER)).getValue();
+    if (element.getAttributeByName(QName.valueOf(XMLConstants.UID)) != null
+        && element.getAttributeByName(QName.valueOf(XMLConstants.USER)) != null) {
+      int uid = Integer.parseInt(element.getAttributeByName(QName.valueOf(XMLConstants.UID)).getValue());
+      String name = element.getAttributeByName(QName.valueOf(XMLConstants.USER)).getValue();
       return new User(uid, name);
     } else {
       return NO_USER;
@@ -136,9 +109,9 @@ public class XmlUtil {
   protected static Map<String, String> readTags(List<StartElement> elements) {
     Map<String, String> tags = new HashMap<>();
     for (StartElement element : elements) {
-      if (element.getName().getLocalPart().equals(TAG)) {
-        String key = element.getAttributeByName(QName.valueOf(KEY)).getValue();
-        String val = element.getAttributeByName(QName.valueOf(VAL)).getValue();
+      if (element.getName().getLocalPart().equals(XMLConstants.TAG)) {
+        String key = element.getAttributeByName(QName.valueOf(XMLConstants.KEY)).getValue();
+        String val = element.getAttributeByName(QName.valueOf(XMLConstants.VAL)).getValue();
         tags.put(key, val);
       }
     }
@@ -148,8 +121,8 @@ public class XmlUtil {
   protected static List<Long> readNodes(List<StartElement> elements) {
     List<Long> nodes = new ArrayList<>();
     for (StartElement element : elements) {
-      if (element.getName().getLocalPart().equals(ND)) {
-        long ref = Long.parseLong(element.getAttributeByName(QName.valueOf(REF)).getValue());
+      if (element.getName().getLocalPart().equals(XMLConstants.ND)) {
+        long ref = Long.parseLong(element.getAttributeByName(QName.valueOf(XMLConstants.REF)).getValue());
         nodes.add(ref);
       }
     }
@@ -159,10 +132,10 @@ public class XmlUtil {
   protected static List<Member> readMembers(List<StartElement> elements) {
     List<Member> nodes = new ArrayList<>();
     for (StartElement element : elements) {
-      if (element.getName().getLocalPart().equals(MEMBER)) {
-        long ref = Long.parseLong(element.getAttributeByName(QName.valueOf(REF)).getValue());
-        String type = element.getAttributeByName(QName.valueOf(TYPE)).getValue();
-        String role = element.getAttributeByName(QName.valueOf(ROLE)).getValue();
+      if (element.getName().getLocalPart().equals(XMLConstants.MEMBER)) {
+        long ref = Long.parseLong(element.getAttributeByName(QName.valueOf(XMLConstants.REF)).getValue());
+        String type = element.getAttributeByName(QName.valueOf(XMLConstants.TYPE)).getValue();
+        String role = element.getAttributeByName(QName.valueOf(XMLConstants.ROLE)).getValue();
         nodes.add(new Member(ref, Member.Type.valueOf(type), role));
       }
     }

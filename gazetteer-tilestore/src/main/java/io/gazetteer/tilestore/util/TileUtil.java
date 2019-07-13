@@ -36,7 +36,7 @@ public class TileUtil {
       XYZ max = getOverlappingXYZ(envelope.getMaxX(), envelope.getMinY(), z);
       return IntStream.rangeClosed(min.getX(), max.getX()).mapToObj(i -> i)
           .flatMap(x -> IntStream.rangeClosed(min.getY(), max.getY()).mapToObj(i -> i).map(y -> new XYZ(x, y, z)));
-    }).iterator(), 10), true);
+    }).spliterator(), 10), true);
   }
 
   public static XYZ getOverlappingXYZ(double lon, double lat, int z) {

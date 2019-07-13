@@ -1,7 +1,5 @@
 package io.gazetteer.osm.util;
 
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
@@ -9,30 +7,18 @@ import static java.util.Spliterators.spliterator;
 
 public final class BatchSpliterator<T> implements Spliterator<T> {
 
-  private final Iterator<T> iterator;
+  private final Spliterator<T> spliterator;
 
   private final int batchSize;
 
-  public BatchSpliterator(Iterator<T> iterator, int batchSize) {
-    this.iterator = iterator;
+  public BatchSpliterator(Spliterator<T> spliterator, int batchSize) {
+    this.spliterator = spliterator;
     this.batchSize = batchSize;
   }
 
   @Override
   public boolean tryAdvance(Consumer<? super T> consumer) {
-    if (iterator.hasNext()) {
-      consumer.accept(iterator.next());
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  @Override
-  public void forEachRemaining(Consumer<? super T> consumer) {
-    while (iterator.hasNext()) {
-      consumer.accept(iterator.next());
-    }
+    return spliterator.tryAdvance(consumer);
   }
 
   @Override
@@ -50,18 +36,13 @@ public final class BatchSpliterator<T> implements Spliterator<T> {
   }
 
   @Override
-  public Comparator<? super T> getComparator() {
-    return null;
-  }
-
-  @Override
   public long estimateSize() {
     return Long.MAX_VALUE;
   }
 
   @Override
   public int characteristics() {
-    return ORDERED | DISTINCT | NONNULL | IMMUTABLE | SUBSIZED;
+    return spliterator.characteristics() | SUBSIZED;
   }
 
 }

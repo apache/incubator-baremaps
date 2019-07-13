@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ChangeIteratorTest {
 
+  /*
   @Test
   public void next() throws Exception {
     Iterator<Change> reader = ChangeUtil.iterator(osmPbfData());
@@ -32,4 +33,5 @@ public class ChangeIteratorTest {
       reader.next();
     });
   }
+  */
 }

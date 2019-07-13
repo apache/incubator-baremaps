@@ -1,5 +1,9 @@
 package io.gazetteer.osm.osmxml;
 
+import static io.gazetteer.osm.osmxml.XMLConstants.CREATE;
+import static io.gazetteer.osm.osmxml.XMLConstants.DELETE;
+import static io.gazetteer.osm.osmxml.XMLConstants.MODIFY;
+
 import io.gazetteer.osm.model.Change;
 import io.gazetteer.osm.model.Entity;
 import io.gazetteer.osm.model.Node;
@@ -28,13 +32,13 @@ public class ChangeConsumer implements Consumer<Change> {
       if (entity instanceof Node) {
         Node node = (Node) entity;
         switch (change.getType()) {
-          case create:
+          case CREATE:
             NodeTable.insert(connection, node);
             break;
-          case modify:
+          case MODIFY:
             NodeTable.update(connection, node);
             break;
-          case delete:
+          case DELETE:
             NodeTable.delete(connection, node.getInfo().getId());
             break;
           default:
@@ -43,13 +47,13 @@ public class ChangeConsumer implements Consumer<Change> {
       } else if (entity instanceof Way) {
         Way way = (Way) entity;
         switch (change.getType()) {
-          case create:
+          case CREATE:
             WayTable.insert(connection, way);
             break;
-          case modify:
+          case MODIFY:
             WayTable.update(connection, way);
             break;
-          case delete:
+          case DELETE:
             WayTable.delete(connection, way.getInfo().getId());
             break;
           default:
@@ -58,13 +62,13 @@ public class ChangeConsumer implements Consumer<Change> {
       } else if (entity instanceof Relation) {
         Relation relation = (Relation) entity;
         switch (change.getType()) {
-          case create:
+          case CREATE:
             RelationTable.insert(connection, relation);
             break;
-          case modify:
+          case MODIFY:
             RelationTable.update(connection, relation);
             break;
-          case delete:
+          case DELETE:
             RelationTable.delete(connection, relation.getInfo().getId());
             break;
           default:

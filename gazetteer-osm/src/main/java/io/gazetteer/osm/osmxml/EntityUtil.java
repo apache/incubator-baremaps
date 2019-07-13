@@ -1,21 +1,22 @@
 package io.gazetteer.osm.osmxml;
 
-import io.gazetteer.osm.model.Entity;
-import io.gazetteer.osm.util.BatchSpliterator;
-
-import java.io.InputStream;
-import java.util.Iterator;
-import java.util.Spliterator;
-
 import static io.gazetteer.osm.osmxml.XmlUtil.xmlEventReader;
+
+import io.gazetteer.osm.model.Entity;
+import java.io.InputStream;
+import java.util.Spliterator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import javax.xml.stream.XMLStreamException;
 
 public class EntityUtil {
 
-  public static Iterator<Entity> iterator(InputStream input) throws Exception {
-    return new EntityIterator(xmlEventReader(input));
+  public static Spliterator<Entity> spliterator(InputStream input) throws XMLStreamException {
+    return new EntitySpliterator(xmlEventReader(input));
   }
 
-  public static Spliterator<Entity> spliterator(InputStream input) throws Exception {
-    return new BatchSpliterator<>(iterator(input), 10);
+  public static Stream<Entity> stream(InputStream input) throws XMLStreamException {
+    return StreamSupport.stream(spliterator(input), false);
   }
+
 }

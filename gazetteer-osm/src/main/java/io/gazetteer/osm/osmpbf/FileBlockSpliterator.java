@@ -27,12 +27,12 @@ public class FileBlockSpliterator implements Spliterator<FileBlock> {
 
   @Override
   public long estimateSize() {
-    return 0;
+    return Long.MAX_VALUE;
   }
 
   @Override
   public int characteristics() {
-    return 0;
+    return ORDERED | DISTINCT | NONNULL | IMMUTABLE;
   }
 
   @Override

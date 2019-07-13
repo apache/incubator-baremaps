@@ -2,21 +2,15 @@ package io.gazetteer.osm.model;
 
 public final class Change {
 
-  public enum Type {
-    create,
-    modify,
-    delete
-  }
-
-  private final Type type;
+  private final String type;
   private final Entity entity;
 
-  public Change(Type type, Entity entity) {
+  public Change(String type, Entity entity) {
     this.type = type;
     this.entity = entity;
   }
 
-  public Type getType() {
+  public String getType() {
     return type;
   }
 

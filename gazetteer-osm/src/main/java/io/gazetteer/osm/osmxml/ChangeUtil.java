@@ -14,15 +14,12 @@ import static io.gazetteer.osm.osmxml.XmlUtil.xmlEventReader;
 
 public class ChangeUtil {
 
-  public static Iterator<Change> iterator(InputStream input) throws XMLStreamException {
-    return new ChangeIterator(xmlEventReader(input));
-  }
-
   public static Spliterator<Change> spliterator(InputStream input) throws XMLStreamException {
-    return new BatchSpliterator<>(iterator(input), 10);
+    return new ChangeSpliterator(XmlUtil.xmlEventReader(input));
   }
 
   public static Stream<Change> stream(InputStream input) throws XMLStreamException {
-    return StreamSupport.stream(spliterator(input), true);
+    return StreamSupport.stream(spliterator(input), false);
   }
+
 }

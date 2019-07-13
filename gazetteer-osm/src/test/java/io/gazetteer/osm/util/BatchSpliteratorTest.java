@@ -46,19 +46,8 @@ public class BatchSpliteratorTest {
   }
 
   @Test
-  public void getComparator() {
-    assertNull(spliterator.getComparator());
-  }
-
-  @Test
   public void estimateSize() {
     assertEquals(spliterator.estimateSize(), Long.MAX_VALUE);
-  }
-
-  @Test
-  public void characteristics() {
-    assertEquals(
-        spliterator.characteristics(), ORDERED | DISTINCT | NONNULL | IMMUTABLE | SUBSIZED);
   }
 
   @BeforeEach
@@ -67,6 +56,6 @@ public class BatchSpliteratorTest {
     for (int i = 0; i < spliteratorSize; i++) {
       ints.add(i);
     }
-    spliterator = new BatchSpliterator<>(ints.iterator(), batchSize);
+    spliterator = new BatchSpliterator<>(ints.spliterator(), batchSize);
   }
 }
