@@ -24,9 +24,9 @@ public class ChangeIterator implements Iterator<Change> {
     try {
       while (reader.hasNext()) {
         XMLEvent event = reader.peek();
-        if (XMLUtil.isElement(event, XMLUtil.NODE)
-            || XMLUtil.isElement(event, XMLUtil.WAY)
-            || XMLUtil.isElement(event, XMLUtil.RELATION)) {
+        if (XmlUtil.isElement(event, XmlUtil.NODE)
+            || XmlUtil.isElement(event, XmlUtil.WAY)
+            || XmlUtil.isElement(event, XmlUtil.RELATION)) {
           return true;
         } else {
           updateType(reader.nextEvent());
@@ -43,12 +43,12 @@ public class ChangeIterator implements Iterator<Change> {
     try {
       while (reader.hasNext()) {
         XMLEvent event = reader.nextEvent();
-        if (XMLUtil.isElement(event, XMLUtil.NODE)) {
-          return new Change(type, XMLUtil.readNode(event.asStartElement(), reader));
-        } else if (XMLUtil.isElement(event, XMLUtil.WAY)) {
-          return new Change(type, XMLUtil.readWay(event.asStartElement(), reader));
-        } else if (XMLUtil.isElement(event, XMLUtil.RELATION)) {
-          return new Change(type, XMLUtil.readRelation(event.asStartElement(), reader));
+        if (XmlUtil.isElement(event, XmlUtil.NODE)) {
+          return new Change(type, XmlUtil.readNode(event.asStartElement(), reader));
+        } else if (XmlUtil.isElement(event, XmlUtil.WAY)) {
+          return new Change(type, XmlUtil.readWay(event.asStartElement(), reader));
+        } else if (XmlUtil.isElement(event, XmlUtil.RELATION)) {
+          return new Change(type, XmlUtil.readRelation(event.asStartElement(), reader));
         }
       }
       throw new NoSuchElementException();
@@ -60,11 +60,11 @@ public class ChangeIterator implements Iterator<Change> {
   }
 
   private void updateType(XMLEvent event) throws XMLStreamException {
-    if (XMLUtil.isElement(event, Change.Type.create.name())) {
+    if (XmlUtil.isElement(event, Change.Type.create.name())) {
       type = Change.Type.create;
-    } else if (XMLUtil.isElement(event, Change.Type.modify.name())) {
+    } else if (XmlUtil.isElement(event, Change.Type.modify.name())) {
       type = Change.Type.modify;
-    } else if (XMLUtil.isElement(event, Change.Type.delete.name())) {
+    } else if (XmlUtil.isElement(event, Change.Type.delete.name())) {
       type = Change.Type.delete;
     }
   }

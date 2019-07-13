@@ -15,7 +15,7 @@ import java.util.stream.StreamSupport;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import org.openstreetmap.osmosis.osmbinary.Osmformat.HeaderBlock;
 
-public class PBFUtil {
+public class PbfUtil {
 
   public static final String HEADER_BLOCK = "OSMHeader";
   public static final String PRIMITIVE_BLOCK = "OSMData";
@@ -37,13 +37,13 @@ public class PBFUtil {
   }
 
   public static HeaderBlock header(Stream<FileBlock> blocks) {
-    return blocks.findFirst().map(PBFUtil::toHeaderBlock).get();
+    return blocks.findFirst().map(PbfUtil::toHeaderBlock).get();
   }
 
   public static Stream<PrimitiveBlock> toPrimitiveBlock(Stream<FileBlock> blocks) {
     return blocks
-        .filter(PBFUtil::isPrimitiveBlock)
-        .map(PBFUtil::toPrimitiveBlock)
+        .filter(PbfUtil::isPrimitiveBlock)
+        .map(PbfUtil::toPrimitiveBlock)
         .map(PrimitiveBlockReader::new)
         .map(PrimitiveBlockReader::readPrimitiveBlock);
   }

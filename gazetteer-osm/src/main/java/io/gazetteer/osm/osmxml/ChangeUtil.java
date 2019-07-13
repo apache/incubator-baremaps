@@ -6,12 +6,11 @@ import io.gazetteer.osm.util.BatchSpliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.xml.stream.XMLStreamException;
-import java.io.File;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Spliterator;
 
-import static io.gazetteer.osm.osmxml.XMLUtil.xmlEventReader;
+import static io.gazetteer.osm.osmxml.XmlUtil.xmlEventReader;
 
 public class ChangeUtil {
 

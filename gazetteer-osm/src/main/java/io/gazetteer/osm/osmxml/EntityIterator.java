@@ -22,9 +22,9 @@ public class EntityIterator implements Iterator<Entity> {
     try {
       while (reader.hasNext()) {
         XMLEvent event = reader.peek();
-        if (XMLUtil.isElement(event, XMLUtil.NODE)
-            || XMLUtil.isElement(event, XMLUtil.WAY)
-            || XMLUtil.isElement(event, XMLUtil.RELATION)) {
+        if (XmlUtil.isElement(event, XmlUtil.NODE)
+            || XmlUtil.isElement(event, XmlUtil.WAY)
+            || XmlUtil.isElement(event, XmlUtil.RELATION)) {
           return true;
         } else {
           reader.nextEvent();
@@ -41,12 +41,12 @@ public class EntityIterator implements Iterator<Entity> {
     try {
       while (reader.hasNext()) {
         XMLEvent event = reader.nextEvent();
-        if (XMLUtil.isElement(event, XMLUtil.NODE)) {
-          return XMLUtil.readNode(event.asStartElement(), reader);
-        } else if (XMLUtil.isElement(event, XMLUtil.WAY)) {
-          return XMLUtil.readWay(event.asStartElement(), reader);
-        } else if (XMLUtil.isElement(event, XMLUtil.RELATION)) {
-          return XMLUtil.readRelation(event.asStartElement(), reader);
+        if (XmlUtil.isElement(event, XmlUtil.NODE)) {
+          return XmlUtil.readNode(event.asStartElement(), reader);
+        } else if (XmlUtil.isElement(event, XmlUtil.WAY)) {
+          return XmlUtil.readWay(event.asStartElement(), reader);
+        } else if (XmlUtil.isElement(event, XmlUtil.RELATION)) {
+          return XmlUtil.readRelation(event.asStartElement(), reader);
         }
       }
       throw new NoSuchElementException();

@@ -5,7 +5,7 @@ import static picocli.CommandLine.Option;
 import io.gazetteer.osm.model.Change;
 import io.gazetteer.osm.postgis.BlockConsumer;
 import io.gazetteer.osm.osmpbf.FileBlock;
-import io.gazetteer.osm.osmpbf.PBFUtil;
+import io.gazetteer.osm.osmpbf.PbfUtil;
 import io.gazetteer.osm.osmxml.ChangeConsumer;
 import io.gazetteer.osm.osmxml.ChangeUtil;
 import io.gazetteer.osm.util.StopWatch;
@@ -53,7 +53,7 @@ public class Importer implements Runnable {
       }
 
       System.out.println("Populating OSM database.");
-      Stream<FileBlock> blocks = PBFUtil.stream(PBFUtil.read(file));
+      Stream<FileBlock> blocks = PbfUtil.stream(PbfUtil.read(file));
       PoolingDataSource pool = DatabaseUtil.poolingDataSource(database);
       BlockConsumer pgBulkInsertConsumer = new BlockConsumer(pool);
       executor.submit(() -> blocks.forEach(pgBulkInsertConsumer)).get();

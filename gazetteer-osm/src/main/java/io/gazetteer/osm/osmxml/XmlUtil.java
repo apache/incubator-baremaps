@@ -15,7 +15,7 @@ import java.util.*;
 
 import static io.gazetteer.osm.model.User.NO_USER;
 
-public class XMLUtil {
+public class XmlUtil {
 
   protected static final SimpleDateFormat format;
 

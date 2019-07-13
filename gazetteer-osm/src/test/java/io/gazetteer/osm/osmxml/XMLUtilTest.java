@@ -17,12 +17,12 @@ public class XMLUtilTest {
 
   @Test
   public void readNode() throws Exception {
-    XMLEventReader reader = XMLUtil.xmlEventReader(osmXmlData());
+    XMLEventReader reader = XmlUtil.xmlEventReader(osmXmlData());
     while (reader.hasNext()) {
       XMLEvent event = reader.nextEvent();
       if (event.isStartElement()
           && event.asStartElement().getName().getLocalPart().equals("node")) {
-        Node node = XMLUtil.readNode(event.asStartElement(), reader);
+        Node node = XmlUtil.readNode(event.asStartElement(), reader);
         assertEquals(1, node.getInfo().getId());
         assertEquals(10, node.getInfo().getVersion());
         assertEquals(1199243045000l, node.getInfo().getTimestamp());
@@ -38,11 +38,11 @@ public class XMLUtilTest {
 
   @Test
   public void readWay() throws Exception {
-    XMLEventReader reader = XMLUtil.xmlEventReader(osmXmlData());
+    XMLEventReader reader = XmlUtil.xmlEventReader(osmXmlData());
     while (reader.hasNext()) {
       XMLEvent event = reader.nextEvent();
       if (event.isStartElement() && event.asStartElement().getName().getLocalPart().equals("way")) {
-        Way way = XMLUtil.readWay(event.asStartElement(), reader);
+        Way way = XmlUtil.readWay(event.asStartElement(), reader);
         assertEquals(1, way.getInfo().getId());
         assertEquals(10, way.getInfo().getVersion());
         assertEquals(1199243045000l, way.getInfo().getTimestamp());
@@ -57,12 +57,12 @@ public class XMLUtilTest {
 
   @Test
   public void readRelation() throws Exception {
-    XMLEventReader reader = XMLUtil.xmlEventReader(osmXmlData());
+    XMLEventReader reader = XmlUtil.xmlEventReader(osmXmlData());
     while (reader.hasNext()) {
       XMLEvent event = reader.nextEvent();
       if (event.isStartElement()
           && event.asStartElement().getName().getLocalPart().equals("relation")) {
-        Relation relation = XMLUtil.readRelation(event.asStartElement(), reader);
+        Relation relation = XmlUtil.readRelation(event.asStartElement(), reader);
         assertEquals(1, relation.getInfo().getId());
         assertEquals(10, relation.getInfo().getVersion());
         assertEquals(1199243045000l, relation.getInfo().getTimestamp());
