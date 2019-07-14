@@ -15,7 +15,7 @@ import java.util.*;
 
 import static io.gazetteer.osm.model.User.NO_USER;
 
-public class XmlUtil {
+public class XMLUtil {
 
   public static XMLEventReader xmlEventReader(InputStream file) throws XMLStreamException {
     XMLInputFactory factory = XMLInputFactory.newInstance();

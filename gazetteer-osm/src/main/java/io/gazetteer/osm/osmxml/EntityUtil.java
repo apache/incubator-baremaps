@@ -1,6 +1,6 @@
 package io.gazetteer.osm.osmxml;
 
-import static io.gazetteer.osm.osmxml.XmlUtil.xmlEventReader;
+import static io.gazetteer.osm.osmxml.XMLUtil.xmlEventReader;
 
 import io.gazetteer.osm.model.Entity;
 import java.io.InputStream;

@@ -36,13 +36,13 @@ public class ChangeSpliterator implements Spliterator<Change> {
           }
           switch (name) {
             case NODE:
-              consumer.accept(new Change(type, XmlUtil.readNode(event.asStartElement(), reader)));
+              consumer.accept(new Change(type, XMLUtil.readNode(event.asStartElement(), reader)));
               return true;
             case WAY:
-              consumer.accept(new Change(type, XmlUtil.readWay(event.asStartElement(), reader)));
+              consumer.accept(new Change(type, XMLUtil.readWay(event.asStartElement(), reader)));
               return true;
             case RELATION:
-              consumer.accept(new Change(type, XmlUtil.readRelation(event.asStartElement(), reader)));
+              consumer.accept(new Change(type, XMLUtil.readRelation(event.asStartElement(), reader)));
               return true;
             default:
               break;
