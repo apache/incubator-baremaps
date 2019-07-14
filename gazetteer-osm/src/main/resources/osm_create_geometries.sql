@@ -13,12 +13,14 @@ ALTER TABLE osm_ways ADD PRIMARY KEY (id);
 
 DROP TABLE IF EXISTS osm_relations_geom;
 CREATE TABLE osm_relations_geom AS (
-    SELECT r.id, r.version, r.uid, r.timestamp, r.changeset, r.tags, r.member_refs, r.member_types, r.member_roles, st_buildarea(st_makevalid(g.geom)) AS geom
+    SELECT r.id, r.version, r.uid, r.timestamp, r.changeset, r.tags, r.member_refs, r.member_types, r.member_roles, g.geom AS geom
     FROM osm_relations r JOIN (
-        SELECT r.id, st_collect(w.geom ORDER BY ordinality) as geom
+        SELECT r.id,
+               CASE WHEN r.tags -> 'type' = 'multipolygon' THEN st_buildarea(st_makevalid(st_collect(w.geom ORDER BY ordinality)))
+                   -- Add cases for other types here
+                    ELSE NULL END as geom
         FROM osm_relations r, unnest(r.member_refs) WITH ORDINALITY as way JOIN osm_ways w ON way = w.id
-        -- WHERE r.tags -> 'type' = 'multipolygon' -- TODO: find a way to remove this limitation
-        GROUP BY r.id
+        GROUP BY r.id, r.tags
     ) AS g ON r.id = g.id
 );
 DROP TABLE IF EXISTS osm_relations;
