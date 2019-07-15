@@ -6,14 +6,15 @@ import io.gazetteer.osm.osmpbf.PrimitiveBlock;
 import io.gazetteer.osm.osmpbf.FileBlockConsumer;
 import io.gazetteer.osm.osmpbf.HeaderBlock;
 import java.sql.Connection;
+import javax.sql.DataSource;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.postgresql.PGConnection;
 
 public class BlockConsumer extends FileBlockConsumer {
 
-  private final PoolingDataSource pool;
+  private final DataSource pool;
 
-  public BlockConsumer(PoolingDataSource pool) {
+  public BlockConsumer(DataSource pool) {
     checkNotNull(pool);
     this.pool = pool;
   }

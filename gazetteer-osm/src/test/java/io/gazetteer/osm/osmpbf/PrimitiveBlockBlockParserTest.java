@@ -21,7 +21,7 @@ public class PrimitiveBlockBlockParserTest {
   @Test
   public void read() throws IOException {
     HoldingConsumer<FileBlock> consumer = new HoldingConsumer<>();
-    FileBlockSpliterator fileBlockIterator = (FileBlockSpliterator) PbfUtil.spliterator(osmPbfData());
+    FileBlockSpliterator fileBlockIterator = (FileBlockSpliterator) PBFUtil.spliterator(osmPbfData());
     fileBlockIterator.tryAdvance(consumer);
     PrimitiveBlockReader primitiveBlockReader =
         new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(consumer.value.getData()));
@@ -36,7 +36,7 @@ public class PrimitiveBlockBlockParserTest {
   @Test
   public void readDenseNodes() throws IOException {
     HoldingConsumer<FileBlock> consumer = new HoldingConsumer<>();
-    FileBlockSpliterator fileBlockIterator = (FileBlockSpliterator) PbfUtil.spliterator(osmPbfDenseBlock());
+    FileBlockSpliterator fileBlockIterator = (FileBlockSpliterator) PBFUtil.spliterator(osmPbfDenseBlock());
     fileBlockIterator.tryAdvance(consumer);
     PrimitiveBlockReader primitiveBlockReader =
         new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(consumer.value.getData()));
@@ -48,7 +48,7 @@ public class PrimitiveBlockBlockParserTest {
   @Test
   public void readWays() throws IOException {
     HoldingConsumer<FileBlock> consumer = new HoldingConsumer<>();
-    FileBlockSpliterator fileBlockIterator = (FileBlockSpliterator) PbfUtil.spliterator(osmPbfWaysBlock());
+    FileBlockSpliterator fileBlockIterator = (FileBlockSpliterator) PBFUtil.spliterator(osmPbfWaysBlock());
     fileBlockIterator.tryAdvance(consumer);
     PrimitiveBlockReader primitiveBlockReader =
         new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(consumer.value.getData()));
@@ -60,7 +60,7 @@ public class PrimitiveBlockBlockParserTest {
   @Test
   public void readRelations() throws IOException {
     HoldingConsumer<FileBlock> consumer = new HoldingConsumer<>();
-    FileBlockSpliterator fileBlockIterator = (FileBlockSpliterator) PbfUtil.spliterator(osmPbfRelationsBlock());
+    FileBlockSpliterator fileBlockIterator = (FileBlockSpliterator) PBFUtil.spliterator(osmPbfRelationsBlock());
     fileBlockIterator.tryAdvance(consumer);
     PrimitiveBlockReader primitiveBlockReader =
         new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(consumer.value.getData()));

@@ -13,7 +13,7 @@ public class FileBlockSpliteratorTest {
 
   @Test
   public void tryAdvance() throws FileNotFoundException {
-    Spliterator<FileBlock> reader = PbfUtil.spliterator(osmPbfData());
+    Spliterator<FileBlock> reader = PBFUtil.spliterator(osmPbfData());
     reader.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
     assertFalse(reader.tryAdvance(new HoldingConsumer<>()));
   }

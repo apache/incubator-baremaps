@@ -49,7 +49,7 @@ public class Generator implements Runnable {
   public void run() {
     ForkJoinPool executor = new ForkJoinPool(threads);
     try {
-      // Read the configuration file
+      // Read the configuration toInputStream
       List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(config.toFile())).getLayers();
       PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
       TileReader tileReader = new PostgisTileReader(datasource, layers);

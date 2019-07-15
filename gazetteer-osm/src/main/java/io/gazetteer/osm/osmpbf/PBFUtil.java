@@ -8,23 +8,33 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
-import org.openstreetmap.osmosis.osmbinary.Osmformat.HeaderBlock;
 
-public class PbfUtil {
+public class PBFUtil {
 
   public static final String HEADER_BLOCK = "OSMHeader";
   public static final String PRIMITIVE_BLOCK = "OSMData";
 
-  public static InputStream read(File file) throws IOException {
+  public static URL url(String source) throws MalformedURLException {
+    if (Files.exists(Paths.get(source))) {
+      return Paths.get(source).toUri().toURL();
+    } else {
+      return new URL(source);
+    }
+  }
+
+  public static InputStream input(File file) throws IOException {
     return new BufferedInputStream(new FileInputStream(file));
   }
 
-  public static InputStream read(URL url) throws IOException {
+  public static InputStream input(URL url) throws IOException {
     return new BufferedInputStream(url.openConnection().getInputStream());
   }
 
@@ -36,14 +46,10 @@ public class PbfUtil {
     return StreamSupport.stream(spliterator(input), true);
   }
 
-  public static HeaderBlock header(Stream<FileBlock> blocks) {
-    return blocks.findFirst().map(PbfUtil::toHeaderBlock).get();
-  }
-
   public static Stream<PrimitiveBlock> toPrimitiveBlock(Stream<FileBlock> blocks) {
     return blocks
-        .filter(PbfUtil::isPrimitiveBlock)
-        .map(PbfUtil::toPrimitiveBlock)
+        .filter(PBFUtil::isPrimitiveBlock)
+        .map(PBFUtil::toPrimitiveBlock)
         .map(PrimitiveBlockReader::new)
         .map(PrimitiveBlockReader::readPrimitiveBlock);
   }
@@ -71,4 +77,5 @@ public class PbfUtil {
       throw new StreamException(e);
     }
   }
+
 }

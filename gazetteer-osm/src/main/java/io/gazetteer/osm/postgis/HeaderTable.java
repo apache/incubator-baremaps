@@ -13,11 +13,10 @@ import org.locationtech.jts.geom.Geometry;
 public class HeaderTable {
 
   private static final String SELECT =
-      "SELECT replication_timestamp, replication_sequence_number, replication_url, source, writing_program, bbox FROM osm_headers ORDER BY replication_timestamp DESC";
+      "SELECT replication_timestamp, replication_sequence_number, replication_url, source, writing_program, st_asewkb(bbox) FROM osm_headers ORDER BY replication_timestamp DESC";
 
   private static final String INSERT =
       "INSERT INTO osm_headers (replication_timestamp, replication_sequence_number, replication_url, source, writing_program, bbox) VALUES (?, ?, ?, ?, ?, ?)";
-
 
   public static List<HeaderBlock> select(Connection connection) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(SELECT)) {
@@ -34,6 +33,10 @@ public class HeaderTable {
       }
       return headerBlocks;
     }
+  }
+
+  public static HeaderBlock last(Connection connection) throws SQLException {
+    return select(connection).get(0);
   }
 
   public static void insert(Connection connection, HeaderBlock headerBlock) throws SQLException {

@@ -1,3 +1,5 @@
+-- Compute the geometries for the ways table
+-- Notice that creating a new table is faster than updating it.
 DROP TABLE IF EXISTS osm_ways_geom;
 CREATE TABLE osm_ways_geom AS (
     SELECT w.id, w.version, w.uid, w.timestamp, w.changeset, w.tags, w.nodes, CASE WHEN st_isclosed(g.geom) THEN st_makepolygon(g.geom) ELSE g.geom END AS geom
@@ -11,6 +13,9 @@ DROP TABLE IF EXISTS osm_ways;
 ALTER TABLE osm_ways_geom RENAME TO osm_ways;
 ALTER TABLE osm_ways ADD PRIMARY KEY (id);
 
+-- Compute the geometries for the relations table
+-- Notice that creating a new table is faster than updating it.
+-- New cases can be inserted here to support other types of relations.
 DROP TABLE IF EXISTS osm_relations_geom;
 CREATE TABLE osm_relations_geom AS (
     SELECT r.id, r.version, r.uid, r.timestamp, r.changeset, r.tags, r.member_refs, r.member_types, r.member_roles, g.geom AS geom

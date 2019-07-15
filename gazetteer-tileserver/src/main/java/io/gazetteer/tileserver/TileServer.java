@@ -45,7 +45,7 @@ public class TileServer implements Runnable {
       Vertx vertx = Vertx.vertx();
       HttpServer server = vertx.createHttpServer();
 
-      // Read the configuration file
+      // Read the configuration toInputStream
       List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(config.toFile())).getLayers();
       PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
       TileReader tileReader = new PostgisTileReader(datasource, layers);

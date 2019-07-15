@@ -27,7 +27,7 @@
 //
 //  @BeforeEach
 //  public void setUp() throws Exception {
-//    RocksDB db = RocksDB.open(new Options().setCreateIfMissing(true), Files.createTempDir().getPath());
+//    RocksDB db = RocksDB.open(new Options().setCreateIfMissing(true), Files.createTempDir().path());
 //    ColumnFamilyHandle nodes = db.createColumnFamily(new ColumnFamilyDescriptor("nodes".getBytes()));
 //    entityStore = LmdbStore.open(db, nodes, new NodeType());
 //  }

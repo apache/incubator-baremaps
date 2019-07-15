@@ -1,19 +1,19 @@
 package io.gazetteer.osm;
 
+import static io.gazetteer.osm.osmpbf.PBFUtil.url;
 import static picocli.CommandLine.Option;
 
 import io.gazetteer.common.postgis.util.DatabaseUtil;
 import io.gazetteer.osm.osmpbf.FileBlock;
-import io.gazetteer.osm.osmpbf.PbfUtil;
+import io.gazetteer.osm.osmpbf.PBFImporter;
+import io.gazetteer.osm.osmpbf.PBFUtil;
+import io.gazetteer.osm.osmxml.ChangeImporter;
 import io.gazetteer.osm.postgis.BlockConsumer;
 import io.gazetteer.osm.util.StopWatch;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
@@ -24,9 +24,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
 @Command(description = "Import OSM PBF into Postgresql")
-public class Importer implements Runnable {
+public class Importer implements Callable<Integer> {
 
-  @Parameters(index = "0", paramLabel = "OSM_FILE", description = "The OpenStreetMap PBF sourceURL.")
+  @Parameters(index = "0", paramLabel = "OSM_FILE", description = "The OpenStreetMap PBF url.")
   private String source;
 
   @Parameters(index = "1", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
@@ -37,66 +37,22 @@ public class Importer implements Runnable {
       description = "The size of the thread pool.")
   private int threads = Runtime.getRuntime().availableProcessors();
 
-  public URL sourceURL(String source) throws MalformedURLException {
-    if (Files.exists(Paths.get(source))) {
-      return Paths.get(source).toUri().toURL();
-    } else {
-      return new URL(source);
-    }
-  }
-
   @Override
-  public void run() {
+  public Integer call() throws Exception {
     ForkJoinPool executor = new ForkJoinPool(threads);
+    PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
     try {
-      StopWatch stopWatch = new StopWatch();
-      PoolingDataSource pool = DatabaseUtil.poolingDataSource(database);
-
-      System.out.println("Creating OSM database.");
-      try (Connection connection = pool.getConnection()) {
-        DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
-        System.out.println(String.format("-> %dms", stopWatch.lap()));
-      }
-
-      System.out.println("Populating OSM database.");
-      Stream<FileBlock> blocks = PbfUtil.stream(PbfUtil.read(sourceURL(source)));
-      BlockConsumer pgBulkInsertConsumer = new BlockConsumer(pool);
-      executor.submit(() -> blocks.forEach(pgBulkInsertConsumer)).get();
-      System.out.println(String.format("-> %dms", stopWatch.lap()));
-
-      try (Connection connection = pool.getConnection()) {
-        System.out.println("Updating OSM geometries.");
-        DatabaseUtil.executeScript(connection, "osm_create_geometries.sql");
-        System.out.println(String.format("-> %dms", stopWatch.lap()));
-      }
-
-      try (Connection connection = pool.getConnection()) {
-        System.out.println("Indexing OSM geometries.");
-        DatabaseUtil.executeScript(connection, "osm_create_indexes.sql");
-        System.out.println(String.format("-> %dms", stopWatch.lap()));
-      }
-
-      System.out.println("Done!");
-
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    } catch (ExecutionException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (SQLException e) {
-      e.printStackTrace();
+      //return new PBFImporter(source, datasource, executor).call();
+      return new ChangeImporter(datasource, executor).call();
     } finally {
       executor.shutdown();
-      try {
-        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
     }
   }
 
   public static void main(String[] args) {
-    CommandLine.run(new Importer(), args);
+    CommandLine.call(new Importer(), args);
   }
+
+
 }

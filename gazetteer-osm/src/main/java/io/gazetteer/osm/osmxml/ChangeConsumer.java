@@ -15,19 +15,19 @@ import io.gazetteer.osm.postgis.WayTable;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Consumer;
-import org.apache.commons.dbcp2.PoolingDataSource;
+import javax.sql.DataSource;
 
 public class ChangeConsumer implements Consumer<Change> {
 
-  private final PoolingDataSource pool;
+  private final DataSource datasource;
 
-  public ChangeConsumer(PoolingDataSource pool) {
-    this.pool = pool;
+  public ChangeConsumer(DataSource datasource) {
+    this.datasource = datasource;
   }
 
   @Override
   public void accept(Change change) {
-    try (Connection connection = pool.getConnection()) {
+    try (Connection connection = datasource.getConnection()) {
       Entity entity = change.getEntity();
       if (entity instanceof Node) {
         Node node = (Node) entity;

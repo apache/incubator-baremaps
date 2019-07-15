@@ -29,7 +29,7 @@ Connect to postgresql with the psql shell:
 sudo -u postgres psql
 ```
 
-From the psql shell, create the database, the username and the extensions:
+From the psql shell, create the datasource, the username and the extensions:
 
 ```
 createuser gazetteer -W
@@ -50,7 +50,7 @@ cd gazetteer
 mvn clean install
 ```
 
-Populate the database with the liechtenstein data:
+Populate the datasource with the liechtenstein data:
 
 ```
 mvn -pl gazetteer-osm exec:java \
