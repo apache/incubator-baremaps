@@ -3,8 +3,8 @@ package io.gazetteer.osm.osmxml;
 import static io.gazetteer.osm.osmxml.ChangeUtil.statePath;
 
 import io.gazetteer.common.io.URLUtil;
-import io.gazetteer.osm.model.Change;
 import io.gazetteer.osm.osmpbf.HeaderBlock;
+import io.gazetteer.osm.postgis.ChangeConsumer;
 import io.gazetteer.osm.postgis.HeaderTable;
 import java.io.InputStream;
 import java.net.URL;

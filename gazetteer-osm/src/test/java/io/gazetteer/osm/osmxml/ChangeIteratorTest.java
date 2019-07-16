@@ -1,15 +1,5 @@
 package io.gazetteer.osm.osmxml;
 
-import io.gazetteer.osm.model.Change;
-import org.junit.jupiter.api.Test;
-
-import javax.xml.stream.XMLStreamException;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
-import static io.gazetteer.osm.OSMTestUtil.osmPbfData;
-import static org.junit.jupiter.api.Assertions.*;
-
 public class ChangeIteratorTest {
 
   /*

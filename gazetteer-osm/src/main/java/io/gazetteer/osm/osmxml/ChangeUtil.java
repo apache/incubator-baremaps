@@ -2,8 +2,6 @@ package io.gazetteer.osm.osmxml;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import io.gazetteer.osm.model.Change;
-
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.xml.stream.XMLStreamException;

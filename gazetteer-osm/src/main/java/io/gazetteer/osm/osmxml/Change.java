@@ -1,4 +1,6 @@
-package io.gazetteer.osm.model;
+package io.gazetteer.osm.osmxml;
+
+import io.gazetteer.osm.model.Entity;
 
 public final class Change {
 

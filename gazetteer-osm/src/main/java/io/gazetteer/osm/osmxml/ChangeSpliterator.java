@@ -7,7 +7,6 @@ import static io.gazetteer.osm.osmxml.XMLConstants.NODE;
 import static io.gazetteer.osm.osmxml.XMLConstants.RELATION;
 import static io.gazetteer.osm.osmxml.XMLConstants.WAY;
 
-import io.gazetteer.osm.model.Change;
 import io.gazetteer.osm.util.StreamException;
 import java.util.Spliterator;
 import java.util.function.Consumer;

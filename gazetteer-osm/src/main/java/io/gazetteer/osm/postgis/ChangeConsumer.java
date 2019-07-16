@@ -1,14 +1,14 @@
-package io.gazetteer.osm.osmxml;
+package io.gazetteer.osm.postgis;
 
 import static io.gazetteer.osm.osmxml.XMLConstants.CREATE;
 import static io.gazetteer.osm.osmxml.XMLConstants.DELETE;
 import static io.gazetteer.osm.osmxml.XMLConstants.MODIFY;
 
-import io.gazetteer.osm.model.Change;
 import io.gazetteer.osm.model.Entity;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
+import io.gazetteer.osm.osmxml.Change;
 import io.gazetteer.osm.postgis.NodeTable;
 import io.gazetteer.osm.postgis.RelationTable;
 import io.gazetteer.osm.postgis.WayTable;
