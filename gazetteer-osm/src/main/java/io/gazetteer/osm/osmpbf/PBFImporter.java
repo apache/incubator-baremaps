@@ -32,13 +32,13 @@ public class PBFImporter implements Callable<Integer> {
   public Integer call() throws Exception {
     StopWatch stopWatch = new StopWatch();
 
-    System.out.println("Creating OSM database.");
+    System.out.println("Creating database.");
     try (Connection connection = database.getConnection()) {
       DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
       System.out.println(String.format("-> %dms", stopWatch.lap()));
     }
 
-    System.out.println("Populating OSM database.");
+    System.out.println("Populating database.");
     try (InputStream input = input(url(source))) {
       Stream<FileBlock> blocks = stream(input);
       BlockConsumer pgBulkInsertConsumer = new BlockConsumer(database);
@@ -47,13 +47,19 @@ public class PBFImporter implements Callable<Integer> {
     }
 
     try (Connection connection = database.getConnection()) {
-      System.out.println("Updating OSM geometries.");
+      System.out.println("Updating geometries.");
       DatabaseUtil.executeScript(connection, "osm_create_geometries.sql");
       System.out.println(String.format("-> %dms", stopWatch.lap()));
     }
 
     try (Connection connection = database.getConnection()) {
-      System.out.println("Indexing OSM geometries.");
+      System.out.println("Creating primary keys.");
+      DatabaseUtil.executeScript(connection, "osm_create_primary_keys.sql");
+      System.out.println(String.format("-> %dms", stopWatch.lap()));
+    }
+
+    try (Connection connection = database.getConnection()) {
+      System.out.println("Indexing geometries.");
       DatabaseUtil.executeScript(connection, "osm_create_indexes.sql");
       System.out.println(String.format("-> %dms", stopWatch.lap()));
     }

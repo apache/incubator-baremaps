@@ -6,6 +6,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.InputStream;
@@ -17,12 +18,20 @@ import static io.gazetteer.osm.model.User.NO_USER;
 
 public class XMLUtil {
 
-  public static XMLEventReader xmlEventReader(InputStream file) throws XMLStreamException {
+  public static XMLInputFactory xmlInputFactory() {
     XMLInputFactory factory = XMLInputFactory.newInstance();
     factory.setProperty(XMLInputFactory.IS_COALESCING, false);
     factory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false);
     factory.setProperty(XMLInputFactory.IS_VALIDATING, false);
-    return factory.createXMLEventReader(file);
+    return factory;
+  }
+
+  public static XMLEventReader xmlEventReader(InputStream file) throws XMLStreamException {
+    return xmlInputFactory().createXMLEventReader(file);
+  }
+
+  public static XMLStreamReader xmlStreamReader(InputStream file) throws XMLStreamException {
+    return xmlInputFactory().createXMLStreamReader(file);
   }
 
   protected static boolean isElement(XMLEvent event, String element) {

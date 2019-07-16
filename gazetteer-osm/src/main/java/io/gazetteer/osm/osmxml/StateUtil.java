@@ -20,7 +20,7 @@ public class StateUtil {
     long sequenceNumber = Long.parseLong(map.get("sequenceNumber"));
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH\\:mm\\:ss'Z'");
     format.setTimeZone(TimeZone.getTimeZone("GMT"));
-    long timestamp = format.parse(map.get("timestamp")).getTime();
+    long timestamp = format.parse(map.get("timestamp")).getTime() / 1000;
     return new State(sequenceNumber, timestamp);
   }
 

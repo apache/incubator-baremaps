@@ -11,7 +11,6 @@ CREATE TABLE osm_ways_geom AS (
 );
 DROP TABLE IF EXISTS osm_ways;
 ALTER TABLE osm_ways_geom RENAME TO osm_ways;
-ALTER TABLE osm_ways ADD PRIMARY KEY (id);
 
 -- Compute the geometries for the relations table
 -- Notice that creating a new table is faster than updating it.
@@ -30,4 +29,3 @@ CREATE TABLE osm_relations_geom AS (
 );
 DROP TABLE IF EXISTS osm_relations;
 ALTER TABLE osm_relations_geom RENAME TO osm_relations;
-ALTER TABLE osm_relations ADD PRIMARY KEY (id);

@@ -23,7 +23,7 @@ public class RelationTable {
       "SELECT version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles FROM osm_relations WHERE id = ?";
 
   private static final String INSERT =
-      "INSERT INTO osm_relations (id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles) VALUES (?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO osm_relations (id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   private static final String UPDATE =
       "UPDATE osm_relations SET version = ?, uid = ?, timestamp = ?, changeset = ?, tags = ?, member_refs = ?, member_types = ?, member_roles = ? WHERE id = ?";
@@ -41,9 +41,9 @@ public class RelationTable {
       statement.setTimestamp(4, new Timestamp(relation.getInfo().getTimestamp()));
       statement.setLong(5, relation.getInfo().getChangeset());
       statement.setObject(6, relation.getInfo().getTags());
-      statement.setObject(7, relation.getMembers().stream().map(m -> m.getRef()).toArray());
-      statement.setObject(8, relation.getMembers().stream().map(m -> m.getType().name()).toArray());
-      statement.setObject(9, relation.getMembers().stream().map(m -> m.getRole()).toArray());
+      statement.setObject(7, relation.getMembers().stream().mapToLong(m -> m.getRef()).toArray());
+      statement.setObject(8, relation.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new));
+      statement.setObject(9, relation.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new));
       statement.execute();
     }
   }
@@ -55,10 +55,10 @@ public class RelationTable {
       statement.setTimestamp(3, new Timestamp(relation.getInfo().getTimestamp()));
       statement.setLong(4, relation.getInfo().getChangeset());
       statement.setObject(5, relation.getInfo().getTags());
-      statement.setObject(6, relation.getMembers().stream().map(m -> m.getRef()).toArray());
-      statement.setObject(7, relation.getMembers().stream().map(m -> m.getType().name()).toArray());
-      statement.setObject(8, relation.getMembers().stream().map(m -> m.getRole()).toArray());
-      statement.setLong(7, relation.getInfo().getId());
+      statement.setObject(6, relation.getMembers().stream().mapToLong(m -> m.getRef()).toArray());
+      statement.setObject(7, relation.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new));
+      statement.setObject(8, relation.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new));
+      statement.setLong(9, relation.getInfo().getId());
       statement.execute();
     }
   }
