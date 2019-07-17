@@ -13,7 +13,6 @@ CREATE FUNCTION osm_ways_update_geometry() RETURNS trigger AS $$
     END;
 $$ LANGUAGE 'plpgsql';
 
-
 CREATE TRIGGER osm_ways_trigger
 AFTER INSERT OR UPDATE ON osm_ways
 FOR EACH ROW
