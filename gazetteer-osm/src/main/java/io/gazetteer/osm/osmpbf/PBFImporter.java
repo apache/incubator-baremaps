@@ -64,6 +64,12 @@ public class PBFImporter implements Callable<Integer> {
       System.out.println(String.format("-> %dms", stopWatch.lap()));
     }
 
+    try (Connection connection = database.getConnection()) {
+      System.out.println("Creating triggers.");
+      DatabaseUtil.executeScript(connection, "osm_create_triggers.sql");
+      System.out.println(String.format("-> %dms", stopWatch.lap()));
+    }
+
     return 1;
   }
 
