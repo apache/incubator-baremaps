@@ -46,7 +46,7 @@
     <version.lib.sqlite>3.21.0</version.lib.sqlite>
     <version.lib.caffeine>2.6.2</version.lib.caffeine>
     <version.lib.guava>27.0.1-jre</version.lib.guava>
-    <version.lib.picocli>3.9.6</version.lib.picocli>
+    <version.lib.picocli>4.0.0</version.lib.picocli>
     <version.lib.vertx>3.7.1</version.lib.vertx>
     <version.lib.snakeyaml>1.23</version.lib.snakeyaml>
     <version.lib.gson>2.8.5</version.lib.gson>
@@ -178,16 +178,18 @@
   </build>
 
   <modules>
-    <module>gazetteer-osm</module>
-    <module>gazetteer-tileserver</module>
-    <module>gazetteer-tilestore</module>
-    <module>gazetteer-benchmarks</module>
     <module>gazetteer-common</module>
+    <module>gazetteer-osm</module>
+    <module>gazetteer-tilestore</module>
+    <module>gazetteer-tileserver</module>
     <module>gazetteer-geoip</module>
+    <module>gazetteer-benchmarks</module>
+    <module>gazetteer-cli</module>
   </modules>
 
   <dependencyManagement>
     <dependencies>
+      <!-- Internal dependencies -->
       <dependency>
         <groupId>io.gazetteer</groupId>
         <artifactId>gazetteer-common</artifactId>
@@ -198,6 +200,33 @@
         <artifactId>gazetteer-osm</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
+      <dependency>
+        <groupId>io.gazetteer</groupId>
+        <artifactId>gazetteer-tilestore</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.gazetteer</groupId>
+        <artifactId>gazetteer-tileserver</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.gazetteer</groupId>
+        <artifactId>gazetteer-geoip</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.gazetteer</groupId>
+        <artifactId>gazetteer-benchmarks</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.gazetteer</groupId>
+        <artifactId>gazetteer-cli</artifactId>
+        <version>${project.parent.version}</version>
+      </dependency>
+
+      <!-- External dependencies -->
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
