@@ -9,7 +9,6 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.WKBWriter;
 import org.postgresql.copy.PGCopyOutputStream;
 
 public class CopyWriter implements AutoCloseable {
@@ -108,7 +107,7 @@ public class CopyWriter implements AutoCloseable {
   }
 
   public void writeGeometry(Geometry value) throws IOException {
-    nullableWriter(CopyWriter::byteArrayWriter).write(data, new WKBWriter().write(value));
+    nullableWriter(CopyWriter::byteArrayWriter).write(data, GeometryUtil.writeGeometry(value));
   }
 
   @Override

@@ -42,7 +42,8 @@ CREATE FUNCTION osm_relations_update_geometry() RETURNS trigger AS $$
                 -- Add cases for other types here
                 ELSE NULL END INTO ge
         FROM osm_relations r, unnest(r.member_refs) WITH ORDINALITY as way JOIN osm_ways w ON way = w.id
-        WHERE r.id = NEW.id;
+        GROUP BY r.id, r.tags, NEW.id
+        HAVING r.id = NEW.id;
         UPDATE osm_relations SET geom = ge WHERE id = NEW.id;
         RETURN NEW;
     END;

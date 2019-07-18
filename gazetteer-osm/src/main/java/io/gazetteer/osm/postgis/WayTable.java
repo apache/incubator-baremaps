@@ -55,7 +55,6 @@ public class WayTable {
       statement.setObject(5, way.getInfo().getTags());
       statement.setObject(6, way.getNodes().stream().mapToLong(Long::longValue).toArray());
       statement.setLong(7, way.getInfo().getId());
-      System.out.println(statement);
       statement.execute();
     }
   }
