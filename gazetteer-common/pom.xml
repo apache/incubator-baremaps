@@ -35,6 +35,20 @@
       <groupId>org.locationtech.jts.io</groupId>
       <artifactId>jts-io-common</artifactId>
     </dependency>
+
+    <!-- Testing libraries -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

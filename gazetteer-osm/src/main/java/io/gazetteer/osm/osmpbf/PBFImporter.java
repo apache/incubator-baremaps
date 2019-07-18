@@ -6,7 +6,7 @@ import static io.gazetteer.osm.osmpbf.PBFUtil.stream;
 
 import io.gazetteer.common.postgis.DatabaseUtil;
 import io.gazetteer.osm.postgis.BlockConsumer;
-import io.gazetteer.osm.util.StopWatch;
+import io.gazetteer.common.cli.StopWatch;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.util.concurrent.Callable;

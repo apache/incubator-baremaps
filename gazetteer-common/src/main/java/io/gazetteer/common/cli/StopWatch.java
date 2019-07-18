@@ -1,4 +1,4 @@
-package io.gazetteer.osm.util;
+package io.gazetteer.common.cli;
 
 public class StopWatch {
 
