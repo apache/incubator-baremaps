@@ -1,7 +1,7 @@
 package io.gazetteer.osm.osmpbf;
 
-import io.gazetteer.osm.util.Accumulator;
-import io.gazetteer.osm.util.StreamException;
+import io.gazetteer.common.stream.Accumulator;
+import io.gazetteer.common.stream.StreamException;
 import org.junit.jupiter.api.Test;
 
 import java.util.Spliterator;

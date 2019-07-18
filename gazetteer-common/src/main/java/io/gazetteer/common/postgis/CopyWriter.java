@@ -1,6 +1,5 @@
-package io.gazetteer.common.postgis.util;
+package io.gazetteer.common.postgis;
 
-import io.gazetteer.common.postgis.metadata.ObjectIdentifier;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -107,7 +106,7 @@ public class CopyWriter implements AutoCloseable {
   }
 
   public void writeGeometry(Geometry value) throws IOException {
-    nullableWriter(CopyWriter::byteArrayWriter).write(data, GeometryUtil.writeGeometry(value));
+    nullableWriter(CopyWriter::byteArrayWriter).write(data, GeometryUtil.toWKB(value));
   }
 
   @Override

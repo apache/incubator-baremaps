@@ -1,7 +1,7 @@
 package io.gazetteer.osm.osmpbf;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import io.gazetteer.osm.util.StreamException;
+import io.gazetteer.common.stream.StreamException;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;

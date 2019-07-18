@@ -1,6 +1,6 @@
 package io.gazetteer.tilestore.util;
 
-import io.gazetteer.osm.util.BatchSpliterator;
+import io.gazetteer.common.stream.BatchSpliterator;
 import io.gazetteer.tilestore.model.XYZ;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,4 +1,4 @@
-package io.gazetteer.common.postgis.metadata;
+package io.gazetteer.common.jdbc;
 
 import com.google.common.base.MoreObjects;
 

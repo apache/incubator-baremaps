@@ -1,6 +1,6 @@
 package io.gazetteer.osm.osmpbf;
 
-import io.gazetteer.osm.util.HoldingConsumer;
+import io.gazetteer.common.stream.HoldingConsumer;
 import java.util.Spliterator;
 import org.junit.jupiter.api.Test;
 

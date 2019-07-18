@@ -1,4 +1,4 @@
-package io.gazetteer.common.postgis.util;
+package io.gazetteer.common.postgis;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

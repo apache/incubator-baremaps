@@ -3,7 +3,7 @@ package io.gazetteer.osm.postgis;
 import io.gazetteer.osm.OSMTestUtil;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
-import io.gazetteer.common.postgis.util.DatabaseUtil;
+import io.gazetteer.common.postgis.DatabaseUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

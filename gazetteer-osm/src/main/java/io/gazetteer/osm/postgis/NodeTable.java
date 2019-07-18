@@ -1,12 +1,12 @@
 package io.gazetteer.osm.postgis;
 
-import static io.gazetteer.osm.util.GeometryUtil.asGeometry;
-import static io.gazetteer.osm.util.GeometryUtil.point;
-import static io.gazetteer.osm.util.GeometryUtil.asWKB;
+import static io.gazetteer.common.postgis.GeometryUtil.toGeometry;
+import static io.gazetteer.common.postgis.GeometryUtil.toPoint;
+import static io.gazetteer.common.postgis.GeometryUtil.toWKB;
 
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
-import io.gazetteer.common.postgis.util.CopyWriter;
+import io.gazetteer.common.postgis.CopyWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,7 +42,7 @@ public class NodeTable {
       statement.setTimestamp(4, new Timestamp(node.getInfo().getTimestamp()));
       statement.setLong(5, node.getInfo().getChangeset());
       statement.setObject(6, node.getInfo().getTags());
-      statement.setBytes(7, asWKB(point(node.getLon(), node.getLat())));
+      statement.setBytes(7, toWKB(toPoint(node.getLon(), node.getLat())));
       statement.execute();
     }
   }
@@ -54,7 +54,7 @@ public class NodeTable {
       statement.setTimestamp(3, new Timestamp(node.getInfo().getTimestamp()));
       statement.setLong(4, node.getInfo().getChangeset());
       statement.setObject(5, node.getInfo().getTags());
-      statement.setBytes(6, asWKB(point(node.getLon(), node.getLat())));
+      statement.setBytes(6, toWKB(toPoint(node.getLon(), node.getLat())));
       statement.setLong(7, node.getInfo().getId());
       statement.execute();
     }
@@ -70,7 +70,7 @@ public class NodeTable {
         long timestamp = result.getTimestamp(3).getTime();
         long changeset = result.getLong(4);
         Map<String, String> tags = (Map<String, String>) result.getObject(5);
-        Point point = (Point) asGeometry(result.getBytes(6));
+        Point point = (Point) toGeometry(result.getBytes(6));
         return new Node(new Info(id, version, timestamp, changeset, uid, tags), point.getX(), point.getY());
       } else {
         throw new IllegalArgumentException();
@@ -96,7 +96,7 @@ public class NodeTable {
         writer.writeLong(node.getInfo().getTimestamp());
         writer.writeLong(node.getInfo().getChangeset());
         writer.writeHstore(node.getInfo().getTags());
-        writer.writeGeometry(point(node.getLon(), node.getLat()));
+        writer.writeGeometry(toPoint(node.getLon(), node.getLat()));
       }
     }
   }

@@ -1,4 +1,4 @@
-package io.gazetteer.osm.util;
+package io.gazetteer.common.stream;
 
 import java.util.ArrayList;
 import java.util.List;

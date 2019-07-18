@@ -1,5 +1,7 @@
 package io.gazetteer.osm.util;
 
+import io.gazetteer.common.stream.Accumulator;
+import io.gazetteer.common.stream.BatchSpliterator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -7,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Spliterator;
 
-import static java.util.Spliterator.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BatchSpliteratorTest {

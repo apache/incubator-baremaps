@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
-import io.gazetteer.osm.util.HoldingConsumer;
+import io.gazetteer.common.stream.HoldingConsumer;
 import java.io.IOException;
 import java.util.List;
 import org.junit.jupiter.api.Test;

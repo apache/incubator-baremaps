@@ -4,7 +4,7 @@ import static io.gazetteer.osm.osmpbf.PBFUtil.url;
 import static io.gazetteer.osm.osmpbf.PBFUtil.input;
 import static io.gazetteer.osm.osmpbf.PBFUtil.stream;
 
-import io.gazetteer.common.postgis.util.DatabaseUtil;
+import io.gazetteer.common.postgis.DatabaseUtil;
 import io.gazetteer.osm.postgis.BlockConsumer;
 import io.gazetteer.osm.util.StopWatch;
 import java.io.InputStream;

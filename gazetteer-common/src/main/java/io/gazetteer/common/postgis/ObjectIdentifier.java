@@ -1,4 +1,4 @@
-package io.gazetteer.common.postgis.metadata;
+package io.gazetteer.common.postgis;
 
 public class ObjectIdentifier {
 
@@ -55,7 +55,7 @@ public class ObjectIdentifier {
 
   // region OID 600 - 699
 
-  // geometric point '(x, y)'
+  // geometric toPoint '(x, y)'
   public static final int Point = 600;
 
   // geometric line segment '(pt1, pt2)'
@@ -77,10 +77,10 @@ public class ObjectIdentifier {
 
   // region OID 700 - 799
 
-  // single-precision floating point number, 4-byte storage
+  // single-precision floating toPoint number, 4-byte storage
   public static final int SinglePrecision = 700;
 
-  // double-precision floating point number, 8-byte storage
+  // double-precision floating toPoint number, 8-byte storage
   public static final int DoublePrecision = 701;
 
   // absolute, limited-range date and time (Unix system time)

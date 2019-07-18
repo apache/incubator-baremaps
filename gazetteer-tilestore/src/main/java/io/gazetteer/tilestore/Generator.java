@@ -2,7 +2,7 @@ package io.gazetteer.tilestore;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import io.gazetteer.common.postgis.util.DatabaseUtil;
+import io.gazetteer.common.postgis.DatabaseUtil;
 import io.gazetteer.tilestore.file.FileTileStore;
 import io.gazetteer.tilestore.model.Tile;
 import io.gazetteer.tilestore.model.TileReader;

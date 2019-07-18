@@ -1,23 +1,12 @@
 package io.gazetteer.osm;
 
-import static io.gazetteer.osm.osmpbf.PBFUtil.url;
 import static picocli.CommandLine.Option;
 
-import io.gazetteer.common.postgis.util.DatabaseUtil;
-import io.gazetteer.osm.osmpbf.FileBlock;
-import io.gazetteer.osm.osmpbf.PBFImporter;
-import io.gazetteer.osm.osmpbf.PBFUtil;
+import io.gazetteer.common.postgis.DatabaseUtil;
 import io.gazetteer.osm.osmxml.ChangeImporter;
-import io.gazetteer.osm.postgis.BlockConsumer;
-import io.gazetteer.osm.util.StopWatch;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;

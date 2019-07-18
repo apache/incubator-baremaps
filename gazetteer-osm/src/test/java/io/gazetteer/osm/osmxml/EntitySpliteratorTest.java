@@ -1,13 +1,10 @@
 package io.gazetteer.osm.osmxml;
 
 import io.gazetteer.osm.model.Entity;
-import io.gazetteer.osm.util.HoldingConsumer;
+import io.gazetteer.common.stream.HoldingConsumer;
 import java.util.Spliterator;
 import org.junit.jupiter.api.Test;
 
-import java.util.Iterator;
-
-import static io.gazetteer.osm.OSMTestUtil.osmPbfData;
 import static io.gazetteer.osm.OSMTestUtil.osmXmlData;
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,7 +1,7 @@
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_ENCODING;
 import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
 
-import io.gazetteer.common.postgis.util.DatabaseUtil;
+import io.gazetteer.common.postgis.DatabaseUtil;
 import io.gazetteer.tileserver.TileServer;
 import io.gazetteer.tilestore.model.Tile;
 import io.gazetteer.tilestore.model.TileException;

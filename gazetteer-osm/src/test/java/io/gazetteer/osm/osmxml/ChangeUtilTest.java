@@ -1,6 +1,6 @@
 package io.gazetteer.osm.osmxml;
 
-import io.gazetteer.osm.util.Accumulator;
+import io.gazetteer.common.stream.Accumulator;
 import org.junit.jupiter.api.Test;
 
 import java.util.Spliterator;
