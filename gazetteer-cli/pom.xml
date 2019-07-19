@@ -37,12 +37,5 @@
       <groupId>io.gazetteer</groupId>
       <artifactId>gazetteer-benchmarks</artifactId>
     </dependency>
-
-    <!-- External dependencies -->
-    <dependency>
-      <groupId>com.github.docker-java</groupId>
-      <artifactId>docker-java</artifactId>
-      <version>3.1.3</version>
-    </dependency>
   </dependencies>
 </project>

@@ -13,7 +13,7 @@ import picocli.CommandLine.Command;
 public class Gazetteer implements Callable<Integer> {
 
   @Override
-  public Integer call() throws Exception {
+  public Integer call() {
     CommandLine.usage(new Gazetteer(), System.out);
     return 0;
   }
