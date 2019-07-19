@@ -37,6 +37,3 @@ layers:
       SELECT id, tags::jsonb as properties, geom as geometry
       FROM osm_ways
       WHERE tags -> 'building' = 'yes'
-
-
-

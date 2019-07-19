@@ -29,7 +29,7 @@ public class PostgisQueryBuilder {
           + ") as {0}";
 
   // {0} = minX; {1} = minY; {2} = maxX; {3} = maxY
-  private static final String SQL_ENVELOPE = "ST_MakeEnvelope({0}, {1}, {2}, {3})";
+  private static final String SQL_ENVELOPE = "ST_MakeEnvelope({0}, {1}, {2}, {3}, 3857)";
 
   private static final double EARTH_CIRCUMFERENCE = 40075016.686;
 

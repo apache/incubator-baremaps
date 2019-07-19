@@ -70,8 +70,8 @@ Generate a tile directory:
 
 ```
 mvn -pl gazetteer-tilestore exec:java \
-  -Dexec.mainClass="io.gazetteer.tilestore.Generator" \
-  -Dexec.args="config/config.yaml jdbc:postgresql://localhost:5432/osm?allowMultiQueries=true&user=osm&password=osm /tmp/tiles"
+  -Dexec.mainClass="io.gazetteer.cli.commands.Tiles" \
+  -Dexec.args="config/config.yaml jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer /tmp/tiles"
 ```
 
 

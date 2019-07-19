@@ -2,12 +2,14 @@ package io.gazetteer.cli;
 
 import io.gazetteer.cli.commands.OSM;
 import io.gazetteer.cli.commands.Postgis;
+import io.gazetteer.cli.commands.Tiles;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(subcommands = {
     OSM.class,
+    Tiles.class,
     Postgis.class,
 })
 public class Gazetteer implements Callable<Integer> {
