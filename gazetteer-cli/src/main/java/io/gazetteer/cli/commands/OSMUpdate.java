@@ -2,7 +2,7 @@ package io.gazetteer.cli.commands;
 
 import static io.gazetteer.osm.osmxml.ChangeUtil.statePath;
 
-import io.gazetteer.common.cli.StopWatch;
+import io.gazetteer.cli.util.StopWatch;
 import io.gazetteer.common.io.URLUtil;
 import io.gazetteer.common.postgis.DatabaseUtil;
 import io.gazetteer.osm.osmpbf.HeaderBlock;
