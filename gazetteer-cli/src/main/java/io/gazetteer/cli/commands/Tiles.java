@@ -1,15 +1,14 @@
 package io.gazetteer.cli.commands;
 
 import io.gazetteer.common.postgis.DatabaseUtil;
-import io.gazetteer.tilestore.file.FileTileStore;
-import io.gazetteer.tilestore.model.Tile;
-import io.gazetteer.tilestore.model.TileReader;
-import io.gazetteer.tilestore.model.TileWriter;
-import io.gazetteer.tilestore.model.XYZ;
-import io.gazetteer.tilestore.postgis.PostgisConfig;
-import io.gazetteer.tilestore.postgis.PostgisLayer;
-import io.gazetteer.tilestore.postgis.PostgisTileReader;
-import io.gazetteer.tilestore.util.TileUtil;
+import io.gazetteer.tiles.file.FileTileStore;
+import io.gazetteer.tiles.TileReader;
+import io.gazetteer.tiles.TileWriter;
+import io.gazetteer.tiles.Tile;
+import io.gazetteer.tiles.postgis.PostgisConfig;
+import io.gazetteer.tiles.postgis.PostgisLayer;
+import io.gazetteer.tiles.postgis.PostgisTileReader;
+import io.gazetteer.tiles.util.TileUtil;
 import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -52,14 +51,14 @@ public class Tiles implements Runnable {
       TileWriter tileWriter = new FileTileStore(directory);
 
       //AmazonS3 client = AmazonS3ClientBuilder.standard().defaultClient();
-      //TileWriter tileWriter = new S3TileStore(client, "gazetteer-tilestore");
+      //TileWriter tileWriter = new S3TileStore(client, "gazetteer-tiles");
 
       try (Connection connection = datasource.getConnection()) {
         Geometry geometry = TileUtil.bbox(connection);
-        Stream<XYZ> coords = TileUtil.getOverlappingXYZ(geometry, 1, 14);
+        Stream<Tile> coords = TileUtil.getOverlappingXYZ(geometry, 1, 14);
         executor.submit(() -> coords.forEach(xyz -> {
           try {
-            Tile tile = tileReader.read(xyz);
+            byte[] tile = tileReader.read(xyz);
             tileWriter.write(xyz, tile);
           } catch (Exception e) {
             e.printStackTrace();

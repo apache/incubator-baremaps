@@ -23,7 +23,7 @@
     </dependency>
     <dependency>
       <groupId>io.gazetteer</groupId>
-      <artifactId>gazetteer-tilestore</artifactId>
+      <artifactId>gazetteer-tiles</artifactId>
     </dependency>
     <dependency>
       <groupId>io.gazetteer</groupId>

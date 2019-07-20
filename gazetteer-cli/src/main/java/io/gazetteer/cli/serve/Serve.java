@@ -2,10 +2,10 @@ package io.gazetteer.cli.serve;
 
 import com.sun.net.httpserver.HttpServer;
 import io.gazetteer.common.postgis.DatabaseUtil;
-import io.gazetteer.tilestore.model.TileReader;
-import io.gazetteer.tilestore.postgis.PostgisConfig;
-import io.gazetteer.tilestore.postgis.PostgisLayer;
-import io.gazetteer.tilestore.postgis.PostgisTileReader;
+import io.gazetteer.tiles.TileReader;
+import io.gazetteer.tiles.postgis.PostgisConfig;
+import io.gazetteer.tiles.postgis.PostgisLayer;
+import io.gazetteer.tiles.postgis.PostgisTileReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;

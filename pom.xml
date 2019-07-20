@@ -179,7 +179,7 @@
   <modules>
     <module>gazetteer-common</module>
     <module>gazetteer-osm</module>
-    <module>gazetteer-tilestore</module>
+    <module>gazetteer-tiles</module>
     <module>gazetteer-geoip</module>
     <module>gazetteer-benchmarks</module>
     <module>gazetteer-cli</module>
@@ -200,7 +200,7 @@
       </dependency>
       <dependency>
         <groupId>io.gazetteer</groupId>
-        <artifactId>gazetteer-tilestore</artifactId>
+        <artifactId>gazetteer-tiles</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>

@@ -6,10 +6,9 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import com.google.common.collect.Lists;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import io.gazetteer.tilestore.model.Tile;
-import io.gazetteer.tilestore.model.TileException;
-import io.gazetteer.tilestore.model.TileReader;
-import io.gazetteer.tilestore.model.XYZ;
+import io.gazetteer.tiles.TileException;
+import io.gazetteer.tiles.TileReader;
+import io.gazetteer.tiles.Tile;
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -39,14 +38,14 @@ public class TileHandler implements HttpHandler {
     Integer z = Integer.parseInt(matcher.group(1));
     Integer x = Integer.parseInt(matcher.group(2));
     Integer y = Integer.parseInt(matcher.group(3));
-    XYZ xyz = new XYZ(x, y, z);
+    Tile tile = new Tile(x, y, z);
 
     try {
-      Tile tile = tileReader.read(xyz);
+      byte[] bytes = tileReader.read(tile);
       exchange.getResponseHeaders().put(CONTENT_TYPE, TILE_MIME_TYPE);
       exchange.getResponseHeaders().put(CONTENT_ENCODING, TILE_ENCODING);
-      exchange.sendResponseHeaders(200, tile.getBytes().length);
-      exchange.getResponseBody().write(tile.getBytes());
+      exchange.sendResponseHeaders(200, bytes.length);
+      exchange.getResponseBody().write(bytes);
     } catch (TileException e) {
       e.printStackTrace();
       exchange.sendResponseHeaders(404, 0);
