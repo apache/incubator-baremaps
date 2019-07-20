@@ -62,7 +62,7 @@ Start the tile server:
 
 ```
 mvn -pl gazetteer-tileserver exec:java \
-  -Dexec.mainClass="io.gazetteer.tileserver.TileServer" \
+  -Dexec.mainClass="io.gazetteer.cli.serve.Serve" \
   -Dexec.args="config/config.yaml jdbc:postgresql://localhost:5432/gazetteer?user=gazetteer&password=gazetteer"
 ```
 

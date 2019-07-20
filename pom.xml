@@ -47,7 +47,6 @@
     <version.lib.caffeine>2.6.2</version.lib.caffeine>
     <version.lib.guava>27.0.1-jre</version.lib.guava>
     <version.lib.picocli>4.0.0</version.lib.picocli>
-    <version.lib.vertx>3.7.1</version.lib.vertx>
     <version.lib.snakeyaml>1.23</version.lib.snakeyaml>
     <version.lib.gson>2.8.5</version.lib.gson>
     <version.lib.proj4j>1.0.0</version.lib.proj4j>
@@ -181,7 +180,6 @@
     <module>gazetteer-common</module>
     <module>gazetteer-osm</module>
     <module>gazetteer-tilestore</module>
-    <module>gazetteer-tileserver</module>
     <module>gazetteer-geoip</module>
     <module>gazetteer-benchmarks</module>
     <module>gazetteer-cli</module>
@@ -236,16 +234,6 @@
         <groupId>info.picocli</groupId>
         <artifactId>picocli</artifactId>
         <version>${version.lib.picocli}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.vertx</groupId>
-        <artifactId>vertx-core</artifactId>
-        <version>${version.lib.vertx}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.vertx</groupId>
-        <artifactId>vertx-web</artifactId>
-        <version>${version.lib.vertx}</version>
       </dependency>
       <dependency>
         <groupId>com.github.ben-manes.caffeine</groupId>

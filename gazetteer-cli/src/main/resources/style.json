@@ -4,7 +4,7 @@
     "osm": {
       "type": "vector",
       "tiles": [
-        "http://localhost:8081/{z}/{x}/{y}.pbf"
+        "http://localhost:8081/tiles/{z}/{x}/{y}.pbf"
       ],
       "minzoom": 0,
       "maxzoom": 14,

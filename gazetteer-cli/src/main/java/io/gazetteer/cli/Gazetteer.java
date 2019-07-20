@@ -3,6 +3,7 @@ package io.gazetteer.cli;
 import io.gazetteer.cli.commands.OSM;
 import io.gazetteer.cli.commands.Postgis;
 import io.gazetteer.cli.commands.Tiles;
+import io.gazetteer.cli.serve.Serve;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -11,6 +12,7 @@ import picocli.CommandLine.Command;
     OSM.class,
     Tiles.class,
     Postgis.class,
+    Serve.class,
 })
 public class Gazetteer implements Callable<Integer> {
 
