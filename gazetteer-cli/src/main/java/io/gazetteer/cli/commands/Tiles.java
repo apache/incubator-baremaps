@@ -1,18 +1,17 @@
 package io.gazetteer.cli.commands;
 
 import io.gazetteer.common.postgis.DatabaseUtil;
-import io.gazetteer.tiles.file.FileTileStore;
+import io.gazetteer.tiles.Tile;
 import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.TileWriter;
-import io.gazetteer.tiles.Tile;
+import io.gazetteer.tiles.file.FileTileStore;
 import io.gazetteer.tiles.postgis.PostgisConfig;
-import io.gazetteer.tiles.postgis.PostgisLayer;
 import io.gazetteer.tiles.postgis.PostgisTileReader;
 import io.gazetteer.tiles.util.TileUtil;
+import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.sql.Connection;
-import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -26,8 +25,8 @@ import picocli.CommandLine.Parameters;
 @Command(name = "tiles")
 public class Tiles implements Runnable {
 
-  @Parameters(index = "0", paramLabel = "CONFIG_FILE", description = "The YAML configuration config.")
-  private Path config;
+  @Parameters(index = "0", paramLabel = "CONFIG_FILE", description = "The YAML configuration file.")
+  private File file;
 
   @Parameters(index = "1", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
   private String database;
@@ -45,9 +44,9 @@ public class Tiles implements Runnable {
     ForkJoinPool executor = new ForkJoinPool(threads);
     try {
       // Read the configuration toInputStream
-      List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(config.toFile())).getLayers();
+      PostgisConfig config = PostgisConfig.load(new FileInputStream(file));
       PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
-      TileReader tileReader = new PostgisTileReader(datasource, layers);
+      TileReader tileReader = new PostgisTileReader(datasource, config);
       TileWriter tileWriter = new FileTileStore(directory);
 
       //AmazonS3 client = AmazonS3ClientBuilder.standard().defaultClient();

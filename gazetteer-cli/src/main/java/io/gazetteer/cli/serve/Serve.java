@@ -4,13 +4,11 @@ import com.sun.net.httpserver.HttpServer;
 import io.gazetteer.common.postgis.DatabaseUtil;
 import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.postgis.PostgisConfig;
-import io.gazetteer.tiles.postgis.PostgisLayer;
 import io.gazetteer.tiles.postgis.PostgisTileReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.Callable;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import picocli.CommandLine.Command;
@@ -20,7 +18,7 @@ import picocli.CommandLine.Parameters;
 public class Serve implements Callable<Integer> {
 
   @Parameters(index = "0", paramLabel = "CONFIG_FILE", description = "The YAML configuration config.")
-  private Path config;
+  private File file;
 
   @Parameters(index = "1", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
   private String database;
@@ -28,9 +26,9 @@ public class Serve implements Callable<Integer> {
   @Override
   public Integer call() throws IOException {
     // Read the configuration toInputStream
-    List<PostgisLayer> layers = PostgisConfig.load(new FileInputStream(config.toFile())).getLayers();
+    PostgisConfig config = PostgisConfig.load(new FileInputStream(file));
     PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
-    TileReader tileReader = new PostgisTileReader(datasource, layers);
+    TileReader tileReader = new PostgisTileReader(datasource, config);
 
     // Create the http server
     HttpServer server = HttpServer.create(new InetSocketAddress(8081), 0);
