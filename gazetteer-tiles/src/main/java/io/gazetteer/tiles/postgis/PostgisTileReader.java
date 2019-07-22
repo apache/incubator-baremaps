@@ -7,7 +7,6 @@ import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.List;
 import java.util.zip.GZIPOutputStream;
 import org.apache.commons.dbcp2.PoolingDataSource;
 
@@ -15,11 +14,11 @@ public class PostgisTileReader implements TileReader {
 
   private final PoolingDataSource datasource;
 
-  private final List<PostgisLayer> layers;
+  private final PostgisConfig config;
 
-  public PostgisTileReader(PoolingDataSource datasource, List<PostgisLayer> layers) {
+  public PostgisTileReader(PoolingDataSource datasource, PostgisConfig config) {
     this.datasource = datasource;
-    this.layers = layers;
+    this.config = config;
   }
 
   @Override
@@ -27,7 +26,7 @@ public class PostgisTileReader implements TileReader {
     try (Connection connection = datasource.getConnection();
         ByteArrayOutputStream data = new ByteArrayOutputStream();
         GZIPOutputStream gzip = new GZIPOutputStream(data)) {
-      for (PostgisLayer layer : layers) {
+      for (PostgisLayer layer : config.getLayers()) {
         if (tile.getZ() >= layer.getMinZoom() && tile.getZ() <= layer.getMaxZoom()) {
           String sql = PostgisQueryBuilder.build(tile, layer);
           try (Statement statement = connection.createStatement()) {
