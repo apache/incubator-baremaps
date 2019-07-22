@@ -15,65 +15,66 @@ On the longer run, the project will include other data sources and be deployable
 
 ![State of the map](https://github.com/gazetteerio/gazetteer/raw/master/screenshots/1550007544903.png)
 
+## Prerequisites
+
+- Docker 18
+- Java 8
+- Maven 3
+
 ## Installation
-
-Install postgresql 11 and postgis 2.5:
-
-```
-sudo apt-get install postgresql-11-postgis-2.5
-```
-
-Connect to postgresql with the psql shell:
-
-```
-sudo -u postgres psql
-```
-
-From the psql shell, create the datasource, the username and the extensions:
-
-```
-createuser gazetteer -W
-CREATE DATABASE gazetteer;
-CREATE USER gazetteer WITH ENCRYPTED PASSWORD 'gazetteer'; 
-GRANT ALL PRIVILEGES ON DATABASE gazetteer TO gazetteer;
-\c gazetteer 
-CREATE EXTENSION IF NOT EXISTS hstore;
-CREATE EXTENSION IF NOT EXISTS postgis;
-\q
-```
 
 Clone and build the repository:
 
-```
+```bash
 git clone git@github.com:gazetteerio/gazetteer.git
 cd gazetteer
 mvn clean install
 ```
 
-Populate the datasource with the liechtenstein data:
+Unzip the binary distribution and add the `/bin` folder to your `PATH` variable:
 
-```
-mvn -pl gazetteer-osm exec:java \
-  -Dexec.mainClass="io.gazetteer.osm.Importer" \
-  -Dexec.args="data/liechtenstein.osm.pbf jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer"
-```
 
-Start the tile server:
-
-```
-mvn -pl gazetteer-tileserver exec:java \
-  -Dexec.mainClass="io.gazetteer.cli.serve.Serve" \
-  -Dexec.args="config/config.yaml jdbc:postgresql://localhost:5432/gazetteer?user=gazetteer&password=gazetteer"
+```bash
+unzip gazetteer-cli/target/gazetteer-cli-1.0-SNAPSHOT.zip
+export PATH=$PATH:/path/to/gazetteer/bin
 ```
 
-Generate a tile directory:
+Calling the `gazetteer` command should now result in an output similar to the following:
 
-```
-mvn -pl gazetteer-tilestore exec:java \
-  -Dexec.mainClass="io.gazetteer.cli.commands.Tiles" \
-  -Dexec.args="config/config.yaml jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer /tmp/tiles"
+```bash
+Usage: <main class> [COMMAND]
+Commands:
+  osm
+  tiles
+  postgis
+  serve
 ```
 
+The `gazetteer` command comes with shorthands to manage a postgis docker container. 
+The following commands will pull the image create and start the container:
+
+```bash
+gazetteer postgis pull
+gazetteer postgis create
+gazetteer postgis start
+```
+
+As a small country Liechtenstein is suitable for testing and easily fits in a git repository. 
+You can now import this data in that postgis container using the following command.
+
+```bash
+gazetteer osm import \
+  'data/liechtenstein.osm.pbf' \
+  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
+```
+
+To preview this data, you can simply run the embed web server with the following command:
+
+```bash
+gazetteer serve \
+  'config/config.yaml' \
+  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
+```
 
 Well done, open your [browser](http://localhost:8081/), a map of liechtenstein should appear!
 
