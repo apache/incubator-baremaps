@@ -10,20 +10,23 @@ import io.gazetteer.tiles.postgis.PostgisTileReader;
 import io.gazetteer.tiles.util.TileUtil;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.locationtech.jts.geom.Geometry;
-import picocli.CommandLine;
+import org.locationtech.jts.io.ParseException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 @Command(name = "tiles")
-public class Tiles implements Runnable {
+public class Tiles implements Callable<Integer> {
 
   @Parameters(index = "0", paramLabel = "CONFIG_FILE", description = "The YAML configuration file.")
   private File file;
@@ -40,9 +43,10 @@ public class Tiles implements Runnable {
   private int threads = Runtime.getRuntime().availableProcessors();
 
   @Override
-  public void run() {
+  public Integer call() throws SQLException, ParseException, FileNotFoundException {
     ForkJoinPool executor = new ForkJoinPool(threads);
     try {
+
       // Read the configuration toInputStream
       PostgisConfig config = PostgisConfig.load(new FileInputStream(file));
       PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
@@ -64,8 +68,8 @@ public class Tiles implements Runnable {
           }
         }));
       }
-    } catch (Exception e) {
-      e.printStackTrace();
+
+      return 0;
     } finally {
       executor.shutdown();
       try {
@@ -74,10 +78,6 @@ public class Tiles implements Runnable {
         e.printStackTrace();
       }
     }
-  }
-
-  public static void main(String[] args) {
-    CommandLine.run(new Tiles(), args);
   }
 
 }
