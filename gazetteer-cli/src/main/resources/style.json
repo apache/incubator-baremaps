@@ -25,9 +25,9 @@
       }
     },
     {
-      "id": "landuses",
+      "id": "landuse",
       "source": "osm",
-      "source-layer": "landuses",
+      "source-layer": "landuse",
       "type": "line",
       "layout": {
         "line-join": "round",
@@ -40,9 +40,9 @@
       }
     },
     {
-      "id": "waterways",
+      "id": "waterway",
       "source": "osm",
-      "source-layer": "waterways",
+      "source-layer": "waterway",
       "type": "line",
       "layout": {
         "line-join": "round",
@@ -55,18 +55,18 @@
       }
     },
     {
-      "id": "waterareas",
+      "id": "waterarea",
       "source": "osm",
-      "source-layer": "waterareas",
+      "source-layer": "waterarea",
       "type": "fill",
       "paint": {
         "fill-color": "#0000ff"
       }
     },
     {
-      "id": "buildings",
+      "id": "building",
       "source": "osm",
-      "source-layer": "buildings",
+      "source-layer": "building",
       "type": "fill",
       "paint": {
         "fill-color": "#D8CEC3",
@@ -75,9 +75,9 @@
       }
     },
     {
-      "id": "highways",
+      "id": "highway",
       "source": "osm",
-      "source-layer": "highways",
+      "source-layer": "highway",
       "type": "line",
       "layout": {
         "line-join": "round",
@@ -90,9 +90,9 @@
       }
     },
     {
-      "id": "forests",
+      "id": "forest",
       "source": "osm",
-      "source-layer": "forests",
+      "source-layer": "forest",
       "type": "fill",
       "paint": {
         "fill-color": "#00FF00",
