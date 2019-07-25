@@ -31,8 +31,9 @@ public class PostgisTileReader implements TileReader {
           String sql = PostgisQueryBuilder.build(tile, layer);
           try (Statement statement = connection.createStatement()) {
             ResultSet result = statement.executeQuery(sql);
-            result.next();
-            gzip.write(result.getBytes(1));
+            if (result.next()) {
+              gzip.write(result.getBytes(1));
+            }
           }
         }
       }
