@@ -25,21 +25,6 @@
       }
     },
     {
-      "id": "landuse",
-      "source": "osm",
-      "source-layer": "landuse",
-      "type": "line",
-      "layout": {
-        "line-join": "round",
-        "line-cap": "round"
-      },
-      "paint": {
-        "line-color": "#ff0000",
-        "line-width": 1,
-        "line-opacity": 0.75
-      }
-    },
-    {
       "id": "waterway",
       "source": "osm",
       "source-layer": "waterway",
@@ -90,9 +75,9 @@
       }
     },
     {
-      "id": "forest",
+      "id": "landuse",
       "source": "osm",
-      "source-layer": "forest",
+      "source-layer": "landuse",
       "type": "fill",
       "paint": {
         "fill-color": "#00FF00",

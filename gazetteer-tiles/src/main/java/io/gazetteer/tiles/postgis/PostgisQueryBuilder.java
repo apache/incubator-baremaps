@@ -19,13 +19,15 @@ public class PostgisQueryBuilder {
   private static final String SQL_LAYERS = "SELECT {0} FROM {1}";
 
   // {0} = name;
-  private static final String SQL_VALUE = "ST_AsMVT({0}, ''{0}'', 4096, ''geometry'')";
+  private static final String SQL_VALUE = "ST_AsMVT({0}, ''{0}'', 4096, ''geom'')";
 
   // {0} = name; {1} = sql; {2} = envelope
   private static final String SQL_SOURCE =
-      "(SELECT id, properties, ST_AsMvtGeom(geometry, {2}, 4096, 256, true) AS geometry "
+      "(SELECT id, "
+          + "(tags || hstore(''geometry'', lower(replace(st_geometrytype(geom), ''ST_'', ''''))))::jsonb, "
+          + "ST_AsMvtGeom(geom, {2}, 4096, 256, true) AS geom "
           + "FROM ({1}) AS layer "
-          + "WHERE geometry && {2} AND ST_Intersects(geometry, {2})"
+          + "WHERE geom && {2} AND ST_Intersects(geom, {2})"
           + ") as {0}";
 
   // {0} = minX; {1} = minY; {2} = maxX; {3} = maxY

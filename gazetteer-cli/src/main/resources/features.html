@@ -1,0 +1,43 @@
+<html>
+<head>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css' rel='stylesheet'/>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.js'></script>
+    <style>
+        #features {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 300px;
+            overflow: auto;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        #map canvas {
+            cursor: crosshair;
+        }
+    </style>
+</head>
+
+<body>
+<div id='map'></div>
+<pre id='features'></pre>
+<script>
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: '/style.json',
+        center: [9.5554, 47.1660],
+        zoom: 14
+    });
+    map.on('click', function (e) {
+        var features = map.queryRenderedFeatures(e.point);
+        document.getElementById('features').innerHTML = JSON.stringify(features, null, 2);
+    });
+</script>
+</body>
+</html>
