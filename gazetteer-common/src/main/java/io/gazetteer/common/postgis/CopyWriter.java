@@ -1,10 +1,18 @@
+// The following code largely comes from PgBulkInsert.
+// Copyright (c) Philipp Wagner. All rights reserved.
+// Licensed under the MIT license.
+
 package io.gazetteer.common.postgis;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.nio.charset.Charset;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import org.locationtech.jts.geom.Geometry;
@@ -13,6 +21,14 @@ import org.postgresql.copy.PGCopyOutputStream;
 public class CopyWriter implements AutoCloseable {
 
   private static final Charset UTF8 = Charset.forName("UTF-8");
+
+  private static final byte IPV4 = 2;
+  private static final byte IPV4_MASK = 32;
+  private static final byte IPV4_IS_CIDR = 0;
+
+  private static final byte IPV6 = 3;
+  private static final int IPV6_MASK = 128;
+  private static final byte IPV6_IS_CIDR = 0;
 
   private final DataOutputStream data;
 
@@ -101,12 +117,28 @@ public class CopyWriter implements AutoCloseable {
     nullableWriter(collectionWriter(ObjectIdentifier.Int8, CopyWriter::doubleWriter)).write(data, value);
   }
 
+  public void writeLocalDate(LocalDate value) throws IOException {
+    nullableWriter(CopyWriter::localDateWriter).write(data, value);
+  }
+
+  public void writeLocalDateTime(LocalDateTime value) throws IOException {
+    nullableWriter(CopyWriter::localDateTimeWriter).write(data, value);
+  }
+
+  public void writeInet4Adress(Inet4Address value) throws IOException {
+    nullableWriter(CopyWriter::inet4AdressWriter).write(data, value);
+  }
+
+  public void writeInet6Adress(Inet6Address value) throws IOException {
+    nullableWriter(CopyWriter::inet6AdressWriter).write(data, value);
+  }
+
   public void writeHstore(Map<String, String> value) throws IOException {
     nullableWriter(CopyWriter::hstoreWriter).write(data, value);
   }
 
   public void writeGeometry(Geometry value) throws IOException {
-    nullableWriter(CopyWriter::byteArrayWriter).write(data, GeometryUtil.toWKB(value));
+    nullableWriter(CopyWriter::byteArrayWriter).write(data, GeometryUtils.toWKB(value));
   }
 
   @Override
@@ -176,6 +208,36 @@ public class CopyWriter implements AutoCloseable {
     data.write(bytes);
   }
 
+  private static void localDateWriter(DataOutputStream data, LocalDate value) throws IOException {
+    data.writeInt(4);
+    data.writeInt(TimestampUtils.toPgDays(value));
+  }
+
+  private static void localDateTimeWriter(DataOutputStream data, LocalDateTime value) throws IOException {
+    data.writeInt(8);
+    data.writeLong(TimestampUtils.toPgSecs(value));
+  }
+
+  private static void inet4AdressWriter(DataOutputStream data, Inet4Address value) throws IOException {
+    data.writeInt(8);
+    data.writeByte(IPV4);
+    data.writeByte(IPV4_MASK);
+    data.writeByte(IPV4_IS_CIDR);
+    byte[] inet4AddressBytes = value.getAddress();
+    data.writeByte(inet4AddressBytes.length);
+    data.write(inet4AddressBytes);
+  }
+
+  private static void inet6AdressWriter(DataOutputStream data, Inet6Address value) throws IOException {
+    data.writeInt(20);
+    data.writeByte(IPV6);
+    data.writeByte(IPV6_MASK);
+    data.writeByte(IPV6_IS_CIDR);
+    byte[] inet6AddressBytes = value.getAddress();
+    data.writeByte(inet6AddressBytes.length);
+    data.write(inet6AddressBytes);
+  }
+
   private <T> ValueWriter<List<T>> collectionWriter(int oid, ValueWriter<T> writer) {
     return (data, values) -> {
       // Write into a temporary byte array
@@ -231,6 +293,7 @@ public class CopyWriter implements AutoCloseable {
   private interface ValueWriter<T> {
 
     void write(DataOutputStream data, T value) throws IOException;
+
   }
 
 }

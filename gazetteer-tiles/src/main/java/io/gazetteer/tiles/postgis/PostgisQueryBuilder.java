@@ -1,7 +1,7 @@
 package io.gazetteer.tiles.postgis;
 
 import com.google.common.base.Joiner;
-import io.gazetteer.common.postgis.GeometryUtil;
+import io.gazetteer.common.postgis.GeometryUtils;
 import io.gazetteer.tiles.Tile;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -88,8 +88,8 @@ public class PostgisQueryBuilder {
 
   protected static String buildSource(Tile tile, PostgisLayer layer) {
     Envelope envelope = tile.envelope();
-    Coordinate min = GeometryUtil.toCoordinate(envelope.getMinX(), envelope.getMinY());
-    Coordinate max = GeometryUtil.toCoordinate(envelope.getMaxX(), envelope.getMaxY());
+    Coordinate min = GeometryUtils.toCoordinate(envelope.getMinX(), envelope.getMinY());
+    Coordinate max = GeometryUtils.toCoordinate(envelope.getMaxX(), envelope.getMaxY());
     String value =
         MessageFormat.format(
             SQL_ENVELOPE,

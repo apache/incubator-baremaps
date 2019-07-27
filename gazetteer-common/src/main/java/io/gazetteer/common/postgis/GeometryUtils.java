@@ -15,7 +15,7 @@ import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
-public class GeometryUtil {
+public class GeometryUtils {
 
   private static final CRSFactory crsFactory = new CRSFactory();
   private static final CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");

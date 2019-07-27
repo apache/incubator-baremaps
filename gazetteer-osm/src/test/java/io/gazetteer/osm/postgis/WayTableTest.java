@@ -3,7 +3,7 @@ package io.gazetteer.osm.postgis;
 import io.gazetteer.osm.OSMTestUtil;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Way;
-import io.gazetteer.common.postgis.DatabaseUtil;
+import io.gazetteer.common.postgis.DatabaseUtils;
 import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,8 +26,8 @@ public class WayTableTest {
   @BeforeEach
   public void createTable() throws SQLException, IOException {
     connection = DriverManager.getConnection(OSMTestUtil.DATABASE_URL);
-    DatabaseUtil.executeScript(connection, "osm_create_extensions.sql");
-    DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
+    DatabaseUtils.executeScript(connection, "osm_create_extensions.sql");
+    DatabaseUtils.executeScript(connection, "osm_create_tables.sql");
   }
 
   @Test

@@ -1,7 +1,7 @@
 package io.gazetteer.cli.serve;
 
 import com.sun.net.httpserver.HttpServer;
-import io.gazetteer.common.postgis.DatabaseUtil;
+import io.gazetteer.common.postgis.DatabaseUtils;
 import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.postgis.PostgisConfig;
 import io.gazetteer.tiles.postgis.PostgisTileReader;
@@ -27,7 +27,7 @@ public class Serve implements Callable<Integer> {
   public Integer call() throws IOException {
     // Read the configuration toInputStream
     PostgisConfig config = PostgisConfig.load(new FileInputStream(file));
-    PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
+    PoolingDataSource datasource = DatabaseUtils.poolingDataSource(database);
     TileReader tileReader = new PostgisTileReader(datasource, config);
 
     // Create the http server

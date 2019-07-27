@@ -1,7 +1,7 @@
 package io.gazetteer.osm.postgis;
 
 import io.gazetteer.osm.osmpbf.HeaderBlock;
-import io.gazetteer.common.postgis.GeometryUtil;
+import io.gazetteer.common.postgis.GeometryUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,7 +28,7 @@ public class HeaderTable {
         String replicationUrl = result.getString(3);
         String source = result.getString(4);
         String writingProgram = result.getString(5);
-        Geometry bbox = GeometryUtil.toGeometry(result.getBytes(6));
+        Geometry bbox = GeometryUtils.toGeometry(result.getBytes(6));
         headerBlocks.add(new HeaderBlock(replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram, bbox));
       }
       return headerBlocks;
@@ -46,7 +46,7 @@ public class HeaderTable {
       statement.setString(3, headerBlock.getReplicationUrl());
       statement.setString(4, headerBlock.getSource());
       statement.setString(5, headerBlock.getWritingProgram());
-      statement.setBytes(6, GeometryUtil.toWKB(headerBlock.getBbox()));
+      statement.setBytes(6, GeometryUtils.toWKB(headerBlock.getBbox()));
       statement.execute();
     }
   }

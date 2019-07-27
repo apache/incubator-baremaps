@@ -9,7 +9,7 @@ import io.gazetteer.cli.commands.OSM.Import;
 import io.gazetteer.cli.commands.OSM.Update;
 import io.gazetteer.cli.util.StopWatch;
 import io.gazetteer.common.io.URLUtil;
-import io.gazetteer.common.postgis.DatabaseUtil;
+import io.gazetteer.common.postgis.DatabaseUtils;
 import io.gazetteer.osm.osmpbf.FileBlock;
 import io.gazetteer.osm.osmpbf.HeaderBlock;
 import io.gazetteer.osm.osmxml.Change;
@@ -56,11 +56,11 @@ public class OSM implements Callable<Integer> {
     public Integer call() throws Exception {
       StopWatch stopWatch = new StopWatch();
       ForkJoinPool executor = new ForkJoinPool(threads);
-      PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
+      PoolingDataSource datasource = DatabaseUtils.poolingDataSource(database);
       try {
         System.out.println("Creating database.");
         try (Connection connection = datasource.getConnection()) {
-          DatabaseUtil.executeScript(connection, "osm_create_tables.sql");
+          DatabaseUtils.executeScript(connection, "osm_create_tables.sql");
           System.out.println(String.format("-> %dms", stopWatch.lap()));
         }
 
@@ -74,25 +74,25 @@ public class OSM implements Callable<Integer> {
 
         try (Connection connection = datasource.getConnection()) {
           System.out.println("Updating geometries.");
-          DatabaseUtil.executeScript(connection, "osm_create_geometries.sql");
+          DatabaseUtils.executeScript(connection, "osm_create_geometries.sql");
           System.out.println(String.format("-> %dms", stopWatch.lap()));
         }
 
         try (Connection connection = datasource.getConnection()) {
           System.out.println("Creating primary keys.");
-          DatabaseUtil.executeScript(connection, "osm_create_primary_keys.sql");
+          DatabaseUtils.executeScript(connection, "osm_create_primary_keys.sql");
           System.out.println(String.format("-> %dms", stopWatch.lap()));
         }
 
         try (Connection connection = datasource.getConnection()) {
           System.out.println("Indexing geometries.");
-          DatabaseUtil.executeScript(connection, "osm_create_indexes.sql");
+          DatabaseUtils.executeScript(connection, "osm_create_indexes.sql");
           System.out.println(String.format("-> %dms", stopWatch.lap()));
         }
 
         try (Connection connection = datasource.getConnection()) {
           System.out.println("Creating triggers.");
-          DatabaseUtil.executeScript(connection, "osm_create_triggers.sql");
+          DatabaseUtils.executeScript(connection, "osm_create_triggers.sql");
           System.out.println(String.format("-> %dms", stopWatch.lap()));
         }
 
@@ -122,7 +122,7 @@ public class OSM implements Callable<Integer> {
     public Integer call() throws Exception {
       StopWatch stopWatch = new StopWatch();
       ForkJoinPool executor = new ForkJoinPool(threads);
-      PoolingDataSource datasource = DatabaseUtil.poolingDataSource(database);
+      PoolingDataSource datasource = DatabaseUtils.poolingDataSource(database);
       try {
         HeaderBlock header;
         try (Connection connection = datasource.getConnection()) {

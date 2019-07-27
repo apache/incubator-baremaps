@@ -17,7 +17,7 @@ import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 
-public class DatabaseUtil {
+public class DatabaseUtils {
 
   private static final String DATABASE_URL = "jdbc:postgresql://{0}:{1}/{2}?user={3}&password={4}&allowMultiQueries={5}";
 

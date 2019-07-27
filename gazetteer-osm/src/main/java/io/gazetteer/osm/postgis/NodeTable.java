@@ -1,8 +1,8 @@
 package io.gazetteer.osm.postgis;
 
-import static io.gazetteer.common.postgis.GeometryUtil.toGeometry;
-import static io.gazetteer.common.postgis.GeometryUtil.toPoint;
-import static io.gazetteer.common.postgis.GeometryUtil.toWKB;
+import static io.gazetteer.common.postgis.GeometryUtils.toGeometry;
+import static io.gazetteer.common.postgis.GeometryUtils.toPoint;
+import static io.gazetteer.common.postgis.GeometryUtils.toWKB;
 
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
