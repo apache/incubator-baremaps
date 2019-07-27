@@ -25,6 +25,30 @@
       }
     },
     {
+      "id": "landuse",
+      "source": "osm",
+      "source-layer": "landuse",
+      "type": "fill",
+      "filter": [
+        "all",
+        [
+          "==",
+          "landuse",
+          "forest"
+        ],
+        [
+          "==",
+          "geometry",
+          "polygon"
+        ]
+      ],
+      "paint": {
+        "fill-color": "#00FF00",
+        "fill-outline-color": "#C5C0BB",
+        "fill-opacity": 1
+      }
+    },
+    {
       "id": "waterway",
       "source": "osm",
       "source-layer": "waterway",
@@ -72,30 +96,6 @@
         "line-color": "#888888",
         "line-width": 1,
         "line-opacity": 0.75
-      }
-    },
-    {
-      "id": "landuse",
-      "source": "osm",
-      "source-layer": "landuse",
-      "type": "fill",
-      "filter": [
-        "all",
-        [
-          "==",
-          "landuse",
-          "forest"
-        ],
-        [
-          "==",
-          "geometry",
-          "polygon"
-        ]
-      ],
-      "paint": {
-        "fill-color": "#00FF00",
-        "fill-outline-color": "#C5C0BB",
-        "fill-opacity": 1
       }
     }
   ]
