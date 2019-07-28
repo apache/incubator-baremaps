@@ -4,14 +4,13 @@ import static io.gazetteer.common.postgis.GeometryUtils.toGeometry;
 import static io.gazetteer.common.postgis.GeometryUtils.toPoint;
 import static io.gazetteer.common.postgis.GeometryUtils.toWKB;
 
+import io.gazetteer.common.postgis.CopyWriter;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
-import io.gazetteer.common.postgis.CopyWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import org.locationtech.jts.geom.Point;
@@ -39,7 +38,7 @@ public class NodeTable {
       statement.setLong(1, node.getInfo().getId());
       statement.setInt(2, node.getInfo().getVersion());
       statement.setInt(3, node.getInfo().getUserId());
-      statement.setTimestamp(4, new Timestamp(node.getInfo().getTimestamp()));
+      statement.setObject(4, node.getInfo().getLocalDateTime());
       statement.setLong(5, node.getInfo().getChangeset());
       statement.setObject(6, node.getInfo().getTags());
       statement.setBytes(7, toWKB(toPoint(node.getLon(), node.getLat())));
@@ -51,7 +50,7 @@ public class NodeTable {
     try (PreparedStatement statement = connection.prepareStatement(UPDATE)) {
       statement.setInt(1, node.getInfo().getVersion());
       statement.setInt(2, node.getInfo().getUserId());
-      statement.setTimestamp(3, new Timestamp(node.getInfo().getTimestamp()));
+      statement.setObject(3, node.getInfo().getLocalDateTime());
       statement.setLong(4, node.getInfo().getChangeset());
       statement.setObject(5, node.getInfo().getTags());
       statement.setBytes(6, toWKB(toPoint(node.getLon(), node.getLat())));
@@ -93,14 +92,13 @@ public class NodeTable {
         writer.writeLong(node.getInfo().getId());
         writer.writeInteger(node.getInfo().getVersion());
         writer.writeInteger(node.getInfo().getUserId());
-        writer.writeLong(node.getInfo().getTimestamp());
+        writer.writeLocalDateTime(node.getInfo().getLocalDateTime());
         writer.writeLong(node.getInfo().getChangeset());
         writer.writeHstore(node.getInfo().getTags());
         writer.writeGeometry(toPoint(node.getLon(), node.getLat()));
       }
     }
   }
-
 
 
 }

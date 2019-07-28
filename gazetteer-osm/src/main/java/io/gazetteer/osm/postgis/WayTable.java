@@ -96,7 +96,7 @@ public class WayTable {
         writer.writeLong(way.getInfo().getId());
         writer.writeInteger(way.getInfo().getVersion());
         writer.writeInteger(way.getInfo().getUserId());
-        writer.writeLong(way.getInfo().getTimestamp());
+        writer.writeLocalDateTime(way.getInfo().getLocalDateTime());
         writer.writeLong(way.getInfo().getChangeset());
         writer.writeHstore(way.getInfo().getTags());
         writer.writeLongList(way.getNodes());

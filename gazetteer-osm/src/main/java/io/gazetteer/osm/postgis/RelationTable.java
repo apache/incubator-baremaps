@@ -1,15 +1,14 @@
 package io.gazetteer.osm.postgis;
 
+import io.gazetteer.common.postgis.CopyWriter;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Member.Type;
 import io.gazetteer.osm.model.Relation;
-import io.gazetteer.common.postgis.CopyWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +37,7 @@ public class RelationTable {
       statement.setLong(1, relation.getInfo().getId());
       statement.setInt(2, relation.getInfo().getVersion());
       statement.setInt(3, relation.getInfo().getUserId());
-      statement.setTimestamp(4, new Timestamp(relation.getInfo().getTimestamp()));
+      statement.setObject(4, relation.getInfo().getLocalDateTime());
       statement.setLong(5, relation.getInfo().getChangeset());
       statement.setObject(6, relation.getInfo().getTags());
       statement.setObject(7, relation.getMembers().stream().mapToLong(m -> m.getRef()).toArray());
@@ -52,7 +51,7 @@ public class RelationTable {
     try (PreparedStatement statement = connection.prepareStatement(UPDATE)) {
       statement.setInt(1, relation.getInfo().getVersion());
       statement.setInt(2, relation.getInfo().getUserId());
-      statement.setTimestamp(3, new Timestamp(relation.getInfo().getTimestamp()));
+      statement.setObject(3, relation.getInfo().getLocalDateTime());
       statement.setLong(4, relation.getInfo().getChangeset());
       statement.setObject(5, relation.getInfo().getTags());
       statement.setObject(6, relation.getMembers().stream().mapToLong(m -> m.getRef()).toArray());
@@ -102,7 +101,7 @@ public class RelationTable {
         writer.writeLong(relation.getInfo().getId());
         writer.writeInteger(relation.getInfo().getVersion());
         writer.writeInteger(relation.getInfo().getUserId());
-        writer.writeLong(relation.getInfo().getTimestamp());
+        writer.writeLocalDateTime(relation.getInfo().getLocalDateTime());
         writer.writeLong(relation.getInfo().getChangeset());
         writer.writeHstore(relation.getInfo().getTags());
         writer.writeLongList(relation.getMembers().stream().map(m -> m.getRef()).collect(Collectors.toList()));

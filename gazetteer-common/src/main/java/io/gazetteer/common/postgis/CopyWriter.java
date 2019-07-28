@@ -1,4 +1,3 @@
-// The following code largely comes from PgBulkInsert.
 // Copyright (c) Philipp Wagner. All rights reserved.
 // Licensed under the MIT license.
 

@@ -1,5 +1,5 @@
 // Copyright (c) Philipp Wagner. All rights reserved.
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// Licensed under the MIT license.
 
 package io.gazetteer.common.postgis;
 
