@@ -2,6 +2,7 @@ package io.gazetteer.osm.osmxml;
 
 import io.gazetteer.osm.model.*;
 
+import java.time.LocalDateTime;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -82,12 +83,10 @@ public class XMLUtil {
     return children;
   }
 
-  protected static Info readInfo(StartElement element, List<StartElement> children)
-      throws ParseException {
+  protected static Info readInfo(StartElement element, List<StartElement> children) throws ParseException {
     long id = Long.parseLong(element.getAttributeByName(QName.valueOf(XMLConstants.ID)).getValue());
     int version = Integer.parseInt(element.getAttributeByName(QName.valueOf(XMLConstants.VERSION)).getValue());
-    long timestamp =
-        XMLConstants.format.parse(element.getAttributeByName(QName.valueOf(XMLConstants.TIMESTAMP)).getValue()).getTime();
+    LocalDateTime timestamp = LocalDateTime.parse(element.getAttributeByName(QName.valueOf(XMLConstants.TIMESTAMP)).getValue(), XMLConstants.format);
     long changeset = readChangeset(element);
     User user = readUser(element);
     Map<String, String> tags = readTags(children);

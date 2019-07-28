@@ -7,10 +7,13 @@ import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
@@ -164,7 +167,7 @@ public class PrimitiveBlockReader {
 
   protected Info createEntityData(
       long id, Osmformat.Info info, List<Integer> keys, List<Integer> vals) {
-    long timestamp = getTimestamp(info.getTimestamp());
+    LocalDateTime timestamp = getTimestamp(info.getTimestamp());
     int version = info.getVersion();
     long changeset = info.getChangeset();
     int uid = info.getUid();
@@ -189,8 +192,8 @@ public class PrimitiveBlockReader {
     return (granularity * lon + lonOffset) * .000000001;
   }
 
-  protected long getTimestamp(long timestamp) {
-    return dateGranularity * timestamp;
+  protected LocalDateTime getTimestamp(long timestamp) {
+    return LocalDateTime.ofInstant(Instant.ofEpochMilli(dateGranularity * timestamp), TimeZone.getDefault().toZoneId());
   }
 
 }

@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import org.locationtech.jts.geom.Point;
@@ -38,7 +39,7 @@ public class NodeTable {
       statement.setLong(1, node.getInfo().getId());
       statement.setInt(2, node.getInfo().getVersion());
       statement.setInt(3, node.getInfo().getUserId());
-      statement.setObject(4, node.getInfo().getLocalDateTime());
+      statement.setObject(4, node.getInfo().getTimestamp());
       statement.setLong(5, node.getInfo().getChangeset());
       statement.setObject(6, node.getInfo().getTags());
       statement.setBytes(7, toWKB(toPoint(node.getLon(), node.getLat())));
@@ -50,7 +51,7 @@ public class NodeTable {
     try (PreparedStatement statement = connection.prepareStatement(UPDATE)) {
       statement.setInt(1, node.getInfo().getVersion());
       statement.setInt(2, node.getInfo().getUserId());
-      statement.setObject(3, node.getInfo().getLocalDateTime());
+      statement.setObject(3, node.getInfo().getTimestamp());
       statement.setLong(4, node.getInfo().getChangeset());
       statement.setObject(5, node.getInfo().getTags());
       statement.setBytes(6, toWKB(toPoint(node.getLon(), node.getLat())));
@@ -66,7 +67,7 @@ public class NodeTable {
       if (result.next()) {
         int version = result.getInt(1);
         int uid = result.getInt(2);
-        long timestamp = result.getTimestamp(3).getTime();
+        LocalDateTime timestamp = result.getObject(3, LocalDateTime.class);
         long changeset = result.getLong(4);
         Map<String, String> tags = (Map<String, String>) result.getObject(5);
         Point point = (Point) toGeometry(result.getBytes(6));
@@ -92,7 +93,7 @@ public class NodeTable {
         writer.writeLong(node.getInfo().getId());
         writer.writeInteger(node.getInfo().getVersion());
         writer.writeInteger(node.getInfo().getUserId());
-        writer.writeLocalDateTime(node.getInfo().getLocalDateTime());
+        writer.writeLocalDateTime(node.getInfo().getTimestamp());
         writer.writeLong(node.getInfo().getChangeset());
         writer.writeHstore(node.getInfo().getTags());
         writer.writeGeometry(toPoint(node.getLon(), node.getLat()));

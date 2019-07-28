@@ -1,6 +1,7 @@
 package io.gazetteer.osm.osmxml;
 
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.TimeZone;
 
 public class XMLConstants {
@@ -28,9 +29,8 @@ public class XMLConstants {
   public static final String KEY = "k";
   public static final String VAL = "v";
 
-  public static final SimpleDateFormat format;
+  public static final DateTimeFormatter format;
   static {
-    format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-    format.setTimeZone(TimeZone.getTimeZone("GMT"));
+    format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
   }
 }

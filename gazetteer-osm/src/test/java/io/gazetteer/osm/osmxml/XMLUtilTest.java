@@ -4,6 +4,7 @@ import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
+import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.stream.XMLEventReader;
@@ -25,7 +26,7 @@ public class XMLUtilTest {
         Node node = XMLUtil.readNode(event.asStartElement(), reader);
         assertEquals(1, node.getInfo().getId());
         assertEquals(10, node.getInfo().getVersion());
-        assertEquals(1199243045000l, node.getInfo().getTimestamp());
+        assertEquals(1199243045l, node.getInfo().getTimestamp().toEpochSecond(ZoneOffset.UTC));
         assertEquals(10, node.getInfo().getUserId());
         assertEquals(11, node.getInfo().getChangeset());
         assertEquals(-1, node.getLat());
@@ -45,7 +46,7 @@ public class XMLUtilTest {
         Way way = XMLUtil.readWay(event.asStartElement(), reader);
         assertEquals(1, way.getInfo().getId());
         assertEquals(10, way.getInfo().getVersion());
-        assertEquals(1199243045000l, way.getInfo().getTimestamp());
+        assertEquals(1199243045l, way.getInfo().getTimestamp().toEpochSecond(ZoneOffset.UTC));
         assertEquals(10, way.getInfo().getUserId());
         assertEquals(11, way.getInfo().getChangeset());
         assertEquals(Arrays.asList(1l, 2l, 3l), way.getNodes());
@@ -65,7 +66,7 @@ public class XMLUtilTest {
         Relation relation = XMLUtil.readRelation(event.asStartElement(), reader);
         assertEquals(1, relation.getInfo().getId());
         assertEquals(10, relation.getInfo().getVersion());
-        assertEquals(1199243045000l, relation.getInfo().getTimestamp());
+        assertEquals(1199243045l, relation.getInfo().getTimestamp().toEpochSecond(ZoneOffset.UTC));
         assertEquals(10, relation.getInfo().getUserId());
         assertEquals(11, relation.getInfo().getChangeset());
         assertEquals(6, relation.getMembers().get(0).getRef());

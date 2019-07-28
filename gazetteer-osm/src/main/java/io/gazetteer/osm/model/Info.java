@@ -12,12 +12,12 @@ public final class Info {
 
   private final long id;
   private final int version;
-  private final long timestamp;
+  private final LocalDateTime timestamp;
   private final long changeset;
   private final int userId;
   private final Map<String, String> tags;
 
-  public Info(long id, int version, long timestamp, long changeset, int userId, Map<String, String> tags) {
+  public Info(long id, int version, LocalDateTime timestamp, long changeset, int userId, Map<String, String> tags) {
     checkNotNull(userId);
     checkNotNull(tags);
     this.id = id;
@@ -36,12 +36,8 @@ public final class Info {
     return version;
   }
 
-  public long getTimestamp() {
+  public LocalDateTime getTimestamp() {
     return timestamp;
-  }
-
-  public LocalDateTime getLocalDateTime() {
-    return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), TimeZone.getDefault().toZoneId());
   }
 
   public long getChangeset() {

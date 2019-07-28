@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class RelationTable {
       statement.setLong(1, relation.getInfo().getId());
       statement.setInt(2, relation.getInfo().getVersion());
       statement.setInt(3, relation.getInfo().getUserId());
-      statement.setObject(4, relation.getInfo().getLocalDateTime());
+      statement.setObject(4, relation.getInfo().getTimestamp());
       statement.setLong(5, relation.getInfo().getChangeset());
       statement.setObject(6, relation.getInfo().getTags());
       statement.setObject(7, relation.getMembers().stream().mapToLong(m -> m.getRef()).toArray());
@@ -51,7 +52,7 @@ public class RelationTable {
     try (PreparedStatement statement = connection.prepareStatement(UPDATE)) {
       statement.setInt(1, relation.getInfo().getVersion());
       statement.setInt(2, relation.getInfo().getUserId());
-      statement.setObject(3, relation.getInfo().getLocalDateTime());
+      statement.setObject(3, relation.getInfo().getTimestamp());
       statement.setLong(4, relation.getInfo().getChangeset());
       statement.setObject(5, relation.getInfo().getTags());
       statement.setObject(6, relation.getMembers().stream().mapToLong(m -> m.getRef()).toArray());
@@ -69,7 +70,7 @@ public class RelationTable {
       if (result.next()) {
         int version = result.getInt(1);
         int uid = result.getInt(2);
-        long timestamp = result.getTimestamp(3).getTime();
+        LocalDateTime timestamp = result.getObject(3, LocalDateTime.class);
         long changeset = result.getLong(4);
         Map<String, String> tags = (Map<String, String>) result.getObject(5);
         List<Member> members = new ArrayList<>();
@@ -101,7 +102,7 @@ public class RelationTable {
         writer.writeLong(relation.getInfo().getId());
         writer.writeInteger(relation.getInfo().getVersion());
         writer.writeInteger(relation.getInfo().getUserId());
-        writer.writeLocalDateTime(relation.getInfo().getLocalDateTime());
+        writer.writeLocalDateTime(relation.getInfo().getTimestamp());
         writer.writeLong(relation.getInfo().getChangeset());
         writer.writeHstore(relation.getInfo().getTags());
         writer.writeLongList(relation.getMembers().stream().map(m -> m.getRef()).collect(Collectors.toList()));

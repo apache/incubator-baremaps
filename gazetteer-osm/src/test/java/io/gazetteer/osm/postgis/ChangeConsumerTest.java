@@ -1,23 +1,25 @@
 package io.gazetteer.osm.postgis;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import io.gazetteer.common.postgis.DatabaseUtils;
 import io.gazetteer.osm.OSMTestUtil;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
-import io.gazetteer.common.postgis.DatabaseUtils;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.TimeZone;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 public class ChangeConsumerTest {
 
@@ -40,7 +42,9 @@ public class ChangeConsumerTest {
       map.put("key", "val");
       Node insert =
           new Node(
-              new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
+              new Info(rnd.nextLong(), rnd.nextInt(),
+                  LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextLong()), TimeZone.getDefault().toZoneId()),
+                  rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
       NodeTable.insert(connection, insert);
@@ -58,13 +62,17 @@ public class ChangeConsumerTest {
       map.put("key", "val");
       Node insert =
           new Node(
-              new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
+              new Info(rnd.nextLong(), rnd.nextInt(),
+                  LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextLong()), TimeZone.getDefault().toZoneId()),
+                  rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
       NodeTable.insert(connection, insert);
       Node update =
           new Node(
-              new Info(insert.getInfo().getId(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
+              new Info(insert.getInfo().getId(), rnd.nextInt(),
+                  LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextLong()), TimeZone.getDefault().toZoneId()),
+                  rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
       NodeTable.update(connection, update);
@@ -82,7 +90,9 @@ public class ChangeConsumerTest {
       map.put("key", "val");
       Node insert =
           new Node(
-              new Info(rnd.nextLong(), rnd.nextInt(), rnd.nextInt(), rnd.nextLong(), rnd.nextInt(), map),
+              new Info(rnd.nextLong(), rnd.nextInt(),
+                  LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextLong()), TimeZone.getDefault().toZoneId()),
+                  rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
       NodeTable.insert(connection, insert);
