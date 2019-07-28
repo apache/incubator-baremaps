@@ -43,7 +43,7 @@ public class ChangeConsumerTest {
       Node insert =
           new Node(
               new Info(rnd.nextLong(), rnd.nextInt(),
-                  LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextLong()), TimeZone.getDefault().toZoneId()),
+                  LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextInt()), TimeZone.getDefault().toZoneId()),
                   rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
@@ -63,7 +63,7 @@ public class ChangeConsumerTest {
       Node insert =
           new Node(
               new Info(rnd.nextLong(), rnd.nextInt(),
-                  LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextLong()), TimeZone.getDefault().toZoneId()),
+                  LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextInt()), TimeZone.getDefault().toZoneId()),
                   rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
@@ -71,7 +71,7 @@ public class ChangeConsumerTest {
       Node update =
           new Node(
               new Info(insert.getInfo().getId(), rnd.nextInt(),
-                  LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextLong()), TimeZone.getDefault().toZoneId()),
+                  LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextInt()), TimeZone.getDefault().toZoneId()),
                   rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());
@@ -91,7 +91,7 @@ public class ChangeConsumerTest {
       Node insert =
           new Node(
               new Info(rnd.nextLong(), rnd.nextInt(),
-                  LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextLong()), TimeZone.getDefault().toZoneId()),
+                  LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextInt()), TimeZone.getDefault().toZoneId()),
                   rnd.nextLong(), rnd.nextInt(), map),
               rnd.nextDouble(),
               rnd.nextDouble());

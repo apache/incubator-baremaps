@@ -42,7 +42,7 @@ public class WayTableTest {
       Map<String, String> map = new HashMap<>();
       map.put("key", "val");
       Way insert = new Way(new Info(rnd.nextLong(), rnd.nextInt(),
-          LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextLong()), TimeZone.getDefault().toZoneId()),
+          LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextInt()), TimeZone.getDefault().toZoneId()),
           rnd.nextLong(), rnd.nextInt(), map), Arrays.asList(1l, 2l, 3l));
       WayTable.insert(connection, insert);
       assertEquals(insert, WayTable.select(connection, insert.getInfo().getId()));
@@ -57,12 +57,12 @@ public class WayTableTest {
       Map<String, String> map = new HashMap<>();
       map.put("key", "val");
       Way insert = new Way(new Info(rnd.nextLong(), rnd.nextInt(),
-          LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextLong()), TimeZone.getDefault().toZoneId()),
+          LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextInt()), TimeZone.getDefault().toZoneId()),
           rnd.nextLong(), rnd.nextInt(), map),
           Arrays.asList(1l, 2l, 3l));
       WayTable.insert(connection, insert);
       Way update = new Way(new Info(insert.getInfo().getId(), rnd.nextInt(),
-          LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextLong()), TimeZone.getDefault().toZoneId()),
+          LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextInt()), TimeZone.getDefault().toZoneId()),
           rnd.nextLong(), rnd.nextInt(), map),
           Arrays.asList(1l, 2l, 3l));
       WayTable.update(connection, update);
@@ -78,7 +78,7 @@ public class WayTableTest {
       Map<String, String> map = new HashMap<>();
       map.put("key", "val");
       Way insert = new Way(new Info(rnd.nextLong(), rnd.nextInt(),
-          LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextLong()), TimeZone.getDefault().toZoneId()),
+          LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextInt()), TimeZone.getDefault().toZoneId()),
           rnd.nextLong(), rnd.nextInt(), map),
           Arrays.asList(1l, 2l, 3l));
       WayTable.insert(connection, insert);

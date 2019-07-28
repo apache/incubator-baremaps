@@ -63,8 +63,8 @@ public final class Info {
     Info info = (Info) o;
     return id == info.id
         && version == info.version
-        && timestamp == info.timestamp
         && changeset == info.changeset
+        && Objects.equal(timestamp, info.timestamp)
         && Objects.equal(userId, info.userId)
         && Objects.equal(tags, info.tags);
   }
