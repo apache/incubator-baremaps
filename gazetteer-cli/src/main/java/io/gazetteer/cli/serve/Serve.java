@@ -31,7 +31,7 @@ public class Serve implements Callable<Integer> {
     TileReader tileReader = new PostgisTileReader(datasource, config);
 
     // Create the http server
-    HttpServer server = HttpServer.create(new InetSocketAddress(8081), 0);
+    HttpServer server = HttpServer.create(new InetSocketAddress(8082), 0);
     server.createContext("/tiles/", new TileHandler(tileReader));
     server.createContext("/", new ResourceHandler());
     server.setExecutor(null);

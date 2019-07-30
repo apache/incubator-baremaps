@@ -78,4 +78,8 @@ gazetteer serve \
 
 Well done, open your [browser](http://localhost:8081/), a map of liechtenstein should appear!
 
+## Importing contours with GDAL
 
+```
+gdal_contour -f PostgreSQL -i 10 -a elevation -nln dem_contours liechtenstein-srtm-finished-1arcsec.tif "PG:host=localhost user=gazetteer password=gazetteer dbname=gazetteer"
+```

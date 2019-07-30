@@ -1,5 +1,6 @@
 package io.gazetteer.cli.serve;
 
+import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
@@ -10,6 +11,7 @@ import io.gazetteer.tiles.TileException;
 import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.Tile;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,6 +46,7 @@ public class TileHandler implements HttpHandler {
       byte[] bytes = tileReader.read(tile);
       exchange.getResponseHeaders().put(CONTENT_TYPE, TILE_MIME_TYPE);
       exchange.getResponseHeaders().put(CONTENT_ENCODING, TILE_ENCODING);
+      exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, Arrays.asList("*"));
       exchange.sendResponseHeaders(200, bytes.length);
       exchange.getResponseBody().write(bytes);
     } catch (TileException e) {

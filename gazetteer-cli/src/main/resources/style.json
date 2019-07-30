@@ -4,7 +4,7 @@
     "osm": {
       "type": "vector",
       "tiles": [
-        "http://localhost:8081/tiles/{z}/{x}/{y}.pbf"
+        "http://localhost:8082/tiles/{z}/{x}/{y}.pbf"
       ],
       "minzoom": 0,
       "maxzoom": 14,
@@ -87,6 +87,21 @@
       "id": "highway",
       "source": "osm",
       "source-layer": "highway",
+      "type": "line",
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#888888",
+        "line-width": 1,
+        "line-opacity": 0.75
+      }
+    },
+    {
+      "id": "contour",
+      "source": "osm",
+      "source-layer": "contour",
       "type": "line",
       "layout": {
         "line-join": "round",
