@@ -19,8 +19,8 @@ import org.openstreetmap.osmosis.osmbinary.Osmformat;
 
 public class PBFUtil {
 
-  public static final String HEADER_BLOCK = "OSMHeader";
-  public static final String PRIMITIVE_BLOCK = "OSMData";
+  private static final String HEADER_BLOCK = "OSMHeader";
+  private static final String PRIMITIVE_BLOCK = "OSMData";
 
   public static URL url(String source) throws MalformedURLException {
     if (Files.exists(Paths.get(source))) {
@@ -50,8 +50,7 @@ public class PBFUtil {
     return blocks
         .filter(PBFUtil::isPrimitiveBlock)
         .map(PBFUtil::toPrimitiveBlock)
-        .map(PrimitiveBlockReader::new)
-        .map(PrimitiveBlockReader::readPrimitiveBlock);
+        .map(PrimitiveBlock::parse);
   }
 
   public static boolean isHeaderBlock(FileBlock block) {

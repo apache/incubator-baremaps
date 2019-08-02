@@ -11,10 +11,10 @@ public abstract class FileBlockConsumer implements Consumer<FileBlock> {
   public void accept(FileBlock block) {
     switch (block.getType()) {
       case HEADER:
-        accept(new HeaderBlockReader(PBFUtil.toHeaderBlock(block)).readHeaderBlock());
+        accept(HeaderBlock.parse(PBFUtil.toHeaderBlock(block)));
         break;
       case DATA:
-        accept(new PrimitiveBlockReader(PBFUtil.toPrimitiveBlock(block)).readPrimitiveBlock());
+        accept(PrimitiveBlock.parse(PBFUtil.toPrimitiveBlock(block)));
         break;
     }
   }

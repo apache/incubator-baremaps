@@ -23,8 +23,8 @@ public class PrimitiveBlockBlockParserTest {
     HoldingConsumer<FileBlock> consumer = new HoldingConsumer<>();
     FileBlockSpliterator fileBlockIterator = (FileBlockSpliterator) PBFUtil.spliterator(osmPbfData());
     fileBlockIterator.tryAdvance(consumer);
-    PrimitiveBlockReader primitiveBlockReader =
-        new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(consumer.value.getData()));
+    PrimitiveBlock.Builder primitiveBlockReader =
+        new PrimitiveBlock.Builder(Osmformat.PrimitiveBlock.parseFrom(consumer.value.getData()));
     PrimitiveBlock primitiveBlock = primitiveBlockReader.readPrimitiveBlock();
     assertNotNull(primitiveBlock);
     for (int i = 0; i < 9; i++) {
@@ -38,8 +38,8 @@ public class PrimitiveBlockBlockParserTest {
     HoldingConsumer<FileBlock> consumer = new HoldingConsumer<>();
     FileBlockSpliterator fileBlockIterator = (FileBlockSpliterator) PBFUtil.spliterator(osmPbfDenseBlock());
     fileBlockIterator.tryAdvance(consumer);
-    PrimitiveBlockReader primitiveBlockReader =
-        new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(consumer.value.getData()));
+    PrimitiveBlock.Builder primitiveBlockReader =
+        new PrimitiveBlock.Builder(Osmformat.PrimitiveBlock.parseFrom(consumer.value.getData()));
     List<Node> nodes = primitiveBlockReader.readDenseNodes();
     assertNotNull(nodes);
     assertFalse(nodes.isEmpty());
@@ -50,8 +50,8 @@ public class PrimitiveBlockBlockParserTest {
     HoldingConsumer<FileBlock> consumer = new HoldingConsumer<>();
     FileBlockSpliterator fileBlockIterator = (FileBlockSpliterator) PBFUtil.spliterator(osmPbfWaysBlock());
     fileBlockIterator.tryAdvance(consumer);
-    PrimitiveBlockReader primitiveBlockReader =
-        new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(consumer.value.getData()));
+    PrimitiveBlock.Builder primitiveBlockReader =
+        new PrimitiveBlock.Builder(Osmformat.PrimitiveBlock.parseFrom(consumer.value.getData()));
     List<Way> ways = primitiveBlockReader.readWays();
     assertNotNull(ways);
     assertFalse(ways.isEmpty());
@@ -62,8 +62,8 @@ public class PrimitiveBlockBlockParserTest {
     HoldingConsumer<FileBlock> consumer = new HoldingConsumer<>();
     FileBlockSpliterator fileBlockIterator = (FileBlockSpliterator) PBFUtil.spliterator(osmPbfRelationsBlock());
     fileBlockIterator.tryAdvance(consumer);
-    PrimitiveBlockReader primitiveBlockReader =
-        new PrimitiveBlockReader(Osmformat.PrimitiveBlock.parseFrom(consumer.value.getData()));
+    PrimitiveBlock.Builder primitiveBlockReader =
+        new PrimitiveBlock.Builder(Osmformat.PrimitiveBlock.parseFrom(consumer.value.getData()));
     List<Relation> relations = primitiveBlockReader.readRelations();
     assertNotNull(relations);
     assertFalse(relations.isEmpty());
