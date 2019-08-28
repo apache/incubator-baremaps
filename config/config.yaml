@@ -1,21 +1,15 @@
 layers:
-  - name: 'aerialway'
-    minZoom: 11
+  # Zoom 0 to 14
+  - name: 'boundary'
+    minZoom: 0
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
-      FROM osm_nodes
-      WHERE tags ? 'aerialway'
-      UNION
-      SELECT id, tags, geom
       FROM osm_ways
-      WHERE tags ? 'aerialway'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_relations
-      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'aerialway'
+      WHERE tags ? 'boundary'
+  # Zoom 10 to 14
   - name: 'aeroway'
-    minZoom: 11
+    minZoom: 10
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -29,23 +23,114 @@ layers:
       SELECT id, tags, geom
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'aeroway'
-  - name: 'amenity'
-    minZoom: 11
+  - name: 'waterway'
+    minZoom: 10
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
       FROM osm_nodes
-      WHERE tags ? 'amenity'
+      WHERE tags ? 'waterway'
       UNION
       SELECT id, tags, geom
       FROM osm_ways
-      WHERE tags ? 'amenity'
+      WHERE tags ? 'waterway'
       UNION
       SELECT id, tags, geom
       FROM osm_relations
-      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'amenity'
+      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'waterway'
+  - name: 'landuse'
+    minZoom: 10
+    maxZoom: 14
+    sql: >
+      SELECT id, tags, geom
+      FROM osm_nodes
+      WHERE tags ? 'landuse'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_ways
+      WHERE tags ? 'landuse'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_relations
+      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'landuse'
+  - name: 'railway'
+    minZoom: 10
+    maxZoom: 14
+    sql: >
+      SELECT id, tags, geom
+      FROM osm_nodes
+      WHERE tags ? 'railway'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_ways
+      WHERE tags ? 'railway'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_relations
+      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'railway'
+  - name: 'highway'
+    minZoom: 10
+    maxZoom: 14
+    sql: >
+      SELECT id, tags, geom
+      FROM osm_nodes
+      WHERE tags ? 'highway'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_ways
+      WHERE tags ? 'highway'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_relations
+      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'highway'
+  - name: 'geological'
+    minZoom: 10
+    maxZoom: 14
+    sql: >
+      SELECT id, tags, geom
+      FROM osm_nodes
+      WHERE tags ? 'geological'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_ways
+      WHERE tags ? 'geological'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_relations
+      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'geological'
+  # Zoom 12 to 14
+  - name: 'public_transport'
+    minZoom: 12
+    maxZoom: 14
+    sql: >
+      SELECT id, tags, geom
+      FROM osm_nodes
+      WHERE tags ? 'public_transport'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_ways
+      WHERE tags ? 'public_transport'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_relations
+      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'public_transport'
+  - name: 'aerialway'
+    minZoom: 12
+    maxZoom: 14
+    sql: >
+      SELECT id, tags, geom
+      FROM osm_nodes
+      WHERE tags ? 'aerialway'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_ways
+      WHERE tags ? 'aerialway'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_relations
+      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'aerialway'
   - name: 'barrier'
-    minZoom: 11
+    minZoom: 12
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -59,38 +144,9 @@ layers:
       SELECT id, tags, geom
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'barrier'
-  - name: 'barrier'
-    minZoom: 11
-    maxZoom: 14
-    sql: >
-      SELECT id, tags, geom
-      FROM osm_nodes
-      WHERE tags ? 'barrier'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_ways
-      WHERE tags ? 'barrier'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_relations
-      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'barrier'
-  - name: 'boundary'
-    minZoom: 11
-    maxZoom: 14
-    sql: >
-      SELECT id, tags, geom
-      FROM osm_nodes
-      WHERE tags ? 'boundary'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_ways
-      WHERE tags ? 'boundary'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_relations
-      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'boundary'
+  # Zoom 14
   - name: 'building'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -104,8 +160,23 @@ layers:
       SELECT id, tags, geom
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'building'
+  - name: 'amenity'
+    minZoom: 14
+    maxZoom: 14
+    sql: >
+      SELECT id, tags, geom
+      FROM osm_nodes
+      WHERE tags ? 'amenity'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_ways
+      WHERE tags ? 'amenity'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_relations
+      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'amenity'
   - name: 'craft'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -120,7 +191,7 @@ layers:
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'craft'
   - name: 'emergency'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -134,53 +205,8 @@ layers:
       SELECT id, tags, geom
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'emergency'
-  - name: 'craft'
-    minZoom: 11
-    maxZoom: 14
-    sql: >
-      SELECT id, tags, geom
-      FROM osm_nodes
-      WHERE tags ? 'craft'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_ways
-      WHERE tags ? 'craft'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_relations
-      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'craft'
-  - name: 'geological'
-    minZoom: 11
-    maxZoom: 14
-    sql: >
-      SELECT id, tags, geom
-      FROM osm_nodes
-      WHERE tags ? 'geological'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_ways
-      WHERE tags ? 'geological'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_relations
-      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'geological'
-  - name: 'highway'
-    minZoom: 11
-    maxZoom: 14
-    sql: >
-      SELECT id, tags, geom
-      FROM osm_nodes
-      WHERE tags ? 'highway'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_ways
-      WHERE tags ? 'highway'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_relations
-      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'highway'
   - name: 'historic'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -194,23 +220,8 @@ layers:
       SELECT id, tags, geom
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'historic'
-  - name: 'landuse'
-    minZoom: 11
-    maxZoom: 14
-    sql: >
-      SELECT id, tags, geom
-      FROM osm_nodes
-      WHERE tags ? 'landuse'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_ways
-      WHERE tags ? 'landuse'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_relations
-      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'landuse'
   - name: 'leisure'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -225,7 +236,7 @@ layers:
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'leisure'
   - name: 'man_made'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -240,7 +251,7 @@ layers:
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'man_made'
   - name: 'military'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -255,7 +266,7 @@ layers:
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'military'
   - name: 'land'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -270,7 +281,7 @@ layers:
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'natural'
   - name: 'office'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -285,7 +296,7 @@ layers:
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'office'
   - name: 'place'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -300,7 +311,7 @@ layers:
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'place'
   - name: 'power'
-    minZoom: 11
+    minZoom: 10
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -314,38 +325,8 @@ layers:
       SELECT id, tags, geom
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'power'
-  - name: 'public_transport'
-    minZoom: 11
-    maxZoom: 14
-    sql: >
-      SELECT id, tags, geom
-      FROM osm_nodes
-      WHERE tags ? 'public_transport'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_ways
-      WHERE tags ? 'public_transport'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_relations
-      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'public_transport'
-  - name: 'railway'
-    minZoom: 11
-    maxZoom: 14
-    sql: >
-      SELECT id, tags, geom
-      FROM osm_nodes
-      WHERE tags ? 'railway'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_ways
-      WHERE tags ? 'railway'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_relations
-      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'railway'
   - name: 'route'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -360,7 +341,7 @@ layers:
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'route'
   - name: 'shop'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -375,7 +356,7 @@ layers:
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'shop'
   - name: 'sport'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -390,7 +371,7 @@ layers:
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'sport'
   - name: 'telecom'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -405,7 +386,7 @@ layers:
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'telecom'
   - name: 'tourism'
-    minZoom: 11
+    minZoom: 14
     maxZoom: 14
     sql: >
       SELECT id, tags, geom
@@ -419,23 +400,4 @@ layers:
       SELECT id, tags, geom
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'tourism'
-  - name: 'waterway'
-    minZoom: 11
-    maxZoom: 14
-    sql: >
-      SELECT id, tags, geom
-      FROM osm_nodes
-      WHERE tags ? 'waterway'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_ways
-      WHERE tags ? 'waterway'
-      UNION
-      SELECT id, tags, geom
-      FROM osm_relations
-      WHERE tags -> 'type' = 'multipolygon' AND tags ? 'waterway'
-  - name: 'contour'
-    minZoom: 11
-    maxZoom: 14
-    sql: >
-      SELECT id, hstore('elevation', elevation::text) as tags, st_transform(wkb_geometry, 3857) as geom FROM dem_contours
+

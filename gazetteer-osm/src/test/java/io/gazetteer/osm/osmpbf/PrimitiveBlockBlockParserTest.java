@@ -25,10 +25,10 @@ public class PrimitiveBlockBlockParserTest {
     fileBlockIterator.tryAdvance(consumer);
     PrimitiveBlock.Builder primitiveBlockReader =
         new PrimitiveBlock.Builder(Osmformat.PrimitiveBlock.parseFrom(consumer.value.getData()));
-    PrimitiveBlock primitiveBlock = primitiveBlockReader.readPrimitiveBlock();
+    PrimitiveBlock primitiveBlock = primitiveBlockReader.build();
     assertNotNull(primitiveBlock);
     for (int i = 0; i < 9; i++) {
-      primitiveBlock = primitiveBlockReader.readPrimitiveBlock();
+      primitiveBlock = primitiveBlockReader.build();
       assertNotNull(primitiveBlock);
     }
   }

@@ -11,7 +11,7 @@
     }
   },
   "sprite": "https://maputnik.github.io/osm-liberty/sprites/osm-liberty",
-  "glyphs": "https://maps.tilehosting.com/fonts/{fontstack}/{range}.pbf?key={key}",
+  "glyphs": "http://localhost:8082/fonts/{fontstack}/{range}.pbf",
   "layers": [
     {
       "id": "background",
@@ -351,30 +351,6 @@
       "paint": {"fill-color": "rgba(206, 236, 178, 1)", "fill-antialias": true}
     },
     {
-      "id": "building",
-      "type": "fill",
-      "source": "gazetteer",
-      "source-layer": "building",
-      "minzoom": 14,
-      "filter": ["all", ["has", "building"], ["==", "geometry", "polygon"]],
-      "layout": {"visibility": "visible"},
-      "paint": {
-        "fill-color": "rgba(195, 188, 185, 1)",
-        "fill-antialias": true,
-        "fill-outline-color": "rgba(145, 145, 145, 1)"
-      }
-    },
-    {
-      "id": "building-name",
-      "type": "symbol",
-      "source": "gazetteer",
-      "source-layer": "building",
-      "minzoom": 14,
-      "filter": ["all", ["has", "building"], ["==", "geometry", "polygon"]],
-      "layout": {"visibility": "visible"},
-      "paint": {}
-    },
-    {
       "id": "waterway-riverbank",
       "type": "fill",
       "source": "gazetteer",
@@ -695,7 +671,7 @@
       "source": "gazetteer",
       "source-layer": "highway",
       "filter": ["all", ["==", "highway", "unclassified"]],
-      "layout": {"visibility": "none"},
+      "layout": {"visibility": "visible"},
       "paint": {
         "line-color": "rgba(127, 127, 127, 1)",
         "line-width": 10,
@@ -804,7 +780,7 @@
       "source": "gazetteer",
       "source-layer": "highway",
       "filter": ["all", ["==", "highway", "unclassified"]],
-      "layout": {"visibility": "none"},
+      "layout": {"visibility": "visible"},
       "paint": {
         "line-color": "rgba(254, 254, 254, 1)",
         "line-width": 8,
@@ -904,7 +880,8 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-field": "{name}",
-        "text-size": 8
+        "text-size": 8,
+        "text-font": ["Open Sans Regular"]
       },
       "paint": {}
     },
@@ -919,7 +896,8 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-field": "{name}",
-        "text-size": 10
+        "text-size": 10,
+        "text-font": ["Open Sans Regular"]
       },
       "paint": {}
     },
@@ -934,7 +912,8 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-field": "{name}",
-        "text-size": 10
+        "text-size": 10,
+        "text-font": ["Open Sans Regular"]
       },
       "paint": {}
     },
@@ -949,7 +928,8 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-field": "{name}",
-        "text-size": 10
+        "text-size": 10,
+        "text-font": ["Open Sans Regular"]
       },
       "paint": {}
     },
@@ -964,7 +944,8 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-field": "{name}",
-        "text-size": 10
+        "text-size": 10,
+        "text-font": ["Open Sans Regular"]
       },
       "paint": {}
     },
@@ -979,7 +960,8 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-field": "{name}",
-        "text-size": 10
+        "text-size": 10,
+        "text-font": ["Open Sans Regular"]
       },
       "paint": {}
     },
@@ -994,7 +976,8 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-field": "{name}",
-        "text-size": 10
+        "text-size": 10,
+        "text-font": ["Open Sans Regular"]
       },
       "paint": {}
     },
@@ -1043,7 +1026,93 @@
       "filter": ["all", ["==", "railway", "rail"]],
       "layout": {"visibility": "visible"},
       "paint": {"line-width": 2, "line-color": "rgba(63, 63, 63, 1)"}
+    },
+    {
+      "id": "building",
+      "type": "fill",
+      "source": "gazetteer",
+      "source-layer": "building",
+      "minzoom": 14,
+      "filter": ["all", ["has", "building"], ["==", "geometry", "polygon"]],
+      "layout": {"visibility": "visible"},
+      "paint": {
+        "fill-color": "rgba(195, 188, 185, 1)",
+        "fill-antialias": true,
+        "fill-outline-color": "rgba(145, 145, 145, 1)"
+      }
+    },
+    {
+      "id": "building-religious",
+      "type": "symbol",
+      "source": "gazetteer",
+      "source-layer": "building",
+      "minzoom": 14,
+      "filter": [
+        "all",
+        [
+          "in",
+          "building",
+          "church",
+          "chapel",
+          "cathedral",
+          "mosque",
+          "religious",
+          "shrine",
+          "templesynagogue",
+          ""
+        ],
+        ["==", "geometry", "polygon"]
+      ],
+      "layout": {
+        "visibility": "visible",
+        "text-font": ["Font Awesome 5 Free Solid-900"],
+        "text-field": "",
+        "icon-optional": true
+      },
+      "paint": {"text-color": "rgba(102, 102, 102, 1)"}
+    },
+    {
+      "id": "building-hospital",
+      "type": "symbol",
+      "source": "gazetteer",
+      "source-layer": "building",
+      "minzoom": 14,
+      "filter": [
+        "all",
+        ["in", "building", "hospital"],
+        ["==", "geometry", "polygon"]
+      ],
+      "layout": {
+        "visibility": "visible",
+        "text-font": ["Font Awesome 5 Free Solid-900"],
+        "text-field": "",
+        "icon-optional": true
+      },
+      "paint": {"text-color": "rgba(102, 102, 102, 1)"}
+    },
+    {
+      "id": "building-housenumber",
+      "type": "symbol",
+      "source": "gazetteer",
+      "source-layer": "building",
+      "minzoom": 14,
+      "filter": [
+        "all",
+        ["has", "addr:housenumber"],
+        ["==", "geometry", "polygon"]
+      ],
+      "layout": {
+        "visibility": "visible",
+        "text-font": ["Font Awesome 5 Free Solid-900"],
+        "text-field": "{addr:housenumber}",
+        "icon-optional": true,
+        "text-size": 10,
+        "text-line-height": 1.2,
+        "text-padding": 2,
+        "text-keep-upright": true,
+        "text-offset": [0, 0]
+      },
+      "paint": {"text-color": "rgba(102, 102, 102, 1)"}
     }
-  ],
-  "id": "cdek0i0am"
+  ]
 }

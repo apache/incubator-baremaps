@@ -1,10 +1,13 @@
 package io.gazetteer.cli.serve;
 
+import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
+
 import com.google.common.io.Resources;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 
 public class ResourceHandler implements HttpHandler {
 
@@ -17,6 +20,7 @@ public class ResourceHandler implements HttpHandler {
       }
       URL resource = Resources.getResource(path.substring(1));
       byte[] bytes = Resources.toByteArray(resource);
+      exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, Arrays.asList("*"));
       exchange.sendResponseHeaders(200, bytes.length);
       exchange.getResponseBody().write(bytes);
     } finally {

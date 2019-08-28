@@ -64,6 +64,12 @@ public class OSM implements Callable<Integer> {
           System.out.println(String.format("-> %dms", stopWatch.lap()));
         }
 
+        try (Connection connection = datasource.getConnection()) {
+          System.out.println("Creating primary keys.");
+          DatabaseUtils.executeScript(connection, "osm_create_primary_keys.sql");
+          System.out.println(String.format("-> %dms", stopWatch.lap()));
+        }
+
         System.out.println("Populating database.");
         try (InputStream input = input(url(source))) {
           Stream<FileBlock> blocks = stream(input);

@@ -1,0 +1,5 @@
+- name: 'contour'
+  minZoom: 11
+  maxZoom: 14
+  sql: >
+    SELECT id, hstore('elevation', elevation::text) as tags, st_transform(wkb_geometry, 3857) as geom FROM dem_contours

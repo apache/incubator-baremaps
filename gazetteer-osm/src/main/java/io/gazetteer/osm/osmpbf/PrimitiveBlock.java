@@ -65,7 +65,7 @@ public final class PrimitiveBlock {
   }
 
   public static PrimitiveBlock parse(Osmformat.PrimitiveBlock primitiveBlock) {
-    return new Builder(primitiveBlock).readPrimitiveBlock();
+    return new Builder(primitiveBlock).build();
   }
 
   protected static class Builder {
@@ -90,7 +90,7 @@ public final class PrimitiveBlock {
       }
     }
 
-    public PrimitiveBlock readPrimitiveBlock() {
+    public PrimitiveBlock build() {
       return new PrimitiveBlock(readDenseNodes(), readWays(), readRelations());
     }
 
