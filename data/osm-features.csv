@@ -97,7 +97,7 @@ amenity,bench,node,A bench to sit down and relax a bit
 amenity,clock,node,A public visible clock
 amenity,courthouse,node area,A place where justice is dispensed
 amenity,crematorium,node area,A place where dead human bodies are burnt
-amenity,dive_centre,node area,A dive center is the base location where sports divers usually start scuba diving or make dive guided trips at new locations.
+amenity,dive_centre,node area,A dive center is the base coordinate where sports divers usually start scuba diving or make dive guided trips at new locations.
 amenity,embassy,node area,"An embassy, consulate or diplomatic office. Also see office=diplomatic"
 amenity,fire_station,node area,A station of a fire brigade
 amenity,firepit,node area,"Deprecated. For campfires and firepits, see Tag:leisure=firepit"
@@ -108,7 +108,7 @@ amenity,internet_cafe,node area,A place whose principal role is providing intern
 amenity,kitchen,node area,A public kitchen in a facility to use by everyone or customers
 amenity,kneipp_water_cure,node area,Outdoor foot bath facility. Usually this is a pool with cold water and handrail. Popular in German speaking countries.
 amenity,marketplace,way area,"A place where trade is regulated, e.g. a square."
-amenity,monastery,node area,Monastery is the location of a monastery or a building in which monks and nuns live.
+amenity,monastery,node area,Monastery is the coordinate of a monastery or a building in which monks and nuns live.
 amenity,photo_booth,node,Photo Booth – A stand to create instant photo.
 amenity,place_of_worship,node area,"A church, mosque, or temple, etc. Note that you also need religion=*, usually denomination=* and preferably name=* as well as amenity=place_of_worship. See the article for details."
 amenity,police,node area,A police station
@@ -116,7 +116,7 @@ amenity,post_box,node,A box for the reception of mail. Alternative mail-carriers
 amenity,post_depot,node area,"Post depot or delivery office, where letters and parcels are collected and sorted prior to delivery."
 amenity,post_office,node area,Post office building with postal services
 amenity,prison,node area,A prison
-amenity,public_bath,node area,"A location where the public may bathe in common, etc. japanese onsen, turkish bath, hot spring"
+amenity,public_bath,node area,"A coordinate where the public may bathe in common, etc. japanese onsen, turkish bath, hot spring"
 amenity,public_building,node area,A generic public building. Don't use! See office=government.
 amenity,ranger_station,node area,National Park Visitor Headquarters
 amenity,recycling,node area,"Recycling facilities (bottle banks, etc.). Combine with recycling_type=container for containers or recycling_type=centre for recycling centres."
@@ -130,7 +130,7 @@ amenity,townhall,node area,"Building where the administration of a village, town
 amenity,vending_machine,node,"A machine selling goods – food, tickets, newspapers, etc. Add type of goods using vending=*"
 amenity,waste_basket,node,A single small container for depositing garbage that is easily accessible for pedestrians.
 amenity,waste_disposal,node,"A place where canal boaters, caravaners, etc. can dispose of rubbish (trash/waste)."
-amenity,waste_transfer_station,node area,"A waste transfer station is a location that accepts, consolidates and transfers waste in bulk."
+amenity,waste_transfer_station,node area,"A waste transfer station is a coordinate that accepts, consolidates and transfers waste in bulk."
 amenity,watering_place,node,Place where water is contained and animals can drink
 amenity,water_point,node,Place where you can get large amounts of drinking water
 amenity,user defined,node way area,All commonly used values according to Taginfo
@@ -365,7 +365,7 @@ highway,give_way,node,"A ""give way,"" or ""Yield"" sign"
 emergency,phone,node,A calling device can be used to tell on your current position in case of an emergency. Use with ref=NUMBER_ON_THE_SIGN
 highway,mini_roundabout,node,"Similar to roundabouts, but at the center there is either a painted circle or a fully traversable island. In case of an untraversable center island, junction=roundabout should be used."
 highway,motorway_junction,node,"Indicates a junction (UK) or exit (US). ref=* should be set to the exit number or junction identifier. (Some roads – e.g., the A14 – also carry junction numbers, so the tag may be encountered elsewhere despite its name)"
-highway,passing_place,node,The location of a passing space
+highway,passing_place,node,The coordinate of a passing space
 highway,rest_area,node area,"Place where drivers can leave the road to rest, but not refuel."
 highway,speed_camera,node,A fixed road-side or overhead speed camera.
 highway,street_lamp,node,"A street light, lamppost, street lamp, light standard, or lamp standard is a raised source of light on the edge of a road, which is turned on or lit at a certain time every night"
@@ -652,7 +652,7 @@ place,locality,node area,A named place that has no population.
 place,sea,node area,A part of an ocean.
 place,ocean,node,The world's five main major oceanic divisions.
 power,plant,area relation,"A place/industrial facility where power is generated (electricity, heat, cold water, biogas...). Individual generating units within the facility should be tagged as power=generator."
-power,cable,way,"A way following the path of underground cables, such as the local 0.4 kV network between transformer stations, distribution boxes and cable connection points, or sea cables. Not to be confused with non-power supply cables such as cables for telecommunication. May be combined with voltage=*, circuits=* and location=*."
+power,cable,way,"A way following the path of underground cables, such as the local 0.4 kV network between transformer stations, distribution boxes and cable connection points, or sea cables. Not to be confused with non-power supply cables such as cables for telecommunication. May be combined with voltage=*, circuits=* and coordinate=*."
 power,catenary_mast,node,A catenary mast supports system of overhead wires used to supply electricity to electricaly powered vehicle equipped with a pantograph.
 power,compensator,node area,Several kind of power devices used to insure of power quality and network resilience.
 power,connection,node,A freestanding electrical connection between two or more overhead wires
@@ -667,7 +667,7 @@ power,marker,node,"A separate pole or pedestal sticking out of the ground, or a 
 power,minor_line,way,"A way following the path of (overground) minor power cables, supported by poles and not towers/pylons. (This isn't quite so simple, as sometimes larger towers are replaced by smaller poles made with a stronger material; a better distinction might be based on voltage)."
 power,pole,node,"Poles supporting low to medium voltage lines (power=minor_line) and high voltage lines (power=line) up to 161,000 volts (161 kV)."
 power,portal,nodeway,Power supporting structure composed of vertical legs with cables between them attached to a horizontal crossarm
-power,substation,node area,"A tag for electricity substations. These provide voltage step-up/step-down, switching, conditioning, etc. Substations may be large facilities (up to several acres) for very high voltage transmission lines or just small buildings or kiosks near the street for low voltage distribution lines. Useful combinations: voltage=*, substation=* and location=*, see the feature page for details."
+power,substation,node area,"A tag for electricity substations. These provide voltage step-up/step-down, switching, conditioning, etc. Substations may be large facilities (up to several acres) for very high voltage transmission lines or just small buildings or kiosks near the street for low voltage distribution lines. Useful combinations: voltage=*, substation=* and coordinate=*, see the feature page for details."
 power,switch,node,A tag for electricity switches which are devices which allow operators to power up & down lines and transformer in substations or outside.
 power,switchgear,area,The switchgear comprises one or more busbar assemblies and a number of bays each connecting a circuit to the busbar assembly.
 power,terminal,node,Point of connection between overhead power lines to buildings or walls
@@ -1014,7 +1014,7 @@ tourism,apartment, ,A furnished apartment or flat with cooking and bathroom faci
 tourism,aquarium, ,A facility with living aquatic animals for public viewing.
 tourism,artwork,  ,A public piece of art.
 tourism,attraction,  ,Object of interest for a tourist.
-tourism,camp_pitch, ,An tent or caravan pitch location within a campsite or caravan site
+tourism,camp_pitch, ,An tent or caravan pitch coordinate within a campsite or caravan site
 tourism,camp_site, ,"An area where people can camp overnight using tents, camper vans or caravans."
 tourism,caravan_site, ,A place where you can stay in a caravan overnight or for longer periods.
 tourism,chalet, ,A holiday cottage with self-contained cooking and bathroom facilities.

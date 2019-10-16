@@ -50,7 +50,7 @@ public class PBFUtil {
     return blocks
         .filter(PBFUtil::isPrimitiveBlock)
         .map(PBFUtil::toPrimitiveBlock)
-        .map(PrimitiveBlock::parse);
+        .map(PrimitiveBlock::new);
   }
 
   public static boolean isHeaderBlock(FileBlock block) {

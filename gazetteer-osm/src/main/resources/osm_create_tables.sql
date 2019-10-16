@@ -27,7 +27,8 @@ CREATE TABLE osm_ways (
     timestamp timestamp without time zone NOT NULL,
     changeset bigint NOT NULL,
     tags hstore,
-    nodes bigint[]
+    nodes bigint[],
+    geom geometry
 );
 
 DROP TABLE IF EXISTS osm_relations;
@@ -40,5 +41,6 @@ CREATE TABLE osm_relations (
     tags hstore,
     member_refs bigint[],
     member_types text[],
-    member_roles text[]
+    member_roles text[],
+    geom geometry
 );

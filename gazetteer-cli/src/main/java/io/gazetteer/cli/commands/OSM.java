@@ -10,23 +10,40 @@ import io.gazetteer.cli.commands.OSM.Update;
 import io.gazetteer.cli.util.StopWatch;
 import io.gazetteer.common.io.URLUtil;
 import io.gazetteer.common.postgis.DatabaseUtils;
+import io.gazetteer.osm.data.DirectByteBufferProvider;
+import io.gazetteer.osm.data.CoordinateMapper;
+import io.gazetteer.osm.data.FixedSizeObjectMap;
+import io.gazetteer.osm.data.LongListMapper;
+import io.gazetteer.osm.data.LongMapper;
+import io.gazetteer.osm.data.VariableSizeObjectMap;
+import io.gazetteer.osm.data.VariableSizeObjectStore;
+import io.gazetteer.osm.geometry.NodeGeometryBuilder;
+import io.gazetteer.osm.geometry.RelationGeometryBuilder;
+import io.gazetteer.osm.geometry.WayGeometryBuilder;
+import io.gazetteer.osm.data.CacheConsumer;
 import io.gazetteer.osm.osmpbf.FileBlock;
 import io.gazetteer.osm.osmpbf.HeaderBlock;
 import io.gazetteer.osm.osmxml.Change;
 import io.gazetteer.osm.osmxml.ChangeUtil;
 import io.gazetteer.osm.osmxml.State;
 import io.gazetteer.osm.osmxml.StateUtil;
-import io.gazetteer.osm.postgis.BlockConsumer;
 import io.gazetteer.osm.postgis.ChangeConsumer;
+import io.gazetteer.osm.postgis.CopyConsumer;
 import io.gazetteer.osm.postgis.HeaderTable;
 import java.io.InputStream;
 import java.net.URL;
 import java.sql.Connection;
+import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.apache.commons.dbcp2.PoolingDataSource;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -70,23 +87,31 @@ public class OSM implements Callable<Integer> {
           System.out.println(String.format("-> %dms", stopWatch.lap()));
         }
 
+        FixedSizeObjectMap<Coordinate> coordinatesMap = new FixedSizeObjectMap<>(new DirectByteBufferProvider(), new CoordinateMapper());
+        FixedSizeObjectMap<Long> keys = new FixedSizeObjectMap<>(
+            new DirectByteBufferProvider(),
+            new LongMapper());
+        VariableSizeObjectStore<List<Long>> values =  new VariableSizeObjectStore<>(
+            new DirectByteBufferProvider(),
+            new LongListMapper());
+        VariableSizeObjectMap<List<Long>> referencesMap = new VariableSizeObjectMap<>(keys, values);
+        System.out.println("Populating cache.");
+        try (InputStream input = input(url(source))) {
+          Stream<FileBlock> blocks = stream(input);
+          CacheConsumer blockConsumer = new CacheConsumer(coordinatesMap, referencesMap);
+          executor.submit(() -> blocks.forEach(blockConsumer)).get();
+          System.out.println(String.format("-> %dms", stopWatch.lap()));
+        }
+
         System.out.println("Populating database.");
         try (InputStream input = input(url(source))) {
           Stream<FileBlock> blocks = stream(input);
-          BlockConsumer pgBulkInsertConsumer = new BlockConsumer(datasource);
-          executor.submit(() -> blocks.forEach(pgBulkInsertConsumer)).get();
-          System.out.println(String.format("-> %dms", stopWatch.lap()));
-        }
-
-        try (Connection connection = datasource.getConnection()) {
-          System.out.println("Updating geometries.");
-          DatabaseUtils.executeScript(connection, "osm_create_geometries.sql");
-          System.out.println(String.format("-> %dms", stopWatch.lap()));
-        }
-
-        try (Connection connection = datasource.getConnection()) {
-          System.out.println("Creating primary keys.");
-          DatabaseUtils.executeScript(connection, "osm_create_primary_keys.sql");
+          GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
+          NodeGeometryBuilder nodeGeometryBuilder = new NodeGeometryBuilder(geometryFactory);
+          WayGeometryBuilder wayGeometryBuilder = new WayGeometryBuilder(geometryFactory, coordinatesMap);
+          RelationGeometryBuilder relationGeometryBuilder = new RelationGeometryBuilder(geometryFactory, coordinatesMap, referencesMap);
+          CopyConsumer blockConsumer = new CopyConsumer(datasource, nodeGeometryBuilder, wayGeometryBuilder, relationGeometryBuilder);
+          executor.submit(() -> blocks.forEach(blockConsumer)).get();
           System.out.println(String.format("-> %dms", stopWatch.lap()));
         }
 

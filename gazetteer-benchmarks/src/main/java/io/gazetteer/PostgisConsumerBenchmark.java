@@ -2,6 +2,9 @@ package io.gazetteer;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import io.gazetteer.osm.data.DirectByteBufferProvider;
+import io.gazetteer.osm.data.CoordinateMapper;
+import io.gazetteer.osm.data.FixedSizeObjectMap;
 import io.gazetteer.osm.osmpbf.PrimitiveBlock;
 import io.gazetteer.osm.osmpbf.PBFUtil;
 import io.gazetteer.osm.postgis.BlockConsumer;
@@ -11,6 +14,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import org.apache.commons.dbcp2.PoolingDataSource;
+import org.locationtech.jts.geom.Coordinate;
 import org.openjdk.jmh.annotations.*;
 
 import java.io.InputStream;
@@ -43,7 +47,8 @@ public class PostgisConsumerBenchmark {
       connection.createStatement().execute(sql);
     }
     PoolingDataSource pool = DatabaseUtils.poolingDataSource(POSTGRES_URL);
-    consumer = new BlockConsumer(pool);
+    FixedSizeObjectMap<Coordinate> coordinateMap = new FixedSizeObjectMap<>(new DirectByteBufferProvider(), new CoordinateMapper());
+    consumer = new BlockConsumer(pool, coordinateMap);
     InputStream input = Files.newInputStream(Paths.get(PBF_FILE));
     stream = PBFUtil.toPrimitiveBlock(PBFUtil.stream(input));
   }
