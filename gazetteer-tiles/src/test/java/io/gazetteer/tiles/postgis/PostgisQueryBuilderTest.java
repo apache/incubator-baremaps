@@ -34,7 +34,7 @@ public class PostgisQueryBuilderTest {
   public void buildLayer() {
     String sql = PostgisQueryBuilder.build(Tile, LAYER);
     assertEquals(
-        "SELECT ST_AsMVT(buildings, 'buildings', 4096, 'geom') FROM (SELECT id, (tags || hstore('geometry', lower(replace(st_geometrytype(geom), 'ST_', ''))))::jsonb, ST_AsMvtGeom(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857), 4096, 256, true) AS geom FROM (SELECT id, tags::jsonb, geom FROM osm_ways WHERE tags -> 'building' = 'yes' AND ST_Area(ST_Envelope(geom)) > 84.38049931026018) AS layer WHERE geom && ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857) AND ST_Intersects(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857))) as buildings",
+        "SELECT ST_AsMVT(mvt_geom, 'buildings', 4096, 'geom') FROM (SELECT id, (tags || hstore('geometry', lower(replace(st_geometrytype(geom), 'ST_', ''))))::jsonb, ST_AsMvtGeom(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857), 4096, 256, true) AS geom FROM (SELECT id, tags::jsonb, geom FROM osm_ways WHERE tags -> 'building' = 'yes' AND ST_Area(ST_Envelope(geom)) > 84.38049931026018) AS layer WHERE geom && ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857) AND ST_Intersects(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857))) as mvt_geom",
         sql);
   }
 
@@ -42,7 +42,7 @@ public class PostgisQueryBuilderTest {
   public void buildLayers() {
     String sql = PostgisQueryBuilder.build(Tile, LAYERS);
     assertEquals(
-        "SELECT ST_AsMVT(buildings, 'buildings', 4096, 'geom') || ST_AsMVT(highways, 'highways', 4096, 'geom') FROM (SELECT id, (tags || hstore('geometry', lower(replace(st_geometrytype(geom), 'ST_', ''))))::jsonb, ST_AsMvtGeom(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857), 4096, 256, true) AS geom FROM (SELECT id, tags::jsonb, geom FROM osm_ways WHERE tags -> 'building' = 'yes' AND ST_Area(ST_Envelope(geom)) > 84.38049931026018) AS layer WHERE geom && ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857) AND ST_Intersects(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857))) as buildings, (SELECT id, (tags || hstore('geometry', lower(replace(st_geometrytype(geom), 'ST_', ''))))::jsonb, ST_AsMvtGeom(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857), 4096, 256, true) AS geom FROM (SELECT id, tags::jsonb, geom FROM osm_ways WHERE tags ? 'highway') AS layer WHERE geom && ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857) AND ST_Intersects(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857))) as highways",
+        "SELECT ST_AsMVT(mvt_geom, 'buildings', 4096, 'geom') || ST_AsMVT(mvt_geom, 'highways', 4096, 'geom') FROM (SELECT id, (tags || hstore('geometry', lower(replace(st_geometrytype(geom), 'ST_', ''))))::jsonb, ST_AsMvtGeom(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857), 4096, 256, true) AS geom FROM (SELECT id, tags::jsonb, geom FROM osm_ways WHERE tags -> 'building' = 'yes' AND ST_Area(ST_Envelope(geom)) > 84.38049931026018) AS layer WHERE geom && ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857) AND ST_Intersects(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857))) as mvt_geom, (SELECT id, (tags || hstore('geometry', lower(replace(st_geometrytype(geom), 'ST_', ''))))::jsonb, ST_AsMvtGeom(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857), 4096, 256, true) AS geom FROM (SELECT id, tags::jsonb, geom FROM osm_ways WHERE tags ? 'highway') AS layer WHERE geom && ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857) AND ST_Intersects(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857))) as mvt_geom",
         sql);
   }
 
@@ -56,7 +56,7 @@ public class PostgisQueryBuilderTest {
   @Test
   public void buildValue() {
     String sql = PostgisQueryBuilder.buildValue(LAYER);
-    assertEquals("ST_AsMVT(buildings, 'buildings', 4096, 'geom')", sql);
+    assertEquals("ST_AsMVT(mvt_geom, 'buildings', 4096, 'geom')", sql);
   }
 
   @Test
@@ -70,7 +70,7 @@ public class PostgisQueryBuilderTest {
   public void buildSource() {
     String sql = PostgisQueryBuilder.buildSource(Tile, LAYER);
     assertEquals(
-        "(SELECT id, (tags || hstore('geometry', lower(replace(st_geometrytype(geom), 'ST_', ''))))::jsonb, ST_AsMvtGeom(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857), 4096, 256, true) AS geom FROM (SELECT id, tags::jsonb, geom FROM osm_ways WHERE tags -> 'building' = 'yes' AND ST_Area(ST_Envelope(geom)) > 84.38049931026018) AS layer WHERE geom && ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857) AND ST_Intersects(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857))) as buildings",
+        "(SELECT id, (tags || hstore('geometry', lower(replace(st_geometrytype(geom), 'ST_', ''))))::jsonb, ST_AsMvtGeom(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857), 4096, 256, true) AS geom FROM (SELECT id, tags::jsonb, geom FROM osm_ways WHERE tags -> 'building' = 'yes' AND ST_Area(ST_Envelope(geom)) > 84.38049931026018) AS layer WHERE geom && ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857) AND ST_Intersects(geom, ST_MakeEnvelope(917244.339422115, 5914391.500593796, 919690.3243272407, 5916837.485498922, 3857))) as mvt_geom",
         sql);
   }
 }
