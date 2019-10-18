@@ -34,8 +34,8 @@ jobs:
       - run: "bash <(curl -s https://codecov.io/bash)"
 
       # Send Benchmarking report
-      - run: "java -jar gazetteer-benchmarks/target/benchmarks.jar -rf json"
-      - run: "bash <(curl -s https://www.slowcodesucks.com/static/assets/circleci.sh)"
+      #- run: "java -jar gazetteer-benchmarks/target/benchmarks.jar -rf json"
+      #- run: "bash <(curl -s https://www.slowcodesucks.com/static/assets/circleci.sh)"
 
       - save_cache:
           paths:
