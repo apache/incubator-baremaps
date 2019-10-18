@@ -1,14 +1,12 @@
-package io.gazetteer.osm.data;
+package io.gazetteer.osm.cache;
 
-import io.gazetteer.common.postgis.GeometryUtils;
 import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
 
-public class CoordinateMapper implements FixedSizeObjectMapper<Coordinate> {
+public class CoordinateMapper implements CacheMapper<Coordinate> {
 
   private static final int PRECISION = 7;
   private static final int MULTIPLICATION_FACTOR = calculateMultiplicationFactor();
-
 
   /**
    * Generates the multiplication factor that the double coordinate must be multiplied by to turn it into a fixed precision integer.
@@ -51,27 +49,24 @@ public class CoordinateMapper implements FixedSizeObjectMapper<Coordinate> {
   }
 
   @Override
-  public int size() {
-    return 9;
-  }
-
-  @Override
   public Coordinate read(ByteBuffer buffer) {
-    if (buffer.get() == 0) {
+    if (buffer == null || buffer.get() == 0) {
       return null;
     }
     double lon = convertToDouble(buffer.getInt());
     double lat = convertToDouble(buffer.getInt());
-    return GeometryUtils.toCoordinate(lon, lat);
-    //return new Coordinate(lon, lat);
+    return new Coordinate(lon, lat);
   }
 
   @Override
-  public void write(ByteBuffer buffer, Coordinate value) {
+  public ByteBuffer write(Coordinate value) {
+    ByteBuffer buffer = ByteBuffer.allocateDirect(9);
     if (value != null) {
       buffer.put((byte) 1);
       buffer.putInt(convertToFixed(value.getX()));
       buffer.putInt(convertToFixed(value.getY()));
     }
+    buffer.flip();
+    return buffer;
   }
 }

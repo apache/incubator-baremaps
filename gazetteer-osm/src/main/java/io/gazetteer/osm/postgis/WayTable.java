@@ -88,21 +88,4 @@ public class WayTable {
       statement.execute();
     }
   }
-
-  public static void copy(PGConnection connection, List<Way> ways) throws Exception {
-    try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(connection, COPY))) {
-      writer.writeHeader();
-      for (Way way : ways) {
-        writer.startRow(7);
-        writer.writeLong(way.getInfo().getId());
-        writer.writeInteger(way.getInfo().getVersion());
-        writer.writeInteger(way.getInfo().getUserId());
-        writer.writeLocalDateTime(way.getInfo().getTimestamp());
-        writer.writeLong(way.getInfo().getChangeset());
-        writer.writeHstore(way.getInfo().getTags());
-        writer.writeLongList(way.getNodes());
-      }
-    }
-  }
-
 }

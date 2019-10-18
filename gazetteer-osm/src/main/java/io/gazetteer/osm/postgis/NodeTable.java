@@ -85,21 +85,4 @@ public class NodeTable {
     }
   }
 
-  public static void copy(PGConnection connection, List<Node> nodes) throws Exception {
-    try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(connection, COPY))) {
-      writer.writeHeader();
-      for (Node node : nodes) {
-        writer.startRow(7);
-        writer.writeLong(node.getInfo().getId());
-        writer.writeInteger(node.getInfo().getVersion());
-        writer.writeInteger(node.getInfo().getUserId());
-        writer.writeLocalDateTime(node.getInfo().getTimestamp());
-        writer.writeLong(node.getInfo().getChangeset());
-        writer.writeHstore(node.getInfo().getTags());
-        writer.writeGeometry(toPoint(node.getLon(), node.getLat()));
-      }
-    }
-  }
-
-
 }

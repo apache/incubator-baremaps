@@ -265,7 +265,7 @@ layers:
       SELECT id, tags, geom
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'military'
-  - name: 'land'
+  - name: 'natural'
     minZoom: 14
     maxZoom: 14
     sql: >
@@ -277,7 +277,7 @@ layers:
       FROM osm_ways
       WHERE tags ? 'natural'
       UNION
-      SELECT id, tags, geom
+      SELECT id, tags, st_buildarea(geom) as geom
       FROM osm_relations
       WHERE tags -> 'type' = 'multipolygon' AND tags ? 'natural'
   - name: 'office'

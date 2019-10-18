@@ -94,22 +94,4 @@ public class RelationTable {
     }
   }
 
-  public static void copy(PGConnection connection, List<Relation> relations) throws Exception {
-    try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(connection, COPY))) {
-      writer.writeHeader();
-      for (Relation relation : relations) {
-        writer.startRow(9);
-        writer.writeLong(relation.getInfo().getId());
-        writer.writeInteger(relation.getInfo().getVersion());
-        writer.writeInteger(relation.getInfo().getUserId());
-        writer.writeLocalDateTime(relation.getInfo().getTimestamp());
-        writer.writeLong(relation.getInfo().getChangeset());
-        writer.writeHstore(relation.getInfo().getTags());
-        writer.writeLongList(relation.getMembers().stream().map(m -> m.getRef()).collect(Collectors.toList()));
-        writer.writeStringList(relation.getMembers().stream().map(m -> m.getType().name()).collect(Collectors.toList()));
-        writer.writeStringList(relation.getMembers().stream().map(m -> m.getRole()).collect(Collectors.toList()));
-      }
-    }
-  }
-
 }

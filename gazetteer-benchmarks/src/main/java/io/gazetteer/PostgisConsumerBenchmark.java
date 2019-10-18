@@ -1,34 +1,11 @@
 package io.gazetteer;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
-import io.gazetteer.osm.data.DirectByteBufferProvider;
-import io.gazetteer.osm.data.CoordinateMapper;
-import io.gazetteer.osm.data.FixedSizeObjectMap;
 import io.gazetteer.osm.osmpbf.PrimitiveBlock;
-import io.gazetteer.osm.osmpbf.PBFUtil;
-import io.gazetteer.osm.postgis.BlockConsumer;
-import io.gazetteer.common.postgis.DatabaseUtils;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import org.apache.commons.dbcp2.PoolingDataSource;
-import org.locationtech.jts.geom.Coordinate;
 import org.openjdk.jmh.annotations.*;
 
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import static io.gazetteer.Constants.PBF_FILE;
-import static io.gazetteer.Constants.POSTGRES_URL;
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -38,7 +15,7 @@ public class PostgisConsumerBenchmark {
   public Stream<PrimitiveBlock> stream;
 
   public Consumer consumer;
-
+  /*
   @Setup(Level.Invocation)
   public void prepare() throws SQLException, IOException {
     try (Connection connection = DriverManager.getConnection(POSTGRES_URL)) {
@@ -47,7 +24,7 @@ public class PostgisConsumerBenchmark {
       connection.createStatement().execute(sql);
     }
     PoolingDataSource pool = DatabaseUtils.poolingDataSource(POSTGRES_URL);
-    FixedSizeObjectMap<Coordinate> coordinateMap = new FixedSizeObjectMap<>(new DirectByteBufferProvider(), new CoordinateMapper());
+    Cache<Coordinate> coordinateMap = new Cache<Coordinate>(new CoordinateMapper());
     consumer = new BlockConsumer(pool, coordinateMap);
     InputStream input = Files.newInputStream(Paths.get(PBF_FILE));
     stream = PBFUtil.toPrimitiveBlock(PBFUtil.stream(input));
@@ -61,4 +38,5 @@ public class PostgisConsumerBenchmark {
     ForkJoinPool executor = new ForkJoinPool(1);
     executor.submit(() -> stream.forEach(consumer)).get();
   }
+  */
 }

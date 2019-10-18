@@ -4,23 +4,20 @@ import static io.gazetteer.osm.osmpbf.PBFUtil.input;
 import static io.gazetteer.osm.osmpbf.PBFUtil.stream;
 import static io.gazetteer.osm.osmpbf.PBFUtil.url;
 import static io.gazetteer.osm.osmxml.ChangeUtil.statePath;
+import static org.lmdbjava.DbiFlags.MDB_CREATE;
 
 import io.gazetteer.cli.commands.OSM.Import;
 import io.gazetteer.cli.commands.OSM.Update;
 import io.gazetteer.cli.util.StopWatch;
 import io.gazetteer.common.io.URLUtil;
 import io.gazetteer.common.postgis.DatabaseUtils;
-import io.gazetteer.osm.data.DirectByteBufferProvider;
-import io.gazetteer.osm.data.CoordinateMapper;
-import io.gazetteer.osm.data.FixedSizeObjectMap;
-import io.gazetteer.osm.data.LongListMapper;
-import io.gazetteer.osm.data.LongMapper;
-import io.gazetteer.osm.data.VariableSizeObjectMap;
-import io.gazetteer.osm.data.VariableSizeObjectStore;
+import io.gazetteer.osm.cache.Cache;
+import io.gazetteer.osm.cache.CoordinateMapper;
+import io.gazetteer.osm.cache.ReferenceMapper;
 import io.gazetteer.osm.geometry.NodeGeometryBuilder;
 import io.gazetteer.osm.geometry.RelationGeometryBuilder;
 import io.gazetteer.osm.geometry.WayGeometryBuilder;
-import io.gazetteer.osm.data.CacheConsumer;
+import io.gazetteer.osm.cache.CacheConsumer;
 import io.gazetteer.osm.osmpbf.FileBlock;
 import io.gazetteer.osm.osmpbf.HeaderBlock;
 import io.gazetteer.osm.osmxml.Change;
@@ -32,15 +29,17 @@ import io.gazetteer.osm.postgis.CopyConsumer;
 import io.gazetteer.osm.postgis.HeaderTable;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.apache.commons.dbcp2.PoolingDataSource;
+import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -87,18 +86,15 @@ public class OSM implements Callable<Integer> {
           System.out.println(String.format("-> %dms", stopWatch.lap()));
         }
 
-        FixedSizeObjectMap<Coordinate> coordinatesMap = new FixedSizeObjectMap<>(new DirectByteBufferProvider(), new CoordinateMapper());
-        FixedSizeObjectMap<Long> keys = new FixedSizeObjectMap<>(
-            new DirectByteBufferProvider(),
-            new LongMapper());
-        VariableSizeObjectStore<List<Long>> values =  new VariableSizeObjectStore<>(
-            new DirectByteBufferProvider(),
-            new LongListMapper());
-        VariableSizeObjectMap<List<Long>> referencesMap = new VariableSizeObjectMap<>(keys, values);
+        Path lmdbPath = Paths.get("/tmp/lmdb");
+        Env<ByteBuffer> env = Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(lmdbPath.toFile());
+        Cache<Coordinate> nodeCache = new Cache<>(env, env.openDbi("nodes", MDB_CREATE), new CoordinateMapper());
+        Cache<List<Long>> wayCache = new Cache<>(env, env.openDbi("ways", MDB_CREATE), new ReferenceMapper());
+        Cache<List<Long>> relationCache = new Cache<>(env, env.openDbi("ways", MDB_CREATE), new ReferenceMapper());
         System.out.println("Populating cache.");
         try (InputStream input = input(url(source))) {
           Stream<FileBlock> blocks = stream(input);
-          CacheConsumer blockConsumer = new CacheConsumer(coordinatesMap, referencesMap);
+          CacheConsumer blockConsumer = new CacheConsumer(nodeCache, wayCache, relationCache);
           executor.submit(() -> blocks.forEach(blockConsumer)).get();
           System.out.println(String.format("-> %dms", stopWatch.lap()));
         }
@@ -108,8 +104,8 @@ public class OSM implements Callable<Integer> {
           Stream<FileBlock> blocks = stream(input);
           GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
           NodeGeometryBuilder nodeGeometryBuilder = new NodeGeometryBuilder(geometryFactory);
-          WayGeometryBuilder wayGeometryBuilder = new WayGeometryBuilder(geometryFactory, coordinatesMap);
-          RelationGeometryBuilder relationGeometryBuilder = new RelationGeometryBuilder(geometryFactory, coordinatesMap, referencesMap);
+          WayGeometryBuilder wayGeometryBuilder = new WayGeometryBuilder(geometryFactory, nodeCache);
+          RelationGeometryBuilder relationGeometryBuilder = new RelationGeometryBuilder(geometryFactory, nodeCache, wayCache);
           CopyConsumer blockConsumer = new CopyConsumer(datasource, nodeGeometryBuilder, wayGeometryBuilder, relationGeometryBuilder);
           executor.submit(() -> blocks.forEach(blockConsumer)).get();
           System.out.println(String.format("-> %dms", stopWatch.lap()));

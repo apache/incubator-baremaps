@@ -23,6 +23,8 @@ public class ResourceHandler implements HttpHandler {
       exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, Arrays.asList("*"));
       exchange.sendResponseHeaders(200, bytes.length);
       exchange.getResponseBody().write(bytes);
+    } catch (Exception e) {
+      e.printStackTrace();
     } finally {
       exchange.close();
     }
