@@ -205,7 +205,7 @@
       </dependency>
       <dependency>
         <groupId>io.gazetteer</groupId>
-        <artifactId>gazetteer-tileserver</artifactId>
+        <artifactId>gazetteer-tiles</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
