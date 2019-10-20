@@ -83,3 +83,16 @@ Well done, open your [browser](http://localhost:8081/), a map of liechtenstein s
 ```
 gdal_contour -f PostgreSQL -i 10 -a elevation -nln dem_contours liechtenstein-srtm-finished-1arcsec.tif "PG:host=localhost user=gazetteer password=gazetteer dbname=gazetteer"
 ```
+
+## Uploading tiles on AWS S3
+
+```
+aws s3 sync . s3://tiles.gazetteer.io/ --content-type application/vnd.mapbox-vector-tile --content-encoding gzip
+```
+
+## Tile URLs
+
+```
+http://localhost:8082/tiles/{z}/{x}/{y}.pbf
+http://tiles.gazetteer.io.s3-website.eu-central-1.amazonaws.com/{z}/{x}/{y}.pbf
+```

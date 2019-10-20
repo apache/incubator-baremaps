@@ -42,6 +42,16 @@ public class Tiles implements Callable<Integer> {
       description = "The size of the thread pool.")
   private int threads = Runtime.getRuntime().availableProcessors();
 
+  @Option(
+      names = {"--minZoom"},
+      description = "The minimal zoom level.")
+  private int minZ = 0;
+
+  @Option(
+      names = {"--maxZoom"},
+      description = "The maximal zoom level.")
+  private int maxZ = 14;
+
   @Override
   public Integer call() throws SQLException, ParseException, FileNotFoundException {
     ForkJoinPool executor = new ForkJoinPool(threads);
@@ -58,7 +68,7 @@ public class Tiles implements Callable<Integer> {
 
       try (Connection connection = datasource.getConnection()) {
         Geometry geometry = TileUtil.bbox(connection);
-        Stream<Tile> coords = TileUtil.getOverlappingXYZ(geometry, 1, 14);
+        Stream<Tile> coords = TileUtil.getOverlappingXYZ(geometry, minZ, maxZ);
         executor.submit(() -> coords.forEach(xyz -> {
           try {
             byte[] tile = tileReader.read(xyz);
