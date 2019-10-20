@@ -13,7 +13,7 @@ On the longer run, the project will include other data sources and be deployable
 
 ## State of the map
 
-![State of the map](https://github.com/gazetteerio/gazetteer/raw/master/screenshots/1550007544903.png)
+![State of the map](https://github.com/gazetteerio/gazetteer/raw/master/screenshots/2019-10-20.png)
 
 ## Prerequisites
 
