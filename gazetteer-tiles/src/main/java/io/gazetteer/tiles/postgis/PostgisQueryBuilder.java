@@ -19,7 +19,7 @@ public class PostgisQueryBuilder {
   private static final String SQL_LAYERS = "SELECT {0} FROM {1}";
 
   // {0} = name;
-  private static final String SQL_VALUE = "ST_AsMVT(geom_{0}, ''{0}'', 4096, ''geom'')";
+  private static final String SQL_VALUE = "ST_AsMVT(mvt_geom, ''{0}'', 4096, ''geom'')";
 
   // {0} = name; {1} = sql; {2} = envelope
   private static final String SQL_SOURCE =
@@ -28,7 +28,7 @@ public class PostgisQueryBuilder {
           + "ST_AsMvtGeom(geom, {2}, 4096, 256, true) AS geom "
           + "FROM ({1}) AS layer "
           + "WHERE geom && {2} AND ST_Intersects(geom, {2})"
-          + ") as geom_{0}";
+          + ") as mvt_geom";
 
   // {0} = minX; {1} = minY; {2} = maxX; {3} = maxY
   private static final String SQL_ENVELOPE = "ST_MakeEnvelope({0}, {1}, {2}, {3}, 3857)";
