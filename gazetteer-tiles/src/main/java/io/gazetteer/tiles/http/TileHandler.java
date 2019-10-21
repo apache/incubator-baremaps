@@ -1,4 +1,4 @@
-package io.gazetteer.cli.serve;
+package io.gazetteer.tiles.http;
 
 import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;

@@ -1,10 +1,12 @@
-package io.gazetteer.cli.serve;
+package io.gazetteer.cli.commands;
 
 import com.sun.net.httpserver.HttpServer;
 import io.gazetteer.common.postgis.DatabaseUtils;
 import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.postgis.PostgisConfig;
 import io.gazetteer.tiles.postgis.PostgisTileReader;
+import io.gazetteer.tiles.http.ResourceHandler;
+import io.gazetteer.tiles.http.TileHandler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

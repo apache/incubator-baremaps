@@ -180,7 +180,6 @@
     <module>gazetteer-common</module>
     <module>gazetteer-osm</module>
     <module>gazetteer-tiles</module>
-    <module>gazetteer-geoip</module>
     <module>gazetteer-benchmarks</module>
     <module>gazetteer-cli</module>
   </modules>
