@@ -4,19 +4,42 @@
   "sources": {
     "gazetteer": {
       "type": "vector",
-      "tiles": ["http://localhost:8082/tiles/{z}/{x}/{y}.pbf"],
-      "minzoom": 0,
+      "tiles": [
+        "http://localhost:8082/tiles/{z}/{x}/{y}.pbf"
+      ],
+      "minzoom": 12,
       "maxzoom": 14,
       "bounds": [5.952882, 45.81617, 10.49584, 47.81126]
     }
   },
-  "sprite": "https://maputnik.github.io/osm-liberty/sprites/osm-liberty",
-  "glyphs": "https://maps.tilehosting.com/fonts/{fontstack}/{range}.pbf?key={key}",
+  "sprite": "",
+  "glyphs": "https://daglvzoa8byzd.cloudfront.net/{fontstack}/{range}.pbf",
   "layers": [
     {
       "id": "background",
       "type": "background",
+      "layout": {"visibility": "visible"},
       "paint": {"background-color": "rgb(239,239,239)"}
+    },
+    {
+      "id": "geological",
+      "type": "fill",
+      "source": "gazetteer",
+      "source-layer": "waterway",
+      "minzoom": 0,
+      "filter": ["all"],
+      "layout": {"visibility": "none"},
+      "paint": {"fill-color": "rgba(152, 205, 255, 1)"}
+    },
+    {
+      "id": "natural-water",
+      "type": "fill",
+      "source": "gazetteer",
+      "source-layer": "natural",
+      "minzoom": 0,
+      "filter": ["all", ["==", "natural", "water"]],
+      "layout": {"visibility": "visible"},
+      "paint": {"fill-color": "rgba(152, 205, 255, 1)"}
     },
     {
       "id": "landuse-commercial",
@@ -28,6 +51,7 @@
         ["==", "landuse", "commercial"],
         ["==", "geometry", "polygon"]
       ],
+      "layout": {"visibility": "visible"},
       "paint": {"fill-color": "rgba(238, 207, 207, 1)", "fill-antialias": true}
     },
     {
@@ -351,30 +375,6 @@
       "paint": {"fill-color": "rgba(206, 236, 178, 1)", "fill-antialias": true}
     },
     {
-      "id": "building",
-      "type": "fill",
-      "source": "gazetteer",
-      "source-layer": "building",
-      "minzoom": 14,
-      "filter": ["all", ["has", "building"], ["==", "geometry", "polygon"]],
-      "layout": {"visibility": "visible"},
-      "paint": {
-        "fill-color": "rgba(195, 188, 185, 1)",
-        "fill-antialias": true,
-        "fill-outline-color": "rgba(145, 145, 145, 1)"
-      }
-    },
-    {
-      "id": "building-name",
-      "type": "symbol",
-      "source": "gazetteer",
-      "source-layer": "building",
-      "minzoom": 14,
-      "filter": ["all", ["has", "building"], ["==", "geometry", "polygon"]],
-      "layout": {"visibility": "visible"},
-      "paint": {}
-    },
-    {
       "id": "waterway-riverbank",
       "type": "fill",
       "source": "gazetteer",
@@ -425,7 +425,7 @@
       "source-layer": "waterway",
       "maxzoom": 24,
       "filter": ["all", ["==", "waterway", "canal"]],
-      "layout": {},
+      "layout": {"visibility": "visible"},
       "paint": {"line-color": "rgba(99, 179, 248, 1)", "line-width": 8}
     },
     {
@@ -695,7 +695,7 @@
       "source": "gazetteer",
       "source-layer": "highway",
       "filter": ["all", ["==", "highway", "unclassified"]],
-      "layout": {"visibility": "none"},
+      "layout": {"visibility": "visible"},
       "paint": {
         "line-color": "rgba(127, 127, 127, 1)",
         "line-width": 10,
@@ -804,7 +804,7 @@
       "source": "gazetteer",
       "source-layer": "highway",
       "filter": ["all", ["==", "highway", "unclassified"]],
-      "layout": {"visibility": "none"},
+      "layout": {"visibility": "visible"},
       "paint": {
         "line-color": "rgba(254, 254, 254, 1)",
         "line-width": 8,
@@ -904,7 +904,8 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-field": "{name}",
-        "text-size": 8
+        "text-size": 8,
+        "text-font": ["Open Sans Regular"]
       },
       "paint": {}
     },
@@ -919,7 +920,8 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-field": "{name}",
-        "text-size": 10
+        "text-size": 10,
+        "text-font": ["Open Sans Regular"]
       },
       "paint": {}
     },
@@ -934,7 +936,8 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-field": "{name}",
-        "text-size": 10
+        "text-size": 10,
+        "text-font": ["Open Sans Regular"]
       },
       "paint": {}
     },
@@ -949,7 +952,8 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-field": "{name}",
-        "text-size": 10
+        "text-size": 10,
+        "text-font": ["Open Sans Regular"]
       },
       "paint": {}
     },
@@ -964,7 +968,8 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-field": "{name}",
-        "text-size": 10
+        "text-size": 10,
+        "text-font": ["Open Sans Regular"]
       },
       "paint": {}
     },
@@ -979,7 +984,8 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-field": "{name}",
-        "text-size": 10
+        "text-size": 10,
+        "text-font": ["Open Sans Regular"]
       },
       "paint": {}
     },
@@ -994,7 +1000,8 @@
         "visibility": "visible",
         "symbol-placement": "line",
         "text-field": "{name}",
-        "text-size": 10
+        "text-size": 10,
+        "text-font": ["Open Sans Regular"]
       },
       "paint": {}
     },
@@ -1043,6 +1050,147 @@
       "filter": ["all", ["==", "railway", "rail"]],
       "layout": {"visibility": "visible"},
       "paint": {"line-width": 2, "line-color": "rgba(63, 63, 63, 1)"}
+    },
+    {
+      "id": "building",
+      "type": "fill",
+      "source": "gazetteer",
+      "source-layer": "building",
+      "minzoom": 14,
+      "maxzoom": 24,
+      "filter": ["all", ["has", "building"], ["==", "geometry", "polygon"]],
+      "layout": {"visibility": "visible"},
+      "paint": {
+        "fill-color": "rgba(195, 188, 185, 1)",
+        "fill-antialias": true,
+        "fill-outline-color": "rgba(145, 145, 145, 1)"
+      }
+    },
+    {
+      "id": "building-religious",
+      "type": "symbol",
+      "source": "gazetteer",
+      "source-layer": "building",
+      "minzoom": 14,
+      "filter": [
+        "all",
+        [
+          "in",
+          "building",
+          "church",
+          "chapel",
+          "cathedral",
+          "mosque",
+          "religious",
+          "shrine",
+          "templesynagogue",
+          ""
+        ],
+        ["==", "geometry", "polygon"]
+      ],
+      "layout": {
+        "visibility": "visible",
+        "text-font": ["Font Awesome 5 Free Solid-900"],
+        "text-field": "",
+        "icon-optional": true
+      },
+      "paint": {"text-color": "rgba(102, 102, 102, 1)"}
+    },
+    {
+      "id": "building-hospital",
+      "type": "symbol",
+      "source": "gazetteer",
+      "source-layer": "building",
+      "minzoom": 14,
+      "filter": [
+        "all",
+        ["in", "building", "hospital"],
+        ["==", "geometry", "polygon"]
+      ],
+      "layout": {
+        "visibility": "visible",
+        "text-font": ["Font Awesome 5 Free Solid-900"],
+        "text-field": "",
+        "icon-optional": true
+      },
+      "paint": {"text-color": "rgba(102, 102, 102, 1)"}
+    },
+    {
+      "id": "building-housenumber",
+      "type": "symbol",
+      "source": "gazetteer",
+      "source-layer": "building",
+      "minzoom": 14,
+      "filter": [
+        "all",
+        ["has", "addr:housenumber"],
+        ["==", "geometry", "polygon"]
+      ],
+      "layout": {
+        "visibility": "visible",
+        "text-font": ["Font Awesome 5 Free Solid-900"],
+        "text-field": "{addr:housenumber}",
+        "icon-optional": true,
+        "text-size": 10,
+        "text-line-height": 1.2,
+        "text-padding": 2,
+        "text-keep-upright": true,
+        "text-offset": [0, 0]
+      },
+      "paint": {"text-color": "rgba(102, 102, 102, 1)"}
+    },
+    {
+      "id": "natural-tree",
+      "type": "circle",
+      "source": "gazetteer",
+      "source-layer": "natural",
+      "minzoom": 14,
+      "maxzoom": 24,
+      "filter": ["all", ["==", "natural", "tree"]],
+      "layout": {"visibility": "visible"},
+      "paint": {
+        "circle-color": "rgba(113, 205, 111, 1)",
+        "circle-opacity": 1,
+        "circle-radius": {"stops": [[16, 8], [18, 16], [20, 32]]}
+      }
+    },
+    {
+      "id": "natural-tree-root",
+      "type": "circle",
+      "source": "gazetteer",
+      "source-layer": "natural",
+      "minzoom": 14,
+      "filter": ["all", ["==", "natural", "tree"]],
+      "layout": {"visibility": "visible"},
+      "paint": {
+        "circle-color": "rgba(129, 94, 39, 1)",
+        "circle-opacity": 1,
+        "circle-radius": {"stops": [[16, 2], [18, 4], [20, 8]]}
+      }
+    },
+    {
+      "id": "boundary-country",
+      "type": "line",
+      "source": "gazetteer",
+      "source-layer": "boundary",
+      "minzoom": 0,
+      "maxzoom": 10,
+      "filter": [
+        "all",
+        ["==", "boundary", "administrative"],
+        ["==", "admin_level", "2"]
+      ],
+      "paint": {"line-color": "rgba(121, 112, 101, 1)"}
+    },
+    {
+      "id": "boundary-all",
+      "type": "line",
+      "source": "gazetteer",
+      "source-layer": "boundary",
+      "minzoom": 10,
+      "maxzoom": 24,
+      "layout": {"visibility": "visible"},
+      "paint": {"line-color": "rgba(121, 112, 101, 1)"}
     }
   ],
   "id": "cdek0i0am"

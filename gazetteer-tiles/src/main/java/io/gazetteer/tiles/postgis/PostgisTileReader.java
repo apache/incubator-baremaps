@@ -29,7 +29,6 @@ public class PostgisTileReader implements TileReader {
       for (PostgisLayer layer : config.getLayers()) {
         if (tile.getZ() >= layer.getMinZoom() && tile.getZ() <= layer.getMaxZoom()) {
           String sql = PostgisQueryBuilder.build(tile, layer);
-          System.out.println(sql);
           try (Statement statement = connection.createStatement()) {
             ResultSet result = statement.executeQuery(sql);
             if (result.next()) {

@@ -3,7 +3,6 @@
     <link href='https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css' rel='stylesheet'/>
     <script src='https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.js'></script>
 </head>
-
 <body>
 <div id='map' style='width: 100%; height: 100%;'></div>
 <script>
@@ -11,7 +10,9 @@
         container: 'map',
         style: '/style.json',
         center: [9.5554, 47.1660],
-        zoom: 14
+        zoom: 15,
+        minZoom: 14,
+        maxZoom: 18
     });
 </script>
 </body>

@@ -6,10 +6,16 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fgazetteerio%2Fgazetteer.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fgazetteerio%2Fgazetteer?ref=badge_shield)
 
-Gazetteer aims at creating high quality and open source vector tiles for web mapping.
-For now, the effort consists into creating a pipeline that imports data from OpenStreetMap into postgresql, which is then used to create vector tiles.
-On the longer run, the project will include other data sources and be deployable as cloud native components.
 
+Gazetteer is an open source pipeline for producing Mapbox vector tiles from [OpenStreetMap](https://www.openstreetmap.org) with Postgis and Java.
+
+It is inspired by [Osmosis](https://github.com/openstreetmap/osmosis), but it comes with additional features, such as the ability to:
+- Process data in parallel with the [Stream API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html) of Java
+- Import data faster with the [COPY API](https://www.postgresql.org/docs/11/sql-copy.html) of Postgresql
+- Create postgis geometries on the fly with [JTS](https://github.com/locationtech/jts)
+- Create and serve customized [Mapbox Vector Tiles](https://docs.mapbox.com/vector-tiles/specification/)
+
+On the longer run, the aim of the project is to work with a variety of data sources in order to create highly specialized and customized maps.
 
 ## State of the map
 
@@ -21,7 +27,7 @@ On the longer run, the project will include other data sources and be deployable
 - Java 8
 - Maven 3
 
-## Installation
+## Quick Start
 
 Clone and build the repository:
 
@@ -32,7 +38,6 @@ mvn clean install
 ```
 
 Unzip the binary distribution and add the `/bin` folder to your `PATH` variable:
-
 
 ```bash
 unzip gazetteer-cli/target/gazetteer-cli-1.0-SNAPSHOT.zip
@@ -51,7 +56,7 @@ Commands:
 ```
 
 The `gazetteer` command comes with shorthands to manage a postgis docker container. 
-The following commands will pull the image create and start the container:
+The following commands will pull the docker image, create and start the container:
 
 ```bash
 gazetteer postgis pull
@@ -59,7 +64,7 @@ gazetteer postgis create
 gazetteer postgis start
 ```
 
-As a small country Liechtenstein is suitable for testing and easily fits in a git repository. 
+As a small country, Liechtenstein is suitable for testing and fits in this git repository. 
 You can now import this data in that postgis container using the following command.
 
 ```bash
@@ -76,23 +81,28 @@ gazetteer serve \
   'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
 ```
 
-Well done, open your [browser](http://localhost:8081/), a map of liechtenstein should appear!
+Well done, the test server should have started and a map of liechtenstein should appear in your browser ([http://localhost:8082/](http://localhost:8082/))!
 
-## Importing contours with GDAL
+## Limitations
 
-```
-gdal_contour -f PostgreSQL -i 10 -a elevation -nln dem_contours liechtenstein-srtm-finished-1arcsec.tif "PG:host=localhost user=gazetteer password=gazetteer dbname=gazetteer"
-```
+Gazetteer is a work in progress and is not production ready, i.e., it comes with a lot of limitations. 
+Additional work is needed to: 
+- Configure the map and its style at all zoom levels
+- Improve the creation of geometries for OSM relations with JTS
+- Apply OSM diffs on existing postgresql databases
+- Optimize the SQL queries used to create Mapbox Vector Tiles
+- Add additional datasets
+- Stabilize and document the codebase
 
-## Uploading tiles on AWS S3
 
-```
-aws s3 sync . s3://tiles.gazetteer.io/ --content-type application/vnd.mapbox-vector-tile --content-encoding gzip
-```
+## Contributing
 
-## Tile URLs
+Being a side project, gazetteer does not have clear contribution guidelines yet.
+As the development work happens on github, feel free to report an issue, suggest a feature, or make a pull request.
+Generally speaking, as a contributor, you should:
+- be nice, inclusive and constructive when interacting with others;
+- agree with the terms of the Apache Software License;
+- try to follow the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html);
+- try to be concise and relevant in [commit messages](https://chris.beams.io/posts/git-commit/);
+- agree to rewrite portions of your code to make it fit better into the upstream sources.
 
-```
-http://localhost:8082/tiles/{z}/{x}/{y}.pbf
-http://tiles.gazetteer.io.s3-website.eu-central-1.amazonaws.com/{z}/{x}/{y}.pbf
-```
