@@ -209,11 +209,6 @@
       </dependency>
       <dependency>
         <groupId>io.gazetteer</groupId>
-        <artifactId>gazetteer-geoip</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.gazetteer</groupId>
         <artifactId>gazetteer-benchmarks</artifactId>
         <version>${project.parent.version}</version>
       </dependency>
