@@ -9,7 +9,8 @@
       ],
       "minzoom": 12,
       "maxzoom": 14,
-      "bounds": [5.952882, 45.81617, 10.49584, 47.81126]
+      "bounds": [5.952882, 45.81617, 10.49584, 47.81126],
+      "attribution": "© <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap contributors</a>"
     }
   },
   "sprite": "",
