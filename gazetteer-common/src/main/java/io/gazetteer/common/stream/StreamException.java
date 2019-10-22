@@ -2,14 +2,12 @@ package io.gazetteer.common.stream;
 
 public class StreamException extends RuntimeException {
 
-  private final Throwable cause;
-
+  /**
+   * Constructs a new stream exception with the specified cause.
+   * @param cause
+   */
   public StreamException(Throwable cause) {
-    this.cause = cause;
+    super(cause);
   }
 
-  @Override
-  public Throwable getCause() {
-    return cause;
-  }
 }

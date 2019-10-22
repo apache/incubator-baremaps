@@ -1,6 +1,6 @@
 package io.gazetteer.osm.osmxml;
 
-import io.gazetteer.common.stream.Accumulator;
+import io.gazetteer.common.stream.AccumulatingConsumer;
 import org.junit.jupiter.api.Test;
 
 import java.util.Spliterator;
@@ -23,8 +23,8 @@ public class ChangeUtilTest {
   @Test
   public void forEachRemaining() throws Exception {
     Spliterator<Change> spliterator = spliterator(oscXmlData());
-    Accumulator<Change> accumulator = new Accumulator<>();
+    AccumulatingConsumer<Change> accumulator = new AccumulatingConsumer<>();
     spliterator.forEachRemaining(accumulator);
-    assertEquals(accumulator.acc.size(), 51);
+    assertEquals(accumulator.values().size(), 51);
   }
 }

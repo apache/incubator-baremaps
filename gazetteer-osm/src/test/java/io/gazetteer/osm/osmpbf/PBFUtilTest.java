@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.gazetteer.common.stream.Accumulator;
+import io.gazetteer.common.stream.AccumulatingConsumer;
 import io.gazetteer.common.stream.StreamException;
 import java.util.Spliterator;
 import java.util.stream.Collectors;
@@ -71,8 +71,8 @@ public class PBFUtilTest {
   @Test
   public void forEachRemaining() {
     Spliterator<FileBlock> spliterator = PBFUtil.spliterator(osmPbfData());
-    Accumulator<FileBlock> accumulator = new Accumulator<>();
+    AccumulatingConsumer<FileBlock> accumulator = new AccumulatingConsumer<>();
     spliterator.forEachRemaining(accumulator);
-    assertTrue(accumulator.acc.size() == 10);
+    assertTrue(accumulator.values().size() == 10);
   }
 }

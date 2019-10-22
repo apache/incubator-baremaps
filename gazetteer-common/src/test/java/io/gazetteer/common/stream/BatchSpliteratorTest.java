@@ -24,9 +24,9 @@ public class BatchSpliteratorTest {
 
   @Test
   public void forEachRemaining() throws Exception {
-    Accumulator<Integer> accumulator = new Accumulator<>();
+    AccumulatingConsumer<Integer> accumulator = new AccumulatingConsumer<>();
     spliterator.forEachRemaining(accumulator);
-    Assertions.assertEquals(accumulator.acc.size(), spliteratorSize);
+    Assertions.assertEquals(accumulator.values().size(), spliteratorSize);
   }
 
   @Test
