@@ -21,10 +21,6 @@ public class URLUtil {
     return new GZIPInputStream(toInputStream(url));
   }
 
-  public static InputStream toZipInputStream(URL url) throws IOException {
-    return new ZipInputStream(toInputStream(url));
-  }
-
   public static String toString(URL url) throws IOException {
     return CharStreams.toString(new InputStreamReader(toInputStream(url), Charsets.UTF_8));
   }

@@ -45,12 +45,12 @@ public class Tiles implements Callable<Integer> {
   @Option(
       names = {"--minZoom"},
       description = "The minimal zoom level.")
-  private int minZ = 0;
+  private int minZoom = 0;
 
   @Option(
       names = {"--maxZoom"},
       description = "The maximal zoom level.")
-  private int maxZ = 14;
+  private int maxZoom = 14;
 
   @Override
   public Integer call() throws SQLException, ParseException, FileNotFoundException {
@@ -68,7 +68,7 @@ public class Tiles implements Callable<Integer> {
 
       try (Connection connection = datasource.getConnection()) {
         Geometry geometry = TileUtil.bbox(connection);
-        Stream<Tile> coords = TileUtil.getOverlappingXYZ(geometry, minZ, maxZ);
+        Stream<Tile> coords = TileUtil.getOverlappingXYZ(geometry, minZoom, maxZoom);
         executor.submit(() -> coords.forEach(xyz -> {
           try {
             byte[] tile = tileReader.read(xyz);

@@ -3,6 +3,7 @@ package io.gazetteer.osm.osmpbf;
 import com.google.common.base.Objects;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Member;
+import io.gazetteer.osm.model.Member.Type;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
@@ -142,22 +143,27 @@ public final class PrimitiveBlock {
       for (int j = 0; j < r.getMemidsCount(); j++) {
         mid = mid + r.getMemids(j);
         String role = getString(r.getRolesSid(j));
-        Member.Type type = null;
-        if (r.getTypes(j) == Osmformat.Relation.MemberType.NODE) {
-          type = Member.Type.node;
-        } else if (r.getTypes(j) == Osmformat.Relation.MemberType.WAY) {
-          type = Member.Type.way;
-        } else if (r.getTypes(j) == Osmformat.Relation.MemberType.RELATION) {
-          type = Member.Type.relation;
-        } else {
-          throw new IllegalArgumentException("Unsupported MemberType");
-        }
+        Member.Type type = type(r.getTypes(j));
         members.add(new Member(mid, type, role));
       }
       relations.add(new Relation(info, members));
     }
     return relations.stream();
   }
+
+  protected Member.Type type(Osmformat.Relation.MemberType type) {
+    switch (type) {
+      case WAY:
+        return Type.way;
+      case NODE:
+        return Type.node;
+      case RELATION:
+        return Type.relation;
+      default:
+        throw new IllegalArgumentException("Unsupported MemberType");
+    }
+  }
+
 
   protected Info createEntityData(
       long id, Osmformat.Info info, List<Integer> keys, List<Integer> vals) {
