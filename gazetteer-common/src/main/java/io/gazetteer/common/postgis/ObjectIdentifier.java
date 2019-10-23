@@ -1,3 +1,6 @@
+// Copyright (c) Philipp Wagner. All rights reserved.
+// Licensed under the MIT license.
+
 package io.gazetteer.common.postgis;
 
 public class ObjectIdentifier {
