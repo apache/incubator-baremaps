@@ -116,13 +116,7 @@ public class OSM implements Callable<Integer> {
           DatabaseUtils.executeScript(connection, "osm_create_indexes.sql");
           System.out.println(String.format("-> %dms", stopWatch.lap()));
         }
-
-        try (Connection connection = datasource.getConnection()) {
-          System.out.println("Creating triggers.");
-          DatabaseUtils.executeScript(connection, "osm_create_triggers.sql");
-          System.out.println(String.format("-> %dms", stopWatch.lap()));
-        }
-
+        
         return 0;
       } finally {
         executor.shutdown();
