@@ -1,5 +1,6 @@
 package io.gazetteer.cli.commands;
 
+import static io.gazetteer.osm.osmpbf.PBFUtil.url;
 import static io.gazetteer.osm.osmxml.ChangeUtil.statePath;
 import static org.lmdbjava.DbiFlags.MDB_CREATE;
 
@@ -43,10 +44,10 @@ import picocli.CommandLine.Parameters;
 @Command(name = "update")
 public class Update implements Callable<Integer> {
 
-  @Parameters(index = "0", paramLabel = "OSM_FILE", description = "The OpenStreetMap PBF url.")
+  @Parameters(index = "0", paramLabel = "REPLICATION_DIRECTORY", description = "The replication directory.")
   private String source;
 
-  @Parameters(index = "1", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
+  @Parameters(index = "1", paramLabel = "POSTGRES_DATABASE", description = "The postgres database.")
   private String database;
 
   @Option(
@@ -71,12 +72,12 @@ public class Update implements Callable<Integer> {
       HeaderBlock header = headerMapper.last();
       long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
       String statePath = statePath(nextSequenceNumber);
-      URL stateURL = new URL(String.format("%s/%s", header.getReplicationUrl(), statePath));
+      URL stateURL = new URL(String.format("%s/%s", url(source), statePath));
       String stateContent = URLUtil.toString(stateURL);
       State state = StateUtil.parse(stateContent);
-
       String changePath = ChangeUtil.changePath(nextSequenceNumber);
-      URL changeURL = new URL(String.format("%s/%s", header.getReplicationUrl(), changePath));
+      URL changeURL = new URL(String.format("%s/%s", url(source), changePath));
+
       try (InputStream changeInputStream = URLUtil.toGZIPInputStream(changeURL)) {
         Stream<Change> changeStream = ChangeUtil.stream(changeInputStream);
         ChangeConsumer changeConsumer = new ChangeConsumer(datasource, nodeStore, wayStore, relationStore);
@@ -90,6 +91,7 @@ public class Update implements Callable<Integer> {
           header.getSource(),
           header.getWritingProgram(),
           header.getBbox()));
+
       return 0;
     } finally {
       executor.shutdown();

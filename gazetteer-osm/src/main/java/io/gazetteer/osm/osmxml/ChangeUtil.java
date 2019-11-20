@@ -19,7 +19,6 @@ public class ChangeUtil {
   }
 
   public static String path(long sequenceNumber) {
-    checkArgument(sequenceNumber <= 999999999);
     String leading = String.format("%09d", sequenceNumber);
     return leading.substring(0, 3) + "/"
         + leading.substring(3, 6) + "/"

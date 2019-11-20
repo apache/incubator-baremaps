@@ -42,10 +42,10 @@ import picocli.CommandLine.Parameters;
 @Command(name = "import")
 public class Import implements Callable<Integer> {
 
-  @Parameters(index = "0", paramLabel = "PBF_URL", description = "The PBF file.")
+  @Parameters(index = "0", paramLabel = "PBF_FILE", description = "The PBF file.")
   private String source;
 
-  @Parameters(index = "1", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
+  @Parameters(index = "1", paramLabel = "POSTGRES_DATABASE", description = "The postgres database.")
   private String database;
 
   @Option(
