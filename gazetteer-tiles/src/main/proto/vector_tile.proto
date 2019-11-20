@@ -1,6 +1,6 @@
 package vector_tile;
 
-option optimize_for = LITE_RUNTIME;
+option optimize_for = SPEED;
 option java_package = "io.gazetteer.tiles.pbf";
 option java_outer_classname = "VectorTile";
 

@@ -1,6 +1,5 @@
 package io.gazetteer.osm.osmpbf;
 
-import static io.gazetteer.osm.OSMTestUtil.osmPbfData;
 import static io.gazetteer.osm.OSMTestUtil.osmPbfDenseBlock;
 import static io.gazetteer.osm.OSMTestUtil.osmPbfRelationsBlock;
 import static io.gazetteer.osm.OSMTestUtil.osmPbfWaysBlock;

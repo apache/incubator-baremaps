@@ -1,6 +1,5 @@
 package io.gazetteer.osm.osmpbf;
 
-import com.google.common.base.Objects;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Member.Type;

@@ -1,16 +1,17 @@
 package io.gazetteer.osm.postgis;
 
-import io.gazetteer.osm.osmpbf.HeaderBlock;
 import io.gazetteer.common.postgis.GeometryUtils;
+import io.gazetteer.osm.osmpbf.HeaderBlock;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sql.DataSource;
 import org.locationtech.jts.geom.Geometry;
 
-public class HeaderTable {
+public class PostgisHeaderStore {
 
   private static final String SELECT =
       "SELECT replication_timestamp, replication_sequence_number, replication_url, source, writing_program, st_asewkb(bbox) FROM osm_headers ORDER BY replication_timestamp DESC";
@@ -18,8 +19,14 @@ public class HeaderTable {
   private static final String INSERT =
       "INSERT INTO osm_headers (replication_timestamp, replication_sequence_number, replication_url, source, writing_program, bbox) VALUES (?, ?, ?, ?, ?, ?)";
 
-  public static List<HeaderBlock> select(Connection connection) throws SQLException {
-    try (PreparedStatement statement = connection.prepareStatement(SELECT)) {
+  private final DataSource dataSource;
+
+  public PostgisHeaderStore(DataSource dataSource) {
+    this.dataSource = dataSource;
+  }
+
+  public List<HeaderBlock> select() throws SQLException {
+    try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(SELECT)) {
       ResultSet result = statement.executeQuery();
       List<HeaderBlock> headerBlocks = new ArrayList<>();
       while (result.next()) {
@@ -35,12 +42,13 @@ public class HeaderTable {
     }
   }
 
-  public static HeaderBlock last(Connection connection) throws SQLException {
-    return select(connection).get(0);
+  public HeaderBlock last() throws SQLException {
+    return select().get(0);
   }
 
-  public static void insert(Connection connection, HeaderBlock headerBlock) throws SQLException {
-    try (PreparedStatement statement = connection.prepareStatement(INSERT)) {
+
+  public void insert(HeaderBlock headerBlock) throws SQLException {
+    try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(INSERT)) {
       statement.setLong(1, headerBlock.getReplicationTimestamp());
       statement.setLong(2, headerBlock.getReplicationSequenceNumber());
       statement.setString(3, headerBlock.getReplicationUrl());

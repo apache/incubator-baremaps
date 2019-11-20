@@ -3,10 +3,8 @@ package io.gazetteer.osm.model;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.base.Objects;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.TimeZone;
 
 public final class Info {
 

@@ -1,4 +1,4 @@
-package io.gazetteer.osm.postgis;
+package io.gazetteer.osm.osmxml;
 
 import static io.gazetteer.osm.osmxml.XMLConstants.CREATE;
 import static io.gazetteer.osm.osmxml.XMLConstants.DELETE;
@@ -8,10 +8,9 @@ import io.gazetteer.osm.model.Entity;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
-import io.gazetteer.osm.osmxml.Change;
-import io.gazetteer.osm.postgis.NodeTable;
-import io.gazetteer.osm.postgis.RelationTable;
-import io.gazetteer.osm.postgis.WayTable;
+import io.gazetteer.osm.postgis.PostgisNodeStore;
+import io.gazetteer.osm.postgis.PostgisRelationStore;
+import io.gazetteer.osm.postgis.PostgisWayStore;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Consumer;
@@ -21,8 +20,15 @@ public class ChangeConsumer implements Consumer<Change> {
 
   private final DataSource datasource;
 
-  public ChangeConsumer(DataSource datasource) {
+  private final PostgisNodeStore nodeStore;
+  private final PostgisWayStore wayStore;
+  private final PostgisRelationStore relationStore;
+
+  public ChangeConsumer(DataSource datasource, PostgisNodeStore nodeStore, PostgisWayStore wayStore, PostgisRelationStore relationStore) {
     this.datasource = datasource;
+    this.nodeStore = nodeStore;
+    this.wayStore = wayStore;
+    this.relationStore = relationStore;
   }
 
   @Override
@@ -33,13 +39,11 @@ public class ChangeConsumer implements Consumer<Change> {
         Node node = (Node) entity;
         switch (change.getType()) {
           case CREATE:
-            NodeTable.insert(connection, node);
-            break;
           case MODIFY:
-            NodeTable.update(connection, node);
+            nodeStore.put(node.getInfo().getId(), node);
             break;
           case DELETE:
-            NodeTable.delete(connection, node.getInfo().getId());
+            nodeStore.delete(node.getInfo().getId());
             break;
           default:
             break;
@@ -48,13 +52,11 @@ public class ChangeConsumer implements Consumer<Change> {
         Way way = (Way) entity;
         switch (change.getType()) {
           case CREATE:
-            WayTable.insert(connection, way);
-            break;
           case MODIFY:
-            WayTable.update(connection, way);
+            wayStore.put(way.getInfo().getId(), way);
             break;
           case DELETE:
-            WayTable.delete(connection, way.getInfo().getId());
+            wayStore.delete(way.getInfo().getId());
             break;
           default:
             break;
@@ -63,13 +65,11 @@ public class ChangeConsumer implements Consumer<Change> {
         Relation relation = (Relation) entity;
         switch (change.getType()) {
           case CREATE:
-            RelationTable.insert(connection, relation);
-            break;
           case MODIFY:
-            RelationTable.update(connection, relation);
+            relationStore.put(relation.getInfo().getId(), relation);
             break;
           case DELETE:
-            RelationTable.delete(connection, relation.getInfo().getId());
+            relationStore.delete(relation.getInfo().getId());
             break;
           default:
             break;

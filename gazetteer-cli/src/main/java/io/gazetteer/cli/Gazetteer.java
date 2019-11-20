@@ -1,15 +1,17 @@
 package io.gazetteer.cli;
 
-import io.gazetteer.cli.commands.OSM;
+import io.gazetteer.cli.commands.Import;
 import io.gazetteer.cli.commands.Postgis;
 import io.gazetteer.cli.commands.Tiles;
 import io.gazetteer.cli.commands.Serve;
+import io.gazetteer.cli.commands.Update;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(subcommands = {
-    OSM.class,
+    Import.class,
+    Update.class,
     Tiles.class,
     Postgis.class,
     Serve.class,

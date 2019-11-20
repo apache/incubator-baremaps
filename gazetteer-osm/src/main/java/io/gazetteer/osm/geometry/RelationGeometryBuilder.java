@@ -1,7 +1,8 @@
 package io.gazetteer.osm.geometry;
 
 import io.gazetteer.common.postgis.GeometryUtils;
-import io.gazetteer.osm.cache.Cache;
+import io.gazetteer.common.stream.Try;
+import io.gazetteer.osm.model.Store;
 import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Member.Type;
 import io.gazetteer.osm.model.Relation;
@@ -11,22 +12,20 @@ import java.util.Map;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 
 public class RelationGeometryBuilder {
 
   private final GeometryFactory geometryFactory;
 
-  private final Cache<Coordinate> nodeCache;
-  private final Cache<List<Long>> wayCache;
+  private final Store<Long, Coordinate> coordinateStore;
+  private final Store<Long, List<Long>> referenceStore;
 
-  public RelationGeometryBuilder(GeometryFactory geometryFactory, Cache<Coordinate> nodeCache, Cache<List<Long>> wayCache) {
+  public RelationGeometryBuilder(GeometryFactory geometryFactory, Store<Long, Coordinate> coordinateStore, Store<Long, List<Long>> referenceStore) {
     this.geometryFactory = geometryFactory;
-    this.nodeCache = nodeCache;
-    this.wayCache = wayCache;
+    this.coordinateStore = coordinateStore;
+    this.referenceStore = referenceStore;
   }
 
   public Geometry create(Relation entity) {
@@ -38,19 +37,20 @@ public class RelationGeometryBuilder {
     Polygonizer polygonizer = new Polygonizer();
     members.stream()
         .filter(member -> member.getType().equals(Type.way) && member.getRole().equals("outer"))
-        .map(member -> wayCache.get(member.getRef()))
+        .map(member -> referenceStore.get(member.getRef()))
         .filter(way -> way != null)
-        .map(way -> nodeCache.getAll(way).stream()
+        .map(way -> Try.of(() -> coordinateStore.getAll(way).stream()
             .filter(coordinate -> coordinate != null)
             .map(coordinate -> GeometryUtils.toCoordinate(coordinate.getX(), coordinate.getY()))
-            .toArray(Coordinate[]::new))
-        .map(way -> geometryFactory.createLineString(way))
+            .toArray(Coordinate[]::new)))
+        .filter(t -> t.isSuccess())
+        .map(t -> geometryFactory.createLineString(t.value()))
         .forEach(way -> polygonizer.add(way));
     members.stream()
         .filter(member -> member.getType().equals(Type.way) && member.getRole().equals("inner"))
-        .map(member -> wayCache.get(member.getRef()))
+        .map(member -> referenceStore.get(member.getRef()))
         .filter(way -> way != null)
-        .map(way -> nodeCache.getAll(way).stream()
+        .map(way -> coordinateStore.getAll(way).stream()
             .filter(coordinate -> coordinate != null)
             .map(coordinate -> GeometryUtils.toCoordinate(coordinate.getX(), coordinate.getY()))
             .toArray(Coordinate[]::new))
