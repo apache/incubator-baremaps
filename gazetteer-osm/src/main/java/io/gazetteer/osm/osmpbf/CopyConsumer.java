@@ -9,22 +9,22 @@ import java.util.stream.Collectors;
 
 public class CopyConsumer extends FileBlockConsumer {
 
-  private final PostgisHeaderStore headerMapper;
-  private final PostgisNodeStore nodeMapper;
-  private final PostgisWayStore wayMapper;
-  private final PostgisRelationStore relationMapper;
+  private final PostgisHeaderStore headerStore;
+  private final PostgisNodeStore nodeStore;
+  private final PostgisWayStore wayStore;
+  private final PostgisRelationStore relationStore;
 
-  public CopyConsumer(PostgisHeaderStore headerMapper, PostgisNodeStore nodeMapper, PostgisWayStore wayMapper, PostgisRelationStore relationMapper) {
-    this.headerMapper = headerMapper;
-    this.nodeMapper = nodeMapper;
-    this.wayMapper = wayMapper;
-    this.relationMapper = relationMapper;
+  public CopyConsumer(PostgisHeaderStore headerStore, PostgisNodeStore nodeStore, PostgisWayStore wayStore, PostgisRelationStore relationStore) {
+    this.headerStore = headerStore;
+    this.nodeStore = nodeStore;
+    this.wayStore = wayStore;
+    this.relationStore = relationStore;
   }
 
   @Override
   public void accept(HeaderBlock headerBlock) {
     try {
-      headerMapper.insert(headerBlock);
+      headerStore.insert(headerBlock);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -33,13 +33,13 @@ public class CopyConsumer extends FileBlockConsumer {
   @Override
   public void accept(PrimitiveBlock primitiveBlock) {
     try {
-      nodeMapper.importAll(primitiveBlock.getDenseNodes().stream()
+      nodeStore.importAll(primitiveBlock.getDenseNodes().stream()
           .map(node -> new Entry<>(node.getInfo().getId(), node))
           .collect(Collectors.toList()));
-      wayMapper.importAll(primitiveBlock.getWays().stream()
+      wayStore.importAll(primitiveBlock.getWays().stream()
           .map(way -> new Entry<>(way.getInfo().getId(), way))
           .collect(Collectors.toList()));
-      relationMapper.importAll(primitiveBlock.getRelations().stream()
+      relationStore.importAll(primitiveBlock.getRelations().stream()
           .map(relation -> new Entry<>(relation.getInfo().getId(), relation))
           .collect(Collectors.toList()));
     } catch (Exception e) {

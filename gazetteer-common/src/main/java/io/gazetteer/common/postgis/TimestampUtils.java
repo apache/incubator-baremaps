@@ -3,7 +3,6 @@
 
 package io.gazetteer.common.postgis;
 
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;

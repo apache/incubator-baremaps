@@ -3,12 +3,12 @@ package io.gazetteer.osm.postgis;
 import static io.gazetteer.common.postgis.GeometryUtils.toWKB;
 
 import io.gazetteer.common.postgis.CopyWriter;
+import io.gazetteer.osm.geometry.WayGeometryBuilder;
 import io.gazetteer.osm.model.Entry;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Store;
 import io.gazetteer.osm.model.StoreException;
 import io.gazetteer.osm.model.Way;
-import io.gazetteer.osm.geometry.WayGeometryBuilder;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,7 +38,7 @@ public class PostgisWayStore implements Store<Long, Way> {
           + "version = excluded.version, "
           + "uid = excluded.uid, "
           + "timestamp = excluded.timestamp, "
-          + "changeset = excluded.changset, "
+          + "changeset = excluded.changeset, "
           + "tags = excluded.tags, "
           + "nodes = excluded.nodes, "
           + "geom = excluded.geom";
@@ -100,7 +100,7 @@ public class PostgisWayStore implements Store<Long, Way> {
         if (array != null) {
           nodes = Arrays.asList((Long[]) array.getArray());
         }
-        ways.add( new Way(new Info(id, version, timestamp, changeset, uid, tags), nodes));
+        ways.add(new Way(new Info(id, version, timestamp, changeset, uid, tags), nodes));
       }
       return ways;
     } catch (SQLException e) {
@@ -117,7 +117,8 @@ public class PostgisWayStore implements Store<Long, Way> {
       statement.setLong(5, value.getInfo().getChangeset());
       statement.setObject(6, value.getInfo().getTags());
       statement.setObject(7, value.getNodes().stream().mapToLong(Long::longValue).toArray());
-      statement.setBytes(8, toWKB(wayGeometryBuilder.create(value)));
+      byte[] wkb = wayGeometryBuilder != null ? toWKB(wayGeometryBuilder.create(value)) : null;
+      statement.setBytes(8, wkb);
       statement.execute();
     } catch (SQLException e) {
       throw new StoreException(e);

@@ -33,6 +33,7 @@ public class WayStoreTest {
     try (Connection connection = dataSource.getConnection()) {
       DatabaseUtils.executeScript(connection, "osm_create_extensions.sql");
       DatabaseUtils.executeScript(connection, "osm_create_tables.sql");
+      DatabaseUtils.executeScript(connection, "osm_create_primary_keys.sql");
     }
   }
 

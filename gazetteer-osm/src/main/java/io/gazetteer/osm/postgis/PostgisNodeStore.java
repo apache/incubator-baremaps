@@ -4,12 +4,12 @@ import static io.gazetteer.common.postgis.GeometryUtils.toGeometry;
 import static io.gazetteer.common.postgis.GeometryUtils.toWKB;
 
 import io.gazetteer.common.postgis.CopyWriter;
+import io.gazetteer.osm.geometry.NodeGeometryBuilder;
 import io.gazetteer.osm.model.Entry;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Store;
 import io.gazetteer.osm.model.StoreException;
-import io.gazetteer.osm.geometry.NodeGeometryBuilder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,7 +38,7 @@ public class PostgisNodeStore implements Store<Long, Node> {
           + "version = excluded.version, "
           + "uid = excluded.uid, "
           + "timestamp = excluded.timestamp, "
-          + "changeset = excluded.changset, "
+          + "changeset = excluded.changeset, "
           + "tags = excluded.tags, "
           + "geom = excluded.geom";
 
@@ -107,7 +107,8 @@ public class PostgisNodeStore implements Store<Long, Node> {
       statement.setObject(4, value.getInfo().getTimestamp());
       statement.setLong(5, value.getInfo().getChangeset());
       statement.setObject(6, value.getInfo().getTags());
-      statement.setBytes(7, toWKB(nodeGeometryBuilder.create(value)));
+      byte[] wkb = nodeGeometryBuilder != null ? toWKB(nodeGeometryBuilder.create(value)) : null;
+      statement.setBytes(7, wkb);
       statement.execute();
     } catch (SQLException e) {
       throw new StoreException(e);
