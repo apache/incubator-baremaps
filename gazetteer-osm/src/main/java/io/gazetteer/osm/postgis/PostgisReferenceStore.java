@@ -1,6 +1,5 @@
 package io.gazetteer.osm.postgis;
 
-import io.gazetteer.osm.model.Entry;
 import io.gazetteer.osm.model.Store;
 import io.gazetteer.osm.model.StoreException;
 import java.sql.Array;
@@ -10,9 +9,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class PostgisReferenceStore implements Store<Long, List<Long>> {
 
@@ -20,7 +21,7 @@ public class PostgisReferenceStore implements Store<Long, List<Long>> {
       "SELECT nodes FROM osm_ways WHERE id = ?";
 
   private static final String SELECT_IN =
-      "SELECT nodes FROM osm_ways WHERE id IN (?)";
+      "SELECT id, nodes FROM osm_ways WHERE id WHERE id = ANY (?)";
 
   private final DataSource dataSource;
 
@@ -49,19 +50,20 @@ public class PostgisReferenceStore implements Store<Long, List<Long>> {
 
   @Override
   public List<List<Long>> getAll(List<Long> keys) {
-    try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(SELECT)) {
-      statement.setArray(1, connection.createArrayOf("bigint", keys.toArray()));
+    try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
+      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       ResultSet result = statement.executeQuery();
-      List<List<Long>> references = new ArrayList<>();
+      Map<Long, List<Long>> references = new HashMap<>();
       while (result.next()) {
         List<Long> nodes = new ArrayList<>();
-        Array array = result.getArray(1);
+        long id = result.getLong(1);
+        Array array = result.getArray(2);
         if (array != null) {
           nodes = Arrays.asList((Long[]) array.getArray());
         }
-        references.add(nodes);
+        references.put(id, nodes);
       }
-      return references;
+      return keys.stream().map(key -> references.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new StoreException(e);
     }
@@ -69,26 +71,26 @@ public class PostgisReferenceStore implements Store<Long, List<Long>> {
 
   @Override
   public void put(Long key, List<Long> values) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void putAll(List<Entry<Long, List<Long>>> entries) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void delete(Long key) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void deleteAll(List<Long> keys) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void importAll(List<Entry<Long, List<Long>>> values) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 }

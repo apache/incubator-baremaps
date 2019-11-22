@@ -5,7 +5,6 @@ import static io.gazetteer.common.postgis.GeometryUtils.toWKB;
 
 import io.gazetteer.common.postgis.CopyWriter;
 import io.gazetteer.osm.geometry.NodeGeometryBuilder;
-import io.gazetteer.osm.model.Entry;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Store;
@@ -15,14 +14,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Point;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class PostgisNodeStore implements Store<Long, Node> {
 
@@ -30,7 +29,7 @@ public class PostgisNodeStore implements Store<Long, Node> {
       "SELECT version, uid, timestamp, changeset, tags, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ?";
 
   private static final String SELECT_IN =
-      "SELECT id, version, uid, timestamp, changeset, tags, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id IN (?)";
+      "SELECT id, version, uid, timestamp, changeset, tags, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ANY (?)";
 
   private static final String INSERT =
       "INSERT INTO osm_nodes (id, version, uid, timestamp, changeset, tags, geom) VALUES (?, ?, ?, ?, ?, ?, ?)"
@@ -80,20 +79,20 @@ public class PostgisNodeStore implements Store<Long, Node> {
   @Override
   public List<Node> getAll(List<Long> keys) {
     try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
-      statement.setArray(1, connection.createArrayOf("bigint", keys.toArray()));
+      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       ResultSet result = statement.executeQuery();
-      List<Node> nodes = new ArrayList<>();
+      Map<Long, Node> nodes = new HashMap<>();
       while (result.next()) {
-        int id = result.getInt(1);
+        long id = result.getInt(1);
         int version = result.getInt(2);
         int uid = result.getInt(3);
         LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
         long changeset = result.getLong(5);
         Map<String, String> tags = (Map<String, String>) result.getObject(6);
         Point point = (Point) toGeometry(result.getBytes(7));
-        nodes.add(new Node(new Info(id, version, timestamp, changeset, uid, tags), point.getX(), point.getY()));
+        nodes.put(id, new Node(new Info(id, version, timestamp, changeset, uid, tags), point.getX(), point.getY()));
       }
-      return nodes;
+      return keys.stream().map(key -> nodes.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new StoreException(e);
     }
@@ -117,7 +116,7 @@ public class PostgisNodeStore implements Store<Long, Node> {
 
   @Override
   public void putAll(List<Entry<Long, Node>> entries) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   public void delete(Long id) {
@@ -131,7 +130,7 @@ public class PostgisNodeStore implements Store<Long, Node> {
 
   @Override
   public void deleteAll(List<Long> keys) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   public void importAll(List<Entry<Long, Node>> entries) {

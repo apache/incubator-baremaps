@@ -72,6 +72,7 @@ public class Update implements Callable<Integer> {
       HeaderBlock header = headerMapper.last();
       long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
       String statePath = statePath(nextSequenceNumber);
+
       URL stateURL = new URL(String.format("%s/%s", url(source), statePath));
       String stateContent = URLUtil.toString(stateURL);
       State state = StateUtil.parse(stateContent);

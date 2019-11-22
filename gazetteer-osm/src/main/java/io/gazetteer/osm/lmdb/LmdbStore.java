@@ -2,7 +2,6 @@ package io.gazetteer.osm.lmdb;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import io.gazetteer.osm.model.Entry;
 import io.gazetteer.osm.model.Store;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import java.util.List;
 import org.lmdbjava.Dbi;
 import org.lmdbjava.Env;
 import org.lmdbjava.Txn;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public abstract class LmdbStore<K, V> implements Store<K, V> {
 
@@ -35,12 +33,12 @@ public abstract class LmdbStore<K, V> implements Store<K, V> {
 
   @Override
   public void delete(K key) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void deleteAll(List<K> keys) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   public void putAll(List<Entry<K, V>> entries) {
@@ -72,7 +70,7 @@ public abstract class LmdbStore<K, V> implements Store<K, V> {
 
   @Override
   public void importAll(List<Entry<K, V>> values) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   public void close() {

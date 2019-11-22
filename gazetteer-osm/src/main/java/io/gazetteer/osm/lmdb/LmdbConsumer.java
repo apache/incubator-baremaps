@@ -1,6 +1,5 @@
 package io.gazetteer.osm.lmdb;
 
-import io.gazetteer.osm.model.Entry;
 import io.gazetteer.osm.model.Store;
 import io.gazetteer.osm.osmpbf.FileBlockConsumer;
 import io.gazetteer.osm.osmpbf.HeaderBlock;
@@ -30,10 +29,10 @@ public class LmdbConsumer extends FileBlockConsumer {
   public void accept(PrimitiveBlock primitiveBlock) {
     try {
       coordinateStore.putAll(primitiveBlock.getDenseNodes().stream()
-          .map(n -> new Entry<>(n.getInfo().getId(), new Coordinate(n.getLon(), n.getLat())))
+          .map(n -> new Store.Entry<>(n.getInfo().getId(), new Coordinate(n.getLon(), n.getLat())))
           .collect(Collectors.toList()));
       referenceStore.putAll(primitiveBlock.getWays().stream()
-          .map(w -> new Entry<>(w.getInfo().getId(), w.getNodes()))
+          .map(w -> new Store.Entry<>(w.getInfo().getId(), w.getNodes()))
           .collect(Collectors.toList()));
     } catch (Exception e) {
       e.printStackTrace();

@@ -4,7 +4,6 @@ import static io.gazetteer.common.postgis.GeometryUtils.toWKB;
 
 import io.gazetteer.common.postgis.CopyWriter;
 import io.gazetteer.osm.geometry.WayGeometryBuilder;
-import io.gazetteer.osm.model.Entry;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Store;
 import io.gazetteer.osm.model.StoreException;
@@ -17,12 +16,13 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class PostgisWayStore implements Store<Long, Way> {
 
@@ -30,7 +30,7 @@ public class PostgisWayStore implements Store<Long, Way> {
       "SELECT version, uid, timestamp, changeset, tags, nodes FROM osm_ways WHERE id = ?";
 
   private static final String SELECT_IN =
-      "SELECT id, version, uid, timestamp, changeset, tags, nodes FROM osm_ways WHERE id IN (?)";
+      "SELECT id, version, uid, timestamp, changeset, tags, nodes FROM osm_ways WHERE id = ANY (?)";
 
   private static final String INSERT =
       "INSERT INTO osm_ways (id, version, uid, timestamp, changeset, tags, nodes, geom) VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
@@ -84,12 +84,12 @@ public class PostgisWayStore implements Store<Long, Way> {
 
   @Override
   public List<Way> getAll(List<Long> keys) {
-    try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(SELECT)) {
-      statement.setArray(1, connection.createArrayOf("bigint", keys.toArray()));
+    try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
+      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       ResultSet result = statement.executeQuery();
-      List<Way> ways = new ArrayList<>();
+      Map<Long, Way> ways = new HashMap<>();
       while (result.next()) {
-        int id = result.getInt(1);
+        long id = result.getLong(1);
         int version = result.getInt(2);
         int uid = result.getInt(3);
         LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
@@ -100,9 +100,9 @@ public class PostgisWayStore implements Store<Long, Way> {
         if (array != null) {
           nodes = Arrays.asList((Long[]) array.getArray());
         }
-        ways.add(new Way(new Info(id, version, timestamp, changeset, uid, tags), nodes));
+        ways.put(id, new Way(new Info(id, version, timestamp, changeset, uid, tags), nodes));
       }
-      return ways;
+      return keys.stream().map(key -> ways.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new StoreException(e);
     }
@@ -127,7 +127,7 @@ public class PostgisWayStore implements Store<Long, Way> {
 
   @Override
   public void putAll(List<Entry<Long, Way>> entries) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   public void delete(Long key) {
@@ -141,7 +141,7 @@ public class PostgisWayStore implements Store<Long, Way> {
 
   @Override
   public void deleteAll(List<Long> keys) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   public void importAll(List<Entry<Long, Way>> entries) {

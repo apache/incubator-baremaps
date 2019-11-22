@@ -3,7 +3,6 @@ package io.gazetteer.osm.postgis;
 import static io.gazetteer.common.postgis.GeometryUtils.toWKB;
 
 import io.gazetteer.common.postgis.CopyWriter;
-import io.gazetteer.osm.model.Entry;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Member.Type;
@@ -17,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,7 +24,6 @@ import javax.sql.DataSource;
 import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class PostgisRelationStore implements Store<Long, Relation> {
 
@@ -32,7 +31,7 @@ public class PostgisRelationStore implements Store<Long, Relation> {
       "SELECT version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles FROM osm_relations WHERE id = ?";
 
   private static final String SELECT_IN =
-      "SELECT id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles FROM osm_relations WHERE id IN (?)";
+      "SELECT id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles FROM osm_relations WHERE id = ANY (?)";
 
   private static final String INSERT =
       "INSERT INTO osm_relations (id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, geom) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
@@ -91,11 +90,11 @@ public class PostgisRelationStore implements Store<Long, Relation> {
   @Override
   public List<Relation> getAll(List<Long> keys) {
     try (Connection connection = dataSource.getConnection(); PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
-      statement.setArray(1, connection.createArrayOf("bigint", keys.toArray()));
+      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       ResultSet result = statement.executeQuery();
-      List<Relation> relations = new ArrayList<>();
+      Map<Long, Relation> relations = new HashMap<>();
       while (result.next()) {
-        int id = result.getInt(1);
+        long id = result.getLong(1);
         int version = result.getInt(2);
         int uid = result.getInt(3);
         LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
@@ -108,9 +107,9 @@ public class PostgisRelationStore implements Store<Long, Relation> {
         for (int i = 0; i < refs.length; i++) {
           members.add(new Member(refs[i], Type.valueOf(types[i]), roles[i]));
         }
-        relations.add(new Relation(new Info(id, version, timestamp, changeset, uid, tags), members));
+        relations.put(id, new Relation(new Info(id, version, timestamp, changeset, uid, tags), members));
       }
-      return relations;
+      return keys.stream().map(key -> relations.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new StoreException(e);
     }
@@ -136,7 +135,7 @@ public class PostgisRelationStore implements Store<Long, Relation> {
 
   @Override
   public void putAll(List<Entry<Long, Relation>> entries) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   public void delete(Long id) {
@@ -150,7 +149,7 @@ public class PostgisRelationStore implements Store<Long, Relation> {
 
   @Override
   public void deleteAll(List<Long> keys) {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException();
   }
 
   public void importAll(List<Entry<Long, Relation>> entries) {
