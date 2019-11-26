@@ -3,6 +3,7 @@ package io.gazetteer.osm.postgis;
 import static io.gazetteer.common.postgis.GeometryUtils.toWKB;
 
 import io.gazetteer.common.postgis.CopyWriter;
+import io.gazetteer.osm.geometry.RelationGeometryBuilder;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Member.Type;
@@ -10,7 +11,6 @@ import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Store;
 import io.gazetteer.osm.model.StoreEntry;
 import io.gazetteer.osm.model.StoreException;
-import io.gazetteer.osm.geometry.RelationGeometryBuilder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

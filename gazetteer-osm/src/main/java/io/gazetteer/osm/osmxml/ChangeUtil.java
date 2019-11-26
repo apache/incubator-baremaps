@@ -1,12 +1,10 @@
 package io.gazetteer.osm.osmxml;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
+import java.io.InputStream;
+import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.xml.stream.XMLStreamException;
-import java.io.InputStream;
-import java.util.Spliterator;
 
 public class ChangeUtil {
 

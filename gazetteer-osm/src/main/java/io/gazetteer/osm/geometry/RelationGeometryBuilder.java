@@ -2,7 +2,6 @@ package io.gazetteer.osm.geometry;
 
 import io.gazetteer.common.postgis.GeometryUtils;
 import io.gazetteer.common.stream.Try;
-import io.gazetteer.osm.model.Store;
 import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Member.Type;
 import io.gazetteer.osm.model.Relation;

@@ -1,8 +1,6 @@
 package io.gazetteer.osm.osmxml;
 
-import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.TimeZone;
 
 public class XMLConstants {
 

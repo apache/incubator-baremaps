@@ -1,18 +1,17 @@
 package io.gazetteer.osm.osmxml;
 
+import static io.gazetteer.osm.OSMTestUtil.osmXmlData;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
 import java.time.ZoneOffset;
-import org.junit.jupiter.api.Test;
-
+import java.util.Arrays;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.events.XMLEvent;
-import java.util.Arrays;
-
-import static io.gazetteer.osm.OSMTestUtil.osmXmlData;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class XMLUtilTest {
 

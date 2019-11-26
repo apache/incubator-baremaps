@@ -14,9 +14,9 @@
  */
 package io.gazetteer.osm.osmpbf;
 
-import com.google.protobuf.ByteString;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.google.protobuf.ByteString;
 
 public final class FileBlock {
 

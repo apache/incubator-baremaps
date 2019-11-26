@@ -3,12 +3,11 @@ package io.gazetteer.tiles.postgis;
 import com.google.common.base.Joiner;
 import io.gazetteer.common.postgis.GeometryUtils;
 import io.gazetteer.tiles.Tile;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 
 public class PostgisQueryBuilder {
 

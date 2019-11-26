@@ -1,12 +1,10 @@
 package io.gazetteer.tiles.postgis;
 
-import io.gazetteer.tiles.postgis.PostgisConfig;
-import org.junit.jupiter.api.Test;
-
-import java.io.InputStream;
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.InputStream;
+import org.junit.jupiter.api.Test;
 
 public class PostgisConfigTest {
 

@@ -6,10 +6,10 @@ import static io.gazetteer.osm.OSMTestUtil.osmPbfWaysBlock;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import io.gazetteer.common.stream.HoldingConsumer;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
-import io.gazetteer.common.stream.HoldingConsumer;
 import java.io.IOException;
 import java.util.List;
 import java.util.Spliterator;

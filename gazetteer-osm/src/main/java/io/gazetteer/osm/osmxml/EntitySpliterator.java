@@ -4,9 +4,8 @@ import static io.gazetteer.osm.osmxml.XMLConstants.NODE;
 import static io.gazetteer.osm.osmxml.XMLConstants.RELATION;
 import static io.gazetteer.osm.osmxml.XMLConstants.WAY;
 
-import io.gazetteer.osm.model.Entity;
-
 import io.gazetteer.common.stream.StreamException;
+import io.gazetteer.osm.model.Entity;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import javax.xml.stream.XMLEventReader;

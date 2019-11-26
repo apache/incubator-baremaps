@@ -1,13 +1,13 @@
 package io.gazetteer.osm.osmpbf;
 
+import static io.gazetteer.osm.OSMTestUtil.osmPbfData;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import io.gazetteer.common.stream.HoldingConsumer;
+import java.io.FileNotFoundException;
 import java.util.Spliterator;
 import org.junit.jupiter.api.Test;
-
-import java.io.FileNotFoundException;
-
-import static io.gazetteer.osm.OSMTestUtil.osmPbfData;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class FileBlockSpliteratorTest {
 

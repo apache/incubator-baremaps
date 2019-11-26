@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +23,7 @@ import org.postgresql.copy.PGCopyOutputStream;
  */
 public class CopyWriter implements AutoCloseable {
 
-  private static final Charset UTF8 = Charset.forName("UTF-8");
+  private static final Charset UTF8 = StandardCharsets.UTF_8;
 
   private static final byte IPV4 = 2;
   private static final byte IPV4_MASK = 32;

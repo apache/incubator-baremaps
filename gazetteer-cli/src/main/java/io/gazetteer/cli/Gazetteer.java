@@ -2,8 +2,8 @@ package io.gazetteer.cli;
 
 import io.gazetteer.cli.commands.Import;
 import io.gazetteer.cli.commands.Postgis;
-import io.gazetteer.cli.commands.Tiles;
 import io.gazetteer.cli.commands.Serve;
+import io.gazetteer.cli.commands.Tiles;
 import io.gazetteer.cli.commands.Update;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;

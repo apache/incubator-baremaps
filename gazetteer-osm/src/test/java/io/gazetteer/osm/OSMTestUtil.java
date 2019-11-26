@@ -2,7 +2,6 @@ package io.gazetteer.osm;
 
 import com.google.protobuf.ByteString;
 import io.gazetteer.osm.osmpbf.FileBlock;
-
 import java.io.InputStream;
 
 public class OSMTestUtil {

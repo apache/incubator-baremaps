@@ -1,13 +1,14 @@
 package io.gazetteer.osm.osmxml;
 
-import io.gazetteer.common.stream.AccumulatingConsumer;
-import org.junit.jupiter.api.Test;
-
-import java.util.Spliterator;
-
 import static io.gazetteer.osm.OSMTestUtil.oscXmlData;
 import static io.gazetteer.osm.osmxml.ChangeUtil.spliterator;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import io.gazetteer.common.stream.AccumulatingConsumer;
+import java.util.Spliterator;
+import org.junit.jupiter.api.Test;
 
 public class ChangeUtilTest {
 

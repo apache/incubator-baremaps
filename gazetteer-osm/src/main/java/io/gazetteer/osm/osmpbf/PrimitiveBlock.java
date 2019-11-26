@@ -1,12 +1,13 @@
 package io.gazetteer.osm.osmpbf;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Member.Type;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,8 +19,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import org.openstreetmap.osmosis.osmbinary.Osmformat.PrimitiveGroup;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class PrimitiveBlock {
 

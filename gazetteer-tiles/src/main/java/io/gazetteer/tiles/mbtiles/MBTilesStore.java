@@ -4,7 +4,6 @@ import io.gazetteer.tiles.Tile;
 import io.gazetteer.tiles.TileException;
 import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.TileWriter;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;

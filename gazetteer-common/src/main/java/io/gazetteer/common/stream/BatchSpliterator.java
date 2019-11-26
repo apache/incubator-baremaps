@@ -1,9 +1,9 @@
 package io.gazetteer.common.stream;
 
+import static java.util.Spliterators.spliterator;
+
 import java.util.Spliterator;
 import java.util.function.Consumer;
-
-import static java.util.Spliterators.spliterator;
 
 /**
  * A {@code Spliterator} that creates batches of values for parallel processing.

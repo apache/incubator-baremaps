@@ -2,7 +2,6 @@ package io.gazetteer.cli.commands;
 
 import static io.gazetteer.osm.osmpbf.PBFUtil.url;
 import static io.gazetteer.osm.osmxml.ChangeUtil.statePath;
-import static org.lmdbjava.DbiFlags.MDB_CREATE;
 
 import io.gazetteer.cli.util.StopWatch;
 import io.gazetteer.common.io.URLUtil;
@@ -10,9 +9,6 @@ import io.gazetteer.common.postgis.DatabaseUtils;
 import io.gazetteer.osm.geometry.NodeGeometryBuilder;
 import io.gazetteer.osm.geometry.RelationGeometryBuilder;
 import io.gazetteer.osm.geometry.WayGeometryBuilder;
-import io.gazetteer.osm.lmdb.LmdbCoordinateStore;
-import io.gazetteer.osm.lmdb.LmdbReferenceStore;
-import io.gazetteer.osm.model.Store;
 import io.gazetteer.osm.model.StoreReader;
 import io.gazetteer.osm.osmpbf.HeaderBlock;
 import io.gazetteer.osm.osmxml.Change;
@@ -28,7 +24,6 @@ import io.gazetteer.osm.postgis.PostgisRelationStore;
 import io.gazetteer.osm.postgis.PostgisWayStore;
 import java.io.InputStream;
 import java.net.URL;
-import java.sql.Connection;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;

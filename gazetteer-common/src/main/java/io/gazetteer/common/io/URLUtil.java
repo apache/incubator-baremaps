@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.ZipInputStream;
 
 public class URLUtil {
 

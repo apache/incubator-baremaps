@@ -1,13 +1,20 @@
 package io.gazetteer.osm.osmxml;
 
+import static io.gazetteer.osm.model.User.NO_USER;
+
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.User;
 import io.gazetteer.osm.model.Way;
-
+import java.io.InputStream;
+import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -15,11 +22,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-import java.io.InputStream;
-import java.text.ParseException;
-import java.util.*;
-
-import static io.gazetteer.osm.model.User.NO_USER;
 
 public class XMLUtil {
 

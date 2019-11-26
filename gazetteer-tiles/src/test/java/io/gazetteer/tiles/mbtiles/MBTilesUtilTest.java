@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.gazetteer.tiles.Tile;
-import io.gazetteer.tiles.mbtiles.MBTilesUtil;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;

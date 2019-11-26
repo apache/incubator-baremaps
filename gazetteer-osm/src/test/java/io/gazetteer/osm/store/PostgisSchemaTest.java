@@ -1,16 +1,17 @@
 package io.gazetteer.osm.store;
 
-import io.gazetteer.common.postgis.DatabaseUtils;
-import java.io.IOException;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.gazetteer.common.postgis.DatabaseUtils;
 import io.gazetteer.osm.OSMTestUtil;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-
-import java.sql.*;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PostgisSchemaTest {
 

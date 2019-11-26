@@ -4,7 +4,11 @@ import static io.gazetteer.osm.osmxml.XMLConstants.CREATE;
 import static io.gazetteer.osm.osmxml.XMLConstants.DELETE;
 import static io.gazetteer.osm.osmxml.XMLConstants.MODIFY;
 
-import io.gazetteer.osm.model.*;
+import io.gazetteer.osm.model.Entity;
+import io.gazetteer.osm.model.Node;
+import io.gazetteer.osm.model.Relation;
+import io.gazetteer.osm.model.Store;
+import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.postgis.PostgisNodeStore;
 import io.gazetteer.osm.postgis.PostgisRelationStore;
 import io.gazetteer.osm.postgis.PostgisWayStore;
