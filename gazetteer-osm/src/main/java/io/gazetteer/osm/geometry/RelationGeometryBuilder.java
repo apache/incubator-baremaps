@@ -6,6 +6,7 @@ import io.gazetteer.osm.model.Store;
 import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Member.Type;
 import io.gazetteer.osm.model.Relation;
+import io.gazetteer.osm.model.StoreReader;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +20,10 @@ public class RelationGeometryBuilder {
 
   private final GeometryFactory geometryFactory;
 
-  private final Store<Long, Coordinate> coordinateStore;
-  private final Store<Long, List<Long>> referenceStore;
+  private final StoreReader<Long, Coordinate> coordinateStore;
+  private final StoreReader<Long, List<Long>> referenceStore;
 
-  public RelationGeometryBuilder(GeometryFactory geometryFactory, Store<Long, Coordinate> coordinateStore, Store<Long, List<Long>> referenceStore) {
+  public RelationGeometryBuilder(GeometryFactory geometryFactory, StoreReader<Long, Coordinate> coordinateStore, StoreReader<Long, List<Long>> referenceStore) {
     this.geometryFactory = geometryFactory;
     this.coordinateStore = coordinateStore;
     this.referenceStore = referenceStore;

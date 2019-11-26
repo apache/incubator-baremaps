@@ -1,6 +1,6 @@
 package io.gazetteer.osm.osmpbf;
 
-import io.gazetteer.osm.model.Store;
+import io.gazetteer.osm.model.StoreEntry;
 import io.gazetteer.osm.postgis.PostgisHeaderStore;
 import io.gazetteer.osm.postgis.PostgisNodeStore;
 import io.gazetteer.osm.postgis.PostgisRelationStore;
@@ -34,13 +34,13 @@ public class CopyConsumer extends FileBlockConsumer {
   public void accept(PrimitiveBlock primitiveBlock) {
     try {
       nodeStore.importAll(primitiveBlock.getDenseNodes().stream()
-          .map(node -> new Store.Entry<>(node.getInfo().getId(), node))
+          .map(node -> new StoreEntry<>(node.getInfo().getId(), node))
           .collect(Collectors.toList()));
       wayStore.importAll(primitiveBlock.getWays().stream()
-          .map(way -> new Store.Entry<>(way.getInfo().getId(), way))
+          .map(way -> new StoreEntry<>(way.getInfo().getId(), way))
           .collect(Collectors.toList()));
       relationStore.importAll(primitiveBlock.getRelations().stream()
-          .map(relation -> new Store.Entry<>(relation.getInfo().getId(), relation))
+          .map(relation -> new StoreEntry<>(relation.getInfo().getId(), relation))
           .collect(Collectors.toList()));
     } catch (Exception e) {
       e.printStackTrace();

@@ -3,6 +3,7 @@ package io.gazetteer.osm.lmdb;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import io.gazetteer.osm.model.Store;
+import io.gazetteer.osm.model.StoreEntry;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +42,9 @@ public abstract class LmdbStore<K, V> implements Store<K, V> {
     throw new UnsupportedOperationException();
   }
 
-  public void putAll(List<Entry<K, V>> entries) {
+  public void putAll(List<StoreEntry<K, V>> entries) {
     try (Txn<ByteBuffer> txn = env.txnWrite()) {
-      for (Entry<K, V> entry : entries) {
+      for (StoreEntry<K, V> entry : entries) {
         database.put(txn, buffer(entry.key()), write(entry.value()));
       }
       txn.commit();
@@ -69,7 +70,7 @@ public abstract class LmdbStore<K, V> implements Store<K, V> {
   }
 
   @Override
-  public void importAll(List<Entry<K, V>> values) {
+  public void importAll(List<StoreEntry<K, V>> values) {
     throw new UnsupportedOperationException();
   }
 

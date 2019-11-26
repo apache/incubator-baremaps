@@ -13,6 +13,7 @@ import io.gazetteer.osm.geometry.WayGeometryBuilder;
 import io.gazetteer.osm.lmdb.LmdbCoordinateStore;
 import io.gazetteer.osm.lmdb.LmdbReferenceStore;
 import io.gazetteer.osm.model.Store;
+import io.gazetteer.osm.model.StoreReader;
 import io.gazetteer.osm.osmpbf.HeaderBlock;
 import io.gazetteer.osm.osmxml.Change;
 import io.gazetteer.osm.osmxml.ChangeConsumer;
@@ -61,8 +62,8 @@ public class Update implements Callable<Integer> {
     ForkJoinPool executor = new ForkJoinPool(threads);
     PoolingDataSource datasource = DatabaseUtils.poolingDataSource(database);
     try {
-      Store<Long, Coordinate> coordinateStore = new PostgisCoordinateStore(datasource);
-      Store<Long, List<Long>> referenceStore = new PostgisReferenceStore(datasource);
+      StoreReader<Long, Coordinate> coordinateStore = new PostgisCoordinateStore(datasource);
+      StoreReader<Long, List<Long>> referenceStore = new PostgisReferenceStore(datasource);
       GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
       PostgisHeaderStore headerMapper = new PostgisHeaderStore(datasource);
       PostgisNodeStore nodeStore = new PostgisNodeStore(datasource, new NodeGeometryBuilder(geometryFactory));

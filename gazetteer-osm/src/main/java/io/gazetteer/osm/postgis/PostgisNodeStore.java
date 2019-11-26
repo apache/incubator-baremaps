@@ -8,6 +8,7 @@ import io.gazetteer.osm.geometry.NodeGeometryBuilder;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Store;
+import io.gazetteer.osm.model.StoreEntry;
 import io.gazetteer.osm.model.StoreException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -115,7 +116,7 @@ public class PostgisNodeStore implements Store<Long, Node> {
   }
 
   @Override
-  public void putAll(List<Entry<Long, Node>> entries) {
+  public void putAll(List<StoreEntry<Long, Node>> entries) {
     throw new UnsupportedOperationException();
   }
 
@@ -133,12 +134,12 @@ public class PostgisNodeStore implements Store<Long, Node> {
     throw new UnsupportedOperationException();
   }
 
-  public void importAll(List<Entry<Long, Node>> entries) {
+  public void importAll(List<StoreEntry<Long, Node>> entries) {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
         writer.writeHeader();
-        for (Entry<Long, Node> entry : entries) {
+        for (StoreEntry<Long, Node> entry : entries) {
           Long id = entry.key();
           Node node = entry.value();
           writer.startRow(7);

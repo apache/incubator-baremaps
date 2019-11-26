@@ -1,8 +1,7 @@
 package io.gazetteer.osm.geometry;
 
 import io.gazetteer.common.postgis.GeometryUtils;
-import io.gazetteer.osm.lmdb.LmdbStore;
-import io.gazetteer.osm.model.Store;
+import io.gazetteer.osm.model.StoreReader;
 import io.gazetteer.osm.model.Way;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -12,9 +11,9 @@ public class WayGeometryBuilder {
 
   private final GeometryFactory geometryFactory;
 
-  private final Store<Long, Coordinate> coordinateStore;
+  private final StoreReader<Long, Coordinate> coordinateStore;
 
-  public WayGeometryBuilder(GeometryFactory geometryFactory, Store<Long, Coordinate> coordinateStore) {
+  public WayGeometryBuilder(GeometryFactory geometryFactory, StoreReader<Long, Coordinate> coordinateStore) {
     this.geometryFactory = geometryFactory;
     this.coordinateStore = coordinateStore;
   }

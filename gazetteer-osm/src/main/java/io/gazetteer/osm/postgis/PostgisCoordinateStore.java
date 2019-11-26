@@ -2,14 +2,12 @@ package io.gazetteer.osm.postgis;
 
 import static io.gazetteer.common.postgis.GeometryUtils.toGeometry;
 
-import io.gazetteer.osm.model.Store;
 import io.gazetteer.osm.model.StoreException;
-import java.sql.Array;
+import io.gazetteer.osm.model.StoreReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +16,7 @@ import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 
-public class PostgisCoordinateStore implements Store<Long, Coordinate> {
+public class PostgisCoordinateStore implements StoreReader<Long, Coordinate> {
 
   private static final String SELECT =
       "SELECT st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ?";
@@ -65,28 +63,6 @@ public class PostgisCoordinateStore implements Store<Long, Coordinate> {
     } catch (SQLException e) {
       throw new StoreException(e);
     }
-  }
-
-  public void put(Long key, Coordinate value) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void putAll(List<Entry<Long, Coordinate>> entries) {
-    throw new UnsupportedOperationException();
-  }
-
-  public void delete(Long id) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void deleteAll(List<Long> keys) {
-    throw new UnsupportedOperationException();
-  }
-
-  public void importAll(List<Entry<Long, Coordinate>> entries) {
-    throw new UnsupportedOperationException();
   }
 
 }

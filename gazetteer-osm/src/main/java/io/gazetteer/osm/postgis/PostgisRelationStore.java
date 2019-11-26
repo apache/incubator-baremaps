@@ -8,6 +8,7 @@ import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Member.Type;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Store;
+import io.gazetteer.osm.model.StoreEntry;
 import io.gazetteer.osm.model.StoreException;
 import io.gazetteer.osm.geometry.RelationGeometryBuilder;
 import java.sql.Connection;
@@ -134,7 +135,7 @@ public class PostgisRelationStore implements Store<Long, Relation> {
   }
 
   @Override
-  public void putAll(List<Entry<Long, Relation>> entries) {
+  public void putAll(List<StoreEntry<Long, Relation>> entries) {
     throw new UnsupportedOperationException();
   }
 
@@ -152,12 +153,12 @@ public class PostgisRelationStore implements Store<Long, Relation> {
     throw new UnsupportedOperationException();
   }
 
-  public void importAll(List<Entry<Long, Relation>> entries) {
+  public void importAll(List<StoreEntry<Long, Relation>> entries) {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
         writer.writeHeader();
-        for (Entry<Long, Relation> entry : entries) {
+        for (StoreEntry<Long, Relation> entry : entries) {
           Relation relation = entry.value();
           writer.startRow(10);
           writer.writeLong(relation.getInfo().getId());

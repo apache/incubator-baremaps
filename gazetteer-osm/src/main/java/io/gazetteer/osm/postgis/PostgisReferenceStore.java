@@ -1,7 +1,7 @@
 package io.gazetteer.osm.postgis;
 
-import io.gazetteer.osm.model.Store;
 import io.gazetteer.osm.model.StoreException;
+import io.gazetteer.osm.model.StoreReader;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
-public class PostgisReferenceStore implements Store<Long, List<Long>> {
+public class PostgisReferenceStore implements StoreReader<Long, List<Long>> {
 
   private static final String SELECT =
       "SELECT nodes FROM osm_ways WHERE id = ?";
@@ -69,28 +69,4 @@ public class PostgisReferenceStore implements Store<Long, List<Long>> {
     }
   }
 
-  @Override
-  public void put(Long key, List<Long> values) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void putAll(List<Entry<Long, List<Long>>> entries) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void delete(Long key) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void deleteAll(List<Long> keys) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void importAll(List<Entry<Long, List<Long>>> values) {
-    throw new UnsupportedOperationException();
-  }
 }

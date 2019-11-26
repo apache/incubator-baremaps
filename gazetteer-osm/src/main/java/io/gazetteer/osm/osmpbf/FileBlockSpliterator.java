@@ -32,7 +32,7 @@ public class FileBlockSpliterator implements Spliterator<FileBlock> {
 
   @Override
   public int characteristics() {
-    return ORDERED | DISTINCT | NONNULL | IMMUTABLE;
+    return ORDERED | DISTINCT | NONNULL | IMMUTABLE | CONCURRENT;
   }
 
   @Override

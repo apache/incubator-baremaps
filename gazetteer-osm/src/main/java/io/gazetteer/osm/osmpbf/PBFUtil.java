@@ -1,6 +1,7 @@
 package io.gazetteer.osm.osmpbf;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import io.gazetteer.common.stream.BatchSpliterator;
 import io.gazetteer.common.stream.StreamException;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -39,7 +40,7 @@ public class PBFUtil {
   }
 
   public static Spliterator<FileBlock> spliterator(InputStream input) {
-    return new FileBlockSpliterator(new DataInputStream(input));
+    return new BatchSpliterator(new FileBlockSpliterator(new DataInputStream(input)), 1);
   }
 
   public static Stream<FileBlock> stream(InputStream input) {

@@ -6,6 +6,7 @@ import io.gazetteer.common.postgis.CopyWriter;
 import io.gazetteer.osm.geometry.WayGeometryBuilder;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Store;
+import io.gazetteer.osm.model.StoreEntry;
 import io.gazetteer.osm.model.StoreException;
 import io.gazetteer.osm.model.Way;
 import java.sql.Array;
@@ -126,7 +127,7 @@ public class PostgisWayStore implements Store<Long, Way> {
   }
 
   @Override
-  public void putAll(List<Entry<Long, Way>> entries) {
+  public void putAll(List<StoreEntry<Long, Way>> entries) {
     throw new UnsupportedOperationException();
   }
 
@@ -144,12 +145,12 @@ public class PostgisWayStore implements Store<Long, Way> {
     throw new UnsupportedOperationException();
   }
 
-  public void importAll(List<Entry<Long, Way>> entries) {
+  public void importAll(List<StoreEntry<Long, Way>> entries) {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
         writer.writeHeader();
-        for (Entry<Long, Way> entry : entries) {
+        for (StoreEntry<Long, Way> entry : entries) {
           Long key = entry.key();
           Way way = entry.value();
           writer.startRow(8);
