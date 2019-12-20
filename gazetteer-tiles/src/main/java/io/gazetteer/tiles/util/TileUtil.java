@@ -1,6 +1,6 @@
 package io.gazetteer.tiles.util;
 
-import io.gazetteer.common.stream.BatchSpliterator;
+import io.gazetteer.osm.stream.BatchSpliterator;
 import io.gazetteer.tiles.Tile;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -1,82 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-
-  <prerequisites>
-    <maven>3.0</maven>
-  </prerequisites>
-
-  <groupId>io.gazetteer</groupId>
   <artifactId>gazetteer</artifactId>
-  <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
-
-  <licenses>
-    <license>
-      <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-    </license>
-  </licenses>
-
-  <developers>
-    <developer>
-      <id>bchapuis</id>
-      <name>Bertil Chapuis</name>
-      <email>bchapuis@gmail.com</email>
-    </developer>
-  </developers>
-
-  <organization>
-    <name>Gazetteer</name>
-    <url>https://www.gazetteer.io/</url>
-  </organization>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <version.plugin.surefire.provider.junit>1.0.3</version.plugin.surefire.provider.junit>
-    <version.plugin.surefire>2.19.1</version.plugin.surefire>
-    <version.plugin.compiler>3.8.0</version.plugin.compiler>
-
-    <version.lib.slf4j>1.7.25</version.lib.slf4j>
-    <version.lib.logback>1.2.3</version.lib.logback>
-    <version.lib.jts>1.16.0</version.lib.jts>
-    <version.lib.dbcp2>2.5.0</version.lib.dbcp2>
-    <version.lib.postgresql>42.2.5</version.lib.postgresql>
-    <version.lib.sqlite>3.21.0</version.lib.sqlite>
-    <version.lib.caffeine>2.6.2</version.lib.caffeine>
-    <version.lib.guava>27.0.1-jre</version.lib.guava>
-    <version.lib.picocli>4.0.0</version.lib.picocli>
-    <version.lib.snakeyaml>1.23</version.lib.snakeyaml>
-    <version.lib.gson>2.8.5</version.lib.gson>
-    <version.lib.proj4j>1.0.0</version.lib.proj4j>
-
-    <version.lib.junit>5.1.0</version.lib.junit>
-    <version.lib.selenium>3.141.59</version.lib.selenium>
-    <version.lib.testng>6.13.1</version.lib.testng>
-  </properties>
-
-  <profiles>
-    <profile>
-      <id>integration</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <properties>
-                <excludeTags>none</excludeTags>
-              </properties>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
   <build>
-    <sourceDirectory>src/main/java</sourceDirectory>
     <pluginManagement>
       <plugins>
         <plugin>
@@ -119,18 +46,16 @@
     </pluginManagement>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>${version.plugin.compiler}</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
         </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>${version.plugin.compiler}</version>
       </plugin>
       <plugin>
-        <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.2</version>
         <executions>
           <execution>
             <goals>
@@ -138,216 +63,285 @@
             </goals>
           </execution>
           <execution>
-            <id>report</id>
-            <phase>test</phase>
             <goals>
               <goal>report</goal>
             </goals>
+            <id>report</id>
+            <phase>test</phase>
           </execution>
         </executions>
+        <groupId>org.jacoco</groupId>
+        <version>0.8.2</version>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${version.plugin.surefire}</version>
         <configuration>
-          <reuseForks>true</reuseForks>
-          <useSystemClassLoader>false</useSystemClassLoader>
           <includes>
             <include>**/*.class</include>
           </includes>
           <properties>
             <excludeTags>integration</excludeTags>
           </properties>
+          <reuseForks>true</reuseForks>
+          <useSystemClassLoader>false</useSystemClassLoader>
         </configuration>
         <dependencies>
           <dependency>
-            <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-surefire-provider</artifactId>
+            <groupId>org.junit.platform</groupId>
             <version>${version.plugin.surefire.provider.junit}</version>
           </dependency>
           <dependency>
-            <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
+            <groupId>org.junit.jupiter</groupId>
             <version>${version.lib.junit}</version>
           </dependency>
         </dependencies>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>${version.plugin.surefire}</version>
       </plugin>
     </plugins>
+    <sourceDirectory>src/main/java</sourceDirectory>
   </build>
 
+  <dependencyManagement>
+    <dependencies>
+      <!-- Internal dependencies -->
+      <dependency>
+        <artifactId>gazetteer-osm</artifactId>
+        <groupId>io.gazetteer</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>gazetteer-tiles</artifactId>
+        <groupId>io.gazetteer</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>gazetteer-tiles</artifactId>
+        <groupId>io.gazetteer</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>gazetteer-benchmarks</artifactId>
+        <groupId>io.gazetteer</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>gazetteer-cli</artifactId>
+        <groupId>io.gazetteer</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+
+      <!-- External dependencies -->
+      <dependency>
+        <artifactId>guava</artifactId>
+        <groupId>com.google.guava</groupId>
+        <version>${version.lib.guava}</version>
+      </dependency>
+      <dependency>
+        <artifactId>picocli</artifactId>
+        <groupId>info.picocli</groupId>
+        <version>${version.lib.picocli}</version>
+      </dependency>
+      <dependency>
+        <artifactId>caffeine</artifactId>
+        <groupId>com.github.ben-manes.caffeine</groupId>
+        <version>${version.lib.caffeine}</version>
+      </dependency>
+      <dependency>
+        <artifactId>sqlite-jdbc</artifactId>
+        <groupId>org.xerial</groupId>
+        <version>${version.lib.sqlite}</version>
+      </dependency>
+      <dependency>
+        <artifactId>postgresql</artifactId>
+        <groupId>org.postgresql</groupId>
+        <version>${version.lib.postgresql}</version>
+      </dependency>
+      <dependency>
+        <artifactId>commons-dbcp2</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <version>${version.lib.dbcp2}</version>
+      </dependency>
+      <dependency>
+        <artifactId>jts-core</artifactId>
+        <groupId>org.locationtech.jts</groupId>
+        <version>${version.lib.jts}</version>
+      </dependency>
+      <dependency>
+        <artifactId>proj4j</artifactId>
+        <groupId>org.locationtech.proj4j</groupId>
+        <version>${version.lib.proj4j}</version>
+      </dependency>
+      <dependency>
+        <artifactId>jts-io-common</artifactId>
+        <groupId>org.locationtech.jts.io</groupId>
+        <version>${version.lib.jts}</version>
+      </dependency>
+      <dependency>
+        <artifactId>logback-core</artifactId>
+        <groupId>ch.qos.logback</groupId>
+        <version>${version.lib.logback}</version>
+      </dependency>
+      <dependency>
+        <artifactId>logback-classic</artifactId>
+        <groupId>ch.qos.logback</groupId>
+        <version>${version.lib.logback}</version>
+      </dependency>
+      <dependency>
+        <artifactId>slf4j-api</artifactId>
+        <groupId>org.slf4j</groupId>
+        <version>${version.lib.slf4j}</version>
+      </dependency>
+      <dependency>
+        <artifactId>snakeyaml</artifactId>
+        <groupId>org.yaml</groupId>
+        <version>${version.lib.snakeyaml}</version>
+      </dependency>
+      <dependency>
+        <artifactId>osmosis-osm-binary</artifactId>
+        <groupId>org.openstreetmap.osmosis</groupId>
+        <version>0.47</version>
+      </dependency>
+      <dependency>
+        <artifactId>protobuf-java</artifactId>
+        <groupId>com.google.protobuf</groupId>
+        <version>3.6.1</version>
+      </dependency>
+      <dependency>
+        <artifactId>commons-compress</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <version>1.19</version>
+      </dependency>
+      <dependency>
+        <artifactId>aws-java-sdk-s3</artifactId>
+        <groupId>com.amazonaws</groupId>
+        <version>1.11.587</version>
+      </dependency>
+
+      <!-- Testing libraries -->
+      <dependency>
+        <artifactId>junit-jupiter-api</artifactId>
+        <groupId>org.junit.jupiter</groupId>
+        <scope>test</scope>
+        <version>${version.lib.junit}</version>
+      </dependency>
+      <dependency>
+        <artifactId>junit-jupiter-params</artifactId>
+        <groupId>org.junit.jupiter</groupId>
+        <scope>test</scope>
+        <version>${version.lib.junit}</version>
+      </dependency>
+      <dependency>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <groupId>org.junit.jupiter</groupId>
+        <scope>test</scope>
+        <version>${version.lib.junit}</version>
+      </dependency>
+      <dependency>
+        <artifactId>selenium-java</artifactId>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <scope>test</scope>
+        <version>${version.lib.selenium}</version>
+      </dependency>
+      <dependency>
+        <artifactId>selenium-server</artifactId>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <scope>test</scope>
+        <version>${version.lib.selenium}</version>
+      </dependency>
+      <dependency>
+        <artifactId>selenium-chrome-driver</artifactId>
+        <groupId>org.seleniumhq.selenium</groupId>
+        <scope>test</scope>
+        <version>${version.lib.selenium}</version>
+      </dependency>
+      <dependency>
+        <artifactId>testng</artifactId>
+        <groupId>org.testng</groupId>
+        <scope>test</scope>
+        <version>${version.lib.testng}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <developers>
+    <developer>
+      <email>bchapuis@gmail.com</email>
+      <id>bchapuis</id>
+      <name>Bertil Chapuis</name>
+    </developer>
+  </developers>
+  <groupId>io.gazetteer</groupId>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+
+  <modelVersion>4.0.0</modelVersion>
+
   <modules>
-    <module>gazetteer-common</module>
     <module>gazetteer-osm</module>
     <module>gazetteer-tiles</module>
     <module>gazetteer-benchmarks</module>
     <module>gazetteer-cli</module>
   </modules>
 
-  <dependencyManagement>
-    <dependencies>
-      <!-- Internal dependencies -->
-      <dependency>
-        <groupId>io.gazetteer</groupId>
-        <artifactId>gazetteer-common</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.gazetteer</groupId>
-        <artifactId>gazetteer-osm</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.gazetteer</groupId>
-        <artifactId>gazetteer-tiles</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.gazetteer</groupId>
-        <artifactId>gazetteer-tiles</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.gazetteer</groupId>
-        <artifactId>gazetteer-benchmarks</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.gazetteer</groupId>
-        <artifactId>gazetteer-cli</artifactId>
-        <version>${project.parent.version}</version>
-      </dependency>
+  <organization>
+    <name>Gazetteer</name>
+    <url>https://www.gazetteer.io/</url>
+  </organization>
 
-      <!-- External dependencies -->
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>${version.lib.guava}</version>
-      </dependency>
-      <dependency>
-        <groupId>info.picocli</groupId>
-        <artifactId>picocli</artifactId>
-        <version>${version.lib.picocli}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.github.ben-manes.caffeine</groupId>
-        <artifactId>caffeine</artifactId>
-        <version>${version.lib.caffeine}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.xerial</groupId>
-        <artifactId>sqlite-jdbc</artifactId>
-        <version>${version.lib.sqlite}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.postgresql</groupId>
-        <artifactId>postgresql</artifactId>
-        <version>${version.lib.postgresql}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-dbcp2</artifactId>
-        <version>${version.lib.dbcp2}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.locationtech.jts</groupId>
-        <artifactId>jts-core</artifactId>
-        <version>${version.lib.jts}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.locationtech.proj4j</groupId>
-        <artifactId>proj4j</artifactId>
-        <version>${version.lib.proj4j}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.locationtech.jts.io</groupId>
-        <artifactId>jts-io-common</artifactId>
-        <version>${version.lib.jts}</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>${version.lib.logback}</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>${version.lib.logback}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${version.lib.slf4j}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.yaml</groupId>
-        <artifactId>snakeyaml</artifactId>
-        <version>${version.lib.snakeyaml}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.openstreetmap.osmosis</groupId>
-        <artifactId>osmosis-osm-binary</artifactId>
-        <version>0.47</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.protobuf</groupId>
-        <artifactId>protobuf-java</artifactId>
-        <version>3.6.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-compress</artifactId>
-        <version>1.19</version>
-      </dependency>
-      <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-s3</artifactId>
-        <version>1.11.587</version>
-      </dependency>
+  <packaging>pom</packaging>
 
-      <!-- Testing libraries -->
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>${version.lib.junit}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-params</artifactId>
-        <version>${version.lib.junit}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-engine</artifactId>
-        <version>${version.lib.junit}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium-java</artifactId>
-        <version>${version.lib.selenium}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium-server</artifactId>
-        <version>${version.lib.selenium}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <artifactId>selenium-chrome-driver</artifactId>
-        <version>${version.lib.selenium}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.testng</groupId>
-        <artifactId>testng</artifactId>
-        <version>${version.lib.testng}</version>
-        <scope>test</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+
+  <profiles>
+    <profile>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <properties>
+                <excludeTags>none</excludeTags>
+              </properties>
+            </configuration>
+            <groupId>org.apache.maven.plugins</groupId>
+          </plugin>
+        </plugins>
+      </build>
+      <id>integration</id>
+    </profile>
+  </profiles>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.lib.caffeine>2.6.2</version.lib.caffeine>
+    <version.lib.dbcp2>2.5.0</version.lib.dbcp2>
+    <version.lib.gson>2.8.5</version.lib.gson>
+
+    <version.lib.guava>27.0.1-jre</version.lib.guava>
+    <version.lib.jts>1.16.0</version.lib.jts>
+    <version.lib.junit>5.1.0</version.lib.junit>
+    <version.lib.logback>1.2.3</version.lib.logback>
+    <version.lib.picocli>4.0.0</version.lib.picocli>
+    <version.lib.postgresql>42.2.5</version.lib.postgresql>
+    <version.lib.proj4j>1.0.0</version.lib.proj4j>
+    <version.lib.selenium>3.141.59</version.lib.selenium>
+    <version.lib.slf4j>1.7.25</version.lib.slf4j>
+    <version.lib.snakeyaml>1.23</version.lib.snakeyaml>
+    <version.lib.sqlite>3.21.0</version.lib.sqlite>
+    <version.lib.testng>6.13.1</version.lib.testng>
+
+    <version.plugin.compiler>3.8.0</version.plugin.compiler>
+    <version.plugin.surefire>2.19.1</version.plugin.surefire>
+    <version.plugin.surefire.provider.junit>1.0.3</version.plugin.surefire.provider.junit>
+  </properties>
+
+  <version>1.0-SNAPSHOT</version>
 </project>

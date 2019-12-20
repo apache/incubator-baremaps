@@ -40,10 +40,6 @@
     <!-- Internal dependencies -->
     <dependency>
       <groupId>io.gazetteer</groupId>
-      <artifactId>gazetteer-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.gazetteer</groupId>
       <artifactId>gazetteer-osm</artifactId>
     </dependency>
     <dependency>

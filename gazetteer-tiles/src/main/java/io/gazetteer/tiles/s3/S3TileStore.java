@@ -24,8 +24,7 @@ public class S3TileStore implements TileReader, TileWriter {
   @Override
   public byte[] read(Tile tile) throws TileException {
     try {
-      byte[] bytes = ByteStreams.toByteArray(client.getObject(bucket, path(tile)).getObjectContent());
-      return bytes;
+      return ByteStreams.toByteArray(client.getObject(bucket, path(tile)).getObjectContent());
     } catch (IOException e) {
       throw new TileException(e);
     }

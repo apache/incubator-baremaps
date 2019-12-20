@@ -1,7 +1,5 @@
 package io.gazetteer.osm.model;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.base.Objects;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -15,9 +13,13 @@ public final class Info {
   private final int userId;
   private final Map<String, String> tags;
 
-  public Info(long id, int version, LocalDateTime timestamp, long changeset, int userId, Map<String, String> tags) {
-    checkNotNull(userId);
-    checkNotNull(tags);
+  public Info(
+      long id,
+      int version,
+      LocalDateTime timestamp,
+      long changeset,
+      int userId,
+      Map<String, String> tags) {
     this.id = id;
     this.version = version;
     this.timestamp = timestamp;

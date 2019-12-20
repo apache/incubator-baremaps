@@ -2,8 +2,8 @@ package io.gazetteer.osm.store;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.gazetteer.common.postgis.DatabaseUtils;
 import io.gazetteer.osm.OSMTestUtil;
+import io.gazetteer.osm.postgis.PostgisHelper;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -19,8 +19,8 @@ public class PostgisSchemaTest {
   @Tag("integration")
   public void resetDatabase() throws SQLException, IOException {
     try (Connection connection = DriverManager.getConnection(OSMTestUtil.DATABASE_URL)) {
-      DatabaseUtils.executeScript(connection, "osm_create_extensions.sql");
-      DatabaseUtils.executeScript(connection, "osm_create_tables.sql");
+      PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
+      PostgisHelper.executeScript(connection, "osm_create_tables.sql");
       assertTrue(tableExists("osm_headers"));
       assertTrue(tableExists("osm_nodes"));
       assertTrue(tableExists("osm_ways"));

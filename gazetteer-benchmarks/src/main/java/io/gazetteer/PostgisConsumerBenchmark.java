@@ -9,6 +9,4 @@ import org.openjdk.jmh.annotations.State;
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(1)
-public class PostgisConsumerBenchmark {
-
-}
+public class PostgisConsumerBenchmark {}

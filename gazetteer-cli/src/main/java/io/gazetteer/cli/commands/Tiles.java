@@ -1,6 +1,6 @@
 package io.gazetteer.cli.commands;
 
-import io.gazetteer.common.postgis.DatabaseUtils;
+import io.gazetteer.osm.postgis.PostgisHelper;
 import io.gazetteer.tiles.Tile;
 import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.TileWriter;
@@ -59,7 +59,7 @@ public class Tiles implements Callable<Integer> {
 
       // Read the configuration toInputStream
       PostgisConfig config = PostgisConfig.load(new FileInputStream(file));
-      PoolingDataSource datasource = DatabaseUtils.poolingDataSource(database);
+      PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
       TileReader tileReader = new PostgisTileReader(datasource, config);
       TileWriter tileWriter = new FileTileStore(directory);
 

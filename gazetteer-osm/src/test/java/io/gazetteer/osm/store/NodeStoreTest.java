@@ -1,14 +1,15 @@
 package io.gazetteer.osm.store;
 
+import static io.gazetteer.osm.OSMTestUtil.COORDINATE_TRANSFORM;
+import static io.gazetteer.osm.OSMTestUtil.GEOMETRY_FACTORY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.gazetteer.common.postgis.DatabaseUtils;
 import io.gazetteer.osm.OSMTestUtil;
-import io.gazetteer.osm.geometry.NodeGeometryBuilder;
+import io.gazetteer.osm.geometry.NodeBuilder;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Node;
-import io.gazetteer.osm.postgis.PostgisNodeStore;
+import io.gazetteer.osm.postgis.PostgisHelper;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,8 +23,6 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
 
 public class NodeStoreTest {
 
@@ -31,11 +30,11 @@ public class NodeStoreTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = DatabaseUtils.poolingDataSource(OSMTestUtil.DATABASE_URL);
+    dataSource = PostgisHelper.poolingDataSource(OSMTestUtil.DATABASE_URL);
     try (Connection connection = dataSource.getConnection()) {
-      DatabaseUtils.executeScript(connection, "osm_create_extensions.sql");
-      DatabaseUtils.executeScript(connection, "osm_create_tables.sql");
-      DatabaseUtils.executeScript(connection, "osm_create_primary_keys.sql");
+      PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
+      PostgisHelper.executeScript(connection, "osm_create_tables.sql");
+      PostgisHelper.executeScript(connection, "osm_create_primary_keys.sql");
     }
   }
 
@@ -47,14 +46,16 @@ public class NodeStoreTest {
       Map<String, String> map = new HashMap<>();
       map.put("key", "val");
       Node node1 = new Node(
-          new Info(rnd.nextLong(), rnd.nextInt(),
-              LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextInt()), TimeZone.getDefault().toZoneId()),
-              rnd.nextLong(), rnd.nextInt(), map),
-          rnd.nextDouble(),
-          rnd.nextDouble());
-      GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
-      NodeGeometryBuilder nodeGeometryBuilder = new NodeGeometryBuilder(geometryFactory);
-      PostgisNodeStore nodeStore = new PostgisNodeStore(dataSource, nodeGeometryBuilder);
+        new Info(rnd.nextLong(),
+            rnd.nextInt(),
+            LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextInt()), TimeZone.getDefault().toZoneId()),
+            rnd.nextLong(),
+            rnd.nextInt(),
+            map),
+        rnd.nextDouble(),
+        rnd.nextDouble());
+      NodeBuilder nodeBuilder = new NodeBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY);
+      PostgisNodeStore nodeStore = new PostgisNodeStore(dataSource, nodeBuilder);
       nodeStore.put(node1.getInfo().getId(), node1);
       Node node2 = nodeStore.get(node1.getInfo().getId());
       assertEquals(node1.getInfo(), node2.getInfo());
@@ -69,11 +70,16 @@ public class NodeStoreTest {
       Map<String, String> map = new HashMap<>();
       map.put("key", "val");
       Node node = new Node(
-          new Info(rnd.nextLong(), rnd.nextInt(),
-              LocalDateTime.ofInstant(Instant.ofEpochMilli(rnd.nextInt()), TimeZone.getDefault().toZoneId()),
-              rnd.nextLong(), rnd.nextInt(), map),
-          rnd.nextDouble(),
-          rnd.nextDouble());
+        new Info(
+            rnd.nextLong(),
+            rnd.nextInt(),
+            LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(rnd.nextInt()), TimeZone.getDefault().toZoneId()),
+            rnd.nextLong(),
+            rnd.nextInt(),
+            map),
+        rnd.nextDouble(),
+        rnd.nextDouble());
       PostgisNodeStore nodeStore = new PostgisNodeStore(dataSource, null);
       nodeStore.put(node.getInfo().getId(), node);
       nodeStore.delete(node.getInfo().getId());

@@ -4,15 +4,17 @@ import io.gazetteer.osm.model.Entity;
 
 public final class Change {
 
-  private final String type;
+  enum Type {delete, create, modify}
+
+  private final Type type;
   private final Entity entity;
 
-  public Change(String type, Entity entity) {
+  public Change(Type type, Entity entity) {
     this.type = type;
     this.entity = entity;
   }
 
-  public String getType() {
+  public Type getType() {
     return type;
   }
 

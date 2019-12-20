@@ -1,10 +1,10 @@
 package io.gazetteer.osm.osmpbf;
 
-import io.gazetteer.osm.model.StoreEntry;
-import io.gazetteer.osm.postgis.PostgisHeaderStore;
-import io.gazetteer.osm.postgis.PostgisNodeStore;
-import io.gazetteer.osm.postgis.PostgisRelationStore;
-import io.gazetteer.osm.postgis.PostgisWayStore;
+import io.gazetteer.osm.store.StoreEntry;
+import io.gazetteer.osm.store.PostgisHeaderStore;
+import io.gazetteer.osm.store.PostgisNodeStore;
+import io.gazetteer.osm.store.PostgisRelationStore;
+import io.gazetteer.osm.store.PostgisWayStore;
 import java.util.stream.Collectors;
 
 public class CopyConsumer extends FileBlockConsumer {

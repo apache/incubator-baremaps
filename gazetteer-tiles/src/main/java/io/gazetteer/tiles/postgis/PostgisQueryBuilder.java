@@ -1,15 +1,27 @@
 package io.gazetteer.tiles.postgis;
 
 import com.google.common.base.Joiner;
-import io.gazetteer.common.postgis.GeometryUtils;
 import io.gazetteer.tiles.Tile;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.WKBReader;
+import org.locationtech.proj4j.CRSFactory;
+import org.locationtech.proj4j.CoordinateReferenceSystem;
+import org.locationtech.proj4j.CoordinateTransform;
+import org.locationtech.proj4j.CoordinateTransformFactory;
+import org.locationtech.proj4j.ProjCoordinate;
 
 public class PostgisQueryBuilder {
+
+  private final CRSFactory crsFactory = new CRSFactory();
+  private final CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");
+  private final CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");
+  private final CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
+  private final CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(epsg4326, epsg3857);
 
   private static final Joiner JOIN_VALUES = Joiner.on(" || ").skipNulls();
   private static final Joiner JOIN_SOURCES = Joiner.on(", ").skipNulls();
@@ -34,19 +46,19 @@ public class PostgisQueryBuilder {
 
   private static final double EARTH_CIRCUMFERENCE = 40075016.686;
 
-  public static String build(Tile tile, PostgisLayer layer) {
+  public String build(Tile tile, PostgisLayer layer) {
     String value = buildValue(layer);
     String source = buildSource(tile, layer);
     return MessageFormat.format(SQL_LAYERS, value, source);
   }
 
-  public static String build(Tile tile, List<PostgisLayer> layers) {
+  public String build(Tile tile, List<PostgisLayer> layers) {
     List<String> values = buildValues(layers);
     List<String> sources = buildSources(tile, layers);
     return MessageFormat.format(SQL_LAYERS, JOIN_VALUES.join(values), JOIN_SOURCES.join(sources));
   }
 
-  protected static String interpolateVariables(Tile tile, String sql) {
+  protected String interpolateVariables(Tile tile, String sql) {
     // tile getOverlappingXYZ
     sql = sql.replace("{x}", Integer.toString(tile.getX()));
     sql = sql.replace("{y}", Integer.toString(tile.getY()));
@@ -65,7 +77,7 @@ public class PostgisQueryBuilder {
     return sql;
   }
 
-  protected static List<String> buildValues(List<PostgisLayer> layers) {
+  protected List<String> buildValues(List<PostgisLayer> layers) {
     List<String> values = new ArrayList<>();
     for (PostgisLayer layer : layers) {
       values.add(buildValue(layer));
@@ -73,11 +85,11 @@ public class PostgisQueryBuilder {
     return values;
   }
 
-  protected static String buildValue(PostgisLayer layer) {
+  protected String buildValue(PostgisLayer layer) {
     return MessageFormat.format(SQL_VALUE, layer.getName());
   }
 
-  protected static List<String> buildSources(Tile tile, List<PostgisLayer> layers) {
+  protected List<String> buildSources(Tile tile, List<PostgisLayer> layers) {
     List<String> sources = new ArrayList<>();
     for (PostgisLayer layer : layers) {
       sources.add(buildSource(tile, layer));
@@ -85,10 +97,15 @@ public class PostgisQueryBuilder {
     return sources;
   }
 
-  protected static String buildSource(Tile tile, PostgisLayer layer) {
+  protected Coordinate toCoordinate(double x, double y) {
+    ProjCoordinate coordinate = coordinateTransform.transform(new ProjCoordinate(x, y), new ProjCoordinate());
+    return new Coordinate(coordinate.x, coordinate.y);
+  }
+
+  protected String buildSource(Tile tile, PostgisLayer layer) {
     Envelope envelope = tile.envelope();
-    Coordinate min = GeometryUtils.toCoordinate(envelope.getMinX(), envelope.getMinY());
-    Coordinate max = GeometryUtils.toCoordinate(envelope.getMaxX(), envelope.getMaxY());
+    Coordinate min = toCoordinate(envelope.getMinX(), envelope.getMinY());
+    Coordinate max = toCoordinate(envelope.getMaxX(), envelope.getMaxY());
     String value =
         MessageFormat.format(
             SQL_ENVELOPE,

@@ -4,23 +4,19 @@ import java.util.function.Consumer;
 
 public abstract class FileBlockConsumer implements Consumer<FileBlock> {
 
-  public static final String HEADER = "OSMHeader";
-  public static final String DATA = "OSMData";
-
   @Override
   public void accept(FileBlock block) {
     switch (block.getType()) {
-      case HEADER:
-        accept( new HeaderBlock(PBFUtil.toHeaderBlock(block)));
+      case OSMHeader:
+        accept(block.toHeaderBlock());
         break;
-      case DATA:
-        accept(new PrimitiveBlock(PBFUtil.toPrimitiveBlock(block)));
+      case OSMData:
+        accept(block.toPrimitiveBlock());
         break;
     }
   }
 
   public abstract void accept(HeaderBlock headerBlock);
 
-  public abstract void accept(PrimitiveBlock data);
-
+  public abstract void accept(PrimitiveBlock primitiveBlock);
 }

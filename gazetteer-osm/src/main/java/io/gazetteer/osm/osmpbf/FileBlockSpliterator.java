@@ -46,7 +46,7 @@ public class FileBlockSpliterator implements Spliterator<FileBlock> {
       byte[] blobData = new byte[blobSize];
       input.readFully(blobData);
       Fileformat.Blob blob = Fileformat.Blob.parseFrom(blobData);
-      action.accept(new FileBlock(header.getType(), header.getIndexdata(), data(blob)));
+      action.accept(new FileBlock(FileBlock.Type.valueOf(header.getType()), header.getIndexdata(), data(blob)));
       return true;
     } catch (Exception e) {
       return false;

@@ -28,7 +28,8 @@ public class PostgisTileReader implements TileReader {
         GZIPOutputStream gzip = new GZIPOutputStream(data)) {
       for (PostgisLayer layer : config.getLayers()) {
         if (tile.getZ() >= layer.getMinZoom() && tile.getZ() <= layer.getMaxZoom()) {
-          String sql = PostgisQueryBuilder.build(tile, layer);
+          PostgisQueryBuilder queryBuilder = new PostgisQueryBuilder();
+          String sql = queryBuilder.build(tile, layer);
           try (Statement statement = connection.createStatement()) {
             ResultSet result = statement.executeQuery(sql);
             if (result.next()) {
