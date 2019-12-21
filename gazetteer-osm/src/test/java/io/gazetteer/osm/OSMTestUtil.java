@@ -110,13 +110,15 @@ public class OSMTestUtil {
     };
 
     public static final Relation RELATION_0 = new Relation(INFO_0, Arrays.asList(
-            new Member(0, Member.Type.way, "outer")));
+        new Member(0, Member.Type.way, "outer")));
 
-    public static final Relation RELATION_1 = new Relation(INFO_1, Arrays.asList(
+    public static final Relation RELATION_1 = new Relation(INFO_1, Arrays.asList());
+
+    public static final Relation RELATION_2 = new Relation(INFO_1, Arrays.asList(
             new Member(0, Member.Type.way, "outer"),
             new Member(1, Member.Type.way, "inner")));
 
-    public static final Relation RELATION_2 = new Relation(INFO_1, Arrays.asList(
+    public static final Relation RELATION_3 = new Relation(INFO_1, Arrays.asList(
             new Member(0, Member.Type.way, "outer"),
             new Member(1, Member.Type.way, "inner"),
             new Member(2, Member.Type.way, "outer")));
