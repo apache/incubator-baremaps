@@ -85,6 +85,8 @@ public class OSMTestUtil {
         }
     };
 
+    public static final Way WAY_EMPTY = new Way(INFO_0, Arrays.asList());
+
     public static final Way WAY_LINESTRING = new Way(INFO_0, Arrays.asList(0l, 1l, 2l, 3l));
 
     public static final Way WAY_POLYGON_OUTER_1 = new Way(INFO_0, Arrays.asList(0l, 1l, 2l, 3l, 0l));
