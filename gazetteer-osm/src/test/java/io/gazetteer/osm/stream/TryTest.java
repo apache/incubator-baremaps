@@ -1,8 +1,9 @@
 package io.gazetteer.osm.stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.gazetteer.osm.stream.Try.Success;
 import java.util.concurrent.Callable;
 import org.junit.jupiter.api.Test;
 
@@ -19,25 +20,25 @@ class TryTest {
   };
 
   @Test
-  void of() {
+  public void of() {
     assertTrue(Try.of(success) instanceof Try.Success);
     assertTrue(Try.of(failure) instanceof Try.Failure);
   }
 
   @Test
-  void isSuccess() {
+  public void isSuccess() {
     assertTrue(Try.of(success).isSuccess());
     assertFalse(Try.of(failure).isSuccess());
   }
 
   @Test
-  void value() {
+  public void value() {
     assertEquals(Try.of(success).value(), object);
     assertEquals(Try.of(failure).value(), null);
   }
 
   @Test
-  void exception() {
+  public void exception() {
     assertEquals(Try.of(success).exception(), null);
     assertEquals(Try.of(failure).exception(), exception);
   }
