@@ -93,7 +93,7 @@ public class Update implements Callable<Integer> {
       try (InputStream changeInputStream = new GZIPInputStream(new BufferedInputStream(changeURL.openConnection().getInputStream()))) {
         Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
         Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
-        ChangeConsumer changeConsumer = new ChangeConsumer(datasource, nodeStore, wayStore, relationStore);
+        ChangeConsumer changeConsumer = new ChangeConsumer(nodeStore, wayStore, relationStore);
         executor.submit(() -> changeStream.forEach(changeConsumer)).get();
       }
 

@@ -8,18 +8,14 @@ import io.gazetteer.osm.store.PostgisNodeStore;
 import io.gazetteer.osm.store.PostgisRelationStore;
 import io.gazetteer.osm.store.PostgisWayStore;
 import java.util.function.Consumer;
-import javax.sql.DataSource;
 
 public class ChangeConsumer implements Consumer<Change> {
-
-  private final DataSource datasource;
 
   private final PostgisNodeStore nodeStore;
   private final PostgisWayStore wayStore;
   private final PostgisRelationStore relationStore;
 
-  public ChangeConsumer(DataSource datasource, PostgisNodeStore nodeStore, PostgisWayStore wayStore, PostgisRelationStore relationStore) {
-    this.datasource = datasource;
+  public ChangeConsumer(PostgisNodeStore nodeStore, PostgisWayStore wayStore, PostgisRelationStore relationStore) {
     this.nodeStore = nodeStore;
     this.wayStore = wayStore;
     this.relationStore = relationStore;
