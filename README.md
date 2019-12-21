@@ -9,10 +9,10 @@
 Gazetteer is an open source pipeline for producing Mapbox vector tiles from [OpenStreetMap](https://www.openstreetmap.org) with Postgis and Java.
 
 It is inspired by [Osmosis](https://github.com/openstreetmap/osmosis), but it comes with additional features, such as the ability to:
-- Process data in parallel with the [Stream API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html) of Java
-- Import data faster with the [COPY API](https://www.postgresql.org/docs/11/sql-copy.html) of Postgresql
-- Create postgis geometries on the fly with [JTS](https://github.com/locationtech/jts)
-- Create and serve customized [Mapbox Vector Tiles](https://docs.mapbox.com/vector-tiles/specification/)
+  - Process data in parallel with the [Stream API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html) of Java
+  - Import data faster with the [COPY API](https://www.postgresql.org/docs/11/sql-copy.html) of Postgresql
+  - Create postgis geometries on the fly with [JTS](https://github.com/locationtech/jts)
+  - Create and serve customized [Mapbox Vector Tiles](https://docs.mapbox.com/vector-tiles/specification/)
 
 On the longer run, the aim of the project is to work with a variety of data sources in order to create highly specialized and customized maps.
 
@@ -22,9 +22,9 @@ On the longer run, the aim of the project is to work with a variety of data sour
 
 ## Prerequisites
 
-- Docker 18
-- Java 8
-- Maven 3
+  - Docker 18
+  - Java 8
+  - Maven 3
 
 ## Quick Start
 
@@ -86,12 +86,12 @@ Well done, the test server should have started and a map of liechtenstein should
 
 Gazetteer is a work in progress and is not production ready, i.e., it comes with a lot of limitations. 
 Additional work is needed to: 
-- Configure the map and its style at all zoom levels
-- Improve the creation of geometries for OSM relations with JTS
-- Apply OSM diffs on existing postgresql databases
-- Optimize the SQL queries used to create Mapbox Vector Tiles
-- Add additional datasets
-- Stabilize and document the codebase
+  - Configure the map and its style at all zoom levels
+  - Improve the creation of geometries for OSM relations with JTS
+  - Apply OSM diffs on existing postgresql databases
+  - Optimize the SQL queries used to create Mapbox Vector Tiles
+  - Add additional datasets
+  - Stabilize and document the codebase
 
 
 ## Contributing
@@ -99,10 +99,8 @@ Additional work is needed to:
 Being a side project, gazetteer does not have clear contribution guidelines yet.
 As the development work happens on github, feel free to report an issue, suggest a feature, or make a pull request.
 Generally speaking, as a contributor, you should:
-- be nice, inclusive and constructive when interacting with others;
-- agree with the terms of the Apache Software License;
-- try to follow the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html);
-- try to be concise and relevant in [commit messages](https://chris.beams.io/posts/git-commit/);
-- agree to rewrite portions of your code to make it fit better into the upstream sources.
-
-3857
+  - be nice, inclusive and constructive when interacting with others;
+  - agree with the terms of the Apache Software License;
+  - try to follow the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html);
+  - try to be concise and relevant in [commit messages](https://chris.beams.io/posts/git-commit/);
+  - agree to rewrite portions of your code to make it fit better into the upstream sources.
