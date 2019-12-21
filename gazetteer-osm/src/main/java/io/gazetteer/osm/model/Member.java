@@ -6,6 +6,8 @@ import com.google.common.base.Objects;
 
 public final class Member {
 
+  public enum Type {node, way, relation}
+
   private final long ref;
   private final Type type;
   private final String role;
@@ -43,9 +45,5 @@ public final class Member {
     return Objects.hashCode(ref, type, role);
   }
 
-  public enum Type {
-    node,
-    way,
-    relation
-  }
+
 }
