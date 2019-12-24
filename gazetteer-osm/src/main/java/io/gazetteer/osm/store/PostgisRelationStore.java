@@ -178,8 +178,8 @@ public class PostgisRelationStore implements Store<Long, Relation> {
           writer.writeGeometry(relationBuilder.build(relation));
         }
       }
-    } catch (Exception e) {
-      throw new StoreException(e);
+    } catch (Exception ex) {
+      throw new StoreException(ex);
     }
   }
 }

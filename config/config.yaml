@@ -115,11 +115,11 @@ layers:
     sql: >
       SELECT w.id, w.tags, w.geom
       FROM osm_ways AS w
-      WHERE w.tags -> 'building' = 'yes'
+      WHERE w.tags ? 'building'
       UNION
       SELECT id, tags, geom
       FROM osm_relations
-      WHERE tags -> 'building' = 'yes'
+      WHERE tags ? 'building'
   - name: 'amenity'
     minZoom: 14
     maxZoom: 14

@@ -33,6 +33,8 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+
+import io.gazetteer.osm.stream.BatchSpliterator;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
@@ -86,7 +88,7 @@ public class Import implements Callable<Integer> {
       System.out.println("Populating cache.");
 
       try (InputStream input = input(url(source))) {
-        Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(new DataInputStream(input)), false);
+        Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(new DataInputStream(input)), true);
         LmdbConsumer blockConsumer = new LmdbConsumer(coordinateStore, referenceStore);
         executor.submit(() -> blocks.forEach(blockConsumer)).get();
         System.out.println(String.format("-> %dms", stopWatch.lap()));
@@ -94,7 +96,7 @@ public class Import implements Callable<Integer> {
 
       System.out.println("Populating database.");
       try (InputStream input = input(url(source))) {
-        Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(new DataInputStream(input)), false);
+        Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(new DataInputStream(input)), true);
         CRSFactory crsFactory = new CRSFactory();
         CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");
         CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");

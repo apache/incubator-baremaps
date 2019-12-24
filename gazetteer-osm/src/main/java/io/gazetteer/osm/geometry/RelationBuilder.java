@@ -45,6 +45,7 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
    * @return a JTS polygon or multipolygon corresponding to the relation
    */
   public Geometry build(Relation entity) {
+
     // Check whether the relation is a multipolygon
     Map<String, String> tags = entity.getInfo().getTags();
     if (!"multipolygon".equals(tags.get("type"))) {
@@ -62,7 +63,6 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
             .toArray(Coordinate[]::new)))
         .filter(t -> t.isSuccess())
         .map(t -> t.value())
-        .filter(t -> t.length > 3 && t[0].equals(t[t.length - 1]))
         .map(t -> geometryFactory.createLineString(t))
         .collect(Collectors.toList());
 
@@ -71,10 +71,15 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
       return  null;
     }
 
-    // Create the polygon from the members
-    Polygonizer polygonizer = new Polygonizer(true);
-    polygonizer.add(members);
-    return polygonizer.getGeometry();
+    // Try to create the polygon from the members
+    try {
+      Polygonizer polygonizer = new Polygonizer(true);
+      polygonizer.add(members);
+      return polygonizer.getGeometry();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      return null;
+    }
   }
 
 }
