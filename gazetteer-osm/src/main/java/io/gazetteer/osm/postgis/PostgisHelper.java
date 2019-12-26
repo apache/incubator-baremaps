@@ -25,7 +25,13 @@ public final class PostgisHelper {
 
   private static final String DATABASE_URL = "jdbc:postgresql://{0}:{1}/{2}?user={3}&password={4}&allowMultiQueries={5}";
 
-  public static String url(String host, Integer port, String database, String user, String password, Boolean allowMultiQueries) {
+  public static String url(
+      String host,
+      Integer port,
+      String database,
+      String user,
+      String password,
+      Boolean allowMultiQueries) {
     checkNotNull(host);
     checkNotNull(port);
     checkNotNull(database);

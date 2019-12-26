@@ -29,8 +29,12 @@ public final class Way implements Entity {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Way way = (Way) o;
     return Objects.equal(info, way.info) && Objects.equal(nodes, way.nodes);
   }

@@ -16,13 +16,19 @@ import org.apache.commons.dbcp2.PoolingDataSource;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
-@Command(name="serve")
+@Command(name = "serve")
 public class Serve implements Callable<Integer> {
 
-  @Parameters(index = "0", paramLabel = "CONFIG_FILE", description = "The YAML configuration config.")
+  @Parameters(
+      index = "0",
+      paramLabel = "CONFIG_FILE",
+      description = "The YAML configuration config.")
   private File file;
 
-  @Parameters(index = "1", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
+  @Parameters(
+      index = "1",
+      paramLabel = "POSTGRES_DATABASE",
+      description = "The Postgres database.")
   private String database;
 
   @Override

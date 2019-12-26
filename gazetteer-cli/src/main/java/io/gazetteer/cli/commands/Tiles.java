@@ -28,19 +28,23 @@ import picocli.CommandLine.Parameters;
 @Command(name = "tiles")
 public class Tiles implements Callable<Integer> {
 
-  @Parameters(index = "0", paramLabel = "CONFIG_FILE", description = "The YAML configuration file.")
+  @Parameters(
+      index = "0",
+      paramLabel = "CONFIG_FILE",
+      description = "The YAML configuration file.")
   private File file;
 
-  @Parameters(index = "1", paramLabel = "POSTGRES_DATABASE", description = "The Postgres database.")
+  @Parameters(
+      index = "1",
+      paramLabel = "POSTGRES_DATABASE",
+      description = "The Postgres database.")
   private String database;
 
-  @Parameters(index = "2", paramLabel = "TILE_DIRECTORY", description = "The tile directory.")
+  @Parameters(
+      index = "2",
+      paramLabel = "TILE_DIRECTORY",
+      description = "The tile directory.")
   private Path directory;
-
-  @Option(
-      names = {"-t", "--threads"},
-      description = "The size of the thread pool.")
-  private int threads = Runtime.getRuntime().availableProcessors();
 
   @Option(
       names = {"--minZoom"},
@@ -54,40 +58,29 @@ public class Tiles implements Callable<Integer> {
 
   @Override
   public Integer call() throws SQLException, ParseException, FileNotFoundException {
-    ForkJoinPool executor = new ForkJoinPool(threads);
-    try {
+    // Read the configuration toInputStream
+    PostgisConfig config = PostgisConfig.load(new FileInputStream(file));
+    PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
+    TileReader tileReader = new PostgisTileReader(datasource, config);
+    TileWriter tileWriter = new FileTileStore(directory);
 
-      // Read the configuration toInputStream
-      PostgisConfig config = PostgisConfig.load(new FileInputStream(file));
-      PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
-      TileReader tileReader = new PostgisTileReader(datasource, config);
-      TileWriter tileWriter = new FileTileStore(directory);
+    //AmazonS3 client = AmazonS3ClientBuilder.standard().defaultClient();
+    //TileWriter tileWriter = new S3TileStore(client, "gazetteer-tiles");
 
-      //AmazonS3 client = AmazonS3ClientBuilder.standard().defaultClient();
-      //TileWriter tileWriter = new S3TileStore(client, "gazetteer-tiles");
-
-      try (Connection connection = datasource.getConnection()) {
-        Geometry geometry = TileUtil.bbox(connection);
-        Stream<Tile> coords = TileUtil.getOverlappingXYZ(geometry, minZoom, maxZoom);
-        executor.submit(() -> coords.forEach(xyz -> {
-          try {
-            byte[] tile = tileReader.read(xyz);
-            tileWriter.write(xyz, tile);
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        }));
-      }
-
-      return 0;
-    } finally {
-      executor.shutdown();
-      try {
-        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+    try (Connection connection = datasource.getConnection()) {
+      Geometry geometry = TileUtil.bbox(connection);
+      Stream<Tile> coords = TileUtil.getOverlappingXYZ(geometry, minZoom, maxZoom);
+      coords.forEach(xyz -> {
+        try {
+          byte[] tile = tileReader.read(xyz);
+          tileWriter.write(xyz, tile);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      });
     }
+
+    return 0;
   }
 
 }

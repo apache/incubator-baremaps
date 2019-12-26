@@ -43,7 +43,6 @@ public class ObjectIdentifier {
   // command identifier type, sequence in transaction id
   public static final int Cid = 29;
 
-
   // endregion
 
   // region OID 100 - 199
@@ -96,10 +95,10 @@ public class ObjectIdentifier {
   public static final int TInterval = 704;
 
   // unknown
-  public static final int Unknown =	705;
+  public static final int Unknown = 705;
 
   // geometric circle '(center, radius)'
-  public static final int Circle =	705;
+  public static final int Circle = 705;
 
   // monetary amounts, $d,ddd.cc
   public static final int Cash = 790;

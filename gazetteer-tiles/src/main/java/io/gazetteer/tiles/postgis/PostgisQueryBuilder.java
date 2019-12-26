@@ -21,7 +21,8 @@ public class PostgisQueryBuilder {
   private final CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");
   private final CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");
   private final CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-  private final CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(epsg4326, epsg3857);
+  private final CoordinateTransform coordinateTransform = coordinateTransformFactory
+      .createTransform(epsg4326, epsg3857);
 
   private static final Joiner JOIN_VALUES = Joiner.on(" || ").skipNulls();
   private static final Joiner JOIN_SOURCES = Joiner.on(", ").skipNulls();

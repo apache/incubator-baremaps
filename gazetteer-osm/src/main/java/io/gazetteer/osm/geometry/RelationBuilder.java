@@ -6,10 +6,8 @@ import io.gazetteer.osm.stream.Try;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
+
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.locationtech.proj4j.CoordinateTransform;
 
@@ -26,10 +24,11 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
 
   /**
    * Constructs a {@code RelationBuilder}.
-   * @param coordinateTransform  the {@code CoordinateTransform} used to project OSM coordinates.
-   * @param geometryFactory the {@code GeometryFactory} used to create polygons and multipolygons
-   * @param coordinateStore the {@code StoreReader} used to retrieve the coordinates of a node
-   * @param referenceStore the {@code StoreReader} used to retrieve the nodes of a way
+   *
+   * @param coordinateTransform the {@code CoordinateTransform} used to project OSM coordinates.
+   * @param geometryFactory     the {@code GeometryFactory} used to create polygons and multipolygons
+   * @param coordinateStore     the {@code StoreReader} used to retrieve the coordinates of a node
+   * @param referenceStore      the {@code StoreReader} used to retrieve the nodes of a way
    */
   public RelationBuilder(CoordinateTransform coordinateTransform, GeometryFactory geometryFactory,
       StoreReader<Long, Coordinate> coordinateStore, StoreReader<Long, List<Long>> referenceStore) {
@@ -41,11 +40,11 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
 
   /**
    * Builds a JTS geometry from an OSM relation
+   *
    * @param entity an OSM relation
    * @return a JTS polygon or multipolygon corresponding to the relation
    */
   public Geometry build(Relation entity) {
-
     // Check whether the relation is a multipolygon
     Map<String, String> tags = entity.getInfo().getTags();
     if (!"multipolygon".equals(tags.get("type"))) {
@@ -68,7 +67,7 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
 
     // Check whether the relation contains members
     if (members.isEmpty()) {
-      return  null;
+      return null;
     }
 
     // Try to create the polygon from the members
@@ -77,7 +76,6 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
       polygonizer.add(members);
       return polygonizer.getGeometry();
     } catch (Exception ex) {
-      ex.printStackTrace();
       return null;
     }
   }

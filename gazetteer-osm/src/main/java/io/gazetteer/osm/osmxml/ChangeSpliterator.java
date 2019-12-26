@@ -107,11 +107,11 @@ public class ChangeSpliterator implements Spliterator<Change> {
     List<StartElement> children = new ArrayList<>();
     while (!(reader.peek().isEndElement()
         && reader
-            .peek()
-            .asEndElement()
-            .getName()
-            .getLocalPart()
-            .equals(element.getName().getLocalPart()))) {
+        .peek()
+        .asEndElement()
+        .getName()
+        .getLocalPart()
+        .equals(element.getName().getLocalPart()))) {
       XMLEvent child = reader.nextEvent();
       if (child.isStartElement()) {
         children.add(child.asStartElement());
@@ -123,7 +123,8 @@ public class ChangeSpliterator implements Spliterator<Change> {
   private Info readInfo(StartElement element, List<StartElement> children) {
     long id = Long.parseLong(element.getAttributeByName(QName.valueOf(ID)).getValue());
     int version = Integer.parseInt(element.getAttributeByName(QName.valueOf(VERSION)).getValue());
-    LocalDateTime timestamp = LocalDateTime.parse(element.getAttributeByName(QName.valueOf(TIMESTAMP)).getValue(), format);
+    LocalDateTime timestamp = LocalDateTime
+        .parse(element.getAttributeByName(QName.valueOf(TIMESTAMP)).getValue(), format);
     long changeset = readChangeset(element);
     User user = readUser(element);
     Map<String, String> tags = readTags(children);

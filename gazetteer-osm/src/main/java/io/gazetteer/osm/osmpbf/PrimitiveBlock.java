@@ -22,7 +22,7 @@ import org.openstreetmap.osmosis.osmbinary.Osmformat.PrimitiveGroup;
 
 public final class PrimitiveBlock {
 
-  private final Osmformat.PrimitiveBlock primitiveBlock;
+  public final Osmformat.PrimitiveBlock primitiveBlock;
   private final int granularity;
   private final int dateGranularity;
   private final long latOffset;
@@ -110,7 +110,7 @@ public final class PrimitiveBlock {
 
   public List<Way> getWays() {
     List<Way> ways = new ArrayList<>();
-    for(PrimitiveGroup group:  primitiveBlock.getPrimitivegroupList()) {
+    for (PrimitiveGroup group : primitiveBlock.getPrimitivegroupList()) {
       for (Osmformat.Way e : group.getWaysList()) {
         Info info = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
         long nid = 0;

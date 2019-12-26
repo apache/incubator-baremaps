@@ -20,7 +20,6 @@ public class State {
   public static State parse(String state) throws ParseException {
     Map<String, String> map = new HashMap<>();
     for (String line : state.split("\n")) {
-      System.out.println(line);
       String[] array = line.split("=");
       if (array.length == 2) {
         map.put(array[0], array[1]);

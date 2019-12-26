@@ -1,25 +1,50 @@
 package io.gazetteer.osm.stream;
 
+import static java.util.Spliterator.IMMUTABLE;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Spliterator;
+import java.util.function.Consumer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class BatchSpliteratorTest {
 
-  private BatchSpliterator<Integer> spliterator;
-
   private int spliteratorSize = 105;
   private int batchSize = 10;
+
+  private BatchSpliterator<Integer> spliterator;
+
+  @BeforeEach
+  public void setUp() {
+    List<Integer> ints = new ArrayList<>();
+    for (int i = 0; i < spliteratorSize; i++) {
+      ints.add(i);
+    }
+    spliterator = new BatchSpliterator<Integer>(batchSize, IMMUTABLE) {
+      int i = 0;
+
+      @Override
+      public boolean tryAdvance(Consumer<? super Integer> consumer) {
+        if (i++ < spliteratorSize) {
+          consumer.accept(i);
+          return true;
+        }
+        return false;
+      }
+    };
+  }
 
   @Test
   public void tryAdvance() throws Exception {
     for (int i = 0; i < spliteratorSize; i++) {
-      Assertions.assertTrue(spliterator.tryAdvance(block -> {}));
+      Assertions.assertTrue(spliterator.tryAdvance(block -> {
+      }));
     }
-    Assertions.assertFalse(spliterator.tryAdvance(block -> {}));
+    Assertions.assertFalse(spliterator.tryAdvance(block -> {
+    }));
   }
 
   @Test
@@ -47,12 +72,5 @@ public class BatchSpliteratorTest {
     Assertions.assertEquals(spliterator.estimateSize(), Long.MAX_VALUE);
   }
 
-  @BeforeEach
-  public void setUp() {
-    List<Integer> ints = new ArrayList<>();
-    for (int i = 0; i < spliteratorSize; i++) {
-      ints.add(i);
-    }
-    spliterator = new BatchSpliterator<>(ints.spliterator(), batchSize);
-  }
+
 }

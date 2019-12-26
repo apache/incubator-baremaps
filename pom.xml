@@ -326,12 +326,12 @@
     <version.lib.gson>2.8.5</version.lib.gson>
 
     <version.lib.guava>27.0.1-jre</version.lib.guava>
-    <version.lib.jts>1.16.0</version.lib.jts>
+    <version.lib.jts>1.16.1</version.lib.jts>
     <version.lib.junit>5.1.0</version.lib.junit>
     <version.lib.logback>1.2.3</version.lib.logback>
     <version.lib.picocli>4.0.0</version.lib.picocli>
     <version.lib.postgresql>42.2.5</version.lib.postgresql>
-    <version.lib.proj4j>1.0.0</version.lib.proj4j>
+    <version.lib.proj4j>1.1.0</version.lib.proj4j>
     <version.lib.selenium>3.141.59</version.lib.selenium>
     <version.lib.slf4j>1.7.25</version.lib.slf4j>
     <version.lib.snakeyaml>1.23</version.lib.snakeyaml>

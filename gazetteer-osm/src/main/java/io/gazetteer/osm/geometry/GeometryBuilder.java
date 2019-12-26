@@ -24,8 +24,7 @@ public abstract class GeometryBuilder<T> {
   }
 
   protected Coordinate toCoordinate(double x, double y) {
-    ProjCoordinate coordinate =
-        coordinateTransform.transform(new ProjCoordinate(x, y), new ProjCoordinate());
+    ProjCoordinate coordinate = coordinateTransform.transform(new ProjCoordinate(x, y), new ProjCoordinate());
     return new Coordinate(coordinate.x, coordinate.y);
   }
 

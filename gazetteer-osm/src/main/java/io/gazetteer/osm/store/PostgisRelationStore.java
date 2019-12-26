@@ -179,6 +179,7 @@ public class PostgisRelationStore implements Store<Long, Relation> {
         }
       }
     } catch (Exception ex) {
+      ex.printStackTrace();
       throw new StoreException(ex);
     }
   }

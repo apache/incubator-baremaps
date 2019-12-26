@@ -34,8 +34,12 @@ public final class Node implements Entity {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Node node = (Node) o;
     return Double.compare(node.lon, lon) == 0
         && Double.compare(node.lat, lat) == 0

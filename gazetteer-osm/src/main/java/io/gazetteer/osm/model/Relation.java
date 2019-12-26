@@ -29,8 +29,12 @@ public final class Relation implements Entity {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     Relation relation = (Relation) o;
     return Objects.equal(info, relation.info) && Objects.equal(members, relation.members);
   }

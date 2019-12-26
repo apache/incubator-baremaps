@@ -13,23 +13,25 @@ public class LmdbConsumer extends FileBlockConsumer {
   private final Store<Long, List<Long>> referenceStore;
 
   public LmdbConsumer(
-      Store<Long, Coordinate> coordinateStore, Store<Long, List<Long>> referenceStore) {
+      Store<Long, Coordinate> coordinateStore,
+      Store<Long, List<Long>> referenceStore) {
     this.coordinateStore = coordinateStore;
     this.referenceStore = referenceStore;
   }
 
   @Override
-  public void accept(HeaderBlock headerBlock) {}
+  public void accept(HeaderBlock headerBlock) {
+  }
 
   @Override
   public void accept(PrimitiveBlock primitiveBlock) {
     try {
       coordinateStore.putAll(primitiveBlock.getDenseNodes().stream()
-        .map(n -> new StoreEntry<>(n.getInfo().getId(), new Coordinate(n.getLon(), n.getLat())))
-        .collect(Collectors.toList()));
+          .map(n -> new StoreEntry<>(n.getInfo().getId(), new Coordinate(n.getLon(), n.getLat())))
+          .collect(Collectors.toList()));
       referenceStore.putAll(primitiveBlock.getWays().stream()
-        .map(w -> new StoreEntry<>(w.getInfo().getId(), w.getNodes()))
-        .collect(Collectors.toList()));
+          .map(w -> new StoreEntry<>(w.getInfo().getId(), w.getNodes()))
+          .collect(Collectors.toList()));
     } catch (Exception e) {
       e.printStackTrace();
     }

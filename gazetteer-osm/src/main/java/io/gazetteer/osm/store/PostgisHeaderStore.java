@@ -77,17 +77,22 @@ public class PostgisHeaderStore implements Store<Long, HeaderBlock> {
   }
 
   @Override
-  public void put(Long key, HeaderBlock values) {}
+  public void put(Long key, HeaderBlock values) {
+  }
 
   @Override
-  public void putAll(List<StoreEntry<Long, HeaderBlock>> storeEntries) {}
+  public void putAll(List<StoreEntry<Long, HeaderBlock>> storeEntries) {
+  }
 
   @Override
-  public void delete(Long key) {}
+  public void delete(Long key) {
+  }
 
   @Override
-  public void deleteAll(List<Long> keys) {}
+  public void deleteAll(List<Long> keys) {
+  }
 
   @Override
-  public void importAll(List<StoreEntry<Long, HeaderBlock>> values) {}
+  public void importAll(List<StoreEntry<Long, HeaderBlock>> values) {
+  }
 }

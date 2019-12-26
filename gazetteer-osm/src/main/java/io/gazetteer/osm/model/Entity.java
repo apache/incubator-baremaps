@@ -1,6 +1,8 @@
 package io.gazetteer.osm.model;
 
-/** An entity in the OSM dataset. */
+/**
+ * An entity in the OSM dataset.
+ */
 public interface Entity {
 
   /**

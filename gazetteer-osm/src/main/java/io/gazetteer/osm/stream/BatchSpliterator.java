@@ -1,60 +1,40 @@
 package io.gazetteer.osm.stream;
 
-import static java.util.Spliterators.spliterator;
-
 import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Consumer;
 
-/**
- * A {@code Spliterator} that creates batches of values for parallel processing.
- *
- * @param <T>
- */
-public final class BatchSpliterator<T> implements Spliterator<T> {
+public abstract class BatchSpliterator<T> implements Spliterator<T> {
 
-  private final Spliterator<T> spliterator;
+  protected final int batchSize;
+  protected final int characteristics;
 
-  private final int batchSize;
-
-  /**
-   * @param spliterator
-   * @param batchSize
-   */
-  public BatchSpliterator(Spliterator<T> spliterator, int batchSize) {
-    this.spliterator = spliterator;
+  public BatchSpliterator(int batchSize, int characteristics) {
     this.batchSize = batchSize;
+    this.characteristics = characteristics;
   }
 
-  /** {@inheritDoc} */
-  @Override
-  public boolean tryAdvance(Consumer<? super T> consumer) {
-    return spliterator.tryAdvance(consumer);
-  }
-
-  /** {@inheritDoc} */
   @Override
   public Spliterator<T> trySplit() {
-    final HoldingConsumer<T> consumer = new HoldingConsumer<>();
-    if (!tryAdvance(consumer)) {
-      return null;
+    HoldingConsumer<T> holder = new HoldingConsumer<>();
+    if (tryAdvance(holder)) {
+      Object[] a = new Object[batchSize];
+      int j = 0;
+      do {
+        a[j] = holder.value();
+      } while (++j < batchSize && tryAdvance(holder));
+      return Spliterators.spliterator(a, 0, j, characteristics());
     }
-    final Object[] batch = new Object[batchSize];
-    int j = 0;
-    do {
-      batch[j] = consumer.value();
-    } while (++j < batchSize && tryAdvance(consumer));
-    return spliterator(batch, 0, j, characteristics() | SIZED);
+    return null;
   }
 
-  /** {@inheritDoc} */
   @Override
   public long estimateSize() {
     return Long.MAX_VALUE;
   }
 
-  /** {@inheritDoc} */
   @Override
   public int characteristics() {
-    return spliterator.characteristics() | SUBSIZED;
+    return characteristics;
   }
 }

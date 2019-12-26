@@ -7,7 +7,9 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.proj4j.CoordinateTransform;
 
-/** A {@code WayBuilder} builds JTS linestring or polygons from OSM ways. */
+/**
+ * A {@code WayBuilder} builds JTS linestring or polygons from OSM ways.
+ */
 public class WayBuilder extends GeometryBuilder<Way> {
 
   private final GeometryFactory geometryFactory;
@@ -18,8 +20,8 @@ public class WayBuilder extends GeometryBuilder<Way> {
    * Constructs a {code WayBuilder}.
    *
    * @param coordinateTransform the {@code CoordinateTransform} used to project OSM coordinates
-   * @param geometryFactory the {@code GeometryFactory} used to create polygons and multipolygons
-   * @param coordinateStore the {@code StoreReader} used to retrieve the coordinates of a node
+   * @param geometryFactory     the {@code GeometryFactory} used to create polygons and multipolygons
+   * @param coordinateStore     the {@code StoreReader} used to retrieve the coordinates of a node
    */
   public WayBuilder(
       CoordinateTransform coordinateTransform,

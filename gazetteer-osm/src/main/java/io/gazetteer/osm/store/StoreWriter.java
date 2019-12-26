@@ -19,7 +19,9 @@ public interface StoreWriter<K, V> {
   void importAll(List<StoreEntry<K, V>> values);
 
   default byte[] serialize(Geometry geometry) {
-    if (geometry == null) return null;
+    if (geometry == null) {
+      return null;
+    }
     WKBWriter writer = new WKBWriter(2, wkbNDR, true);
     return writer.write(geometry);
   }

@@ -12,7 +12,9 @@ public class PostgisLayer {
 
   private String sql;
 
-  public PostgisLayer() {}
+  public PostgisLayer() {
+
+  }
 
   public PostgisLayer(String name, String geometry, int minZoom, int maxZoom, String sql) {
     this.name = name;

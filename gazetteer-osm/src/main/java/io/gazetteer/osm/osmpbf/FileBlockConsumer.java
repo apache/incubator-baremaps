@@ -13,6 +13,8 @@ public abstract class FileBlockConsumer implements Consumer<FileBlock> {
       case OSMData:
         accept(block.toPrimitiveBlock());
         break;
+      default:
+        break;
     }
   }
 
