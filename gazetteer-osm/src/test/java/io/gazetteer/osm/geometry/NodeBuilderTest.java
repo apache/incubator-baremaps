@@ -1,8 +1,8 @@
 package io.gazetteer.osm.geometry;
 
-import static io.gazetteer.osm.OSMTestUtil.COORDINATE_TRANSFORM;
-import static io.gazetteer.osm.OSMTestUtil.GEOMETRY_FACTORY;
-import static io.gazetteer.osm.OSMTestUtil.NODE_0;
+import static io.gazetteer.osm.TestConstants.COORDINATE_TRANSFORM;
+import static io.gazetteer.osm.TestConstants.GEOMETRY_FACTORY;
+import static io.gazetteer.osm.TestConstants.NODE_0;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;

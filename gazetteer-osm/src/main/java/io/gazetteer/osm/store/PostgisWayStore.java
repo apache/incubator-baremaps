@@ -125,7 +125,27 @@ public class PostgisWayStore implements Store<Long, Way> {
 
   @Override
   public void putAll(List<StoreEntry<Long, Way>> entries) {
-    throw new UnsupportedOperationException();
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(INSERT)) {
+      for (StoreEntry<Long, Way> entry : entries) {
+        Long key = entry.key();
+        Way value = entry.value();
+        statement.clearParameters();
+        statement.setLong(1, key);
+        statement.setInt(2, value.getInfo().getVersion());
+        statement.setInt(3, value.getInfo().getUserId());
+        statement.setObject(4, value.getInfo().getTimestamp());
+        statement.setLong(5, value.getInfo().getChangeset());
+        statement.setObject(6, value.getInfo().getTags());
+        statement.setObject(7, value.getNodes().stream().mapToLong(Long::longValue).toArray());
+        byte[] wkb = wayBuilder != null ? serialize(wayBuilder.build(value)) : null;
+        statement.setBytes(8, wkb);
+        statement.addBatch();
+      }
+      statement.executeBatch();
+    } catch (SQLException e) {
+      throw new StoreException(e);
+    }
   }
 
   public void delete(Long key) {
@@ -140,7 +160,17 @@ public class PostgisWayStore implements Store<Long, Way> {
 
   @Override
   public void deleteAll(List<Long> keys) {
-    throw new UnsupportedOperationException();
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(DELETE)) {
+      for (Long key : keys) {
+        statement.clearParameters();
+        statement.setLong(1, key);
+        statement.execute();
+      }
+      statement.executeBatch();
+    } catch (SQLException e) {
+      throw new StoreException(e);
+    }
   }
 
   public void importAll(List<StoreEntry<Long, Way>> entries) {

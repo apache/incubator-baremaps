@@ -50,10 +50,10 @@ public class PostgisNodeStore implements Store<Long, Node> {
     this.nodeBuilder = nodeBuilder;
   }
 
-  public Node get(Long id) {
+  public Node get(Long key) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
-      statement.setLong(1, id);
+      statement.setLong(1, key);
       ResultSet result = statement.executeQuery();
       if (result.next()) {
         int version = result.getInt(1);
@@ -63,7 +63,7 @@ public class PostgisNodeStore implements Store<Long, Node> {
         Map<String, String> tags = (Map<String, String>) result.getObject(5);
         Point point = (Point) deserialize(result.getBytes(6));
         return new Node(
-            new Info(id, version, timestamp, changeset, uid, tags), point.getX(), point.getY());
+            new Info(key, version, timestamp, changeset, uid, tags), point.getX(), point.getY());
       } else {
         throw new IllegalArgumentException();
       }
@@ -119,15 +119,32 @@ public class PostgisNodeStore implements Store<Long, Node> {
 
   @Override
   public void putAll(List<StoreEntry<Long, Node>> entries) {
-    for (StoreEntry<Long, Node> entry : entries) {
-      put(entry.key(), entry.value());
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(INSERT)) {
+      for (StoreEntry<Long, Node> entry : entries) {
+        Long key = entry.key();
+        Node value = entry.value();
+        statement.clearParameters();
+        statement.setLong(1, key);
+        statement.setInt(2, value.getInfo().getVersion());
+        statement.setInt(3, value.getInfo().getUserId());
+        statement.setObject(4, value.getInfo().getTimestamp());
+        statement.setLong(5, value.getInfo().getChangeset());
+        statement.setObject(6, value.getInfo().getTags());
+        byte[] wkb = nodeBuilder != null ? serialize(nodeBuilder.build(value)) : null;
+        statement.setBytes(7, wkb);
+        statement.addBatch();
+      }
+      statement.executeBatch();
+    } catch (SQLException e) {
+      throw new StoreException(e);
     }
   }
 
-  public void delete(Long id) {
+  public void delete(Long key) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE)) {
-      statement.setLong(1, id);
+      statement.setLong(1, key);
       statement.execute();
     } catch (SQLException e) {
       throw new StoreException(e);
@@ -136,8 +153,16 @@ public class PostgisNodeStore implements Store<Long, Node> {
 
   @Override
   public void deleteAll(List<Long> keys) {
-    for (Long key : keys) {
-      delete(key);
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(DELETE)) {
+      for (Long key : keys) {
+        statement.clearParameters();
+        statement.setLong(1, key);
+        statement.addBatch();
+      }
+      statement.executeBatch();
+    } catch (SQLException e) {
+      throw new StoreException(e);
     }
   }
 

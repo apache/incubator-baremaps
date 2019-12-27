@@ -67,9 +67,9 @@ public class PostgisRelationStore implements Store<Long, Relation> {
         long changeset = result.getLong(4);
         Map<String, String> tags = (Map<String, String>) result.getObject(5);
         List<Member> members = new ArrayList<>();
-        Long[] refs = (Long[]) result.getObject(6);
-        String[] types = (String[]) result.getObject(7);
-        String[] roles = (String[]) result.getObject(8);
+        Long[] refs = (Long[]) result.getArray(6).getArray();
+        String[] types = (String[]) result.getArray(7).getArray();
+        String[] roles = (String[]) result.getArray(8).getArray();
         for (int i = 0; i < refs.length; i++) {
           members.add(new Member(refs[i], Type.valueOf(types[i]), roles[i]));
         }
@@ -97,14 +97,13 @@ public class PostgisRelationStore implements Store<Long, Relation> {
         long changeset = result.getLong(5);
         Map<String, String> tags = (Map<String, String>) result.getObject(6);
         List<Member> members = new ArrayList<>();
-        Long[] refs = (Long[]) result.getObject(7);
-        String[] types = (String[]) result.getObject(8);
-        String[] roles = (String[]) result.getObject(9);
+        Long[] refs = (Long[]) result.getArray(7).getArray();
+        String[] types = (String[]) result.getArray(8).getArray();
+        String[] roles = (String[]) result.getArray(9).getArray();
         for (int i = 0; i < refs.length; i++) {
           members.add(new Member(refs[i], Type.valueOf(types[i]), roles[i]));
         }
-        relations.put(
-            id, new Relation(new Info(id, version, timestamp, changeset, uid, tags), members));
+        relations.put(id, new Relation(new Info(id, version, timestamp, changeset, uid, tags), members));
       }
       return keys.stream().map(key -> relations.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
@@ -115,17 +114,15 @@ public class PostgisRelationStore implements Store<Long, Relation> {
   public void put(Long key, Relation value) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      statement.setLong(1, value.getInfo().getId());
+      statement.setLong(1, key);
       statement.setInt(2, value.getInfo().getVersion());
       statement.setInt(3, value.getInfo().getUserId());
       statement.setObject(4, value.getInfo().getTimestamp());
       statement.setLong(5, value.getInfo().getChangeset());
       statement.setObject(6, value.getInfo().getTags());
       statement.setObject(7, value.getMembers().stream().mapToLong(m -> m.getRef()).toArray());
-      statement.setObject(
-          8, value.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new));
-      statement.setObject(
-          9, value.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new));
+      statement.setObject(8, value.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new));
+      statement.setObject(9, value.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new));
       statement.setBytes(10, serialize(relationBuilder.build(value)));
       statement.execute();
     } catch (SQLException e) {
@@ -135,13 +132,34 @@ public class PostgisRelationStore implements Store<Long, Relation> {
 
   @Override
   public void putAll(List<StoreEntry<Long, Relation>> entries) {
-    throw new UnsupportedOperationException();
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(INSERT)) {
+      for (StoreEntry<Long, Relation> entry : entries) {
+        Long key = entry.key();
+        Relation value = entry.value();
+        statement.clearParameters();
+        statement.setLong(1, key);
+        statement.setInt(2, value.getInfo().getVersion());
+        statement.setInt(3, value.getInfo().getUserId());
+        statement.setObject(4, value.getInfo().getTimestamp());
+        statement.setLong(5, value.getInfo().getChangeset());
+        statement.setObject(6, value.getInfo().getTags());
+        statement.setObject(7, value.getMembers().stream().mapToLong(m -> m.getRef()).toArray());
+        statement.setObject(8, value.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new));
+        statement.setObject(9, value.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new));
+        statement.setBytes(10, serialize(relationBuilder.build(value)));
+        statement.addBatch();
+      }
+      statement.executeBatch();
+    } catch (SQLException e) {
+      throw new StoreException(e);
+    }
   }
 
-  public void delete(Long id) {
+  public void delete(Long key) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE)) {
-      statement.setLong(1, id);
+      statement.setLong(1, key);
       statement.execute();
     } catch (SQLException e) {
       throw new StoreException(e);
@@ -150,7 +168,17 @@ public class PostgisRelationStore implements Store<Long, Relation> {
 
   @Override
   public void deleteAll(List<Long> keys) {
-    throw new UnsupportedOperationException();
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(DELETE)) {
+      for (Long key : keys) {
+        statement.clearParameters();
+        statement.setLong(1, key);
+        statement.addBatch();
+      }
+      statement.executeBatch();
+    } catch (SQLException e) {
+      throw new StoreException(e);
+    }
   }
 
   public void importAll(List<StoreEntry<Long, Relation>> entries) {
@@ -167,14 +195,10 @@ public class PostgisRelationStore implements Store<Long, Relation> {
           writer.writeLocalDateTime(relation.getInfo().getTimestamp());
           writer.writeLong(relation.getInfo().getChangeset());
           writer.writeHstore(relation.getInfo().getTags());
-          writer.writeLongList(
-              relation.getMembers().stream().map(m -> m.getRef()).collect(Collectors.toList()));
+          writer.writeLongList(relation.getMembers().stream().map(m -> m.getRef()).collect(Collectors.toList()));
           writer.writeStringList(
-              relation.getMembers().stream()
-                  .map(m -> m.getType().name())
-                  .collect(Collectors.toList()));
-          writer.writeStringList(
-              relation.getMembers().stream().map(m -> m.getRole()).collect(Collectors.toList()));
+              relation.getMembers().stream().map(m -> m.getType().name()).collect(Collectors.toList()));
+          writer.writeStringList(relation.getMembers().stream().map(m -> m.getRole()).collect(Collectors.toList()));
           writer.writeGeometry(relationBuilder.build(relation));
         }
       }

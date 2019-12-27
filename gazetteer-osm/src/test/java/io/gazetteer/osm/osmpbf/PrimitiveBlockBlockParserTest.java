@@ -1,8 +1,8 @@
 package io.gazetteer.osm.osmpbf;
 
-import static io.gazetteer.osm.OSMTestUtil.denseOsmPbf;
-import static io.gazetteer.osm.OSMTestUtil.relationsOsmPbf;
-import static io.gazetteer.osm.OSMTestUtil.waysOsmPbf;
+import static io.gazetteer.osm.TestConstants.denseOsmPbf;
+import static io.gazetteer.osm.TestConstants.relationsOsmPbf;
+import static io.gazetteer.osm.TestConstants.waysOsmPbf;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

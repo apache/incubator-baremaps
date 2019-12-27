@@ -3,6 +3,8 @@ package io.gazetteer.osm;
 import com.google.common.collect.ImmutableMap;
 import com.google.protobuf.ByteString;
 import io.gazetteer.osm.geometry.NodeBuilder;
+import io.gazetteer.osm.geometry.RelationBuilder;
+import io.gazetteer.osm.geometry.WayBuilder;
 import io.gazetteer.osm.model.*;
 import io.gazetteer.osm.osmpbf.FileBlock;
 import io.gazetteer.osm.osmpbf.FileBlock.Type;
@@ -18,11 +20,10 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.CoordinateTransform;
-import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.Proj4jException;
 import org.locationtech.proj4j.ProjCoordinate;
 
-public class OSMTestUtil {
+public class TestConstants {
 
   private static final CRSFactory CRS_FACTORY = new CRSFactory();
   private static final CoordinateReferenceSystem EPSG_4326 = CRS_FACTORY.createFromName("EPSG:4326");
@@ -53,7 +54,6 @@ public class OSMTestUtil {
   public static final Map<String, String> TAGS_RELATION = ImmutableMap.of("type", "multipolygon");
 
   public static final Info INFO_0 = new Info(0, 0, TIMESTAMP, 0, 0, TAGS);
-
   public static final Info INFO_1 = new Info(1, 0, TIMESTAMP, 0, 0, TAGS_RELATION);
   public static final Info INFO_2 = new Info(2, 0, TIMESTAMP, 0, 0, TAGS_RELATION);
   public static final Info INFO_3 = new Info(3, 0, TIMESTAMP, 0, 0, TAGS_RELATION);
@@ -100,13 +100,15 @@ public class OSMTestUtil {
     }
   };
 
-  public static final Way WAY_EMPTY = new Way(INFO_0, Arrays.asList());
-  public static final Way WAY_LINESTRING = new Way(INFO_0, Arrays.asList(0l, 1l, 2l, 3l));
-  public static final Way WAY_POLYGON_OUTER_1 = new Way(INFO_0, Arrays.asList(0l, 1l, 2l, 3l, 0l));
-  public static final Way WAY_POLYGON_OUTER_2 = new Way(INFO_0, Arrays.asList(8l, 9l, 10l, 11l, 8l));
-  public static final Way WAY_POLYGON_INNER_1 = new Way(INFO_0, Arrays.asList(4l, 5l, 6l, 7l, 4l));
+  public static final WayBuilder WAY_BUILDER = new WayBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY, COORDINATE_STORE);
 
-  public static final List<Way> WAY_LIST = Arrays.asList(WAY_POLYGON_OUTER_1, WAY_POLYGON_INNER_1, WAY_POLYGON_OUTER_2);
+  public static final Way WAY_0 = new Way(INFO_0, Arrays.asList());
+  public static final Way WAY_1 = new Way(INFO_1, Arrays.asList(0l, 1l, 2l, 3l));
+  public static final Way WAY_2 = new Way(INFO_2, Arrays.asList(0l, 1l, 2l, 3l, 0l));
+  public static final Way WAY_3 = new Way(INFO_3, Arrays.asList(8l, 9l, 10l, 11l, 8l));
+  public static final Way WAY_4 = new Way(INFO_4, Arrays.asList(4l, 5l, 6l, 7l, 4l));
+
+  public static final List<Way> WAY_LIST = Arrays.asList(WAY_0, WAY_1, WAY_2, WAY_3, WAY_4);
 
   public static final StoreReader<Long, List<Long>> REFERENCE_STORE = new StoreReader<Long, List<Long>>() {
     @Override
@@ -124,36 +126,40 @@ public class OSMTestUtil {
     }
   };
 
-  public static final Relation RELATION_0 = new Relation(INFO_0, Arrays.asList(
-      new Member(0, Member.Type.way, "outer")));
 
+  public static final Relation RELATION_0 = new Relation(INFO_0, Arrays.asList());
   public static final Relation RELATION_1 = new Relation(INFO_1, Arrays.asList());
-
-  public static final Relation RELATION_2 = new Relation(INFO_1, Arrays.asList(
-      new Member(0, Member.Type.way, "outer"),
-      new Member(1, Member.Type.way, "inner")));
-
-  public static final Relation RELATION_3 = new Relation(INFO_1, Arrays.asList(
-      new Member(0, Member.Type.way, "outer"),
-      new Member(1, Member.Type.way, "inner"),
+  public static final Relation RELATION_2 = new Relation(INFO_2, Arrays.asList(
       new Member(2, Member.Type.way, "outer")));
+  public static final Relation RELATION_3 = new Relation(INFO_3, Arrays.asList(
+      new Member(2, Member.Type.way, "outer"),
+      new Member(3, Member.Type.way, "inner")));
+  public static final Relation RELATION_4 = new Relation(INFO_4, Arrays.asList(
+      new Member(2, Member.Type.way, "outer"),
+      new Member(3, Member.Type.way, "inner"),
+      new Member(4, Member.Type.way, "outer")));
+
+  public static final List<Relation> RELATION_LIST = Arrays.asList(RELATION_0, RELATION_2, RELATION_3, RELATION_4);
+
+  public static final RelationBuilder RELATION_BUILDER = new RelationBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY, COORDINATE_STORE,
+      REFERENCE_STORE);
 
   public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/osm?allowMultiQueries=true&user=osm&password=osm";
 
   public static InputStream dataOsmPbf() {
-    return OSMTestUtil.class.getClassLoader().getResourceAsStream("data.osm.pbf");
+    return TestConstants.class.getClassLoader().getResourceAsStream("data.osm.pbf");
   }
 
   public static InputStream denseOsmPbf() {
-    return OSMTestUtil.class.getClassLoader().getResourceAsStream("dense.osm.pbf");
+    return TestConstants.class.getClassLoader().getResourceAsStream("dense.osm.pbf");
   }
 
   public static InputStream waysOsmPbf() {
-    return OSMTestUtil.class.getClassLoader().getResourceAsStream("ways.osm.pbf");
+    return TestConstants.class.getClassLoader().getResourceAsStream("ways.osm.pbf");
   }
 
   public static InputStream relationsOsmPbf() {
-    return OSMTestUtil.class.getClassLoader().getResourceAsStream("relations.osm.pbf");
+    return TestConstants.class.getClassLoader().getResourceAsStream("relations.osm.pbf");
   }
 
   public static FileBlock invalidOsmPbf() {
@@ -161,11 +167,11 @@ public class OSMTestUtil {
   }
 
   public static InputStream dataOsmXml() {
-    return OSMTestUtil.class.getClassLoader().getResourceAsStream("data.osm.xml");
+    return TestConstants.class.getClassLoader().getResourceAsStream("data.osm.xml");
   }
 
   public static InputStream dataOscXml() {
-    return OSMTestUtil.class.getClassLoader().getResourceAsStream("data.osc.xml");
+    return TestConstants.class.getClassLoader().getResourceAsStream("data.osc.xml");
   }
 
 }

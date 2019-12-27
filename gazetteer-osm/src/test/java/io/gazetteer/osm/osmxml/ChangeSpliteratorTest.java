@@ -1,6 +1,6 @@
 package io.gazetteer.osm.osmxml;
 
-import static io.gazetteer.osm.OSMTestUtil.dataOscXml;
+import static io.gazetteer.osm.TestConstants.dataOscXml;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
