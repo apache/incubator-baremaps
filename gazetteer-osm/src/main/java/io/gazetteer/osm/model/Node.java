@@ -2,6 +2,7 @@ package io.gazetteer.osm.model;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 public final class Node implements Entity {
@@ -50,4 +51,14 @@ public final class Node implements Entity {
   public int hashCode() {
     return Objects.hashCode(info, lon, lat);
   }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("info", info)
+        .add("lon", lon)
+        .add("lat", lat)
+        .toString();
+  }
+
 }

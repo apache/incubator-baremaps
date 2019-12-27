@@ -1,5 +1,6 @@
 package io.gazetteer.osm.model;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -72,5 +73,12 @@ public final class Info {
   @Override
   public int hashCode() {
     return Objects.hashCode(id, version, timestamp, changeset, userId, tags);
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("id", id)
+        .toString();
   }
 }

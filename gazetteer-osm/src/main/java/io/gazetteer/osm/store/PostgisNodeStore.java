@@ -119,7 +119,9 @@ public class PostgisNodeStore implements Store<Long, Node> {
 
   @Override
   public void putAll(List<StoreEntry<Long, Node>> entries) {
-    throw new UnsupportedOperationException();
+    for (StoreEntry<Long, Node> entry : entries) {
+      put(entry.key(), entry.value());
+    }
   }
 
   public void delete(Long id) {
@@ -134,7 +136,9 @@ public class PostgisNodeStore implements Store<Long, Node> {
 
   @Override
   public void deleteAll(List<Long> keys) {
-    throw new UnsupportedOperationException();
+    for (Long key : keys) {
+      delete(key);
+    }
   }
 
   public void importAll(List<StoreEntry<Long, Node>> entries) {

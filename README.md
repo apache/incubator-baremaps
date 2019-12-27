@@ -18,7 +18,7 @@ On the longer run, the aim of the project is to work with a variety of data sour
 
 ## State of the map
 
-![State of the map](https://github.com/gazetteerio/gazetteer/raw/master/screenshots/2019-10-20.png)
+[![State of the map](https://github.com/gazetteerio/gazetteer/raw/master/screenshots/2019-12-27.png)](https://www.gazetteer.io/)
 
 ## Prerequisites
 

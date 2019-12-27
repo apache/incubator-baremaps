@@ -132,7 +132,7 @@ public class ChangeSpliterator implements Spliterator<Change> {
   }
 
   private long readChangeset(StartElement element) {
-    // todo: changesets are not present on geofabrik but described as mandatory in the doc
+    // TODO: changesets are not present on geofabrik but described as mandatory in the doc
     if (element.getAttributeByName(QName.valueOf(CHANGESET)) != null
         && element.getAttributeByName(QName.valueOf(CHANGESET)) != null) {
       return Long.parseLong(element.getAttributeByName(QName.valueOf(CHANGESET)).getValue());

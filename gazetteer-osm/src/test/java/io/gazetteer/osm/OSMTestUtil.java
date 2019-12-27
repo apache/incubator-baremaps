@@ -19,58 +19,69 @@ import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
+import org.locationtech.proj4j.Proj4jException;
+import org.locationtech.proj4j.ProjCoordinate;
 
 public class OSMTestUtil {
 
   private static final CRSFactory CRS_FACTORY = new CRSFactory();
-
   private static final CoordinateReferenceSystem EPSG_4326 = CRS_FACTORY.createFromName("EPSG:4326");
 
-  private static final CoordinateTransformFactory COORDINATE_TRANSFORM_FACTORY = new CoordinateTransformFactory();
+  public static final CoordinateTransform COORDINATE_TRANSFORM = new CoordinateTransform() {
+    @Override
+    public CoordinateReferenceSystem getSourceCRS() {
+      return EPSG_4326;
+    }
 
-  public static final CoordinateTransform COORDINATE_TRANSFORM = COORDINATE_TRANSFORM_FACTORY
-      .createTransform(EPSG_4326, EPSG_4326);
+    @Override
+    public CoordinateReferenceSystem getTargetCRS() {
+      return EPSG_4326;
+    }
+
+    @Override
+    public ProjCoordinate transform(ProjCoordinate src, ProjCoordinate tgt) throws Proj4jException {
+      return src;
+    }
+  };
 
   public static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
-
-  public static final NodeBuilder GEOMETRY_BUILDER = new NodeBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY);
+  public static final NodeBuilder NODE_BUILDER = new NodeBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY);
 
   public static final LocalDateTime TIMESTAMP = LocalDateTime.of(2020, 1, 1, 0, 0);
 
   public static final Map<String, String> TAGS = new HashMap<>();
-
   public static final Map<String, String> TAGS_RELATION = ImmutableMap.of("type", "multipolygon");
 
   public static final Info INFO_0 = new Info(0, 0, TIMESTAMP, 0, 0, TAGS);
 
   public static final Info INFO_1 = new Info(1, 0, TIMESTAMP, 0, 0, TAGS_RELATION);
+  public static final Info INFO_2 = new Info(2, 0, TIMESTAMP, 0, 0, TAGS_RELATION);
+  public static final Info INFO_3 = new Info(3, 0, TIMESTAMP, 0, 0, TAGS_RELATION);
+  public static final Info INFO_4 = new Info(4, 0, TIMESTAMP, 0, 0, TAGS_RELATION);
+  public static final Info INFO_5 = new Info(5, 0, TIMESTAMP, 0, 0, TAGS_RELATION);
+  public static final Info INFO_6 = new Info(6, 0, TIMESTAMP, 0, 0, TAGS_RELATION);
+  public static final Info INFO_7 = new Info(7, 0, TIMESTAMP, 0, 0, TAGS_RELATION);
+  public static final Info INFO_8 = new Info(8, 0, TIMESTAMP, 0, 0, TAGS_RELATION);
+  public static final Info INFO_9 = new Info(9, 0, TIMESTAMP, 0, 0, TAGS_RELATION);
+  public static final Info INFO_10 = new Info(10, 0, TIMESTAMP, 0, 0, TAGS_RELATION);
+  public static final Info INFO_11 = new Info(11, 0, TIMESTAMP, 0, 0, TAGS_RELATION);
 
   public static final Node NODE_0 = new Node(INFO_0, 0, 0);
+  public static final Node NODE_1 = new Node(INFO_1, 0, 3);
+  public static final Node NODE_2 = new Node(INFO_2, 3, 3);
+  public static final Node NODE_3 = new Node(INFO_3, 3, 0);
+  public static final Node NODE_4 = new Node(INFO_4, 1, 1);
+  public static final Node NODE_5 = new Node(INFO_5, 1, 2);
+  public static final Node NODE_6 = new Node(INFO_6, 2, 2);
+  public static final Node NODE_7 = new Node(INFO_7, 2, 1);
+  public static final Node NODE_8 = new Node(INFO_8, 4, 1);
+  public static final Node NODE_9 = new Node(INFO_9, 4, 2);
+  public static final Node NODE_10 = new Node(INFO_10, 5, 2);
+  public static final Node NODE_11 = new Node(INFO_11, 5, 1);
 
-  public static final Node NODE_1 = new Node(INFO_0, 0, 3);
-
-  public static final Node NODE_2 = new Node(INFO_0, 3, 3);
-
-  public static final Node NODE_3 = new Node(INFO_0, 3, 0);
-
-  public static final Node NODE_4 = new Node(INFO_0, 1, 1);
-
-  public static final Node NODE_5 = new Node(INFO_0, 1, 2);
-
-  public static final Node NODE_6 = new Node(INFO_0, 2, 2);
-
-  public static final Node NODE_7 = new Node(INFO_0, 2, 1);
-
-  public static final Node NODE_8 = new Node(INFO_0, 4, 1);
-
-  public static final Node NODE_9 = new Node(INFO_0, 4, 2);
-
-  public static final Node NODE_10 = new Node(INFO_0, 5, 2);
-
-  public static final Node NODE_11 = new Node(INFO_0, 5, 1);
-
-  public static final List<Node> NODE_LIST = Arrays
-      .asList(NODE_0, NODE_1, NODE_2, NODE_3, NODE_4, NODE_5, NODE_6, NODE_7, NODE_8, NODE_9, NODE_10, NODE_11);
+  public static final List<Node> NODE_LIST = Arrays.asList(
+      NODE_0, NODE_1, NODE_2, NODE_3, NODE_4, NODE_5,
+      NODE_6, NODE_7, NODE_8, NODE_9, NODE_10, NODE_11);
 
   public static final StoreReader<Long, Coordinate> COORDINATE_STORE = new StoreReader<Long, Coordinate>() {
     @Override
@@ -90,13 +101,9 @@ public class OSMTestUtil {
   };
 
   public static final Way WAY_EMPTY = new Way(INFO_0, Arrays.asList());
-
   public static final Way WAY_LINESTRING = new Way(INFO_0, Arrays.asList(0l, 1l, 2l, 3l));
-
   public static final Way WAY_POLYGON_OUTER_1 = new Way(INFO_0, Arrays.asList(0l, 1l, 2l, 3l, 0l));
-
   public static final Way WAY_POLYGON_OUTER_2 = new Way(INFO_0, Arrays.asList(8l, 9l, 10l, 11l, 8l));
-
   public static final Way WAY_POLYGON_INNER_1 = new Way(INFO_0, Arrays.asList(4l, 5l, 6l, 7l, 4l));
 
   public static final List<Way> WAY_LIST = Arrays.asList(WAY_POLYGON_OUTER_1, WAY_POLYGON_INNER_1, WAY_POLYGON_OUTER_2);
