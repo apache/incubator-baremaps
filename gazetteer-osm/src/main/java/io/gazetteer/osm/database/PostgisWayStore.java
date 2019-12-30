@@ -1,9 +1,11 @@
-package io.gazetteer.osm.store;
+package io.gazetteer.osm.database;
 
+import io.gazetteer.osm.geometry.GeometryUtil;
 import io.gazetteer.osm.geometry.WayBuilder;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Way;
-import io.gazetteer.osm.postgis.CopyWriter;
+import io.gazetteer.osm.store.Store;
+import io.gazetteer.osm.store.StoreException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -115,7 +117,7 @@ public class PostgisWayStore implements Store<Long, Way> {
       statement.setLong(5, value.getInfo().getChangeset());
       statement.setObject(6, value.getInfo().getTags());
       statement.setObject(7, value.getNodes().stream().mapToLong(Long::longValue).toArray());
-      byte[] wkb = wayBuilder != null ? serialize(wayBuilder.build(value)) : null;
+      byte[] wkb = wayBuilder != null ? GeometryUtil.serialize(wayBuilder.build(value)) : null;
       statement.setBytes(8, wkb);
       statement.execute();
     } catch (SQLException e) {
@@ -124,10 +126,10 @@ public class PostgisWayStore implements Store<Long, Way> {
   }
 
   @Override
-  public void putAll(List<StoreEntry<Long, Way>> entries) {
+  public void putAll(List<Entry<Long, Way>> entries) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      for (StoreEntry<Long, Way> entry : entries) {
+      for (Entry<Long, Way> entry : entries) {
         Long key = entry.key();
         Way value = entry.value();
         statement.clearParameters();
@@ -138,7 +140,7 @@ public class PostgisWayStore implements Store<Long, Way> {
         statement.setLong(5, value.getInfo().getChangeset());
         statement.setObject(6, value.getInfo().getTags());
         statement.setObject(7, value.getNodes().stream().mapToLong(Long::longValue).toArray());
-        byte[] wkb = wayBuilder != null ? serialize(wayBuilder.build(value)) : null;
+        byte[] wkb = wayBuilder != null ? GeometryUtil.serialize(wayBuilder.build(value)) : null;
         statement.setBytes(8, wkb);
         statement.addBatch();
       }
@@ -173,12 +175,12 @@ public class PostgisWayStore implements Store<Long, Way> {
     }
   }
 
-  public void importAll(List<StoreEntry<Long, Way>> entries) {
+  public void importAll(List<Entry<Long, Way>> entries) {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
         writer.writeHeader();
-        for (StoreEntry<Long, Way> entry : entries) {
+        for (Entry<Long, Way> entry : entries) {
           Long key = entry.key();
           Way way = entry.value();
           writer.startRow(8);

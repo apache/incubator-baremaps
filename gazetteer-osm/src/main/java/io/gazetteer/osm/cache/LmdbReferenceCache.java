@@ -1,4 +1,4 @@
-package io.gazetteer.osm.store;
+package io.gazetteer.osm.cache;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -6,9 +6,9 @@ import java.util.List;
 import org.lmdbjava.Dbi;
 import org.lmdbjava.Env;
 
-public class LmdbReferenceStore extends LmdbStore<Long, List<Long>> {
+public class LmdbReferenceCache extends LmdbCache<Long, List<Long>> {
 
-  public LmdbReferenceStore(Env<ByteBuffer> env, Dbi<ByteBuffer> database) {
+  public LmdbReferenceCache(Env<ByteBuffer> env, Dbi<ByteBuffer> database) {
     super(env, database);
   }
 
@@ -40,4 +40,5 @@ public class LmdbReferenceStore extends LmdbStore<Long, List<Long>> {
     buffer.flip();
     return buffer;
   }
+
 }

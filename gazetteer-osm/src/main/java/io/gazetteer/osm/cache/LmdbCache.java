@@ -1,7 +1,8 @@
-package io.gazetteer.osm.store;
+package io.gazetteer.osm.cache;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import io.gazetteer.osm.store.Store;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,13 +10,13 @@ import org.lmdbjava.Dbi;
 import org.lmdbjava.Env;
 import org.lmdbjava.Txn;
 
-public abstract class LmdbStore<K, V> implements Store<K, V> {
+public abstract class LmdbCache<K, V> implements Store<K, V> {
 
   private final Env<ByteBuffer> env;
 
   private final Dbi<ByteBuffer> database;
 
-  public LmdbStore(Env<ByteBuffer> env, Dbi<ByteBuffer> database) {
+  public LmdbCache(Env<ByteBuffer> env, Dbi<ByteBuffer> database) {
     checkNotNull(env);
     checkNotNull(database);
     this.env = env;
@@ -29,20 +30,30 @@ public abstract class LmdbStore<K, V> implements Store<K, V> {
     }
   }
 
+
+  public void putAll(List<Entry<K, V>> entries) {
+    try (Txn<ByteBuffer> txn = env.txnWrite()) {
+      for (Entry<K, V> entry : entries) {
+        database.put(txn, buffer(entry.key()), write(entry.value()));
+      }
+      txn.commit();
+    }
+  }
+
+
   @Override
   public void delete(K key) {
-    throw new UnsupportedOperationException();
+    try (Txn<ByteBuffer> txn = env.txnWrite()) {
+      database.delete(txn, buffer(key));
+      txn.commit();
+    }
   }
 
   @Override
   public void deleteAll(List<K> keys) {
-    throw new UnsupportedOperationException();
-  }
-
-  public void putAll(List<StoreEntry<K, V>> entries) {
     try (Txn<ByteBuffer> txn = env.txnWrite()) {
-      for (StoreEntry<K, V> entry : entries) {
-        database.put(txn, buffer(entry.key()), write(entry.value()));
+      for (K key : keys) {
+        database.delete(txn, buffer(key));
       }
       txn.commit();
     }
@@ -66,13 +77,8 @@ public abstract class LmdbStore<K, V> implements Store<K, V> {
     return list;
   }
 
-  @Override
-  public void importAll(List<StoreEntry<K, V>> values) {
+  public void importAll(List<Entry<K, V>> values) {
     throw new UnsupportedOperationException();
-  }
-
-  public void close() {
-    database.close();
   }
 
   public abstract ByteBuffer buffer(K key);

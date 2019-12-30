@@ -8,25 +8,24 @@ import io.gazetteer.cli.util.StopWatch;
 import io.gazetteer.osm.geometry.NodeBuilder;
 import io.gazetteer.osm.geometry.RelationBuilder;
 import io.gazetteer.osm.geometry.WayBuilder;
-import io.gazetteer.osm.osmpbf.CopyConsumer;
+import io.gazetteer.osm.store.Store;
+import io.gazetteer.osm.store.StoreConsumer;
 import io.gazetteer.osm.osmpbf.FileBlock;
 import io.gazetteer.osm.osmpbf.FileBlockSpliterator;
-import io.gazetteer.osm.postgis.PostgisHelper;
-import io.gazetteer.osm.store.LmdbConsumer;
-import io.gazetteer.osm.store.LmdbCoordinateStore;
-import io.gazetteer.osm.store.LmdbReferenceStore;
-import io.gazetteer.osm.store.PostgisHeaderStore;
-import io.gazetteer.osm.store.PostgisNodeStore;
-import io.gazetteer.osm.store.PostgisRelationStore;
-import io.gazetteer.osm.store.PostgisWayStore;
-import io.gazetteer.osm.store.Store;
+import io.gazetteer.osm.database.PostgisHelper;
+import io.gazetteer.osm.cache.CacheConsumer;
+import io.gazetteer.osm.cache.LmdbCoordinateCache;
+import io.gazetteer.osm.cache.LmdbReferenceCache;
+import io.gazetteer.osm.database.PostgisHeaderStore;
+import io.gazetteer.osm.database.PostgisNodeStore;
+import io.gazetteer.osm.database.PostgisRelationStore;
+import io.gazetteer.osm.database.PostgisWayStore;
 
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -85,13 +84,13 @@ public class Import implements Callable<Integer> {
 
     Path lmdbPath = Files.createTempDirectory("gazetteer_");
     Env<ByteBuffer> env = Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(lmdbPath.toFile());
-    Store<Long, Coordinate> coordinateStore = new LmdbCoordinateStore(env, env.openDbi("coordinates", MDB_CREATE));
-    Store<Long, List<Long>> referenceStore = new LmdbReferenceStore(env, env.openDbi("references", MDB_CREATE));
+    Store<Long, Coordinate> coordinateStore = new LmdbCoordinateCache(env, env.openDbi("coordinates", MDB_CREATE));
+    Store<Long, List<Long>> referenceStore = new LmdbReferenceCache(env, env.openDbi("references", MDB_CREATE));
 
     System.out.println("Populating cache.");
     try (InputStream input = input(url(source))) {
       Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(new DataInputStream(input)), false);
-      LmdbConsumer blockConsumer = new LmdbConsumer(coordinateStore, referenceStore);
+      CacheConsumer blockConsumer = new CacheConsumer(coordinateStore, referenceStore);
       blocks.forEach(blockConsumer);
       System.out.println(String.format("-> %dms", stopWatch.lap()));
     }
@@ -112,7 +111,7 @@ public class Import implements Callable<Integer> {
           new WayBuilder(coordinateTransform, geometryFactory, coordinateStore));
       PostgisRelationStore relationMapper = new PostgisRelationStore(datasource,
           new RelationBuilder(coordinateTransform, geometryFactory, coordinateStore, referenceStore));
-      CopyConsumer blockConsumer = new CopyConsumer(headerMapper, nodeMapper, wayMapper, relationMapper);
+      StoreConsumer blockConsumer = new StoreConsumer(headerMapper, nodeMapper, wayMapper, relationMapper);
       blocks.forEach(blockConsumer);
       System.out.println(String.format("-> %dms", stopWatch.lap()));
     }

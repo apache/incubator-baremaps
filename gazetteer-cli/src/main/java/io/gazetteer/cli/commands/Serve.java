@@ -1,7 +1,7 @@
 package io.gazetteer.cli.commands;
 
 import com.sun.net.httpserver.HttpServer;
-import io.gazetteer.osm.postgis.PostgisHelper;
+import io.gazetteer.osm.database.PostgisHelper;
 import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.http.ResourceHandler;
 import io.gazetteer.tiles.http.TileHandler;

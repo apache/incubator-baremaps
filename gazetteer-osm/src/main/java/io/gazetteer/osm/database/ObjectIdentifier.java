@@ -1,7 +1,7 @@
 // Copyright (c) Philipp Wagner. All rights reserved.
 // Licensed under the MIT license.
 
-package io.gazetteer.osm.postgis;
+package io.gazetteer.osm.database;
 
 public class ObjectIdentifier {
 

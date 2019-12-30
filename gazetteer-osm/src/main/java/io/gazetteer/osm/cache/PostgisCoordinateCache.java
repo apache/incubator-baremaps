@@ -1,5 +1,8 @@
-package io.gazetteer.osm.store;
+package io.gazetteer.osm.cache;
 
+import io.gazetteer.osm.geometry.GeometryUtil;
+import io.gazetteer.osm.store.Store;
+import io.gazetteer.osm.store.StoreException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,7 +15,7 @@ import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 
-public class PostgisCoordinateStore implements StoreReader<Long, Coordinate> {
+public class PostgisCoordinateCache implements Store<Long, Coordinate> {
 
   private static final String SELECT =
       "SELECT st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ?";
@@ -25,7 +28,7 @@ public class PostgisCoordinateStore implements StoreReader<Long, Coordinate> {
 
   private final DataSource dataSource;
 
-  public PostgisCoordinateStore(DataSource dataSource) {
+  public PostgisCoordinateCache(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
@@ -35,7 +38,7 @@ public class PostgisCoordinateStore implements StoreReader<Long, Coordinate> {
       statement.setLong(1, id);
       ResultSet result = statement.executeQuery();
       if (result.next()) {
-        Point point = (Point) deserialize(result.getBytes(6));
+        Point point = (Point) GeometryUtil.deserialize(result.getBytes(6));
         return point.getCoordinate();
       } else {
         throw new IllegalArgumentException();
@@ -54,7 +57,7 @@ public class PostgisCoordinateStore implements StoreReader<Long, Coordinate> {
       Map<Long, Coordinate> nodes = new HashMap<>();
       while (result.next()) {
         Long id = result.getLong(1);
-        Point point = (Point) deserialize(result.getBytes(2));
+        Point point = (Point) GeometryUtil.deserialize(result.getBytes(2));
         nodes.put(id, point.getCoordinate());
       }
       return keys.stream().map(key -> nodes.get(key)).collect(Collectors.toList());
@@ -62,4 +65,30 @@ public class PostgisCoordinateStore implements StoreReader<Long, Coordinate> {
       throw new StoreException(e);
     }
   }
+
+  @Override
+  public void put(Long key, Coordinate values) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void putAll(List<Entry<Long, Coordinate>> storeEntries) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void delete(Long key) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void deleteAll(List<Long> keys) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void importAll(List<Entry<Long, Coordinate>> values) {
+    throw new UnsupportedOperationException();
+  }
+
 }

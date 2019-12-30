@@ -1,4 +1,4 @@
-package io.gazetteer.osm.store;
+package io.gazetteer.osm.database;
 
 import static io.gazetteer.osm.TestConstants.DATABASE_URL;
 import static io.gazetteer.osm.TestConstants.WAY_BUILDER;
@@ -8,7 +8,7 @@ import static io.gazetteer.osm.TestConstants.WAY_3;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.gazetteer.osm.model.Way;
-import io.gazetteer.osm.postgis.PostgisHelper;
+import io.gazetteer.osm.store.Store.Entry;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -47,10 +47,10 @@ class PostgisWayStoreTest {
   @Test
   @Tag("integration")
   void putAll() {
-    List<StoreEntry<Long, Way>> ways = Arrays.asList(
-        new StoreEntry<>(WAY_1.getInfo().getId(), WAY_1),
-        new StoreEntry<>(WAY_2.getInfo().getId(), WAY_2),
-        new StoreEntry<>(WAY_3.getInfo().getId(), WAY_3));
+    List<Entry<Long, Way>> ways = Arrays.asList(
+        new Entry<>(WAY_1.getInfo().getId(), WAY_1),
+        new Entry<>(WAY_2.getInfo().getId(), WAY_2),
+        new Entry<>(WAY_3.getInfo().getId(), WAY_3));
     wayStore.putAll(ways);
     assertIterableEquals(
         ways.stream().map(e -> e.value()).collect(Collectors.toList()),
@@ -68,10 +68,10 @@ class PostgisWayStoreTest {
   @Test
   @Tag("integration")
   void deleteAll() {
-    List<StoreEntry<Long, Way>> ways = Arrays.asList(
-        new StoreEntry<>(WAY_1.getInfo().getId(), WAY_1),
-        new StoreEntry<>(WAY_2.getInfo().getId(), WAY_2),
-        new StoreEntry<>(WAY_3.getInfo().getId(), WAY_3));
+    List<Entry<Long, Way>> ways = Arrays.asList(
+        new Entry<>(WAY_1.getInfo().getId(), WAY_1),
+        new Entry<>(WAY_2.getInfo().getId(), WAY_2),
+        new Entry<>(WAY_3.getInfo().getId(), WAY_3));
     wayStore.putAll(ways);
     wayStore.deleteAll(ways.stream().map(e -> e.key()).collect(Collectors.toList()));
     assertIterableEquals(
@@ -82,10 +82,10 @@ class PostgisWayStoreTest {
   @Test
   @Tag("integration")
   void importAll() {
-    List<StoreEntry<Long, Way>> ways = Arrays.asList(
-        new StoreEntry<>(WAY_1.getInfo().getId(), WAY_1),
-        new StoreEntry<>(WAY_2.getInfo().getId(), WAY_2),
-        new StoreEntry<>(WAY_3.getInfo().getId(), WAY_3));
+    List<Entry<Long, Way>> ways = Arrays.asList(
+        new Entry<>(WAY_1.getInfo().getId(), WAY_1),
+        new Entry<>(WAY_2.getInfo().getId(), WAY_2),
+        new Entry<>(WAY_3.getInfo().getId(), WAY_3));
     wayStore.importAll(ways);
     assertIterableEquals(
         ways.stream().map(e -> e.value()).collect(Collectors.toList()),

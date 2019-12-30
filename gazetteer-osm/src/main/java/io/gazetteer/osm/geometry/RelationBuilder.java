@@ -1,7 +1,7 @@
 package io.gazetteer.osm.geometry;
 
 import io.gazetteer.osm.model.Relation;
-import io.gazetteer.osm.store.StoreReader;
+import io.gazetteer.osm.store.Store;
 import io.gazetteer.osm.stream.Try;
 import java.util.List;
 import java.util.Map;
@@ -18,20 +18,20 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
 
   private final GeometryFactory geometryFactory;
 
-  private final StoreReader<Long, Coordinate> coordinateStore;
+  private final Store<Long, Coordinate> coordinateStore;
 
-  private final StoreReader<Long, List<Long>> referenceStore;
+  private final Store<Long, List<Long>> referenceStore;
 
   /**
    * Constructs a {@code RelationBuilder}.
    *
    * @param coordinateTransform the {@code CoordinateTransform} used to project OSM coordinates.
    * @param geometryFactory     the {@code GeometryFactory} used to create polygons and multipolygons
-   * @param coordinateStore     the {@code StoreReader} used to retrieve the coordinates of a node
-   * @param referenceStore      the {@code StoreReader} used to retrieve the nodes of a way
+   * @param coordinateStore     the {@code Store} used to retrieve the coordinates of a node
+   * @param referenceStore      the {@code Store} used to retrieve the nodes of a way
    */
   public RelationBuilder(CoordinateTransform coordinateTransform, GeometryFactory geometryFactory,
-      StoreReader<Long, Coordinate> coordinateStore, StoreReader<Long, List<Long>> referenceStore) {
+      Store<Long, Coordinate> coordinateStore, Store<Long, List<Long>> referenceStore) {
     super(coordinateTransform);
     this.geometryFactory = geometryFactory;
     this.coordinateStore = coordinateStore;

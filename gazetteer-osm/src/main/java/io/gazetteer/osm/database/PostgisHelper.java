@@ -1,4 +1,4 @@
-package io.gazetteer.osm.postgis;
+package io.gazetteer.osm.database;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

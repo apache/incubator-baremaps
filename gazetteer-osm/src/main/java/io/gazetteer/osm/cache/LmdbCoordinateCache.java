@@ -1,13 +1,13 @@
-package io.gazetteer.osm.store;
+package io.gazetteer.osm.cache;
 
 import java.nio.ByteBuffer;
 import org.lmdbjava.Dbi;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 
-public class LmdbCoordinateStore extends LmdbStore<Long, Coordinate> {
+public class LmdbCoordinateCache extends LmdbCache<Long, Coordinate> {
 
-  public LmdbCoordinateStore(Env<ByteBuffer> env, Dbi<ByteBuffer> database) {
+  public LmdbCoordinateCache(Env<ByteBuffer> env, Dbi<ByteBuffer> database) {
     super(env, database);
   }
 
@@ -39,4 +39,5 @@ public class LmdbCoordinateStore extends LmdbStore<Long, Coordinate> {
     buffer.flip();
     return buffer;
   }
+
 }

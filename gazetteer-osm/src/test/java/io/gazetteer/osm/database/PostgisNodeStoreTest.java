@@ -1,4 +1,4 @@
-package io.gazetteer.osm.store;
+package io.gazetteer.osm.database;
 
 import static io.gazetteer.osm.TestConstants.NODE_0;
 import static io.gazetteer.osm.TestConstants.NODE_1;
@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.gazetteer.osm.TestConstants;
 import io.gazetteer.osm.model.Node;
-import io.gazetteer.osm.postgis.PostgisHelper;
+import io.gazetteer.osm.store.Store.Entry;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -49,10 +49,10 @@ public class PostgisNodeStoreTest {
   @Test
   @Tag("integration")
   public void putAll() {
-    List<StoreEntry<Long, Node>> nodes = Arrays.asList(
-        new StoreEntry<>(NODE_0.getInfo().getId(), NODE_0),
-        new StoreEntry<>(NODE_1.getInfo().getId(), NODE_1),
-        new StoreEntry<>(NODE_2.getInfo().getId(), NODE_2));
+    List<Entry<Long, Node>> nodes = Arrays.asList(
+        new Entry<>(NODE_0.getInfo().getId(), NODE_0),
+        new Entry<>(NODE_1.getInfo().getId(), NODE_1),
+        new Entry<>(NODE_2.getInfo().getId(), NODE_2));
     nodeStore.putAll(nodes);
     assertIterableEquals(
         nodes.stream().map(e -> e.value()).collect(Collectors.toList()),
@@ -70,10 +70,10 @@ public class PostgisNodeStoreTest {
   @Test
   @Tag("integration")
   public void deleteAll() {
-    List<StoreEntry<Long, Node>> nodes = Arrays.asList(
-        new StoreEntry<>(NODE_0.getInfo().getId(), NODE_0),
-        new StoreEntry<>(NODE_1.getInfo().getId(), NODE_1),
-        new StoreEntry<>(NODE_2.getInfo().getId(), NODE_2));
+    List<Entry<Long, Node>> nodes = Arrays.asList(
+        new Entry<>(NODE_0.getInfo().getId(), NODE_0),
+        new Entry<>(NODE_1.getInfo().getId(), NODE_1),
+        new Entry<>(NODE_2.getInfo().getId(), NODE_2));
     nodeStore.putAll(nodes);
     nodeStore.deleteAll(nodes.stream().map(e -> e.key()).collect(Collectors.toList()));
     assertIterableEquals(
@@ -84,10 +84,10 @@ public class PostgisNodeStoreTest {
   @Test
   @Tag("integration")
   public void importAll() {
-    List<StoreEntry<Long, Node>> nodes = Arrays.asList(
-        new StoreEntry<>(NODE_0.getInfo().getId(), NODE_0),
-        new StoreEntry<>(NODE_1.getInfo().getId(), NODE_1),
-        new StoreEntry<>(NODE_2.getInfo().getId(), NODE_2));
+    List<Entry<Long, Node>> nodes = Arrays.asList(
+        new Entry<>(NODE_0.getInfo().getId(), NODE_0),
+        new Entry<>(NODE_1.getInfo().getId(), NODE_1),
+        new Entry<>(NODE_2.getInfo().getId(), NODE_2));
     nodeStore.importAll(nodes);
     assertIterableEquals(
         nodes.stream().map(e -> e.value()).collect(Collectors.toList()),

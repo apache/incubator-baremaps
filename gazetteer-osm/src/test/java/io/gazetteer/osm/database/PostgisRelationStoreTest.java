@@ -1,20 +1,14 @@
-package io.gazetteer.osm.store;
+package io.gazetteer.osm.database;
 
-import static io.gazetteer.osm.TestConstants.NODE_0;
-import static io.gazetteer.osm.TestConstants.NODE_1;
-import static io.gazetteer.osm.TestConstants.NODE_2;
-import static io.gazetteer.osm.TestConstants.NODE_BUILDER;
 import static io.gazetteer.osm.TestConstants.RELATION_2;
 import static io.gazetteer.osm.TestConstants.RELATION_3;
 import static io.gazetteer.osm.TestConstants.RELATION_4;
 import static io.gazetteer.osm.TestConstants.RELATION_BUILDER;
-import static io.gazetteer.osm.TestConstants.WAY_BUILDER;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.gazetteer.osm.TestConstants;
-import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
-import io.gazetteer.osm.postgis.PostgisHelper;
+import io.gazetteer.osm.store.Store.Entry;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -54,10 +48,10 @@ class PostgisRelationStoreTest {
   @Test
   @Tag("integration")
   void putAll() {
-    List<StoreEntry<Long, Relation>> relations = Arrays.asList(
-        new StoreEntry<>(RELATION_2.getInfo().getId(), RELATION_2),
-        new StoreEntry<>(RELATION_3.getInfo().getId(), RELATION_3),
-        new StoreEntry<>(RELATION_4.getInfo().getId(), RELATION_4));
+    List<Entry<Long, Relation>> relations = Arrays.asList(
+        new Entry<>(RELATION_2.getInfo().getId(), RELATION_2),
+        new Entry<>(RELATION_3.getInfo().getId(), RELATION_3),
+        new Entry<>(RELATION_4.getInfo().getId(), RELATION_4));
     relationStore.putAll(relations);
     assertIterableEquals(
         relations.stream().map(e -> e.value()).collect(Collectors.toList()),
@@ -75,10 +69,10 @@ class PostgisRelationStoreTest {
   @Test
   @Tag("integration")
   void deleteAll() {
-    List<StoreEntry<Long, Relation>> relations = Arrays.asList(
-        new StoreEntry<>(RELATION_2.getInfo().getId(), RELATION_2),
-        new StoreEntry<>(RELATION_3.getInfo().getId(), RELATION_3),
-        new StoreEntry<>(RELATION_4.getInfo().getId(), RELATION_4));
+    List<Entry<Long, Relation>> relations = Arrays.asList(
+        new Entry<>(RELATION_2.getInfo().getId(), RELATION_2),
+        new Entry<>(RELATION_3.getInfo().getId(), RELATION_3),
+        new Entry<>(RELATION_4.getInfo().getId(), RELATION_4));
     relationStore.putAll(relations);
     relationStore.deleteAll(relations.stream().map(e -> e.key()).collect(Collectors.toList()));
     assertIterableEquals(
@@ -89,10 +83,10 @@ class PostgisRelationStoreTest {
   @Test
   @Tag("integration")
   void importAll() {
-    List<StoreEntry<Long, Relation>> relations = Arrays.asList(
-        new StoreEntry<>(RELATION_2.getInfo().getId(), RELATION_2),
-        new StoreEntry<>(RELATION_3.getInfo().getId(), RELATION_3),
-        new StoreEntry<>(RELATION_4.getInfo().getId(), RELATION_4));
+    List<Entry<Long, Relation>> relations = Arrays.asList(
+        new Entry<>(RELATION_2.getInfo().getId(), RELATION_2),
+        new Entry<>(RELATION_3.getInfo().getId(), RELATION_3),
+        new Entry<>(RELATION_4.getInfo().getId(), RELATION_4));
     relationStore.importAll(relations);
     assertIterableEquals(
         relations.stream().map(e -> e.value()).collect(Collectors.toList()),

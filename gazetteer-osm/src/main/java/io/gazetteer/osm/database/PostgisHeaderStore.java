@@ -1,5 +1,6 @@
-package io.gazetteer.osm.store;
+package io.gazetteer.osm.database;
 
+import static io.gazetteer.osm.geometry.GeometryUtil.*;
 import io.gazetteer.osm.osmpbf.HeaderBlock;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +11,7 @@ import java.util.List;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Geometry;
 
-public class PostgisHeaderStore implements Store<Long, HeaderBlock> {
+public class PostgisHeaderStore {
 
   private static final String SELECT =
       "SELECT replication_timestamp, replication_sequence_number, replication_url, source, writing_program, st_asewkb(bbox) FROM osm_headers ORDER BY replication_timestamp DESC";
@@ -49,7 +50,7 @@ public class PostgisHeaderStore implements Store<Long, HeaderBlock> {
     }
   }
 
-  public HeaderBlock last() throws SQLException {
+  public HeaderBlock getLast() throws SQLException {
     return select().get(0);
   }
 
@@ -66,33 +67,4 @@ public class PostgisHeaderStore implements Store<Long, HeaderBlock> {
     }
   }
 
-  @Override
-  public HeaderBlock get(Long key) {
-    return null;
-  }
-
-  @Override
-  public List<HeaderBlock> getAll(List<Long> keys) {
-    return null;
-  }
-
-  @Override
-  public void put(Long key, HeaderBlock values) {
-  }
-
-  @Override
-  public void putAll(List<StoreEntry<Long, HeaderBlock>> storeEntries) {
-  }
-
-  @Override
-  public void delete(Long key) {
-  }
-
-  @Override
-  public void deleteAll(List<Long> keys) {
-  }
-
-  @Override
-  public void importAll(List<StoreEntry<Long, HeaderBlock>> values) {
-  }
 }

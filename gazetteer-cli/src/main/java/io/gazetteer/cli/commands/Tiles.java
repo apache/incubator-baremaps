@@ -1,6 +1,6 @@
 package io.gazetteer.cli.commands;
 
-import io.gazetteer.osm.postgis.PostgisHelper;
+import io.gazetteer.osm.database.PostgisHelper;
 import io.gazetteer.tiles.Tile;
 import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.TileWriter;
@@ -15,8 +15,6 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.locationtech.jts.geom.Geometry;

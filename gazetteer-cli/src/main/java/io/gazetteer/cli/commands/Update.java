@@ -13,15 +13,15 @@ import io.gazetteer.osm.osmxml.Change;
 import io.gazetteer.osm.osmxml.ChangeConsumer;
 import io.gazetteer.osm.osmxml.ChangeSpliterator;
 import io.gazetteer.osm.osmxml.State;
-import io.gazetteer.osm.postgis.PostgisHelper;
-import io.gazetteer.osm.store.PostgisCoordinateStore;
-import io.gazetteer.osm.store.PostgisHeaderStore;
-import io.gazetteer.osm.store.PostgisNodeStore;
-import io.gazetteer.osm.store.PostgisReferenceStore;
-import io.gazetteer.osm.store.PostgisRelationStore;
-import io.gazetteer.osm.store.PostgisWayStore;
-import io.gazetteer.osm.store.StoreReader;
+import io.gazetteer.osm.database.PostgisHelper;
+import io.gazetteer.osm.cache.PostgisCoordinateCache;
+import io.gazetteer.osm.database.PostgisHeaderStore;
+import io.gazetteer.osm.database.PostgisNodeStore;
+import io.gazetteer.osm.cache.PostgisReferenceCache;
+import io.gazetteer.osm.database.PostgisRelationStore;
+import io.gazetteer.osm.database.PostgisWayStore;
 
+import io.gazetteer.osm.store.Store;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,8 +29,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
@@ -77,8 +75,8 @@ public class Update implements Callable<Integer> {
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
     CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(epsg4326, epsg3857);
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
-    StoreReader<Long, Coordinate> coordinateStore = new PostgisCoordinateStore(datasource);
-    StoreReader<Long, List<Long>> referenceStore = new PostgisReferenceStore(datasource);
+    Store<Long, Coordinate> coordinateStore = new PostgisCoordinateCache(datasource);
+    Store<Long, List<Long>> referenceStore = new PostgisReferenceCache(datasource);
     PostgisHeaderStore headerMapper = new PostgisHeaderStore(datasource);
     PostgisNodeStore nodeStore = new PostgisNodeStore(datasource,
         new NodeBuilder(coordinateTransform, geometryFactory));
@@ -87,7 +85,7 @@ public class Update implements Callable<Integer> {
     PostgisRelationStore relationStore = new PostgisRelationStore(datasource,
         new RelationBuilder(coordinateTransform, geometryFactory, coordinateStore, referenceStore));
 
-    HeaderBlock header = headerMapper.last();
+    HeaderBlock header = headerMapper.getLast();
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
     String statePath = statePath(nextSequenceNumber);
 

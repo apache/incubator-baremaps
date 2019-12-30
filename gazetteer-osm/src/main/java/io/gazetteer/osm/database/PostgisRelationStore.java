@@ -1,11 +1,13 @@
-package io.gazetteer.osm.store;
+package io.gazetteer.osm.database;
 
+import io.gazetteer.osm.geometry.GeometryUtil;
 import io.gazetteer.osm.geometry.RelationBuilder;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Member;
 import io.gazetteer.osm.model.Member.Type;
 import io.gazetteer.osm.model.Relation;
-import io.gazetteer.osm.postgis.CopyWriter;
+import io.gazetteer.osm.store.Store;
+import io.gazetteer.osm.store.StoreException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -123,7 +125,7 @@ public class PostgisRelationStore implements Store<Long, Relation> {
       statement.setObject(7, value.getMembers().stream().mapToLong(m -> m.getRef()).toArray());
       statement.setObject(8, value.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new));
       statement.setObject(9, value.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new));
-      statement.setBytes(10, serialize(relationBuilder.build(value)));
+      statement.setBytes(10, GeometryUtil.serialize(relationBuilder.build(value)));
       statement.execute();
     } catch (SQLException e) {
       throw new StoreException(e);
@@ -131,10 +133,10 @@ public class PostgisRelationStore implements Store<Long, Relation> {
   }
 
   @Override
-  public void putAll(List<StoreEntry<Long, Relation>> entries) {
+  public void putAll(List<Entry<Long, Relation>> entries) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      for (StoreEntry<Long, Relation> entry : entries) {
+      for (Entry<Long, Relation> entry : entries) {
         Long key = entry.key();
         Relation value = entry.value();
         statement.clearParameters();
@@ -147,7 +149,7 @@ public class PostgisRelationStore implements Store<Long, Relation> {
         statement.setObject(7, value.getMembers().stream().mapToLong(m -> m.getRef()).toArray());
         statement.setObject(8, value.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new));
         statement.setObject(9, value.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new));
-        statement.setBytes(10, serialize(relationBuilder.build(value)));
+        statement.setBytes(10, GeometryUtil.serialize(relationBuilder.build(value)));
         statement.addBatch();
       }
       statement.executeBatch();
@@ -181,25 +183,26 @@ public class PostgisRelationStore implements Store<Long, Relation> {
     }
   }
 
-  public void importAll(List<StoreEntry<Long, Relation>> entries) {
+  public void importAll(List<Entry<Long, Relation>> entries) {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
         writer.writeHeader();
-        for (StoreEntry<Long, Relation> entry : entries) {
-          Relation relation = entry.value();
+        for (Entry<Long, Relation> entry : entries) {
+          Long key = entry.key();
+          Relation value = entry.value();
           writer.startRow(10);
-          writer.writeLong(relation.getInfo().getId());
-          writer.writeInteger(relation.getInfo().getVersion());
-          writer.writeInteger(relation.getInfo().getUserId());
-          writer.writeLocalDateTime(relation.getInfo().getTimestamp());
-          writer.writeLong(relation.getInfo().getChangeset());
-          writer.writeHstore(relation.getInfo().getTags());
-          writer.writeLongList(relation.getMembers().stream().map(m -> m.getRef()).collect(Collectors.toList()));
+          writer.writeLong(key);
+          writer.writeInteger(value.getInfo().getVersion());
+          writer.writeInteger(value.getInfo().getUserId());
+          writer.writeLocalDateTime(value.getInfo().getTimestamp());
+          writer.writeLong(value.getInfo().getChangeset());
+          writer.writeHstore(value.getInfo().getTags());
+          writer.writeLongList(value.getMembers().stream().map(m -> m.getRef()).collect(Collectors.toList()));
           writer.writeStringList(
-              relation.getMembers().stream().map(m -> m.getType().name()).collect(Collectors.toList()));
-          writer.writeStringList(relation.getMembers().stream().map(m -> m.getRole()).collect(Collectors.toList()));
-          writer.writeGeometry(relationBuilder.build(relation));
+              value.getMembers().stream().map(m -> m.getType().name()).collect(Collectors.toList()));
+          writer.writeStringList(value.getMembers().stream().map(m -> m.getRole()).collect(Collectors.toList()));
+          writer.writeGeometry(relationBuilder.build(value));
         }
       }
     } catch (Exception ex) {
