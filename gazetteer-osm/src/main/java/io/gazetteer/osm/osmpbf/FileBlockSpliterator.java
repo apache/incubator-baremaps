@@ -2,13 +2,12 @@ package io.gazetteer.osm.osmpbf;
 
 import com.google.protobuf.ByteString;
 import io.gazetteer.osm.stream.BatchSpliterator;
-import org.openstreetmap.osmosis.osmbinary.Fileformat;
-import org.openstreetmap.osmosis.osmbinary.Fileformat.Blob;
-
 import java.io.DataInputStream;
 import java.util.function.Consumer;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
+import org.openstreetmap.osmosis.osmbinary.Fileformat;
+import org.openstreetmap.osmosis.osmbinary.Fileformat.Blob;
 
 public class FileBlockSpliterator extends BatchSpliterator<FileBlock> {
 

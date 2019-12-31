@@ -1,11 +1,13 @@
 package io.gazetteer.osm.database;
 
-import static io.gazetteer.osm.TestConstants.DATABASE_URL;
-import static io.gazetteer.osm.TestConstants.WAY_BUILDER;
-import static io.gazetteer.osm.TestConstants.WAY_1;
-import static io.gazetteer.osm.TestConstants.WAY_2;
-import static io.gazetteer.osm.TestConstants.WAY_3;
-import static org.junit.jupiter.api.Assertions.*;
+import static io.gazetteer.osm.TestUtils.DATABASE_URL;
+import static io.gazetteer.osm.TestUtils.WAY_1;
+import static io.gazetteer.osm.TestUtils.WAY_2;
+import static io.gazetteer.osm.TestUtils.WAY_3;
+import static io.gazetteer.osm.TestUtils.WAY_BUILDER;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.store.Store.Entry;
@@ -39,14 +41,14 @@ class PostgisWayStoreTest {
 
   @Test
   @Tag("integration")
-  void put() {
+  public void put() {
     wayStore.put(WAY_1.getInfo().getId(), WAY_1);
     assertEquals(WAY_1, wayStore.get(WAY_1.getInfo().getId()));
   }
 
   @Test
   @Tag("integration")
-  void putAll() {
+  public void putAll() {
     List<Entry<Long, Way>> ways = Arrays.asList(
         new Entry<>(WAY_1.getInfo().getId(), WAY_1),
         new Entry<>(WAY_2.getInfo().getId(), WAY_2),
@@ -59,7 +61,7 @@ class PostgisWayStoreTest {
 
   @Test
   @Tag("integration")
-  void delete() {
+  public void delete() {
     wayStore.put(WAY_1.getInfo().getId(), WAY_1);
     wayStore.delete(WAY_1.getInfo().getId());
     assertThrows(IllegalArgumentException.class, () -> wayStore.get(WAY_1.getInfo().getId()));
@@ -67,7 +69,7 @@ class PostgisWayStoreTest {
 
   @Test
   @Tag("integration")
-  void deleteAll() {
+  public void deleteAll() {
     List<Entry<Long, Way>> ways = Arrays.asList(
         new Entry<>(WAY_1.getInfo().getId(), WAY_1),
         new Entry<>(WAY_2.getInfo().getId(), WAY_2),
@@ -81,7 +83,7 @@ class PostgisWayStoreTest {
 
   @Test
   @Tag("integration")
-  void importAll() {
+  public void importAll() {
     List<Entry<Long, Way>> ways = Arrays.asList(
         new Entry<>(WAY_1.getInfo().getId(), WAY_1),
         new Entry<>(WAY_2.getInfo().getId(), WAY_2),

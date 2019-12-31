@@ -36,4 +36,5 @@ public interface Store<K, V>  {
       return value;
     }
   }
+
 }

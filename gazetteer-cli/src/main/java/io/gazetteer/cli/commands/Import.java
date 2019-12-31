@@ -5,22 +5,21 @@ import static io.gazetteer.cli.util.IOUtil.url;
 import static org.lmdbjava.DbiFlags.MDB_CREATE;
 
 import io.gazetteer.cli.util.StopWatch;
-import io.gazetteer.osm.geometry.NodeBuilder;
-import io.gazetteer.osm.geometry.RelationBuilder;
-import io.gazetteer.osm.geometry.WayBuilder;
-import io.gazetteer.osm.store.Store;
-import io.gazetteer.osm.store.StoreConsumer;
-import io.gazetteer.osm.osmpbf.FileBlock;
-import io.gazetteer.osm.osmpbf.FileBlockSpliterator;
-import io.gazetteer.osm.database.PostgisHelper;
 import io.gazetteer.osm.cache.CacheConsumer;
 import io.gazetteer.osm.cache.LmdbCoordinateCache;
 import io.gazetteer.osm.cache.LmdbReferenceCache;
 import io.gazetteer.osm.database.PostgisHeaderStore;
+import io.gazetteer.osm.database.PostgisHelper;
 import io.gazetteer.osm.database.PostgisNodeStore;
 import io.gazetteer.osm.database.PostgisRelationStore;
 import io.gazetteer.osm.database.PostgisWayStore;
-
+import io.gazetteer.osm.geometry.NodeBuilder;
+import io.gazetteer.osm.geometry.RelationBuilder;
+import io.gazetteer.osm.geometry.WayBuilder;
+import io.gazetteer.osm.osmpbf.FileBlock;
+import io.gazetteer.osm.osmpbf.FileBlockSpliterator;
+import io.gazetteer.osm.store.Store;
+import io.gazetteer.osm.store.StoreConsumer;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -31,7 +30,6 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;

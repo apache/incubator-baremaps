@@ -6,8 +6,10 @@ import io.gazetteer.osm.stream.Try;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.locationtech.proj4j.CoordinateTransform;
 

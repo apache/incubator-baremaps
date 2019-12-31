@@ -1,12 +1,12 @@
 package io.gazetteer.osm.store;
 
-import io.gazetteer.osm.osmpbf.FileBlockConsumer;
-import io.gazetteer.osm.osmpbf.HeaderBlock;
-import io.gazetteer.osm.osmpbf.PrimitiveBlock;
 import io.gazetteer.osm.database.PostgisHeaderStore;
 import io.gazetteer.osm.database.PostgisNodeStore;
 import io.gazetteer.osm.database.PostgisRelationStore;
 import io.gazetteer.osm.database.PostgisWayStore;
+import io.gazetteer.osm.osmpbf.FileBlockConsumer;
+import io.gazetteer.osm.osmpbf.HeaderBlock;
+import io.gazetteer.osm.osmpbf.PrimitiveBlock;
 import io.gazetteer.osm.store.Store.Entry;
 import java.util.stream.Collectors;
 

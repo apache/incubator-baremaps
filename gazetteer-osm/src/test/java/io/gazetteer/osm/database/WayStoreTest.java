@@ -3,7 +3,7 @@ package io.gazetteer.osm.database;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.gazetteer.osm.TestConstants;
+import io.gazetteer.osm.TestUtils;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Way;
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class WayStoreTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = PostgisHelper.poolingDataSource(TestConstants.DATABASE_URL);
+    dataSource = PostgisHelper.poolingDataSource(TestUtils.DATABASE_URL);
     try (Connection connection = dataSource.getConnection()) {
       PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
       PostgisHelper.executeScript(connection, "osm_create_tables.sql");

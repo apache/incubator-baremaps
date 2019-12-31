@@ -2,7 +2,6 @@ package io.gazetteer.osm.stream;
 
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.function.Consumer;
 
 public abstract class BatchSpliterator<T> implements Spliterator<T> {
 

@@ -1,14 +1,14 @@
 package io.gazetteer.osm.database;
 
-import static io.gazetteer.osm.TestConstants.NODE_0;
-import static io.gazetteer.osm.TestConstants.NODE_1;
-import static io.gazetteer.osm.TestConstants.NODE_2;
-import static io.gazetteer.osm.TestConstants.NODE_BUILDER;
+import static io.gazetteer.osm.TestUtils.NODE_0;
+import static io.gazetteer.osm.TestUtils.NODE_1;
+import static io.gazetteer.osm.TestUtils.NODE_2;
+import static io.gazetteer.osm.TestUtils.NODE_BUILDER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import io.gazetteer.osm.TestConstants;
+import io.gazetteer.osm.TestUtils;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.store.Store.Entry;
 import java.io.IOException;
@@ -30,7 +30,7 @@ public class PostgisNodeStoreTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = PostgisHelper.poolingDataSource(TestConstants.DATABASE_URL);
+    dataSource = PostgisHelper.poolingDataSource(TestUtils.DATABASE_URL);
     nodeStore = new PostgisNodeStore(dataSource, NODE_BUILDER);
     try (Connection connection = dataSource.getConnection()) {
       PostgisHelper.executeScript(connection, "osm_create_extensions.sql");

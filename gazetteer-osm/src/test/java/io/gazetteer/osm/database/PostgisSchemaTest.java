@@ -2,7 +2,7 @@ package io.gazetteer.osm.database;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.gazetteer.osm.TestConstants;
+import io.gazetteer.osm.TestUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -17,7 +17,7 @@ public class PostgisSchemaTest {
   @Test
   @Tag("integration")
   public void resetDatabase() throws SQLException, IOException {
-    try (Connection connection = DriverManager.getConnection(TestConstants.DATABASE_URL)) {
+    try (Connection connection = DriverManager.getConnection(TestUtils.DATABASE_URL)) {
       PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
       PostgisHelper.executeScript(connection, "osm_create_tables.sql");
       assertTrue(tableExists("osm_headers"));
@@ -28,7 +28,7 @@ public class PostgisSchemaTest {
   }
 
   public boolean tableExists(String table) throws SQLException {
-    try (Connection connection = DriverManager.getConnection(TestConstants.DATABASE_URL)) {
+    try (Connection connection = DriverManager.getConnection(TestUtils.DATABASE_URL)) {
       DatabaseMetaData metadata = connection.getMetaData();
       ResultSet tables = metadata.getTables(null, null, table, null);
       return tables.next();

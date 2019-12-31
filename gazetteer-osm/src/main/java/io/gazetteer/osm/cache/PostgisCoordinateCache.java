@@ -23,9 +23,6 @@ public class PostgisCoordinateCache implements Store<Long, Coordinate> {
   private static final String SELECT_IN =
       "SELECT id, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ANY (?)";
 
-  private static final String COPY =
-      "COPY osm_nodes (id, version, uid, timestamp, changeset, tags, geom) FROM STDIN BINARY";
-
   private final DataSource dataSource;
 
   public PostgisCoordinateCache(DataSource dataSource) {

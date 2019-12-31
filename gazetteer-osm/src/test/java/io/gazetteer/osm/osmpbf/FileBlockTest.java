@@ -1,7 +1,7 @@
 package io.gazetteer.osm.osmpbf;
 
-import static io.gazetteer.osm.TestConstants.dataOsmPbf;
-import static io.gazetteer.osm.TestConstants.invalidOsmPbf;
+import static io.gazetteer.osm.TestUtils.dataOsmPbf;
+import static io.gazetteer.osm.TestUtils.invalidOsmPbf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

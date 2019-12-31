@@ -11,7 +11,6 @@ import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.osmxml.Change.Type;
 import io.gazetteer.osm.stream.StreamException;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

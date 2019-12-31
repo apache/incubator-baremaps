@@ -1,6 +1,8 @@
 package io.gazetteer.osm.database;
 
-import static io.gazetteer.osm.geometry.GeometryUtil.*;
+import static io.gazetteer.osm.geometry.GeometryUtil.deserialize;
+import static io.gazetteer.osm.geometry.GeometryUtil.serialize;
+
 import io.gazetteer.osm.osmpbf.HeaderBlock;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

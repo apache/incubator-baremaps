@@ -1,12 +1,12 @@
 package io.gazetteer.osm.osmxml;
 
+import io.gazetteer.osm.database.PostgisNodeStore;
+import io.gazetteer.osm.database.PostgisRelationStore;
+import io.gazetteer.osm.database.PostgisWayStore;
 import io.gazetteer.osm.model.Entity;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
-import io.gazetteer.osm.database.PostgisNodeStore;
-import io.gazetteer.osm.database.PostgisRelationStore;
-import io.gazetteer.osm.database.PostgisWayStore;
 import java.util.function.Consumer;
 
 public class ChangeConsumer implements Consumer<Change> {

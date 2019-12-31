@@ -6,15 +6,18 @@ import com.google.protobuf.ByteString;
 import io.gazetteer.osm.geometry.NodeBuilder;
 import io.gazetteer.osm.geometry.RelationBuilder;
 import io.gazetteer.osm.geometry.WayBuilder;
-import io.gazetteer.osm.model.*;
+import io.gazetteer.osm.model.Info;
+import io.gazetteer.osm.model.Member;
+import io.gazetteer.osm.model.Node;
+import io.gazetteer.osm.model.Relation;
+import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.osmpbf.FileBlock;
 import io.gazetteer.osm.osmpbf.FileBlock.Type;
-
 import io.gazetteer.osm.store.Store;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -24,7 +27,7 @@ import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.Proj4jException;
 import org.locationtech.proj4j.ProjCoordinate;
 
-public class TestConstants {
+public class TestUtils {
 
   private static final CRSFactory CRS_FACTORY = new CRSFactory();
   private static final CoordinateReferenceSystem EPSG_4326 = CRS_FACTORY.createFromName("EPSG:4326");
@@ -47,7 +50,7 @@ public class TestConstants {
   };
 
   public static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
-  
+
   public static final NodeBuilder NODE_BUILDER = new NodeBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY);
 
   public static final LocalDateTime TIMESTAMP = LocalDateTime.of(2020, 1, 1, 0, 0);
@@ -122,27 +125,27 @@ public class TestConstants {
 
     @Override
     public void put(Long key, Coordinate values) {
-
+      throw new UnsupportedOperationException();
     }
 
     @Override
     public void putAll(List<Entry<Long, Coordinate>> storeEntries) {
-
+      throw new UnsupportedOperationException();
     }
 
     @Override
     public void delete(Long key) {
-
+      throw new UnsupportedOperationException();
     }
 
     @Override
     public void deleteAll(List<Long> keys) {
-
+      throw new UnsupportedOperationException();
     }
 
     @Override
     public void importAll(List<Entry<Long, Coordinate>> values) {
-
+      throw new UnsupportedOperationException();
     }
 
   };
@@ -188,29 +191,28 @@ public class TestConstants {
 
     @Override
     public void put(Long key, List<Long> values) {
-
+      throw new UnsupportedOperationException();
     }
 
     @Override
     public void putAll(List<Entry<Long, List<Long>>> storeEntries) {
-
+      throw new UnsupportedOperationException();
     }
 
     @Override
     public void delete(Long key) {
-
+      throw new UnsupportedOperationException();
     }
 
     @Override
     public void deleteAll(List<Long> keys) {
-
+      throw new UnsupportedOperationException();
     }
 
     @Override
     public void importAll(List<Entry<Long, List<Long>>> values) {
-
+      throw new UnsupportedOperationException();
     }
-
   };
 
 
@@ -248,19 +250,19 @@ public class TestConstants {
   public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/osm?allowMultiQueries=true&user=osm&password=osm";
 
   public static InputStream dataOsmPbf() {
-    return TestConstants.class.getClassLoader().getResourceAsStream("data.osm.pbf");
+    return TestUtils.class.getClassLoader().getResourceAsStream("data.osm.pbf");
   }
 
   public static InputStream denseOsmPbf() {
-    return TestConstants.class.getClassLoader().getResourceAsStream("dense.osm.pbf");
+    return TestUtils.class.getClassLoader().getResourceAsStream("dense.osm.pbf");
   }
 
   public static InputStream waysOsmPbf() {
-    return TestConstants.class.getClassLoader().getResourceAsStream("ways.osm.pbf");
+    return TestUtils.class.getClassLoader().getResourceAsStream("ways.osm.pbf");
   }
 
   public static InputStream relationsOsmPbf() {
-    return TestConstants.class.getClassLoader().getResourceAsStream("relations.osm.pbf");
+    return TestUtils.class.getClassLoader().getResourceAsStream("relations.osm.pbf");
   }
 
   public static FileBlock invalidOsmPbf() {
@@ -268,11 +270,11 @@ public class TestConstants {
   }
 
   public static InputStream dataOsmXml() {
-    return TestConstants.class.getClassLoader().getResourceAsStream("data.osm.xml");
+    return TestUtils.class.getClassLoader().getResourceAsStream("data.osm.xml");
   }
 
   public static InputStream dataOscXml() {
-    return TestConstants.class.getClassLoader().getResourceAsStream("data.osc.xml");
+    return TestUtils.class.getClassLoader().getResourceAsStream("data.osc.xml");
   }
 
 }

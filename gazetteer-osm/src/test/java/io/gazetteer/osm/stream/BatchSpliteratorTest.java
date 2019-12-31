@@ -1,6 +1,11 @@
 package io.gazetteer.osm.stream;
 
 import static java.util.Spliterator.IMMUTABLE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +45,10 @@ public class BatchSpliteratorTest {
   @Test
   public void tryAdvance() throws Exception {
     for (int i = 0; i < spliteratorSize; i++) {
-      Assertions.assertTrue(spliterator.tryAdvance(block -> {
+      assertTrue(spliterator.tryAdvance(block -> {
       }));
     }
-    Assertions.assertFalse(spliterator.tryAdvance(block -> {
+    assertFalse(spliterator.tryAdvance(block -> {
     }));
   }
 
@@ -51,7 +56,7 @@ public class BatchSpliteratorTest {
   public void forEachRemaining() throws Exception {
     AccumulatingConsumer<Integer> accumulator = new AccumulatingConsumer<>();
     spliterator.forEachRemaining(accumulator);
-    Assertions.assertEquals(accumulator.values().size(), spliteratorSize);
+    assertEquals(accumulator.values().size(), spliteratorSize);
   }
 
   @Test
@@ -59,17 +64,17 @@ public class BatchSpliteratorTest {
     Spliterator<Integer> s;
     for (int i = 0; i < spliteratorSize / batchSize; i++) {
       s = spliterator.trySplit();
-      Assertions.assertNotNull(s);
-      Assertions.assertEquals(s.estimateSize(), batchSize);
+      assertNotNull(s);
+      assertEquals(s.estimateSize(), batchSize);
     }
-    Assertions.assertNotNull(spliterator);
-    Assertions.assertEquals(spliterator.trySplit().estimateSize(), spliteratorSize % batchSize);
-    Assertions.assertNull(spliterator.trySplit());
+    assertNotNull(spliterator);
+    assertEquals(spliterator.trySplit().estimateSize(), spliteratorSize % batchSize);
+    assertNull(spliterator.trySplit());
   }
 
   @Test
   public void estimateSize() {
-    Assertions.assertEquals(spliterator.estimateSize(), Long.MAX_VALUE);
+    assertEquals(spliterator.estimateSize(), Long.MAX_VALUE);
   }
 
 
