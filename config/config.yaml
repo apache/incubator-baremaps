@@ -175,6 +175,10 @@ layers:
       SELECT id, tags, geom
       FROM osm_ways
       WHERE tags ? 'leisure'
+      UNION
+      SELECT id, tags, geom
+      FROM osm_relations
+      WHERE tags ? 'leisure'
   - name: 'man_made'
     minZoom: 14
     maxZoom: 14

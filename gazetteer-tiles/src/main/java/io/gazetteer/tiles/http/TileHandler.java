@@ -22,6 +22,8 @@ public class TileHandler implements HttpHandler {
 
   public static final List<String> TILE_MIME_TYPE = Lists.newArrayList("application/vnd.mapbox-vector-tile");
 
+  public static final List<String> ORIGIN_WILDCARD = Lists.newArrayList("*");
+
   private static final Pattern URL = Pattern.compile("/(\\d+)/(\\d+)/(\\d+)\\.pbf");
 
   private final TileReader tileReader;
@@ -46,6 +48,7 @@ public class TileHandler implements HttpHandler {
       byte[] bytes = tileReader.read(tile);
       exchange.getResponseHeaders().put(CONTENT_TYPE, TILE_MIME_TYPE);
       exchange.getResponseHeaders().put(CONTENT_ENCODING, TILE_ENCODING);
+      exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, ORIGIN_WILDCARD);
       exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, Arrays.asList("*"));
       exchange.sendResponseHeaders(200, bytes.length);
       exchange.getResponseBody().write(bytes);
