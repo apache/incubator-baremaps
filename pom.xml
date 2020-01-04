@@ -1,9 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <groupId>io.gazetteer</groupId>
   <artifactId>gazetteer</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <modelVersion>4.0.0</modelVersion>
+
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+
+  <organization>
+    <name>Gazetteer</name>
+    <url>https://www.gazetteer.io/</url>
+  </organization>
+
+  <developers>
+    <developer>
+      <email>bchapuis@gmail.com</email>
+      <id>bchapuis</id>
+      <name>Bertil Chapuis</name>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+
+  <modules>
+    <module>gazetteer-osm</module>
+    <module>gazetteer-tiles</module>
+    <module>gazetteer-benchmarks</module>
+    <module>gazetteer-cli</module>
+  </modules>
+
+  <profiles>
+    <profile>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <properties>
+                <excludeTags>none</excludeTags>
+              </properties>
+            </configuration>
+            <groupId>org.apache.maven.plugins</groupId>
+          </plugin>
+        </plugins>
+      </build>
+      <id>integration</id>
+    </profile>
+  </profiles>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.lib.commons-compress>1.19</version.lib.commons-compress>
+    <version.lib.aws-java-sdk-s3>1.11.587</version.lib.aws-java-sdk-s3>
+    <version.lib.caffeine>2.6.2</version.lib.caffeine>
+    <version.lib.dbcp2>2.5.0</version.lib.dbcp2>
+    <version.lib.gson>2.8.5</version.lib.gson>
+    <version.lib.guava>27.0.1-jre</version.lib.guava>
+    <version.lib.jts>1.16.1</version.lib.jts>
+    <version.lib.junit>5.1.0</version.lib.junit>
+    <version.lib.logback>1.2.3</version.lib.logback>
+    <version.lib.osmosis>0.47</version.lib.osmosis>
+    <version.lib.picocli>4.0.0</version.lib.picocli>
+    <version.lib.postgresql>42.2.5</version.lib.postgresql>
+    <version.lib.proj4j>1.1.0</version.lib.proj4j>
+    <version.lib.protobuf>3.6.1</version.lib.protobuf>
+    <version.lib.selenium>3.141.59</version.lib.selenium>
+    <version.lib.slf4j>1.7.25</version.lib.slf4j>
+    <version.lib.snakeyaml>1.23</version.lib.snakeyaml>
+    <version.lib.sqlite>3.21.0</version.lib.sqlite>
+    <version.lib.testng>6.13.1</version.lib.testng>
+    <version.plugin.compiler>3.8.0</version.plugin.compiler>
+    <version.plugin.surefire>2.19.1</version.plugin.surefire>
+    <version.plugin.surefire.provider.junit>1.0.3</version.plugin.surefire.provider.junit>
+  </properties>
+
+
 
   <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
     <pluginManagement>
       <plugins>
         <plugin>
@@ -101,27 +185,11 @@
         <version>${version.plugin.surefire}</version>
       </plugin>
     </plugins>
-    <sourceDirectory>src/main/java</sourceDirectory>
   </build>
 
   <dependencyManagement>
     <dependencies>
       <!-- Internal dependencies -->
-      <dependency>
-        <artifactId>gazetteer-osm</artifactId>
-        <groupId>io.gazetteer</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>gazetteer-tiles</artifactId>
-        <groupId>io.gazetteer</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>gazetteer-tiles</artifactId>
-        <groupId>io.gazetteer</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
       <dependency>
         <artifactId>gazetteer-benchmarks</artifactId>
         <groupId>io.gazetteer</groupId>
@@ -129,6 +197,16 @@
       </dependency>
       <dependency>
         <artifactId>gazetteer-cli</artifactId>
+        <groupId>io.gazetteer</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>gazetteer-osm</artifactId>
+        <groupId>io.gazetteer</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>gazetteer-tiles</artifactId>
         <groupId>io.gazetteer</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -202,22 +280,22 @@
       <dependency>
         <artifactId>osmosis-osm-binary</artifactId>
         <groupId>org.openstreetmap.osmosis</groupId>
-        <version>0.47</version>
+        <version>${version.lib.osmosis}</version>
       </dependency>
       <dependency>
         <artifactId>protobuf-java</artifactId>
         <groupId>com.google.protobuf</groupId>
-        <version>3.6.1</version>
+        <version>${version.lib.protobuf}</version>
       </dependency>
       <dependency>
         <artifactId>commons-compress</artifactId>
         <groupId>org.apache.commons</groupId>
-        <version>1.19</version>
+        <version>${version.lib.commons-compress}</version>
       </dependency>
       <dependency>
         <artifactId>aws-java-sdk-s3</artifactId>
         <groupId>com.amazonaws</groupId>
-        <version>1.11.587</version>
+        <version>${version.lib.aws-java-sdk-s3}</version>
       </dependency>
 
       <!-- Testing libraries -->
@@ -265,83 +343,5 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-  <developers>
-    <developer>
-      <email>bchapuis@gmail.com</email>
-      <id>bchapuis</id>
-      <name>Bertil Chapuis</name>
-    </developer>
-  </developers>
-  <groupId>io.gazetteer</groupId>
-  <licenses>
-    <license>
-      <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-    </license>
-  </licenses>
 
-  <modelVersion>4.0.0</modelVersion>
-
-  <modules>
-    <module>gazetteer-osm</module>
-    <module>gazetteer-tiles</module>
-    <module>gazetteer-benchmarks</module>
-    <module>gazetteer-cli</module>
-  </modules>
-
-  <organization>
-    <name>Gazetteer</name>
-    <url>https://www.gazetteer.io/</url>
-  </organization>
-
-  <packaging>pom</packaging>
-
-  <prerequisites>
-    <maven>3.0</maven>
-  </prerequisites>
-
-  <profiles>
-    <profile>
-      <build>
-        <plugins>
-          <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <properties>
-                <excludeTags>none</excludeTags>
-              </properties>
-            </configuration>
-            <groupId>org.apache.maven.plugins</groupId>
-          </plugin>
-        </plugins>
-      </build>
-      <id>integration</id>
-    </profile>
-  </profiles>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <version.lib.caffeine>2.6.2</version.lib.caffeine>
-    <version.lib.dbcp2>2.5.0</version.lib.dbcp2>
-    <version.lib.gson>2.8.5</version.lib.gson>
-
-    <version.lib.guava>27.0.1-jre</version.lib.guava>
-    <version.lib.jts>1.16.1</version.lib.jts>
-    <version.lib.junit>5.1.0</version.lib.junit>
-    <version.lib.logback>1.2.3</version.lib.logback>
-    <version.lib.picocli>4.0.0</version.lib.picocli>
-    <version.lib.postgresql>42.2.5</version.lib.postgresql>
-    <version.lib.proj4j>1.1.0</version.lib.proj4j>
-    <version.lib.selenium>3.141.59</version.lib.selenium>
-    <version.lib.slf4j>1.7.25</version.lib.slf4j>
-    <version.lib.snakeyaml>1.23</version.lib.snakeyaml>
-    <version.lib.sqlite>3.21.0</version.lib.sqlite>
-    <version.lib.testng>6.13.1</version.lib.testng>
-
-    <version.plugin.compiler>3.8.0</version.plugin.compiler>
-    <version.plugin.surefire>2.19.1</version.plugin.surefire>
-    <version.plugin.surefire.provider.junit>1.0.3</version.plugin.surefire.provider.junit>
-  </properties>
-
-  <version>1.0-SNAPSHOT</version>
 </project>
