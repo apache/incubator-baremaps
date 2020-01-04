@@ -47,14 +47,6 @@
       <groupId>io.gazetteer</groupId>
       <artifactId>gazetteer-tiles</artifactId>
     </dependency>
-    <dependency>
-      <groupId>io.gazetteer</groupId>
-      <artifactId>gazetteer-tiles</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.gazetteer</groupId>
-      <artifactId>gazetteer-benchmarks</artifactId>
-    </dependency>
   </dependencies>
 
 </project>

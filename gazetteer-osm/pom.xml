@@ -44,7 +44,6 @@
     <dependency>
       <artifactId>lmdbjava</artifactId>
       <groupId>org.lmdbjava</groupId>
-      <version>0.7.0</version>
     </dependency>
 
     <!-- Testing libraries -->

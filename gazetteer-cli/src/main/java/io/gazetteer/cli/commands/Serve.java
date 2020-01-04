@@ -14,6 +14,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.Callable;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 @Command(name = "serve")
@@ -31,6 +32,11 @@ public class Serve implements Callable<Integer> {
       description = "The Postgres database.")
   private String database;
 
+  @Option(
+      names = {"-p", "--port"},
+      description = "The port on which to listen.")
+  private int port = 9000;
+
   @Override
   public Integer call() throws IOException {
     // Read the configuration toInputStream
@@ -39,7 +45,7 @@ public class Serve implements Callable<Integer> {
     TileReader tileReader = new PostgisTileReader(datasource, config);
 
     // Create the http server
-    HttpServer server = HttpServer.create(new InetSocketAddress(8082), 0);
+    HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
     server.createContext("/tiles/", new TileHandler(tileReader));
     server.createContext("/", new ResourceHandler());
     server.setExecutor(null);

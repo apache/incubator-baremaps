@@ -67,8 +67,8 @@ As a small country, Liechtenstein is suitable for testing and fits in this git r
 You can now import this data in that postgis container using the following command.
 
 ```bash
-gazetteer osm import \
-  'data/liechtenstein.osm.pbf' \
+gazetteer import \
+  'data/liechtenstein-latest.osm.pbf' \
   'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
 ```
 
@@ -77,10 +77,22 @@ To preview this data, you can simply run the embed web server with the following
 ```bash
 gazetteer serve \
   'config/config.yaml' \
-  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
+  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer' \
+  --port 9000
 ```
 
-Well done, the test server should have started and a map of liechtenstein should appear in your browser ([http://localhost:8082/](http://localhost:8082/))!
+Well done, the test server should have started and a map of liechtenstein should appear in your browser ([http://localhost:9000/](http://localhost:8082/))!
+
+Vector tiles are rarely served dynamically in production. The following command produces a directory that contains precomputed tiles that can be deployed on a CDN:
+
+```bash
+gazetteer tiles \
+  'config/config.yaml' \
+  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer' \
+  'tiles/' \
+  --minZoom 14 \
+  --maxZoom 14
+```
 
 ## Limitations
 
