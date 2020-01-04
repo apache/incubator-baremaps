@@ -8,7 +8,7 @@
     "gazetteer": {
       "type": "vector",
       "tiles": [
-        "http://localhost:8082/tiles/{z}/{x}/{y}.pbf"
+        "http://localhost:9000/tiles/{z}/{x}/{y}.pbf"
       ],
       "minzoom": 12,
       "maxzoom": 14,
