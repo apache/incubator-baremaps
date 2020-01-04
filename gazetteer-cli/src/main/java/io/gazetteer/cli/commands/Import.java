@@ -20,6 +20,7 @@ import io.gazetteer.osm.osmpbf.FileBlock;
 import io.gazetteer.osm.osmpbf.FileBlockSpliterator;
 import io.gazetteer.osm.store.Store;
 import io.gazetteer.osm.store.StoreConsumer;
+import io.gazetteer.osm.stream.BatchSpliterator;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -95,7 +96,7 @@ public class Import implements Callable<Integer> {
 
     System.out.println("Populating database.");
     try (InputStream input = input(url(source))) {
-      Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(new DataInputStream(input)), true);
+      Stream<FileBlock> blocks = StreamSupport.stream(new BatchSpliterator<>(new FileBlockSpliterator(new DataInputStream(input)), 10), true);
       CRSFactory crsFactory = new CRSFactory();
       CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");
       CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");

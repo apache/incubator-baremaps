@@ -1,21 +1,37 @@
 package io.gazetteer.osm.osmpbf;
 
 import com.google.protobuf.ByteString;
+import io.gazetteer.osm.osmxml.Change;
 import io.gazetteer.osm.stream.BatchSpliterator;
 import java.io.DataInputStream;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 import org.openstreetmap.osmosis.osmbinary.Fileformat;
 import org.openstreetmap.osmosis.osmbinary.Fileformat.Blob;
 
-public class FileBlockSpliterator extends BatchSpliterator<FileBlock> {
+public class FileBlockSpliterator implements Spliterator<FileBlock> {
 
   protected final DataInputStream input;
 
   public FileBlockSpliterator(DataInputStream input) {
-    super(10, IMMUTABLE | SUBSIZED);
     this.input = input;
+  }
+
+  @Override
+  public Spliterator<FileBlock> trySplit() {
+    return null;
+  }
+
+  @Override
+  public long estimateSize() {
+    return Long.MAX_VALUE;
+  }
+
+  @Override
+  public int characteristics() {
+    return IMMUTABLE;
   }
 
   @Override

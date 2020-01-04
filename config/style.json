@@ -1365,7 +1365,32 @@
       }
     },
     {
-      "id": "highway-pedestrian",
+      "id": "highway-pedestrian-polygon",
+      "type": "fill",
+      "source": "gazetteer",
+      "source-layer": "highway",
+      "filter": [
+        "all",
+        [
+          "==",
+          "highway",
+          "pedestrian"
+        ],
+        [
+          "==",
+          "geometry",
+          "polygon"
+        ]
+      ],
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(215, 215, 226, 1)"
+      }
+    },
+    {
+      "id": "highway-pedestrian-linestring",
       "type": "line",
       "source": "gazetteer",
       "source-layer": "highway",
@@ -1375,6 +1400,11 @@
           "==",
           "highway",
           "pedestrian"
+        ],
+        [
+          "==",
+          "geometry",
+          "linestring"
         ]
       ],
       "layout": {
@@ -1955,6 +1985,27 @@
       "paint": {}
     },
     {
+      "id": "railway-platform",
+      "type": "fill",
+      "source": "gazetteer",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          "railway",
+          "platform"
+        ]
+      ],
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(150, 150, 155, 1)"
+      },
+      "minzoom": 0
+    },
+    {
       "id": "railway-subway",
       "type": "line",
       "source": "gazetteer",
@@ -2020,6 +2071,27 @@
           0.2,
           3
         ],
+        "line-color": "rgba(63, 63, 63, 1)"
+      }
+    },
+    {
+      "id": "railway-light-rail",
+      "type": "line",
+      "source": "gazetteer",
+      "source-layer": "railway",
+      "filter": [
+        "all",
+        [
+          "==",
+          "railway",
+          "light_rail"
+        ]
+      ],
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "line-width": 2,
         "line-color": "rgba(63, 63, 63, 1)"
       }
     },
@@ -2222,11 +2294,39 @@
           "stops": [
             [
               14,
-              0
+              0.5
+            ],
+            [
+              15,
+              1
+            ],
+            [
+              16,
+              2
+            ],
+            [
+              17,
+              4
+            ],
+            [
+              18,
+              8
+            ],
+            [
+              19,
+              16
+            ],
+            [
+              20,
+              32
+            ],
+            [
+              21,
+              64
             ],
             [
               22,
-              48
+              128
             ]
           ]
         }
@@ -2255,12 +2355,40 @@
         "circle-radius": {
           "stops": [
             [
+              14,
+              0
+            ],
+            [
+              15,
+              0
+            ],
+            [
               16,
+              0.5
+            ],
+            [
+              17,
               1
             ],
             [
+              18,
+              2
+            ],
+            [
+              19,
+              4
+            ],
+            [
+              20,
+              8
+            ],
+            [
+              21,
+              16
+            ],
+            [
               22,
-              12
+              32
             ]
           ]
         }

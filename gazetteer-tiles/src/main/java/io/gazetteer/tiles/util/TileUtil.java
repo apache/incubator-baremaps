@@ -1,5 +1,6 @@
 package io.gazetteer.tiles.util;
 
+import io.gazetteer.osm.stream.BatchSpliterator;
 import io.gazetteer.tiles.Tile;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,12 +31,12 @@ public class TileUtil {
 
   public static Stream<Tile> getOverlappingXYZ(Geometry geometry, int minZ, int maxZ) {
     Envelope envelope = geometry.getEnvelopeInternal();
-    return StreamSupport.stream(IntStream.rangeClosed(minZ, maxZ).mapToObj(z -> z).flatMap(z -> {
+    return StreamSupport.stream(new BatchSpliterator<>(IntStream.rangeClosed(minZ, maxZ).mapToObj(z -> z).flatMap(z -> {
       Tile min = getOverlappingXYZ(envelope.getMinX(), envelope.getMaxY(), z);
       Tile max = getOverlappingXYZ(envelope.getMaxX(), envelope.getMinY(), z);
       return IntStream.rangeClosed(min.getX(), max.getX()).mapToObj(i -> i)
           .flatMap(x -> IntStream.rangeClosed(min.getY(), max.getY()).mapToObj(i -> i).map(y -> new Tile(x, y, z)));
-    }).spliterator(), true);
+    }).spliterator(), 10), true);
   }
 
   public static Tile getOverlappingXYZ(double lon, double lat, int z) {

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ public class BatchSpliteratorTest {
     for (int i = 0; i < spliteratorSize; i++) {
       ints.add(i);
     }
-    spliterator = new BatchSpliterator<Integer>(batchSize, IMMUTABLE) {
+    spliterator = new BatchSpliterator<Integer>(IntStream.range(0, spliteratorSize).spliterator(), batchSize) {
       int i = 0;
 
       @Override
