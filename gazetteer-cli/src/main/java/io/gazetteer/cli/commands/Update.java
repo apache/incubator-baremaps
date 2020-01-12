@@ -3,7 +3,6 @@ package io.gazetteer.cli.commands;
 import static io.gazetteer.cli.util.IOUtil.url;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Stopwatch;
 import com.google.common.io.CharStreams;
 import io.gazetteer.osm.cache.PostgisCoordinateCache;
 import io.gazetteer.osm.cache.PostgisReferenceCache;

@@ -2,12 +2,15 @@ package io.gazetteer.tiles.postgis;
 
 import io.gazetteer.tiles.Tile;
 import io.gazetteer.tiles.TileReader;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.proj4j.*;
-
 import java.text.MessageFormat;
 import java.util.regex.Pattern;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.proj4j.CRSFactory;
+import org.locationtech.proj4j.CoordinateReferenceSystem;
+import org.locationtech.proj4j.CoordinateTransform;
+import org.locationtech.proj4j.CoordinateTransformFactory;
+import org.locationtech.proj4j.ProjCoordinate;
 
 public abstract class AbstractTileReader implements TileReader {
 

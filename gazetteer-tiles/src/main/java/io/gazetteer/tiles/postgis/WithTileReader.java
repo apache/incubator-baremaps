@@ -1,11 +1,9 @@
 package io.gazetteer.tiles.postgis;
 
-import com.google.common.base.Stopwatch;
 import io.gazetteer.tiles.Tile;
 import io.gazetteer.tiles.TileException;
 import io.gazetteer.tiles.config.Config;
 import io.gazetteer.tiles.config.Layer;
-
 import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -14,14 +12,10 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
-
 import org.apache.commons.dbcp2.PoolingDataSource;
-import org.locationtech.proj4j.*;
 
 public class WithTileReader extends AbstractTileReader {
 

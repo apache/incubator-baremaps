@@ -1,8 +1,6 @@
 package io.gazetteer.osm.osmpbf;
 
 import com.google.protobuf.ByteString;
-import io.gazetteer.osm.osmxml.Change;
-import io.gazetteer.osm.stream.BatchSpliterator;
 import java.io.DataInputStream;
 import java.util.Spliterator;
 import java.util.function.Consumer;

@@ -2,10 +2,8 @@ package io.gazetteer.tiles.postgis;
 
 import io.gazetteer.tiles.Tile;
 import io.gazetteer.tiles.TileException;
-import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.config.Config;
 import io.gazetteer.tiles.config.Layer;
-
 import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -13,15 +11,7 @@ import java.sql.Statement;
 import java.text.MessageFormat;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
-
 import org.apache.commons.dbcp2.PoolingDataSource;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.proj4j.CRSFactory;
-import org.locationtech.proj4j.CoordinateReferenceSystem;
-import org.locationtech.proj4j.CoordinateTransform;
-import org.locationtech.proj4j.CoordinateTransformFactory;
-import org.locationtech.proj4j.ProjCoordinate;
 
 public class BasicTileReader extends AbstractTileReader {
 
