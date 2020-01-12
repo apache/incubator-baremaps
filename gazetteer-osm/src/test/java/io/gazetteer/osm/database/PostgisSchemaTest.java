@@ -19,6 +19,8 @@ public class PostgisSchemaTest {
   public void resetDatabase() throws SQLException, IOException {
     try (Connection connection = DriverManager.getConnection(TestUtils.DATABASE_URL)) {
       PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
+      PostgisHelper.executeScript(connection, "osm_drop_tables.sql");
+      PostgisHelper.executeScript(connection, "osm_drop_tables.sql");
       PostgisHelper.executeScript(connection, "osm_create_tables.sql");
       assertTrue(tableExists("osm_headers"));
       assertTrue(tableExists("osm_nodes"));

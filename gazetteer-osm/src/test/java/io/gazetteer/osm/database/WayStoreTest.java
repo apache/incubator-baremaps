@@ -30,6 +30,7 @@ public class WayStoreTest {
     dataSource = PostgisHelper.poolingDataSource(TestUtils.DATABASE_URL);
     try (Connection connection = dataSource.getConnection()) {
       PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
+      PostgisHelper.executeScript(connection, "osm_drop_tables.sql");
       PostgisHelper.executeScript(connection, "osm_create_tables.sql");
       PostgisHelper.executeScript(connection, "osm_create_primary_keys.sql");
     }
