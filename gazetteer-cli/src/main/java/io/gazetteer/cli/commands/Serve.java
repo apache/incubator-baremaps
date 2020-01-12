@@ -5,8 +5,9 @@ import io.gazetteer.osm.database.PostgisHelper;
 import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.http.ResourceHandler;
 import io.gazetteer.tiles.http.TileHandler;
-import io.gazetteer.tiles.postgis.PostgisConfig;
-import io.gazetteer.tiles.postgis.PostgisTileReader;
+import io.gazetteer.tiles.config.Config;
+import io.gazetteer.tiles.postgis.BasicTileReader;
+import io.gazetteer.tiles.postgis.WithTileReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -40,14 +41,14 @@ public class Serve implements Callable<Integer> {
   @Override
   public Integer call() throws IOException {
     // Read the configuration toInputStream
-    PostgisConfig config = PostgisConfig.load(new FileInputStream(file));
+    Config config = Config.load(new FileInputStream(file));
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
-    TileReader tileReader = new PostgisTileReader(datasource, config);
+    TileReader tileReader = new WithTileReader(datasource, config);
 
     // Create the http server
     HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
-    server.createContext("/tiles/", new TileHandler(tileReader));
     server.createContext("/", new ResourceHandler());
+    server.createContext("/tiles/", new TileHandler(tileReader));
     server.setExecutor(null);
     server.start();
 

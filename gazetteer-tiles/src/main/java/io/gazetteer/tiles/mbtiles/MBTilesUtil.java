@@ -22,12 +22,14 @@ public final class MBTilesUtil {
   private static final String CREATE_INDEX_TILES =
       "CREATE UNIQUE INDEX tile_index on tiles (zoom_level, tile_column, tile_row)";
 
-  private static final String SELECT_METADATA = "SELECT name, value FROM metadata";
+  private static final String SELECT_METADATA =
+      "SELECT name, value FROM metadata";
 
   private static final String SELECT_TILE =
       "SELECT tile_data FROM tiles WHERE zoom_level = ? AND tile_column = ? AND tile_row = ?";
 
-  private static final String INSERT_METADATA = "INSERT INTO metadata (name, value) VALUES (?, ?)";
+  private static final String INSERT_METADATA =
+      "INSERT INTO metadata (name, value) VALUES (?, ?)";
 
   private static final String INSERT_TILE =
       "INSERT INTO tiles (zoom_level, tile_column, tile_row, tile_data) VALUES (?, ?, ?, ?)";

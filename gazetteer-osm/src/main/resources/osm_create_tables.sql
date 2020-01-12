@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS osm_headers;
 CREATE TABLE IF NOT EXISTS osm_headers
 (
     replication_timestamp       bigint NOT NULL,
@@ -8,8 +7,6 @@ CREATE TABLE IF NOT EXISTS osm_headers
     writing_program             text,
     bbox                        geometry
 );
-
-DROP TABLE IF EXISTS osm_nodes;
 CREATE TABLE osm_nodes
 (
     id        bigint                      NOT NULL,
@@ -20,8 +17,6 @@ CREATE TABLE osm_nodes
     tags      hstore,
     geom      geometry(point)
 );
-
-DROP TABLE IF EXISTS osm_ways;
 CREATE TABLE osm_ways
 (
     id        bigint                      NOT NULL,
@@ -33,8 +28,6 @@ CREATE TABLE osm_ways
     nodes     bigint[],
     geom      geometry
 );
-
-DROP TABLE IF EXISTS osm_relations;
 CREATE TABLE osm_relations
 (
     id           bigint                      NOT NULL,

@@ -3,8 +3,8 @@ package io.gazetteer.cli.commands;
 import static io.gazetteer.cli.util.IOUtil.url;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Stopwatch;
 import com.google.common.io.CharStreams;
-import io.gazetteer.cli.util.StopWatch;
 import io.gazetteer.osm.cache.PostgisCoordinateCache;
 import io.gazetteer.osm.cache.PostgisReferenceCache;
 import io.gazetteer.osm.database.PostgisHeaderStore;
@@ -65,7 +65,6 @@ public class Update implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    StopWatch stopWatch = new StopWatch();
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
     CRSFactory crsFactory = new CRSFactory();
     CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");

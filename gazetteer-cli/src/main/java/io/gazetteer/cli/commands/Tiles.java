@@ -1,12 +1,13 @@
 package io.gazetteer.cli.commands;
 
+import com.google.common.base.Stopwatch;
 import io.gazetteer.osm.database.PostgisHelper;
 import io.gazetteer.tiles.Tile;
 import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.TileWriter;
 import io.gazetteer.tiles.file.FileTileStore;
-import io.gazetteer.tiles.postgis.PostgisConfig;
-import io.gazetteer.tiles.postgis.PostgisTileReader;
+import io.gazetteer.tiles.config.Config;
+import io.gazetteer.tiles.postgis.WithTileReader;
 import io.gazetteer.tiles.util.TileUtil;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,6 +16,7 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.locationtech.jts.geom.Geometry;
@@ -56,10 +58,12 @@ public class Tiles implements Callable<Integer> {
 
   @Override
   public Integer call() throws SQLException, ParseException, FileNotFoundException {
+    Stopwatch stopWatch = Stopwatch.createStarted();
+
     // Read the configuration toInputStream
-    PostgisConfig config = PostgisConfig.load(new FileInputStream(file));
+    Config config = Config.load(new FileInputStream(file));
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
-    TileReader tileReader = new PostgisTileReader(datasource, config);
+    TileReader tileReader = new WithTileReader(datasource, config);
     TileWriter tileWriter = new FileTileStore(directory);
 
     //AmazonS3 client = AmazonS3ClientBuilder.standard().defaultClient();
@@ -67,7 +71,7 @@ public class Tiles implements Callable<Integer> {
 
     try (Connection connection = datasource.getConnection()) {
       Geometry geometry = TileUtil.bbox(connection);
-      Stream<Tile> coords = TileUtil.getOverlappingXYZ(geometry, minZoom, maxZoom);
+      Stream<Tile> coords = TileUtil.getTiles(geometry, minZoom, maxZoom);
       coords.forEach(xyz -> {
         try {
           byte[] tile = tileReader.read(xyz);
@@ -77,6 +81,7 @@ public class Tiles implements Callable<Integer> {
         }
       });
     }
+    System.out.println(String.format("-> %dms", stopWatch.elapsed(TimeUnit.MILLISECONDS)));
 
     return 0;
   }
