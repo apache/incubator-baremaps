@@ -77,7 +77,7 @@ To preview this data, you can simply run the embed web server with the following
 ```bash
 gazetteer serve \
   'config/config.yaml' \
-  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer' \
+  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
 ```
 
 Well done, the test server should have started and a map of liechtenstein should appear in your browser ([http://localhost:9000/](http://localhost:8082/))!
