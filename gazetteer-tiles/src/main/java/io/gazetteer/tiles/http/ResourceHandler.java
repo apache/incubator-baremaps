@@ -7,9 +7,17 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 public class ResourceHandler implements HttpHandler {
+
+  private final Path directory;
+
+  public ResourceHandler(Path directory) {
+    this.directory = directory;
+  }
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
@@ -18,8 +26,8 @@ public class ResourceHandler implements HttpHandler {
       if (path.endsWith("/")) {
         path = String.format("%sindex.html", path);
       }
-      URL resource = Resources.getResource(path.substring(1));
-      byte[] bytes = Resources.toByteArray(resource);
+      Path file = directory.resolve(path.substring(1));
+      byte[] bytes = Files.readAllBytes(file);
       exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, Arrays.asList("*"));
       exchange.sendResponseHeaders(200, bytes.length);
       exchange.getResponseBody().write(bytes);

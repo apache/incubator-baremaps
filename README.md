@@ -26,6 +26,28 @@ On the longer run, the aim of the project is to work with a variety of data sour
 -   Java 8
 -   Maven 3
 
+## Database
+
+In order to run Gazetteer, you first need to setup a postgis database.
+The following docker image will allow you to jump start this installation:
+
+```bash
+docker run \
+  --name gazetteer-postgis \
+  --publish 5432:5432 \
+  -e POSTGRES_DB=gazetteer \
+  -e POSTGRES_USER=gazetteer \
+  -e POSTGRES_PASSWORD=gazetteer \
+  -d gazetteerio/postgis:1
+```
+
+You can then start and stop the container with the following commands:
+
+```bash
+docker start gazetteer-postgis
+docker stop gazetteer-postgis
+```
+
 ## Quick Start
 
 Clone and build the repository:
