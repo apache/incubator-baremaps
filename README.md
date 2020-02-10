@@ -26,6 +26,28 @@ On the longer run, the aim of the project is to work with a variety of data sour
 -   Java 8
 -   Maven 3
 
+## Database
+
+In order to run Gazetteer, you first need to setup a postgis database.
+The following docker image will allow you to jump start this installation:
+
+```bash
+docker run \
+  --name gazetteer-postgis \
+  --publish 5432:5432 \
+  -e POSTGRES_DB=gazetteer \
+  -e POSTGRES_USER=gazetteer \
+  -e POSTGRES_PASSWORD=gazetteer \
+  -d gazetteerio/postgis:1
+```
+
+You can then start and stop the container with the following commands:
+
+```bash
+docker start gazetteer-postgis
+docker stop gazetteer-postgis
+```
+
 ## Quick Start
 
 Clone and build the repository:
@@ -40,27 +62,18 @@ Unzip the binary distribution and add the `/bin` folder to your `PATH` variable:
 
 ```bash
 unzip gazetteer-cli/target/gazetteer-cli-1.0-SNAPSHOT.zip
-export PATH=$PATH:/path/to/gazetteer/bin
+export PATH=$PATH:`pwd`/gazetteer-cli-1.0-SNAPSHOT/bin
 ```
 
 Calling the `gazetteer` command should now result in an output similar to the following:
 
 ```bash
-Usage: <main class> [COMMAND]
+Usage: gazetteer [COMMAND]
 Commands:
-  osm
+  import
+  update
   tiles
-  postgis
   serve
-```
-
-The `gazetteer` command comes with shorthands to manage a postgis docker container. 
-The following commands will pull the docker image, create and start the container:
-
-```bash
-gazetteer postgis pull
-gazetteer postgis create
-gazetteer postgis start
 ```
 
 As a small country, Liechtenstein is suitable for testing and fits in this git repository. 
@@ -72,12 +85,19 @@ gazetteer import \
   'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
 ```
 
+```bash
+gazetteer import \
+  'switzerland-latest.osm.pbf' \
+  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
+```
+
 To preview this data, you can simply run the embed web server with the following command:
 
 ```bash
 gazetteer serve \
+  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer' \
   'config/config.yaml' \
-  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
+  'static/'
 ```
 
 Well done, the test server should have started and a map of liechtenstein should appear in your browser ([http://localhost:9000/](http://localhost:8082/))!

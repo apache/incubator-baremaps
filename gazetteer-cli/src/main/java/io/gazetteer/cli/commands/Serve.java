@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import picocli.CommandLine.Command;
@@ -21,16 +22,22 @@ import picocli.CommandLine.Parameters;
 public class Serve implements Callable<Integer> {
 
   @Parameters(
-      index = "0",
-      paramLabel = "CONFIG_FILE",
-      description = "The YAML configuration config.")
-  private File file;
+          index = "0",
+          paramLabel = "POSTGRES_DATABASE",
+          description = "The Postgres database.")
+  private String database;
 
   @Parameters(
       index = "1",
-      paramLabel = "POSTGRES_DATABASE",
-      description = "The Postgres database.")
-  private String database;
+      paramLabel = "CONFIG_FILE",
+      description = "The YAML configuration config.")
+  private Path file;
+
+  @Parameters(
+          index = "2",
+          paramLabel = "STATIC_DIRECTORY",
+          description = "The YAML configuration config.")
+  private Path directory;
 
   @Option(
       names = {"-p", "--port"},
@@ -40,13 +47,13 @@ public class Serve implements Callable<Integer> {
   @Override
   public Integer call() throws IOException {
     // Read the configuration toInputStream
-    Config config = Config.load(new FileInputStream(file));
+    Config config = Config.load(new FileInputStream(file.toFile()));
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
     TileReader tileReader = new WithTileReader(datasource, config);
 
     // Create the http server
     HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
-    server.createContext("/", new ResourceHandler());
+    server.createContext("/", new ResourceHandler(directory));
     server.createContext("/tiles/", new TileHandler(tileReader));
     server.setExecutor(null);
     server.start();
