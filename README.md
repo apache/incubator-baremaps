@@ -72,17 +72,7 @@ Usage: <main class> [COMMAND]
 Commands:
   osm
   tiles
-  postgis
   serve
-```
-
-The `gazetteer` command comes with shorthands to manage a postgis docker container. 
-The following commands will pull the docker image, create and start the container:
-
-```bash
-gazetteer postgis pull
-gazetteer postgis create
-gazetteer postgis start
 ```
 
 As a small country, Liechtenstein is suitable for testing and fits in this git repository. 
