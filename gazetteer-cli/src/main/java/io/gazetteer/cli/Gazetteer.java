@@ -13,7 +13,7 @@ import picocli.CommandLine.Command;
     Update.class,
     Tiles.class,
     Serve.class,
-})
+}, name="gazetteer")
 public class Gazetteer implements Callable<Integer> {
 
   @Override

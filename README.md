@@ -62,15 +62,16 @@ Unzip the binary distribution and add the `/bin` folder to your `PATH` variable:
 
 ```bash
 unzip gazetteer-cli/target/gazetteer-cli-1.0-SNAPSHOT.zip
-export PATH=$PATH:/path/to/gazetteer/bin
+export PATH=$PATH:`pwd`/gazetteer-cli-1.0-SNAPSHOT/bin
 ```
 
 Calling the `gazetteer` command should now result in an output similar to the following:
 
 ```bash
-Usage: <main class> [COMMAND]
+Usage: gazetteer [COMMAND]
 Commands:
-  osm
+  import
+  update
   tiles
   serve
 ```
@@ -84,12 +85,19 @@ gazetteer import \
   'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
 ```
 
+```bash
+gazetteer import \
+  'switzerland-latest.osm.pbf' \
+  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
+```
+
 To preview this data, you can simply run the embed web server with the following command:
 
 ```bash
 gazetteer serve \
+  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer' \
   'config/config.yaml' \
-  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
+  'static/'
 ```
 
 Well done, the test server should have started and a map of liechtenstein should appear in your browser ([http://localhost:9000/](http://localhost:8082/))!
