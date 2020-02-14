@@ -8,13 +8,20 @@ import java.util.regex.Pattern;
 
 public class QueryParser {
 
+  private static final Pattern QUERY_PATTERN = Pattern
+      .compile("SELECT\\s(.*?)\\sFROM\\s(.*?)(?:\\sWHERE\\s(.*))?", Pattern.CASE_INSENSITIVE);
+
+  private static final Pattern COLUMN_PATTERN = Pattern
+      .compile("(.*?)(?:\\sAS\\s(.*))?", Pattern.CASE_INSENSITIVE);
+
+  private static final String COLUMNS_SEPARATOR = ",(?![^()]*+\\))";
+
   private QueryParser() {
 
   }
 
   public static Query parse(Layer layer, String sql) {
-    Pattern query = Pattern.compile("SELECT(.*?)FROM(.*?)(?:WHERE(.*))?");
-    Matcher matcher = query.matcher(sql);
+    Matcher matcher = QUERY_PATTERN.matcher(sql);
     if (!matcher.matches()) {
       throw new IllegalArgumentException("The SQL query malformed");
     }
@@ -23,18 +30,26 @@ public class QueryParser {
     String from = matcher.group(2).trim();
     Optional<String> where = Optional.ofNullable(matcher.group(3)).map(s -> s.trim());
 
-    String[] columns = select.split(",(?![^()]*+\\))");
+    String[] columns = select.split(COLUMNS_SEPARATOR);
     if (columns.length != 3) {
       throw new IllegalArgumentException("The SQL query malformed");
     }
 
-    String id = columns[0].trim();
-    String tags = columns[1].trim();
-    String geom = columns[2].trim();
+    String id = column(columns[0]);
+    String tags = column(columns[1]);
+    String geom = column(columns[2]);
 
     String source = "H" + Math.abs(Objects.hash(id, tags, geom, from));
 
     return new Query(layer, source, id, tags, geom, from, where);
+  }
+
+  private static String column(String column) {
+    Matcher matcher = COLUMN_PATTERN.matcher(column);
+    if (!matcher.matches()) {
+      throw new IllegalArgumentException("The SQL query malformed");
+    }
+    return matcher.group(1).trim();
   }
 
   public static class Query {
@@ -47,7 +62,8 @@ public class QueryParser {
     private final String from;
     private final Optional<String> where;
 
-    private Query(Layer layer, String source, String id, String tags, String geom, String from, Optional<String> where) {
+    private Query(Layer layer, String source, String id, String tags, String geom, String from,
+        Optional<String> where) {
       this.layer = layer;
       this.source = source;
       this.id = id;
@@ -84,6 +100,7 @@ public class QueryParser {
     public Optional<String> getWhere() {
       return where;
     }
+
   }
 
 }
