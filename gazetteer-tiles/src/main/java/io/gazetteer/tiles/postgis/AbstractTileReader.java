@@ -14,8 +14,6 @@ import org.locationtech.proj4j.ProjCoordinate;
 
 public abstract class AbstractTileReader implements TileReader {
 
-
-
     private final CRSFactory crsFactory = new CRSFactory();
     private final CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");
     private final CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");
