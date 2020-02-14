@@ -37,6 +37,7 @@
     <module>gazetteer-tiles</module>
     <module>gazetteer-benchmarks</module>
     <module>gazetteer-cli</module>
+    <module>gazetteer-core</module>
   </modules>
 
   <profiles>
@@ -85,50 +86,8 @@
     <version.plugin.surefire.provider.junit>1.3.2</version.plugin.surefire.provider.junit>
   </properties>
 
-
-
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>2.5</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>2.4</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.9.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>2.6</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>3.3</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-source-plugin</artifactId>
-          <version>2.2.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.17</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -198,6 +157,11 @@
       </dependency>
       <dependency>
         <artifactId>gazetteer-cli</artifactId>
+        <groupId>io.gazetteer</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>gazetteer-core</artifactId>
         <groupId>io.gazetteer</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -349,5 +313,50 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <artifactId>postgresql</artifactId>
+      <groupId>org.postgresql</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>commons-dbcp2</artifactId>
+      <groupId>org.apache.commons</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>guava</artifactId>
+      <groupId>com.google.guava</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>picocli</artifactId>
+      <groupId>info.picocli</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>jts-core</artifactId>
+      <groupId>org.locationtech.jts</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>proj4j</artifactId>
+      <groupId>org.locationtech.proj4j</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>protobuf-java</artifactId>
+      <groupId>com.google.protobuf</groupId>
+    </dependency>
+
+    <!-- Testing libraries -->
+    <dependency>
+      <artifactId>junit-jupiter-api</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>junit-jupiter-params</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+    </dependency>
+  </dependencies>
 
 </project>

@@ -1,4 +1,4 @@
-package io.gazetteer.osm.stream;
+package io.gazetteer.core.stream;
 
 public class StreamException extends RuntimeException {
 

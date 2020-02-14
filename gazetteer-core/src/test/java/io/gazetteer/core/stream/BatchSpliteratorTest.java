@@ -1,4 +1,4 @@
-package io.gazetteer.osm.stream;
+package io.gazetteer.core.stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

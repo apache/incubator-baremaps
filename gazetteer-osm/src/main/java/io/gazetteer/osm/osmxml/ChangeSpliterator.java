@@ -9,7 +9,7 @@ import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.User;
 import io.gazetteer.osm.model.Way;
 import io.gazetteer.osm.osmxml.Change.Type;
-import io.gazetteer.osm.stream.StreamException;
+import io.gazetteer.core.stream.StreamException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

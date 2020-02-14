@@ -2,7 +2,7 @@ package io.gazetteer.osm.geometry;
 
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.store.Store;
-import io.gazetteer.osm.stream.Try;
+import io.gazetteer.core.stream.Try;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

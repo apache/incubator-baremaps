@@ -18,22 +18,22 @@ import org.apache.commons.dbcp2.PoolingDataSource;
 
 public class WithTileReader extends AbstractTileReader {
 
-  private static final String SQL_WITH = "WITH {0} {1}";
+  private static final String WITH = "WITH {0} {1}";
 
-  private static final String SQL_SOURCE = "{0} AS (SELECT id, "
-          + "(tags || hstore(''geometry'', lower(replace(st_geometrytype(geom), ''ST_'', '''')))) as tags, "
-          + "ST_AsMvtGeom(geom, {5}, 4096, 256, true) AS geom "
-          + "FROM (SELECT {1}, {2}, {3} FROM {4}) AS {0} WHERE ST_Intersects(geom, {5}))";
+  private static final String SOURCE = "{0} AS (SELECT id, "
+      + "(tags || hstore(''geometry'', lower(replace(st_geometrytype(geom), ''ST_'', '''')))) as tags, "
+      + "ST_AsMvtGeom(geom, {5}, 4096, 256, true) AS geom "
+      + "FROM (SELECT {1}, {2}, {3} FROM {4}) AS {0} WHERE ST_Intersects(geom, {5}))";
 
-  private static final String SQL_LAYER = "SELECT ST_AsMVT(mvt_geom, ''{0}'', 4096) FROM ({1}) as mvt_geom";
+  private static final String LAYER = "SELECT ST_AsMVT(mvt_geom, ''{0}'', 4096) FROM ({1}) as mvt_geom";
 
-  private static final String SQL_QUERY = "SELECT id, tags::jsonb, geom FROM {3}";
+  private static final String QUERY = "SELECT id, tags::jsonb, geom FROM {3}";
 
-  private static final String SQL_CONDITION = " WHERE {0}";
+  private static final String WHERE = " WHERE {0}";
 
-  private static final String SQL_COMMA = ", ";
+  private static final String COMMA = ", ";
 
-  private static final String SQL_UNION = " UNION All ";
+  private static final String UNION_ALL = " UNION All ";
 
   private final PoolingDataSource datasource;
 
@@ -45,15 +45,15 @@ public class WithTileReader extends AbstractTileReader {
     this.datasource = datasource;
     this.config = config;
     this.queries = config.getLayers().stream()
-            .flatMap(layer -> layer.getQueries().stream().map(query -> QueryParser.parse(layer, query.getSql())))
-            .collect(Collectors.groupingBy(q -> q.getLayer()));
+        .flatMap(layer -> layer.getQueries().stream().map(query -> QueryParser.parse(layer, query.getSql())))
+        .collect(Collectors.groupingBy(q -> q.getLayer()));
   }
 
   @Override
   public byte[] read(Tile tile) throws TileException {
     try (Connection connection = datasource.getConnection();
-         ByteArrayOutputStream data = new ByteArrayOutputStream();
-         GZIPOutputStream gzip = new GZIPOutputStream(data)) {
+        ByteArrayOutputStream data = new ByteArrayOutputStream();
+        GZIPOutputStream gzip = new GZIPOutputStream(data)) {
       String sql = query(tile);
       try (Statement statement = connection.createStatement()) {
         ResultSet result = statement.executeQuery(sql);
@@ -71,33 +71,37 @@ public class WithTileReader extends AbstractTileReader {
 
   private String query(Tile tile) {
     String sources = queries.entrySet().stream()
-            .filter(entry -> entry.getKey().getMinZoom() <= tile.getZ() && entry.getKey().getMaxZoom() >= tile.getZ())
-            .flatMap(entry -> entry.getValue().stream().map(query -> MessageFormat.format(SQL_SOURCE,
-                    query.getSource(),
-                    query.getId(),
-                    query.getTags(),
-                    query.getGeom(),
-                    query.getFrom(),
-                    envelope(tile))))
-            .collect(Collectors.toSet())
-            .stream()
-            .collect(Collectors.joining(SQL_COMMA));
+        .filter(entry -> entry.getKey().getMinZoom() <= tile.getZ() && entry.getKey().getMaxZoom() >= tile.getZ())
+        .flatMap(entry -> entry.getValue().stream().map(query -> MessageFormat.format(SOURCE,
+            query.getSource(),
+            query.getId(),
+            query.getTags(),
+            query.getGeom(),
+            query.getFrom(),
+            envelope(tile))))
+        .collect(Collectors.toSet())
+        .stream()
+        .collect(Collectors.joining(COMMA));
     String targets = queries.entrySet().stream()
-            .filter(entry -> entry.getKey().getMinZoom() <= tile.getZ() && entry.getKey().getMaxZoom() >= tile.getZ())
-            .map(entry -> {
-              String queries = entry.getValue().stream()
-                      .map(select -> {
-                        String l = MessageFormat.format(SQL_QUERY, select.getId(), select.getTags(), select.getGeom(), select.getSource());
-                        String r = select.getWhere()
-                                .map(s -> MessageFormat.format(SQL_CONDITION, s))
-                                .orElse("");
-                        return l + r;
-                      })
-                      .collect(Collectors.joining(SQL_UNION));
-              return MessageFormat.format(SQL_LAYER, entry.getKey().getName(), queries);
-            })
-            .collect(Collectors.joining(SQL_UNION));
-    return MessageFormat.format(SQL_WITH, sources, targets);
+        .filter(entry -> entry.getKey().getMinZoom() <= tile.getZ() && entry.getKey().getMaxZoom() >= tile.getZ())
+        .map(entry -> {
+          String queries = entry.getValue().stream()
+              .map(select -> {
+                String l = MessageFormat.format(QUERY,
+                    select.getId(),
+                    select.getTags(),
+                    select.getGeom(),
+                    select.getSource());
+                String r = select.getWhere()
+                    .map(s -> MessageFormat.format(WHERE, s))
+                    .orElse("");
+                return l + r;
+              })
+              .collect(Collectors.joining(UNION_ALL));
+          return MessageFormat.format(LAYER, entry.getKey().getName(), queries);
+        })
+        .collect(Collectors.joining(UNION_ALL));
+    return MessageFormat.format(WITH, sources, targets);
   }
 
 }

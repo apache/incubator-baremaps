@@ -38,7 +38,10 @@
   </build>
 
   <dependencies>
-    <!-- Internal dependencies -->
+    <dependency>
+      <groupId>io.gazetteer</groupId>
+      <artifactId>gazetteer-core</artifactId>
+    </dependency>
     <dependency>
       <groupId>io.gazetteer</groupId>
       <artifactId>gazetteer-osm</artifactId>
