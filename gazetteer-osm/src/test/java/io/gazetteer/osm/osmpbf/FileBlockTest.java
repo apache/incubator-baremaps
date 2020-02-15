@@ -5,7 +5,7 @@ import static io.gazetteer.osm.TestUtils.invalidOsmPbf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.gazetteer.osm.stream.StreamException;
+import io.gazetteer.core.stream.StreamException;
 import java.io.DataInputStream;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;

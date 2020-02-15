@@ -14,50 +14,16 @@
 
   <dependencies>
     <dependency>
-      <artifactId>postgresql</artifactId>
-      <groupId>org.postgresql</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>commons-dbcp2</artifactId>
-      <groupId>org.apache.commons</groupId>
+      <groupId>io.gazetteer</groupId>
+      <artifactId>gazetteer-core</artifactId>
     </dependency>
     <dependency>
       <artifactId>osmosis-osm-binary</artifactId>
       <groupId>org.openstreetmap.osmosis</groupId>
     </dependency>
     <dependency>
-      <artifactId>guava</artifactId>
-      <groupId>com.google.guava</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>picocli</artifactId>
-      <groupId>info.picocli</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>jts-core</artifactId>
-      <groupId>org.locationtech.jts</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>proj4j</artifactId>
-      <groupId>org.locationtech.proj4j</groupId>
-    </dependency>
-    <dependency>
       <artifactId>lmdbjava</artifactId>
       <groupId>org.lmdbjava</groupId>
-    </dependency>
-
-    <!-- Testing libraries -->
-    <dependency>
-      <artifactId>junit-jupiter-api</artifactId>
-      <groupId>org.junit.jupiter</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>junit-jupiter-params</artifactId>
-      <groupId>org.junit.jupiter</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <groupId>org.junit.jupiter</groupId>
     </dependency>
   </dependencies>
 

@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.gazetteer.osm.stream.AccumulatingConsumer;
-import io.gazetteer.osm.stream.HoldingConsumer;
+import io.gazetteer.core.stream.AccumulatingConsumer;
+import io.gazetteer.core.stream.HoldingConsumer;
 import java.io.DataInputStream;
 import java.util.Spliterator;
 import org.junit.jupiter.api.Test;

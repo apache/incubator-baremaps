@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import io.gazetteer.osm.model.Node;
 import io.gazetteer.osm.model.Relation;
 import io.gazetteer.osm.model.Way;
-import io.gazetteer.osm.stream.HoldingConsumer;
+import io.gazetteer.core.stream.HoldingConsumer;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.List;

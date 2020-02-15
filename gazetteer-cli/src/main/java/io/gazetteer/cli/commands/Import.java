@@ -22,7 +22,7 @@ import io.gazetteer.osm.osmpbf.FileBlock;
 import io.gazetteer.osm.osmpbf.FileBlockSpliterator;
 import io.gazetteer.osm.store.Store;
 import io.gazetteer.osm.store.StoreConsumer;
-import io.gazetteer.osm.stream.BatchSpliterator;
+import io.gazetteer.core.stream.BatchSpliterator;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;

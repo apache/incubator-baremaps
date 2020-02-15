@@ -58,14 +58,21 @@
 
   <dependencies>
     <dependency>
-      <artifactId>postgresql</artifactId>
-      <groupId>org.postgresql</groupId>
-      <version>42.2.5</version>
+      <groupId>io.gazetteer</groupId>
+      <artifactId>gazetteer-core</artifactId>
     </dependency>
     <dependency>
-      <artifactId>gazetteer-osm</artifactId>
       <groupId>io.gazetteer</groupId>
-      <version>1.0-SNAPSHOT</version>
+      <artifactId>gazetteer-tiles</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.gazetteer</groupId>
+      <artifactId>gazetteer-osm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+      <version>1.3.2</version>
     </dependency>
     <dependency>
       <artifactId>jmh-core</artifactId>
