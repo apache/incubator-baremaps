@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * A {@code Consumer} that accumulates the values it accepted.
+ * A {@code Consumer} that accumulates the values it accepts.
  *
  * @param <T>
  */
@@ -24,7 +24,7 @@ public class AccumulatingConsumer<T> implements Consumer<T> {
   /**
    * Returns the accumulated values.
    *
-   * @return
+   * @return the accumulated values.
    */
   public List<T> values() {
     return values;

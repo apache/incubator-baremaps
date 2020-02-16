@@ -3,7 +3,8 @@ package io.gazetteer.core.stream;
 import java.util.concurrent.Callable;
 
 /**
- * The {@code Try} class represents a computation that may either succeed or fail.
+ * The {@code Try} class represents a computation that may either succeed or fail. This abstraction can be
+ * used to process the elements of a stream that may fail independently from each others.
  *
  * @param <T>
  */
@@ -12,9 +13,9 @@ public abstract class Try<T> {
   /**
    * Creates a Try from a Callable
    *
-   * @param callable
-   * @param <T>
-   * @return
+   * @param callable the callable to be executed.
+   * @param <T> the return type of the callable.
+   * @return a success or a failure.
    */
   public static <T> Try<T> of(Callable<T> callable) {
     try {
@@ -27,21 +28,21 @@ public abstract class Try<T> {
   /**
    * Returns {@code true} if the {@code Try} is a {@code Success}, {@code false} otherwise.
    *
-   * @return
+   * @return {@code true} if the {@code Try} is a {@code Success}, {@code false} otherwise.
    */
   public abstract boolean isSuccess();
 
   /**
-   * Returns the value of the {@code Try}
+   * Returns the value of the {@code Try}.
    *
-   * @return
+   * @return the value of the {@code Try}.
    */
   public abstract T value();
 
   /**
-   * Returns the exception of the {@code Try}
+   * Returns the exception of the {@code Try}.
    *
-   * @return
+   * @return the exception of the {@code Try}.
    */
   public abstract Exception exception();
 
@@ -57,7 +58,7 @@ public abstract class Try<T> {
     /**
      * Construct a {@code Success} with the specified value.
      *
-     * @param value
+     * @param value the values.
      */
     public Success(T value) {
       this.value = value;
@@ -100,7 +101,7 @@ public abstract class Try<T> {
     /**
      * Construct a {@code Failure} with the specified exception.
      *
-     * @param exception
+     * @param exception the exception.
      */
     public Failure(Exception exception) {
       this.exception = exception;

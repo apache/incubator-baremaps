@@ -22,7 +22,7 @@ public class HoldingConsumer<T> implements Consumer<T> {
   /**
    * Returns the holded value.
    *
-   * @return
+   * @return the holded value.
    */
   public T value() {
     return value;
