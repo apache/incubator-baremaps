@@ -17,7 +17,8 @@ import javax.sql.DataSource;
 
 public class PostgisReferenceCache implements Store<Long, List<Long>> {
 
-  private static final String SELECT = "SELECT nodes FROM osm_ways WHERE id = ?";
+  private static final String SELECT =
+      "SELECT nodes FROM osm_ways WHERE id = ?";
 
   private static final String SELECT_IN =
       "SELECT id, nodes FROM osm_ways WHERE id WHERE id = ANY (?)";

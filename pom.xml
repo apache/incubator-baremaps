@@ -248,11 +248,6 @@
         <version>${version.lib.snakeyaml}</version>
       </dependency>
       <dependency>
-        <artifactId>osmosis-osm-binary</artifactId>
-        <groupId>org.openstreetmap.osmosis</groupId>
-        <version>${version.lib.osmosis}</version>
-      </dependency>
-      <dependency>
         <artifactId>protobuf-java</artifactId>
         <groupId>com.google.protobuf</groupId>
         <version>${version.lib.protobuf}</version>

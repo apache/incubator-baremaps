@@ -5,7 +5,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.gazetteer.core.stream.StreamException;
-import org.openstreetmap.osmosis.osmbinary.Osmformat;
+import io.gazetteer.osm.binary.Osmformat;
 
 public final class FileBlock {
 

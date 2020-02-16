@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.openstreetmap.osmosis.osmbinary.Osmformat;
-import org.openstreetmap.osmosis.osmbinary.Osmformat.PrimitiveGroup;
+import io.gazetteer.osm.binary.Osmformat;
+import io.gazetteer.osm.binary.Osmformat.PrimitiveGroup;
 
 public final class PrimitiveBlock {
 

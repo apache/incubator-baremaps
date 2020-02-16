@@ -4,8 +4,8 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.openstreetmap.osmosis.osmbinary.Osmformat;
-import org.openstreetmap.osmosis.osmbinary.Osmformat.HeaderBBox;
+import io.gazetteer.osm.binary.Osmformat;
+import io.gazetteer.osm.binary.Osmformat.HeaderBBox;
 
 public class HeaderBlock {
 

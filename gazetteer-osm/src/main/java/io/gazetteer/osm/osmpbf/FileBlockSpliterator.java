@@ -6,8 +6,8 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
-import org.openstreetmap.osmosis.osmbinary.Fileformat;
-import org.openstreetmap.osmosis.osmbinary.Fileformat.Blob;
+import io.gazetteer.osm.binary.Fileformat;
+import io.gazetteer.osm.binary.Fileformat.Blob;
 
 public class FileBlockSpliterator implements Spliterator<FileBlock> {
 

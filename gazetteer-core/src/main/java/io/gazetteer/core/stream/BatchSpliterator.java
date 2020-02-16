@@ -5,7 +5,7 @@ import java.util.Spliterators;
 import java.util.function.Consumer;
 
 /**
- * A BatchSpliterator wraps another spliterator and partition its elements according to a given batch size
+ * A {@code BatchSpliterator} wraps another spliterator and partition its elements according to a given batch size
  * when trySplit is invoked.
  *
  * @param <T>
@@ -51,9 +51,9 @@ public class BatchSpliterator<T> implements Spliterator<T> {
   }
 
   /**
-   * Returns Long.MAX_VALUE assuming that the underlying spliterator is of unknown size.
+   * Returns {@code Long.MAX_VALUE} assuming that the underlying spliterator is of unknown size.
    *
-   * @return Long.MAX_VALUE corresponding to unknown size.
+   * @return {@code Long.MAX_VALUE} corresponding to unknown size.
    */
   @Override
   public long estimateSize() {

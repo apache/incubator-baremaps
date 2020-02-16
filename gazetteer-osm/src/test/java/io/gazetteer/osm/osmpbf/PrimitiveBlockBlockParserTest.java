@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Spliterator;
 import org.junit.jupiter.api.Test;
-import org.openstreetmap.osmosis.osmbinary.Osmformat;
+import io.gazetteer.osm.binary.Osmformat;
 
 public class PrimitiveBlockBlockParserTest {
 
