@@ -6,7 +6,7 @@ import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.config.Config;
 import io.gazetteer.tiles.http.ResourceHandler;
 import io.gazetteer.tiles.http.TileHandler;
-import io.gazetteer.tiles.postgis.BasicTileReader;
+import io.gazetteer.tiles.postgis.SimpleTileReader;
 import io.gazetteer.tiles.postgis.WithTileReader;
 
 import java.io.FileInputStream;
@@ -54,7 +54,7 @@ public class Serve implements Callable<Integer> {
   public TileReader initTileReader(PoolingDataSource dataSource, Config config) {
     switch (tileReader) {
       case "basic":
-        return new BasicTileReader(dataSource, config);
+        return new SimpleTileReader(dataSource, config);
       case "with":
         return new WithTileReader(dataSource, config);
       default:

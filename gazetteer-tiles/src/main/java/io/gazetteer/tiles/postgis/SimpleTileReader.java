@@ -15,7 +15,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.dbcp2.PoolingDataSource;
 
-public class BasicTileReader extends AbstractTileReader {
+public class SimpleTileReader extends AbstractTileReader {
 
   private static final String SQL_LAYER = "SELECT ST_AsMVT(mvt_geom, ''{0}'', 4096, ''geom'') FROM {1}";
 
@@ -37,7 +37,7 @@ public class BasicTileReader extends AbstractTileReader {
 
   private final Config config;
 
-  public BasicTileReader(PoolingDataSource datasource, Config config) {
+  public SimpleTileReader(PoolingDataSource datasource, Config config) {
     this.datasource = datasource;
     this.config = config;
   }

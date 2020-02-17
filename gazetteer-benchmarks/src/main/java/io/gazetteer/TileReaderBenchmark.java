@@ -4,7 +4,7 @@ import io.gazetteer.core.postgis.PostgisHelper;
 import io.gazetteer.tiles.Tile;
 import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.config.Config;
-import io.gazetteer.tiles.postgis.BasicTileReader;
+import io.gazetteer.tiles.postgis.SimpleTileReader;
 import io.gazetteer.tiles.postgis.WithTileReader;
 import io.gazetteer.tiles.util.TileUtil;
 import java.io.File;
@@ -51,7 +51,7 @@ public class TileReaderBenchmark {
   @Warmup(iterations = 1)
   @Measurement(iterations = 2)
   public void basic() throws SQLException, ParseException {
-    reader = new BasicTileReader(datasource, config);
+    reader = new SimpleTileReader(datasource, config);
     execute();
   }
 

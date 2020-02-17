@@ -85,7 +85,7 @@ gazetteer import \
   'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
 ```
 
-To preview this data, you can simply run the embed web server with the following command:
+To preview the data, run the tile server with the following command:
 
 ```bash
 gazetteer serve \

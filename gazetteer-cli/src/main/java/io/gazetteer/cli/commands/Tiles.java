@@ -7,7 +7,7 @@ import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.TileWriter;
 import io.gazetteer.tiles.config.Config;
 import io.gazetteer.tiles.file.FileTileStore;
-import io.gazetteer.tiles.postgis.BasicTileReader;
+import io.gazetteer.tiles.postgis.SimpleTileReader;
 import io.gazetteer.tiles.postgis.WithTileReader;
 import io.gazetteer.tiles.util.TileUtil;
 import java.io.File;
@@ -65,7 +65,7 @@ public class Tiles implements Callable<Integer> {
   public TileReader initTileReader(PoolingDataSource dataSource, Config config) {
     switch (tileReader) {
       case "basic":
-        return new BasicTileReader(dataSource, config);
+        return new SimpleTileReader(dataSource, config);
       case "with":
         return new WithTileReader(dataSource, config);
       default:
