@@ -1,7 +1,7 @@
 // Copyright (c) Philipp Wagner. All rights reserved.
 // Licensed under the MIT license.
 
-package io.gazetteer.osm.database;
+package io.gazetteer.core.postgis;
 
 import static org.locationtech.jts.io.WKBConstants.wkbNDR;
 
@@ -39,7 +39,7 @@ public class CopyWriter implements AutoCloseable {
   private final DataOutputStream data;
 
   /**
-   * Constructs a new writer with the specified {@code PGCopyOutputStream}.
+   * Creates a new writer with the specified {@code PGCopyOutputStream}.
    */
   public CopyWriter(PGCopyOutputStream data) {
     this.data = new DataOutputStream(new BufferedOutputStream(data, 65536));

@@ -1,12 +1,13 @@
 package io.gazetteer.cli.commands;
 
 import com.google.common.base.Stopwatch;
-import io.gazetteer.osm.database.PostgisHelper;
+import io.gazetteer.core.postgis.PostgisHelper;
 import io.gazetteer.tiles.Tile;
 import io.gazetteer.tiles.TileReader;
 import io.gazetteer.tiles.TileWriter;
 import io.gazetteer.tiles.config.Config;
 import io.gazetteer.tiles.file.FileTileStore;
+import io.gazetteer.tiles.postgis.BasicTileReader;
 import io.gazetteer.tiles.postgis.WithTileReader;
 import io.gazetteer.tiles.util.TileUtil;
 import java.io.File;
@@ -56,6 +57,22 @@ public class Tiles implements Callable<Integer> {
       description = "The maximal zoom level.")
   private int maxZoom = 14;
 
+  @Option(
+      names = {"-t", "--tile-reader"},
+      description = "The tile reader.")
+  private String tileReader = "basic";
+
+  public TileReader initTileReader(PoolingDataSource dataSource, Config config) {
+    switch (tileReader) {
+      case "basic":
+        return new BasicTileReader(dataSource, config);
+      case "with":
+        return new WithTileReader(dataSource, config);
+      default:
+        throw new UnsupportedOperationException("Unsupported tile reader");
+    }
+  }
+
   @Override
   public Integer call() throws SQLException, ParseException, FileNotFoundException {
     Stopwatch stopWatch = Stopwatch.createStarted();
@@ -63,7 +80,9 @@ public class Tiles implements Callable<Integer> {
     // Read the configuration toInputStream
     Config config = Config.load(new FileInputStream(file));
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
-    TileReader tileReader = new WithTileReader(datasource, config);
+
+    // Choose the tile reader
+    TileReader tileReader = initTileReader(datasource, config);
     TileWriter tileWriter = new FileTileStore(directory);
 
     //AmazonS3 client = AmazonS3ClientBuilder.standard().defaultClient();

@@ -38,7 +38,8 @@
               </filters>
               <finalName>${uberjar.name}</finalName>
               <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                <transformer
+                  implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>org.openjdk.jmh.Main</mainClass>
                 </transformer>
               </transformers>
@@ -53,7 +54,6 @@
         <version>2.2</version>
       </plugin>
     </plugins>
-
   </build>
 
   <dependencies>
@@ -64,10 +64,6 @@
     <dependency>
       <groupId>io.gazetteer</groupId>
       <artifactId>gazetteer-tiles</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.gazetteer</groupId>
-      <artifactId>gazetteer-osm</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.annotation</groupId>

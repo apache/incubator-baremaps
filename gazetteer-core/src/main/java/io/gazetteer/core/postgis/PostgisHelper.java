@@ -1,4 +1,4 @@
-package io.gazetteer.osm.database;
+package io.gazetteer.core.postgis;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -26,19 +26,19 @@ public final class PostgisHelper {
   private static final String DATABASE_URL = "jdbc:postgresql://{0}:{1}/{2}?user={3}&password={4}&allowMultiQueries={5}";
 
   public static String url(
-      String host,
+      String hostname,
       Integer port,
       String database,
-      String user,
+      String username,
       String password,
       Boolean allowMultiQueries) {
-    checkNotNull(host);
+    checkNotNull(hostname);
     checkNotNull(port);
     checkNotNull(database);
-    checkNotNull(user);
+    checkNotNull(username);
     checkNotNull(password);
     checkNotNull(allowMultiQueries);
-    return MessageFormat.format(DATABASE_URL, host, port, database, user, password, allowMultiQueries);
+    return MessageFormat.format(DATABASE_URL, hostname, port, database, username, password, allowMultiQueries);
   }
 
   public static String url(String database, String user, String password) {

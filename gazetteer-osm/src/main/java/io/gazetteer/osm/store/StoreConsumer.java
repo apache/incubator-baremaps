@@ -1,9 +1,9 @@
 package io.gazetteer.osm.store;
 
-import io.gazetteer.osm.database.PostgisHeaderStore;
-import io.gazetteer.osm.database.PostgisNodeStore;
-import io.gazetteer.osm.database.PostgisRelationStore;
-import io.gazetteer.osm.database.PostgisWayStore;
+import io.gazetteer.osm.postgis.PostgisHeaderStore;
+import io.gazetteer.osm.postgis.PostgisNodeStore;
+import io.gazetteer.osm.postgis.PostgisRelationStore;
+import io.gazetteer.osm.postgis.PostgisWayStore;
 import io.gazetteer.osm.osmpbf.FileBlockConsumer;
 import io.gazetteer.osm.osmpbf.HeaderBlock;
 import io.gazetteer.osm.osmpbf.PrimitiveBlock;

@@ -311,8 +311,8 @@
 
   <dependencies>
     <dependency>
-      <artifactId>postgresql</artifactId>
       <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
     </dependency>
     <dependency>
       <artifactId>commons-dbcp2</artifactId>
