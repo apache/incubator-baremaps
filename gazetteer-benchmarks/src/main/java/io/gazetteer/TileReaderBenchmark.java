@@ -1,20 +1,15 @@
 package io.gazetteer;
 
-import io.gazetteer.osm.database.PostgisHelper;
+import io.gazetteer.core.postgis.PostgisHelper;
 import io.gazetteer.tiles.Tile;
 import io.gazetteer.tiles.TileReader;
-import io.gazetteer.tiles.TileWriter;
 import io.gazetteer.tiles.config.Config;
-import io.gazetteer.tiles.file.FileTileStore;
 import io.gazetteer.tiles.postgis.BasicTileReader;
 import io.gazetteer.tiles.postgis.WithTileReader;
 import io.gazetteer.tiles.util.TileUtil;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
@@ -41,15 +36,14 @@ public class TileReaderBenchmark {
 
   private Config config;
   private PoolingDataSource datasource;
-  private Path output;
   private TileReader reader;
-  private TileWriter writer;
 
   @Setup(Level.Invocation)
-  public void prepare() throws IOException {
-    config = Config.load(new FileInputStream(new File("./config/config.yaml")));
-    datasource = PostgisHelper.poolingDataSource("jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer");
-    writer = new FileTileStore(output = Files.createTempDirectory("tiles"));
+  public void prepare() throws IOException, ClassNotFoundException {
+    Class.forName("org.postgresql.Driver");
+    config = Config.load(new FileInputStream(new File("./examples/openstreetmap/config.yaml")));
+    datasource = PostgisHelper.poolingDataSource(
+        "jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer");
   }
 
   @Benchmark
@@ -76,8 +70,7 @@ public class TileReaderBenchmark {
       Stream<Tile> coords = TileUtil.getTiles(geometry, 14, 14);
       coords.forEach(xyz -> {
         try {
-          byte[] tile = reader.read(xyz);
-          writer.write(xyz, tile);
+          reader.read(xyz);
         } catch (Exception e) {
           e.printStackTrace();
         }

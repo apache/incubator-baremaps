@@ -1,7 +1,8 @@
-package io.gazetteer.osm.database;
+package io.gazetteer.osm.postgis;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.gazetteer.core.postgis.PostgisHelper;
 import io.gazetteer.osm.TestUtils;
 import java.io.IOException;
 import java.sql.Connection;

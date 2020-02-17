@@ -1,5 +1,6 @@
-package io.gazetteer.osm.database;
+package io.gazetteer.osm.postgis;
 
+import io.gazetteer.core.postgis.CopyWriter;
 import io.gazetteer.osm.geometry.GeometryUtil;
 import io.gazetteer.osm.geometry.NodeBuilder;
 import io.gazetteer.osm.model.Info;

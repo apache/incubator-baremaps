@@ -81,13 +81,7 @@ You can now import this data in that postgis container using the following comma
 
 ```bash
 gazetteer import \
-  'data/liechtenstein-latest.osm.pbf' \
-  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
-```
-
-```bash
-gazetteer import \
-  'switzerland-latest.osm.pbf' \
+  'examples/openstreetmap/liechtenstein-latest.osm.pbf' \
   'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
 ```
 
@@ -96,8 +90,9 @@ To preview this data, you can simply run the embed web server with the following
 ```bash
 gazetteer serve \
   'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer' \
-  'config/config.yaml' \
-  'static/'
+  'examples/openstreetmap/config.yaml' \
+  'examples/openstreetmap/static/' \
+  --tile-reader with
 ```
 
 Well done, the test server should have started and a map of liechtenstein should appear in your browser ([http://localhost:9000/](http://localhost:8082/))!
@@ -106,9 +101,9 @@ Vector tiles are rarely served dynamically in production. The following command 
 
 ```bash
 gazetteer tiles \
-  'config/config.yaml' \
+  'examples/openstreetmap/config.yaml' \
   'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer' \
-  'tiles/' \
+  'examples/openstreetmap/tiles/' \
   --minZoom 14 \
   --maxZoom 14
 ```

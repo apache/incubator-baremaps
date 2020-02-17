@@ -1,7 +1,7 @@
 // Copyright (c) Philipp Wagner. All rights reserved.
 // Licensed under the MIT license.
 
-package io.gazetteer.osm.database;
+package io.gazetteer.core.postgis;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -1,8 +1,9 @@
-package io.gazetteer.osm.database;
+package io.gazetteer.osm.postgis;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import io.gazetteer.core.postgis.PostgisHelper;
 import io.gazetteer.osm.TestUtils;
 import io.gazetteer.osm.model.Info;
 import io.gazetteer.osm.model.Way;
