@@ -17,6 +17,7 @@ sudo apt-get install gdal-bin
 ```
 
 You can then import the data using the following command. Here, notice the re-projection in web mercator (EPSG:3857).
+The Natural Earth tables should become visible in your postgresql database. 
 
 ```bash
 PGCLIENTENCODING=UTF8 ogr2ogr \
@@ -34,7 +35,21 @@ PGCLIENTENCODING=UTF8 ogr2ogr \
     "data/packages/natural_earth_vector.sqlite"
 ```
 
-The Natural Earth tables should now be visible in your postgresql database. 
+To improve performance, an spatial index should be created for each geometry columns. 
+Such queries can be generated from the schema itself with the following query:
+
+```postgresql
+SELECT concat('CREATE INDEX IF NOT EXISTS ', tablename, '_gix ON ', tablename, ' USING SPGIST(geometry);')
+FROM pg_tables
+WHERE schemaname = 'public' AND tablename LIKE 'ne_%'
+ORDER BY tablename
+```
+
+These queries have been saved in the `indexes.sql` file. You can execute it with the following command:
+
+```bash
+psql -h localhost -U gazetteer gazetteer < indexes.sql
+```
 
 To preview the data, run the tile server with the following command:
 
