@@ -26,28 +26,6 @@ On the longer run, the aim of the project is to work with a variety of data sour
 -   Java 8
 -   Maven 3
 
-## Database
-
-In order to run Gazetteer, you first need to setup a postgis database.
-The following docker image will allow you to jump start this installation:
-
-```bash
-docker run \
-  --name gazetteer-postgis \
-  --publish 5432:5432 \
-  -e POSTGRES_DB=gazetteer \
-  -e POSTGRES_USER=gazetteer \
-  -e POSTGRES_PASSWORD=gazetteer \
-  -d gazetteerio/postgis:1
-```
-
-You can then start and stop the container with the following commands:
-
-```bash
-docker start gazetteer-postgis
-docker stop gazetteer-postgis
-```
-
 ## Quick Start
 
 Clone and build the repository:
@@ -76,37 +54,32 @@ Commands:
   serve
 ```
 
-As a small country, Liechtenstein is suitable for testing and fits in this git repository. 
-You can now import this data in that postgis container using the following command.
+In order to run Gazetteer, you need to setup a postgis database.
+The following docker image will allow you to jump start this installation:
 
 ```bash
-gazetteer import \
-  'examples/openstreetmap/liechtenstein-latest.osm.pbf' \
-  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer'
+docker run \
+  --name gazetteer-postgis \
+  --publish 5432:5432 \
+  -e POSTGRES_DB=gazetteer \
+  -e POSTGRES_USER=gazetteer \
+  -e POSTGRES_PASSWORD=gazetteer \
+  -d gazetteerio/postgis:1
 ```
 
-To preview the data, run the tile server with the following command:
+You can then start and stop the container with the following commands:
 
 ```bash
-gazetteer serve \
-  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer' \
-  'examples/openstreetmap/config.yaml' \
-  'examples/openstreetmap/static/' \
-  --tile-reader with
+docker start gazetteer-postgis
+docker stop gazetteer-postgis
 ```
 
-Well done, the test server should have started and a map of liechtenstein should appear in your browser ([http://localhost:9000/](http://localhost:8082/))!
+## Examples
 
-Vector tiles are rarely served dynamically in production. The following command produces a directory that contains precomputed tiles that can be deployed on a CDN:
-
-```bash
-gazetteer tiles \
-  'examples/openstreetmap/config.yaml' \
-  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer' \
-  'examples/openstreetmap/tiles/' \
-  --minZoom 14 \
-  --maxZoom 14
-```
+Several examples illustrate how to import datasets in postgis and produce vector tiles.
+-   The [OpenStreetMap](examples/openstreetmap/README.md) example shows how to produce high resolution vector tiles.
+-   The [NaturalEarth](examples/naturalearth/README.md) example shows how to produce low resolution vector tiles.
+-   The [Contour](examples/contour/README.md) example shows how to produce contours from a digital elevation model (DEM).
 
 ## Limitations
 

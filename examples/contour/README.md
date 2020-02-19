@@ -1,6 +1,8 @@
-# Contours with Aster Digital Elevation Model (DEM)
+# Contour Example
 
-A first approach consists in using the [`gdal_contour`](https://gdal.org/programs/gdal_contour.html) command.
+This example shows how to produce contours from a digital elevation model (DEM).
+
+The approach consists in using the [`gdal_contour`](https://gdal.org/programs/gdal_contour.html) command.
 Therefore, start by installing `gdal`:
 
 ```bash
