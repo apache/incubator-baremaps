@@ -149,7 +149,7 @@ public class Import implements Callable<Integer> {
 
     stopwatch.start();
     System.out.println("Indexing geometries.");
-    loadStatements("osm_create_spgist_indexes.sql").forEach(statement -> {
+    loadStatements("osm_create_gist_indexes.sql").forEach(statement -> {
       try (Connection connection = datasource.getConnection()) {
         connection.createStatement().execute(statement);
       } catch (SQLException e) {
