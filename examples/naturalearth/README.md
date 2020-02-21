@@ -1,4 +1,4 @@
-# Natural Earth
+# Natural Earth Example
 
 [Natural Earth](https://www.naturalearthdata.com/) is a public domain map dataset available at 1:10m, 1:50m, and 1:110 million scales.
 This example shows how to create vector tiles from the Natural Earth dataset.
