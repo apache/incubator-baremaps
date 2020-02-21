@@ -5,7 +5,7 @@ This image enables to play with Gazetteer without having to install java locally
 It can be built from the root of the project directory using the following command:
 
 ```bash
-docker build -t gazetteer/gazetteer -f docker/gazetteer/Dockerfile .
+docker build -t gazetteerio/gazetteer -f docker/gazetteer/Dockerfile .
 ```
 
 It can then be run as follow:
