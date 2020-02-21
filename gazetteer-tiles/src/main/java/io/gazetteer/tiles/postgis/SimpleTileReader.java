@@ -64,6 +64,7 @@ public class SimpleTileReader extends AbstractTileReader {
                               .orElse("")))
                       .collect(Collectors.joining(SQL_UNION_ALL)),
                   envelope(tile)));
+          System.out.println(sql);
           try (Statement statement = connection.createStatement()) {
             ResultSet result = statement.executeQuery(sql);
             if (result.next()) {
