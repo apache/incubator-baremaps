@@ -14,8 +14,12 @@ import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.dbcp2.PoolingDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleTileReader extends AbstractTileReader {
+
+  private static final Logger logger = LoggerFactory.getLogger(SimpleTileReader.class);
 
   private static final String SQL_LAYER = "SELECT ST_AsMVT(mvt_geom, ''{0}'', 4096, ''geom'') FROM {1}";
 
@@ -49,22 +53,8 @@ public class SimpleTileReader extends AbstractTileReader {
         GZIPOutputStream gzip = new GZIPOutputStream(data)) {
       for (Layer layer : config.getLayers()) {
         if (tile.getZ() >= layer.getMinZoom() && tile.getZ() <= layer.getMaxZoom()) {
-          String sql = MessageFormat.format(SQL_LAYER,
-              layer.getName(),
-              MessageFormat.format(SQL_SOURCE,
-                  layer.getName(),
-                  layer.getQueries().stream()
-                      .map(query -> QueryParser.parse(layer, query.getSql()))
-                      .map(query -> MessageFormat.format(SQL_QUERY,
-                          query.getId(),
-                          query.getTags(),
-                          query.getGeom(),
-                          query.getFrom(),
-                          query.getWhere().map(where -> MessageFormat.format(SQL_WHERE, where))
-                              .orElse("")))
-                      .collect(Collectors.joining(SQL_UNION_ALL)),
-                  envelope(tile)));
-          System.out.println(sql);
+          String sql = query(tile, layer);
+          logger.debug("Executing tile query: {}", sql);
           try (Statement statement = connection.createStatement()) {
             ResultSet result = statement.executeQuery(sql);
             if (result.next()) {
@@ -78,6 +68,24 @@ public class SimpleTileReader extends AbstractTileReader {
     } catch (Exception e) {
       throw new TileException(e);
     }
+  }
+
+  private String query(Tile tile, Layer layer) {
+    return MessageFormat.format(SQL_LAYER,
+        layer.getName(),
+        MessageFormat.format(SQL_SOURCE,
+            layer.getName(),
+            layer.getQueries().stream()
+                .map(query -> QueryParser.parse(layer, query.getSql()))
+                .map(query -> MessageFormat.format(SQL_QUERY,
+                    query.getId(),
+                    query.getTags(),
+                    query.getGeom(),
+                    query.getFrom(),
+                    query.getWhere().map(where -> MessageFormat.format(SQL_WHERE, where))
+                        .orElse("")))
+                .collect(Collectors.joining(SQL_UNION_ALL)),
+            envelope(tile)));
   }
 
 }

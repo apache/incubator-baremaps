@@ -1,16 +1,12 @@
 package io.gazetteer.cli.commands;
 
-import static io.gazetteer.cli.util.IOUtil.url;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
+import io.gazetteer.core.io.InputStreams;
+import io.gazetteer.core.postgis.PostgisHelper;
 import io.gazetteer.osm.cache.PostgisCoordinateCache;
 import io.gazetteer.osm.cache.PostgisReferenceCache;
-import io.gazetteer.osm.postgis.PostgisHeaderStore;
-import io.gazetteer.core.postgis.PostgisHelper;
-import io.gazetteer.osm.postgis.PostgisNodeStore;
-import io.gazetteer.osm.postgis.PostgisRelationStore;
-import io.gazetteer.osm.postgis.PostgisWayStore;
 import io.gazetteer.osm.geometry.NodeBuilder;
 import io.gazetteer.osm.geometry.RelationBuilder;
 import io.gazetteer.osm.geometry.WayBuilder;
@@ -19,11 +15,14 @@ import io.gazetteer.osm.osmxml.Change;
 import io.gazetteer.osm.osmxml.ChangeConsumer;
 import io.gazetteer.osm.osmxml.ChangeSpliterator;
 import io.gazetteer.osm.osmxml.State;
+import io.gazetteer.osm.postgis.PostgisHeaderStore;
+import io.gazetteer.osm.postgis.PostgisNodeStore;
+import io.gazetteer.osm.postgis.PostgisRelationStore;
+import io.gazetteer.osm.postgis.PostgisWayStore;
 import io.gazetteer.osm.store.Store;
-import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URI;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.concurrent.Callable;
@@ -85,16 +84,14 @@ public class Update implements Callable<Integer> {
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
     String statePath = statePath(nextSequenceNumber);
 
-    URL stateURL = new URL(String.format("%s/%s", url(source), statePath));
-    InputStreamReader reader = new InputStreamReader(
-        new BufferedInputStream(stateURL.openConnection().getInputStream()), Charsets.UTF_8);
+    String stateURL = String.format("%s/%s", source, statePath);
+    InputStreamReader reader = new InputStreamReader(InputStreams.from(stateURL), Charsets.UTF_8);
     String stateContent = CharStreams.toString(reader);
     State state = State.parse(stateContent);
     String changePath = changePath(nextSequenceNumber);
-    URL changeURL = new URL(String.format("%s/%s", url(source), changePath));
+    String changeURL = String.format("%s/%s", source, changePath);
 
-    try (InputStream changeInputStream = new GZIPInputStream(
-        new BufferedInputStream(changeURL.openConnection().getInputStream()))) {
+    try (InputStream changeInputStream = new GZIPInputStream(InputStreams.from(changeURL))) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
       ChangeConsumer changeConsumer = new ChangeConsumer(nodeStore, wayStore, relationStore);

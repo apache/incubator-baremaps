@@ -10,8 +10,12 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ResourceHandler implements HttpHandler {
+
+  private static final Logger logger = LoggerFactory.getLogger(ResourceHandler.class);
 
   private final Path directory;
 
@@ -23,9 +27,12 @@ public class ResourceHandler implements HttpHandler {
   public void handle(HttpExchange exchange) throws IOException {
     try {
       String path = exchange.getRequestURI().getPath();
+      logger.info("GET {}", path);
+
       if (path.endsWith("/")) {
         path = String.format("%sindex.html", path);
       }
+
       Path file = directory.resolve(path.substring(1));
       byte[] bytes = Files.readAllBytes(file);
       exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, Arrays.asList("*"));

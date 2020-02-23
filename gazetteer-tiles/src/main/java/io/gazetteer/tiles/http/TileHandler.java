@@ -15,8 +15,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TileHandler implements HttpHandler {
+
+  private static final Logger logger = LoggerFactory.getLogger(TileHandler.class);
 
   public static final List<String> TILE_ENCODING = Lists.newArrayList("gzip");
 
@@ -34,7 +38,10 @@ public class TileHandler implements HttpHandler {
 
   @Override
   public void handle(HttpExchange exchange) throws IOException {
-    Matcher matcher = URL.matcher(exchange.getRequestURI().getPath());
+    String path = exchange.getRequestURI().getPath();
+    logger.info("GET {}", path);
+
+    Matcher matcher = URL.matcher(path);
     if (!matcher.find()) {
       exchange.sendResponseHeaders(404, 0);
     }

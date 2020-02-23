@@ -1,28 +1,26 @@
 package io.gazetteer.cli.commands;
 
-import static io.gazetteer.cli.util.IOUtil.input;
-import static io.gazetteer.cli.util.IOUtil.url;
 import static org.lmdbjava.DbiFlags.MDB_CREATE;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Stopwatch;
 import com.google.common.io.Resources;
+import io.gazetteer.core.io.InputStreams;
+import io.gazetteer.core.postgis.PostgisHelper;
+import io.gazetteer.core.stream.BatchSpliterator;
 import io.gazetteer.osm.cache.CacheConsumer;
 import io.gazetteer.osm.cache.LmdbCoordinateCache;
 import io.gazetteer.osm.cache.LmdbReferenceCache;
-import io.gazetteer.osm.postgis.PostgisHeaderStore;
-import io.gazetteer.core.postgis.PostgisHelper;
-import io.gazetteer.osm.postgis.PostgisNodeStore;
-import io.gazetteer.osm.postgis.PostgisRelationStore;
-import io.gazetteer.osm.postgis.PostgisWayStore;
 import io.gazetteer.osm.geometry.NodeBuilder;
 import io.gazetteer.osm.geometry.RelationBuilder;
 import io.gazetteer.osm.geometry.WayBuilder;
 import io.gazetteer.osm.osmpbf.FileBlock;
 import io.gazetteer.osm.osmpbf.FileBlockSpliterator;
+import io.gazetteer.osm.postgis.PostgisHeaderStore;
+import io.gazetteer.osm.postgis.PostgisNodeStore;
+import io.gazetteer.osm.postgis.PostgisRelationStore;
+import io.gazetteer.osm.postgis.PostgisWayStore;
 import io.gazetteer.osm.store.Store;
 import io.gazetteer.osm.store.StoreConsumer;
-import io.gazetteer.core.stream.BatchSpliterator;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +32,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.apache.commons.dbcp2.PoolingDataSource;
@@ -46,12 +43,16 @@ import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 @Command(name = "import")
 public class Import implements Callable<Integer> {
+
+  private static final Logger logger = LoggerFactory.getLogger(Import.class);
 
   @Parameters(
       index = "0",
@@ -72,10 +73,9 @@ public class Import implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    Stopwatch stopwatch = Stopwatch.createStarted();
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
-    System.out.println("Dropping tables.");
+    logger.info("Dropping tables.");
     loadStatements("osm_drop_tables.sql").forEach(statement -> {
       try (Connection connection = datasource.getConnection()) {
         connection.createStatement().execute(statement);
@@ -83,10 +83,8 @@ public class Import implements Callable<Integer> {
         throw new RuntimeException(e);
       }
     });
-    System.out.println(String.format("-> %dms", stopwatch.elapsed(TimeUnit.MILLISECONDS)));
-    stopwatch.reset();
 
-    System.out.println("Creating tables.");
+    logger.info("Creating tables.");
     loadStatements("osm_create_tables.sql").forEach(statement -> {
       try (Connection connection = datasource.getConnection()) {
         connection.createStatement().execute(statement);
@@ -94,10 +92,8 @@ public class Import implements Callable<Integer> {
         throw new RuntimeException(e);
       }
     });
-    System.out.println(String.format("-> %dms", stopwatch.elapsed(TimeUnit.MILLISECONDS)));
-    stopwatch.reset();
 
-    System.out.println("Creating primary keys.");
+    logger.info("Creating primary keys.");
     loadStatements("osm_create_primary_keys.sql").forEach(statement -> {
       try (Connection connection = datasource.getConnection()) {
         connection.createStatement().execute(statement);
@@ -105,27 +101,21 @@ public class Import implements Callable<Integer> {
         throw new RuntimeException(e);
       }
     });
-    System.out.println(String.format("-> %dms", stopwatch.elapsed(TimeUnit.MILLISECONDS)));
-    stopwatch.reset();
 
-    stopwatch.start();
     Path lmdbPath = Files.createTempDirectory("gazetteer_");
     Env<ByteBuffer> env = Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(lmdbPath.toFile());
     Store<Long, Coordinate> coordinateStore = new LmdbCoordinateCache(env, env.openDbi("coordinates", MDB_CREATE));
     Store<Long, List<Long>> referenceStore = new LmdbReferenceCache(env, env.openDbi("references", MDB_CREATE));
 
-    System.out.println("Populating cache.");
-    try (InputStream input = input(url(source))) {
+    logger.info("Populating cache.");
+    try (InputStream input = InputStreams.from(source)) {
       Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(new DataInputStream(input)), false);
       CacheConsumer blockConsumer = new CacheConsumer(coordinateStore, referenceStore);
       blocks.forEach(blockConsumer);
     }
-    System.out.println(String.format("-> %dms", stopwatch.elapsed(TimeUnit.MILLISECONDS)));
-    stopwatch.reset();
 
-    stopwatch.start();
-    System.out.println("Populating database.");
-    try (InputStream input = input(url(source))) {
+    logger.info("Populating database.");
+    try (InputStream input = InputStreams.from(source)) {
       Stream<FileBlock> blocks = StreamSupport
           .stream(new BatchSpliterator<>(new FileBlockSpliterator(new DataInputStream(input)), 10), true);
       CRSFactory crsFactory = new CRSFactory();
@@ -143,12 +133,9 @@ public class Import implements Callable<Integer> {
           new RelationBuilder(coordinateTransform, geometryFactory, coordinateStore, referenceStore));
       StoreConsumer blockConsumer = new StoreConsumer(headerMapper, nodeMapper, wayMapper, relationMapper);
       blocks.forEach(blockConsumer);
-      System.out.println(String.format("-> %dms", stopwatch.elapsed(TimeUnit.MILLISECONDS)));
-      stopwatch.reset();
     }
 
-    stopwatch.start();
-    System.out.println("Indexing geometries.");
+    logger.info("Indexing geometries.");
     loadStatements("osm_create_gist_indexes.sql").forEach(statement -> {
       try (Connection connection = datasource.getConnection()) {
         connection.createStatement().execute(statement);
@@ -156,11 +143,8 @@ public class Import implements Callable<Integer> {
         throw new RuntimeException(e);
       }
     });
-    System.out.println(String.format("-> %dms", stopwatch.elapsed(TimeUnit.MILLISECONDS)));
-    stopwatch.reset();
 
-    stopwatch.start();
-    System.out.println("Indexing attributes.");
+    logger.info("Indexing attributes.");
     loadStatements("osm_create_gin_indexes.sql").forEach(statement -> {
       try (Connection connection = datasource.getConnection()) {
         connection.createStatement().execute(statement);
@@ -168,8 +152,6 @@ public class Import implements Callable<Integer> {
         throw new RuntimeException(e);
       }
     });
-    System.out.println(String.format("-> %dms", stopwatch.elapsed(TimeUnit.MILLISECONDS)));
-    stopwatch.reset();
 
     return 0;
   }

@@ -263,6 +263,13 @@
         <version>${version.lib.aws-java-sdk-s3}</version>
       </dependency>
 
+      <!-- Logging libraries -->
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>1.2.3</version>
+      </dependency>
+
       <!-- Testing libraries -->
       <dependency>
         <artifactId>junit-jupiter-api</artifactId>
@@ -337,6 +344,12 @@
     <dependency>
       <artifactId>protobuf-java</artifactId>
       <groupId>com.google.protobuf</groupId>
+    </dependency>
+
+    <!-- Logging libraries -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
     </dependency>
 
     <!-- Testing libraries -->

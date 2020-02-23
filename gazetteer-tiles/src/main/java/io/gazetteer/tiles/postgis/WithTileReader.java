@@ -15,8 +15,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 import org.apache.commons.dbcp2.PoolingDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WithTileReader extends AbstractTileReader {
+
+  private static final Logger logger = LoggerFactory.getLogger(WithTileReader.class);
 
   private static final String WITH = "WITH {0} {1}";
 
@@ -54,8 +58,9 @@ public class WithTileReader extends AbstractTileReader {
     try (Connection connection = datasource.getConnection();
         ByteArrayOutputStream data = new ByteArrayOutputStream();
         GZIPOutputStream gzip = new GZIPOutputStream(data)) {
-      String sql = query(tile);
       try (Statement statement = connection.createStatement()) {
+        String sql = query(tile);
+        logger.debug("Executing tile query: {}", sql);
         ResultSet result = statement.executeQuery(sql);
         while (result.next()) {
           gzip.write(result.getBytes(1));

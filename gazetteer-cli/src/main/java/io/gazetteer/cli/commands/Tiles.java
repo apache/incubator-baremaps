@@ -1,6 +1,10 @@
 package io.gazetteer.cli.commands;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.AmazonS3URI;
 import com.google.common.base.Stopwatch;
+import io.gazetteer.core.io.InputStreams;
 import io.gazetteer.core.postgis.PostgisHelper;
 import io.gazetteer.tiles.Tile;
 import io.gazetteer.tiles.TileReader;
@@ -9,11 +13,11 @@ import io.gazetteer.tiles.config.Config;
 import io.gazetteer.tiles.file.FileTileStore;
 import io.gazetteer.tiles.postgis.SimpleTileReader;
 import io.gazetteer.tiles.postgis.WithTileReader;
+import io.gazetteer.tiles.s3.S3TileStore;
 import io.gazetteer.tiles.util.TileUtil;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.nio.file.Path;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
@@ -22,6 +26,8 @@ import java.util.stream.Stream;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
@@ -29,11 +35,13 @@ import picocli.CommandLine.Parameters;
 @Command(name = "tiles")
 public class Tiles implements Callable<Integer> {
 
+  private static final Logger logger = LoggerFactory.getLogger(Tiles.class);
+
   @Parameters(
       index = "0",
       paramLabel = "CONFIG_FILE",
       description = "The YAML configuration file.")
-  private File file;
+  private String file;
 
   @Parameters(
       index = "1",
@@ -43,9 +51,9 @@ public class Tiles implements Callable<Integer> {
 
   @Parameters(
       index = "2",
-      paramLabel = "TILE_DIRECTORY",
-      description = "The tile directory.")
-  private Path directory;
+      paramLabel = "TILE_REPOSITORY",
+      description = "The tile repository.")
+  private String repository;
 
   @Option(
       names = {"--minZoom"},
@@ -60,11 +68,11 @@ public class Tiles implements Callable<Integer> {
   @Option(
       names = {"-t", "--tile-reader"},
       description = "The tile reader.")
-  private String tileReader = "basic";
+  private String tileReader = "simple";
 
-  public TileReader initTileReader(PoolingDataSource dataSource, Config config) {
+  private TileReader tileReader(PoolingDataSource dataSource, Config config) {
     switch (tileReader) {
-      case "basic":
+      case "simple":
         return new SimpleTileReader(dataSource, config);
       case "with":
         return new WithTileReader(dataSource, config);
@@ -73,34 +81,40 @@ public class Tiles implements Callable<Integer> {
     }
   }
 
-  @Override
-  public Integer call() throws SQLException, ParseException, FileNotFoundException {
-    Stopwatch stopWatch = Stopwatch.createStarted();
+  private TileWriter tileWriter(String repository) throws IOException {
+    if (Files.exists(Paths.get(repository))) {
+      return new FileTileStore(Paths.get(repository));
+    } else if (repository.startsWith("s3://")) {
+      AmazonS3 client = AmazonS3ClientBuilder.standard().defaultClient();
+      AmazonS3URI uri = new AmazonS3URI(repository);
+      return new S3TileStore(client, uri);
+    } else {
+      throw new IOException("");
+    }
+  }
 
+  @Override
+  public Integer call() throws SQLException, ParseException, IOException {
     // Read the configuration toInputStream
-    Config config = Config.load(new FileInputStream(file));
+    Config config = Config.load(InputStreams.from(file));
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
-    // Choose the tile reader
-    TileReader tileReader = initTileReader(datasource, config);
-    TileWriter tileWriter = new FileTileStore(directory);
-
-    //AmazonS3 client = AmazonS3ClientBuilder.standard().defaultClient();
-    //TileWriter tileWriter = new S3TileStore(client, "gazetteer-tiles");
+    // Initialize tile reader and writer
+    TileReader tileReader = tileReader(datasource, config);
+    TileWriter tileWriter = tileWriter(repository);
 
     try (Connection connection = datasource.getConnection()) {
       Geometry geometry = TileUtil.bbox(connection);
       Stream<Tile> coords = TileUtil.getTiles(geometry, minZoom, maxZoom);
-      coords.forEach(xyz -> {
+      coords.forEach(tile -> {
         try {
-          byte[] tile = tileReader.read(xyz);
-          tileWriter.write(xyz, tile);
+          byte[] bytes = tileReader.read(tile);
+          tileWriter.write(tile, bytes);
         } catch (Exception e) {
           e.printStackTrace();
         }
       });
     }
-    System.out.println(String.format("-> %dms", stopWatch.elapsed(TimeUnit.MILLISECONDS)));
 
     return 0;
   }
