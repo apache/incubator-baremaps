@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.apache.commons.dbcp2.PoolingDataSource;
@@ -66,9 +67,14 @@ public class Tiles implements Callable<Integer> {
   private int maxZoom = 14;
 
   @Option(
-      names = {"-t", "--tile-reader"},
+      names = {"--tile-reader"},
       description = "The tile reader.")
   private String tileReader = "simple";
+
+  @Option(
+      names = {"--threads"},
+      description = "The size of the thread pool.")
+  private int threads = Runtime.getRuntime().availableProcessors();
 
   private TileReader tileReader(PoolingDataSource dataSource, Config config) {
     switch (tileReader) {
@@ -95,6 +101,8 @@ public class Tiles implements Callable<Integer> {
 
   @Override
   public Integer call() throws SQLException, ParseException, IOException {
+    logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
+
     // Read the configuration toInputStream
     Config config = Config.load(InputStreams.from(file));
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
@@ -103,18 +111,20 @@ public class Tiles implements Callable<Integer> {
     TileReader tileReader = tileReader(datasource, config);
     TileWriter tileWriter = tileWriter(repository);
 
+    Stream<Tile> tiles;
     try (Connection connection = datasource.getConnection()) {
       Geometry geometry = TileUtil.bbox(connection);
-      Stream<Tile> coords = TileUtil.getTiles(geometry, minZoom, maxZoom);
-      coords.forEach(tile -> {
-        try {
-          byte[] bytes = tileReader.read(tile);
-          tileWriter.write(tile, bytes);
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      });
+      tiles = TileUtil.getTiles(geometry, minZoom, maxZoom);
     }
+
+    tiles.parallel().forEach(tile -> {
+      try {
+        byte[] bytes = tileReader.read(tile);
+        tileWriter.write(tile, bytes);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    });
 
     return 0;
   }

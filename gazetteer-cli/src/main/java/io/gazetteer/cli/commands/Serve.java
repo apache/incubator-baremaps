@@ -84,7 +84,7 @@ public class Serve implements Callable<Integer> {
     server.setExecutor(null);
     server.start();
 
-    logger.info("Server started listening on port %s", port);
+    logger.info("Server started listening on port {}", port);
 
     return 0;
   }
