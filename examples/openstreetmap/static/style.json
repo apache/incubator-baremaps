@@ -5,7 +5,7 @@
     "maputnik:renderer": "mbgljs"
   },
   "sources": {
-    "gazetteer": {
+    "baremaps": {
       "type": "vector",
       "tiles": [
         "http://localhost:9000/tiles/{z}/{x}/{y}.pbf"
@@ -37,7 +37,7 @@
     {
       "id": "geological",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "waterway",
       "minzoom": 0,
       "filter": [
@@ -53,7 +53,7 @@
     {
       "id": "natural-water",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "natural",
       "minzoom": 0,
       "filter": [
@@ -74,7 +74,7 @@
     {
       "id": "amenity-school",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "amenity",
       "minzoom": 14,
       "maxzoom": 24,
@@ -98,7 +98,7 @@
     {
       "id": "amenity-university",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "amenity",
       "minzoom": 14,
       "maxzoom": 24,
@@ -122,7 +122,7 @@
     {
       "id": "landuse-commercial",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -148,7 +148,7 @@
     {
       "id": "landuse-construction",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -171,7 +171,7 @@
     {
       "id": "landuse-industrial",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -194,7 +194,7 @@
     {
       "id": "landuse-residential",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -217,7 +217,7 @@
     {
       "id": "landuse-retail",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -240,7 +240,7 @@
     {
       "id": "landuse-allotments",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -263,7 +263,7 @@
     {
       "id": "landuse-farmland",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -286,7 +286,7 @@
     {
       "id": "landuse-farmyard",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -309,7 +309,7 @@
     {
       "id": "landuse-meadow",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -332,7 +332,7 @@
     {
       "id": "landuse-orchard",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -355,7 +355,7 @@
     {
       "id": "landuse-vineyard",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -381,7 +381,7 @@
     {
       "id": "landuse-forest",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -404,7 +404,7 @@
     {
       "id": "landuse-basin",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -427,7 +427,7 @@
     {
       "id": "landuse-brownfield",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -450,7 +450,7 @@
     {
       "id": "landuse-cemetery",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -473,7 +473,7 @@
     {
       "id": "landuse-garages",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -496,7 +496,7 @@
     {
       "id": "landuse-grass",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -519,7 +519,7 @@
     {
       "id": "landuse-greenfield",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -542,7 +542,7 @@
     {
       "id": "landuse-greenhouse-horticulture",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -565,7 +565,7 @@
     {
       "id": "landuse-landfill",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -588,7 +588,7 @@
     {
       "id": "landuse-military",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -614,7 +614,7 @@
     {
       "id": "landuse-plant-nursery-copy",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -640,7 +640,7 @@
     {
       "id": "landuse-quarry",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -666,7 +666,7 @@
     {
       "id": "landuse-railway",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -692,7 +692,7 @@
     {
       "id": "landuse-recreation-ground",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -718,7 +718,7 @@
     {
       "id": "landuse-religious",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -744,7 +744,7 @@
     {
       "id": "landuse-village-green",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "landuse",
       "filter": [
         "all",
@@ -770,7 +770,7 @@
     {
       "id": "leisure-swimming-pool",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "leisure",
       "minzoom": 14,
       "maxzoom": 24,
@@ -794,7 +794,7 @@
     {
       "id": "leisure-sports-centre",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "leisure",
       "minzoom": 14,
       "maxzoom": 24,
@@ -818,7 +818,7 @@
     {
       "id": "leisure-track",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "leisure",
       "minzoom": 14,
       "maxzoom": 24,
@@ -842,7 +842,7 @@
     {
       "id": "leisure",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "leisure",
       "minzoom": 14,
       "maxzoom": 24,
@@ -866,7 +866,7 @@
     {
       "id": "amenity-parking",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "amenity",
       "minzoom": 14,
       "maxzoom": 24,
@@ -890,7 +890,7 @@
     {
       "id": "waterway-riverbank",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "waterway",
       "filter": [
         "all",
@@ -910,7 +910,7 @@
     {
       "id": "waterway-river",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "waterway",
       "filter": [
         "all",
@@ -929,7 +929,7 @@
     {
       "id": "waterway-stream",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "waterway",
       "filter": [
         "all",
@@ -952,7 +952,7 @@
     {
       "id": "waterway-tidal-channel-copy",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "waterway",
       "filter": [
         "all",
@@ -977,7 +977,7 @@
     {
       "id": "waterway-canal",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "waterway",
       "maxzoom": 24,
       "filter": [
@@ -999,7 +999,7 @@
     {
       "id": "waterway-drain",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "waterway",
       "maxzoom": 24,
       "filter": [
@@ -1019,7 +1019,7 @@
     {
       "id": "waterway-ditch",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "waterway",
       "maxzoom": 24,
       "filter": [
@@ -1039,7 +1039,7 @@
     {
       "id": "waterway-fairway",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "waterway",
       "maxzoom": 24,
       "filter": [
@@ -1059,7 +1059,7 @@
     {
       "id": "waterway-pressurised",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "waterway",
       "maxzoom": 24,
       "filter": [
@@ -1079,7 +1079,7 @@
     {
       "id": "highway-construction",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1106,7 +1106,7 @@
     {
       "id": "highway-cycleway",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1133,7 +1133,7 @@
     {
       "id": "highway-path",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1160,7 +1160,7 @@
     {
       "id": "highway-steps",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1187,7 +1187,7 @@
     {
       "id": "highway-bridleway",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1214,7 +1214,7 @@
     {
       "id": "highway-footway",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1241,7 +1241,7 @@
     {
       "id": "highway-road",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1265,7 +1265,7 @@
     {
       "id": "highway-raceway",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1289,7 +1289,7 @@
     {
       "id": "highway-escape",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1313,7 +1313,7 @@
     {
       "id": "highway-bus-guideway",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1340,7 +1340,7 @@
     {
       "id": "highway-track",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1367,7 +1367,7 @@
     {
       "id": "highway-pedestrian-polygon",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1392,7 +1392,7 @@
     {
       "id": "highway-pedestrian-linestring",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1420,7 +1420,7 @@
     {
       "id": "highway-service",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1443,7 +1443,7 @@
     {
       "id": "highway-living-street",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1466,7 +1466,7 @@
     {
       "id": "highway-residential-casting",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1489,7 +1489,7 @@
     {
       "id": "highway-unclassified-casting",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1512,7 +1512,7 @@
     {
       "id": "highway-tertiary-casting",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1538,7 +1538,7 @@
     {
       "id": "highway-secondary-casting",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1565,7 +1565,7 @@
     {
       "id": "highway-primary-casting",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1591,7 +1591,7 @@
     {
       "id": "highway-trunk-casting",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1615,7 +1615,7 @@
     {
       "id": "highway-motorway-casting",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1639,7 +1639,7 @@
     {
       "id": "highway-residential",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1662,7 +1662,7 @@
     {
       "id": "highway-unclassified",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1685,7 +1685,7 @@
     {
       "id": "highway-tertiary",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1711,7 +1711,7 @@
     {
       "id": "highway-secondary",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1738,7 +1738,7 @@
     {
       "id": "highway-primary",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1764,7 +1764,7 @@
     {
       "id": "highway-trunk",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1788,7 +1788,7 @@
     {
       "id": "highway-motorway",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "filter": [
         "all",
@@ -1812,7 +1812,7 @@
     {
       "id": "highway-residential-name",
       "type": "symbol",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "minzoom": 0,
       "filter": [
@@ -1837,7 +1837,7 @@
     {
       "id": "highway-unclassified-name",
       "type": "symbol",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "minzoom": 0,
       "filter": [
@@ -1862,7 +1862,7 @@
     {
       "id": "highway-tertiary-name",
       "type": "symbol",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "minzoom": 0,
       "filter": [
@@ -1887,7 +1887,7 @@
     {
       "id": "highway-secondary-name",
       "type": "symbol",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "minzoom": 0,
       "filter": [
@@ -1912,7 +1912,7 @@
     {
       "id": "highway-primary-name",
       "type": "symbol",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "minzoom": 0,
       "filter": [
@@ -1937,7 +1937,7 @@
     {
       "id": "highway-trunk-name-copy",
       "type": "symbol",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "minzoom": 0,
       "filter": [
@@ -1962,7 +1962,7 @@
     {
       "id": "highway-motorway-name",
       "type": "symbol",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "highway",
       "minzoom": 0,
       "filter": [
@@ -1987,7 +1987,7 @@
     {
       "id": "railway-platform",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "railway",
       "filter": [
         "all",
@@ -2008,7 +2008,7 @@
     {
       "id": "railway-subway",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "railway",
       "filter": [
         "all",
@@ -2030,7 +2030,7 @@
     {
       "id": "railway-tram",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "railway",
       "filter": [
         "all",
@@ -2052,7 +2052,7 @@
     {
       "id": "railway-rail-dash",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "railway",
       "filter": [
         "all",
@@ -2077,7 +2077,7 @@
     {
       "id": "railway-light-rail",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "railway",
       "filter": [
         "all",
@@ -2098,7 +2098,7 @@
     {
       "id": "railway-rail",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "railway",
       "filter": [
         "all",
@@ -2119,7 +2119,7 @@
     {
       "id": "building",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "building",
       "minzoom": 14,
       "maxzoom": 24,
@@ -2142,7 +2142,7 @@
     {
       "id": "building-religious",
       "type": "symbol",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "building",
       "minzoom": 14,
       "filter": [
@@ -2180,7 +2180,7 @@
     {
       "id": "building-hospital",
       "type": "symbol",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "building",
       "minzoom": 14,
       "filter": [
@@ -2211,7 +2211,7 @@
     {
       "id": "building-housenumber",
       "type": "symbol",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "building",
       "minzoom": 14,
       "filter": [
@@ -2249,7 +2249,7 @@
     {
       "id": "natural-scrub",
       "type": "fill",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "natural",
       "minzoom": 14,
       "maxzoom": 24,
@@ -2272,7 +2272,7 @@
     {
       "id": "natural-tree",
       "type": "circle",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "natural",
       "minzoom": 14,
       "maxzoom": 24,
@@ -2335,7 +2335,7 @@
     {
       "id": "natural-tree-root",
       "type": "circle",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "natural",
       "minzoom": 16,
       "filter": [
@@ -2397,7 +2397,7 @@
     {
       "id": "boundary-country",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "boundary",
       "minzoom": 0,
       "maxzoom": 10,
@@ -2421,7 +2421,7 @@
     {
       "id": "boundary-all",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "boundary",
       "minzoom": 10,
       "maxzoom": 24,

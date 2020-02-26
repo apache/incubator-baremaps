@@ -29,7 +29,7 @@ the `-i` argument specifies the interval in meters at which contours are generat
 gdal_contour \
   -a elevation -nln aster_dem -i 10 \
   -f PostgreSQL \
-  liecthenstein-aster-dem-v2-3857.tif "PG:host=localhost user=gazetteer password=gazetteer dbname=gazetteer"
+  liecthenstein-aster-dem-v2-3857.tif "PG:host=localhost user=baremaps password=baremaps dbname=baremaps"
 ```
 
 The following index can now be created to improve performances. 
@@ -43,8 +43,8 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS aster_dem_gix ON aster_dem USING SPGIST(
 To preview the data, run the tile server with the following command:
 
 ```bash
-gazetteer serve \
-  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer' \
+baremaps serve \
+  'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
   'config.yaml' \
   'static/'
 ```
@@ -57,6 +57,6 @@ However, this is out of the scope of this example, as contours are not supported
 
 ```
 raster2pgsql -s 3857 -I -C -M -Y liecthenstein-aster-dem-v2.tif -t 256x256 public aster_dem > liecthenstein-aster-dem-v2.sql
-psql -h localhost -U gazetteer gazetteer < liecthenstein-aster-dem-v2.sql
+psql -h localhost -U baremaps baremaps < liecthenstein-aster-dem-v2.sql
 rm liecthenstein-aster-dem-v2.sql
 ```

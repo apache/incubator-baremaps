@@ -1,0 +1,30 @@
+package com.baremaps.osm.osmxml;
+
+import static com.baremaps.osm.TestUtils.dataOscXml;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.baremaps.core.stream.HoldingConsumer;
+import com.baremaps.core.stream.AccumulatingConsumer;
+import java.util.Spliterator;
+import javax.xml.stream.XMLStreamException;
+import org.junit.jupiter.api.Test;
+
+public class ChangeSpliteratorTest {
+
+  @Test
+  public void tryAdvance() throws XMLStreamException {
+    Spliterator<Change> spliterator = new ChangeSpliterator(dataOscXml());
+    spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
+    assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
+  }
+
+  @Test
+  public void forEachRemaining() throws XMLStreamException {
+    Spliterator<Change> spliterator = new ChangeSpliterator(dataOscXml());
+    AccumulatingConsumer<Change> accumulator = new AccumulatingConsumer<>();
+    spliterator.forEachRemaining(accumulator);
+    assertEquals(accumulator.values().size(), 51);
+  }
+}

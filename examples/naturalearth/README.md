@@ -26,7 +26,7 @@ PGCLIENTENCODING=UTF8 ogr2ogr \
     -s_srs EPSG:4326 \
     -t_srs EPSG:3857 \
     -clipsrc -180.1 -85.0511 180.1 85.0511 \
-    PG:"dbname=gazetteer user=gazetteer host=localhost password=gazetteer port=5432" \
+    PG:"dbname=baremaps user=baremaps host=localhost password=baremaps port=5432" \
     -lco GEOMETRY_NAME=geometry \
     -lco OVERWRITE=YES \
     -lco DIM=2 \
@@ -48,14 +48,14 @@ ORDER BY tablename
 These queries have been saved in the `indexes.sql` file. You can execute it with the following command:
 
 ```bash
-psql -h localhost -U gazetteer gazetteer < indexes.sql
+psql -h localhost -U baremaps baremaps < indexes.sql
 ```
 
 To preview the data, run the tile server with the following command:
 
 ```bash
-gazetteer serve \
-  'jdbc:postgresql://localhost:5432/gazetteer?allowMultiQueries=true&user=gazetteer&password=gazetteer' \
+baremaps serve \
+  'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
   'config.yaml' \
   'static/'
 ```
