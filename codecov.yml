@@ -1,2 +1,2 @@
 ignore:
-  - "gazetteer-osm/src/main/java/io/gazetteer/osm/model"  # ignore the OSM model classes
+  - "baremaps-osm/src/main/java/io/baremaps/osm/model"  # ignore the OSM model classes

@@ -5,7 +5,7 @@
     "maputnik:renderer": "mbgljs"
   },
   "sources": {
-    "gazetteer": {
+    "baremaps": {
       "type": "vector",
       "tiles": [
         "http://localhost:9000/tiles/{z}/{x}/{y}.pbf"
@@ -37,7 +37,7 @@
     {
       "id": "aster_dem",
       "type": "line",
-      "source": "gazetteer",
+      "source": "baremaps",
       "source-layer": "aster_dem",
       "paint": {
         "line-color": "rgba(0, 0, 0, 0.5)"

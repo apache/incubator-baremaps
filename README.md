@@ -1,12 +1,12 @@
-# Gazetteer
+# Baremaps
 
-[![CircleCI](https://circleci.com/gh/gazetteerio/gazetteer.svg?style=svg)](https://circleci.com/gh/gazetteerio/gazetteer)
-[![Codacy](https://api.codacy.com/project/badge/Grade/9bb5efb0bea54a868cc70b0d9e564767)](https://app.codacy.com/app/bchapuis/gazetteer?utm_source=github.com&utm_medium=referral&utm_content=bchapuis/gazetteer&utm_campaign=Badge_Grade_Dashboard)
-[![codecov](https://codecov.io/gh/gazetteerio/gazetteer/branch/master/graph/badge.svg)](https://codecov.io/gh/gazetteerio/gazetteer)
+[![CircleCI](https://circleci.com/gh/baremaps/baremaps.svg?style=svg)](https://circleci.com/gh/baremaps/baremaps)
+[![Codacy](https://api.codacy.com/project/badge/Grade/9bb5efb0bea54a868cc70b0d9e564767)](https://app.codacy.com/app/bchapuis/baremaps?utm_source=github.com&utm_medium=referral&utm_content=bchapuis/baremaps&utm_campaign=Badge_Grade_Dashboard)
+[![codecov](https://codecov.io/gh/baremaps/baremaps/branch/master/graph/badge.svg)](https://codecov.io/gh/baremaps/baremaps)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fgazetteerio%2Fgazetteer.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fgazetteerio%2Fgazetteer?ref=badge_shield)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbaremaps%2Fbaremaps.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbaremaps%2Fbaremaps?ref=badge_shield)
 
-Gazetteer is an open source pipeline for producing Mapbox vector tiles from [OpenStreetMap](https://www.openstreetmap.org) with Postgis and Java.
+Baremaps is an open source pipeline for producing Mapbox vector tiles from [OpenStreetMap](https://www.openstreetmap.org) with Postgis and Java.
 
 It is inspired by [Osmosis](https://github.com/openstreetmap/osmosis), but it comes with additional features, such as the ability to:
 -   Process data in parallel with the [Stream API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html) of Java
@@ -18,7 +18,7 @@ On the longer run, the aim of the project is to work with a variety of data sour
 
 ## State of the map
 
-[![State of the map](https://github.com/gazetteerio/gazetteer/raw/master/screenshots/2019-12-27.png)](https://www.gazetteer.io/)
+[![State of the map](https://github.com/baremaps/baremaps/raw/master/screenshots/2019-12-27.png)](https://www.baremaps.com/)
 
 ## Prerequisites
 
@@ -31,22 +31,22 @@ On the longer run, the aim of the project is to work with a variety of data sour
 Clone and build the repository:
 
 ```bash
-git clone git@github.com:gazetteerio/gazetteer.git
-cd gazetteer
+git clone git@github.com:baremaps/baremaps.git
+cd baremaps
 mvn clean install
 ```
 
 Unzip the binary distribution and add the `/bin` folder to your `PATH` variable:
 
 ```bash
-unzip gazetteer-cli/target/gazetteer-cli-1.0-SNAPSHOT.zip
-export PATH=$PATH:`pwd`/gazetteer-cli-1.0-SNAPSHOT/bin
+unzip baremaps-cli/target/baremaps-cli-0.1-SNAPSHOT.zip
+export PATH=$PATH:`pwd`/baremaps-cli-0.1-SNAPSHOT/bin
 ```
 
-Calling the `gazetteer` command should now result in an output similar to the following:
+Calling the `baremaps` command should now result in an output similar to the following:
 
 ```bash
-Usage: gazetteer [COMMAND]
+Usage: baremaps [COMMAND]
 Commands:
   import
   update
@@ -54,24 +54,24 @@ Commands:
   serve
 ```
 
-In order to run Gazetteer, you need to setup a postgis database.
+In order to run baremaps, you need to setup a postgis database.
 The following docker image will allow you to jump start this installation:
 
 ```bash
 docker run \
-  --name gazetteer-postgis \
+  --name baremaps-postgis \
   --publish 5432:5432 \
-  -e POSTGRES_DB=gazetteer \
-  -e POSTGRES_USER=gazetteer \
-  -e POSTGRES_PASSWORD=gazetteer \
-  -d gazetteerio/postgis:1
+  -e POSTGRES_DB=baremaps \
+  -e POSTGRES_USER=baremaps \
+  -e POSTGRES_PASSWORD=baremaps \
+  -d baremaps/postgis:1
 ```
 
 You can then start and stop the container with the following commands:
 
 ```bash
-docker start gazetteer-postgis
-docker stop gazetteer-postgis
+docker start baremaps-postgis
+docker stop baremaps-postgis
 ```
 
 ## Examples
@@ -83,7 +83,7 @@ Several examples illustrate how to import datasets in postgis and produce vector
 
 ## Limitations
 
-Gazetteer is a work in progress and is not production ready, i.e., it comes with a lot of limitations. 
+baremaps is a work in progress and is not production ready, i.e., it comes with a lot of limitations. 
 Additional work is needed to: 
 -   Configure the map and its style at all zoom levels
 -   Improve the creation of geometries for OSM relations with JTS
@@ -95,7 +95,7 @@ Additional work is needed to:
 
 ## Contributing
 
-Being a side project, gazetteer does not have clear contribution guidelines yet.
+Being a side project, baremaps does not have clear contribution guidelines yet.
 As the development work happens on github, feel free to report an issue, suggest a feature, or make a pull request.
 Generally speaking, as a contributor, you should:
 -   be nice, inclusive and constructive when interacting with others;
