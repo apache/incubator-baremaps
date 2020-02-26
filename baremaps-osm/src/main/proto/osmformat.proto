@@ -13,9 +13,10 @@
 
 syntax = "proto2";
 
-option optimize_for = LITE_RUNTIME;
+package osmpbf;
+
+option optimize_for = SPEED;
 option java_package = "com.baremaps.osm.binary";
-package OSMPBF;
 
 /* OSM Binary file format
 This is the master schema file of the OSM binary file format. This

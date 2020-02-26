@@ -68,7 +68,7 @@
     <version.lib.gson>2.8.6</version.lib.gson>
     <version.lib.guava>28.1-jre</version.lib.guava>
     <version.lib.jts>1.16.1</version.lib.jts>
-    <version.lib.junit>5.1.0</version.lib.junit>
+    <version.lib.junit>5.6.0</version.lib.junit>
     <version.lib.lmdb>0.7.0</version.lib.lmdb>
     <version.lib.logback>1.2.3</version.lib.logback>
     <version.lib.osmosis>0.47</version.lib.osmosis>
@@ -119,28 +119,14 @@
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>${version.plugin.surefire}</version>
         <configuration>
-          <includes>
-            <include>**/*.class</include>
-          </includes>
-          <properties>
-            <excludeTags>integration</excludeTags>
-          </properties>
-          <reuseForks>true</reuseForks>
-          <useSystemClassLoader>false</useSystemClassLoader>
+          <excludedGroups>integration</excludedGroups>
         </configuration>
-        <dependencies>
-          <dependency>
-            <artifactId>junit-platform-surefire-provider</artifactId>
-            <groupId>org.junit.platform</groupId>
-            <version>${version.plugin.surefire.provider.junit}</version>
-          </dependency>
-          <dependency>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <groupId>org.junit.jupiter</groupId>
-            <version>${version.lib.junit}</version>
-          </dependency>
-        </dependencies>
+      </plugin>
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
         <groupId>org.apache.maven.plugins</groupId>
         <version>${version.plugin.surefire}</version>
       </plugin>
@@ -223,16 +209,6 @@
         <version>${version.lib.jts}</version>
       </dependency>
       <dependency>
-        <artifactId>logback-core</artifactId>
-        <groupId>ch.qos.logback</groupId>
-        <version>${version.lib.logback}</version>
-      </dependency>
-      <dependency>
-        <artifactId>logback-classic</artifactId>
-        <groupId>ch.qos.logback</groupId>
-        <version>${version.lib.logback}</version>
-      </dependency>
-      <dependency>
         <artifactId>slf4j-api</artifactId>
         <groupId>org.slf4j</groupId>
         <version>${version.lib.slf4j}</version>
@@ -265,9 +241,14 @@
 
       <!-- Logging libraries -->
       <dependency>
+        <artifactId>logback-core</artifactId>
+        <groupId>ch.qos.logback</groupId>
+        <version>${version.lib.logback}</version>
+      </dependency>
+      <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.2.3</version>
+        <version>${version.lib.logback}</version>
       </dependency>
 
       <!-- Testing libraries -->
@@ -355,10 +336,6 @@
     <!-- Testing libraries -->
     <dependency>
       <artifactId>junit-jupiter-api</artifactId>
-      <groupId>org.junit.jupiter</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>junit-jupiter-params</artifactId>
       <groupId>org.junit.jupiter</groupId>
     </dependency>
     <dependency>

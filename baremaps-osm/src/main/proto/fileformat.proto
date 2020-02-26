@@ -13,7 +13,7 @@
 
 syntax = "proto2";
 
-option optimize_for = LITE_RUNTIME;
+option optimize_for = SPEED;
 option java_package = "com.baremaps.osm.binary";
 package OSMPBF;
 
