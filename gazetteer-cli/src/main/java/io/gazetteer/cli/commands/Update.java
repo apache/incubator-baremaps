@@ -37,12 +37,16 @@ import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 @Command(name = "update")
 public class Update implements Callable<Integer> {
+
+  private static final Logger logger = LoggerFactory.getLogger(Import.class);
 
   @Parameters(
       index = "0",
@@ -56,13 +60,10 @@ public class Update implements Callable<Integer> {
       description = "The postgres database.")
   private String database;
 
-  @Option(
-      names = {"-t", "--threads"},
-      description = "The size of the thread pool.")
-  private int threads = Runtime.getRuntime().availableProcessors();
-
   @Override
   public Integer call() throws Exception {
+    logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
+
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
     CRSFactory crsFactory = new CRSFactory();
     CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");

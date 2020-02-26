@@ -66,13 +66,10 @@ public class Import implements Callable<Integer> {
       description = "The postgres database.")
   private String database;
 
-  @Option(
-      names = {"-t", "--threads"},
-      description = "The size of the thread pool.")
-  private int threads = Runtime.getRuntime().availableProcessors();
-
   @Override
   public Integer call() throws Exception {
+    logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
+
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
     logger.info("Dropping tables.");

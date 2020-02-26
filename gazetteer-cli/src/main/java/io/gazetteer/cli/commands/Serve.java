@@ -48,12 +48,12 @@ public class Serve implements Callable<Integer> {
   private String directory;
 
   @Option(
-      names = {"-p", "--port"},
+      names = {"--port"},
       description = "The port on which to listen.")
   private int port = 9000;
 
   @Option(
-      names = {"-t", "--tile-reader"},
+      names = {"--tile-reader"},
       description = "The tile reader.")
   private String tileReader = "basic";
 
@@ -70,6 +70,8 @@ public class Serve implements Callable<Integer> {
 
   @Override
   public Integer call() throws IOException {
+    logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
+
     // Read the configuration toInputStream
     Config config = Config.load(InputStreams.from(file));
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);

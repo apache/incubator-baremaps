@@ -71,11 +71,6 @@ public class Tiles implements Callable<Integer> {
       description = "The tile reader.")
   private String tileReader = "simple";
 
-  @Option(
-      names = {"--threads"},
-      description = "The size of the thread pool.")
-  private int threads = Runtime.getRuntime().availableProcessors();
-
   private TileReader tileReader(PoolingDataSource dataSource, Config config) {
     switch (tileReader) {
       case "simple":
