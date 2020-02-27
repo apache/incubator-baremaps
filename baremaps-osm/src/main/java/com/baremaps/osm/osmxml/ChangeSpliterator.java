@@ -70,9 +70,11 @@ public class ChangeSpliterator implements Spliterator<Change> {
 
   private static XMLEventReader xmlEventReader(InputStream file) throws XMLStreamException {
     XMLInputFactory factory = XMLInputFactory.newInstance();
-    factory.setProperty(XMLInputFactory.IS_COALESCING, false);
+    factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+    factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
     factory.setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, false);
     factory.setProperty(XMLInputFactory.IS_VALIDATING, false);
+    factory.setProperty(XMLInputFactory.IS_COALESCING, false);
     return factory.createXMLEventReader(file);
   }
 

@@ -84,26 +84,28 @@ public class Update implements Callable<Integer> {
     String statePath = statePath(nextSequenceNumber);
 
     String stateURL = String.format("%s/%s", source, statePath);
-    InputStreamReader reader = new InputStreamReader(InputStreams.from(stateURL), Charsets.UTF_8);
-    String stateContent = CharStreams.toString(reader);
-    State state = State.parse(stateContent);
-    String changePath = changePath(nextSequenceNumber);
-    String changeURL = String.format("%s/%s", source, changePath);
 
-    try (InputStream changeInputStream = new GZIPInputStream(InputStreams.from(changeURL))) {
-      Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
-      Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
-      ChangeConsumer changeConsumer = new ChangeConsumer(nodeStore, wayStore, relationStore);
-      changeStream.forEach(changeConsumer);
+    try (InputStreamReader reader = new InputStreamReader(InputStreams.from(stateURL), Charsets.UTF_8)) {
+      String stateContent = CharStreams.toString(reader);
+      State state = State.parse(stateContent);
+      String changePath = changePath(nextSequenceNumber);
+      String changeURL = String.format("%s/%s", source, changePath);
+
+      try (InputStream changeInputStream = new GZIPInputStream(InputStreams.from(changeURL))) {
+        Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
+        Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
+        ChangeConsumer changeConsumer = new ChangeConsumer(nodeStore, wayStore, relationStore);
+        changeStream.forEach(changeConsumer);
+      }
+
+      headerMapper.insert(new HeaderBlock(
+          state.timestamp,
+          state.sequenceNumber,
+          header.getReplicationUrl(),
+          header.getSource(),
+          header.getWritingProgram(),
+          header.getBbox()));
     }
-
-    headerMapper.insert(new HeaderBlock(
-        state.timestamp,
-        state.sequenceNumber,
-        header.getReplicationUrl(),
-        header.getSource(),
-        header.getWritingProgram(),
-        header.getBbox()));
 
     return 0;
 

@@ -41,9 +41,11 @@ public class TileReaderBenchmark {
   @Setup(Level.Invocation)
   public void prepare() throws IOException, ClassNotFoundException {
     Class.forName("org.postgresql.Driver");
-    config = Config.load(new FileInputStream(new File("./examples/openstreetmap/config.yaml")));
-    datasource = PostgisHelper.poolingDataSource(
-        "jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps");
+    try (FileInputStream fis = new FileInputStream(new File("./examples/openstreetmap/config.yaml"))) {
+      config = Config.load(fis);
+      datasource = PostgisHelper.poolingDataSource(
+          "jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps");
+    }
   }
 
   @Benchmark
