@@ -2,7 +2,7 @@ package com.baremaps.cli;
 
 import com.baremaps.cli.commands.Import;
 import com.baremaps.cli.commands.Serve;
-import com.baremaps.cli.commands.Tiles;
+import com.baremaps.cli.commands.Export;
 import com.baremaps.cli.commands.Update;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
@@ -11,7 +11,7 @@ import picocli.CommandLine.Command;
 @Command(subcommands = {
     Import.class,
     Update.class,
-    Tiles.class,
+    Export.class,
     Serve.class,
 }, name="baremaps")
 public class Baremaps implements Callable<Integer> {
