@@ -30,10 +30,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "tiles")
-public class Tiles implements Callable<Integer> {
+@Command(name = "export")
+public class Export implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(Tiles.class);
+  private static final Logger logger = LoggerFactory.getLogger(Export.class);
 
   @Parameters(
       index = "0",

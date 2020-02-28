@@ -8,6 +8,12 @@ It can be built from the root of the project directory using the following comma
 docker build -t baremaps/baremaps -f docker/baremaps/Dockerfile .
 ```
 
+This image is published on docker hub with the fol:
+
+```bash
+docker push baremaps/baremaps:latest
+```
+
 It can then be run as follow:
 
 ```bash

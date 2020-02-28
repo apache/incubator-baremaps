@@ -13,6 +13,10 @@ import java.io.IOException;
 
 public class S3TileStore implements TileReader, TileWriter {
 
+  private static final String CONTENT_ENCODING = "gzip";
+
+  private static final String CONTENT_TYPE = "application/vnd.mapbox-vector-tile";
+
   private final AmazonS3 client;
 
   private final AmazonS3URI uri;
@@ -36,6 +40,8 @@ public class S3TileStore implements TileReader, TileWriter {
   public void write(Tile tile, byte[] bytes) {
     String path = getPath(tile);
     ObjectMetadata metadata = new ObjectMetadata();
+    metadata.setContentEncoding(CONTENT_ENCODING);
+    metadata.setContentType(CONTENT_TYPE);
     metadata.setContentLength(bytes.length);
     client.putObject(uri.getBucket(), path, new ByteArrayInputStream(bytes), metadata);
   }
