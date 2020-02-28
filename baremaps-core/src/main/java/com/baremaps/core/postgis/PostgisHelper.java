@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.MessageFormat;
 import org.apache.commons.dbcp2.ConnectionFactory;
 import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
@@ -58,7 +59,9 @@ public final class PostgisHelper {
   public static void executeScript(Connection connection, String script) throws IOException, SQLException {
     URL url = Resources.getResource(script);
     String sql = Resources.toString(url, Charsets.UTF_8);
-    connection.createStatement().execute(sql);
+    try (Statement statement = connection.createStatement()) {
+      statement.execute(sql);
+    }
   }
 
 }
