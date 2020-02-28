@@ -24,7 +24,7 @@ Well done, the tile server should have started and a map of liechtenstein should
 Vector tiles are rarely served dynamically in production. The following command produces a directory that contains precomputed tiles that can be deployed on a CDN:
 
 ```bash
-baremaps tiles \
+baremaps export \
   'examples/openstreetmap/config.yaml' \
   'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
   'examples/openstreetmap/tiles/' \
