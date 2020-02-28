@@ -1,6 +1,8 @@
 # Baremaps
 
-[![CircleCI](https://circleci.com/gh/baremaps/baremaps.svg?style=svg)](https://circleci.com/gh/baremaps/baremaps)
+![Java CI](https://github.com/baremaps/baremaps/workflows/Java%20CI/badge.svg)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/baremaps/baremaps.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/baremaps/baremaps/alerts/)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/baremaps/baremaps.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/baremaps/baremaps/context:java)
 [![Codacy](https://api.codacy.com/project/badge/Grade/9bb5efb0bea54a868cc70b0d9e564767)](https://app.codacy.com/app/bchapuis/baremaps?utm_source=github.com&utm_medium=referral&utm_content=bchapuis/baremaps&utm_campaign=Badge_Grade_Dashboard)
 [![codecov](https://codecov.io/gh/baremaps/baremaps/branch/master/graph/badge.svg)](https://codecov.io/gh/baremaps/baremaps)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
