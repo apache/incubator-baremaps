@@ -64,7 +64,7 @@ docker run \
   -e POSTGRES_DB=baremaps \
   -e POSTGRES_USER=baremaps \
   -e POSTGRES_PASSWORD=baremaps \
-  -d baremaps/postgis:1
+  -d baremaps/postgis:latest
 ```
 
 You can then start and stop the container with the following commands:
