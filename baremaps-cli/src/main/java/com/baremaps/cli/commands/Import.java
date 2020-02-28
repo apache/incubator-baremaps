@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
@@ -72,27 +73,30 @@ public class Import implements Callable<Integer> {
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
     logger.info("Dropping tables.");
-    loadStatements("osm_drop_tables.sql").forEach(statement -> {
-      try (Connection connection = datasource.getConnection()) {
-        connection.createStatement().execute(statement);
+    loadStatements("osm_drop_tables.sql").forEach(query -> {
+      try (Connection connection = datasource.getConnection();
+          Statement statement = connection.createStatement()) {
+        statement.execute(query);
       } catch (SQLException e) {
         throw new RuntimeException(e);
       }
     });
 
     logger.info("Creating tables.");
-    loadStatements("osm_create_tables.sql").forEach(statement -> {
-      try (Connection connection = datasource.getConnection()) {
-        connection.createStatement().execute(statement);
+    loadStatements("osm_create_tables.sql").forEach(query -> {
+      try (Connection connection = datasource.getConnection();
+          Statement statement = connection.createStatement()) {
+        statement.execute(query);
       } catch (SQLException e) {
         throw new RuntimeException(e);
       }
     });
 
     logger.info("Creating primary keys.");
-    loadStatements("osm_create_primary_keys.sql").forEach(statement -> {
-      try (Connection connection = datasource.getConnection()) {
-        connection.createStatement().execute(statement);
+    loadStatements("osm_create_primary_keys.sql").forEach(query -> {
+      try (Connection connection = datasource.getConnection();
+          Statement statement = connection.createStatement()) {
+        statement.execute(query);
       } catch (SQLException e) {
         throw new RuntimeException(e);
       }
@@ -100,25 +104,28 @@ public class Import implements Callable<Integer> {
 
     Path lmdbPath = Files.createTempDirectory("baremaps_");
     Env<ByteBuffer> env = Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(lmdbPath.toFile());
-    Store<Long, Coordinate> coordinateStore = new LmdbCoordinateCache(env, env.openDbi("coordinates", MDB_CREATE));
-    Store<Long, List<Long>> referenceStore = new LmdbReferenceCache(env, env.openDbi("references", MDB_CREATE));
+    Store<Long, Coordinate> coordinateStore = new LmdbCoordinateCache(env,
+        env.openDbi("coordinates", MDB_CREATE));
+    Store<Long, List<Long>> referenceStore = new LmdbReferenceCache(env,
+        env.openDbi("references", MDB_CREATE));
 
     logger.info("Populating cache.");
-    try (InputStream input = InputStreams.from(source)) {
-      Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(new DataInputStream(input)), false);
+    try (DataInputStream input = new DataInputStream(InputStreams.from(source))) {
+      Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(input), false);
       CacheConsumer blockConsumer = new CacheConsumer(coordinateStore, referenceStore);
       blocks.forEach(blockConsumer);
     }
 
     logger.info("Populating database.");
-    try (InputStream input = InputStreams.from(source)) {
+    try (DataInputStream input = new DataInputStream(InputStreams.from(source))) {
       Stream<FileBlock> blocks = StreamSupport
-          .stream(new BatchSpliterator<>(new FileBlockSpliterator(new DataInputStream(input)), 10), true);
+          .stream(new BatchSpliterator<>(new FileBlockSpliterator(input), 10), true);
       CRSFactory crsFactory = new CRSFactory();
       CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");
       CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");
       CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-      CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(epsg4326, epsg3857);
+      CoordinateTransform coordinateTransform = coordinateTransformFactory
+          .createTransform(epsg4326, epsg3857);
       GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
       PostgisHeaderStore headerMapper = new PostgisHeaderStore(datasource);
       PostgisNodeStore nodeMapper = new PostgisNodeStore(datasource,
@@ -132,18 +139,20 @@ public class Import implements Callable<Integer> {
     }
 
     logger.info("Indexing geometries.");
-    loadStatements("osm_create_gist_indexes.sql").forEach(statement -> {
-      try (Connection connection = datasource.getConnection()) {
-        connection.createStatement().execute(statement);
+    loadStatements("osm_create_gist_indexes.sql").forEach(query -> {
+      try (Connection connection = datasource.getConnection();
+          Statement statement = connection.createStatement()) {
+        statement.execute(query);
       } catch (SQLException e) {
         throw new RuntimeException(e);
       }
     });
 
     logger.info("Indexing attributes.");
-    loadStatements("osm_create_gin_indexes.sql").forEach(statement -> {
-      try (Connection connection = datasource.getConnection()) {
-        connection.createStatement().execute(statement);
+    loadStatements("osm_create_gin_indexes.sql").forEach(query -> {
+      try (Connection connection = datasource.getConnection();
+          Statement statement = connection.createStatement()) {
+        statement.execute(query);
       } catch (SQLException e) {
         throw new RuntimeException(e);
       }

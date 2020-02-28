@@ -46,9 +46,9 @@ public class TileHandler implements HttpHandler {
       exchange.sendResponseHeaders(404, 0);
     }
 
-    Integer z = Integer.parseInt(matcher.group(1));
-    Integer x = Integer.parseInt(matcher.group(2));
-    Integer y = Integer.parseInt(matcher.group(3));
+    int z = Integer.parseInt(matcher.group(1));
+    int x = Integer.parseInt(matcher.group(2));
+    int y = Integer.parseInt(matcher.group(3));
     Tile tile = new Tile(x, y, z);
 
     try {
