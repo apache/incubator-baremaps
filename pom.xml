@@ -69,9 +69,9 @@
     <version.lib.jts>1.16.1</version.lib.jts>
     <version.lib.junit>5.6.0</version.lib.junit>
     <version.lib.lmdb>0.7.0</version.lib.lmdb>
-    <version.lib.logback>1.2.3</version.lib.logback>
+    <version.lib.log4j>2.13.0</version.lib.log4j>
     <version.lib.osmosis>0.47</version.lib.osmosis>
-    <version.lib.picocli>4.1.4</version.lib.picocli>
+    <version.lib.picocli>4.2.0</version.lib.picocli>
     <version.lib.postgresql>42.2.9</version.lib.postgresql>
     <version.lib.proj4j>1.1.0</version.lib.proj4j>
     <version.lib.protobuf>3.6.1</version.lib.protobuf>
@@ -128,6 +128,23 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <groupId>org.apache.maven.plugins</groupId>
         <version>${version.plugin.surefire}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${version.plugin.compiler}</version>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>info.picocli</groupId>
+              <artifactId>picocli-codegen</artifactId>
+              <version>${version.lib.picocli}</version>
+            </path>
+          </annotationProcessorPaths>
+          <compilerArgs>
+            <arg>-Aproject=${groupId}/${artifactId}</arg>
+          </compilerArgs>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -240,14 +257,14 @@
 
       <!-- Logging libraries -->
       <dependency>
-        <artifactId>logback-core</artifactId>
-        <groupId>ch.qos.logback</groupId>
-        <version>${version.lib.logback}</version>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-api</artifactId>
+        <version>${version.lib.log4j}</version>
       </dependency>
       <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>${version.lib.logback}</version>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${version.lib.log4j}</version>
       </dependency>
 
       <!-- Testing libraries -->
@@ -328,8 +345,12 @@
 
     <!-- Logging libraries -->
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
     </dependency>
 
     <!-- Testing libraries -->

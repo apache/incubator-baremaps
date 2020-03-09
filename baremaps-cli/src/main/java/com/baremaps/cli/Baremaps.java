@@ -1,8 +1,9 @@
 package com.baremaps.cli;
 
-import com.baremaps.cli.commands.Import;
-import com.baremaps.cli.commands.Serve;
 import com.baremaps.cli.commands.Export;
+import com.baremaps.cli.commands.Import;
+import com.baremaps.cli.commands.Mixins;
+import com.baremaps.cli.commands.Serve;
 import com.baremaps.cli.commands.Update;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
@@ -13,7 +14,7 @@ import picocli.CommandLine.Command;
     Update.class,
     Export.class,
     Serve.class,
-}, name="baremaps")
+}, name = "baremaps")
 public class Baremaps implements Callable<Integer> {
 
   @Override
@@ -23,7 +24,8 @@ public class Baremaps implements Callable<Integer> {
   }
 
   public static void main(String[] args) {
-    CommandLine cmd = new CommandLine(new Baremaps());
+    CommandLine cmd = new CommandLine(new Baremaps())
+        .addMixin("logging", new Mixins());
     cmd.execute(args);
   }
 
