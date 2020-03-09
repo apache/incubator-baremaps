@@ -8,10 +8,6 @@
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
 
-  <prerequisites>
-    <maven>3.0</maven>
-  </prerequisites>
-
   <organization>
     <name>baremaps</name>
     <url>https://www.baremaps.com/</url>
@@ -90,12 +86,23 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>${version.plugin.compiler}</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>info.picocli</groupId>
+              <artifactId>picocli-codegen</artifactId>
+              <version>${version.lib.picocli}</version>
+            </path>
+          </annotationProcessorPaths>
+          <compilerArgs>
+            <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
+          </compilerArgs>
         </configuration>
-        <groupId>org.apache.maven.plugins</groupId>
-        <version>${version.plugin.compiler}</version>
       </plugin>
       <plugin>
         <artifactId>jacoco-maven-plugin</artifactId>
@@ -128,23 +135,6 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <groupId>org.apache.maven.plugins</groupId>
         <version>${version.plugin.surefire}</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${version.plugin.compiler}</version>
-        <configuration>
-          <annotationProcessorPaths>
-            <path>
-              <groupId>info.picocli</groupId>
-              <artifactId>picocli-codegen</artifactId>
-              <version>${version.lib.picocli}</version>
-            </path>
-          </annotationProcessorPaths>
-          <compilerArgs>
-            <arg>-Aproject=${groupId}/${artifactId}</arg>
-          </compilerArgs>
-        </configuration>
       </plugin>
     </plugins>
   </build>

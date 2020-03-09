@@ -23,6 +23,8 @@
     <plugins>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>2.2</version>
         <executions>
           <execution>
             <configuration>
@@ -50,8 +52,6 @@
             <phase>package</phase>
           </execution>
         </executions>
-        <groupId>org.apache.maven.plugins</groupId>
-        <version>2.2</version>
       </plugin>
     </plugins>
   </build>
