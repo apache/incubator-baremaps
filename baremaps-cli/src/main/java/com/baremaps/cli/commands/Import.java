@@ -49,9 +49,9 @@ import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
-import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Option;
 
-@Command(name = "import")
+@Command(name = "import", description = "Import OpenStreetMap data in the Postgresql database.")
 public class Import implements Callable<Integer> {
 
   private static Logger logger = LogManager.getLogger();
@@ -59,26 +59,26 @@ public class Import implements Callable<Integer> {
   @Mixin
   private Mixins mixins;
 
-  @Parameters(
-      index = "0",
-      paramLabel = "PBF_FILE",
-      description = "The PBF file.")
-  private String source;
+  @Option(
+      names = {"--input"},
+      paramLabel= "PBF",
+      description = "The OpenStreetMap PBF file.",
+      required = true)
+  private String input;
 
-  @Parameters(
-      index = "1",
-      paramLabel = "POSTGRES_DATABASE",
-      description = "The postgres database.")
+  @Option(
+      names = {"--database"},
+      paramLabel= "JDBC",
+      description = "The JDBC url of the Postgres database.",
+      required = true)
   private String database;
 
   @Override
   public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(mixins.level));
-
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
-
     logger.info("Dropping tables.");
     loadStatements("osm_drop_tables.sql").forEach(query -> {
       try (Connection connection = datasource.getConnection();
@@ -117,14 +117,14 @@ public class Import implements Callable<Integer> {
         env.openDbi("references", MDB_CREATE));
 
     logger.info("Populating cache.");
-    try (DataInputStream input = new DataInputStream(InputStreams.from(source))) {
+    try (DataInputStream input = new DataInputStream(InputStreams.from(this.input))) {
       Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(input), false);
       CacheConsumer blockConsumer = new CacheConsumer(coordinateStore, referenceStore);
       blocks.forEach(blockConsumer);
     }
 
     logger.info("Populating database.");
-    try (DataInputStream input = new DataInputStream(InputStreams.from(source))) {
+    try (DataInputStream input = new DataInputStream(InputStreams.from(this.input))) {
       Stream<FileBlock> blocks = StreamSupport
           .stream(new BatchSpliterator<>(new FileBlockSpliterator(input), 10), true);
       CRSFactory crsFactory = new CRSFactory();

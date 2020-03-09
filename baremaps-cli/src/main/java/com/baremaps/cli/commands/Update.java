@@ -41,9 +41,9 @@ import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
-import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Option;
 
-@Command(name = "update")
+@Command(name = "update", description = "Update OpenStreetMap data in the Postgresql database.")
 public class Update implements Callable<Integer> {
 
   private static Logger logger = LogManager.getLogger();
@@ -51,33 +51,37 @@ public class Update implements Callable<Integer> {
   @Mixin
   private Mixins mixins;
 
-  @Parameters(
-      index = "0",
-      paramLabel = "REPLICATION_DIRECTORY",
-      description = "The replication directory.")
-  private String source;
+  @Option(
+      names = {"--input"},
+      paramLabel= "OSC",
+      description = "The OpenStreetMap Change file.",
+      required = true)
+  private String input;
 
-  @Parameters(
-      index = "1",
-      paramLabel = "POSTGRES_DATABASE",
-      description = "The postgres database.")
+  @Option(
+      names = {"--database"},
+      paramLabel= "JDBC",
+      description = "The JDBC url of the Postgres database.",
+      required = true)
   private String database;
 
   @Override
   public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(mixins.level));
-
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
+
     CRSFactory crsFactory = new CRSFactory();
     CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");
     CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
     CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(epsg4326, epsg3857);
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
+
     Store<Long, Coordinate> coordinateStore = new PostgisCoordinateCache(datasource);
     Store<Long, List<Long>> referenceStore = new PostgisReferenceCache(datasource);
+    
     PostgisHeaderStore headerMapper = new PostgisHeaderStore(datasource);
     PostgisNodeStore nodeStore = new PostgisNodeStore(datasource,
         new NodeBuilder(coordinateTransform, geometryFactory));
@@ -90,13 +94,13 @@ public class Update implements Callable<Integer> {
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
     String statePath = statePath(nextSequenceNumber);
 
-    String stateURL = String.format("%s/%s", source, statePath);
+    String stateURL = String.format("%s/%s", input, statePath);
 
     try (InputStreamReader reader = new InputStreamReader(InputStreams.from(stateURL), Charsets.UTF_8)) {
       String stateContent = CharStreams.toString(reader);
       State state = State.parse(stateContent);
       String changePath = changePath(nextSequenceNumber);
-      String changeURL = String.format("%s/%s", source, changePath);
+      String changeURL = String.format("%s/%s", input, changePath);
 
       try (InputStream changeInputStream = new GZIPInputStream(InputStreams.from(changeURL))) {
         Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
@@ -115,9 +119,7 @@ public class Update implements Callable<Integer> {
     }
 
     return 0;
-
   }
-
 
   public String path(long sequenceNumber) {
     String leading = String.format("%09d", sequenceNumber);

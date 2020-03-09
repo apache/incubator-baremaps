@@ -18,7 +18,7 @@ import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class WithTileReader extends AbstractTileReader {
+public class FastTileReader extends AbstractTileReader {
 
   private static Logger logger = LogManager.getLogger();
 
@@ -45,7 +45,7 @@ public class WithTileReader extends AbstractTileReader {
 
   private final Map<Layer, List<Query>> queries;
 
-  public WithTileReader(PoolingDataSource datasource, Config config) {
+  public FastTileReader(PoolingDataSource datasource, Config config) {
     this.datasource = datasource;
     this.config = config;
     this.queries = config.getLayers().stream()

@@ -5,18 +5,18 @@ You can import the OSM data in postgis using the following command:
 
 ```bash
 baremaps import \
-  'examples/openstreetmap/liechtenstein-latest.osm.pbf' \
-  'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps'
+  --input 'liechtenstein-latest.osm.pbf' \
+  --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps'
 ```
 
 To preview the data, start the tile server:
 
 ```bash
 baremaps serve \
-  'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
-  'examples/openstreetmap/config.yaml' \
-  'examples/openstreetmap/static/' \
-  --tile-reader with
+  --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
+  --config 'config.yaml' \
+  --assets 'static/' \
+  --reader fast
 ```
 
 Well done, the tile server should have started and a map of liechtenstein should appear in your browser ([http://localhost:9000/](http://localhost:8082/))!
@@ -25,9 +25,10 @@ Vector tiles are rarely served dynamically in production. The following command 
 
 ```bash
 baremaps export \
-  'examples/openstreetmap/config.yaml' \
-  'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
-  'examples/openstreetmap/tiles/' \
+  --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
+  --config 'config.yaml' \
+  --repository 'tiles/' \
   --minZoom 14 \
-  --maxZoom 14
+  --maxZoom 14 \
+  --reader fast
 ```
