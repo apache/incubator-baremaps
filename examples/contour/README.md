@@ -33,7 +33,7 @@ gdal_contour \
 ```
 
 The following index can now be created to improve performances. 
-A smoothing function such as `ST_ChaikinSmoothing` can be used to improve rendering. 
+When available, a smoothing function such as `ST_ChaikinSmoothing` can be used to improve rendering. 
 
 ```postgresql
 DROP INDEX IF EXISTS aster_dem_gix;

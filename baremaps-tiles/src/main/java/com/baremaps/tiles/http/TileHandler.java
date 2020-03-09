@@ -15,12 +15,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TileHandler implements HttpHandler {
 
-  private static final Logger logger = LoggerFactory.getLogger(TileHandler.class);
+  private static Logger logger = LogManager.getLogger();
 
   public static final List<String> TILE_ENCODING = Lists.newArrayList("gzip");
 

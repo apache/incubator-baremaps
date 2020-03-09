@@ -8,12 +8,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ResourceHandler implements HttpHandler {
 
-  private static final Logger logger = LoggerFactory.getLogger(ResourceHandler.class);
+  private static Logger logger = LogManager.getLogger();
 
   private final Path directory;
 

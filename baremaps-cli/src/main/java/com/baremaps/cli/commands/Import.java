@@ -23,7 +23,6 @@ import com.baremaps.osm.postgis.PostgisRelationStore;
 import com.baremaps.osm.postgis.PostgisWayStore;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -36,6 +35,10 @@ import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.apache.commons.dbcp2.PoolingDataSource;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -44,15 +47,17 @@ import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Parameters;
 
 @Command(name = "import")
 public class Import implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(Import.class);
+  private static Logger logger = LogManager.getLogger();
+
+  @Mixin
+  private Mixins mixins;
 
   @Parameters(
       index = "0",
@@ -68,6 +73,8 @@ public class Import implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
+    Configurator.setRootLevel(Level.getLevel(mixins.level));
+
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);

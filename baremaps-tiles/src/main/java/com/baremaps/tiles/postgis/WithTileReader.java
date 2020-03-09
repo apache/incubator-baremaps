@@ -15,12 +15,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 import org.apache.commons.dbcp2.PoolingDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class WithTileReader extends AbstractTileReader {
 
-  private static final Logger logger = LoggerFactory.getLogger(WithTileReader.class);
+  private static Logger logger = LogManager.getLogger();
 
   private static final String WITH = "WITH {0} {1}";
 

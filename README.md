@@ -54,7 +54,7 @@ Usage: baremaps [COMMAND]
 Commands:
   import
   update
-  tiles
+  export
   serve
 ```
 

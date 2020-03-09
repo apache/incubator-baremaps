@@ -22,18 +22,24 @@ import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 import org.apache.commons.dbcp2.PoolingDataSource;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 @Command(name = "export")
 public class Export implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(Export.class);
+  private static Logger logger = LogManager.getLogger();
+
+  @Mixin
+  private Mixins mixins;
 
   @Parameters(
       index = "0",
@@ -93,6 +99,8 @@ public class Export implements Callable<Integer> {
 
   @Override
   public Integer call() throws SQLException, ParseException, IOException {
+    Configurator.setRootLevel(Level.getLevel(mixins.level));
+
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     // Read the configuration toInputStream

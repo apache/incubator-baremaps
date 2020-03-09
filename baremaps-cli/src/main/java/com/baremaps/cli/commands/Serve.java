@@ -16,16 +16,22 @@ import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.dbcp2.PoolingDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 @Command(name = "serve")
 public class Serve implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(Serve.class);
+  private static Logger logger = LogManager.getLogger();
+
+  @Mixin
+  private Mixins mixins;
 
   @Parameters(
       index = "0",
@@ -68,6 +74,8 @@ public class Serve implements Callable<Integer> {
 
   @Override
   public Integer call() throws IOException {
+    Configurator.setRootLevel(Level.getLevel(mixins.level));
+
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     // Read the configuration toInputStream

@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.dbcp2.PoolingDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SimpleTileReader extends AbstractTileReader {
 
-  private static final Logger logger = LoggerFactory.getLogger(SimpleTileReader.class);
+  private static Logger logger = LogManager.getLogger();
 
   private static final String SQL_LAYER = "SELECT ST_AsMVT(mvt_geom, ''{0}'', 4096, ''geom'') FROM {1}";
 
