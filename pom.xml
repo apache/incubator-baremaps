@@ -28,6 +28,20 @@
     </license>
   </licenses>
 
+  <scm>
+    <url>https://github.com/baremaps/baremaps</url>
+    <connection>scm:git:https://github.com/baremaps/baremaps.git</connection>
+    <developerConnection>scm:git:https://github.com/baremaps/baremaps.git</developerConnection>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Baremaps Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/baremaps/baremaps</url>
+    </repository>
+  </distributionManagement>
+
   <modules>
     <module>baremaps-osm</module>
     <module>baremaps-tiles</module>
@@ -38,6 +52,7 @@
 
   <profiles>
     <profile>
+      <id>integration</id>
       <build>
         <plugins>
           <plugin>
@@ -50,7 +65,23 @@
           </plugin>
         </plugins>
       </build>
-      <id>integration</id>
+    </profile>
+    <profile>
+      <id>release</id>
+      <repositories>
+        <repository>
+          <id>maven</id>
+          <name>Maven Central</name>
+          <url>https://repo1.maven.org/maven2</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+        <repository>
+          <id>github</id>
+          <name>GitHub Packages</name>
+          <url>https://maven.pkg.github.com/baremaps/baremaps</url>
+        </repository>
+      </repositories>
     </profile>
   </profiles>
 
@@ -77,6 +108,7 @@
     <version.lib.sqlite>3.30.1</version.lib.sqlite>
     <version.lib.testng>6.13.1</version.lib.testng>
     <version.plugin.compiler>3.8.0</version.plugin.compiler>
+    <version.plugin.jacoco>0.8.2</version.plugin.jacoco>
     <version.plugin.surefire>2.22.2</version.plugin.surefire>
     <version.plugin.surefire.provider.junit>1.3.2</version.plugin.surefire.provider.junit>
   </properties>
@@ -86,7 +118,6 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-
         <groupId>org.apache.maven.plugins</groupId>
         <version>${version.plugin.compiler}</version>
         <configuration>
@@ -106,6 +137,8 @@
       </plugin>
       <plugin>
         <artifactId>jacoco-maven-plugin</artifactId>
+        <groupId>org.jacoco</groupId>
+        <version>${version.plugin.jacoco}</version>
         <executions>
           <execution>
             <goals>
@@ -120,8 +153,6 @@
             <phase>test</phase>
           </execution>
         </executions>
-        <groupId>org.jacoco</groupId>
-        <version>0.8.2</version>
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -135,6 +166,16 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <groupId>org.apache.maven.plugins</groupId>
         <version>${version.plugin.surefire}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5.3</version>
+        <configuration>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <tagNameFormat>@{project.version}</tagNameFormat>
+          <releaseProfiles>release</releaseProfiles>
+        </configuration>
       </plugin>
     </plugins>
   </build>
