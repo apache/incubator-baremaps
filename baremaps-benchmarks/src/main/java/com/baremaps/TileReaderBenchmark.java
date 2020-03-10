@@ -4,8 +4,8 @@ import com.baremaps.core.postgis.PostgisHelper;
 import com.baremaps.tiles.Tile;
 import com.baremaps.tiles.TileReader;
 import com.baremaps.tiles.config.Config;
-import com.baremaps.tiles.postgis.SimpleTileReader;
-import com.baremaps.tiles.postgis.WithTileReader;
+import com.baremaps.tiles.postgis.SlowTileReader;
+import com.baremaps.tiles.postgis.FastTileReader;
 import com.baremaps.tiles.util.TileUtil;
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,7 +53,7 @@ public class TileReaderBenchmark {
   @Warmup(iterations = 1)
   @Measurement(iterations = 2)
   public void basic() throws SQLException, ParseException {
-    reader = new SimpleTileReader(datasource, config);
+    reader = new SlowTileReader(datasource, config);
     execute();
   }
 
@@ -62,7 +62,7 @@ public class TileReaderBenchmark {
   @Warmup(iterations = 1)
   @Measurement(iterations = 2)
   public void with() throws SQLException, ParseException {
-    reader = new WithTileReader(datasource, config);
+    reader = new FastTileReader(datasource, config);
     execute();
   }
 

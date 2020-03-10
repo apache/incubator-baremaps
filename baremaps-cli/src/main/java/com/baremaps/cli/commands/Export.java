@@ -1,11 +1,14 @@
 package com.baremaps.cli.commands;
 
+import static com.baremaps.cli.options.TileReaderOption.slow;
+
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3URI;
+import com.baremaps.cli.options.TileReaderOption;
 import com.baremaps.core.io.InputStreams;
-import com.baremaps.tiles.postgis.SimpleTileReader;
-import com.baremaps.tiles.postgis.WithTileReader;
+import com.baremaps.tiles.postgis.SlowTileReader;
+import com.baremaps.tiles.postgis.FastTileReader;
 import com.baremaps.core.postgis.PostgisHelper;
 import com.baremaps.tiles.Tile;
 import com.baremaps.tiles.TileReader;
@@ -31,9 +34,8 @@ import org.locationtech.jts.io.ParseException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
-@Command(name = "export")
+@Command(name = "export", description = "Export vector tiles from the Postgresql database.")
 public class Export implements Callable<Integer> {
 
   private static Logger logger = LogManager.getLogger();
@@ -41,45 +43,51 @@ public class Export implements Callable<Integer> {
   @Mixin
   private Mixins mixins;
 
-  @Parameters(
-      index = "0",
-      paramLabel = "CONFIG_FILE",
-      description = "The YAML configuration file.")
-  private String file;
-
-  @Parameters(
-      index = "1",
-      paramLabel = "POSTGRES_DATABASE",
-      description = "The Postgres database.")
+  @Option(
+      names = {"--database"},
+      paramLabel= "JDBC",
+      description = "The JDBC url of the Postgres database.",
+      required = true)
   private String database;
 
-  @Parameters(
-      index = "2",
-      paramLabel = "TILE_REPOSITORY",
-      description = "The tile repository.")
+  @Option(
+      names = {"--config"},
+      paramLabel= "YAML",
+      description = "The YAML configuration file.",
+      required = true)
+  private String config;
+
+  @Option(
+      names = {"--repository"},
+      paramLabel= "URL",
+      description = "The tile repository URL.",
+      required = true)
   private String repository;
 
   @Option(
       names = {"--minZoom"},
+      paramLabel= "MIN",
       description = "The minimal zoom level.")
   private int minZoom = 0;
 
   @Option(
       names = {"--maxZoom"},
+      paramLabel= "MAX",
       description = "The maximal zoom level.")
   private int maxZoom = 14;
 
   @Option(
-      names = {"--tile-reader"},
+      names = {"--reader"},
+      paramLabel = "READER",
       description = "The tile reader.")
-  private String tileReader = "simple";
+  private TileReaderOption tileReader = slow;
 
-  private TileReader tileReader(PoolingDataSource dataSource, Config config) {
+  public TileReader tileReader(PoolingDataSource dataSource, Config config) {
     switch (tileReader) {
-      case "simple":
-        return new SimpleTileReader(dataSource, config);
-      case "with":
-        return new WithTileReader(dataSource, config);
+      case slow:
+        return new SlowTileReader(dataSource, config);
+      case fast:
+        return new FastTileReader(dataSource, config);
       default:
         throw new UnsupportedOperationException("Unsupported tile reader");
     }
@@ -93,18 +101,17 @@ public class Export implements Callable<Integer> {
       AmazonS3URI uri = new AmazonS3URI(repository);
       return new S3TileStore(client, uri);
     } else {
-      throw new IOException("");
+      throw new IOException("Wrong repository url.");
     }
   }
 
   @Override
   public Integer call() throws SQLException, ParseException, IOException {
     Configurator.setRootLevel(Level.getLevel(mixins.level));
-
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     // Read the configuration toInputStream
-    Config config = Config.load(InputStreams.from(file));
+    Config config = Config.load(InputStreams.from(this.config));
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
     // Initialize tile reader and writer

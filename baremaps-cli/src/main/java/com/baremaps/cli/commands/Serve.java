@@ -1,20 +1,19 @@
 package com.baremaps.cli.commands;
 
+import com.baremaps.cli.options.TileReaderOption;
 import com.baremaps.core.io.InputStreams;
-import com.baremaps.tiles.postgis.SimpleTileReader;
-import com.baremaps.tiles.postgis.WithTileReader;
-import com.sun.net.httpserver.HttpServer;
 import com.baremaps.core.postgis.PostgisHelper;
 import com.baremaps.tiles.TileReader;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.http.ResourceHandler;
 import com.baremaps.tiles.http.TileHandler;
-
+import com.baremaps.tiles.postgis.FastTileReader;
+import com.baremaps.tiles.postgis.SlowTileReader;
+import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
-
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -23,9 +22,10 @@ import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
-@Command(name = "serve")
+import static com.baremaps.cli.options.TileReaderOption.*;
+
+@Command(name = "serve", description = "Serve vector tiles from the the Postgresql database.")
 public class Serve implements Callable<Integer> {
 
   private static Logger logger = LogManager.getLogger();
@@ -33,40 +33,44 @@ public class Serve implements Callable<Integer> {
   @Mixin
   private Mixins mixins;
 
-  @Parameters(
-      index = "0",
-      paramLabel = "POSTGRES_DATABASE",
-      description = "The Postgres database.")
+  @Option(
+      names = {"--database"},
+      paramLabel= "JDBC",
+      description = "The JDBC url of the Postgres database.",
+      required = true)
   private String database;
 
-  @Parameters(
-      index = "1",
-      paramLabel = "CONFIG_FILE",
-      description = "The YAML configuration config.")
-  private String file;
+  @Option(
+      names = {"--config"},
+      paramLabel= "YAML",
+      description = "The YAML configuration file.",
+      required = true)
+  private String config;
 
-  @Parameters(
-      index = "2",
-      paramLabel = "STATIC_DIRECTORY",
-      description = "The YAML configuration config.")
+  @Option(
+      names = {"--assets"},
+      paramLabel = "ASSETS",
+      description = "A directory containing assets.")
   private String directory;
 
   @Option(
       names = {"--port"},
+      paramLabel = "PORT",
       description = "The port on which to listen.")
   private int port = 9000;
 
   @Option(
-      names = {"--tile-reader"},
+      names = {"--reader"},
+      paramLabel = "READER",
       description = "The tile reader.")
-  private String tileReader = "basic";
+  private TileReaderOption tileReader = slow;
 
-  public TileReader initTileReader(PoolingDataSource dataSource, Config config) {
+  public TileReader tileReader(PoolingDataSource dataSource, Config config) {
     switch (tileReader) {
-      case "basic":
-        return new SimpleTileReader(dataSource, config);
-      case "with":
-        return new WithTileReader(dataSource, config);
+      case slow:
+        return new SlowTileReader(dataSource, config);
+      case fast:
+        return new FastTileReader(dataSource, config);
       default:
         throw new UnsupportedOperationException("Unsupported tile reader");
     }
@@ -79,11 +83,11 @@ public class Serve implements Callable<Integer> {
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     // Read the configuration toInputStream
-    Config config = Config.load(InputStreams.from(file));
+    Config config = Config.load(InputStreams.from(this.config));
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
     // Choose the tile reader
-    TileReader tileReader = initTileReader(datasource, config);
+    TileReader tileReader = tileReader(datasource, config);
 
     // Create the http server
     HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);

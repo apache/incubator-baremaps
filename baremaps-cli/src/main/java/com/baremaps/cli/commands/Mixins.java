@@ -4,7 +4,10 @@ import picocli.CommandLine.Option;
 
 public class Mixins {
 
-  @Option(names = { "--level" }, description = { "The log level." })
+  @Option(
+      names = { "--level" },
+      paramLabel= "LEVEL",
+      description = { "The log level." })
   protected String level = "INFO";
 
 }
