@@ -32,19 +32,12 @@ On the longer run, the aim of the project is to work with a variety of data sour
 
 ## Quick Start
 
-Clone and build the repository:
+Download and unzip the latest distribution. Add the `/bin` folder to your `PATH` variable:
 
 ```bash
-git clone git@github.com:baremaps/baremaps.git
-cd baremaps
-mvn clean install
-```
-
-Unzip the binary distribution and add the `/bin` folder to your `PATH` variable:
-
-```bash
-unzip baremaps-cli/target/baremaps-cli-0.1-SNAPSHOT.zip
-export PATH=$PATH:`pwd`/baremaps-cli-0.1-SNAPSHOT/bin
+wget https://github.com/baremaps/baremaps/releases/latest/download/baremaps.zip
+unzip baremaps.zip
+export PATH=$PATH:`pwd`/baremaps/bin
 ```
 
 Calling the `baremaps` command should now result in an output similar to the following:
