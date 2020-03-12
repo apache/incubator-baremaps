@@ -31,7 +31,7 @@ public class FastTileReader extends AbstractTileReader {
 
   private static final String LAYER = "SELECT ST_AsMVT(mvt_geom, ''{0}'', 4096) FROM ({1}) as mvt_geom";
 
-  private static final String QUERY = "SELECT id, tags::jsonb, geom FROM {3}";
+  private static final String QUERY = "SELECT id, hstore_to_jsonb_loose(tags), geom FROM {3}";
 
   private static final String WHERE = " WHERE {0}";
 

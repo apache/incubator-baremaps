@@ -1,6 +1,9 @@
 package com.baremaps.tiles.postgis;
 
 import com.baremaps.tiles.config.Layer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -13,8 +16,6 @@ public class QueryParser {
 
   private static final Pattern COLUMN_PATTERN = Pattern
       .compile("(.*?)(?:\\sAS\\s(.*))?", Pattern.CASE_INSENSITIVE);
-
-  private static final String COLUMNS_SEPARATOR = ",(?![^()]*+\\))";
 
   private QueryParser() {
 
@@ -30,18 +31,40 @@ public class QueryParser {
     String from = matcher.group(2).trim();
     Optional<String> where = Optional.ofNullable(matcher.group(3)).map(s -> s.trim());
 
-    String[] columns = select.split(COLUMNS_SEPARATOR);
-    if (columns.length != 3) {
+    List<String> columns = split(select);
+    if (columns.size() != 3) {
       throw new IllegalArgumentException("The SQL query malformed");
     }
 
-    String id = column(columns[0]);
-    String tags = column(columns[1]);
-    String geom = column(columns[2]);
+    String id = column(columns.get(0));
+    String tags = column(columns.get(1));
+    String geom = column(columns.get(2));
 
     String source = "H" + Math.abs(Objects.hash(id, tags, geom, from));
 
     return new Query(layer, source, id, tags, geom, from, where);
+  }
+
+  private static List<String> split(String s) {
+    List<String> results = new ArrayList<String>();
+    int level = 0;
+    StringBuilder result = new StringBuilder();
+    for (char c : s.toCharArray()) {
+      if (c == ',' && level == 0) {
+        results.add(result.toString());
+        result.setLength(0);
+      } else {
+        if (c == '(' || c == '[') {
+          level++;
+        }
+        if (c == ')' || c == ']') {
+          level--;
+        }
+        result.append(c);
+      }
+    }
+    results.add(result.toString());
+    return results;
   }
 
   private static String column(String column) {
@@ -51,6 +74,7 @@ public class QueryParser {
     }
     return matcher.group(1).trim();
   }
+
 
   public static class Query {
 

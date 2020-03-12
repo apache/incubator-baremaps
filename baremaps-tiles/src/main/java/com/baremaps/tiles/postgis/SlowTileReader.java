@@ -29,7 +29,8 @@ public class SlowTileReader extends AbstractTileReader {
 
   private static final String SQL_SOURCE =
       "(SELECT id, "
-          + "(tags || hstore(''geometry'', lower(replace(st_geometrytype(geom), ''ST_'', ''''))))::jsonb, "
+          + "(tags || hstore(''geometry'', "
+          + "hstore_to_jsonb_loose(lower(replace(st_geometrytype(geom), ''ST_'', ''''))))), "
           + "ST_AsMvtGeom(geom, {2}, 4096, 256, true) AS geom "
           + "FROM ({1}) AS layer "
           + "WHERE ST_Intersects(geom, {2})"

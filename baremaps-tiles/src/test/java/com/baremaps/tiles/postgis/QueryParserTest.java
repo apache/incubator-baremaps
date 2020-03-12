@@ -61,6 +61,9 @@ class QueryParserTest {
           Optional.empty()),
       new TestQuery("SELECT id, tags, st_transform(geom, '1234') as geom FROM table",
           "id", "tags", "st_transform(geom, '1234')", "table",
+          Optional.empty()),
+      new TestQuery("SELECT id, a(b(c), d(e)), geom FROM table",
+          "id", "a(b(c), d(e))", "geom", "table",
           Optional.empty()));
 
   @Test
