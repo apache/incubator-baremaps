@@ -24,13 +24,9 @@ On the longer run, the aim of the project is to work with a variety of data sour
 
 [![State of the map](https://github.com/baremaps/baremaps/raw/master/screenshots/2019-12-27.png)](https://www.baremaps.com/)
 
-## Prerequisites
-
--   Docker 18
--   Java 8
--   Maven 3
-
 ## Quick Start
+
+In order to run Baremaps, you first need to install [Java 8](https://sdkman.io/).
 
 Download and unzip the latest distribution. Add the `/bin` folder to your `PATH` variable:
 
@@ -51,7 +47,7 @@ Commands:
   serve
 ```
 
-In order to run baremaps, you need to setup a postgis database.
+In order to run Baremaps, you need to setup a postgis database.
 The following docker image will allow you to jump start this installation:
 
 ```bash
@@ -78,25 +74,6 @@ Several examples illustrate how to import datasets in postgis and produce vector
 -   The [NaturalEarth](examples/naturalearth/README.md) example shows how to produce low resolution vector tiles.
 -   The [Contour](examples/contour/README.md) example shows how to produce contours from a digital elevation model (DEM).
 
-## Limitations
-
-baremaps is a work in progress and is not production ready, i.e., it comes with a lot of limitations. 
-Additional work is needed to: 
--   Configure the map and its style at all zoom levels
--   Improve the creation of geometries for OSM relations with JTS
--   Apply OSM diffs on existing postgresql databases
--   Optimize the SQL queries used to create Mapbox Vector Tiles
--   Add additional datasets
--   Stabilize and document the codebase
-
-
 ## Contributing
 
-Being a side project, baremaps does not have clear contribution guidelines yet.
-As the development work happens on github, feel free to report an issue, suggest a feature, or make a pull request.
-Generally speaking, as a contributor, you should:
--   be nice, inclusive and constructive when interacting with others;
--   agree with the terms of the Apache Software License;
--   try to follow the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html);
--   try to be concise and relevant in [commit messages](https://chris.beams.io/posts/git-commit/);
--   agree to rewrite portions of your code to make it fit better into the upstream sources.
+Contributions are welcome and encouraged. Please,checkout our [code of conduct](CODE_OF_CONDUCT.md) and [contributing guidelines](CONTRIBUTING.md).
