@@ -77,7 +77,7 @@ public class SlowTileReader extends AbstractTileReader {
         MessageFormat.format(SQL_SOURCE,
             layer.getName(),
             layer.getQueries().stream()
-                .map(query -> QueryParser.parse(layer, query.getSql()))
+                .map(query -> QueryParser.parse(layer, query))
                 .map(query -> MessageFormat.format(SQL_QUERY,
                     query.getId(),
                     query.getTags(),

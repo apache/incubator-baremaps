@@ -49,7 +49,7 @@ public class FastTileReader extends AbstractTileReader {
     this.datasource = datasource;
     this.config = config;
     this.queries = config.getLayers().stream()
-        .flatMap(layer -> layer.getQueries().stream().map(query -> QueryParser.parse(layer, query.getSql())))
+        .flatMap(layer -> layer.getQueries().stream().map(query -> QueryParser.parse(layer, query)))
         .collect(Collectors.groupingBy(q -> q.getLayer()));
   }
 
@@ -71,7 +71,6 @@ public class FastTileReader extends AbstractTileReader {
     } catch (Exception e) {
       throw new TileException(e);
     }
-
   }
 
   private String query(Tile tile) {

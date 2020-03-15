@@ -21,4 +21,5 @@ public class Config {
     Yaml yaml = new Yaml(new Constructor(Config.class));
     return yaml.load(input);
   }
+
 }

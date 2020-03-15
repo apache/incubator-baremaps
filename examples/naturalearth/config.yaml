@@ -3,674 +3,674 @@ layers:
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_antarctic_claim_limit_lines AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_antarctic_claim_limit_lines AS t
   - name: 'ne_10m_admin_0_antarctic_claims'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_antarctic_claims AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_antarctic_claims AS t
   - name: 'ne_10m_admin_0_boundary_lines_disputed_areas'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_boundary_lines_disputed_areas AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_boundary_lines_disputed_areas AS t
   - name: 'ne_10m_admin_0_boundary_lines_land'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_boundary_lines_land AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_boundary_lines_land AS t
   - name: 'ne_10m_admin_0_boundary_lines_map_units'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_boundary_lines_map_units AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_boundary_lines_map_units AS t
   - name: 'ne_10m_admin_0_boundary_lines_maritime_indicator'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_boundary_lines_maritime_indicator AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_boundary_lines_maritime_indicator AS t
   - name: 'ne_10m_admin_0_countries'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_countries AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_countries AS t
   - name: 'ne_10m_admin_0_countries_lakes'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_countries_lakes AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_countries_lakes AS t
   - name: 'ne_10m_admin_0_disputed_areas'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_disputed_areas AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_disputed_areas AS t
   - name: 'ne_10m_admin_0_disputed_areas_scale_rank_minor_islands'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_disputed_areas_scale_rank_minor_islands AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_disputed_areas_scale_rank_minor_islands AS t
   - name: 'ne_10m_admin_0_label_points'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_label_points AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_label_points AS t
   - name: 'ne_10m_admin_0_map_subunits'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_map_subunits AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_map_subunits AS t
   - name: 'ne_10m_admin_0_map_units'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_map_units AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_map_units AS t
   - name: 'ne_10m_admin_0_pacific_groupings'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_pacific_groupings AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_pacific_groupings AS t
   - name: 'ne_10m_admin_0_scale_rank'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_scale_rank AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_scale_rank AS t
   - name: 'ne_10m_admin_0_scale_rank_minor_islands'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_scale_rank_minor_islands AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_scale_rank_minor_islands AS t
   - name: 'ne_10m_admin_0_seams'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_seams AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_seams AS t
   - name: 'ne_10m_admin_0_sovereignty'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_sovereignty AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_sovereignty AS t
   - name: 'ne_10m_admin_1_label_points'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_label_points AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_label_points AS t
   - name: 'ne_10m_admin_1_label_points_details'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_label_points_details AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_label_points_details AS t
   - name: 'ne_10m_admin_1_seams'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_seams AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_seams AS t
   - name: 'ne_10m_admin_1_states_provinces'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces AS t
   - name: 'ne_10m_admin_1_states_provinces_lakes'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces_lakes AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces_lakes AS t
   - name: 'ne_10m_admin_1_states_provinces_lines'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces_lines AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces_lines AS t
   - name: 'ne_10m_admin_1_states_provinces_scale_rank'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces_scale_rank AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces_scale_rank AS t
   - name: 'ne_10m_admin_1_states_provinces_scale_rank_minor_islands'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces_scale_rank_minor_islands AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces_scale_rank_minor_islands AS t
   - name: 'ne_10m_airports'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_airports AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_airports AS t
   - name: 'ne_10m_antarctic_ice_shelves_lines'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_antarctic_ice_shelves_lines AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_antarctic_ice_shelves_lines AS t
   - name: 'ne_10m_antarctic_ice_shelves_polys'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_antarctic_ice_shelves_polys AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_antarctic_ice_shelves_polys AS t
   - name: 'ne_10m_coastline'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_coastline AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_coastline AS t
   - name: 'ne_10m_geographic_lines'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geographic_lines AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geographic_lines AS t
   - name: 'ne_10m_geography_marine_polys'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geography_marine_polys AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geography_marine_polys AS t
   - name: 'ne_10m_geography_regions_elevation_points'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geography_regions_elevation_points AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geography_regions_elevation_points AS t
   - name: 'ne_10m_geography_regions_points'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geography_regions_points AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geography_regions_points AS t
   - name: 'ne_10m_geography_regions_polys'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geography_regions_polys AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geography_regions_polys AS t
   - name: 'ne_10m_glaciated_areas'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_glaciated_areas AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_glaciated_areas AS t
   - name: 'ne_10m_lakes'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes AS t
   - name: 'ne_10m_lakes_europe'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes_europe AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes_europe AS t
   - name: 'ne_10m_lakes_historic'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes_historic AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes_historic AS t
   - name: 'ne_10m_lakes_north_america'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes_north_america AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes_north_america AS t
   - name: 'ne_10m_lakes_pluvial'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes_pluvial AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes_pluvial AS t
   #  - name: 'ne_10m_land'
   #    minZoom: 6
   #    maxZoom: 13
   #    queries:
-  #      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_land AS t
+  #      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_land AS t
   - name: 'ne_10m_land_ocean_label_points'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_land_ocean_label_points AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_land_ocean_label_points AS t
   - name: 'ne_10m_land_ocean_seams'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_land_ocean_seams AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_land_ocean_seams AS t
   - name: 'ne_10m_land_scale_rank'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_land_scale_rank AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_land_scale_rank AS t
   - name: 'ne_10m_minor_islands'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_minor_islands AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_minor_islands AS t
   - name: 'ne_10m_minor_islands_coastline'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_minor_islands_coastline AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_minor_islands_coastline AS t
   - name: 'ne_10m_minor_islands_label_points'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_minor_islands_label_points AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_minor_islands_label_points AS t
   - name: 'ne_10m_ocean'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_ocean AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_ocean AS t
   - name: 'ne_10m_ocean_scale_rank'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_ocean_scale_rank AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_ocean_scale_rank AS t
   - name: 'ne_10m_parks_and_protected_lands_area'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_parks_and_protected_lands_area AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_parks_and_protected_lands_area AS t
   - name: 'ne_10m_parks_and_protected_lands_line'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_parks_and_protected_lands_line AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_parks_and_protected_lands_line AS t
   - name: 'ne_10m_parks_and_protected_lands_point'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_parks_and_protected_lands_point AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_parks_and_protected_lands_point AS t
   - name: 'ne_10m_parks_and_protected_lands_scale_rank'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_parks_and_protected_lands_scale_rank AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_parks_and_protected_lands_scale_rank AS t
   - name: 'ne_10m_playas'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_playas AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_playas AS t
   - name: 'ne_10m_populated_places'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_populated_places AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_populated_places AS t
   - name: 'ne_10m_populated_places_simple'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_populated_places_simple AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_populated_places_simple AS t
   - name: 'ne_10m_ports'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_ports AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_ports AS t
   - name: 'ne_10m_railroads'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_railroads AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_railroads AS t
   - name: 'ne_10m_railroads_north_america'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_railroads_north_america AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_railroads_north_america AS t
   - name: 'ne_10m_reefs'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_reefs AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_reefs AS t
   - name: 'ne_10m_rivers_europe'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_rivers_europe AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_rivers_europe AS t
   - name: 'ne_10m_rivers_lake_centerlines'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_rivers_lake_centerlines AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_rivers_lake_centerlines AS t
   - name: 'ne_10m_rivers_lake_centerlines_scale_rank'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_rivers_lake_centerlines_scale_rank AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_rivers_lake_centerlines_scale_rank AS t
   - name: 'ne_10m_rivers_north_america'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_rivers_north_america AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_rivers_north_america AS t
   - name: 'ne_10m_roads'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_roads AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_roads AS t
   - name: 'ne_10m_roads_north_america'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_roads_north_america AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_roads_north_america AS t
   - name: 'ne_10m_time_zones'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_time_zones AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_time_zones AS t
   - name: 'ne_10m_urban_areas'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_urban_areas AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_urban_areas AS t
   - name: 'ne_10m_urban_areas_landscan'
     minZoom: 6
     maxZoom: 13
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_urban_areas_landscan AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_urban_areas_landscan AS t
   - name: 'ne_110m_admin_0_boundary_lines_land'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_boundary_lines_land AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_boundary_lines_land AS t
   - name: 'ne_110m_admin_0_countries'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_countries AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_countries AS t
   - name: 'ne_110m_admin_0_countries_lakes'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_countries_lakes AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_countries_lakes AS t
   - name: 'ne_110m_admin_0_map_units'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_map_units AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_map_units AS t
   - name: 'ne_110m_admin_0_pacific_groupings'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_pacific_groupings AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_pacific_groupings AS t
   - name: 'ne_110m_admin_0_scale_rank'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_scale_rank AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_scale_rank AS t
   - name: 'ne_110m_admin_0_sovereignty'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_sovereignty AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_sovereignty AS t
   - name: 'ne_110m_admin_0_tiny_countries'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_tiny_countries AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_tiny_countries AS t
   - name: 'ne_110m_admin_1_states_provinces'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_1_states_provinces AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_1_states_provinces AS t
   - name: 'ne_110m_admin_1_states_provinces_lakes'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_1_states_provinces_lakes AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_1_states_provinces_lakes AS t
   - name: 'ne_110m_admin_1_states_provinces_lines'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_1_states_provinces_lines AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_1_states_provinces_lines AS t
   - name: 'ne_110m_admin_1_states_provinces_scale_rank'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_1_states_provinces_scale_rank AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_1_states_provinces_scale_rank AS t
   - name: 'ne_110m_coastline'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_coastline AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_coastline AS t
   - name: 'ne_110m_geographic_lines'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geographic_lines AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geographic_lines AS t
   - name: 'ne_110m_geography_marine_polys'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geography_marine_polys AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geography_marine_polys AS t
   - name: 'ne_110m_geography_regions_elevation_points'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geography_regions_elevation_points AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geography_regions_elevation_points AS t
   - name: 'ne_110m_geography_regions_points'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geography_regions_points AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geography_regions_points AS t
   - name: 'ne_110m_geography_regions_polys'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geography_regions_polys AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geography_regions_polys AS t
   - name: 'ne_110m_glaciated_areas'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_glaciated_areas AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_glaciated_areas AS t
   - name: 'ne_110m_lakes'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_lakes AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_lakes AS t
   - name: 'ne_110m_land'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_land AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_land AS t
   - name: 'ne_110m_ocean'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_ocean AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_ocean AS t
   - name: 'ne_110m_populated_places'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_populated_places AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_populated_places AS t
   - name: 'ne_110m_populated_places_simple'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_populated_places_simple AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_populated_places_simple AS t
   - name: 'ne_110m_rivers_lake_centerlines'
     minZoom: 0
     maxZoom: 3
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_rivers_lake_centerlines AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_rivers_lake_centerlines AS t
   - name: 'ne_50m_admin_0_boundary_lines_disputed_areas'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_boundary_lines_disputed_areas AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_boundary_lines_disputed_areas AS t
   - name: 'ne_50m_admin_0_boundary_lines_land'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_boundary_lines_land AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_boundary_lines_land AS t
   - name: 'ne_50m_admin_0_boundary_lines_maritime_indicator'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_boundary_lines_maritime_indicator AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_boundary_lines_maritime_indicator AS t
   - name: 'ne_50m_admin_0_boundary_map_units'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_boundary_map_units AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_boundary_map_units AS t
   - name: 'ne_50m_admin_0_breakaway_disputed_areas'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_breakaway_disputed_areas AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_breakaway_disputed_areas AS t
   - name: 'ne_50m_admin_0_breakaway_disputed_areas_scale_rank'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_breakaway_disputed_areas_scale_rank AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_breakaway_disputed_areas_scale_rank AS t
   - name: 'ne_50m_admin_0_countries'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_countries AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_countries AS t
   - name: 'ne_50m_admin_0_countries_lakes'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_countries_lakes AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_countries_lakes AS t
   - name: 'ne_50m_admin_0_map_subunits'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_map_subunits AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_map_subunits AS t
   - name: 'ne_50m_admin_0_map_units'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_map_units AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_map_units AS t
   - name: 'ne_50m_admin_0_pacific_groupings'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_pacific_groupings AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_pacific_groupings AS t
   - name: 'ne_50m_admin_0_scale_rank'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_scale_rank AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_scale_rank AS t
   - name: 'ne_50m_admin_0_sovereignty'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_sovereignty AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_sovereignty AS t
   - name: 'ne_50m_admin_0_tiny_countries'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_tiny_countries AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_tiny_countries AS t
   - name: 'ne_50m_admin_0_tiny_countries_scale_rank'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_tiny_countries_scale_rank AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_tiny_countries_scale_rank AS t
   - name: 'ne_50m_admin_1_states_provinces'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_1_states_provinces AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_1_states_provinces AS t
   - name: 'ne_50m_admin_1_states_provinces_lakes'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_1_states_provinces_lakes AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_1_states_provinces_lakes AS t
   - name: 'ne_50m_admin_1_states_provinces_lines'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_1_states_provinces_lines AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_1_states_provinces_lines AS t
   - name: 'ne_50m_admin_1_states_provinces_scale_rank'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_1_states_provinces_scale_rank AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_1_states_provinces_scale_rank AS t
   - name: 'ne_50m_airports'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_airports AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_airports AS t
   - name: 'ne_50m_antarctic_ice_shelves_lines'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_antarctic_ice_shelves_lines AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_antarctic_ice_shelves_lines AS t
   - name: 'ne_50m_antarctic_ice_shelves_polys'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_antarctic_ice_shelves_polys AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_antarctic_ice_shelves_polys AS t
   - name: 'ne_50m_coastline'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_coastline AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_coastline AS t
   - name: 'ne_50m_geographic_lines'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geographic_lines AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geographic_lines AS t
   - name: 'ne_50m_geography_marine_polys'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geography_marine_polys AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geography_marine_polys AS t
   - name: 'ne_50m_geography_regions_elevation_points'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geography_regions_elevation_points AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geography_regions_elevation_points AS t
   - name: 'ne_50m_geography_regions_points'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geography_regions_points AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geography_regions_points AS t
   - name: 'ne_50m_geography_regions_polys'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geography_regions_polys AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geography_regions_polys AS t
   - name: 'ne_50m_glaciated_areas'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_glaciated_areas AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_glaciated_areas AS t
   - name: 'ne_50m_lakes'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_lakes AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_lakes AS t
   - name: 'ne_50m_lakes_historic'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_lakes_historic AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_lakes_historic AS t
   - name: 'ne_50m_land'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_land AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_land AS t
   - name: 'ne_50m_ocean'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_ocean AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_ocean AS t
   - name: 'ne_50m_playas'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_playas AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_playas AS t
   - name: 'ne_50m_populated_places'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_populated_places AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_populated_places AS t
   - name: 'ne_50m_populated_places_simple'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_populated_places_simple AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_populated_places_simple AS t
   - name: 'ne_50m_ports'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_ports AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_ports AS t
   - name: 'ne_50m_rivers_lake_centerlines'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_rivers_lake_centerlines AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_rivers_lake_centerlines AS t
   - name: 'ne_50m_rivers_lake_centerlines_scale_rank'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_rivers_lake_centerlines_scale_rank AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_rivers_lake_centerlines_scale_rank AS t
   - name: 'ne_50m_urban_areas'
     minZoom: 4
     maxZoom: 5
     queries:
-      - sql: SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_urban_areas AS t
+      - SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_urban_areas AS t

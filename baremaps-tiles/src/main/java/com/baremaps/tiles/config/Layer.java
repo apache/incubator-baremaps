@@ -10,13 +10,13 @@ public class Layer {
 
   private int maxZoom;
 
-  private List<Query> queries;
+  private List<String> queries;
 
   public Layer() {
 
   }
 
-  public Layer(String name, String geometry, int minZoom, int maxZoom, List<Query> queries) {
+  public Layer(String name, String geometry, int minZoom, int maxZoom, List<String> queries) {
     this.name = name;
     this.minZoom = minZoom;
     this.maxZoom = maxZoom;
@@ -35,7 +35,7 @@ public class Layer {
     return maxZoom;
   }
 
-  public List<Query> getQueries() {
+  public List<String> getQueries() {
     return queries;
   }
 
@@ -51,7 +51,7 @@ public class Layer {
     this.maxZoom = maxZoom;
   }
 
-  public void setQueries(List<Query> queries) {
+  public void setQueries(List<String> queries) {
     this.queries = queries;
   }
 }

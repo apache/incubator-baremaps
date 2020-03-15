@@ -19,7 +19,7 @@ baremaps serve \
   --reader fast
 ```
 
-Well done, the tile server should have started and a map of liechtenstein should appear in your browser ([http://localhost:9000/](http://localhost:8082/))!
+Well done, the tile server should have started and a map of liechtenstein should appear in your browser ([http://localhost:9000/](http://localhost:9000/))!
 
 Vector tiles are rarely served dynamically in production. The following command produces a directory that contains precomputed tiles that can be deployed on a CDN:
 
