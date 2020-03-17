@@ -87,7 +87,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <version.lib.aws-java-sdk-s3>1.11.700</version.lib.aws-java-sdk-s3>
+    <version.lib.aws-java-sdk-s3>1.11.744</version.lib.aws-java-sdk-s3>
     <version.lib.caffeine>2.8.0</version.lib.caffeine>
     <version.lib.commons-compress>1.19</version.lib.commons-compress>
     <version.lib.dbcp2>2.7.0</version.lib.dbcp2>
