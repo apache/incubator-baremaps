@@ -100,7 +100,7 @@
     <version.lib.osmosis>0.47</version.lib.osmosis>
     <version.lib.picocli>4.2.0</version.lib.picocli>
     <version.lib.postgresql>42.2.9</version.lib.postgresql>
-    <version.lib.proj4j>1.1.0</version.lib.proj4j>
+    <version.lib.proj4j>1.1.1</version.lib.proj4j>
     <version.lib.protobuf>3.11.4</version.lib.protobuf>
     <version.lib.selenium>3.141.59</version.lib.selenium>
     <version.lib.slf4j>1.7.30</version.lib.slf4j>
