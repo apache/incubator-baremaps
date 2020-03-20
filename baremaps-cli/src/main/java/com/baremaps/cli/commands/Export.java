@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2011 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.cli.commands;
 
 import static com.baremaps.cli.options.TileReaderOption.slow;
@@ -45,34 +59,34 @@ public class Export implements Callable<Integer> {
 
   @Option(
       names = {"--database"},
-      paramLabel= "JDBC",
+      paramLabel = "JDBC",
       description = "The JDBC url of the Postgres database.",
       required = true)
   private String database;
 
   @Option(
       names = {"--config"},
-      paramLabel= "YAML",
+      paramLabel = "YAML",
       description = "The YAML configuration file.",
       required = true)
   private String config;
 
   @Option(
       names = {"--repository"},
-      paramLabel= "URL",
+      paramLabel = "URL",
       description = "The tile repository URL.",
       required = true)
   private String repository;
 
   @Option(
       names = {"--minZoom"},
-      paramLabel= "MIN",
+      paramLabel = "MIN",
       description = "The minimal zoom level.")
   private int minZoom = 0;
 
   @Option(
       names = {"--maxZoom"},
-      paramLabel= "MAX",
+      paramLabel = "MAX",
       description = "The maximal zoom level.")
   private int maxZoom = 14;
 
