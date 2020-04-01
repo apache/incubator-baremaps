@@ -10,7 +10,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbaremaps%2Fbaremaps.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbaremaps%2Fbaremaps?ref=badge_shield)
 
-Baremaps is a pipeline and a server for producing and serving Mapbox vector tiles from [OpenStreetMap](https://www.openstreetmap.org) with Postgis and Java.
+Baremaps is a vector tile server and pipeline built with Postgis and Java for producing and serving Mapbox vector tiles from [OpenStreetMap](https://www.openstreetmap.org) and other data sources.
 
 It is inspired by [Osmosis](https://github.com/openstreetmap/osmosis), but it comes with additional features, such as the ability to:
 -   Process data in parallel with the [Stream API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html) of Java
