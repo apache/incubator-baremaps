@@ -14,25 +14,27 @@
 
 package com.baremaps.cli.commands;
 
-import com.baremaps.core.io.InputStreams;
+import com.baremaps.core.fetch.Fetcher;
+import com.baremaps.core.fetch.Data;
+import com.baremaps.core.postgis.PostgisHelper;
+import com.baremaps.osm.cache.PostgisCoordinateCache;
+import com.baremaps.osm.cache.PostgisReferenceCache;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.osmpbf.HeaderBlock;
 import com.baremaps.osm.osmxml.Change;
-import com.baremaps.osm.osmxml.ChangeConsumer;
 import com.baremaps.osm.osmxml.ChangeSpliterator;
 import com.baremaps.osm.osmxml.State;
 import com.baremaps.osm.postgis.PostgisHeaderStore;
-import com.baremaps.osm.store.Store;
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
-import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.osm.cache.PostgisCoordinateCache;
-import com.baremaps.osm.cache.PostgisReferenceCache;
 import com.baremaps.osm.postgis.PostgisNodeStore;
 import com.baremaps.osm.postgis.PostgisRelationStore;
 import com.baremaps.osm.postgis.PostgisWayStore;
+import com.baremaps.osm.store.Store;
+import com.baremaps.osm.store.StoreUpdateConsumer;
+import com.baremaps.osm.store.TileChangeConsumer;
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -67,14 +69,14 @@ public class Update implements Callable<Integer> {
 
   @Option(
       names = {"--input"},
-      paramLabel= "OSC",
+      paramLabel = "OSC",
       description = "The OpenStreetMap Change file.",
       required = true)
   private String input;
 
   @Option(
       names = {"--database"},
-      paramLabel= "JDBC",
+      paramLabel = "JDBC",
       description = "The JDBC url of the Postgres database.",
       required = true)
   private String database;
@@ -95,34 +97,42 @@ public class Update implements Callable<Integer> {
 
     Store<Long, Coordinate> coordinateStore = new PostgisCoordinateCache(datasource);
     Store<Long, List<Long>> referenceStore = new PostgisReferenceCache(datasource);
-    
-    PostgisHeaderStore headerMapper = new PostgisHeaderStore(datasource);
-    PostgisNodeStore nodeStore = new PostgisNodeStore(datasource,
-        new NodeBuilder(coordinateTransform, geometryFactory));
-    PostgisWayStore wayStore = new PostgisWayStore(datasource,
-        new WayBuilder(coordinateTransform, geometryFactory, coordinateStore));
-    PostgisRelationStore relationStore = new PostgisRelationStore(datasource,
-        new RelationBuilder(coordinateTransform, geometryFactory, coordinateStore, referenceStore));
 
+    NodeBuilder nodeBuilder = new NodeBuilder(coordinateTransform, geometryFactory);
+    PostgisNodeStore nodeStore = new PostgisNodeStore(datasource, nodeBuilder);
+
+    WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateStore);
+    PostgisWayStore wayStore = new PostgisWayStore(datasource, wayBuilder);
+
+    RelationBuilder relationBuilder = new RelationBuilder(
+        coordinateTransform, geometryFactory, coordinateStore, referenceStore);
+    PostgisRelationStore relationStore = new PostgisRelationStore(datasource, relationBuilder);
+
+    PostgisHeaderStore headerMapper = new PostgisHeaderStore(datasource);
     HeaderBlock header = headerMapper.getLast();
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
+
+    String changePath = changePath(nextSequenceNumber);
+    String changeURL = String.format("%s/%s", input, changePath);
+    Fetcher fetcher = new Fetcher(mixins.caching);
+    Data changeFetch = fetcher.fetch(changeURL);
+    try (InputStream changeInputStream = new GZIPInputStream(changeFetch.getInputStream())) {
+      Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
+      Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
+      TileChangeConsumer tileChangeConsumer = new TileChangeConsumer(nodeBuilder, wayBuilder,
+          relationBuilder);
+      StoreUpdateConsumer storeUpdateConsumer = new StoreUpdateConsumer(nodeStore, wayStore, relationStore);
+      changeStream
+          .peek(tileChangeConsumer)
+          .forEach(storeUpdateConsumer);
+    }
+
     String statePath = statePath(nextSequenceNumber);
-
     String stateURL = String.format("%s/%s", input, statePath);
-
-    try (InputStreamReader reader = new InputStreamReader(InputStreams.from(stateURL), Charsets.UTF_8)) {
+    Data stateFetch = fetcher.fetch(stateURL);
+    try (InputStreamReader reader = new InputStreamReader(stateFetch.getInputStream(), Charsets.UTF_8)) {
       String stateContent = CharStreams.toString(reader);
       State state = State.parse(stateContent);
-      String changePath = changePath(nextSequenceNumber);
-      String changeURL = String.format("%s/%s", input, changePath);
-
-      try (InputStream changeInputStream = new GZIPInputStream(InputStreams.from(changeURL))) {
-        Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
-        Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
-        ChangeConsumer changeConsumer = new ChangeConsumer(nodeStore, wayStore, relationStore);
-        changeStream.forEach(changeConsumer);
-      }
-
       headerMapper.insert(new HeaderBlock(
           state.timestamp,
           state.sequenceNumber,
@@ -149,5 +159,6 @@ public class Update implements Callable<Integer> {
   public String statePath(long sequenceNumber) {
     return path(sequenceNumber) + ".state.txt";
   }
+
 
 }

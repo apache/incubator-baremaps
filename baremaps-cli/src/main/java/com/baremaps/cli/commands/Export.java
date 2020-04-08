@@ -20,11 +20,11 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.AmazonS3URI;
 import com.baremaps.cli.options.TileReaderOption;
-import com.baremaps.core.io.InputStreams;
+import com.baremaps.core.fetch.Fetcher;
 import com.baremaps.tiles.postgis.SlowTileReader;
 import com.baremaps.tiles.postgis.FastTileReader;
 import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.tiles.Tile;
+import com.baremaps.core.tile.Tile;
 import com.baremaps.tiles.TileReader;
 import com.baremaps.tiles.TileWriter;
 import com.baremaps.tiles.config.Config;
@@ -32,6 +32,7 @@ import com.baremaps.tiles.file.FileTileStore;
 import com.baremaps.tiles.s3.S3TileStore;
 import com.baremaps.tiles.util.TileUtil;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -124,28 +125,33 @@ public class Export implements Callable<Integer> {
     Configurator.setRootLevel(Level.getLevel(mixins.level));
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
-    // Read the configuration toInputStream
-    Config config = Config.load(InputStreams.from(this.config));
-    PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
+    // Initialize the fetcher
+    Fetcher fetcher = new Fetcher(mixins.caching);
 
-    // Initialize tile reader and writer
-    TileReader tileReader = tileReader(datasource, config);
-    TileWriter tileWriter = tileWriter(repository);
+    // Read the configuration file
+    try (InputStream input = fetcher.fetch(this.config).getInputStream()) {
+      Config config = Config.load(input);
+      PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
-    Stream<Tile> tiles;
-    try (Connection connection = datasource.getConnection()) {
-      Geometry geometry = TileUtil.bbox(connection);
-      tiles = TileUtil.getTiles(geometry, minZoom, maxZoom);
-    }
+      // Initialize tile reader and writer
+      TileReader tileReader = tileReader(datasource, config);
+      TileWriter tileWriter = tileWriter(repository);
 
-    tiles.parallel().forEach(tile -> {
-      try {
-        byte[] bytes = tileReader.read(tile);
-        tileWriter.write(tile, bytes);
-      } catch (Exception e) {
-        e.printStackTrace();
+      Stream<Tile> tiles;
+      try (Connection connection = datasource.getConnection()) {
+        Geometry geometry = TileUtil.bbox(connection);
+        tiles = Tile.getTiles(geometry, minZoom);
       }
-    });
+
+      tiles.parallel().forEach(tile -> {
+        try {
+          byte[] bytes = tileReader.read(tile);
+          tileWriter.write(tile, bytes);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      });
+    }
 
     return 0;
   }

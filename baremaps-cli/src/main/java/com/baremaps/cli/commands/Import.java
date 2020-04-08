@@ -16,7 +16,8 @@ package com.baremaps.cli.commands;
 
 import static org.lmdbjava.DbiFlags.MDB_CREATE;
 
-import com.baremaps.core.io.InputStreams;
+import com.baremaps.core.fetch.Fetcher;
+import com.baremaps.core.fetch.Data;
 import com.baremaps.core.stream.BatchSpliterator;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.RelationBuilder;
@@ -25,7 +26,7 @@ import com.baremaps.osm.osmpbf.FileBlock;
 import com.baremaps.osm.osmpbf.FileBlockSpliterator;
 import com.baremaps.osm.postgis.PostgisHeaderStore;
 import com.baremaps.osm.store.Store;
-import com.baremaps.osm.store.StoreConsumer;
+import com.baremaps.osm.store.StoreImportConsumer;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.baremaps.core.postgis.PostgisHelper;
@@ -75,14 +76,14 @@ public class Import implements Callable<Integer> {
 
   @Option(
       names = {"--input"},
-      paramLabel= "PBF",
+      paramLabel = "PBF",
       description = "The OpenStreetMap PBF file.",
       required = true)
   private String input;
 
   @Option(
       names = {"--database"},
-      paramLabel= "JDBC",
+      paramLabel = "JDBC",
       description = "The JDBC url of the Postgres database.",
       required = true)
   private String database;
@@ -130,15 +131,19 @@ public class Import implements Callable<Integer> {
     Store<Long, List<Long>> referenceStore = new LmdbReferenceCache(env,
         env.openDbi("references", MDB_CREATE));
 
+    logger.info("Fetching input.");
+    Fetcher fetcher = new Fetcher(mixins.caching);
+    Data fetch = fetcher.fetch(this.input);
+
     logger.info("Populating cache.");
-    try (DataInputStream input = new DataInputStream(InputStreams.from(this.input))) {
+    try (DataInputStream input = new DataInputStream(fetch.getInputStream())) {
       Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(input), false);
       CacheConsumer blockConsumer = new CacheConsumer(coordinateStore, referenceStore);
       blocks.forEach(blockConsumer);
     }
 
     logger.info("Populating database.");
-    try (DataInputStream input = new DataInputStream(InputStreams.from(this.input))) {
+    try (DataInputStream input = new DataInputStream(fetch.getInputStream())) {
       Stream<FileBlock> blocks = StreamSupport
           .stream(new BatchSpliterator<>(new FileBlockSpliterator(input), 10), true);
       CRSFactory crsFactory = new CRSFactory();
@@ -155,7 +160,8 @@ public class Import implements Callable<Integer> {
           new WayBuilder(coordinateTransform, geometryFactory, coordinateStore));
       PostgisRelationStore relationMapper = new PostgisRelationStore(datasource,
           new RelationBuilder(coordinateTransform, geometryFactory, coordinateStore, referenceStore));
-      StoreConsumer blockConsumer = new StoreConsumer(headerMapper, nodeMapper, wayMapper, relationMapper);
+      StoreImportConsumer blockConsumer = new StoreImportConsumer(headerMapper, nodeMapper, wayMapper,
+          relationMapper);
       blocks.forEach(blockConsumer);
     }
 

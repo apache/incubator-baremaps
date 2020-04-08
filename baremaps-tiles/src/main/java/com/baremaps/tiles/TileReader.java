@@ -14,6 +14,8 @@
 
 package com.baremaps.tiles;
 
+import com.baremaps.core.tile.Tile;
+
 public interface TileReader {
 
   byte[] read(Tile tile) throws TileException;

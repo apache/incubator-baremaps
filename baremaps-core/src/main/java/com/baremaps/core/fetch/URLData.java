@@ -12,27 +12,24 @@
  * the License.
  */
 
-package com.baremaps.osm.osmxml;
+package com.baremaps.core.fetch;
 
-import com.baremaps.osm.model.Entity;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 
-public final class Change {
+public class URLData implements Data {
 
-  public enum Type {delete, create, modify}
+  private final URL url;
 
-  private final Type type;
-  private final Entity entity;
-
-  public Change(Type type, Entity entity) {
-    this.type = type;
-    this.entity = entity;
+  public URLData(URL url) {
+    this.url = url;
   }
 
-  public Type getType() {
-    return type;
+  @Override
+  public InputStream getInputStream() throws IOException {
+    return new BufferedInputStream(url.openConnection().getInputStream());
   }
 
-  public Entity getEntity() {
-    return entity;
-  }
 }

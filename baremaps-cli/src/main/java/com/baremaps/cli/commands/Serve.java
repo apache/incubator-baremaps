@@ -15,7 +15,7 @@
 package com.baremaps.cli.commands;
 
 import com.baremaps.cli.options.TileReaderOption;
-import com.baremaps.core.io.InputStreams;
+import com.baremaps.core.fetch.Fetcher;
 import com.baremaps.core.postgis.PostgisHelper;
 import com.baremaps.tiles.TileReader;
 import com.baremaps.tiles.config.Config;
@@ -25,6 +25,7 @@ import com.baremaps.tiles.postgis.FastTileReader;
 import com.baremaps.tiles.postgis.SlowTileReader;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
@@ -97,20 +98,24 @@ public class Serve implements Callable<Integer> {
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     // Read the configuration toInputStream
-    Config config = Config.load(InputStreams.from(this.config));
-    PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
+    Fetcher fetcher = new Fetcher(mixins.caching);
+    try(InputStream input = fetcher.fetch(this.config).getInputStream()) {
+      Config config = Config.load(input);
+      PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
-    // Choose the tile reader
-    TileReader tileReader = tileReader(datasource, config);
+      // Choose the tile reader
+      TileReader tileReader = tileReader(datasource, config);
 
-    // Create the http server
-    HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
-    server.createContext("/", new ResourceHandler(Paths.get(directory)));
-    server.createContext("/tiles/", new TileHandler(tileReader));
-    server.setExecutor(null);
-    server.start();
+      // Create the http server
+      HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+      server.createContext("/", new ResourceHandler(Paths.get(directory)));
+      server.createContext("/tiles/", new TileHandler(tileReader));
+      server.setExecutor(null);
+      server.start();
 
-    logger.info("Server started listening on port {}", port);
+      logger.info("Server started listening on port {}", port);
+    }
+
 
     return 0;
   }

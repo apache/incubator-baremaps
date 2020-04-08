@@ -24,14 +24,14 @@ import com.baremaps.osm.postgis.PostgisRelationStore;
 import com.baremaps.osm.postgis.PostgisWayStore;
 import java.util.stream.Collectors;
 
-public class StoreConsumer extends FileBlockConsumer {
+public class StoreImportConsumer extends FileBlockConsumer {
 
   private final PostgisHeaderStore headerStore;
   private final PostgisNodeStore nodeStore;
   private final PostgisWayStore wayStore;
   private final PostgisRelationStore relationStore;
 
-  public StoreConsumer(
+  public StoreImportConsumer(
       PostgisHeaderStore headerStore,
       PostgisNodeStore nodeStore,
       PostgisWayStore wayStore,

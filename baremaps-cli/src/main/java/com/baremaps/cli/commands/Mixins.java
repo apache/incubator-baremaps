@@ -24,4 +24,9 @@ public class Mixins {
       description = { "The log level." })
   protected String level = "INFO";
 
+  @Option(
+      names = {"--caching"},
+      description = "Cache the fetched resources in temporary files.")
+  protected boolean caching = false;
+
 }

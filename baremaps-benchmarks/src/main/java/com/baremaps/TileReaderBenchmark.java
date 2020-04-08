@@ -15,7 +15,7 @@
 package com.baremaps;
 
 import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.tiles.Tile;
+import com.baremaps.core.tile.Tile;
 import com.baremaps.tiles.TileReader;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.postgis.SlowTileReader;
@@ -83,7 +83,7 @@ public class TileReaderBenchmark {
   public void execute() throws SQLException, ParseException {
     try (Connection connection = datasource.getConnection()) {
       Geometry geometry = TileUtil.bbox(connection);
-      Stream<Tile> coords = TileUtil.getTiles(geometry, 14, 14);
+      Stream<Tile> coords = Tile.getTiles(geometry, 14);
       coords.forEach(xyz -> {
         try {
           reader.read(xyz);

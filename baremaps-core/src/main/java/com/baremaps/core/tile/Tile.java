@@ -12,11 +12,16 @@
  * the License.
  */
 
-package com.baremaps.tiles;
+package com.baremaps.core.tile;
 
+import com.baremaps.core.stream.BatchSpliterator;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 
 public final class Tile {
 
@@ -88,4 +93,24 @@ public final class Tile {
         .add("z", z)
         .toString();
   }
+
+
+  public static Stream<Tile> getTiles(Geometry geometry, int z) {
+    Envelope envelope = geometry.getEnvelopeInternal();
+    Tile min = getTiles(envelope.getMinX(), envelope.getMaxY(), z);
+    Tile max = getTiles(envelope.getMaxX(), envelope.getMinY(), z);
+    return IntStream.rangeClosed(min.getX(), max.getX()).mapToObj(i -> i)
+        .flatMap(x -> IntStream
+            .rangeClosed(min.getY(), max.getY())
+            .mapToObj(i -> i)
+            .map(y -> new Tile(x, y, z)));
+  }
+
+  public static Tile getTiles(double lon, double lat, int z) {
+    int x = (int) ((lon + 180.0) / 360.0 * (1 << z));
+    int y = (int) ((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat)))
+        / Math.PI) / 2.0 * (1 << z));
+    return new Tile(x, y, z);
+  }
+
 }

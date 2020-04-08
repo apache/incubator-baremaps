@@ -21,7 +21,7 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import com.google.common.collect.Lists;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import com.baremaps.tiles.Tile;
+import com.baremaps.core.tile.Tile;
 import com.baremaps.tiles.TileException;
 import com.baremaps.tiles.TileReader;
 import java.io.IOException;

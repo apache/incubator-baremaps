@@ -12,27 +12,23 @@
  * the License.
  */
 
-package com.baremaps.osm.osmxml;
+package com.baremaps.core.fetch;
 
-import com.baremaps.osm.model.Entity;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-public final class Change {
+public class FileData implements Data {
 
-  public enum Type {delete, create, modify}
+  private final Path file;
 
-  private final Type type;
-  private final Entity entity;
-
-  public Change(Type type, Entity entity) {
-    this.type = type;
-    this.entity = entity;
+  FileData(Path file) {
+    this.file = file;
   }
 
-  public Type getType() {
-    return type;
+  public InputStream getInputStream() throws IOException {
+    return Files.newInputStream(file);
   }
 
-  public Entity getEntity() {
-    return entity;
-  }
 }

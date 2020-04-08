@@ -14,6 +14,8 @@
 
 package com.baremaps.tiles;
 
+import com.baremaps.core.tile.Tile;
+
 public interface TileWriter {
 
   void write(Tile tile, byte[] bytes) throws TileException;

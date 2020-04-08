@@ -12,8 +12,9 @@
  * the License.
  */
 
-package com.baremaps.osm.osmxml;
+package com.baremaps.osm.store;
 
+import com.baremaps.osm.osmxml.Change;
 import com.baremaps.osm.postgis.PostgisNodeStore;
 import com.baremaps.osm.postgis.PostgisRelationStore;
 import com.baremaps.osm.postgis.PostgisWayStore;
@@ -23,13 +24,16 @@ import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
 import java.util.function.Consumer;
 
-public class ChangeConsumer implements Consumer<Change> {
+public class StoreUpdateConsumer implements Consumer<Change> {
 
   private final PostgisNodeStore nodeStore;
   private final PostgisWayStore wayStore;
   private final PostgisRelationStore relationStore;
 
-  public ChangeConsumer(PostgisNodeStore nodeStore, PostgisWayStore wayStore, PostgisRelationStore relationStore) {
+  public StoreUpdateConsumer(
+      PostgisNodeStore nodeStore,
+      PostgisWayStore wayStore,
+      PostgisRelationStore relationStore) {
     this.nodeStore = nodeStore;
     this.wayStore = wayStore;
     this.relationStore = relationStore;

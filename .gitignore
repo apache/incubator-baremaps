@@ -11,7 +11,7 @@ log/
 target/
 
 # Release
-baremaps/
+/baremaps
 
 # JMH
 jmh-result.json
