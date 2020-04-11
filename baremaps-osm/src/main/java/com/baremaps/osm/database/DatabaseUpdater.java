@@ -78,7 +78,17 @@ public class DatabaseUpdater implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          relationTable.put(relation.getInfo().getId(), relation);
+          relationTable.put(new RelationTable.Relation(
+              relation.getInfo().getId(),
+              relation.getInfo().getVersion(),
+              relation.getInfo().getTimestamp(),
+              relation.getInfo().getChangeset(),
+              relation.getInfo().getUserId(),
+              relation.getInfo().getTags(),
+              relation.getMembers().stream().map(m -> m.getRef()).toArray(Long[]::new),
+              relation.getMembers().stream().map(m -> m.getType()).toArray(String[]::new),
+              relation.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new),
+              null));
           break;
         case delete:
           relationTable.delete(relation.getInfo().getId());

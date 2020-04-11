@@ -14,36 +14,121 @@
 
 package com.baremaps.osm.database;
 
+import com.baremaps.osm.database.RelationTable.Relation;
 import com.baremaps.osm.geometry.GeometryUtil;
 import com.baremaps.osm.geometry.RelationBuilder;
-import com.baremaps.osm.store.Store;
 import com.baremaps.osm.store.StoreException;
 import com.baremaps.core.postgis.CopyWriter;
-import com.baremaps.osm.model.Info;
-import com.baremaps.osm.model.Member;
-import com.baremaps.osm.model.Member.Type;
-import com.baremaps.osm.model.Relation;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
+import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class RelationTable implements Store<Long, Relation> {
+public class RelationTable implements Table<Relation> {
+
+  public static class Relation {
+
+    private final long id;
+
+    private final int version;
+
+    private final LocalDateTime timestamp;
+
+    private final long changeset;
+
+    private final int userId;
+
+    private final Map<String, String> tags;
+
+    private final Long[] memberRefs;
+
+    private final String[] memberTypes;
+
+    private final String[] memberRoles;
+
+    private final Geometry geometry;
+
+    public Relation(
+        long id,
+        int version,
+        LocalDateTime timestamp,
+        long changeset,
+        int userId,
+        Map<String, String> tags,
+        Long[] memberRefs,
+        String[] memberTypes,
+        String[] memberRoles,
+        Geometry geometry) {
+      this.id = id;
+      this.version = version;
+      this.timestamp = timestamp;
+      this.changeset = changeset;
+      this.userId = userId;
+      this.tags = tags;
+      this.memberRefs = memberRefs;
+      this.memberTypes = memberTypes;
+      this.memberRoles = memberRoles;
+      this.geometry = geometry;
+    }
+
+    public long getId() {
+      return id;
+    }
+
+    public int getVersion() {
+      return version;
+    }
+
+    public LocalDateTime getTimestamp() {
+      return timestamp;
+    }
+
+    public long getChangeset() {
+      return changeset;
+    }
+
+    public int getUserId() {
+      return userId;
+    }
+
+    public Map<String, String> getTags() {
+      return tags;
+    }
+
+    public Long[] getMemberRefs() {
+      return memberRefs;
+    }
+
+    public String[] getMemberTypes() {
+      return memberTypes;
+    }
+
+    public String[] getMemberRoles() {
+      return memberRoles;
+    }
+
+    public Geometry getGeometry() {
+      return geometry;
+    }
+
+  }
 
   private static final String SELECT =
-      "SELECT version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles FROM osm_relations WHERE id = ?";
+      "SELECT version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, geom FROM osm_relations WHERE id = ?";
 
   private static final String SELECT_IN =
-      "SELECT id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles FROM osm_relations WHERE id = ANY (?)";
+      "SELECT id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, geom FROM osm_relations WHERE id = ANY (?)";
 
   private static final String INSERT =
       "INSERT INTO osm_relations (id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, geom) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
@@ -58,7 +143,8 @@ public class RelationTable implements Store<Long, Relation> {
           + "member_roles = EXCLUDED.member_roles, "
           + "geom = EXCLUDED.geom";
 
-  private static final String DELETE = "DELETE FROM osm_relations WHERE id = ?";
+  private static final String DELETE =
+      "DELETE FROM osm_relations WHERE id = ?";
 
   private static final String COPY =
       "COPY osm_relations (id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, geom) FROM STDIN BINARY";
@@ -83,14 +169,11 @@ public class RelationTable implements Store<Long, Relation> {
         LocalDateTime timestamp = result.getObject(3, LocalDateTime.class);
         long changeset = result.getLong(4);
         Map<String, String> tags = (Map<String, String>) result.getObject(5);
-        List<Member> members = new ArrayList<>();
         Long[] refs = (Long[]) result.getArray(6).getArray();
         String[] types = (String[]) result.getArray(7).getArray();
         String[] roles = (String[]) result.getArray(8).getArray();
-        for (int i = 0; i < refs.length; i++) {
-          members.add(new Member(refs[i], Type.valueOf(types[i]), roles[i]));
-        }
-        return new Relation(new Info(id, version, timestamp, changeset, uid, tags), members);
+        Geometry geometry = GeometryUtil.deserialize(result.getBytes(9));
+        return new RelationTable.Relation(id, version, timestamp, changeset, uid, tags, refs, types, roles, geometry);
       } else {
         throw new IllegalArgumentException();
       }
@@ -100,10 +183,10 @@ public class RelationTable implements Store<Long, Relation> {
   }
 
   @Override
-  public List<Relation> getAll(List<Long> keys) {
+  public List<Relation> getAll(List<Long> ids) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
-      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
+      statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
       ResultSet result = statement.executeQuery();
       Map<Long, Relation> relations = new HashMap<>();
       while (result.next()) {
@@ -113,34 +196,31 @@ public class RelationTable implements Store<Long, Relation> {
         LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
         long changeset = result.getLong(5);
         Map<String, String> tags = (Map<String, String>) result.getObject(6);
-        List<Member> members = new ArrayList<>();
         Long[] refs = (Long[]) result.getArray(7).getArray();
         String[] types = (String[]) result.getArray(8).getArray();
         String[] roles = (String[]) result.getArray(9).getArray();
-        for (int i = 0; i < refs.length; i++) {
-          members.add(new Member(refs[i], Type.valueOf(types[i]), roles[i]));
-        }
-        relations.put(id, new Relation(new Info(id, version, timestamp, changeset, uid, tags), members));
+        Geometry geometry = GeometryUtil.deserialize(result.getBytes(10));
+        relations.put(id, new Relation(id, version, timestamp, changeset, uid, tags, refs, types, roles, geometry));
       }
-      return keys.stream().map(key -> relations.get(key)).collect(Collectors.toList());
+      return ids.stream().map(id -> relations.get(id)).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new StoreException(e);
     }
   }
 
-  public void put(Long key, Relation value) {
+  public void put(Relation value) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      statement.setLong(1, key);
-      statement.setInt(2, value.getInfo().getVersion());
-      statement.setInt(3, value.getInfo().getUserId());
-      statement.setObject(4, value.getInfo().getTimestamp());
-      statement.setLong(5, value.getInfo().getChangeset());
-      statement.setObject(6, value.getInfo().getTags());
-      statement.setObject(7, value.getMembers().stream().mapToLong(m -> m.getRef()).toArray());
-      statement.setObject(8, value.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new));
-      statement.setObject(9, value.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new));
-      statement.setBytes(10, GeometryUtil.serialize(relationBuilder.build(value)));
+      statement.setLong(1, value.getId());
+      statement.setInt(2, value.getVersion());
+      statement.setInt(3, value.getUserId());
+      statement.setObject(4, value.getTimestamp());
+      statement.setLong(5, value.getChangeset());
+      statement.setObject(6, value.getTags());
+      statement.setObject(7, value.getMemberRefs());
+      statement.setObject(8, value.getMemberTypes());
+      statement.setObject(9, value.getMemberRoles());
+      statement.setBytes(10, GeometryUtil.serialize(value.getGeometry()));
       statement.execute();
     } catch (SQLException e) {
       throw new StoreException(e);
@@ -148,23 +228,21 @@ public class RelationTable implements Store<Long, Relation> {
   }
 
   @Override
-  public void putAll(List<Entry<Long, Relation>> entries) {
+  public void putAll(List<Relation> entries) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      for (Entry<Long, Relation> entry : entries) {
-        Long key = entry.key();
-        Relation value = entry.value();
+      for (Relation value : entries) {
         statement.clearParameters();
-        statement.setLong(1, key);
-        statement.setInt(2, value.getInfo().getVersion());
-        statement.setInt(3, value.getInfo().getUserId());
-        statement.setObject(4, value.getInfo().getTimestamp());
-        statement.setLong(5, value.getInfo().getChangeset());
-        statement.setObject(6, value.getInfo().getTags());
-        statement.setObject(7, value.getMembers().stream().mapToLong(m -> m.getRef()).toArray());
-        statement.setObject(8, value.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new));
-        statement.setObject(9, value.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new));
-        statement.setBytes(10, GeometryUtil.serialize(relationBuilder.build(value)));
+        statement.setLong(1, value.getId());
+        statement.setInt(2, value.getVersion());
+        statement.setInt(3, value.getUserId());
+        statement.setObject(4, value.getTimestamp());
+        statement.setLong(5, value.getChangeset());
+        statement.setObject(6, value.getTags());
+        statement.setObject(7, value.getMemberRefs());
+        statement.setObject(8, value.getMemberTypes());
+        statement.setObject(9, value.getMemberRoles());
+        statement.setBytes(10, GeometryUtil.serialize(value.getGeometry()));
         statement.addBatch();
       }
       statement.executeBatch();
@@ -198,26 +276,23 @@ public class RelationTable implements Store<Long, Relation> {
     }
   }
 
-  public void importAll(List<Entry<Long, Relation>> entries) {
+  public void importAll(List<Relation> entries) {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
         writer.writeHeader();
-        for (Entry<Long, Relation> entry : entries) {
-          Long key = entry.key();
-          Relation value = entry.value();
+        for (Relation value : entries) {
           writer.startRow(10);
-          writer.writeLong(key);
-          writer.writeInteger(value.getInfo().getVersion());
-          writer.writeInteger(value.getInfo().getUserId());
-          writer.writeLocalDateTime(value.getInfo().getTimestamp());
-          writer.writeLong(value.getInfo().getChangeset());
-          writer.writeHstore(value.getInfo().getTags());
-          writer.writeLongList(value.getMembers().stream().map(m -> m.getRef()).collect(Collectors.toList()));
-          writer.writeStringList(
-              value.getMembers().stream().map(m -> m.getType().name()).collect(Collectors.toList()));
-          writer.writeStringList(value.getMembers().stream().map(m -> m.getRole()).collect(Collectors.toList()));
-          writer.writeGeometry(relationBuilder.build(value));
+          writer.writeLong(value.getId());
+          writer.writeInteger(value.getVersion());
+          writer.writeInteger(value.getUserId());
+          writer.writeLocalDateTime(value.getTimestamp());
+          writer.writeLong(value.getChangeset());
+          writer.writeHstore(value.getTags());
+          writer.writeLongList(Arrays.asList(value.getMemberRefs()));
+          writer.writeStringList(Arrays.asList(value.getMemberTypes()));
+          writer.writeStringList(Arrays.asList(value.getMemberRoles()));
+          writer.writeGeometry(value.getGeometry());
         }
       }
     } catch (Exception ex) {

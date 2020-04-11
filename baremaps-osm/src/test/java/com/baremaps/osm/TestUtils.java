@@ -15,6 +15,7 @@
 package com.baremaps.osm;
 
 import com.baremaps.osm.database.NodeTable;
+import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -230,32 +231,37 @@ public class TestUtils {
   };
 
 
-  public static final Relation RELATION_0 = new Relation(
-      new Info(0, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      ImmutableList.of());
+  public static final RelationTable.Relation RELATION_0 = new RelationTable.Relation(
+      0, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      new Long[0], new String[0], new String[0], null);
 
-  public static final Relation RELATION_1 = new Relation(
-      new Info(1, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon")),
-      ImmutableList.of());
+  public static final RelationTable.Relation RELATION_1 = new RelationTable.Relation(
+      1, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon"),
+      new Long[0], new String[0], new String[0], null);
 
-  public static final Relation RELATION_2 = new Relation(
-      new Info(2, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon")),
-      ImmutableList.of(new Member(2, Member.Type.way, "outer")));
+  public static final RelationTable.Relation RELATION_2 = new RelationTable.Relation(
+      2, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon"),
+      new Long[]{2l},
+      new String[]{Member.Type.way.name()},
+      new String[]{"outer"},
+      null);
 
-  public static final Relation RELATION_3 = new Relation(
-      new Info(3, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon")),
-      ImmutableList.of(
-          new Member(2, Member.Type.way, "outer"),
-          new Member(3, Member.Type.way, "inner")));
+  public static final RelationTable.Relation RELATION_3 = new RelationTable.Relation(
+      3, 0, TIMESTAMP, 0, 0,
+      ImmutableMap.of("type", "multipolygon"),
+      new Long[]{2l, 3l},
+      new String[]{Member.Type.way.name(), Member.Type.way.name()},
+      new String[]{"outer", "inner"},
+      null);
 
-  public static final Relation RELATION_4 = new Relation(
-      new Info(4, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon")),
-      ImmutableList.of(
-          new Member(2, Member.Type.way, "outer"),
-          new Member(3, Member.Type.way, "inner"),
-          new Member(4, Member.Type.way, "outer")));
+  public static final RelationTable.Relation RELATION_4 = new RelationTable.Relation(
+      4, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon"),
+      new Long[]{2l, 3l, 4l},
+      new String[]{Member.Type.way.name(), Member.Type.way.name(), Member.Type.way.name()},
+      new String[]{"outer", "inner", "outer"},
+      null);
 
-  public static final List<Relation> RELATION_LIST = ImmutableList
+  public static final List<RelationTable.Relation> RELATION_LIST = ImmutableList
       .of(RELATION_0, RELATION_2, RELATION_3, RELATION_4);
 
   public static final RelationBuilder RELATION_BUILDER = new RelationBuilder(COORDINATE_TRANSFORM,

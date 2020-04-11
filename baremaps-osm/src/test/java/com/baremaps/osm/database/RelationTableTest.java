@@ -55,55 +55,49 @@ class RelationTableTest {
   @Test
   @Tag("integration")
   public void put() {
-    relationStore.put(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2);
-    assertEquals(TestUtils.RELATION_2, relationStore.get(TestUtils.RELATION_2.getInfo().getId()));
+    relationStore.put(TestUtils.RELATION_2);
+    assertEquals(TestUtils.RELATION_2, relationStore.get(TestUtils.RELATION_2.getId()));
   }
 
   @Test
   @Tag("integration")
   public void putAll() {
-    List<Entry<Long, Relation>> relations = Arrays.asList(
-        new Entry<>(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2),
-        new Entry<>(TestUtils.RELATION_3.getInfo().getId(), TestUtils.RELATION_3),
-        new Entry<>(TestUtils.RELATION_4.getInfo().getId(), TestUtils.RELATION_4));
+    List<RelationTable.Relation> relations = Arrays
+        .asList(TestUtils.RELATION_2, TestUtils.RELATION_3, TestUtils.RELATION_4);
     relationStore.putAll(relations);
     assertIterableEquals(
-        relations.stream().map(e -> e.value()).collect(Collectors.toList()),
-        relationStore.getAll(relations.stream().map(e -> e.key()).collect(Collectors.toList())));
+        relations,
+        relationStore.getAll(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void delete() {
-    relationStore.put(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2);
-    relationStore.delete(TestUtils.RELATION_2.getInfo().getId());
-    assertThrows(IllegalArgumentException.class, () -> relationStore.get(TestUtils.RELATION_2.getInfo().getId()));
+    relationStore.put(TestUtils.RELATION_2);
+    relationStore.delete(TestUtils.RELATION_2.getId());
+    assertThrows(IllegalArgumentException.class, () -> relationStore.get(TestUtils.RELATION_2.getId()));
   }
 
   @Test
   @Tag("integration")
   public void deleteAll() {
-    List<Entry<Long, Relation>> relations = Arrays.asList(
-        new Entry<>(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2),
-        new Entry<>(TestUtils.RELATION_3.getInfo().getId(), TestUtils.RELATION_3),
-        new Entry<>(TestUtils.RELATION_4.getInfo().getId(), TestUtils.RELATION_4));
+    List<RelationTable.Relation> relations = Arrays
+        .asList(TestUtils.RELATION_2, TestUtils.RELATION_3, TestUtils.RELATION_4);
     relationStore.putAll(relations);
-    relationStore.deleteAll(relations.stream().map(e -> e.key()).collect(Collectors.toList()));
+    relationStore.deleteAll(relations.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
         Arrays.asList(null, null, null),
-        relationStore.getAll(relations.stream().map(e -> e.key()).collect(Collectors.toList())));
+        relationStore.getAll(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void importAll() {
-    List<Entry<Long, Relation>> relations = Arrays.asList(
-        new Entry<>(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2),
-        new Entry<>(TestUtils.RELATION_3.getInfo().getId(), TestUtils.RELATION_3),
-        new Entry<>(TestUtils.RELATION_4.getInfo().getId(), TestUtils.RELATION_4));
+    List<RelationTable.Relation> relations = Arrays
+        .asList(TestUtils.RELATION_2, TestUtils.RELATION_3, TestUtils.RELATION_4);
     relationStore.importAll(relations);
     assertIterableEquals(
-        relations.stream().map(e -> e.value()).collect(Collectors.toList()),
-        relationStore.getAll(relations.stream().map(e -> e.key()).collect(Collectors.toList())));
+        relations,
+        relationStore.getAll(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

@@ -14,6 +14,7 @@
 
 package com.baremaps.osm.database;
 
+import com.baremaps.osm.database.RelationTable.Relation;
 import com.baremaps.osm.osmpbf.FileBlockConsumer;
 import com.baremaps.osm.osmpbf.HeaderBlock;
 import com.baremaps.osm.osmpbf.PrimitiveBlock;
@@ -57,19 +58,40 @@ public class DatabaseImporter extends FileBlockConsumer {
       // TODO: Build node geometries
       nodeTable.importAll(
           primitiveBlock.getDenseNodes().stream()
-              .map(node -> new NodeTable.Node(node.getInfo().getId(), node.getInfo().getVersion(),
-                  node.getInfo().getTimestamp(), node.getInfo().getChangeset(), node.getInfo().getUserId(),
-                  node.getInfo().getTags(), null))
+              .map(node -> new NodeTable.Node(
+                  node.getInfo().getId(),
+                  node.getInfo().getVersion(),
+                  node.getInfo().getTimestamp(),
+                  node.getInfo().getChangeset(),
+                  node.getInfo().getUserId(),
+                  node.getInfo().getTags(),
+                  null))
               .collect(Collectors.toList()));
       wayTable.importAll(
           primitiveBlock.getWays().stream()
-              .map(way -> new WayTable.Way(way.getInfo().getId(), way.getInfo().getVersion(),
-                  way.getInfo().getTimestamp(), way.getInfo().getChangeset(), way.getInfo().getUserId(),
-                  way.getInfo().getTags(), way.getNodes(), null))
+              .map(way -> new WayTable.Way(
+                  way.getInfo().getId(),
+                  way.getInfo().getVersion(),
+                  way.getInfo().getTimestamp(),
+                  way.getInfo().getChangeset(),
+                  way.getInfo().getUserId(),
+                  way.getInfo().getTags(),
+                  way.getNodes(),
+                  null))
               .collect(Collectors.toList()));
       relationTable.importAll(
           primitiveBlock.getRelations().stream()
-              .map(relation -> new Entry<>(relation.getInfo().getId(), relation))
+              .map(relation -> new RelationTable.Relation(
+                  relation.getInfo().getId(),
+                  relation.getInfo().getVersion(),
+                  relation.getInfo().getTimestamp(),
+                  relation.getInfo().getChangeset(),
+                  relation.getInfo().getUserId(),
+                  relation.getInfo().getTags(),
+                  relation.getMembers().stream().map(m -> m.getRef()).toArray(Long[]::new),
+                  relation.getMembers().stream().map(m -> m.getType()).toArray(String[]::new),
+                  relation.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new),
+                  null))
               .collect(Collectors.toList()));
     } catch (Exception e) {
       e.printStackTrace();
