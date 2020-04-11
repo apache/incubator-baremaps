@@ -15,6 +15,7 @@
 package com.baremaps.osm.postgis;
 
 import com.baremaps.osm.geometry.GeometryUtil;
+import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.store.Store;
 import com.baremaps.osm.store.StoreException;
@@ -225,4 +226,9 @@ public class PostgisRelationStore implements Store<Long, Relation> {
       throw new StoreException(ex);
     }
   }
+
+  public RelationBuilder getRelationBuilder() {
+    return relationBuilder;
+  }
+
 }

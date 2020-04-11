@@ -14,12 +14,10 @@
 
 package com.baremaps.core.tile;
 
-import com.baremaps.core.stream.BatchSpliterator;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
@@ -96,9 +94,10 @@ public final class Tile {
 
 
   public static Stream<Tile> getTiles(Geometry geometry, int z) {
+    if (geometry == null) return Stream.empty();
     Envelope envelope = geometry.getEnvelopeInternal();
-    Tile min = getTiles(envelope.getMinX(), envelope.getMaxY(), z);
-    Tile max = getTiles(envelope.getMaxX(), envelope.getMinY(), z);
+    Tile min = getTile(envelope.getMinX(), envelope.getMaxY(), z);
+    Tile max = getTile(envelope.getMaxX(), envelope.getMinY(), z);
     return IntStream.rangeClosed(min.getX(), max.getX()).mapToObj(i -> i)
         .flatMap(x -> IntStream
             .rangeClosed(min.getY(), max.getY())
@@ -106,10 +105,13 @@ public final class Tile {
             .map(y -> new Tile(x, y, z)));
   }
 
-  public static Tile getTiles(double lon, double lat, int z) {
+  public static Tile getTile(double lon, double lat, int z) {
     int x = (int) ((lon + 180.0) / 360.0 * (1 << z));
     int y = (int) ((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat)))
         / Math.PI) / 2.0 * (1 << z));
+    System.out.println("-----------");
+    System.out.println(lon + " - " + lat);
+    System.out.println(x + " - " + y);
     return new Tile(x, y, z);
   }
 

@@ -13,7 +13,6 @@
  */
 
 package com.baremaps.cli.commands;
-
 import com.baremaps.core.fetch.Data;
 import com.baremaps.core.fetch.Fetcher;
 import com.baremaps.core.postgis.PostgisHelper;
@@ -32,6 +31,7 @@ import com.baremaps.osm.postgis.PostgisRelationStore;
 import com.baremaps.osm.postgis.PostgisWayStore;
 import com.baremaps.osm.store.Store;
 import com.baremaps.osm.store.StoreUpdateConsumer;
+import com.baremaps.osm.store.TileChangeConsumer;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import java.io.InputStream;
@@ -58,8 +58,8 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "update", description = "Update OpenStreetMap data in the Postgresql database.")
-public class Update implements Callable<Integer> {
+@Command(name = "diff", description = "List the tiles affected by an OpenStreetMap change file.")
+public class Diff implements Callable<Integer> {
 
   private static Logger logger = LogManager.getLogger();
 
@@ -92,7 +92,7 @@ public class Update implements Callable<Integer> {
     CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
     CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(epsg4326, epsg3857);
-    GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
+    GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), epsg3857.getProjection().getEPSGCode());
 
     Store<Long, Coordinate> coordinateStore = new PostgisCoordinateCache(datasource);
     Store<Long, List<Long>> referenceStore = new PostgisReferenceCache(datasource);
@@ -116,23 +116,10 @@ public class Update implements Callable<Integer> {
     try (InputStream changeInputStream = new GZIPInputStream(changeFetch.getInputStream())) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
-      StoreUpdateConsumer storeUpdateConsumer = new StoreUpdateConsumer(nodeStore, wayStore, relationStore);
-      changeStream.forEach(storeUpdateConsumer);
-    }
-
-    String statePath = statePath(nextSequenceNumber);
-    String stateURL = String.format("%s/%s", input, statePath);
-    Data stateFetch = fetcher.fetch(stateURL);
-    try (InputStreamReader reader = new InputStreamReader(stateFetch.getInputStream(), Charsets.UTF_8)) {
-      String stateContent = CharStreams.toString(reader);
-      State state = State.parse(stateContent);
-      headerMapper.insert(new HeaderBlock(
-          state.timestamp,
-          state.sequenceNumber,
-          header.getReplicationUrl(),
-          header.getSource(),
-          header.getWritingProgram(),
-          header.getBbox()));
+      TileChangeConsumer tileChangeConsumer = new TileChangeConsumer(
+          nodeStore, wayStore, relationStore);
+      changeStream.forEach(tileChangeConsumer);
+      System.out.println(tileChangeConsumer.getTiles());
     }
 
     return 0;
@@ -148,10 +135,5 @@ public class Update implements Callable<Integer> {
   public String changePath(long sequenceNumber) {
     return path(sequenceNumber) + ".osc.gz";
   }
-
-  public String statePath(long sequenceNumber) {
-    return path(sequenceNumber) + ".state.txt";
-  }
-
 
 }

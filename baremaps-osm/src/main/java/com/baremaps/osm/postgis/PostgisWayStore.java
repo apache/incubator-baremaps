@@ -15,6 +15,7 @@
 package com.baremaps.osm.postgis;
 
 import com.baremaps.osm.geometry.GeometryUtil;
+import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.store.Store;
 import com.baremaps.osm.store.StoreException;
@@ -213,4 +214,9 @@ public class PostgisWayStore implements Store<Long, Way> {
       throw new StoreException(e);
     }
   }
+
+  public WayBuilder getWayBuilder() {
+    return wayBuilder;
+  }
+
 }
