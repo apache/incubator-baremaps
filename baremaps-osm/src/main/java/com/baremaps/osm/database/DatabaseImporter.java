@@ -54,7 +54,7 @@ public class DatabaseImporter extends FileBlockConsumer {
   @Override
   public void accept(PrimitiveBlock primitiveBlock) {
     try {
-      // TODO: Build node geometry
+      // TODO: Build node geometries
       nodeTable.importAll(
           primitiveBlock.getDenseNodes().stream()
               .map(node -> new NodeTable.Node(node.getInfo().getId(), node.getInfo().getVersion(),
@@ -63,7 +63,9 @@ public class DatabaseImporter extends FileBlockConsumer {
               .collect(Collectors.toList()));
       wayTable.importAll(
           primitiveBlock.getWays().stream()
-              .map(way -> new Entry<>(way.getInfo().getId(), way))
+              .map(way -> new WayTable.Way(way.getInfo().getId(), way.getInfo().getVersion(),
+                  way.getInfo().getTimestamp(), way.getInfo().getChangeset(), way.getInfo().getUserId(),
+                  way.getInfo().getTags(), way.getNodes(), null))
               .collect(Collectors.toList()));
       relationTable.importAll(
           primitiveBlock.getRelations().stream()

@@ -15,6 +15,7 @@
 package com.baremaps.osm;
 
 import com.baremaps.osm.database.NodeTable;
+import com.baremaps.osm.database.WayTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.protobuf.ByteString;
@@ -166,27 +167,26 @@ public class TestUtils {
   public static final WayBuilder WAY_BUILDER = new WayBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY,
       COORDINATE_STORE);
 
-  public static final Way WAY_0 = new Way(
-      new Info(0, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      ImmutableList.of());
+  public static final WayTable.Way WAY_0 = new WayTable.Way(0, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      ImmutableList.of(), null);
 
-  public static final Way WAY_1 = new Way(
-      new Info(1, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      ImmutableList.of(0l, 1l, 2l, 3l));
+  public static final WayTable.Way WAY_1 = new WayTable.Way(
+      1, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      ImmutableList.of(0l, 1l, 2l, 3l), null);
 
-  public static final Way WAY_2 = new Way(
-      new Info(2, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      ImmutableList.of(0l, 1l, 2l, 3l, 0l));
+  public static final WayTable.Way WAY_2 = new WayTable.Way(
+      2, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      ImmutableList.of(0l, 1l, 2l, 3l, 0l), null);
 
-  public static final Way WAY_3 = new Way(
-      new Info(3, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      ImmutableList.of(8l, 9l, 10l, 11l, 8l));
+  public static final WayTable.Way WAY_3 = new WayTable.Way(
+      3, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      ImmutableList.of(8l, 9l, 10l, 11l, 8l), null);
 
-  public static final Way WAY_4 = new Way(
-      new Info(4, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      ImmutableList.of(4l, 5l, 6l, 7l, 4l));
+  public static final WayTable.Way WAY_4 = new WayTable.Way(
+      4, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      ImmutableList.of(4l, 5l, 6l, 7l, 4l), null);
 
-  public static final List<Way> WAY_LIST = ImmutableList.of(WAY_0, WAY_1, WAY_2, WAY_3, WAY_4);
+  public static final List<WayTable.Way> WAY_LIST = ImmutableList.of(WAY_0, WAY_1, WAY_2, WAY_3, WAY_4);
 
   public static final Store<Long, List<Long>> REFERENCE_STORE = new Store<Long, List<Long>>() {
     @Override

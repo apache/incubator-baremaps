@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.baremaps.osm.TestUtils;
 import com.baremaps.osm.store.Store.Entry;
 import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.osm.model.Relation;
+import com.baremaps.osm.model.Way;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -33,17 +33,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgisRelationStoreTest {
-
+class WayTableTest {
 
   public DataSource dataSource;
 
-  public RelationTable relationStore;
+  public WayTable wayStore;
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
     dataSource = PostgisHelper.poolingDataSource(TestUtils.DATABASE_URL);
-    relationStore = new RelationTable(dataSource, TestUtils.RELATION_BUILDER);
+    wayStore = new WayTable(dataSource, TestUtils.WAY_BUILDER);
     try (Connection connection = dataSource.getConnection()) {
       PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
       PostgisHelper.executeScript(connection, "osm_drop_tables.sql");
@@ -55,55 +54,46 @@ class PostgisRelationStoreTest {
   @Test
   @Tag("integration")
   public void put() {
-    relationStore.put(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2);
-    assertEquals(TestUtils.RELATION_2, relationStore.get(TestUtils.RELATION_2.getInfo().getId()));
+    wayStore.put(TestUtils.WAY_1);
+    assertEquals(TestUtils.WAY_1, wayStore.get(TestUtils.WAY_1.getId()));
   }
 
   @Test
   @Tag("integration")
   public void putAll() {
-    List<Entry<Long, Relation>> relations = Arrays.asList(
-        new Entry<>(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2),
-        new Entry<>(TestUtils.RELATION_3.getInfo().getId(), TestUtils.RELATION_3),
-        new Entry<>(TestUtils.RELATION_4.getInfo().getId(), TestUtils.RELATION_4));
-    relationStore.putAll(relations);
+    List<WayTable.Way> ways = Arrays.asList(TestUtils.WAY_1, TestUtils.WAY_2, TestUtils.WAY_3);
+    wayStore.putAll(ways);
     assertIterableEquals(
-        relations.stream().map(e -> e.value()).collect(Collectors.toList()),
-        relationStore.getAll(relations.stream().map(e -> e.key()).collect(Collectors.toList())));
+        ways,
+        wayStore.getAll(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void delete() {
-    relationStore.put(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2);
-    relationStore.delete(TestUtils.RELATION_2.getInfo().getId());
-    assertThrows(IllegalArgumentException.class, () -> relationStore.get(TestUtils.RELATION_2.getInfo().getId()));
+    wayStore.put(TestUtils.WAY_1);
+    wayStore.delete(TestUtils.WAY_1.getId());
+    assertThrows(IllegalArgumentException.class, () -> wayStore.get(TestUtils.WAY_1.getId()));
   }
 
   @Test
   @Tag("integration")
   public void deleteAll() {
-    List<Entry<Long, Relation>> relations = Arrays.asList(
-        new Entry<>(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2),
-        new Entry<>(TestUtils.RELATION_3.getInfo().getId(), TestUtils.RELATION_3),
-        new Entry<>(TestUtils.RELATION_4.getInfo().getId(), TestUtils.RELATION_4));
-    relationStore.putAll(relations);
-    relationStore.deleteAll(relations.stream().map(e -> e.key()).collect(Collectors.toList()));
+    List<WayTable.Way> ways = Arrays.asList(TestUtils.WAY_1, TestUtils.WAY_2, TestUtils.WAY_3);
+    wayStore.putAll(ways);
+    wayStore.deleteAll(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
         Arrays.asList(null, null, null),
-        relationStore.getAll(relations.stream().map(e -> e.key()).collect(Collectors.toList())));
+        wayStore.getAll(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void importAll() {
-    List<Entry<Long, Relation>> relations = Arrays.asList(
-        new Entry<>(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2),
-        new Entry<>(TestUtils.RELATION_3.getInfo().getId(), TestUtils.RELATION_3),
-        new Entry<>(TestUtils.RELATION_4.getInfo().getId(), TestUtils.RELATION_4));
-    relationStore.importAll(relations);
+    List<WayTable.Way> ways = Arrays.asList(TestUtils.WAY_1, TestUtils.WAY_2, TestUtils.WAY_3);
+    wayStore.importAll(ways);
     assertIterableEquals(
-        relations.stream().map(e -> e.value()).collect(Collectors.toList()),
-        relationStore.getAll(relations.stream().map(e -> e.key()).collect(Collectors.toList())));
+        ways,
+        wayStore.getAll(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

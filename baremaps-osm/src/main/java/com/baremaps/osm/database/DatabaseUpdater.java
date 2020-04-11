@@ -63,7 +63,9 @@ public class DatabaseUpdater implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          wayTable.put(way.getInfo().getId(), way);
+          wayTable.put(new WayTable.Way(way.getInfo().getId(), way.getInfo().getVersion(),
+              way.getInfo().getTimestamp(), way.getInfo().getChangeset(), way.getInfo().getUserId(),
+              way.getInfo().getTags(), way.getNodes(), null));
           break;
         case delete:
           wayTable.delete(way.getInfo().getId());

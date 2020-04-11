@@ -16,6 +16,7 @@ package com.baremaps.osm.database;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.baremaps.osm.database.NodeTable.Node;
 import com.baremaps.osm.geometry.GeometryUtil;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.store.StoreException;
@@ -34,7 +35,7 @@ import org.locationtech.jts.geom.Point;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class NodeTable {
+public class NodeTable implements Table<Node> {
 
   public static class Node {
 
@@ -151,10 +152,10 @@ public class NodeTable {
     }
   }
 
-  public List<Node> getAll(List<Long> keys) {
+  public List<Node> getAll(List<Long> ids) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
-      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
+      statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
       ResultSet result = statement.executeQuery();
       Map<Long, Node> nodes = new HashMap<>();
       while (result.next()) {
@@ -167,7 +168,7 @@ public class NodeTable {
         Point point = (Point) GeometryUtil.deserialize(result.getBytes(7));
         nodes.put(id, new Node(id, version, timestamp, changeset, uid, tags, point));
       }
-      return keys.stream().map(key -> nodes.get(key)).collect(Collectors.toList());
+      return ids.stream().map(key -> nodes.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new StoreException(e);
     }

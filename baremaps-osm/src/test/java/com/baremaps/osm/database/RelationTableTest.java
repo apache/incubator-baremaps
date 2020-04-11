@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.baremaps.osm.TestUtils;
 import com.baremaps.osm.store.Store.Entry;
 import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.osm.model.Node;
+import com.baremaps.osm.model.Relation;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -33,16 +33,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class PostgisNodeStoreTest {
+class RelationTableTest {
+
 
   public DataSource dataSource;
 
-  public NodeTable nodeTable;
+  public RelationTable relationStore;
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
     dataSource = PostgisHelper.poolingDataSource(TestUtils.DATABASE_URL);
-    nodeTable = new NodeTable(dataSource, TestUtils.NODE_BUILDER);
+    relationStore = new RelationTable(dataSource, TestUtils.RELATION_BUILDER);
     try (Connection connection = dataSource.getConnection()) {
       PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
       PostgisHelper.executeScript(connection, "osm_drop_tables.sql");
@@ -54,47 +55,55 @@ public class PostgisNodeStoreTest {
   @Test
   @Tag("integration")
   public void put() {
-    nodeTable.put(TestUtils.NODE_0);
-    assertEquals(TestUtils.NODE_0, nodeTable.get(TestUtils.NODE_0.getId()));
+    relationStore.put(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2);
+    assertEquals(TestUtils.RELATION_2, relationStore.get(TestUtils.RELATION_2.getInfo().getId()));
   }
 
   @Test
   @Tag("integration")
   public void putAll() {
-    List<NodeTable.Node> nodes = Arrays.asList(
-        TestUtils.NODE_0, TestUtils.NODE_1, TestUtils.NODE_2);
-    nodeTable.putAll(nodes);
+    List<Entry<Long, Relation>> relations = Arrays.asList(
+        new Entry<>(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2),
+        new Entry<>(TestUtils.RELATION_3.getInfo().getId(), TestUtils.RELATION_3),
+        new Entry<>(TestUtils.RELATION_4.getInfo().getId(), TestUtils.RELATION_4));
+    relationStore.putAll(relations);
     assertIterableEquals(
-        nodes,
-        nodeTable.getAll(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        relations.stream().map(e -> e.value()).collect(Collectors.toList()),
+        relationStore.getAll(relations.stream().map(e -> e.key()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void delete() {
-    nodeTable.put(TestUtils.NODE_0);
-    nodeTable.delete(TestUtils.NODE_0.getId());
-    assertThrows(IllegalArgumentException.class, () -> nodeTable.get(TestUtils.NODE_0.getId()));
+    relationStore.put(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2);
+    relationStore.delete(TestUtils.RELATION_2.getInfo().getId());
+    assertThrows(IllegalArgumentException.class, () -> relationStore.get(TestUtils.RELATION_2.getInfo().getId()));
   }
 
   @Test
   @Tag("integration")
   public void deleteAll() {
-    List<NodeTable.Node> nodes = Arrays.asList(TestUtils.NODE_0, TestUtils.NODE_1, TestUtils.NODE_2);
-    nodeTable.putAll(nodes);
-    nodeTable.deleteAll(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
+    List<Entry<Long, Relation>> relations = Arrays.asList(
+        new Entry<>(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2),
+        new Entry<>(TestUtils.RELATION_3.getInfo().getId(), TestUtils.RELATION_3),
+        new Entry<>(TestUtils.RELATION_4.getInfo().getId(), TestUtils.RELATION_4));
+    relationStore.putAll(relations);
+    relationStore.deleteAll(relations.stream().map(e -> e.key()).collect(Collectors.toList()));
     assertIterableEquals(
         Arrays.asList(null, null, null),
-        nodeTable.getAll(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        relationStore.getAll(relations.stream().map(e -> e.key()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void importAll() {
-    List<NodeTable.Node> nodes = Arrays.asList(TestUtils.NODE_0, TestUtils.NODE_1, TestUtils.NODE_2);
-    nodeTable.importAll(nodes);
+    List<Entry<Long, Relation>> relations = Arrays.asList(
+        new Entry<>(TestUtils.RELATION_2.getInfo().getId(), TestUtils.RELATION_2),
+        new Entry<>(TestUtils.RELATION_3.getInfo().getId(), TestUtils.RELATION_3),
+        new Entry<>(TestUtils.RELATION_4.getInfo().getId(), TestUtils.RELATION_4));
+    relationStore.importAll(relations);
     assertIterableEquals(
-        nodes,
-        nodeTable.getAll(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        relations.stream().map(e -> e.value()).collect(Collectors.toList()),
+        relationStore.getAll(relations.stream().map(e -> e.key()).collect(Collectors.toList())));
   }
 }

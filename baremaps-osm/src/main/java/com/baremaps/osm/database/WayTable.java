@@ -14,13 +14,13 @@
 
 package com.baremaps.osm.database;
 
+import com.baremaps.osm.database.WayTable.Way;
 import com.baremaps.osm.geometry.GeometryUtil;
 import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.store.Store;
 import com.baremaps.osm.store.StoreException;
 import com.baremaps.core.postgis.CopyWriter;
 import com.baremaps.osm.model.Info;
-import com.baremaps.osm.model.Way;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,13 +34,86 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class WayTable implements Store<Long, Way> {
+public class WayTable implements Table<Way> {
+
+  public static class Way {
+
+    private final long id;
+
+    private final int version;
+
+    private final LocalDateTime timestamp;
+
+    private final long changeset;
+
+    private final int userId;
+
+    private final Map<String, String> tags;
+
+    private final List<Long> nodes;
+
+    private final Geometry geometry;
+
+    public Way(
+        long id,
+        int version,
+        LocalDateTime timestamp,
+        long changeset,
+        int userId,
+        Map<String, String> tags,
+        List<Long> nodes,
+        Geometry geometry) {
+      this.id = id;
+      this.version = version;
+      this.timestamp = timestamp;
+      this.changeset = changeset;
+      this.userId = userId;
+      this.tags = tags;
+      this.nodes = nodes;
+      this.geometry = geometry;
+    }
+
+    public long getId() {
+      return id;
+    }
+
+    public int getVersion() {
+      return version;
+    }
+
+    public LocalDateTime getTimestamp() {
+      return timestamp;
+    }
+
+    public long getChangeset() {
+      return changeset;
+    }
+
+    public int getUserId() {
+      return userId;
+    }
+
+    public Map<String, String> getTags() {
+      return tags;
+    }
+
+    public List<Long> getNodes() {
+      return nodes;
+    }
+
+    public Geometry getGeometry() {
+      return geometry;
+    }
+
+  }
 
   private static final String SELECT =
-      "SELECT version, uid, timestamp, changeset, tags, nodes FROM osm_ways WHERE id = ?";
+      "SELECT version, uid, timestamp, changeset, tags, nodes, geom FROM osm_ways WHERE id = ?";
 
   private static final String SELECT_IN =
       "SELECT id, version, uid, timestamp, changeset, tags, nodes FROM osm_ways WHERE id = ANY (?)";
@@ -70,7 +143,7 @@ public class WayTable implements Store<Long, Way> {
     this.wayBuilder = wayBuilder;
   }
 
-  public Way get(Long id) {
+  public WayTable.Way get(Long id) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
@@ -86,7 +159,8 @@ public class WayTable implements Store<Long, Way> {
         if (array != null) {
           nodes = Arrays.asList((Long[]) array.getArray());
         }
-        return new Way(new Info(id, version, timestamp, changeset, uid, tags), nodes);
+        Geometry geometry = GeometryUtil.deserialize(result.getBytes(7));
+        return new WayTable.Way(id, version, timestamp, changeset, uid, tags, nodes, geometry);
       } else {
         throw new IllegalArgumentException();
       }
@@ -114,7 +188,8 @@ public class WayTable implements Store<Long, Way> {
         if (array != null) {
           nodes = Arrays.asList((Long[]) array.getArray());
         }
-        ways.put(id, new Way(new Info(id, version, timestamp, changeset, uid, tags), nodes));
+        Geometry geometry = GeometryUtil.deserialize(result.getBytes(8));
+        ways.put(id, new Way(id, version, timestamp, changeset, uid, tags, nodes, geometry));
       }
       return keys.stream().map(key -> ways.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
@@ -122,18 +197,17 @@ public class WayTable implements Store<Long, Way> {
     }
   }
 
-  public void put(Long key, Way value) {
+  public void put(Way value) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      statement.setLong(1, key);
-      statement.setInt(2, value.getInfo().getVersion());
-      statement.setInt(3, value.getInfo().getUserId());
-      statement.setObject(4, value.getInfo().getTimestamp());
-      statement.setLong(5, value.getInfo().getChangeset());
-      statement.setObject(6, value.getInfo().getTags());
+      statement.setLong(1, value.getId());
+      statement.setInt(2, value.getVersion());
+      statement.setInt(3, value.getUserId());
+      statement.setObject(4, value.getTimestamp());
+      statement.setLong(5, value.getChangeset());
+      statement.setObject(6, value.getTags());
       statement.setObject(7, value.getNodes().stream().mapToLong(Long::longValue).toArray());
-      byte[] wkb = wayBuilder != null ? GeometryUtil.serialize(wayBuilder.build(value)) : null;
-      statement.setBytes(8, wkb);
+      statement.setBytes(8, GeometryUtil.serialize(value.getGeometry()));
       statement.execute();
     } catch (SQLException e) {
       throw new StoreException(e);
@@ -141,22 +215,19 @@ public class WayTable implements Store<Long, Way> {
   }
 
   @Override
-  public void putAll(List<Entry<Long, Way>> entries) {
+  public void putAll(List<Way> entries) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      for (Entry<Long, Way> entry : entries) {
-        Long key = entry.key();
-        Way value = entry.value();
+      for (Way entry : entries) {
         statement.clearParameters();
-        statement.setLong(1, key);
-        statement.setInt(2, value.getInfo().getVersion());
-        statement.setInt(3, value.getInfo().getUserId());
-        statement.setObject(4, value.getInfo().getTimestamp());
-        statement.setLong(5, value.getInfo().getChangeset());
-        statement.setObject(6, value.getInfo().getTags());
-        statement.setObject(7, value.getNodes().stream().mapToLong(Long::longValue).toArray());
-        byte[] wkb = wayBuilder != null ? GeometryUtil.serialize(wayBuilder.build(value)) : null;
-        statement.setBytes(8, wkb);
+        statement.setLong(1, entry.getId());
+        statement.setInt(2, entry.getVersion());
+        statement.setInt(3, entry.getUserId());
+        statement.setObject(4, entry.getTimestamp());
+        statement.setLong(5, entry.getChangeset());
+        statement.setObject(6, entry.getTags());
+        statement.setObject(7, entry.getNodes().stream().mapToLong(Long::longValue).toArray());
+        statement.setBytes(8, GeometryUtil.serialize(entry.getGeometry()));
         statement.addBatch();
       }
       statement.executeBatch();
@@ -190,23 +261,21 @@ public class WayTable implements Store<Long, Way> {
     }
   }
 
-  public void importAll(List<Entry<Long, Way>> entries) {
+  public void importAll(List<Way> entries) {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
         writer.writeHeader();
-        for (Entry<Long, Way> entry : entries) {
-          Long key = entry.key();
-          Way way = entry.value();
+        for (Way entry : entries) {
           writer.startRow(8);
-          writer.writeLong(key);
-          writer.writeInteger(way.getInfo().getVersion());
-          writer.writeInteger(way.getInfo().getUserId());
-          writer.writeLocalDateTime(way.getInfo().getTimestamp());
-          writer.writeLong(way.getInfo().getChangeset());
-          writer.writeHstore(way.getInfo().getTags());
-          writer.writeLongList(way.getNodes());
-          writer.writeGeometry(wayBuilder.build(way));
+          writer.writeLong(entry.getId());
+          writer.writeInteger(entry.getVersion());
+          writer.writeInteger(entry.getUserId());
+          writer.writeLocalDateTime(entry.getTimestamp());
+          writer.writeLong(entry.getChangeset());
+          writer.writeHstore(entry.getTags());
+          writer.writeLongList(entry.getNodes());
+          writer.writeGeometry(entry.getGeometry());
         }
       }
     } catch (Exception e) {
