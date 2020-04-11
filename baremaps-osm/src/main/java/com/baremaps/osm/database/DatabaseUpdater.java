@@ -12,31 +12,31 @@
  * the License.
  */
 
-package com.baremaps.osm.store;
+package com.baremaps.osm.database;
 
 import com.baremaps.osm.osmxml.Change;
-import com.baremaps.osm.postgis.PostgisNodeStore;
-import com.baremaps.osm.postgis.PostgisRelationStore;
-import com.baremaps.osm.postgis.PostgisWayStore;
+import com.baremaps.osm.database.NodeTable;
+import com.baremaps.osm.database.RelationTable;
+import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.model.Entity;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
 import java.util.function.Consumer;
 
-public class StoreUpdateConsumer implements Consumer<Change> {
+public class DatabaseUpdater implements Consumer<Change> {
 
-  private final PostgisNodeStore nodeStore;
-  private final PostgisWayStore wayStore;
-  private final PostgisRelationStore relationStore;
+  private final NodeTable nodeTable;
+  private final WayTable wayTable;
+  private final RelationTable relationTable;
 
-  public StoreUpdateConsumer(
-      PostgisNodeStore nodeStore,
-      PostgisWayStore wayStore,
-      PostgisRelationStore relationStore) {
-    this.nodeStore = nodeStore;
-    this.wayStore = wayStore;
-    this.relationStore = relationStore;
+  public DatabaseUpdater(
+      NodeTable nodeTable,
+      WayTable wayTable,
+      RelationTable relationTable) {
+    this.nodeTable = nodeTable;
+    this.wayTable = wayTable;
+    this.relationTable = relationTable;
   }
 
   @Override
@@ -47,10 +47,13 @@ public class StoreUpdateConsumer implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          nodeStore.put(node.getInfo().getId(), node);
+          // TODO: Build node geometry
+          nodeTable.put(new NodeTable.Node(node.getInfo().getId(), node.getInfo().getVersion(),
+              node.getInfo().getTimestamp(), node.getInfo().getChangeset(), node.getInfo().getUserId(),
+              node.getInfo().getTags(), null));
           break;
         case delete:
-          nodeStore.delete(node.getInfo().getId());
+          nodeTable.delete(node.getInfo().getId());
           break;
         default:
           break;
@@ -60,10 +63,10 @@ public class StoreUpdateConsumer implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          wayStore.put(way.getInfo().getId(), way);
+          wayTable.put(way.getInfo().getId(), way);
           break;
         case delete:
-          wayStore.delete(way.getInfo().getId());
+          wayTable.delete(way.getInfo().getId());
           break;
         default:
           break;
@@ -73,10 +76,10 @@ public class StoreUpdateConsumer implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          relationStore.put(relation.getInfo().getId(), relation);
+          relationTable.put(relation.getInfo().getId(), relation);
           break;
         case delete:
-          relationStore.delete(relation.getInfo().getId());
+          relationTable.delete(relation.getInfo().getId());
           break;
         default:
           break;

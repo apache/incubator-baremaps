@@ -24,18 +24,18 @@ import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.osmpbf.FileBlock;
 import com.baremaps.osm.osmpbf.FileBlockSpliterator;
-import com.baremaps.osm.postgis.PostgisHeaderStore;
+import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.store.Store;
-import com.baremaps.osm.store.StoreImportConsumer;
+import com.baremaps.osm.database.DatabaseImporter;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.baremaps.core.postgis.PostgisHelper;
 import com.baremaps.osm.cache.CacheConsumer;
 import com.baremaps.osm.cache.LmdbCoordinateCache;
 import com.baremaps.osm.cache.LmdbReferenceCache;
-import com.baremaps.osm.postgis.PostgisNodeStore;
-import com.baremaps.osm.postgis.PostgisRelationStore;
-import com.baremaps.osm.postgis.PostgisWayStore;
+import com.baremaps.osm.database.NodeTable;
+import com.baremaps.osm.database.RelationTable;
+import com.baremaps.osm.database.WayTable;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -153,14 +153,14 @@ public class Import implements Callable<Integer> {
       CoordinateTransform coordinateTransform = coordinateTransformFactory
           .createTransform(epsg4326, epsg3857);
       GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
-      PostgisHeaderStore headerMapper = new PostgisHeaderStore(datasource);
-      PostgisNodeStore nodeMapper = new PostgisNodeStore(datasource,
+      HeaderTable headerMapper = new HeaderTable(datasource);
+      NodeTable nodeMapper = new NodeTable(datasource,
           new NodeBuilder(coordinateTransform, geometryFactory));
-      PostgisWayStore wayMapper = new PostgisWayStore(datasource,
+      WayTable wayMapper = new WayTable(datasource,
           new WayBuilder(coordinateTransform, geometryFactory, coordinateStore));
-      PostgisRelationStore relationMapper = new PostgisRelationStore(datasource,
+      RelationTable relationMapper = new RelationTable(datasource,
           new RelationBuilder(coordinateTransform, geometryFactory, coordinateStore, referenceStore));
-      StoreImportConsumer blockConsumer = new StoreImportConsumer(headerMapper, nodeMapper, wayMapper,
+      DatabaseImporter blockConsumer = new DatabaseImporter(headerMapper, nodeMapper, wayMapper,
           relationMapper);
       blocks.forEach(blockConsumer);
     }

@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.postgis;
+package com.baremaps.osm.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -38,12 +38,12 @@ class PostgisRelationStoreTest {
 
   public DataSource dataSource;
 
-  public PostgisRelationStore relationStore;
+  public RelationTable relationStore;
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
     dataSource = PostgisHelper.poolingDataSource(TestUtils.DATABASE_URL);
-    relationStore = new PostgisRelationStore(dataSource, TestUtils.RELATION_BUILDER);
+    relationStore = new RelationTable(dataSource, TestUtils.RELATION_BUILDER);
     try (Connection connection = dataSource.getConnection()) {
       PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
       PostgisHelper.executeScript(connection, "osm_drop_tables.sql");

@@ -26,12 +26,12 @@ import com.baremaps.osm.osmpbf.HeaderBlock;
 import com.baremaps.osm.osmxml.Change;
 import com.baremaps.osm.osmxml.ChangeSpliterator;
 import com.baremaps.osm.osmxml.State;
-import com.baremaps.osm.postgis.PostgisHeaderStore;
-import com.baremaps.osm.postgis.PostgisNodeStore;
-import com.baremaps.osm.postgis.PostgisRelationStore;
-import com.baremaps.osm.postgis.PostgisWayStore;
+import com.baremaps.osm.database.HeaderTable;
+import com.baremaps.osm.database.NodeTable;
+import com.baremaps.osm.database.RelationTable;
+import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.store.Store;
-import com.baremaps.osm.store.StoreUpdateConsumer;
+import com.baremaps.osm.database.DatabaseUpdater;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import java.io.InputStream;
@@ -98,14 +98,14 @@ public class Update implements Callable<Integer> {
     Store<Long, List<Long>> referenceStore = new PostgisReferenceCache(datasource);
 
     NodeBuilder nodeBuilder = new NodeBuilder(coordinateTransform, geometryFactory);
-    PostgisNodeStore nodeStore = new PostgisNodeStore(datasource, nodeBuilder);
+    NodeTable nodeStore = new NodeTable(datasource, nodeBuilder);
     WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateStore);
-    PostgisWayStore wayStore = new PostgisWayStore(datasource, wayBuilder);
+    WayTable wayStore = new WayTable(datasource, wayBuilder);
     RelationBuilder relationBuilder = new RelationBuilder(
         coordinateTransform, geometryFactory, coordinateStore, referenceStore);
-    PostgisRelationStore relationStore = new PostgisRelationStore(datasource, relationBuilder);
+    RelationTable relationStore = new RelationTable(datasource, relationBuilder);
 
-    PostgisHeaderStore headerMapper = new PostgisHeaderStore(datasource);
+    HeaderTable headerMapper = new HeaderTable(datasource);
     HeaderBlock header = headerMapper.getLast();
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
 
@@ -116,8 +116,8 @@ public class Update implements Callable<Integer> {
     try (InputStream changeInputStream = new GZIPInputStream(changeFetch.getInputStream())) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
-      StoreUpdateConsumer storeUpdateConsumer = new StoreUpdateConsumer(nodeStore, wayStore, relationStore);
-      changeStream.forEach(storeUpdateConsumer);
+      DatabaseUpdater databaseUpdater = new DatabaseUpdater(nodeStore, wayStore, relationStore);
+      changeStream.forEach(databaseUpdater);
     }
 
     String statePath = statePath(nextSequenceNumber);

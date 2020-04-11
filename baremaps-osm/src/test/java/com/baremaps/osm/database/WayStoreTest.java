@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.postgis;
+package com.baremaps.osm.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -68,7 +68,7 @@ public class WayStoreTest {
             rnd.nextInt(),
             map),
         Arrays.asList(1l, 2l, 3l));
-      PostgisWayStore wayMapper = new PostgisWayStore(dataSource, null);
+      WayTable wayMapper = new WayTable(dataSource, null);
       wayMapper.put(way.getInfo().getId(), way);
       assertEquals(way, wayMapper.get(way.getInfo().getId()));
     }
@@ -91,7 +91,7 @@ public class WayStoreTest {
             rnd.nextInt(),
             map),
         Arrays.asList(1l, 2l, 3l));
-      PostgisWayStore wayMapper = new PostgisWayStore(dataSource, null);
+      WayTable wayMapper = new WayTable(dataSource, null);
       wayMapper.put(way.getInfo().getId(), way);
       wayMapper.delete(way.getInfo().getId());
       assertThrows(IllegalArgumentException.class, () -> wayMapper.get(way.getInfo().getId()));

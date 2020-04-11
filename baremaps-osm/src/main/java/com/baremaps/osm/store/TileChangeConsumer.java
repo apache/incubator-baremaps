@@ -21,23 +21,23 @@ import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
 import com.baremaps.osm.osmxml.Change;
 import com.baremaps.osm.osmxml.Change.Type;
-import com.baremaps.osm.postgis.PostgisNodeStore;
-import com.baremaps.osm.postgis.PostgisRelationStore;
-import com.baremaps.osm.postgis.PostgisWayStore;
+import com.baremaps.osm.database.NodeTable;
+import com.baremaps.osm.database.RelationTable;
+import com.baremaps.osm.database.WayTable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
 public class TileChangeConsumer implements Consumer<Change> {
 
-  private final PostgisNodeStore nodeStore;
-  private final PostgisWayStore wayStore;
-  private final PostgisRelationStore relationStore;
+  private final NodeTable nodeStore;
+  private final WayTable wayStore;
+  private final RelationTable relationStore;
 
   private final Set<Tile> tiles = new HashSet<>();
 
   public TileChangeConsumer(
-      PostgisNodeStore nodeStore, PostgisWayStore wayStore, PostgisRelationStore relationStore) {
+      NodeTable nodeStore, WayTable wayStore, RelationTable relationStore) {
     this.nodeStore = nodeStore;
     this.wayStore = wayStore;
     this.relationStore = relationStore;
@@ -48,7 +48,7 @@ public class TileChangeConsumer implements Consumer<Change> {
     Entity entity = change.getEntity();
     if (change.getType().equals(Type.delete) || change.getType().equals(Type.modify)) {
       if (entity instanceof Node) {
-        Node node = nodeStore.get(entity.getInfo().getId());
+        NodeTable.Node node = nodeStore.get(entity.getInfo().getId());
         System.out.println(node);
       } else if (entity instanceof Way) {
         Way way = wayStore.get(entity.getInfo().getId());

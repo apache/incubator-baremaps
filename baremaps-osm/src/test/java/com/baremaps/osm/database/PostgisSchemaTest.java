@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.postgis;
+package com.baremaps.osm.database;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

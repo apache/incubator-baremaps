@@ -19,6 +19,10 @@ import static com.baremaps.osm.TestUtils.GEOMETRY_FACTORY;
 import static com.baremaps.osm.TestUtils.NODE_0;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.baremaps.osm.TestUtils;
+import com.baremaps.osm.model.Info;
+import com.baremaps.osm.model.Node;
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Point;
 
@@ -26,9 +30,10 @@ public class NodeBuilderTest {
 
   @Test
   public void create() {
+    // TODO: improve this test
     NodeBuilder nodeBuilder = new NodeBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY);
-    Point point = nodeBuilder.build(NODE_0);
-    assertEquals(point.getX(), NODE_0.getLon());
-    assertEquals(point.getY(), NODE_0.getLat());
+    Point point = nodeBuilder.build(new Node(new Info(0, 0, TestUtils.TIMESTAMP, 0, 0, ImmutableMap.of()), 0, 0));
+    assertEquals(point.getX(), 0);
+    assertEquals(point.getY(), 0);
   }
 }

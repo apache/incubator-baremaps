@@ -12,10 +12,9 @@
  * the License.
  */
 
-package com.baremaps.osm.postgis;
+package com.baremaps.osm.database;
 
 import com.baremaps.osm.geometry.GeometryUtil;
-import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.store.Store;
 import com.baremaps.osm.store.StoreException;
@@ -38,7 +37,7 @@ import javax.sql.DataSource;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class PostgisRelationStore implements Store<Long, Relation> {
+public class RelationTable implements Store<Long, Relation> {
 
   private static final String SELECT =
       "SELECT version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles FROM osm_relations WHERE id = ?";
@@ -68,7 +67,7 @@ public class PostgisRelationStore implements Store<Long, Relation> {
 
   private final RelationBuilder relationBuilder;
 
-  public PostgisRelationStore(DataSource dataSource, RelationBuilder relationBuilder) {
+  public RelationTable(DataSource dataSource, RelationBuilder relationBuilder) {
     this.dataSource = dataSource;
     this.relationBuilder = relationBuilder;
   }

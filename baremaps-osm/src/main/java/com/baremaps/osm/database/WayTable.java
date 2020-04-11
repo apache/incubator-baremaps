@@ -12,75 +12,81 @@
  * the License.
  */
 
-package com.baremaps.osm.postgis;
+package com.baremaps.osm.database;
 
 import com.baremaps.osm.geometry.GeometryUtil;
-import com.baremaps.osm.geometry.NodeBuilder;
+import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.store.Store;
 import com.baremaps.osm.store.StoreException;
 import com.baremaps.core.postgis.CopyWriter;
 import com.baremaps.osm.model.Info;
-import com.baremaps.osm.model.Node;
+import com.baremaps.osm.model.Way;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import org.locationtech.jts.geom.Point;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class PostgisNodeStore implements Store<Long, Node> {
+public class WayTable implements Store<Long, Way> {
 
   private static final String SELECT =
-      "SELECT id, version, uid, timestamp, changeset, tags, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ?";
+      "SELECT version, uid, timestamp, changeset, tags, nodes FROM osm_ways WHERE id = ?";
 
   private static final String SELECT_IN =
-      "SELECT id, version, uid, timestamp, changeset, tags, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ANY (?)";
+      "SELECT id, version, uid, timestamp, changeset, tags, nodes FROM osm_ways WHERE id = ANY (?)";
 
   private static final String INSERT =
-      "INSERT INTO osm_nodes (id, version, uid, timestamp, changeset, tags, geom) VALUES (?, ?, ?, ?, ?, ?, ?)"
+      "INSERT INTO osm_ways (id, version, uid, timestamp, changeset, tags, nodes, geom) VALUES (?, ?, ?, ?, ?, ?, ?, ?) "
           + "ON CONFLICT (id) DO UPDATE SET "
           + "version = excluded.version, "
           + "uid = excluded.uid, "
           + "timestamp = excluded.timestamp, "
           + "changeset = excluded.changeset, "
           + "tags = excluded.tags, "
+          + "nodes = excluded.nodes, "
           + "geom = excluded.geom";
 
-  private static final String DELETE = "DELETE FROM osm_nodes WHERE id = ?";
+  private static final String DELETE = "DELETE FROM osm_ways WHERE id = ?";
 
   private static final String COPY =
-      "COPY osm_nodes (id, version, uid, timestamp, changeset, tags, geom) FROM STDIN BINARY";
+      "COPY osm_ways (id, version, uid, timestamp, changeset, tags, nodes, geom) FROM STDIN BINARY";
 
   private final DataSource dataSource;
 
-  private final NodeBuilder nodeBuilder;
+  private final WayBuilder wayBuilder;
 
-  public PostgisNodeStore(DataSource dataSource, NodeBuilder nodeBuilder) {
+  public WayTable(DataSource dataSource, WayBuilder wayBuilder) {
     this.dataSource = dataSource;
-    this.nodeBuilder = nodeBuilder;
+    this.wayBuilder = wayBuilder;
   }
 
-  public Node get(Long key) {
+  public Way get(Long id) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
-      statement.setLong(1, key);
+      statement.setLong(1, id);
       ResultSet result = statement.executeQuery();
       if (result.next()) {
-        long id = result.getLong(1);
-        int version = result.getInt(2);
-        int uid = result.getInt(3);
-        LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
-        long changeset = result.getLong(5);
-        Map<String, String> tags = (Map<String, String>) result.getObject(6);
-        Point point = (Point) GeometryUtil.deserialize(result.getBytes(7));
-        return new Node(new Info(id, version, timestamp, changeset, uid, tags), point.getX(), point.getY());
+        int version = result.getInt(1);
+        int uid = result.getInt(2);
+        LocalDateTime timestamp = result.getObject(3, LocalDateTime.class);
+        long changeset = result.getLong(4);
+        Map<String, String> tags = (Map<String, String>) result.getObject(5);
+        List<Long> nodes = new ArrayList<>();
+        Array array = result.getArray(6);
+        if (array != null) {
+          nodes = Arrays.asList((Long[]) array.getArray());
+        }
+        return new Way(new Info(id, version, timestamp, changeset, uid, tags), nodes);
       } else {
         throw new IllegalArgumentException();
       }
@@ -90,12 +96,12 @@ public class PostgisNodeStore implements Store<Long, Node> {
   }
 
   @Override
-  public List<Node> getAll(List<Long> keys) {
+  public List<Way> getAll(List<Long> keys) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       ResultSet result = statement.executeQuery();
-      Map<Long, Node> nodes = new HashMap<>();
+      Map<Long, Way> ways = new HashMap<>();
       while (result.next()) {
         long id = result.getLong(1);
         int version = result.getInt(2);
@@ -103,21 +109,20 @@ public class PostgisNodeStore implements Store<Long, Node> {
         LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
         long changeset = result.getLong(5);
         Map<String, String> tags = (Map<String, String>) result.getObject(6);
-        Point point = (Point) GeometryUtil.deserialize(result.getBytes(7));
-        nodes.put(
-            id,
-            new Node(
-                new Info(id, version, timestamp, changeset, uid, tags),
-                point.getX(),
-                point.getY()));
+        List<Long> nodes = new ArrayList<>();
+        Array array = result.getArray(7);
+        if (array != null) {
+          nodes = Arrays.asList((Long[]) array.getArray());
+        }
+        ways.put(id, new Way(new Info(id, version, timestamp, changeset, uid, tags), nodes));
       }
-      return keys.stream().map(key -> nodes.get(key)).collect(Collectors.toList());
+      return keys.stream().map(key -> ways.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new StoreException(e);
     }
   }
 
-  public void put(Long key, Node value) {
+  public void put(Long key, Way value) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
       statement.setLong(1, key);
@@ -126,8 +131,9 @@ public class PostgisNodeStore implements Store<Long, Node> {
       statement.setObject(4, value.getInfo().getTimestamp());
       statement.setLong(5, value.getInfo().getChangeset());
       statement.setObject(6, value.getInfo().getTags());
-      byte[] wkb = nodeBuilder != null ? GeometryUtil.serialize(nodeBuilder.build(value)) : null;
-      statement.setBytes(7, wkb);
+      statement.setObject(7, value.getNodes().stream().mapToLong(Long::longValue).toArray());
+      byte[] wkb = wayBuilder != null ? GeometryUtil.serialize(wayBuilder.build(value)) : null;
+      statement.setBytes(8, wkb);
       statement.execute();
     } catch (SQLException e) {
       throw new StoreException(e);
@@ -135,12 +141,12 @@ public class PostgisNodeStore implements Store<Long, Node> {
   }
 
   @Override
-  public void putAll(List<Entry<Long, Node>> entries) {
+  public void putAll(List<Entry<Long, Way>> entries) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      for (Entry<Long, Node> entry : entries) {
+      for (Entry<Long, Way> entry : entries) {
         Long key = entry.key();
-        Node value = entry.value();
+        Way value = entry.value();
         statement.clearParameters();
         statement.setLong(1, key);
         statement.setInt(2, value.getInfo().getVersion());
@@ -148,8 +154,9 @@ public class PostgisNodeStore implements Store<Long, Node> {
         statement.setObject(4, value.getInfo().getTimestamp());
         statement.setLong(5, value.getInfo().getChangeset());
         statement.setObject(6, value.getInfo().getTags());
-        byte[] wkb = nodeBuilder != null ? GeometryUtil.serialize(nodeBuilder.build(value)) : null;
-        statement.setBytes(7, wkb);
+        statement.setObject(7, value.getNodes().stream().mapToLong(Long::longValue).toArray());
+        byte[] wkb = wayBuilder != null ? GeometryUtil.serialize(wayBuilder.build(value)) : null;
+        statement.setBytes(8, wkb);
         statement.addBatch();
       }
       statement.executeBatch();
@@ -175,7 +182,7 @@ public class PostgisNodeStore implements Store<Long, Node> {
       for (Long key : keys) {
         statement.clearParameters();
         statement.setLong(1, key);
-        statement.addBatch();
+        statement.execute();
       }
       statement.executeBatch();
     } catch (SQLException e) {
@@ -183,26 +190,32 @@ public class PostgisNodeStore implements Store<Long, Node> {
     }
   }
 
-  public void importAll(List<Entry<Long, Node>> entries) {
+  public void importAll(List<Entry<Long, Way>> entries) {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
         writer.writeHeader();
-        for (Entry<Long, Node> entry : entries) {
-          Long id = entry.key();
-          Node node = entry.value();
-          writer.startRow(7);
-          writer.writeLong(id);
-          writer.writeInteger(node.getInfo().getVersion());
-          writer.writeInteger(node.getInfo().getUserId());
-          writer.writeLocalDateTime(node.getInfo().getTimestamp());
-          writer.writeLong(node.getInfo().getChangeset());
-          writer.writeHstore(node.getInfo().getTags());
-          writer.writeGeometry(nodeBuilder.build(node));
+        for (Entry<Long, Way> entry : entries) {
+          Long key = entry.key();
+          Way way = entry.value();
+          writer.startRow(8);
+          writer.writeLong(key);
+          writer.writeInteger(way.getInfo().getVersion());
+          writer.writeInteger(way.getInfo().getUserId());
+          writer.writeLocalDateTime(way.getInfo().getTimestamp());
+          writer.writeLong(way.getInfo().getChangeset());
+          writer.writeHstore(way.getInfo().getTags());
+          writer.writeLongList(way.getNodes());
+          writer.writeGeometry(wayBuilder.build(way));
         }
       }
     } catch (Exception e) {
       throw new StoreException(e);
     }
   }
+
+  public WayBuilder getWayBuilder() {
+    return wayBuilder;
+  }
+
 }

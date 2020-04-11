@@ -12,40 +12,40 @@
  * the License.
  */
 
-package com.baremaps.osm.store;
+package com.baremaps.osm.database;
 
 import com.baremaps.osm.osmpbf.FileBlockConsumer;
 import com.baremaps.osm.osmpbf.HeaderBlock;
 import com.baremaps.osm.osmpbf.PrimitiveBlock;
 import com.baremaps.osm.store.Store.Entry;
-import com.baremaps.osm.postgis.PostgisHeaderStore;
-import com.baremaps.osm.postgis.PostgisNodeStore;
-import com.baremaps.osm.postgis.PostgisRelationStore;
-import com.baremaps.osm.postgis.PostgisWayStore;
+import com.baremaps.osm.database.HeaderTable;
+import com.baremaps.osm.database.NodeTable;
+import com.baremaps.osm.database.RelationTable;
+import com.baremaps.osm.database.WayTable;
 import java.util.stream.Collectors;
 
-public class StoreImportConsumer extends FileBlockConsumer {
+public class DatabaseImporter extends FileBlockConsumer {
 
-  private final PostgisHeaderStore headerStore;
-  private final PostgisNodeStore nodeStore;
-  private final PostgisWayStore wayStore;
-  private final PostgisRelationStore relationStore;
+  private final HeaderTable headerTable;
+  private final NodeTable nodeTable;
+  private final WayTable wayTable;
+  private final RelationTable relationTable;
 
-  public StoreImportConsumer(
-      PostgisHeaderStore headerStore,
-      PostgisNodeStore nodeStore,
-      PostgisWayStore wayStore,
-      PostgisRelationStore relationStore) {
-    this.headerStore = headerStore;
-    this.nodeStore = nodeStore;
-    this.wayStore = wayStore;
-    this.relationStore = relationStore;
+  public DatabaseImporter(
+      HeaderTable headerTable,
+      NodeTable nodeTable,
+      WayTable wayTable,
+      RelationTable relationTable) {
+    this.headerTable = headerTable;
+    this.nodeTable = nodeTable;
+    this.wayTable = wayTable;
+    this.relationTable = relationTable;
   }
 
   @Override
   public void accept(HeaderBlock headerBlock) {
     try {
-      headerStore.insert(headerBlock);
+      headerTable.insert(headerBlock);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -54,15 +54,18 @@ public class StoreImportConsumer extends FileBlockConsumer {
   @Override
   public void accept(PrimitiveBlock primitiveBlock) {
     try {
-      nodeStore.importAll(
+      // TODO: Build node geometry
+      nodeTable.importAll(
           primitiveBlock.getDenseNodes().stream()
-              .map(node -> new Entry<>(node.getInfo().getId(), node))
+              .map(node -> new NodeTable.Node(node.getInfo().getId(), node.getInfo().getVersion(),
+                  node.getInfo().getTimestamp(), node.getInfo().getChangeset(), node.getInfo().getUserId(),
+                  node.getInfo().getTags(), null))
               .collect(Collectors.toList()));
-      wayStore.importAll(
+      wayTable.importAll(
           primitiveBlock.getWays().stream()
               .map(way -> new Entry<>(way.getInfo().getId(), way))
               .collect(Collectors.toList()));
-      relationStore.importAll(
+      relationTable.importAll(
           primitiveBlock.getRelations().stream()
               .map(relation -> new Entry<>(relation.getInfo().getId(), relation))
               .collect(Collectors.toList()));

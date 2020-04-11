@@ -14,6 +14,7 @@
 
 package com.baremaps.osm;
 
+import com.baremaps.osm.database.NodeTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.protobuf.ByteString;
@@ -22,7 +23,6 @@ import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.model.Info;
 import com.baremaps.osm.model.Member;
-import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
 import com.baremaps.osm.osmpbf.FileBlock;
@@ -69,63 +69,62 @@ public class TestUtils {
 
   public static final LocalDateTime TIMESTAMP = LocalDateTime.of(2020, 1, 1, 0, 0);
 
-  public static final Node NODE_0 = new Node(
-      new Info(0, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      0, 0);
+  public static final NodeTable.Node NODE_0 = new NodeTable.Node(0, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      GEOMETRY_FACTORY.createPoint(new Coordinate(0, 0)));
 
-  public static final Node NODE_1 = new Node(
-      new Info(1, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      0, 3);
+  public static final NodeTable.Node NODE_1 = new NodeTable.Node(
+      1, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      GEOMETRY_FACTORY.createPoint(new Coordinate(0, 3)));
 
-  public static final Node NODE_2 = new Node(
-      new Info(2, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      3, 3);
+  public static final NodeTable.Node NODE_2 = new NodeTable.Node(
+      2, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      GEOMETRY_FACTORY.createPoint(new Coordinate(3, 3)));
 
-  public static final Node NODE_3 = new Node(
-      new Info(3, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      3, 0);
+  public static final NodeTable.Node NODE_3 = new NodeTable.Node(
+      3, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      GEOMETRY_FACTORY.createPoint(new Coordinate(3, 0)));
 
-  public static final Node NODE_4 = new Node(
-      new Info(4, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      1, 1);
+  public static final NodeTable.Node NODE_4 = new NodeTable.Node(
+      4, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      GEOMETRY_FACTORY.createPoint(new Coordinate(1, 1)));
 
-  public static final Node NODE_5 = new Node(
-      new Info(5, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      1, 2);
+  public static final NodeTable.Node NODE_5 = new NodeTable.Node(
+      5, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      GEOMETRY_FACTORY.createPoint(new Coordinate(1, 2)));
 
-  public static final Node NODE_6 = new Node(
-      new Info(6, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      2, 2);
+  public static final NodeTable.Node NODE_6 = new NodeTable.Node(
+      6, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      GEOMETRY_FACTORY.createPoint(new Coordinate(2, 2)));
 
-  public static final Node NODE_7 = new Node(
-      new Info(7, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      2, 1);
+  public static final NodeTable.Node NODE_7 = new NodeTable.Node(
+      7, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      GEOMETRY_FACTORY.createPoint(new Coordinate(2, 1)));
 
-  public static final Node NODE_8 = new Node(
-      new Info(8, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      4, 1);
+  public static final NodeTable.Node NODE_8 = new NodeTable.Node(
+      8, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      GEOMETRY_FACTORY.createPoint(new Coordinate(4, 1)));
 
-  public static final Node NODE_9 = new Node(
-      new Info(9, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      4, 2);
+  public static final NodeTable.Node NODE_9 = new NodeTable.Node(
+      9, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      GEOMETRY_FACTORY.createPoint(new Coordinate(4, 2)));
 
-  public static final Node NODE_10 = new Node(
-      new Info(10, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      5, 2);
+  public static final NodeTable.Node NODE_10 = new NodeTable.Node(
+      10, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      GEOMETRY_FACTORY.createPoint(new Coordinate(5, 2)));
 
-  public static final Node NODE_11 = new Node(
-      new Info(11, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
-      5, 1);
+  public static final NodeTable.Node NODE_11 = new NodeTable.Node(
+      11, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+      GEOMETRY_FACTORY.createPoint(new Coordinate(5, 1)));
 
-  public static final List<Node> NODE_LIST = ImmutableList.of(
+  public static final List<NodeTable.Node> NODE_LIST = ImmutableList.of(
       NODE_0, NODE_1, NODE_2, NODE_3, NODE_4, NODE_5,
       NODE_6, NODE_7, NODE_8, NODE_9, NODE_10, NODE_11);
 
   public static final Store<Long, Coordinate> COORDINATE_STORE = new Store<Long, Coordinate>() {
     @Override
     public Coordinate get(Long key) {
-      Node node = NODE_LIST.get(key.intValue());
-      return new Coordinate(node.getLon(), node.getLat());
+      NodeTable.Node node = NODE_LIST.get(key.intValue());
+      return new Coordinate(node.getPoint().getX(), node.getPoint().getY());
     }
 
     @Override
@@ -164,7 +163,8 @@ public class TestUtils {
 
   };
 
-  public static final WayBuilder WAY_BUILDER = new WayBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY, COORDINATE_STORE);
+  public static final WayBuilder WAY_BUILDER = new WayBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY,
+      COORDINATE_STORE);
 
   public static final Way WAY_0 = new Way(
       new Info(0, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
@@ -255,9 +255,11 @@ public class TestUtils {
           new Member(3, Member.Type.way, "inner"),
           new Member(4, Member.Type.way, "outer")));
 
-  public static final List<Relation> RELATION_LIST = ImmutableList.of(RELATION_0, RELATION_2, RELATION_3, RELATION_4);
+  public static final List<Relation> RELATION_LIST = ImmutableList
+      .of(RELATION_0, RELATION_2, RELATION_3, RELATION_4);
 
-  public static final RelationBuilder RELATION_BUILDER = new RelationBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY,
+  public static final RelationBuilder RELATION_BUILDER = new RelationBuilder(COORDINATE_TRANSFORM,
+      GEOMETRY_FACTORY,
       COORDINATE_STORE,
       REFERENCE_STORE);
 
