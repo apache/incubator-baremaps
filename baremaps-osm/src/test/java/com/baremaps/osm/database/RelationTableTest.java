@@ -54,14 +54,14 @@ class RelationTableTest {
 
   @Test
   @Tag("integration")
-  public void put() {
+  public void insert() {
     relationStore.insert(RELATION_2);
     assertEquals(RELATION_2, relationStore.select(RELATION_2.getId()));
   }
 
   @Test
   @Tag("integration")
-  public void putAll() {
+  public void insertAll() {
     List<RelationTable.Relation> relations = Arrays
         .asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.insert(relations);
@@ -92,7 +92,7 @@ class RelationTableTest {
 
   @Test
   @Tag("integration")
-  public void importAll() {
+  public void copy() {
     List<RelationTable.Relation> relations = Arrays
         .asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.copy(relations);

@@ -17,6 +17,7 @@ package com.baremaps.osm.database;
 import com.baremaps.core.postgis.CopyWriter;
 import com.baremaps.osm.database.RelationTable.Relation;
 import com.baremaps.osm.geometry.GeometryUtil;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -135,9 +136,9 @@ public class RelationTable implements Table<Relation> {
           userId == relation.userId &&
           Objects.equal(timestamp, relation.timestamp) &&
           Objects.equal(tags, relation.tags) &&
-          Objects.equal(memberRefs, relation.memberRefs) &&
-          Objects.equal(memberTypes, relation.memberTypes) &&
-          Objects.equal(memberRoles, relation.memberRoles) &&
+          Arrays.deepEquals(memberRefs, relation.memberRefs) &&
+          Arrays.deepEquals(memberTypes, relation.memberTypes) &&
+          Arrays.deepEquals(memberRoles, relation.memberRoles) &&
           Objects.equal(geometry, relation.geometry);
     }
 
@@ -146,6 +147,22 @@ public class RelationTable implements Table<Relation> {
       return Objects
           .hashCode(id, version, timestamp, changeset, userId, tags, memberRefs, memberTypes, memberRoles,
               geometry);
+    }
+
+    @Override
+    public String toString() {
+      return MoreObjects.toStringHelper(this)
+          .add("id", id)
+          .add("version", version)
+          .add("timestamp", timestamp)
+          .add("changeset", changeset)
+          .add("userId", userId)
+          .add("tags", tags)
+          .add("memberRefs", memberRefs)
+          .add("memberTypes", memberTypes)
+          .add("memberRoles", memberRoles)
+          .add("geometry", geometry)
+          .toString();
     }
   }
 

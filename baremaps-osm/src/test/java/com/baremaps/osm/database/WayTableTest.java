@@ -54,14 +54,14 @@ class WayTableTest {
 
   @Test
   @Tag("integration")
-  public void put() {
+  public void insert() {
     wayStore.insert(WAY_1);
     assertEquals(WAY_1, wayStore.select(WAY_1.getId()));
   }
 
   @Test
   @Tag("integration")
-  public void putAll() {
+  public void insertAll() {
     List<WayTable.Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayStore.insert(ways);
     assertIterableEquals(
@@ -90,7 +90,7 @@ class WayTableTest {
 
   @Test
   @Tag("integration")
-  public void importAll() {
+  public void copy() {
     List<WayTable.Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayStore.copy(ways);
     assertIterableEquals(
