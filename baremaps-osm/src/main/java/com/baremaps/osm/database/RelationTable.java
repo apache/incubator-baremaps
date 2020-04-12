@@ -17,7 +17,6 @@ package com.baremaps.osm.database;
 import com.baremaps.core.postgis.CopyWriter;
 import com.baremaps.osm.database.RelationTable.Relation;
 import com.baremaps.osm.geometry.GeometryUtil;
-import com.baremaps.osm.store.StoreException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -174,7 +173,7 @@ public class RelationTable implements Table<Relation> {
         throw new IllegalArgumentException();
       }
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -201,7 +200,7 @@ public class RelationTable implements Table<Relation> {
       }
       return ids.stream().map(id -> relations.get(id)).collect(Collectors.toList());
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -220,7 +219,7 @@ public class RelationTable implements Table<Relation> {
       statement.setBytes(10, GeometryUtil.serialize(row.getGeometry()));
       statement.execute();
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -244,7 +243,7 @@ public class RelationTable implements Table<Relation> {
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -254,7 +253,7 @@ public class RelationTable implements Table<Relation> {
       statement.setLong(1, id);
       statement.execute();
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -269,7 +268,7 @@ public class RelationTable implements Table<Relation> {
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -294,7 +293,7 @@ public class RelationTable implements Table<Relation> {
       }
     } catch (Exception ex) {
       ex.printStackTrace();
-      throw new StoreException(ex);
+      throw new DatabaseException(ex);
     }
   }
 

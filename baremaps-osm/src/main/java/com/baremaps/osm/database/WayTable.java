@@ -17,7 +17,6 @@ package com.baremaps.osm.database;
 import com.baremaps.core.postgis.CopyWriter;
 import com.baremaps.osm.database.WayTable.Way;
 import com.baremaps.osm.geometry.GeometryUtil;
-import com.baremaps.osm.store.StoreException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -158,7 +157,7 @@ public class WayTable implements Table<Way> {
         throw new IllegalArgumentException();
       }
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -186,7 +185,7 @@ public class WayTable implements Table<Way> {
       }
       return ids.stream().map(key -> ways.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -203,7 +202,7 @@ public class WayTable implements Table<Way> {
       statement.setBytes(8, GeometryUtil.serialize(row.getGeometry()));
       statement.execute();
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -225,7 +224,7 @@ public class WayTable implements Table<Way> {
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -235,7 +234,7 @@ public class WayTable implements Table<Way> {
       statement.setLong(1, id);
       statement.execute();
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -250,7 +249,7 @@ public class WayTable implements Table<Way> {
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -272,7 +271,7 @@ public class WayTable implements Table<Way> {
         }
       }
     } catch (Exception e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 

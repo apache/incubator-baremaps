@@ -28,7 +28,7 @@ import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
-import com.baremaps.osm.store.Store;
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.store.TileChangeConsumer;
 import java.io.InputStream;
 import java.util.List;
@@ -89,15 +89,15 @@ public class Diff implements Callable<Integer> {
     CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(epsg4326, epsg3857);
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), epsg3857.getProjection().getEPSGCode());
 
-    Store<Long, Coordinate> coordinateStore = new PostgisCoordinateCache(datasource);
-    Store<Long, List<Long>> referenceStore = new PostgisReferenceCache(datasource);
+    Cache<Long, Coordinate> coordinateCache = new PostgisCoordinateCache(datasource);
+    Cache<Long, List<Long>> referenceCache = new PostgisReferenceCache(datasource);
 
     NodeBuilder nodeBuilder = new NodeBuilder(coordinateTransform, geometryFactory);
     NodeTable nodeStore = new NodeTable(datasource);
-    WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateStore);
+    WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateCache);
     WayTable wayStore = new WayTable(datasource);
     RelationBuilder relationBuilder = new RelationBuilder(
-        coordinateTransform, geometryFactory, coordinateStore, referenceStore);
+        coordinateTransform, geometryFactory, coordinateCache, referenceCache);
     RelationTable relationStore = new RelationTable(datasource);
 
     HeaderTable headerMapper = new HeaderTable(datasource);

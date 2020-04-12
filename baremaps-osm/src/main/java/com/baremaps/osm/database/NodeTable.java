@@ -17,7 +17,6 @@ package com.baremaps.osm.database;
 import com.baremaps.core.postgis.CopyWriter;
 import com.baremaps.osm.database.NodeTable.Node;
 import com.baremaps.osm.geometry.GeometryUtil;
-import com.baremaps.osm.store.StoreException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -141,7 +140,7 @@ public class NodeTable implements Table<Node> {
         throw new IllegalArgumentException();
       }
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -163,7 +162,7 @@ public class NodeTable implements Table<Node> {
       }
       return ids.stream().map(id -> nodes.get(id)).collect(Collectors.toList());
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -179,7 +178,7 @@ public class NodeTable implements Table<Node> {
       statement.setBytes(7, GeometryUtil.serialize(row.getPoint()));
       statement.execute();
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -199,7 +198,7 @@ public class NodeTable implements Table<Node> {
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -209,7 +208,7 @@ public class NodeTable implements Table<Node> {
       statement.setLong(1, id);
       statement.execute();
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -223,7 +222,7 @@ public class NodeTable implements Table<Node> {
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
@@ -244,7 +243,7 @@ public class NodeTable implements Table<Node> {
         }
       }
     } catch (Exception e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 }

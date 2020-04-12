@@ -14,15 +14,15 @@
 
 package com.baremaps.osm;
 
-import com.baremaps.osm.store.Store;
+import com.baremaps.osm.cache.Cache;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MockStore<T> implements Store<Long, T> {
+public class MockCache<T> implements Cache<Long, T> {
 
   private final List<T> nodes;
 
-  public MockStore(List<T> nodes) {
+  public MockCache(List<T> nodes) {
     this.nodes = nodes;
   }
 

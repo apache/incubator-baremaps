@@ -15,8 +15,6 @@
 package com.baremaps.osm.cache;
 
 import com.baremaps.osm.geometry.GeometryUtil;
-import com.baremaps.osm.store.Store;
-import com.baremaps.osm.store.StoreException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,7 +27,7 @@ import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 
-public class PostgisCoordinateCache implements Store<Long, Coordinate> {
+public class PostgisCoordinateCache implements Cache<Long, Coordinate> {
 
   private static final String SELECT =
       "SELECT st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ?";
@@ -55,7 +53,7 @@ public class PostgisCoordinateCache implements Store<Long, Coordinate> {
         throw new IllegalArgumentException();
       }
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new CacheException(e);
     }
   }
 
@@ -73,7 +71,7 @@ public class PostgisCoordinateCache implements Store<Long, Coordinate> {
       }
       return keys.stream().map(key -> nodes.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new CacheException(e);
     }
   }
 

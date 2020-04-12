@@ -14,21 +14,17 @@
 
 package com.baremaps.osm.geometry;
 
-import com.baremaps.osm.MockStore;
-import com.baremaps.osm.database.NodeTable;
-import com.baremaps.osm.database.RelationTable;
-import com.baremaps.osm.database.WayTable;
+import com.baremaps.osm.MockCache;
 import com.baremaps.osm.model.Info;
 import com.baremaps.osm.model.Member;
 import com.baremaps.osm.model.Member.Type;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
-import com.baremaps.osm.store.Store;
+import com.baremaps.osm.cache.Cache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -106,7 +102,7 @@ public class GeometryConstants {
 
   public static final NodeBuilder NODE_BUILDER = new NodeBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY);
 
-  public static final Store<Long, Coordinate> COORDINATE_STORE = new MockStore(
+  public static final Cache<Long, Coordinate> COORDINATE_CACHE = new MockCache(
       Arrays.asList(NODE_0, NODE_1, NODE_2, NODE_3, NODE_4, NODE_5,
           NODE_6, NODE_7, NODE_8, NODE_9, NODE_10, NODE_11).stream()
           .map(n -> new Coordinate(n.getLon(), n.getLat())).collect(Collectors.toList()));
@@ -132,9 +128,9 @@ public class GeometryConstants {
       ImmutableList.of(4l, 5l, 6l, 7l, 4l));
 
   public static final WayBuilder WAY_BUILDER = new WayBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY,
-      COORDINATE_STORE);
+      COORDINATE_CACHE);
 
-  public static final Store<Long, List<Long>> REFERENCE_STORE = new MockStore(
+  public static final Cache<Long, List<Long>> REFERENCE_CACHE = new MockCache(
       Arrays.asList(WAY_0, WAY_1, WAY_2, WAY_3, WAY_4).stream()
           .map(w -> w.getNodes()).collect(Collectors.toList()));
 
@@ -164,7 +160,7 @@ public class GeometryConstants {
           new Member(4l, Type.way, "outer")));
 
   public static final RelationBuilder RELATION_BUILDER = new RelationBuilder(COORDINATE_TRANSFORM,
-      GEOMETRY_FACTORY, COORDINATE_STORE, REFERENCE_STORE);
+      GEOMETRY_FACTORY, COORDINATE_CACHE, REFERENCE_CACHE);
 
 
 }

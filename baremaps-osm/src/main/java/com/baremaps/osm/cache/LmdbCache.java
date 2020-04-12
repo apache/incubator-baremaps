@@ -16,7 +16,6 @@ package com.baremaps.osm.cache;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.baremaps.osm.store.Store;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,7 @@ import org.lmdbjava.Dbi;
 import org.lmdbjava.Env;
 import org.lmdbjava.Txn;
 
-public abstract class LmdbCache<K, V> implements Store<K, V> {
+public abstract class LmdbCache<K, V> implements Cache<K, V> {
 
   private final Env<ByteBuffer> env;
 

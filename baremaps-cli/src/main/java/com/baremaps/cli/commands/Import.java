@@ -25,7 +25,7 @@ import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.osmpbf.FileBlock;
 import com.baremaps.osm.osmpbf.FileBlockSpliterator;
 import com.baremaps.osm.database.HeaderTable;
-import com.baremaps.osm.store.Store;
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.database.DatabaseImporter;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -126,9 +126,9 @@ public class Import implements Callable<Integer> {
 
     Path lmdbPath = Files.createTempDirectory("baremaps_");
     Env<ByteBuffer> env = Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(lmdbPath.toFile());
-    Store<Long, Coordinate> coordinateStore = new LmdbCoordinateCache(env,
+    Cache<Long, Coordinate> coordinateCache = new LmdbCoordinateCache(env,
         env.openDbi("coordinates", MDB_CREATE));
-    Store<Long, List<Long>> referenceStore = new LmdbReferenceCache(env,
+    Cache<Long, List<Long>> referenceCache = new LmdbReferenceCache(env,
         env.openDbi("references", MDB_CREATE));
 
     logger.info("Fetching input.");
@@ -138,7 +138,7 @@ public class Import implements Callable<Integer> {
     logger.info("Populating cache.");
     try (DataInputStream input = new DataInputStream(fetch.getInputStream())) {
       Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(input), false);
-      CacheConsumer blockConsumer = new CacheConsumer(coordinateStore, referenceStore);
+      CacheConsumer blockConsumer = new CacheConsumer(coordinateCache, referenceCache);
       blocks.forEach(blockConsumer);
     }
 
@@ -158,11 +158,11 @@ public class Import implements Callable<Integer> {
       NodeBuilder nodeBuilder = new NodeBuilder(coordinateTransform, geometryFactory);
       NodeTable nodeTable = new NodeTable(datasource);
 
-      WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateStore);
+      WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateCache);
       WayTable wayTable = new WayTable(datasource);
       RelationBuilder relationBuilder = new RelationBuilder(
           coordinateTransform, geometryFactory,
-          coordinateStore, referenceStore);
+          coordinateCache, referenceCache);
       RelationTable relationTable = new RelationTable(
           datasource);
       DatabaseImporter blockConsumer = new DatabaseImporter(

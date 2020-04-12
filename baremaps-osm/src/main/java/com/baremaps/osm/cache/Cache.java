@@ -12,11 +12,11 @@
  * the License.
  */
 
-package com.baremaps.osm.store;
+package com.baremaps.osm.cache;
 
 import java.util.List;
 
-public interface Store<K, V>  {
+public interface Cache<K, V>  {
 
   V get(K key);
 
