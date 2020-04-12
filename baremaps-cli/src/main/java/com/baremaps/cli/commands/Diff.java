@@ -86,7 +86,7 @@ public class Diff implements Callable<Integer> {
       description = "The JDBC url of the Postgres database.",
       required = true)
   private String database;
-  
+
   @Override
   public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(mixins.level));

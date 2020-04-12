@@ -17,6 +17,7 @@ package com.baremaps.osm.database;
 import com.baremaps.core.postgis.CopyWriter;
 import com.baremaps.osm.database.NodeTable.Node;
 import com.baremaps.osm.geometry.GeometryUtil;
+import com.google.common.base.Objects;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -92,6 +93,29 @@ public class NodeTable implements Table<Node> {
 
     public Point getPoint() {
       return geometry;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      Node node = (Node) o;
+      return id == node.id &&
+          version == node.version &&
+          changeset == node.changeset &&
+          userId == node.userId &&
+          Objects.equal(timestamp, node.timestamp) &&
+          Objects.equal(tags, node.tags) &&
+          Objects.equal(geometry, node.geometry);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hashCode(id, version, timestamp, changeset, userId, tags, geometry);
     }
   }
 

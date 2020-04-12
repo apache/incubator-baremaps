@@ -54,19 +54,17 @@ public class NodeTableTest {
 
   @Test
   @Tag("integration")
-  public void put() {
+  public void insert() {
     nodeTable.insert(NODE_0);
     assertEquals(NODE_0, nodeTable.select(NODE_0.getId()));
   }
 
   @Test
   @Tag("integration")
-  public void putAll() {
-    List<NodeTable.Node> nodes = Arrays.asList(
-        NODE_0, NODE_1, NODE_2);
+  public void insertAll() {
+    List<NodeTable.Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeTable.insert(nodes);
-    assertIterableEquals(
-        nodes,
+    assertIterableEquals(nodes,
         nodeTable.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
@@ -84,18 +82,16 @@ public class NodeTableTest {
     List<NodeTable.Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeTable.insert(nodes);
     nodeTable.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
-    assertIterableEquals(
-        Arrays.asList(null, null, null),
+    assertIterableEquals( Arrays.asList(null, null, null),
         nodeTable.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
-  public void importAll() {
+  public void copy() {
     List<NodeTable.Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeTable.copy(nodes);
-    assertIterableEquals(
-        nodes,
+    assertIterableEquals(nodes,
         nodeTable.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

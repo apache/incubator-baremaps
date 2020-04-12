@@ -17,6 +17,7 @@ package com.baremaps.osm.database;
 import com.baremaps.core.postgis.CopyWriter;
 import com.baremaps.osm.database.WayTable.Way;
 import com.baremaps.osm.geometry.GeometryUtil;
+import com.google.common.base.Objects;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -105,6 +106,29 @@ public class WayTable implements Table<Way> {
       return geometry;
     }
 
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      Way way = (Way) o;
+      return id == way.id &&
+          version == way.version &&
+          changeset == way.changeset &&
+          userId == way.userId &&
+          Objects.equal(timestamp, way.timestamp) &&
+          Objects.equal(tags, way.tags) &&
+          Objects.equal(nodes, way.nodes) &&
+          Objects.equal(geometry, way.geometry);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hashCode(id, version, timestamp, changeset, userId, tags, nodes, geometry);
+    }
   }
 
   private static final String SELECT =

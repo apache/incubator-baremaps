@@ -17,6 +17,7 @@ package com.baremaps.osm.database;
 import com.baremaps.core.postgis.CopyWriter;
 import com.baremaps.osm.database.RelationTable.Relation;
 import com.baremaps.osm.geometry.GeometryUtil;
+import com.google.common.base.Objects;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -119,6 +120,33 @@ public class RelationTable implements Table<Relation> {
       return geometry;
     }
 
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      Relation relation = (Relation) o;
+      return id == relation.id &&
+          version == relation.version &&
+          changeset == relation.changeset &&
+          userId == relation.userId &&
+          Objects.equal(timestamp, relation.timestamp) &&
+          Objects.equal(tags, relation.tags) &&
+          Objects.equal(memberRefs, relation.memberRefs) &&
+          Objects.equal(memberTypes, relation.memberTypes) &&
+          Objects.equal(memberRoles, relation.memberRoles) &&
+          Objects.equal(geometry, relation.geometry);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects
+          .hashCode(id, version, timestamp, changeset, userId, tags, memberRefs, memberTypes, memberRoles,
+              geometry);
+    }
   }
 
   private static final String SELECT =
