@@ -12,8 +12,9 @@
  * the License.
  */
 
-package com.baremaps.osm.cache;
+package com.baremaps.osm.stream;
 
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.osmpbf.FileBlockConsumer;
 import com.baremaps.osm.osmpbf.HeaderBlock;
 import com.baremaps.osm.osmpbf.PrimitiveBlock;
@@ -22,12 +23,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
 
-public class CacheConsumer extends FileBlockConsumer {
+public class CacheImporter extends FileBlockConsumer {
 
   private final Cache<Long, Coordinate> coordinateCache;
   private final Cache<Long, List<Long>> referenceCache;
 
-  public CacheConsumer(
+  public CacheImporter(
       Cache<Long, Coordinate> coordinateCache,
       Cache<Long, List<Long>> referenceCache) {
     this.coordinateCache = coordinateCache;

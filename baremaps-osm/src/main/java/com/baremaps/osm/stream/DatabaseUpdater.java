@@ -12,8 +12,14 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.stream;
 
+import com.baremaps.osm.database.NodeTable;
+import com.baremaps.osm.database.RelationTable;
+import com.baremaps.osm.database.WayTable;
+import com.baremaps.osm.geometry.NodeBuilder;
+import com.baremaps.osm.geometry.RelationBuilder;
+import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.osmxml.Change;
 import com.baremaps.osm.model.Entity;
 import com.baremaps.osm.model.Node;
@@ -23,14 +29,22 @@ import java.util.function.Consumer;
 
 public class DatabaseUpdater implements Consumer<Change> {
 
+  private final WayBuilder wayBuilder;
+  private final RelationBuilder relationBuilder;
+  private final NodeBuilder nodeBuilder;
+
   private final NodeTable nodeTable;
   private final WayTable wayTable;
   private final RelationTable relationTable;
 
   public DatabaseUpdater(
-      NodeTable nodeTable,
+      NodeBuilder nodeBuilder, WayBuilder wayBuilder,
+      RelationBuilder relationBuilder, NodeTable nodeTable,
       WayTable wayTable,
       RelationTable relationTable) {
+    this.nodeBuilder = nodeBuilder;
+    this.wayBuilder = wayBuilder;
+    this.relationBuilder = relationBuilder;
     this.nodeTable = nodeTable;
     this.wayTable = wayTable;
     this.relationTable = relationTable;
@@ -44,10 +58,9 @@ public class DatabaseUpdater implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          // TODO: Build node geometry
           nodeTable.insert(new NodeTable.Node(node.getInfo().getId(), node.getInfo().getVersion(),
               node.getInfo().getTimestamp(), node.getInfo().getChangeset(), node.getInfo().getUserId(),
-              node.getInfo().getTags(), null));
+              node.getInfo().getTags(), nodeBuilder.build(node)));
           break;
         case delete:
           nodeTable.delete(node.getInfo().getId());
@@ -62,7 +75,7 @@ public class DatabaseUpdater implements Consumer<Change> {
         case modify:
           wayTable.insert(new WayTable.Way(way.getInfo().getId(), way.getInfo().getVersion(),
               way.getInfo().getTimestamp(), way.getInfo().getChangeset(), way.getInfo().getUserId(),
-              way.getInfo().getTags(), way.getNodes(), null));
+              way.getInfo().getTags(), way.getNodes(), wayBuilder.build(way)));
           break;
         case delete:
           wayTable.delete(way.getInfo().getId());
@@ -83,9 +96,9 @@ public class DatabaseUpdater implements Consumer<Change> {
               relation.getInfo().getUserId(),
               relation.getInfo().getTags(),
               relation.getMembers().stream().map(m -> m.getRef()).toArray(Long[]::new),
-              relation.getMembers().stream().map(m -> m.getType()).toArray(String[]::new),
+              relation.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new),
               relation.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new),
-              null));
+              relationBuilder.build(relation)));
           break;
         case delete:
           relationTable.delete(relation.getInfo().getId());

@@ -31,7 +31,7 @@ import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.database.DatabaseUpdater;
+import com.baremaps.osm.stream.DatabaseUpdater;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import java.io.InputStream;
@@ -88,10 +88,10 @@ public class Update implements Callable<Integer> {
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
     CRSFactory crsFactory = new CRSFactory();
-    CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");
-    CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");
+    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
+    CoordinateReferenceSystem targetCRS = crsFactory.createFromName("EPSG:3857");
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-    CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(epsg4326, epsg3857);
+    CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(sourceCRS, targetCRS);
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
 
     Cache<Long, Coordinate> coordinateCache = new PostgisCoordinateCache(datasource);
@@ -109,20 +109,27 @@ public class Update implements Callable<Integer> {
     HeaderBlock header = headerMapper.getLast();
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
 
+    logger.info("Downloading changes.");
     String changePath = changePath(nextSequenceNumber);
     String changeURL = String.format("%s/%s", input, changePath);
     Fetcher fetcher = new Fetcher(mixins.caching);
     Data changeFetch = fetcher.fetch(changeURL);
-    try (InputStream changeInputStream = new GZIPInputStream(changeFetch.getInputStream())) {
-      Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
-      Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
-      DatabaseUpdater databaseUpdater = new DatabaseUpdater(nodeStore, wayStore, relationStore);
-      changeStream.forEach(databaseUpdater);
-    }
 
+    logger.info("Downloading state information.");
     String statePath = statePath(nextSequenceNumber);
     String stateURL = String.format("%s/%s", input, statePath);
     Data stateFetch = fetcher.fetch(stateURL);
+
+    logger.info("Updating database.");
+
+    try (InputStream changeInputStream = new GZIPInputStream(changeFetch.getInputStream())) {
+      Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
+      Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
+      DatabaseUpdater databaseUpdater = new DatabaseUpdater(nodeBuilder, wayBuilder, relationBuilder,
+          nodeStore, wayStore, relationStore);
+      changeStream.forEach(databaseUpdater);
+    }
+
     try (InputStreamReader reader = new InputStreamReader(stateFetch.getInputStream(), Charsets.UTF_8)) {
       String stateContent = CharStreams.toString(reader);
       State state = State.parse(stateContent);

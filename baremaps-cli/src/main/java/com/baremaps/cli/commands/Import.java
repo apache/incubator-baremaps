@@ -26,11 +26,11 @@ import com.baremaps.osm.osmpbf.FileBlock;
 import com.baremaps.osm.osmpbf.FileBlockSpliterator;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.database.DatabaseImporter;
+import com.baremaps.osm.stream.DatabaseImporter;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.osm.cache.CacheConsumer;
+import com.baremaps.osm.stream.CacheImporter;
 import com.baremaps.osm.cache.LmdbCoordinateCache;
 import com.baremaps.osm.cache.LmdbReferenceCache;
 import com.baremaps.osm.database.NodeTable;
@@ -138,7 +138,7 @@ public class Import implements Callable<Integer> {
     logger.info("Populating cache.");
     try (DataInputStream input = new DataInputStream(fetch.getInputStream())) {
       Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(input), false);
-      CacheConsumer blockConsumer = new CacheConsumer(coordinateCache, referenceCache);
+      CacheImporter blockConsumer = new CacheImporter(coordinateCache, referenceCache);
       blocks.forEach(blockConsumer);
     }
 
@@ -147,27 +147,26 @@ public class Import implements Callable<Integer> {
       Stream<FileBlock> blocks = StreamSupport
           .stream(new BatchSpliterator<>(new FileBlockSpliterator(input), 10), true);
       CRSFactory crsFactory = new CRSFactory();
-      CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");
-      CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");
+      CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
+      CoordinateReferenceSystem targetCSR = crsFactory.createFromName("EPSG:3857");
       CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
       CoordinateTransform coordinateTransform = coordinateTransformFactory
-          .createTransform(epsg4326, epsg3857);
+          .createTransform(sourceCRS, targetCSR);
       GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
       HeaderTable headerMapper = new HeaderTable(datasource);
 
       NodeBuilder nodeBuilder = new NodeBuilder(coordinateTransform, geometryFactory);
-      NodeTable nodeTable = new NodeTable(datasource);
-
       WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateCache);
-      WayTable wayTable = new WayTable(datasource);
-      RelationBuilder relationBuilder = new RelationBuilder(
-          coordinateTransform, geometryFactory,
+      RelationBuilder relationBuilder = new RelationBuilder(coordinateTransform, geometryFactory,
           coordinateCache, referenceCache);
-      RelationTable relationTable = new RelationTable(
-          datasource);
-      DatabaseImporter blockConsumer = new DatabaseImporter(
-          headerMapper, nodeBuilder, nodeTable, wayBuilder,
-          wayTable, relationBuilder, relationTable);
+
+      NodeTable nodeTable = new NodeTable(datasource);
+      WayTable wayTable = new WayTable(datasource);
+      RelationTable relationTable = new RelationTable(datasource);
+
+      DatabaseImporter blockConsumer = new DatabaseImporter(headerMapper, nodeBuilder, wayBuilder,
+          relationBuilder, nodeTable, wayTable, relationTable);
+
       blocks.forEach(blockConsumer);
     }
 

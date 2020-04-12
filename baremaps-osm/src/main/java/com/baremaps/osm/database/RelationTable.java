@@ -122,10 +122,10 @@ public class RelationTable implements Table<Relation> {
   }
 
   private static final String SELECT =
-      "SELECT version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, geom FROM osm_relations WHERE id = ?";
+      "SELECT version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, st_asbinary(ST_Transform(geom, 4326)) FROM osm_relations WHERE id = ?";
 
   private static final String SELECT_IN =
-      "SELECT id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, geom FROM osm_relations WHERE id = ANY (?)";
+      "SELECT id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, st_asbinary(ST_Transform(geom, 4326)) FROM osm_relations WHERE id = ANY (?)";
 
   private static final String INSERT =
       "INSERT INTO osm_relations (id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, geom) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
@@ -213,7 +213,7 @@ public class RelationTable implements Table<Relation> {
       statement.setObject(4, row.getTimestamp());
       statement.setLong(5, row.getChangeset());
       statement.setObject(6, row.getTags());
-      statement.setObject(7, row.getMemberRefs());
+      statement.setObject(7, connection.createArrayOf("bigint", row.getMemberRefs()));
       statement.setObject(8, row.getMemberTypes());
       statement.setObject(9, row.getMemberRoles());
       statement.setBytes(10, GeometryUtil.serialize(row.getGeometry()));
@@ -235,7 +235,7 @@ public class RelationTable implements Table<Relation> {
         statement.setObject(4, row.getTimestamp());
         statement.setLong(5, row.getChangeset());
         statement.setObject(6, row.getTags());
-        statement.setObject(7, row.getMemberRefs());
+        statement.setObject(7, connection.createArrayOf("bigint", row.getMemberRefs()));
         statement.setObject(8, row.getMemberTypes());
         statement.setObject(9, row.getMemberRoles());
         statement.setBytes(10, GeometryUtil.serialize(row.getGeometry()));

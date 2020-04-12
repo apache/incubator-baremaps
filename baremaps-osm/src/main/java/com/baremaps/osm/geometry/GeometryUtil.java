@@ -33,9 +33,12 @@ public class GeometryUtil {
   }
 
   public static Geometry deserialize(byte[] wkb) {
+    if (wkb == null) {
+      return null;
+    }
     try {
       WKBReader reader = new WKBReader(new GeometryFactory());
-      return reader.read(wkb);
+      return reader.  read(wkb);
     } catch (ParseException e) {
       throw new IllegalArgumentException(e);
     }

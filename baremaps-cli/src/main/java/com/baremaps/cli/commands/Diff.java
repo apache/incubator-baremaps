@@ -16,6 +16,8 @@ package com.baremaps.cli.commands;
 import com.baremaps.core.fetch.Data;
 import com.baremaps.core.fetch.Fetcher;
 import com.baremaps.core.postgis.PostgisHelper;
+import com.baremaps.core.tile.Tile;
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.PostgisCoordinateCache;
 import com.baremaps.osm.cache.PostgisReferenceCache;
 import com.baremaps.osm.geometry.NodeBuilder;
@@ -28,9 +30,12 @@ import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.store.TileChangeConsumer;
+import com.baremaps.osm.stream.DatabaseDiffer;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.concurrent.Callable;
@@ -69,12 +74,19 @@ public class Diff implements Callable<Integer> {
   private String input;
 
   @Option(
+      names = {"--output"},
+      paramLabel = "OSC",
+      description = "The OpenStreetMap Change file.",
+      required = true)
+  private String output;
+
+  @Option(
       names = {"--database"},
       paramLabel = "JDBC",
       description = "The JDBC url of the Postgres database.",
       required = true)
   private String database;
-
+  
   @Override
   public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(mixins.level));
@@ -83,37 +95,49 @@ public class Diff implements Callable<Integer> {
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
     CRSFactory crsFactory = new CRSFactory();
-    CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");
-    CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");
+    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
+    CoordinateReferenceSystem targetCRS = crsFactory.createFromName("EPSG:4326");
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-    CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(epsg4326, epsg3857);
-    GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), epsg3857.getProjection().getEPSGCode());
+    CoordinateTransform coordinateTransform = coordinateTransformFactory
+        .createTransform(sourceCRS, targetCRS);
+
+    GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
 
     Cache<Long, Coordinate> coordinateCache = new PostgisCoordinateCache(datasource);
     Cache<Long, List<Long>> referenceCache = new PostgisReferenceCache(datasource);
 
     NodeBuilder nodeBuilder = new NodeBuilder(coordinateTransform, geometryFactory);
-    NodeTable nodeStore = new NodeTable(datasource);
     WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateCache);
+    RelationBuilder relationBuilder = new RelationBuilder(coordinateTransform, geometryFactory,
+        coordinateCache, referenceCache);
+
+    NodeTable nodeStore = new NodeTable(datasource);
     WayTable wayStore = new WayTable(datasource);
-    RelationBuilder relationBuilder = new RelationBuilder(
-        coordinateTransform, geometryFactory, coordinateCache, referenceCache);
     RelationTable relationStore = new RelationTable(datasource);
 
     HeaderTable headerMapper = new HeaderTable(datasource);
     HeaderBlock header = headerMapper.getLast();
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
 
+    logger.info("Downloading changes.");
     String changePath = changePath(nextSequenceNumber);
     String changeURL = String.format("%s/%s", input, changePath);
     Fetcher fetcher = new Fetcher(mixins.caching);
     Data changeFetch = fetcher.fetch(changeURL);
+    DatabaseDiffer databaseDiffer = new DatabaseDiffer(nodeBuilder, wayBuilder, relationBuilder, nodeStore, wayStore, relationStore);
+
+    logger.info("Computing differences.");
     try (InputStream changeInputStream = new GZIPInputStream(changeFetch.getInputStream())) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
-      TileChangeConsumer tileChangeConsumer = new TileChangeConsumer(
-          nodeStore, wayStore, relationStore);
-      changeStream.forEach(tileChangeConsumer);
+      changeStream.forEach(databaseDiffer);
+    }
+
+    logger.info("Saving differences.");
+    try (PrintWriter diffPrintWriter = new PrintWriter(new FileOutputStream(Paths.get(output).toFile()))) {
+      for (Tile tile : databaseDiffer.getTiles()) {
+        diffPrintWriter.println(String.format("%d/%d/%d", tile.getX(), tile.getY(), tile.getZ()));
+      }
     }
 
     return 0;

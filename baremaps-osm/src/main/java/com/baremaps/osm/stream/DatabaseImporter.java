@@ -12,8 +12,12 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.stream;
 
+import com.baremaps.osm.database.HeaderTable;
+import com.baremaps.osm.database.NodeTable;
+import com.baremaps.osm.database.RelationTable;
+import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
@@ -27,22 +31,18 @@ public class DatabaseImporter extends FileBlockConsumer {
   private final HeaderTable headerTable;
 
   private final NodeBuilder nodeBuilder;
-
   private final WayBuilder wayBuilder;
-
   private final RelationBuilder relationBuilder;
 
   private final NodeTable nodeTable;
-
   private final WayTable wayTable;
-
   private final RelationTable relationTable;
 
   public DatabaseImporter(
       HeaderTable headerTable,
-      NodeBuilder nodeBuilder, NodeTable nodeTable,
-      WayBuilder wayBuilder, WayTable wayTable,
-      RelationBuilder relationBuilder, RelationTable relationTable) {
+      NodeBuilder nodeBuilder, WayBuilder wayBuilder, RelationBuilder relationBuilder, NodeTable nodeTable,
+      WayTable wayTable,
+      RelationTable relationTable) {
     this.headerTable = headerTable;
     this.nodeBuilder = nodeBuilder;
     this.nodeTable = nodeTable;
