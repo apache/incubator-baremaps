@@ -17,6 +17,7 @@ package com.baremaps.cli.commands;
 import com.baremaps.core.fetch.Data;
 import com.baremaps.core.fetch.Fetcher;
 import com.baremaps.core.postgis.PostgisHelper;
+import com.baremaps.core.tile.Tile;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.PostgisCoordinateCache;
 import com.baremaps.osm.cache.PostgisReferenceCache;
@@ -30,12 +31,11 @@ import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.osmpbf.HeaderBlock;
 import com.baremaps.osm.osmxml.Change;
 import com.baremaps.osm.osmxml.ChangeSpliterator;
-import com.baremaps.osm.osmxml.State;
-import com.baremaps.osm.stream.DatabaseUpdater;
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
+import com.baremaps.osm.stream.DatabaseDiffer;
+import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.concurrent.Callable;
@@ -58,8 +58,8 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "update", description = "Update OpenStreetMap data in the Postgresql database.")
-public class Update implements Callable<Integer> {
+@Command(name = "diff", description = "List the tiles affected by an OpenStreetMap change file.")
+public class Diff implements Callable<Integer> {
 
   private static Logger logger = LogManager.getLogger();
 
@@ -72,6 +72,13 @@ public class Update implements Callable<Integer> {
       description = "The OpenStreetMap Change file.",
       required = true)
   private String input;
+
+  @Option(
+      names = {"--output"},
+      paramLabel = "OSC",
+      description = "The OpenStreetMap Change file.",
+      required = true)
+  private String output;
 
   @Option(
       names = {"--database"},
@@ -89,20 +96,23 @@ public class Update implements Callable<Integer> {
 
     CRSFactory crsFactory = new CRSFactory();
     CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
-    CoordinateReferenceSystem targetCRS = crsFactory.createFromName("EPSG:3857");
+    CoordinateReferenceSystem targetCRS = crsFactory.createFromName("EPSG:4326");
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-    CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(sourceCRS, targetCRS);
-    GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
+    CoordinateTransform coordinateTransform = coordinateTransformFactory
+        .createTransform(sourceCRS, targetCRS);
+
+    GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
 
     Cache<Long, Coordinate> coordinateCache = new PostgisCoordinateCache(datasource);
     Cache<Long, List<Long>> referenceCache = new PostgisReferenceCache(datasource);
 
     NodeBuilder nodeBuilder = new NodeBuilder(coordinateTransform, geometryFactory);
-    NodeTable nodeStore = new NodeTable(datasource);
     WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateCache);
+    RelationBuilder relationBuilder = new RelationBuilder(coordinateTransform, geometryFactory,
+        coordinateCache, referenceCache);
+
+    NodeTable nodeStore = new NodeTable(datasource);
     WayTable wayStore = new WayTable(datasource);
-    RelationBuilder relationBuilder = new RelationBuilder(
-        coordinateTransform, geometryFactory, coordinateCache, referenceCache);
     RelationTable relationStore = new RelationTable(datasource);
 
     HeaderTable headerMapper = new HeaderTable(datasource);
@@ -114,32 +124,20 @@ public class Update implements Callable<Integer> {
     String changeURL = String.format("%s/%s", input, changePath);
     Fetcher fetcher = new Fetcher(mixins.caching);
     Data changeFetch = fetcher.fetch(changeURL);
+    DatabaseDiffer databaseDiffer = new DatabaseDiffer(nodeBuilder, wayBuilder, relationBuilder, nodeStore, wayStore, relationStore);
 
-    logger.info("Downloading state information.");
-    String statePath = statePath(nextSequenceNumber);
-    String stateURL = String.format("%s/%s", input, statePath);
-    Data stateFetch = fetcher.fetch(stateURL);
-
-    logger.info("Updating database.");
-
+    logger.info("Computing differences.");
     try (InputStream changeInputStream = new GZIPInputStream(changeFetch.getInputStream())) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
-      DatabaseUpdater databaseUpdater = new DatabaseUpdater(nodeBuilder, wayBuilder, relationBuilder,
-          nodeStore, wayStore, relationStore);
-      changeStream.forEach(databaseUpdater);
+      changeStream.forEach(databaseDiffer);
     }
 
-    try (InputStreamReader reader = new InputStreamReader(stateFetch.getInputStream(), Charsets.UTF_8)) {
-      String stateContent = CharStreams.toString(reader);
-      State state = State.parse(stateContent);
-      headerMapper.insert(new HeaderBlock(
-          state.timestamp,
-          state.sequenceNumber,
-          header.getReplicationUrl(),
-          header.getSource(),
-          header.getWritingProgram(),
-          header.getBbox()));
+    logger.info("Saving differences.");
+    try (PrintWriter diffPrintWriter = new PrintWriter(new FileOutputStream(Paths.get(output).toFile()))) {
+      for (Tile tile : databaseDiffer.getTiles()) {
+        diffPrintWriter.println(String.format("%d/%d/%d", tile.getX(), tile.getY(), tile.getZ()));
+      }
     }
 
     return 0;
@@ -155,10 +153,5 @@ public class Update implements Callable<Integer> {
   public String changePath(long sequenceNumber) {
     return path(sequenceNumber) + ".osc.gz";
   }
-
-  public String statePath(long sequenceNumber) {
-    return path(sequenceNumber) + ".state.txt";
-  }
-
 
 }

@@ -16,6 +16,8 @@ package com.baremaps.osm.osmpbf;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.baremaps.osm.binary.Osmformat;
+import com.baremaps.osm.binary.Osmformat.PrimitiveGroup;
 import com.baremaps.osm.model.Info;
 import com.baremaps.osm.model.Member;
 import com.baremaps.osm.model.Member.Type;
@@ -31,8 +33,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import com.baremaps.osm.binary.Osmformat;
-import com.baremaps.osm.binary.Osmformat.PrimitiveGroup;
 
 public final class PrimitiveBlock {
 

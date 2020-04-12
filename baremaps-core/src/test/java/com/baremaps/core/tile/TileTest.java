@@ -12,23 +12,18 @@
  * the License.
  */
 
-package com.baremaps.osm.geometry;
-
-import static com.baremaps.osm.geometry.GeometryConstants.NODE_BUILDER;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+package com.baremaps.core.tile;
 
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.Point;
 
-public class NodeBuilderTest {
+class TileTest {
 
   @Test
-  public void build() {
-    Point p0 = NODE_BUILDER.build(GeometryConstants.NODE_0);
-    assertEquals(p0.getX(), 0);
-    assertEquals(p0.getY(), 0);
-    Point p1 = NODE_BUILDER.build(GeometryConstants.NODE_2);
-    assertEquals(p1.getX(), 3);
-    assertEquals(p1.getY(), 3);
+  void getTile() {
+    double lon = 1062451.988597151, lat = 5965417.348546229;
+    int z = 14;
+    Tile tile = Tile.getTile(lon, lat, 14);
+    int y = (int) ((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat)))
+        / Math.PI) / 2.0 * (1 << z));
   }
 }

@@ -14,14 +14,14 @@
 
 package com.baremaps.osm.osmpbf;
 
+import com.baremaps.osm.binary.Fileformat;
+import com.baremaps.osm.binary.Fileformat.Blob;
 import com.google.protobuf.ByteString;
 import java.io.DataInputStream;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
-import com.baremaps.osm.binary.Fileformat;
-import com.baremaps.osm.binary.Fileformat.Blob;
 
 public class FileBlockSpliterator implements Spliterator<FileBlock> {
 

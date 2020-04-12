@@ -17,9 +17,9 @@ package com.baremaps.osm.osmpbf;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.baremaps.core.stream.StreamException;
+import com.baremaps.osm.binary.Osmformat;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.baremaps.osm.binary.Osmformat;
 
 public final class FileBlock {
 

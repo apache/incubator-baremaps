@@ -14,6 +14,8 @@
 
 package com.baremaps.cli.commands;
 
+import static com.baremaps.cli.options.TileReaderOption.slow;
+
 import com.baremaps.cli.options.TileReaderOption;
 import com.baremaps.core.fetch.Fetcher;
 import com.baremaps.core.postgis.PostgisHelper;
@@ -37,8 +39,6 @@ import org.apache.logging.log4j.core.config.Configurator;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
-
-import static com.baremaps.cli.options.TileReaderOption.*;
 
 @Command(name = "serve", description = "Serve vector tiles from the the Postgresql database.")
 public class Serve implements Callable<Integer> {

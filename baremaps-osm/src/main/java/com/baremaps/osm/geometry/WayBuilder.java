@@ -14,8 +14,8 @@
 
 package com.baremaps.osm.geometry;
 
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.model.Way;
-import com.baremaps.osm.store.Store;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -28,22 +28,22 @@ public class WayBuilder extends GeometryBuilder<Way> {
 
   private final GeometryFactory geometryFactory;
 
-  private final Store<Long, Coordinate> coordinateStore;
+  private final Cache<Long, Coordinate> coordinateCache;
 
   /**
    * Constructs a {code WayBuilder}.
    *
    * @param coordinateTransform the {@code CoordinateTransform} used to project OSM coordinates
    * @param geometryFactory     the {@code GeometryFactory} used to create polygons and multipolygons
-   * @param coordinateStore     the {@code Store} used to retrieve the coordinates of a node
+   * @param coordinateCache     the {@code Store} used to retrieve the coordinates of a node
    */
   public WayBuilder(
       CoordinateTransform coordinateTransform,
       GeometryFactory geometryFactory,
-      Store<Long, Coordinate> coordinateStore) {
+      Cache<Long, Coordinate> coordinateCache) {
     super(coordinateTransform);
     this.geometryFactory = geometryFactory;
-    this.coordinateStore = coordinateStore;
+    this.coordinateCache = coordinateCache;
   }
 
   /**
@@ -54,7 +54,7 @@ public class WayBuilder extends GeometryBuilder<Way> {
    */
   public Geometry build(Way entity) {
     Coordinate[] coordinates =
-        coordinateStore.getAll(entity.getNodes()).stream()
+        coordinateCache.getAll(entity.getNodes()).stream()
             .map(coordinate -> toCoordinate(coordinate.getX(), coordinate.getY()))
             .toArray(Coordinate[]::new);
     if (coordinates.length > 3 && coordinates[0].equals(coordinates[coordinates.length - 1])) {

@@ -12,27 +12,27 @@
  * the License.
  */
 
-package com.baremaps.osm.cache;
+package com.baremaps.osm.stream;
 
+import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.cache.Cache.Entry;
 import com.baremaps.osm.osmpbf.FileBlockConsumer;
 import com.baremaps.osm.osmpbf.HeaderBlock;
 import com.baremaps.osm.osmpbf.PrimitiveBlock;
-import com.baremaps.osm.store.Store;
-import com.baremaps.osm.store.Store.Entry;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
 
-public class CacheConsumer extends FileBlockConsumer {
+public class CacheImporter extends FileBlockConsumer {
 
-  private final Store<Long, Coordinate> coordinateStore;
-  private final Store<Long, List<Long>> referenceStore;
+  private final Cache<Long, Coordinate> coordinateCache;
+  private final Cache<Long, List<Long>> referenceCache;
 
-  public CacheConsumer(
-      Store<Long, Coordinate> coordinateStore,
-      Store<Long, List<Long>> referenceStore) {
-    this.coordinateStore = coordinateStore;
-    this.referenceStore = referenceStore;
+  public CacheImporter(
+      Cache<Long, Coordinate> coordinateCache,
+      Cache<Long, List<Long>> referenceCache) {
+    this.coordinateCache = coordinateCache;
+    this.referenceCache = referenceCache;
   }
 
   @Override
@@ -42,10 +42,10 @@ public class CacheConsumer extends FileBlockConsumer {
   @Override
   public void accept(PrimitiveBlock primitiveBlock) {
     try {
-      coordinateStore.putAll(primitiveBlock.getDenseNodes().stream()
+      coordinateCache.putAll(primitiveBlock.getDenseNodes().stream()
           .map(n -> new Entry<>(n.getInfo().getId(), new Coordinate(n.getLon(), n.getLat())))
           .collect(Collectors.toList()));
-      referenceStore.putAll(primitiveBlock.getWays().stream()
+      referenceCache.putAll(primitiveBlock.getWays().stream()
           .map(w -> new Entry<>(w.getInfo().getId(), w.getNodes()))
           .collect(Collectors.toList()));
     } catch (Exception e) {

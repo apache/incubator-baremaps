@@ -14,11 +14,11 @@
 
 package com.baremaps.tiles.postgis;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.baremaps.tiles.config.Layer;
 import com.baremaps.tiles.postgis.QueryParser.Query;
 import com.google.common.collect.ImmutableList;
-import com.baremaps.tiles.config.Layer;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;

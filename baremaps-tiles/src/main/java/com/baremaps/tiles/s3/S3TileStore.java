@@ -17,11 +17,11 @@ package com.baremaps.tiles.s3;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3URI;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.google.common.io.ByteStreams;
 import com.baremaps.core.tile.Tile;
 import com.baremaps.tiles.TileException;
 import com.baremaps.tiles.TileReader;
 import com.baremaps.tiles.TileWriter;
+import com.google.common.io.ByteStreams;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 

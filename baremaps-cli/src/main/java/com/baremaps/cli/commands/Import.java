@@ -16,26 +16,26 @@ package com.baremaps.cli.commands;
 
 import static org.lmdbjava.DbiFlags.MDB_CREATE;
 
-import com.baremaps.core.fetch.Fetcher;
 import com.baremaps.core.fetch.Data;
+import com.baremaps.core.fetch.Fetcher;
+import com.baremaps.core.postgis.PostgisHelper;
 import com.baremaps.core.stream.BatchSpliterator;
+import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.cache.LmdbCoordinateCache;
+import com.baremaps.osm.cache.LmdbReferenceCache;
+import com.baremaps.osm.database.HeaderTable;
+import com.baremaps.osm.database.NodeTable;
+import com.baremaps.osm.database.RelationTable;
+import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.osmpbf.FileBlock;
 import com.baremaps.osm.osmpbf.FileBlockSpliterator;
-import com.baremaps.osm.postgis.PostgisHeaderStore;
-import com.baremaps.osm.store.Store;
-import com.baremaps.osm.store.StoreImportConsumer;
+import com.baremaps.osm.stream.CacheImporter;
+import com.baremaps.osm.stream.DatabaseImporter;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.osm.cache.CacheConsumer;
-import com.baremaps.osm.cache.LmdbCoordinateCache;
-import com.baremaps.osm.cache.LmdbReferenceCache;
-import com.baremaps.osm.postgis.PostgisNodeStore;
-import com.baremaps.osm.postgis.PostgisRelationStore;
-import com.baremaps.osm.postgis.PostgisWayStore;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -126,9 +126,9 @@ public class Import implements Callable<Integer> {
 
     Path lmdbPath = Files.createTempDirectory("baremaps_");
     Env<ByteBuffer> env = Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(lmdbPath.toFile());
-    Store<Long, Coordinate> coordinateStore = new LmdbCoordinateCache(env,
+    Cache<Long, Coordinate> coordinateCache = new LmdbCoordinateCache(env,
         env.openDbi("coordinates", MDB_CREATE));
-    Store<Long, List<Long>> referenceStore = new LmdbReferenceCache(env,
+    Cache<Long, List<Long>> referenceCache = new LmdbReferenceCache(env,
         env.openDbi("references", MDB_CREATE));
 
     logger.info("Fetching input.");
@@ -138,7 +138,7 @@ public class Import implements Callable<Integer> {
     logger.info("Populating cache.");
     try (DataInputStream input = new DataInputStream(fetch.getInputStream())) {
       Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(input), false);
-      CacheConsumer blockConsumer = new CacheConsumer(coordinateStore, referenceStore);
+      CacheImporter blockConsumer = new CacheImporter(coordinateCache, referenceCache);
       blocks.forEach(blockConsumer);
     }
 
@@ -147,21 +147,26 @@ public class Import implements Callable<Integer> {
       Stream<FileBlock> blocks = StreamSupport
           .stream(new BatchSpliterator<>(new FileBlockSpliterator(input), 10), true);
       CRSFactory crsFactory = new CRSFactory();
-      CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");
-      CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");
+      CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
+      CoordinateReferenceSystem targetCSR = crsFactory.createFromName("EPSG:3857");
       CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
       CoordinateTransform coordinateTransform = coordinateTransformFactory
-          .createTransform(epsg4326, epsg3857);
+          .createTransform(sourceCRS, targetCSR);
       GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
-      PostgisHeaderStore headerMapper = new PostgisHeaderStore(datasource);
-      PostgisNodeStore nodeMapper = new PostgisNodeStore(datasource,
-          new NodeBuilder(coordinateTransform, geometryFactory));
-      PostgisWayStore wayMapper = new PostgisWayStore(datasource,
-          new WayBuilder(coordinateTransform, geometryFactory, coordinateStore));
-      PostgisRelationStore relationMapper = new PostgisRelationStore(datasource,
-          new RelationBuilder(coordinateTransform, geometryFactory, coordinateStore, referenceStore));
-      StoreImportConsumer blockConsumer = new StoreImportConsumer(headerMapper, nodeMapper, wayMapper,
-          relationMapper);
+      HeaderTable headerMapper = new HeaderTable(datasource);
+
+      NodeBuilder nodeBuilder = new NodeBuilder(coordinateTransform, geometryFactory);
+      WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateCache);
+      RelationBuilder relationBuilder = new RelationBuilder(coordinateTransform, geometryFactory,
+          coordinateCache, referenceCache);
+
+      NodeTable nodeTable = new NodeTable(datasource);
+      WayTable wayTable = new WayTable(datasource);
+      RelationTable relationTable = new RelationTable(datasource);
+
+      DatabaseImporter blockConsumer = new DatabaseImporter(headerMapper, nodeBuilder, wayBuilder,
+          relationBuilder, nodeTable, wayTable, relationTable);
+
       blocks.forEach(blockConsumer);
     }
 

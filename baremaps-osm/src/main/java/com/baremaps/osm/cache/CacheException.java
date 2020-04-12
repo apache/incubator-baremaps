@@ -12,15 +12,15 @@
  * the License.
  */
 
-package com.baremaps.osm.store;
+package com.baremaps.osm.cache;
 
-public class StoreException extends RuntimeException {
+public class CacheException extends RuntimeException {
 
-  public StoreException() {
+  public CacheException() {
     super();
   }
 
-  public StoreException(Exception e) {
+  public CacheException(Exception e) {
     super(e);
   }
 

@@ -14,8 +14,6 @@
 
 package com.baremaps.osm.cache;
 
-import com.baremaps.osm.store.Store;
-import com.baremaps.osm.store.StoreException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,7 +27,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
-public class PostgisReferenceCache implements Store<Long, List<Long>> {
+public class PostgisReferenceCache implements Cache<Long, List<Long>> {
 
   private static final String SELECT =
       "SELECT nodes FROM osm_ways WHERE id = ?";
@@ -59,7 +57,7 @@ public class PostgisReferenceCache implements Store<Long, List<Long>> {
         throw new IllegalArgumentException();
       }
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new CacheException(e);
     }
   }
 
@@ -81,7 +79,7 @@ public class PostgisReferenceCache implements Store<Long, List<Long>> {
       }
       return keys.stream().map(key -> references.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new CacheException(e);
     }
   }
 

@@ -14,12 +14,12 @@
 
 package com.baremaps.osm.osmpbf;
 
+import com.baremaps.osm.binary.Osmformat;
+import com.baremaps.osm.binary.Osmformat.HeaderBBox;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import com.baremaps.osm.binary.Osmformat;
-import com.baremaps.osm.binary.Osmformat.HeaderBBox;
 
 public class HeaderBlock {
 

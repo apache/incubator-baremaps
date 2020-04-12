@@ -14,13 +14,13 @@
 
 package com.baremaps.osm.osmxml;
 
-import static com.baremaps.osm.TestUtils.dataOscXml;
+import static com.baremaps.osm.DataFiles.dataOscXml;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.baremaps.core.stream.HoldingConsumer;
 import com.baremaps.core.stream.AccumulatingConsumer;
+import com.baremaps.core.stream.HoldingConsumer;
 import java.util.Spliterator;
 import javax.xml.stream.XMLStreamException;
 import org.junit.jupiter.api.Test;

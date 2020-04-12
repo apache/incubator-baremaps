@@ -14,7 +14,7 @@
 
 package com.baremaps.osm.osmpbf;
 
-import static com.baremaps.osm.TestUtils.dataOsmPbf;
+import static com.baremaps.osm.DataFiles.dataOsmPbf;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;

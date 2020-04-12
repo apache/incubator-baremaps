@@ -12,23 +12,16 @@
  * the License.
  */
 
-package com.baremaps.osm.geometry;
+package com.baremaps.osm.database;
 
-import static com.baremaps.osm.geometry.GeometryConstants.NODE_BUILDER;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+public class DatabaseException extends RuntimeException {
 
-import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.Point;
-
-public class NodeBuilderTest {
-
-  @Test
-  public void build() {
-    Point p0 = NODE_BUILDER.build(GeometryConstants.NODE_0);
-    assertEquals(p0.getX(), 0);
-    assertEquals(p0.getY(), 0);
-    Point p1 = NODE_BUILDER.build(GeometryConstants.NODE_2);
-    assertEquals(p1.getX(), 3);
-    assertEquals(p1.getY(), 3);
+  public DatabaseException() {
+    super();
   }
+
+  public DatabaseException(Exception e) {
+    super(e);
+  }
+
 }

@@ -14,13 +14,14 @@
 
 package com.baremaps.osm.osmpbf;
 
-import static com.baremaps.osm.TestUtils.denseOsmPbf;
-import static com.baremaps.osm.TestUtils.relationsOsmPbf;
-import static com.baremaps.osm.TestUtils.waysOsmPbf;
+import static com.baremaps.osm.DataFiles.denseOsmPbf;
+import static com.baremaps.osm.DataFiles.relationsOsmPbf;
+import static com.baremaps.osm.DataFiles.waysOsmPbf;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.baremaps.core.stream.HoldingConsumer;
+import com.baremaps.osm.binary.Osmformat;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
@@ -29,7 +30,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Spliterator;
 import org.junit.jupiter.api.Test;
-import com.baremaps.osm.binary.Osmformat;
 
 public class PrimitiveBlockBlockParserTest {
 

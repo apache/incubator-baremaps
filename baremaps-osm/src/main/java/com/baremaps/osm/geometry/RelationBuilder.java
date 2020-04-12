@@ -15,8 +15,8 @@
 package com.baremaps.osm.geometry;
 
 import com.baremaps.core.stream.Try;
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.model.Relation;
-import com.baremaps.osm.store.Store;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,24 +34,24 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
 
   private final GeometryFactory geometryFactory;
 
-  private final Store<Long, Coordinate> coordinateStore;
+  private final Cache<Long, Coordinate> coordinateCache;
 
-  private final Store<Long, List<Long>> referenceStore;
+  private final Cache<Long, List<Long>> referenceCache;
 
   /**
    * Constructs a {@code RelationBuilder}.
    *
    * @param coordinateTransform the {@code CoordinateTransform} used to project OSM coordinates.
    * @param geometryFactory     the {@code GeometryFactory} used to create polygons and multipolygons
-   * @param coordinateStore     the {@code Store} used to retrieve the coordinates of a node
-   * @param referenceStore      the {@code Store} used to retrieve the nodes of a way
+   * @param coordinateCache     the {@code Store} used to retrieve the coordinates of a node
+   * @param referenceCache      the {@code Store} used to retrieve the nodes of a way
    */
   public RelationBuilder(CoordinateTransform coordinateTransform, GeometryFactory geometryFactory,
-      Store<Long, Coordinate> coordinateStore, Store<Long, List<Long>> referenceStore) {
+      Cache<Long, Coordinate> coordinateCache, Cache<Long, List<Long>> referenceCache) {
     super(coordinateTransform);
     this.geometryFactory = geometryFactory;
-    this.coordinateStore = coordinateStore;
-    this.referenceStore = referenceStore;
+    this.coordinateCache = coordinateCache;
+    this.referenceCache = referenceCache;
   }
 
   /**
@@ -70,9 +70,9 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
     // Collect the members of the relation
     List<LineString> members = entity.getMembers()
         .stream()
-        .map(member -> referenceStore.get(member.getRef()))
+        .map(member -> referenceCache.get(member.getRef()))
         .filter(reference -> reference != null)
-        .map(reference -> Try.of(() -> coordinateStore.getAll(reference).stream()
+        .map(reference -> Try.of(() -> coordinateCache.getAll(reference).stream()
             .filter(coordinate -> coordinate != null)
             .map(coordinate -> toCoordinate(coordinate.getX(), coordinate.getY()))
             .toArray(Coordinate[]::new)))
