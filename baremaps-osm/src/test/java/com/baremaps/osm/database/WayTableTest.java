@@ -55,46 +55,46 @@ class WayTableTest {
   @Test
   @Tag("integration")
   public void put() {
-    wayStore.put(WAY_1);
-    assertEquals(WAY_1, wayStore.get(WAY_1.getId()));
+    wayStore.insert(WAY_1);
+    assertEquals(WAY_1, wayStore.select(WAY_1.getId()));
   }
 
   @Test
   @Tag("integration")
   public void putAll() {
     List<WayTable.Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
-    wayStore.putAll(ways);
+    wayStore.insert(ways);
     assertIterableEquals(
         ways,
-        wayStore.getAll(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        wayStore.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void delete() {
-    wayStore.put(WAY_1);
+    wayStore.insert(WAY_1);
     wayStore.delete(WAY_1.getId());
-    assertThrows(IllegalArgumentException.class, () -> wayStore.get(WAY_1.getId()));
+    assertThrows(IllegalArgumentException.class, () -> wayStore.select(WAY_1.getId()));
   }
 
   @Test
   @Tag("integration")
   public void deleteAll() {
     List<WayTable.Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
-    wayStore.putAll(ways);
-    wayStore.deleteAll(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
+    wayStore.insert(ways);
+    wayStore.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
         Arrays.asList(null, null, null),
-        wayStore.getAll(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        wayStore.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void importAll() {
     List<WayTable.Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
-    wayStore.importAll(ways);
+    wayStore.copy(ways);
     assertIterableEquals(
         ways,
-        wayStore.getAll(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        wayStore.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

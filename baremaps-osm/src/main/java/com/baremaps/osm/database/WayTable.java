@@ -14,13 +14,10 @@
 
 package com.baremaps.osm.database;
 
+import com.baremaps.core.postgis.CopyWriter;
 import com.baremaps.osm.database.WayTable.Way;
 import com.baremaps.osm.geometry.GeometryUtil;
-import com.baremaps.osm.geometry.WayBuilder;
-import com.baremaps.osm.store.Store;
 import com.baremaps.osm.store.StoreException;
-import com.baremaps.core.postgis.CopyWriter;
-import com.baremaps.osm.model.Info;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,7 +32,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Point;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
@@ -140,7 +136,7 @@ public class WayTable implements Table<Way> {
     this.dataSource = dataSource;
   }
 
-  public WayTable.Way get(Long id) {
+  public WayTable.Way select(Long id) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
@@ -167,10 +163,10 @@ public class WayTable implements Table<Way> {
   }
 
   @Override
-  public List<Way> getAll(List<Long> keys) {
+  public List<Way> select(List<Long> ids) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
-      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
+      statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
       ResultSet result = statement.executeQuery();
       Map<Long, Way> ways = new HashMap<>();
       while (result.next()) {
@@ -188,23 +184,23 @@ public class WayTable implements Table<Way> {
         Geometry geometry = GeometryUtil.deserialize(result.getBytes(8));
         ways.put(id, new Way(id, version, timestamp, changeset, uid, tags, nodes, geometry));
       }
-      return keys.stream().map(key -> ways.get(key)).collect(Collectors.toList());
+      return ids.stream().map(key -> ways.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new StoreException(e);
     }
   }
 
-  public void put(Way value) {
+  public void insert(Way row) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      statement.setLong(1, value.getId());
-      statement.setInt(2, value.getVersion());
-      statement.setInt(3, value.getUserId());
-      statement.setObject(4, value.getTimestamp());
-      statement.setLong(5, value.getChangeset());
-      statement.setObject(6, value.getTags());
-      statement.setObject(7, value.getNodes().stream().mapToLong(Long::longValue).toArray());
-      statement.setBytes(8, GeometryUtil.serialize(value.getGeometry()));
+      statement.setLong(1, row.getId());
+      statement.setInt(2, row.getVersion());
+      statement.setInt(3, row.getUserId());
+      statement.setObject(4, row.getTimestamp());
+      statement.setLong(5, row.getChangeset());
+      statement.setObject(6, row.getTags());
+      statement.setObject(7, row.getNodes().stream().mapToLong(Long::longValue).toArray());
+      statement.setBytes(8, GeometryUtil.serialize(row.getGeometry()));
       statement.execute();
     } catch (SQLException e) {
       throw new StoreException(e);
@@ -212,19 +208,19 @@ public class WayTable implements Table<Way> {
   }
 
   @Override
-  public void putAll(List<Way> entries) {
+  public void insert(List<Way> rows) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      for (Way entry : entries) {
+      for (Way row : rows) {
         statement.clearParameters();
-        statement.setLong(1, entry.getId());
-        statement.setInt(2, entry.getVersion());
-        statement.setInt(3, entry.getUserId());
-        statement.setObject(4, entry.getTimestamp());
-        statement.setLong(5, entry.getChangeset());
-        statement.setObject(6, entry.getTags());
-        statement.setObject(7, entry.getNodes().stream().mapToLong(Long::longValue).toArray());
-        statement.setBytes(8, GeometryUtil.serialize(entry.getGeometry()));
+        statement.setLong(1, row.getId());
+        statement.setInt(2, row.getVersion());
+        statement.setInt(3, row.getUserId());
+        statement.setObject(4, row.getTimestamp());
+        statement.setLong(5, row.getChangeset());
+        statement.setObject(6, row.getTags());
+        statement.setObject(7, row.getNodes().stream().mapToLong(Long::longValue).toArray());
+        statement.setBytes(8, GeometryUtil.serialize(row.getGeometry()));
         statement.addBatch();
       }
       statement.executeBatch();
@@ -233,10 +229,10 @@ public class WayTable implements Table<Way> {
     }
   }
 
-  public void delete(Long key) {
+  public void delete(Long id) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE)) {
-      statement.setLong(1, key);
+      statement.setLong(1, id);
       statement.execute();
     } catch (SQLException e) {
       throw new StoreException(e);
@@ -244,12 +240,12 @@ public class WayTable implements Table<Way> {
   }
 
   @Override
-  public void deleteAll(List<Long> keys) {
+  public void delete(List<Long> ids) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE)) {
-      for (Long key : keys) {
+      for (Long id : ids) {
         statement.clearParameters();
-        statement.setLong(1, key);
+        statement.setLong(1, id);
         statement.execute();
       }
       statement.executeBatch();
@@ -258,21 +254,21 @@ public class WayTable implements Table<Way> {
     }
   }
 
-  public void importAll(List<Way> entries) {
+  public void copy(List<Way> rows) {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
         writer.writeHeader();
-        for (Way entry : entries) {
+        for (Way row : rows) {
           writer.startRow(8);
-          writer.writeLong(entry.getId());
-          writer.writeInteger(entry.getVersion());
-          writer.writeInteger(entry.getUserId());
-          writer.writeLocalDateTime(entry.getTimestamp());
-          writer.writeLong(entry.getChangeset());
-          writer.writeHstore(entry.getTags());
-          writer.writeLongList(entry.getNodes());
-          writer.writeGeometry(entry.getGeometry());
+          writer.writeLong(row.getId());
+          writer.writeInteger(row.getVersion());
+          writer.writeInteger(row.getUserId());
+          writer.writeLocalDateTime(row.getTimestamp());
+          writer.writeLong(row.getChangeset());
+          writer.writeHstore(row.getTags());
+          writer.writeLongList(row.getNodes());
+          writer.writeGeometry(row.getGeometry());
         }
       }
     } catch (Exception e) {

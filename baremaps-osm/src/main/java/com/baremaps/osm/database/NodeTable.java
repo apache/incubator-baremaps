@@ -14,13 +14,10 @@
 
 package com.baremaps.osm.database;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
+import com.baremaps.core.postgis.CopyWriter;
 import com.baremaps.osm.database.NodeTable.Node;
 import com.baremaps.osm.geometry.GeometryUtil;
-import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.store.StoreException;
-import com.baremaps.core.postgis.CopyWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -100,7 +97,7 @@ public class NodeTable implements Table<Node> {
   }
 
   private static final String SELECT =
-      "SELECT id, version, uid, timestamp, changeset, tags, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ?";
+      "SELECT version, uid, timestamp, changeset, tags, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ?";
 
   private static final String SELECT_IN =
       "SELECT id, version, uid, timestamp, changeset, tags, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ANY (?)";
@@ -127,19 +124,18 @@ public class NodeTable implements Table<Node> {
     this.dataSource = dataSource;
   }
 
-  public Node get(Long key) {
+  public Node select(Long id) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
-      statement.setLong(1, key);
+      statement.setLong(1, id);
       ResultSet result = statement.executeQuery();
       if (result.next()) {
-        long id = result.getLong(1);
-        int version = result.getInt(2);
-        int uid = result.getInt(3);
-        LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
-        long changeset = result.getLong(5);
-        Map<String, String> tags = (Map<String, String>) result.getObject(6);
-        Point point = (Point) GeometryUtil.deserialize(result.getBytes(7));
+        int version = result.getInt(1);
+        int uid = result.getInt(2);
+        LocalDateTime timestamp = result.getObject(3, LocalDateTime.class);
+        long changeset = result.getLong(4);
+        Map<String, String> tags = (Map<String, String>) result.getObject(5);
+        Point point = (Point) GeometryUtil.deserialize(result.getBytes(6));
         return new Node(id, version, timestamp, changeset, uid, tags, point);
       } else {
         throw new IllegalArgumentException();
@@ -149,7 +145,7 @@ public class NodeTable implements Table<Node> {
     }
   }
 
-  public List<Node> getAll(List<Long> ids) {
+  public List<Node> select(List<Long> ids) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
@@ -165,40 +161,40 @@ public class NodeTable implements Table<Node> {
         Point point = (Point) GeometryUtil.deserialize(result.getBytes(7));
         nodes.put(id, new Node(id, version, timestamp, changeset, uid, tags, point));
       }
-      return ids.stream().map(key -> nodes.get(key)).collect(Collectors.toList());
+      return ids.stream().map(id -> nodes.get(id)).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new StoreException(e);
     }
   }
 
-  public void put(Node value) {
+  public void insert(Node row) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      statement.setLong(1, value.getId());
-      statement.setInt(2, value.getVersion());
-      statement.setInt(3, value.getUserId());
-      statement.setObject(4, value.getTimestamp());
-      statement.setLong(5, value.getChangeset());
-      statement.setObject(6, value.getTags());
-      statement.setBytes(7, GeometryUtil.serialize(value.getPoint()));
+      statement.setLong(1, row.getId());
+      statement.setInt(2, row.getVersion());
+      statement.setInt(3, row.getUserId());
+      statement.setObject(4, row.getTimestamp());
+      statement.setLong(5, row.getChangeset());
+      statement.setObject(6, row.getTags());
+      statement.setBytes(7, GeometryUtil.serialize(row.getPoint()));
       statement.execute();
     } catch (SQLException e) {
       throw new StoreException(e);
     }
   }
 
-  public void putAll(List<Node> nodes) {
+  public void insert(List<Node> rows) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      for (Node node : nodes) {
+      for (Node row : rows) {
         statement.clearParameters();
-        statement.setLong(1, node.getId());
-        statement.setInt(2, node.getVersion());
-        statement.setInt(3, node.getUserId());
-        statement.setObject(4, node.getTimestamp());
-        statement.setLong(5, node.getChangeset());
-        statement.setObject(6, node.getTags());
-        statement.setBytes(7, GeometryUtil.serialize(node.getPoint()));
+        statement.setLong(1, row.getId());
+        statement.setInt(2, row.getVersion());
+        statement.setInt(3, row.getUserId());
+        statement.setObject(4, row.getTimestamp());
+        statement.setLong(5, row.getChangeset());
+        statement.setObject(6, row.getTags());
+        statement.setBytes(7, GeometryUtil.serialize(row.getPoint()));
         statement.addBatch();
       }
       statement.executeBatch();
@@ -217,7 +213,7 @@ public class NodeTable implements Table<Node> {
     }
   }
 
-  public void deleteAll(List<Long> ids) {
+  public void delete(List<Long> ids) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE)) {
       for (Long id : ids) {
@@ -231,12 +227,12 @@ public class NodeTable implements Table<Node> {
     }
   }
 
-  public void importAll(List<Node> nodes) {
+  public void copy(List<Node> rows) {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
         writer.writeHeader();
-        for (Node node : nodes) {
+        for (Node node : rows) {
           writer.startRow(7);
           writer.writeLong(node.getId());
           writer.writeInteger(node.getVersion());

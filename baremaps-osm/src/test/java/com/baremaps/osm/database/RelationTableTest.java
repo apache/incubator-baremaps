@@ -55,8 +55,8 @@ class RelationTableTest {
   @Test
   @Tag("integration")
   public void put() {
-    relationStore.put(RELATION_2);
-    assertEquals(RELATION_2, relationStore.get(RELATION_2.getId()));
+    relationStore.insert(RELATION_2);
+    assertEquals(RELATION_2, relationStore.select(RELATION_2.getId()));
   }
 
   @Test
@@ -64,18 +64,18 @@ class RelationTableTest {
   public void putAll() {
     List<RelationTable.Relation> relations = Arrays
         .asList(RELATION_2, RELATION_3, RELATION_4);
-    relationStore.putAll(relations);
+    relationStore.insert(relations);
     assertIterableEquals(
         relations,
-        relationStore.getAll(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        relationStore.select(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void delete() {
-    relationStore.put(RELATION_2);
+    relationStore.insert(RELATION_2);
     relationStore.delete(RELATION_2.getId());
-    assertThrows(IllegalArgumentException.class, () -> relationStore.get(RELATION_2.getId()));
+    assertThrows(IllegalArgumentException.class, () -> relationStore.select(RELATION_2.getId()));
   }
 
   @Test
@@ -83,11 +83,11 @@ class RelationTableTest {
   public void deleteAll() {
     List<RelationTable.Relation> relations = Arrays
         .asList(RELATION_2, RELATION_3, RELATION_4);
-    relationStore.putAll(relations);
-    relationStore.deleteAll(relations.stream().map(e -> e.getId()).collect(Collectors.toList()));
+    relationStore.insert(relations);
+    relationStore.delete(relations.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
         Arrays.asList(null, null, null),
-        relationStore.getAll(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        relationStore.select(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
@@ -95,9 +95,9 @@ class RelationTableTest {
   public void importAll() {
     List<RelationTable.Relation> relations = Arrays
         .asList(RELATION_2, RELATION_3, RELATION_4);
-    relationStore.importAll(relations);
+    relationStore.copy(relations);
     assertIterableEquals(
         relations,
-        relationStore.getAll(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        relationStore.select(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

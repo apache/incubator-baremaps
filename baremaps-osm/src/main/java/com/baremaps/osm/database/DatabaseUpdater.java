@@ -15,9 +15,6 @@
 package com.baremaps.osm.database;
 
 import com.baremaps.osm.osmxml.Change;
-import com.baremaps.osm.database.NodeTable;
-import com.baremaps.osm.database.RelationTable;
-import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.model.Entity;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
@@ -48,7 +45,7 @@ public class DatabaseUpdater implements Consumer<Change> {
         case create:
         case modify:
           // TODO: Build node geometry
-          nodeTable.put(new NodeTable.Node(node.getInfo().getId(), node.getInfo().getVersion(),
+          nodeTable.insert(new NodeTable.Node(node.getInfo().getId(), node.getInfo().getVersion(),
               node.getInfo().getTimestamp(), node.getInfo().getChangeset(), node.getInfo().getUserId(),
               node.getInfo().getTags(), null));
           break;
@@ -63,7 +60,7 @@ public class DatabaseUpdater implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          wayTable.put(new WayTable.Way(way.getInfo().getId(), way.getInfo().getVersion(),
+          wayTable.insert(new WayTable.Way(way.getInfo().getId(), way.getInfo().getVersion(),
               way.getInfo().getTimestamp(), way.getInfo().getChangeset(), way.getInfo().getUserId(),
               way.getInfo().getTags(), way.getNodes(), null));
           break;
@@ -78,7 +75,7 @@ public class DatabaseUpdater implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          relationTable.put(new RelationTable.Relation(
+          relationTable.insert(new RelationTable.Relation(
               relation.getInfo().getId(),
               relation.getInfo().getVersion(),
               relation.getInfo().getTimestamp(),

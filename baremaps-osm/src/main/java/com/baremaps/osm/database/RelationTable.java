@@ -153,7 +153,7 @@ public class RelationTable implements Table<Relation> {
     this.dataSource = dataSource;
   }
 
-  public Relation get(Long id) {
+  public Relation select(Long id) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
@@ -179,7 +179,7 @@ public class RelationTable implements Table<Relation> {
   }
 
   @Override
-  public List<Relation> getAll(List<Long> ids) {
+  public List<Relation> select(List<Long> ids) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
@@ -205,19 +205,19 @@ public class RelationTable implements Table<Relation> {
     }
   }
 
-  public void put(Relation value) {
+  public void insert(Relation row) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      statement.setLong(1, value.getId());
-      statement.setInt(2, value.getVersion());
-      statement.setInt(3, value.getUserId());
-      statement.setObject(4, value.getTimestamp());
-      statement.setLong(5, value.getChangeset());
-      statement.setObject(6, value.getTags());
-      statement.setObject(7, value.getMemberRefs());
-      statement.setObject(8, value.getMemberTypes());
-      statement.setObject(9, value.getMemberRoles());
-      statement.setBytes(10, GeometryUtil.serialize(value.getGeometry()));
+      statement.setLong(1, row.getId());
+      statement.setInt(2, row.getVersion());
+      statement.setInt(3, row.getUserId());
+      statement.setObject(4, row.getTimestamp());
+      statement.setLong(5, row.getChangeset());
+      statement.setObject(6, row.getTags());
+      statement.setObject(7, row.getMemberRefs());
+      statement.setObject(8, row.getMemberTypes());
+      statement.setObject(9, row.getMemberRoles());
+      statement.setBytes(10, GeometryUtil.serialize(row.getGeometry()));
       statement.execute();
     } catch (SQLException e) {
       throw new StoreException(e);
@@ -225,21 +225,21 @@ public class RelationTable implements Table<Relation> {
   }
 
   @Override
-  public void putAll(List<Relation> entries) {
+  public void insert(List<Relation> rows) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      for (Relation value : entries) {
+      for (Relation row : rows) {
         statement.clearParameters();
-        statement.setLong(1, value.getId());
-        statement.setInt(2, value.getVersion());
-        statement.setInt(3, value.getUserId());
-        statement.setObject(4, value.getTimestamp());
-        statement.setLong(5, value.getChangeset());
-        statement.setObject(6, value.getTags());
-        statement.setObject(7, value.getMemberRefs());
-        statement.setObject(8, value.getMemberTypes());
-        statement.setObject(9, value.getMemberRoles());
-        statement.setBytes(10, GeometryUtil.serialize(value.getGeometry()));
+        statement.setLong(1, row.getId());
+        statement.setInt(2, row.getVersion());
+        statement.setInt(3, row.getUserId());
+        statement.setObject(4, row.getTimestamp());
+        statement.setLong(5, row.getChangeset());
+        statement.setObject(6, row.getTags());
+        statement.setObject(7, row.getMemberRefs());
+        statement.setObject(8, row.getMemberTypes());
+        statement.setObject(9, row.getMemberRoles());
+        statement.setBytes(10, GeometryUtil.serialize(row.getGeometry()));
         statement.addBatch();
       }
       statement.executeBatch();
@@ -248,10 +248,10 @@ public class RelationTable implements Table<Relation> {
     }
   }
 
-  public void delete(Long key) {
+  public void delete(Long id) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE)) {
-      statement.setLong(1, key);
+      statement.setLong(1, id);
       statement.execute();
     } catch (SQLException e) {
       throw new StoreException(e);
@@ -259,12 +259,12 @@ public class RelationTable implements Table<Relation> {
   }
 
   @Override
-  public void deleteAll(List<Long> keys) {
+  public void delete(List<Long> ids) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE)) {
-      for (Long key : keys) {
+      for (Long id : ids) {
         statement.clearParameters();
-        statement.setLong(1, key);
+        statement.setLong(1, id);
         statement.addBatch();
       }
       statement.executeBatch();
@@ -273,23 +273,23 @@ public class RelationTable implements Table<Relation> {
     }
   }
 
-  public void importAll(List<Relation> entries) {
+  public void copy(List<Relation> rows) {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
         writer.writeHeader();
-        for (Relation value : entries) {
+        for (Relation row : rows) {
           writer.startRow(10);
-          writer.writeLong(value.getId());
-          writer.writeInteger(value.getVersion());
-          writer.writeInteger(value.getUserId());
-          writer.writeLocalDateTime(value.getTimestamp());
-          writer.writeLong(value.getChangeset());
-          writer.writeHstore(value.getTags());
-          writer.writeLongList(Arrays.asList(value.getMemberRefs()));
-          writer.writeStringList(Arrays.asList(value.getMemberTypes()));
-          writer.writeStringList(Arrays.asList(value.getMemberRoles()));
-          writer.writeGeometry(value.getGeometry());
+          writer.writeLong(row.getId());
+          writer.writeInteger(row.getVersion());
+          writer.writeInteger(row.getUserId());
+          writer.writeLocalDateTime(row.getTimestamp());
+          writer.writeLong(row.getChangeset());
+          writer.writeHstore(row.getTags());
+          writer.writeLongList(Arrays.asList(row.getMemberRefs()));
+          writer.writeStringList(Arrays.asList(row.getMemberTypes()));
+          writer.writeStringList(Arrays.asList(row.getMemberRoles()));
+          writer.writeGeometry(row.getGeometry());
         }
       }
     } catch (Exception ex) {

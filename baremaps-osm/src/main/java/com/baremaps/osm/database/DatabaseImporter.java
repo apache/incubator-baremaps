@@ -64,7 +64,7 @@ public class DatabaseImporter extends FileBlockConsumer {
   @Override
   public void accept(PrimitiveBlock primitiveBlock) {
     try {
-      nodeTable.importAll(
+      nodeTable.copy(
           primitiveBlock.getDenseNodes().stream()
               .map(node -> new NodeTable.Node(
                   node.getInfo().getId(),
@@ -75,7 +75,7 @@ public class DatabaseImporter extends FileBlockConsumer {
                   node.getInfo().getTags(),
                   nodeBuilder.build(node)))
               .collect(Collectors.toList()));
-      wayTable.importAll(
+      wayTable.copy(
           primitiveBlock.getWays().stream()
               .map(way -> new WayTable.Way(
                   way.getInfo().getId(),
@@ -87,7 +87,7 @@ public class DatabaseImporter extends FileBlockConsumer {
                   way.getNodes(),
                   wayBuilder.build(way)))
               .collect(Collectors.toList()));
-      relationTable.importAll(
+      relationTable.copy(
           primitiveBlock.getRelations().stream()
               .map(relation -> new RelationTable.Relation(
                   relation.getInfo().getId(),

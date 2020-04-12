@@ -18,18 +18,18 @@ import java.util.List;
 
 public interface Table<Row> {
 
-  Row get(Long id);
+  Row select(Long id);
 
-  List<Row> getAll(List<Long> ids);
+  List<Row> select(List<Long> ids);
 
-  void put(Row row);
+  void insert(Row row);
 
-  void putAll(List<Row> rows);
+  void insert(List<Row> rows);
 
   void delete(Long id);
 
-  void deleteAll(List<Long> ids);
+  void delete(List<Long> ids);
 
-  void importAll(List<Row> rows);
+  void copy(List<Row> rows);
 
 }

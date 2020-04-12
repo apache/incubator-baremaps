@@ -55,8 +55,8 @@ public class NodeTableTest {
   @Test
   @Tag("integration")
   public void put() {
-    nodeTable.put(NODE_0);
-    assertEquals(NODE_0, nodeTable.get(NODE_0.getId()));
+    nodeTable.insert(NODE_0);
+    assertEquals(NODE_0, nodeTable.select(NODE_0.getId()));
   }
 
   @Test
@@ -64,38 +64,38 @@ public class NodeTableTest {
   public void putAll() {
     List<NodeTable.Node> nodes = Arrays.asList(
         NODE_0, NODE_1, NODE_2);
-    nodeTable.putAll(nodes);
+    nodeTable.insert(nodes);
     assertIterableEquals(
         nodes,
-        nodeTable.getAll(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeTable.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void delete() {
-    nodeTable.put(NODE_0);
+    nodeTable.insert(NODE_0);
     nodeTable.delete(NODE_0.getId());
-    assertThrows(IllegalArgumentException.class, () -> nodeTable.get(NODE_0.getId()));
+    assertThrows(IllegalArgumentException.class, () -> nodeTable.select(NODE_0.getId()));
   }
 
   @Test
   @Tag("integration")
   public void deleteAll() {
     List<NodeTable.Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
-    nodeTable.putAll(nodes);
-    nodeTable.deleteAll(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
+    nodeTable.insert(nodes);
+    nodeTable.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
         Arrays.asList(null, null, null),
-        nodeTable.getAll(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeTable.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void importAll() {
     List<NodeTable.Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
-    nodeTable.importAll(nodes);
+    nodeTable.copy(nodes);
     assertIterableEquals(
         nodes,
-        nodeTable.getAll(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeTable.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }
