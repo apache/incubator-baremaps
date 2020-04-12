@@ -154,14 +154,20 @@ public class Import implements Callable<Integer> {
           .createTransform(epsg4326, epsg3857);
       GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
       HeaderTable headerMapper = new HeaderTable(datasource);
-      NodeTable nodeMapper = new NodeTable(datasource,
-          new NodeBuilder(coordinateTransform, geometryFactory));
-      WayTable wayMapper = new WayTable(datasource,
-          new WayBuilder(coordinateTransform, geometryFactory, coordinateStore));
-      RelationTable relationMapper = new RelationTable(datasource,
-          new RelationBuilder(coordinateTransform, geometryFactory, coordinateStore, referenceStore));
-      DatabaseImporter blockConsumer = new DatabaseImporter(headerMapper, nodeMapper, wayMapper,
-          relationMapper);
+
+      NodeBuilder nodeBuilder = new NodeBuilder(coordinateTransform, geometryFactory);
+      NodeTable nodeTable = new NodeTable(datasource);
+
+      WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateStore);
+      WayTable wayTable = new WayTable(datasource);
+      RelationBuilder relationBuilder = new RelationBuilder(
+          coordinateTransform, geometryFactory,
+          coordinateStore, referenceStore);
+      RelationTable relationTable = new RelationTable(
+          datasource);
+      DatabaseImporter blockConsumer = new DatabaseImporter(
+          headerMapper, nodeBuilder, nodeTable, wayBuilder,
+          wayTable, relationBuilder, relationTable);
       blocks.forEach(blockConsumer);
     }
 

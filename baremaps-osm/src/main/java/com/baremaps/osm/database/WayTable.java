@@ -136,11 +136,8 @@ public class WayTable implements Table<Way> {
 
   private final DataSource dataSource;
 
-  private final WayBuilder wayBuilder;
-
-  public WayTable(DataSource dataSource, WayBuilder wayBuilder) {
+  public WayTable(DataSource dataSource) {
     this.dataSource = dataSource;
-    this.wayBuilder = wayBuilder;
   }
 
   public WayTable.Way get(Long id) {
@@ -281,10 +278,6 @@ public class WayTable implements Table<Way> {
     } catch (Exception e) {
       throw new StoreException(e);
     }
-  }
-
-  public WayBuilder getWayBuilder() {
-    return wayBuilder;
   }
 
 }

@@ -98,12 +98,12 @@ public class Update implements Callable<Integer> {
     Store<Long, List<Long>> referenceStore = new PostgisReferenceCache(datasource);
 
     NodeBuilder nodeBuilder = new NodeBuilder(coordinateTransform, geometryFactory);
-    NodeTable nodeStore = new NodeTable(datasource, nodeBuilder);
+    NodeTable nodeStore = new NodeTable(datasource);
     WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateStore);
-    WayTable wayStore = new WayTable(datasource, wayBuilder);
+    WayTable wayStore = new WayTable(datasource);
     RelationBuilder relationBuilder = new RelationBuilder(
         coordinateTransform, geometryFactory, coordinateStore, referenceStore);
-    RelationTable relationStore = new RelationTable(datasource, relationBuilder);
+    RelationTable relationStore = new RelationTable(datasource);
 
     HeaderTable headerMapper = new HeaderTable(datasource);
     HeaderBlock header = headerMapper.getLast();

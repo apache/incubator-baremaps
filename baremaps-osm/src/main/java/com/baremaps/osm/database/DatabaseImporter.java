@@ -14,32 +14,41 @@
 
 package com.baremaps.osm.database;
 
-import com.baremaps.osm.database.RelationTable.Relation;
+import com.baremaps.osm.geometry.NodeBuilder;
+import com.baremaps.osm.geometry.RelationBuilder;
+import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.osmpbf.FileBlockConsumer;
 import com.baremaps.osm.osmpbf.HeaderBlock;
 import com.baremaps.osm.osmpbf.PrimitiveBlock;
-import com.baremaps.osm.store.Store.Entry;
-import com.baremaps.osm.database.HeaderTable;
-import com.baremaps.osm.database.NodeTable;
-import com.baremaps.osm.database.RelationTable;
-import com.baremaps.osm.database.WayTable;
 import java.util.stream.Collectors;
 
 public class DatabaseImporter extends FileBlockConsumer {
 
   private final HeaderTable headerTable;
+
+  private final NodeBuilder nodeBuilder;
+
+  private final WayBuilder wayBuilder;
+
+  private final RelationBuilder relationBuilder;
+
   private final NodeTable nodeTable;
+
   private final WayTable wayTable;
+
   private final RelationTable relationTable;
 
   public DatabaseImporter(
       HeaderTable headerTable,
-      NodeTable nodeTable,
-      WayTable wayTable,
-      RelationTable relationTable) {
+      NodeBuilder nodeBuilder, NodeTable nodeTable,
+      WayBuilder wayBuilder, WayTable wayTable,
+      RelationBuilder relationBuilder, RelationTable relationTable) {
     this.headerTable = headerTable;
+    this.nodeBuilder = nodeBuilder;
     this.nodeTable = nodeTable;
+    this.wayBuilder = wayBuilder;
     this.wayTable = wayTable;
+    this.relationBuilder = relationBuilder;
     this.relationTable = relationTable;
   }
 
@@ -55,7 +64,6 @@ public class DatabaseImporter extends FileBlockConsumer {
   @Override
   public void accept(PrimitiveBlock primitiveBlock) {
     try {
-      // TODO: Build node geometries
       nodeTable.importAll(
           primitiveBlock.getDenseNodes().stream()
               .map(node -> new NodeTable.Node(
@@ -65,7 +73,7 @@ public class DatabaseImporter extends FileBlockConsumer {
                   node.getInfo().getChangeset(),
                   node.getInfo().getUserId(),
                   node.getInfo().getTags(),
-                  null))
+                  nodeBuilder.build(node)))
               .collect(Collectors.toList()));
       wayTable.importAll(
           primitiveBlock.getWays().stream()
@@ -77,7 +85,7 @@ public class DatabaseImporter extends FileBlockConsumer {
                   way.getInfo().getUserId(),
                   way.getInfo().getTags(),
                   way.getNodes(),
-                  null))
+                  wayBuilder.build(way)))
               .collect(Collectors.toList()));
       relationTable.importAll(
           primitiveBlock.getRelations().stream()
@@ -89,9 +97,9 @@ public class DatabaseImporter extends FileBlockConsumer {
                   relation.getInfo().getUserId(),
                   relation.getInfo().getTags(),
                   relation.getMembers().stream().map(m -> m.getRef()).toArray(Long[]::new),
-                  relation.getMembers().stream().map(m -> m.getType()).toArray(String[]::new),
+                  relation.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new),
                   relation.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new),
-                  null))
+                  relationBuilder.build(relation)))
               .collect(Collectors.toList()));
     } catch (Exception e) {
       e.printStackTrace();

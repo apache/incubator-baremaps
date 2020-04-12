@@ -14,14 +14,15 @@
 
 package com.baremaps.osm.database;
 
+import static com.baremaps.osm.database.DatabaseConstants.DATABASE_URL;
+import static com.baremaps.osm.database.DatabaseConstants.RELATION_2;
+import static com.baremaps.osm.database.DatabaseConstants.RELATION_3;
+import static com.baremaps.osm.database.DatabaseConstants.RELATION_4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.baremaps.osm.TestUtils;
-import com.baremaps.osm.store.Store.Entry;
 import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.osm.model.Relation;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -35,15 +36,14 @@ import org.junit.jupiter.api.Test;
 
 class RelationTableTest {
 
-
   public DataSource dataSource;
 
   public RelationTable relationStore;
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = PostgisHelper.poolingDataSource(TestUtils.DATABASE_URL);
-    relationStore = new RelationTable(dataSource, TestUtils.RELATION_BUILDER);
+    dataSource = PostgisHelper.poolingDataSource(DATABASE_URL);
+    relationStore = new RelationTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
       PostgisHelper.executeScript(connection, "osm_drop_tables.sql");
@@ -55,15 +55,15 @@ class RelationTableTest {
   @Test
   @Tag("integration")
   public void put() {
-    relationStore.put(TestUtils.RELATION_2);
-    assertEquals(TestUtils.RELATION_2, relationStore.get(TestUtils.RELATION_2.getId()));
+    relationStore.put(RELATION_2);
+    assertEquals(RELATION_2, relationStore.get(RELATION_2.getId()));
   }
 
   @Test
   @Tag("integration")
   public void putAll() {
     List<RelationTable.Relation> relations = Arrays
-        .asList(TestUtils.RELATION_2, TestUtils.RELATION_3, TestUtils.RELATION_4);
+        .asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.putAll(relations);
     assertIterableEquals(
         relations,
@@ -73,16 +73,16 @@ class RelationTableTest {
   @Test
   @Tag("integration")
   public void delete() {
-    relationStore.put(TestUtils.RELATION_2);
-    relationStore.delete(TestUtils.RELATION_2.getId());
-    assertThrows(IllegalArgumentException.class, () -> relationStore.get(TestUtils.RELATION_2.getId()));
+    relationStore.put(RELATION_2);
+    relationStore.delete(RELATION_2.getId());
+    assertThrows(IllegalArgumentException.class, () -> relationStore.get(RELATION_2.getId()));
   }
 
   @Test
   @Tag("integration")
   public void deleteAll() {
     List<RelationTable.Relation> relations = Arrays
-        .asList(TestUtils.RELATION_2, TestUtils.RELATION_3, TestUtils.RELATION_4);
+        .asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.putAll(relations);
     relationStore.deleteAll(relations.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
@@ -94,7 +94,7 @@ class RelationTableTest {
   @Tag("integration")
   public void importAll() {
     List<RelationTable.Relation> relations = Arrays
-        .asList(TestUtils.RELATION_2, TestUtils.RELATION_3, TestUtils.RELATION_4);
+        .asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.importAll(relations);
     assertIterableEquals(
         relations,

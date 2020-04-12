@@ -14,14 +14,15 @@
 
 package com.baremaps.osm.database;
 
+import static com.baremaps.osm.database.DatabaseConstants.DATABASE_URL;
+import static com.baremaps.osm.database.DatabaseConstants.NODE_0;
+import static com.baremaps.osm.database.DatabaseConstants.NODE_1;
+import static com.baremaps.osm.database.DatabaseConstants.NODE_2;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.baremaps.osm.TestUtils;
-import com.baremaps.osm.store.Store.Entry;
 import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.osm.model.Node;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,8 +42,8 @@ public class NodeTableTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = PostgisHelper.poolingDataSource(TestUtils.DATABASE_URL);
-    nodeTable = new NodeTable(dataSource, TestUtils.NODE_BUILDER);
+    dataSource = PostgisHelper.poolingDataSource(DATABASE_URL);
+    nodeTable = new NodeTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
       PostgisHelper.executeScript(connection, "osm_drop_tables.sql");
@@ -54,15 +55,15 @@ public class NodeTableTest {
   @Test
   @Tag("integration")
   public void put() {
-    nodeTable.put(TestUtils.NODE_0);
-    assertEquals(TestUtils.NODE_0, nodeTable.get(TestUtils.NODE_0.getId()));
+    nodeTable.put(NODE_0);
+    assertEquals(NODE_0, nodeTable.get(NODE_0.getId()));
   }
 
   @Test
   @Tag("integration")
   public void putAll() {
     List<NodeTable.Node> nodes = Arrays.asList(
-        TestUtils.NODE_0, TestUtils.NODE_1, TestUtils.NODE_2);
+        NODE_0, NODE_1, NODE_2);
     nodeTable.putAll(nodes);
     assertIterableEquals(
         nodes,
@@ -72,15 +73,15 @@ public class NodeTableTest {
   @Test
   @Tag("integration")
   public void delete() {
-    nodeTable.put(TestUtils.NODE_0);
-    nodeTable.delete(TestUtils.NODE_0.getId());
-    assertThrows(IllegalArgumentException.class, () -> nodeTable.get(TestUtils.NODE_0.getId()));
+    nodeTable.put(NODE_0);
+    nodeTable.delete(NODE_0.getId());
+    assertThrows(IllegalArgumentException.class, () -> nodeTable.get(NODE_0.getId()));
   }
 
   @Test
   @Tag("integration")
   public void deleteAll() {
-    List<NodeTable.Node> nodes = Arrays.asList(TestUtils.NODE_0, TestUtils.NODE_1, TestUtils.NODE_2);
+    List<NodeTable.Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeTable.putAll(nodes);
     nodeTable.deleteAll(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
@@ -91,7 +92,7 @@ public class NodeTableTest {
   @Test
   @Tag("integration")
   public void importAll() {
-    List<NodeTable.Node> nodes = Arrays.asList(TestUtils.NODE_0, TestUtils.NODE_1, TestUtils.NODE_2);
+    List<NodeTable.Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeTable.importAll(nodes);
     assertIterableEquals(
         nodes,

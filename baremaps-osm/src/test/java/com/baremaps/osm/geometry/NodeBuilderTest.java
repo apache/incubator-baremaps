@@ -14,26 +14,21 @@
 
 package com.baremaps.osm.geometry;
 
-import static com.baremaps.osm.TestUtils.COORDINATE_TRANSFORM;
-import static com.baremaps.osm.TestUtils.GEOMETRY_FACTORY;
-import static com.baremaps.osm.TestUtils.NODE_0;
+import static com.baremaps.osm.geometry.GeometryConstants.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.baremaps.osm.TestUtils;
-import com.baremaps.osm.model.Info;
-import com.baremaps.osm.model.Node;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Point;
 
 public class NodeBuilderTest {
 
   @Test
-  public void create() {
-    // TODO: improve this test
-    NodeBuilder nodeBuilder = new NodeBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY);
-    Point point = nodeBuilder.build(new Node(new Info(0, 0, TestUtils.TIMESTAMP, 0, 0, ImmutableMap.of()), 0, 0));
-    assertEquals(point.getX(), 0);
-    assertEquals(point.getY(), 0);
+  public void build() {
+    Point p0 = NODE_BUILDER.build(GeometryConstants.NODE_0);
+    assertEquals(p0.getX(), 0);
+    assertEquals(p0.getY(), 0);
+    Point p1 = NODE_BUILDER.build(GeometryConstants.NODE_2);
+    assertEquals(p1.getX(), 3);
+    assertEquals(p1.getY(), 3);
   }
 }

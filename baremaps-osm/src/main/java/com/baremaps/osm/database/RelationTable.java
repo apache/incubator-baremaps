@@ -14,17 +14,15 @@
 
 package com.baremaps.osm.database;
 
+import com.baremaps.core.postgis.CopyWriter;
 import com.baremaps.osm.database.RelationTable.Relation;
 import com.baremaps.osm.geometry.GeometryUtil;
-import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.store.StoreException;
-import com.baremaps.core.postgis.CopyWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -151,11 +149,8 @@ public class RelationTable implements Table<Relation> {
 
   private final DataSource dataSource;
 
-  private final RelationBuilder relationBuilder;
-
-  public RelationTable(DataSource dataSource, RelationBuilder relationBuilder) {
+  public RelationTable(DataSource dataSource) {
     this.dataSource = dataSource;
-    this.relationBuilder = relationBuilder;
   }
 
   public Relation get(Long id) {
@@ -173,7 +168,8 @@ public class RelationTable implements Table<Relation> {
         String[] types = (String[]) result.getArray(7).getArray();
         String[] roles = (String[]) result.getArray(8).getArray();
         Geometry geometry = GeometryUtil.deserialize(result.getBytes(9));
-        return new RelationTable.Relation(id, version, timestamp, changeset, uid, tags, refs, types, roles, geometry);
+        return new RelationTable.Relation(id, version, timestamp, changeset, uid, tags, refs, types, roles,
+            geometry);
       } else {
         throw new IllegalArgumentException();
       }
@@ -200,7 +196,8 @@ public class RelationTable implements Table<Relation> {
         String[] types = (String[]) result.getArray(8).getArray();
         String[] roles = (String[]) result.getArray(9).getArray();
         Geometry geometry = GeometryUtil.deserialize(result.getBytes(10));
-        relations.put(id, new Relation(id, version, timestamp, changeset, uid, tags, refs, types, roles, geometry));
+        relations.put(id,
+            new Relation(id, version, timestamp, changeset, uid, tags, refs, types, roles, geometry));
       }
       return ids.stream().map(id -> relations.get(id)).collect(Collectors.toList());
     } catch (SQLException e) {
@@ -299,10 +296,6 @@ public class RelationTable implements Table<Relation> {
       ex.printStackTrace();
       throw new StoreException(ex);
     }
-  }
-
-  public RelationBuilder getRelationBuilder() {
-    return relationBuilder;
   }
 
 }

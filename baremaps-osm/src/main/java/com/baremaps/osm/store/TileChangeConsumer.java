@@ -49,13 +49,10 @@ public class TileChangeConsumer implements Consumer<Change> {
     if (change.getType().equals(Type.delete) || change.getType().equals(Type.modify)) {
       if (entity instanceof Node) {
         NodeTable.Node node = nodeStore.get(entity.getInfo().getId());
-        System.out.println(node);
       } else if (entity instanceof Way) {
         WayTable.Way way = wayStore.get(entity.getInfo().getId());
-        System.out.println(way);
       } else if (entity instanceof Relation) {
         RelationTable.Relation relation = relationStore.get(entity.getInfo().getId());
-        System.out.println(relation);
       }
     }
 

@@ -27,7 +27,5 @@ class TileTest {
     Tile tile = Tile.getTile(lon, lat, 14);
     int y = (int) ((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat)))
         / Math.PI) / 2.0 * (1 << z));
-
-    System.out.println(y);
   }
 }

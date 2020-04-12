@@ -14,14 +14,15 @@
 
 package com.baremaps.osm.database;
 
+import static com.baremaps.osm.database.DatabaseConstants.DATABASE_URL;
+import static com.baremaps.osm.database.DatabaseConstants.WAY_1;
+import static com.baremaps.osm.database.DatabaseConstants.WAY_2;
+import static com.baremaps.osm.database.DatabaseConstants.WAY_3;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.baremaps.osm.TestUtils;
-import com.baremaps.osm.store.Store.Entry;
 import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.osm.model.Way;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,8 +42,8 @@ class WayTableTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = PostgisHelper.poolingDataSource(TestUtils.DATABASE_URL);
-    wayStore = new WayTable(dataSource, TestUtils.WAY_BUILDER);
+    dataSource = PostgisHelper.poolingDataSource(DATABASE_URL);
+    wayStore = new WayTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
       PostgisHelper.executeScript(connection, "osm_drop_tables.sql");
@@ -54,14 +55,14 @@ class WayTableTest {
   @Test
   @Tag("integration")
   public void put() {
-    wayStore.put(TestUtils.WAY_1);
-    assertEquals(TestUtils.WAY_1, wayStore.get(TestUtils.WAY_1.getId()));
+    wayStore.put(WAY_1);
+    assertEquals(WAY_1, wayStore.get(WAY_1.getId()));
   }
 
   @Test
   @Tag("integration")
   public void putAll() {
-    List<WayTable.Way> ways = Arrays.asList(TestUtils.WAY_1, TestUtils.WAY_2, TestUtils.WAY_3);
+    List<WayTable.Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayStore.putAll(ways);
     assertIterableEquals(
         ways,
@@ -71,15 +72,15 @@ class WayTableTest {
   @Test
   @Tag("integration")
   public void delete() {
-    wayStore.put(TestUtils.WAY_1);
-    wayStore.delete(TestUtils.WAY_1.getId());
-    assertThrows(IllegalArgumentException.class, () -> wayStore.get(TestUtils.WAY_1.getId()));
+    wayStore.put(WAY_1);
+    wayStore.delete(WAY_1.getId());
+    assertThrows(IllegalArgumentException.class, () -> wayStore.get(WAY_1.getId()));
   }
 
   @Test
   @Tag("integration")
   public void deleteAll() {
-    List<WayTable.Way> ways = Arrays.asList(TestUtils.WAY_1, TestUtils.WAY_2, TestUtils.WAY_3);
+    List<WayTable.Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayStore.putAll(ways);
     wayStore.deleteAll(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
@@ -90,7 +91,7 @@ class WayTableTest {
   @Test
   @Tag("integration")
   public void importAll() {
-    List<WayTable.Way> ways = Arrays.asList(TestUtils.WAY_1, TestUtils.WAY_2, TestUtils.WAY_3);
+    List<WayTable.Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayStore.importAll(ways);
     assertIterableEquals(
         ways,

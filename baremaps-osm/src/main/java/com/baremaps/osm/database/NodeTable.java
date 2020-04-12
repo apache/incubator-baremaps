@@ -123,11 +123,8 @@ public class NodeTable implements Table<Node> {
 
   private final DataSource dataSource;
 
-  private final NodeBuilder nodeBuilder;
-
-  public NodeTable(DataSource dataSource, NodeBuilder nodeBuilder) {
+  public NodeTable(DataSource dataSource) {
     this.dataSource = dataSource;
-    this.nodeBuilder = nodeBuilder;
   }
 
   public Node get(Long key) {

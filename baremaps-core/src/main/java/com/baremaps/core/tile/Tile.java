@@ -109,9 +109,6 @@ public final class Tile {
     int x = (int) ((lon + 180.0) / 360.0 * (1 << z));
     int y = (int) ((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat)))
         / Math.PI) / 2.0 * (1 << z));
-    System.out.println("-----------");
-    System.out.println(lon + " - " + lat);
-    System.out.println(x + " - " + y);
     return new Tile(x, y, z);
   }
 

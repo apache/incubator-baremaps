@@ -14,9 +14,10 @@
 
 package com.baremaps.osm.database;
 
+import static com.baremaps.osm.database.DatabaseConstants.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.baremaps.osm.TestUtils;
+import com.baremaps.osm.DataFiles;
 import com.baremaps.core.postgis.PostgisHelper;
 import java.io.IOException;
 import java.sql.Connection;
@@ -32,7 +33,7 @@ public class SchemaTest {
   @Test
   @Tag("integration")
   public void resetDatabase() throws SQLException, IOException {
-    try (Connection connection = DriverManager.getConnection(TestUtils.DATABASE_URL)) {
+    try (Connection connection = DriverManager.getConnection(DATABASE_URL)) {
       PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
       PostgisHelper.executeScript(connection, "osm_drop_tables.sql");
       PostgisHelper.executeScript(connection, "osm_drop_tables.sql");
@@ -45,7 +46,7 @@ public class SchemaTest {
   }
 
   public boolean tableExists(String table) throws SQLException {
-    try (Connection connection = DriverManager.getConnection(TestUtils.DATABASE_URL)) {
+    try (Connection connection = DriverManager.getConnection(DATABASE_URL)) {
       DatabaseMetaData metadata = connection.getMetaData();
       ResultSet tables = metadata.getTables(null, null, table, null);
       return tables.next();

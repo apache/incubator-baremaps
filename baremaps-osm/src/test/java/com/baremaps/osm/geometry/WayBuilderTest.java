@@ -14,12 +14,7 @@
 
 package com.baremaps.osm.geometry;
 
-import static com.baremaps.osm.TestUtils.COORDINATE_STORE;
-import static com.baremaps.osm.TestUtils.COORDINATE_TRANSFORM;
-import static com.baremaps.osm.TestUtils.GEOMETRY_FACTORY;
-import static com.baremaps.osm.TestUtils.WAY_0;
-import static com.baremaps.osm.TestUtils.WAY_1;
-import static com.baremaps.osm.TestUtils.WAY_2;
+import static com.baremaps.osm.geometry.GeometryConstants.*;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -31,16 +26,12 @@ import org.locationtech.jts.geom.Polygon;
 class WayBuilderTest {
 
   @Test
-  public void create() {
-    // TODO: improve this test
-    /*
-    WayBuilder wayBuilder = new WayBuilder(COORDINATE_TRANSFORM, GEOMETRY_FACTORY, COORDINATE_STORE);
-    Geometry empty = wayBuilder.build(WAY_0);
+  public void build() {
+    Geometry empty = WAY_BUILDER.build(WAY_0);
     assertNull(empty);
-    Geometry linestring = wayBuilder.build(WAY_1);
+    Geometry linestring = WAY_BUILDER.build(WAY_1);
     assertTrue(linestring instanceof LineString);
-    Geometry polygon = wayBuilder.build(WAY_2);
+    Geometry polygon = WAY_BUILDER.build(WAY_2);
     assertTrue(polygon instanceof Polygon);
-    */
   }
 }
