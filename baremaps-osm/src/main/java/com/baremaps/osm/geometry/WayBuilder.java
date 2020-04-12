@@ -14,8 +14,8 @@
 
 package com.baremaps.osm.geometry;
 
-import com.baremaps.osm.model.Way;
 import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.model.Way;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;

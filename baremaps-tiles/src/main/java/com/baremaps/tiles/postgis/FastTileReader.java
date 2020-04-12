@@ -14,11 +14,11 @@
 
 package com.baremaps.tiles.postgis;
 
-import com.baremaps.tiles.postgis.QueryParser.Query;
 import com.baremaps.core.tile.Tile;
 import com.baremaps.tiles.TileException;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.config.Layer;
+import com.baremaps.tiles.postgis.QueryParser.Query;
 import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;

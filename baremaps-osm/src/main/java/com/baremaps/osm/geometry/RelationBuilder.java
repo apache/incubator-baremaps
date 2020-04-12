@@ -15,8 +15,8 @@
 package com.baremaps.osm.geometry;
 
 import com.baremaps.core.stream.Try;
-import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.model.Relation;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

@@ -18,7 +18,6 @@ import com.baremaps.core.tile.Tile;
 import com.baremaps.tiles.TileException;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.config.Layer;
-
 import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -26,7 +25,6 @@ import java.sql.Statement;
 import java.text.MessageFormat;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
-
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

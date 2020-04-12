@@ -13,6 +13,7 @@
  */
 
 package com.baremaps.cli.commands;
+
 import com.baremaps.core.fetch.Data;
 import com.baremaps.core.fetch.Fetcher;
 import com.baremaps.core.postgis.PostgisHelper;
@@ -20,20 +21,19 @@ import com.baremaps.core.tile.Tile;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.PostgisCoordinateCache;
 import com.baremaps.osm.cache.PostgisReferenceCache;
+import com.baremaps.osm.database.HeaderTable;
+import com.baremaps.osm.database.NodeTable;
+import com.baremaps.osm.database.RelationTable;
+import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.osmpbf.HeaderBlock;
 import com.baremaps.osm.osmxml.Change;
 import com.baremaps.osm.osmxml.ChangeSpliterator;
-import com.baremaps.osm.database.HeaderTable;
-import com.baremaps.osm.database.NodeTable;
-import com.baremaps.osm.database.RelationTable;
-import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.stream.DatabaseDiffer;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Paths;
 import java.util.List;

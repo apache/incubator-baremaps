@@ -14,7 +14,7 @@
 
 package com.baremaps.osm.geometry;
 
-import static com.baremaps.osm.geometry.GeometryConstants.*;
+import static com.baremaps.osm.geometry.GeometryConstants.NODE_BUILDER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;

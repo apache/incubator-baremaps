@@ -14,7 +14,10 @@
 
 package com.baremaps.osm.geometry;
 
-import static com.baremaps.osm.geometry.GeometryConstants.*;
+import static com.baremaps.osm.geometry.GeometryConstants.WAY_0;
+import static com.baremaps.osm.geometry.GeometryConstants.WAY_1;
+import static com.baremaps.osm.geometry.GeometryConstants.WAY_2;
+import static com.baremaps.osm.geometry.GeometryConstants.WAY_BUILDER;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

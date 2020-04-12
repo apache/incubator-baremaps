@@ -15,10 +15,10 @@
 package com.baremaps.osm.stream;
 
 import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.cache.Cache.Entry;
 import com.baremaps.osm.osmpbf.FileBlockConsumer;
 import com.baremaps.osm.osmpbf.HeaderBlock;
 import com.baremaps.osm.osmpbf.PrimitiveBlock;
-import com.baremaps.osm.cache.Cache.Entry;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;

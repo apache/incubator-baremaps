@@ -15,13 +15,13 @@
 package com.baremaps.osm.geometry;
 
 import com.baremaps.osm.MockCache;
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.model.Info;
 import com.baremaps.osm.model.Member;
 import com.baremaps.osm.model.Member.Type;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
-import com.baremaps.osm.cache.Cache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.time.LocalDateTime;
