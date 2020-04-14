@@ -49,6 +49,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
@@ -91,18 +92,19 @@ public class Update implements Callable<Integer> {
     CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
     CoordinateReferenceSystem targetCRS = crsFactory.createFromName("EPSG:3857");
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-    CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(sourceCRS, targetCRS);
+    CoordinateTransform coordinateTransform = coordinateTransformFactory
+        .createTransform(sourceCRS, targetCRS);
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
 
     Cache<Long, Coordinate> coordinateCache = new PostgisCoordinateCache(datasource);
     Cache<Long, List<Long>> referenceCache = new PostgisReferenceCache(datasource);
 
-    NodeBuilder nodeBuilder = new NodeBuilder(coordinateTransform, geometryFactory);
+    NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
+    WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
+    RelationBuilder relationBuilder = new RelationBuilder(coordinateCache, referenceCache);
+
     NodeTable nodeStore = new NodeTable(datasource);
-    WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateCache);
     WayTable wayStore = new WayTable(datasource);
-    RelationBuilder relationBuilder = new RelationBuilder(
-        coordinateTransform, geometryFactory, coordinateCache, referenceCache);
     RelationTable relationStore = new RelationTable(datasource);
 
     HeaderTable headerMapper = new HeaderTable(datasource);

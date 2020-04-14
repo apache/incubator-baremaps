@@ -97,6 +97,13 @@ public class Export implements Callable<Integer> {
       description = "The tile reader.")
   private TileReaderOption tileReader = slow;
 
+  @Option(
+      names = {"--delta"},
+      paramLabel = "DELTA",
+      description = "The output delta file..")
+  private String delta;
+
+
   public TileReader tileReader(PoolingDataSource dataSource, Config config) {
     switch (tileReader) {
       case slow:

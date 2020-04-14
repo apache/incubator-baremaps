@@ -120,10 +120,10 @@ public class NodeTable implements Table<Node> {
   }
 
   private static final String SELECT =
-      "SELECT version, uid, timestamp, changeset, tags, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ?";
+      "SELECT version, uid, timestamp, changeset, tags, st_asbinary(geom) FROM osm_nodes WHERE id = ?";
 
   private static final String SELECT_IN =
-      "SELECT id, version, uid, timestamp, changeset, tags, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ANY (?)";
+      "SELECT id, version, uid, timestamp, changeset, tags, st_asbinary(geom) FROM osm_nodes WHERE id = ANY (?)";
 
   private static final String INSERT =
       "INSERT INTO osm_nodes (id, version, uid, timestamp, changeset, tags, geom) VALUES (?, ?, ?, ?, ?, ?, ?)"

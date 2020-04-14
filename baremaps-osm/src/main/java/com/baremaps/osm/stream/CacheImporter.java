@@ -16,21 +16,27 @@ package com.baremaps.osm.stream;
 
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.Cache.Entry;
+import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.osmpbf.FileBlockConsumer;
 import com.baremaps.osm.osmpbf.HeaderBlock;
 import com.baremaps.osm.osmpbf.PrimitiveBlock;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 
 public class CacheImporter extends FileBlockConsumer {
 
+  private final NodeBuilder nodeBuilder;
   private final Cache<Long, Coordinate> coordinateCache;
   private final Cache<Long, List<Long>> referenceCache;
 
   public CacheImporter(
+      NodeBuilder nodeBuilder,
       Cache<Long, Coordinate> coordinateCache,
       Cache<Long, List<Long>> referenceCache) {
+    this.nodeBuilder = nodeBuilder;
     this.coordinateCache = coordinateCache;
     this.referenceCache = referenceCache;
   }
@@ -43,7 +49,7 @@ public class CacheImporter extends FileBlockConsumer {
   public void accept(PrimitiveBlock primitiveBlock) {
     try {
       coordinateCache.putAll(primitiveBlock.getDenseNodes().stream()
-          .map(n -> new Entry<>(n.getInfo().getId(), new Coordinate(n.getLon(), n.getLat())))
+          .map(n -> new Entry<>(n.getInfo().getId(), nodeBuilder.build(n).getCoordinate()))
           .collect(Collectors.toList()));
       referenceCache.putAll(primitiveBlock.getWays().stream()
           .map(w -> new Entry<>(w.getInfo().getId(), w.getNodes()))

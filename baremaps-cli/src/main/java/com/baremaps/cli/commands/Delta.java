@@ -25,13 +25,14 @@ import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
+import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.osmpbf.HeaderBlock;
 import com.baremaps.osm.osmxml.Change;
 import com.baremaps.osm.osmxml.ChangeSpliterator;
-import com.baremaps.osm.stream.DatabaseDiffer;
+import com.baremaps.osm.stream.DeltaProducer;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -58,8 +59,8 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "diff", description = "List the tiles affected by an OpenStreetMap change file.")
-public class Diff implements Callable<Integer> {
+@Command(name = "delta", description = "List the tiles affected by an OpenStreetMap change file.")
+public class Delta implements Callable<Integer> {
 
   private static Logger logger = LogManager.getLogger();
 
@@ -69,16 +70,9 @@ public class Diff implements Callable<Integer> {
   @Option(
       names = {"--input"},
       paramLabel = "OSC",
-      description = "The OpenStreetMap Change file.",
+      description = "The input change file.",
       required = true)
   private String input;
-
-  @Option(
-      names = {"--output"},
-      paramLabel = "OSC",
-      description = "The OpenStreetMap Change file.",
-      required = true)
-  private String output;
 
   @Option(
       names = {"--database"},
@@ -86,6 +80,13 @@ public class Diff implements Callable<Integer> {
       description = "The JDBC url of the Postgres database.",
       required = true)
   private String database;
+
+  @Option(
+      names = {"--delta"},
+      paramLabel = "DELTA",
+      description = "The input delta file.",
+      required = false)
+  private String delta;
 
   @Override
   public Integer call() throws Exception {
@@ -96,46 +97,47 @@ public class Diff implements Callable<Integer> {
 
     CRSFactory crsFactory = new CRSFactory();
     CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
-    CoordinateReferenceSystem targetCRS = crsFactory.createFromName("EPSG:4326");
+    CoordinateReferenceSystem targetCRS = crsFactory.createFromName("EPSG:3857");
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
     CoordinateTransform coordinateTransform = coordinateTransformFactory
         .createTransform(sourceCRS, targetCRS);
-
-    GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+    GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
 
     Cache<Long, Coordinate> coordinateCache = new PostgisCoordinateCache(datasource);
     Cache<Long, List<Long>> referenceCache = new PostgisReferenceCache(datasource);
 
-    NodeBuilder nodeBuilder = new NodeBuilder(coordinateTransform, geometryFactory);
-    WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateCache);
-    RelationBuilder relationBuilder = new RelationBuilder(coordinateTransform, geometryFactory,
-        coordinateCache, referenceCache);
+    NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
+    WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
+    RelationBuilder relationBuilder = new RelationBuilder(coordinateCache, referenceCache);
 
     NodeTable nodeStore = new NodeTable(datasource);
     WayTable wayStore = new WayTable(datasource);
     RelationTable relationStore = new RelationTable(datasource);
 
-    HeaderTable headerMapper = new HeaderTable(datasource);
-    HeaderBlock header = headerMapper.getLast();
-    long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
+    HeaderTable headerTable = new HeaderTable(datasource);
+    HeaderBlock headerBlock = headerTable.getLast();
+    long nextSequenceNumber = headerBlock.getReplicationSequenceNumber() + 1;
 
     logger.info("Downloading changes.");
     String changePath = changePath(nextSequenceNumber);
     String changeURL = String.format("%s/%s", input, changePath);
     Fetcher fetcher = new Fetcher(mixins.caching);
     Data changeFetch = fetcher.fetch(changeURL);
-    DatabaseDiffer databaseDiffer = new DatabaseDiffer(nodeBuilder, wayBuilder, relationBuilder, nodeStore, wayStore, relationStore);
+
+    ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransformFactory
+        .createTransform(targetCRS, sourceCRS));
+    DeltaProducer deltaMaker = new DeltaProducer(projectionTransformer, nodeBuilder, wayBuilder, relationBuilder, nodeStore, wayStore, relationStore);
 
     logger.info("Computing differences.");
     try (InputStream changeInputStream = new GZIPInputStream(changeFetch.getInputStream())) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
-      changeStream.forEach(databaseDiffer);
+      changeStream.forEach(deltaMaker);
     }
 
     logger.info("Saving differences.");
-    try (PrintWriter diffPrintWriter = new PrintWriter(new FileOutputStream(Paths.get(output).toFile()))) {
-      for (Tile tile : databaseDiffer.getTiles()) {
+    try (PrintWriter diffPrintWriter = new PrintWriter(new FileOutputStream(Paths.get(delta).toFile()))) {
+      for (Tile tile : deltaMaker.getTiles()) {
         diffPrintWriter.println(String.format("%d/%d/%d", tile.getX(), tile.getY(), tile.getZ()));
       }
     }
