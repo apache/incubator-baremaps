@@ -18,6 +18,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
@@ -26,11 +27,11 @@ public class TileUtil {
 
   public static final String BBOX = "SELECT st_asewkb(st_transform(st_setsrid(st_extent(geom), 3857), 4326)) as table_extent FROM osm_nodes;";
 
-  public static Geometry bbox(Connection connection) throws SQLException, ParseException {
+  public static Envelope envelope(Connection connection) throws SQLException, ParseException {
     try (PreparedStatement statement = connection.prepareStatement(BBOX)) {
       ResultSet result = statement.executeQuery();
       if (result.next()) {
-        return new WKBReader().read(result.getBytes(1));
+        return new WKBReader().read(result.getBytes(1)).getEnvelopeInternal();
       } else {
         return null;
       }

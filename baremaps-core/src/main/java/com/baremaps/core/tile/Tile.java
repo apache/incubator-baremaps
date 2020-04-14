@@ -18,6 +18,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import org.checkerframework.common.value.qual.IntRange;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
@@ -92,16 +93,18 @@ public final class Tile {
         .toString();
   }
 
+  public static Stream<Tile> getTiles(Envelope envelope, int minZ, int maxZ) {
+    return IntStream.rangeClosed(minZ, maxZ).boxed().flatMap(z -> getTiles(envelope, z));
+  }
 
-  public static Stream<Tile> getTiles(Geometry geometry, int z) {
-    if (geometry == null) return Stream.empty();
-    Envelope envelope = geometry.getEnvelopeInternal();
+  public static Stream<Tile> getTiles(Envelope envelope, int z) {
+    if (envelope == null) return Stream.empty();
     Tile min = getTile(envelope.getMinX(), envelope.getMaxY(), z);
     Tile max = getTile(envelope.getMaxX(), envelope.getMinY(), z);
-    return IntStream.rangeClosed(min.getX(), max.getX()).mapToObj(i -> i)
+    return IntStream.rangeClosed(min.getX(), max.getX()).boxed()
         .flatMap(x -> IntStream
             .rangeClosed(min.getY(), max.getY())
-            .mapToObj(i -> i)
+            .boxed()
             .map(y -> new Tile(x, y, z)));
   }
 

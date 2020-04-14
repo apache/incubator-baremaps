@@ -35,7 +35,7 @@ import org.locationtech.jts.geom.Geometry;
 
 public class DeltaProducer implements Consumer<Change> {
 
-  private final ProjectionTransformer coordinatesTransformer;
+  private final ProjectionTransformer projectionTransformer;
 
   private final WayBuilder wayBuilder;
   private final RelationBuilder relationBuilder;
@@ -45,23 +45,23 @@ public class DeltaProducer implements Consumer<Change> {
   private final WayTable wayStore;
   private final RelationTable relationStore;
 
-  private final int z = 18;
+  private final int zoom;
 
   private final Set<Tile> tiles = new HashSet<>();
 
   public DeltaProducer(
-      ProjectionTransformer coordinatesTransformer,
-      NodeBuilder nodeBuilder, WayBuilder wayBuilder,
-      RelationBuilder relationBuilder, NodeTable nodeStore,
-      WayTable wayStore,
-      RelationTable relationStore) {
-    this.coordinatesTransformer = coordinatesTransformer;
+      NodeBuilder nodeBuilder, WayBuilder wayBuilder, RelationBuilder relationBuilder,
+      NodeTable nodeStore, WayTable wayStore, RelationTable relationStore,
+      ProjectionTransformer projectionTransformer,
+      int zoom) {
+    this.projectionTransformer = projectionTransformer;
     this.nodeBuilder = nodeBuilder;
     this.wayBuilder = wayBuilder;
     this.relationBuilder = relationBuilder;
     this.nodeStore = nodeStore;
     this.wayStore = wayStore;
     this.relationStore = relationStore;
+    this.zoom = zoom;
   }
 
   @Override
@@ -69,7 +69,7 @@ public class DeltaProducer implements Consumer<Change> {
     Geometry geometry = geometry(change);
     if (geometry != null) {
       tiles.addAll(
-          Tile.getTiles(coordinatesTransformer.transform(geometry), z)
+          Tile.getTiles(projectionTransformer.transform(geometry).getEnvelopeInternal(), zoom)
               .collect(Collectors.toList()));
     }
   }

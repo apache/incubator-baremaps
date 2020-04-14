@@ -29,6 +29,7 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.apache.commons.dbcp2.PoolingDataSource;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -82,7 +83,7 @@ public class TileReaderBenchmark {
 
   public void execute() throws SQLException, ParseException {
     try (Connection connection = datasource.getConnection()) {
-      Geometry geometry = TileUtil.bbox(connection);
+      Envelope geometry = TileUtil.envelope(connection);
       Stream<Tile> coords = Tile.getTiles(geometry, 14);
       coords.forEach(xyz -> {
         try {

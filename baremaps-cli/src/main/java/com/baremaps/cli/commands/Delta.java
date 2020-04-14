@@ -84,9 +84,15 @@ public class Delta implements Callable<Integer> {
   @Option(
       names = {"--delta"},
       paramLabel = "DELTA",
-      description = "The input delta file.",
-      required = false)
+      description = "The output delta file.",
+      required = true)
   private String delta;
+
+  @Option(
+      names = {"--zoom"},
+      paramLabel = "ZOOM",
+      description = "The zoom level.")
+  private int zoom = 0;
 
   @Override
   public Integer call() throws Exception {
@@ -126,7 +132,8 @@ public class Delta implements Callable<Integer> {
 
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransformFactory
         .createTransform(targetCRS, sourceCRS));
-    DeltaProducer deltaMaker = new DeltaProducer(projectionTransformer, nodeBuilder, wayBuilder, relationBuilder, nodeStore, wayStore, relationStore);
+    DeltaProducer deltaMaker = new DeltaProducer(nodeBuilder, wayBuilder, relationBuilder, nodeStore,
+        wayStore, relationStore, projectionTransformer, zoom);
 
     logger.info("Computing differences.");
     try (InputStream changeInputStream = new GZIPInputStream(changeFetch.getInputStream())) {
