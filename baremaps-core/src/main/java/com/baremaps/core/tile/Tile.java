@@ -16,11 +16,11 @@ package com.baremaps.core.tile;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import org.checkerframework.common.value.qual.IntRange;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
 
 public final class Tile {
 
@@ -42,6 +42,18 @@ public final class Tile {
 
   public int getZ() {
     return z;
+  }
+
+  public Tile parent() {
+    return new Tile(x / 2, y / 2, z - 1);
+  }
+
+  public List<Tile> children() {
+    return Arrays.asList(
+        new Tile(2 * x, 2 * y, z + 1),
+        new Tile(2 * x + 1, 2 * y, z + 1),
+        new Tile(2 * x, 2 * y + 1, z + 1),
+        new Tile(2 * x + 1, 2 * y + 1, z + 1));
   }
 
   public Envelope envelope() {
@@ -98,7 +110,9 @@ public final class Tile {
   }
 
   public static Stream<Tile> getTiles(Envelope envelope, int z) {
-    if (envelope == null) return Stream.empty();
+    if (envelope == null) {
+      return Stream.empty();
+    }
     Tile min = getTile(envelope.getMinX(), envelope.getMaxY(), z);
     Tile max = getTile(envelope.getMaxX(), envelope.getMinY(), z);
     return IntStream.rangeClosed(min.getX(), max.getX()).boxed()
