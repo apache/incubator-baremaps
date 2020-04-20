@@ -31,20 +31,23 @@ import com.baremaps.tiles.postgis.FastTileReader;
 import com.baremaps.tiles.postgis.SlowTileReader;
 import com.baremaps.tiles.s3.S3TileStore;
 import com.baremaps.tiles.util.TileUtil;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
+import javax.sql.DataSource;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
-import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.io.ParseException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
@@ -92,10 +95,48 @@ public class Export implements Callable<Integer> {
   private int maxZoom = 14;
 
   @Option(
+      names = {"--delta"},
+      paramLabel = "DELTA",
+      description = "The input delta file.")
+  private String delta;
+
+  @Option(
       names = {"--reader"},
       paramLabel = "READER",
       description = "The tile reader.")
   private TileReaderOption tileReader = slow;
+
+  @Override
+  public Integer call() throws SQLException, ParseException, IOException {
+    Configurator.setRootLevel(Level.getLevel(mixins.level));
+    logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
+
+    // Initialize the fetcher
+    Fetcher fetcher = new Fetcher(mixins.caching);
+
+    // Read the configuration file
+    try (InputStream input = fetcher.fetch(this.config).getInputStream()) {
+      Config config = Config.load(input);
+      PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
+
+      // Initialize tile reader and writer
+      TileReader tileReader = tileReader(datasource, config);
+      TileWriter tileWriter = tileWriter(repository);
+
+      // Export the tiles
+      Stream<Tile> tiles = tileStream(fetcher, datasource);
+      tiles.parallel().forEach(tile -> {
+        try {
+          byte[] bytes = tileReader.read(tile);
+          tileWriter.write(tile, bytes);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      });
+    }
+
+    return 0;
+  }
 
   public TileReader tileReader(PoolingDataSource dataSource, Config config) {
     switch (tileReader) {
@@ -120,40 +161,26 @@ public class Export implements Callable<Integer> {
     }
   }
 
-  @Override
-  public Integer call() throws SQLException, ParseException, IOException {
-    Configurator.setRootLevel(Level.getLevel(mixins.level));
-    logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
-
-    // Initialize the fetcher
-    Fetcher fetcher = new Fetcher(mixins.caching);
-
-    // Read the configuration file
-    try (InputStream input = fetcher.fetch(this.config).getInputStream()) {
-      Config config = Config.load(input);
-      PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
-
-      // Initialize tile reader and writer
-      TileReader tileReader = tileReader(datasource, config);
-      TileWriter tileWriter = tileWriter(repository);
-
-      Stream<Tile> tiles;
-      try (Connection connection = datasource.getConnection()) {
-        Geometry geometry = TileUtil.bbox(connection);
-        tiles = Tile.getTiles(geometry, minZoom);
+  private Stream<Tile> tileStream(Fetcher fetcher, DataSource datasource)
+      throws IOException, SQLException, ParseException {
+    if (delta != null) {
+      try (Stream<String> lines = new BufferedReader(
+          new InputStreamReader(fetcher.fetch(delta).getInputStream())).lines()) {
+        return lines.flatMap(line -> {
+          String[] array = line.split(",");
+          int x = Integer.parseInt(array[0]);
+          int y = Integer.parseInt(array[1]);
+          int z = Integer.parseInt(array[2]);
+          Tile tile = new Tile(x, y, z);
+          return Tile.getTiles(tile.envelope(), minZoom, maxZoom);
+        });
       }
-
-      tiles.parallel().forEach(tile -> {
-        try {
-          byte[] bytes = tileReader.read(tile);
-          tileWriter.write(tile, bytes);
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      });
+    } else {
+      try (Connection connection = datasource.getConnection()) {
+        Envelope envelope = TileUtil.envelope(connection);
+        return Tile.getTiles(envelope, minZoom, maxZoom);
+      }
     }
-
-    return 0;
   }
 
 }

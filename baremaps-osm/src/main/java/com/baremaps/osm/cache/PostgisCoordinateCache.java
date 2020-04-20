@@ -30,10 +30,10 @@ import org.locationtech.jts.geom.Point;
 public class PostgisCoordinateCache implements Cache<Long, Coordinate> {
 
   private static final String SELECT =
-      "SELECT st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ?";
+      "SELECT st_asbinary(geom) FROM osm_nodes WHERE id = ?";
 
   private static final String SELECT_IN =
-      "SELECT id, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ANY (?)";
+      "SELECT id, st_asbinary(geom) FROM osm_nodes WHERE id = ANY (?)";
 
   private final DataSource dataSource;
 

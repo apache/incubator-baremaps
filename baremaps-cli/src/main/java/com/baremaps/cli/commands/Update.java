@@ -17,6 +17,7 @@ package com.baremaps.cli.commands;
 import com.baremaps.core.fetch.Data;
 import com.baremaps.core.fetch.Fetcher;
 import com.baremaps.core.postgis.PostgisHelper;
+import com.baremaps.core.tile.Tile;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.PostgisCoordinateCache;
 import com.baremaps.osm.cache.PostgisReferenceCache;
@@ -25,6 +26,7 @@ import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.geometry.NodeBuilder;
+import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.osmpbf.HeaderBlock;
@@ -32,10 +34,14 @@ import com.baremaps.osm.osmxml.Change;
 import com.baremaps.osm.osmxml.ChangeSpliterator;
 import com.baremaps.osm.osmxml.State;
 import com.baremaps.osm.stream.DatabaseUpdater;
+import com.baremaps.osm.stream.DeltaProducer;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.concurrent.Callable;
@@ -49,6 +55,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
@@ -80,6 +87,19 @@ public class Update implements Callable<Integer> {
       required = true)
   private String database;
 
+  @Option(
+      names = {"--delta"},
+      paramLabel = "DELTA",
+      description = "The output delta file.",
+      required = true)
+  private String delta;
+
+  @Option(
+      names = {"--zoom"},
+      paramLabel = "ZOOM",
+      description = "The zoom level.")
+  private int zoom = 16;
+
   @Override
   public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(mixins.level));
@@ -91,18 +111,19 @@ public class Update implements Callable<Integer> {
     CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
     CoordinateReferenceSystem targetCRS = crsFactory.createFromName("EPSG:3857");
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-    CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(sourceCRS, targetCRS);
+    CoordinateTransform coordinateTransform = coordinateTransformFactory
+        .createTransform(sourceCRS, targetCRS);
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
 
     Cache<Long, Coordinate> coordinateCache = new PostgisCoordinateCache(datasource);
     Cache<Long, List<Long>> referenceCache = new PostgisReferenceCache(datasource);
 
-    NodeBuilder nodeBuilder = new NodeBuilder(coordinateTransform, geometryFactory);
+    NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
+    WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
+    RelationBuilder relationBuilder = new RelationBuilder(coordinateCache, referenceCache);
+
     NodeTable nodeStore = new NodeTable(datasource);
-    WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateCache);
     WayTable wayStore = new WayTable(datasource);
-    RelationBuilder relationBuilder = new RelationBuilder(
-        coordinateTransform, geometryFactory, coordinateCache, referenceCache);
     RelationTable relationStore = new RelationTable(datasource);
 
     HeaderTable headerMapper = new HeaderTable(datasource);
@@ -115,13 +136,32 @@ public class Update implements Callable<Integer> {
     Fetcher fetcher = new Fetcher(mixins.caching);
     Data changeFetch = fetcher.fetch(changeURL);
 
+
     logger.info("Downloading state information.");
     String statePath = statePath(nextSequenceNumber);
     String stateURL = String.format("%s/%s", input, statePath);
     Data stateFetch = fetcher.fetch(stateURL);
 
-    logger.info("Updating database.");
+    ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransformFactory
+        .createTransform(targetCRS, sourceCRS));
+    DeltaProducer deltaMaker = new DeltaProducer(nodeBuilder, wayBuilder, relationBuilder, nodeStore,
+        wayStore, relationStore, projectionTransformer, zoom);
 
+    logger.info("Computing differences.");
+    try (InputStream changeInputStream = new GZIPInputStream(changeFetch.getInputStream())) {
+      Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
+      Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
+      changeStream.forEach(deltaMaker);
+    }
+
+    logger.info("Saving differences.");
+    try (PrintWriter diffPrintWriter = new PrintWriter(new FileOutputStream(Paths.get(delta).toFile()))) {
+      for (Tile tile : deltaMaker.getTiles()) {
+        diffPrintWriter.println(String.format("%d/%d/%d", tile.getX(), tile.getY(), tile.getZ()));
+      }
+    }
+
+    logger.info("Updating database.");
     try (InputStream changeInputStream = new GZIPInputStream(changeFetch.getInputStream())) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
@@ -130,6 +170,7 @@ public class Update implements Callable<Integer> {
       changeStream.forEach(databaseUpdater);
     }
 
+    logger.info("Updating state information.");
     try (InputStreamReader reader = new InputStreamReader(stateFetch.getInputStream(), Charsets.UTF_8)) {
       String stateContent = CharStreams.toString(reader);
       State state = State.parse(stateContent);

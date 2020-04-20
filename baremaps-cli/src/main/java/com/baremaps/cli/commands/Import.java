@@ -57,6 +57,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
@@ -131,6 +132,18 @@ public class Import implements Callable<Integer> {
     Cache<Long, List<Long>> referenceCache = new LmdbReferenceCache(env,
         env.openDbi("references", MDB_CREATE));
 
+    CRSFactory crsFactory = new CRSFactory();
+    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
+    CoordinateReferenceSystem targetCSR = crsFactory.createFromName("EPSG:3857");
+    CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
+    CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(sourceCRS, targetCSR);
+    HeaderTable headerMapper = new HeaderTable(datasource);
+    GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
+
+    NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
+    WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
+    RelationBuilder relationBuilder = new RelationBuilder(coordinateCache, referenceCache);
+
     logger.info("Fetching input.");
     Fetcher fetcher = new Fetcher(mixins.caching);
     Data fetch = fetcher.fetch(this.input);
@@ -138,7 +151,7 @@ public class Import implements Callable<Integer> {
     logger.info("Populating cache.");
     try (DataInputStream input = new DataInputStream(fetch.getInputStream())) {
       Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(input), false);
-      CacheImporter blockConsumer = new CacheImporter(coordinateCache, referenceCache);
+      CacheImporter blockConsumer = new CacheImporter(nodeBuilder, coordinateCache, referenceCache);
       blocks.forEach(blockConsumer);
     }
 
@@ -146,19 +159,6 @@ public class Import implements Callable<Integer> {
     try (DataInputStream input = new DataInputStream(fetch.getInputStream())) {
       Stream<FileBlock> blocks = StreamSupport
           .stream(new BatchSpliterator<>(new FileBlockSpliterator(input), 10), true);
-      CRSFactory crsFactory = new CRSFactory();
-      CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
-      CoordinateReferenceSystem targetCSR = crsFactory.createFromName("EPSG:3857");
-      CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-      CoordinateTransform coordinateTransform = coordinateTransformFactory
-          .createTransform(sourceCRS, targetCSR);
-      GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
-      HeaderTable headerMapper = new HeaderTable(datasource);
-
-      NodeBuilder nodeBuilder = new NodeBuilder(coordinateTransform, geometryFactory);
-      WayBuilder wayBuilder = new WayBuilder(coordinateTransform, geometryFactory, coordinateCache);
-      RelationBuilder relationBuilder = new RelationBuilder(coordinateTransform, geometryFactory,
-          coordinateCache, referenceCache);
 
       NodeTable nodeTable = new NodeTable(datasource);
       WayTable wayTable = new WayTable(datasource);

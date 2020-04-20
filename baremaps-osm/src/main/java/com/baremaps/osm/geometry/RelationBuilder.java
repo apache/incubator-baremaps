@@ -24,8 +24,8 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
-import org.locationtech.proj4j.CoordinateTransform;
 
 /**
  * A {@code RelationBuilder} builds JTS polygons and multipolygons from OSM relations.
@@ -41,15 +41,11 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
   /**
    * Constructs a {@code RelationBuilder}.
    *
-   * @param coordinateTransform the {@code CoordinateTransform} used to project OSM coordinates.
-   * @param geometryFactory     the {@code GeometryFactory} used to create polygons and multipolygons
    * @param coordinateCache     the {@code Store} used to retrieve the coordinates of a node
    * @param referenceCache      the {@code Store} used to retrieve the nodes of a way
    */
-  public RelationBuilder(CoordinateTransform coordinateTransform, GeometryFactory geometryFactory,
-      Cache<Long, Coordinate> coordinateCache, Cache<Long, List<Long>> referenceCache) {
-    super(coordinateTransform);
-    this.geometryFactory = geometryFactory;
+  public RelationBuilder(Cache<Long, Coordinate> coordinateCache, Cache<Long, List<Long>> referenceCache) {
+    this.geometryFactory = new GeometryFactory(new PrecisionModel(), 3);
     this.coordinateCache = coordinateCache;
     this.referenceCache = referenceCache;
   }
@@ -73,8 +69,7 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
         .map(member -> referenceCache.get(member.getRef()))
         .filter(reference -> reference != null)
         .map(reference -> Try.of(() -> coordinateCache.getAll(reference).stream()
-            .filter(coordinate -> coordinate != null)
-            .map(coordinate -> toCoordinate(coordinate.getX(), coordinate.getY()))
+            .filter(point -> point != null)
             .toArray(Coordinate[]::new)))
         .filter(t -> t.isSuccess())
         .map(t -> t.value())

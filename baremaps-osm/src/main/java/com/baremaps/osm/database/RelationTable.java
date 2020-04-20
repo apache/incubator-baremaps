@@ -167,10 +167,10 @@ public class RelationTable implements Table<Relation> {
   }
 
   private static final String SELECT =
-      "SELECT version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, st_asbinary(ST_Transform(geom, 4326)) FROM osm_relations WHERE id = ?";
+      "SELECT version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, st_asbinary(geom) FROM osm_relations WHERE id = ?";
 
   private static final String SELECT_IN =
-      "SELECT id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, st_asbinary(ST_Transform(geom, 4326)) FROM osm_relations WHERE id = ANY (?)";
+      "SELECT id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, st_asbinary(geom) FROM osm_relations WHERE id = ANY (?)";
 
   private static final String INSERT =
       "INSERT INTO osm_relations (id, version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, geom) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"

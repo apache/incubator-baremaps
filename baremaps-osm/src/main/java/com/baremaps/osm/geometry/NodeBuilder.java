@@ -19,20 +19,21 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.proj4j.CoordinateTransform;
+import org.locationtech.proj4j.ProjCoordinate;
 
 /** A {@code NodeBuilder} builds JTS points from OSM nodes. */
 public class NodeBuilder extends GeometryBuilder<Node> {
 
+  protected final CoordinateTransform coordinateTransform;
   protected final GeometryFactory geometryFactory;
 
   /**
    * Constructs a {@code NodeBuilder}.
    *
    * @param coordinateTransform the {@code CoordinateTransform} used to project OSM coordinates
-   * @param geometryFactory the {@code GeometryFactory} used to build OSM points
    */
-  public NodeBuilder(CoordinateTransform coordinateTransform, GeometryFactory geometryFactory) {
-    super(coordinateTransform);
+  public NodeBuilder(GeometryFactory geometryFactory, CoordinateTransform coordinateTransform) {
+    this.coordinateTransform = coordinateTransform;
     this.geometryFactory = geometryFactory;
   }
 
@@ -43,7 +44,8 @@ public class NodeBuilder extends GeometryBuilder<Node> {
    * @return a JTS point corresponding to the node
    */
   public Point build(Node entity) {
-    Coordinate coordinate = toCoordinate(entity.getLon(), entity.getLat());
-    return geometryFactory.createPoint(coordinate);
+    ProjCoordinate c1 = new ProjCoordinate(entity.getLon(),  entity.getLat());
+    ProjCoordinate c2 = coordinateTransform.transform(c1, new ProjCoordinate());
+    return geometryFactory.createPoint(new Coordinate(c2.x, c2.y));
   }
 }

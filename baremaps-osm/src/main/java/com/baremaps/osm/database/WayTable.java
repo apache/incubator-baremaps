@@ -132,10 +132,10 @@ public class WayTable implements Table<Way> {
   }
 
   private static final String SELECT =
-      "SELECT version, uid, timestamp, changeset, tags, nodes, st_asbinary(ST_Transform(geom, 4326)) FROM osm_ways WHERE id = ?";
+      "SELECT version, uid, timestamp, changeset, tags, nodes, st_asbinary(geom) FROM osm_ways WHERE id = ?";
 
   private static final String SELECT_IN =
-      "SELECT id, version, uid, timestamp, changeset, tags, nodes, st_asbinary(ST_Transform(geom, 4326)) FROM osm_ways WHERE id = ANY (?)";
+      "SELECT id, version, uid, timestamp, changeset, tags, nodes, st_asbinary(geom) FROM osm_ways WHERE id = ANY (?)";
 
   private static final String INSERT =
       "INSERT INTO osm_ways (id, version, uid, timestamp, changeset, tags, nodes, geom) VALUES (?, ?, ?, ?, ?, ?, ?, ?) "

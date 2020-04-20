@@ -19,7 +19,6 @@ import com.baremaps.osm.model.Way;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.proj4j.CoordinateTransform;
 
 /**
  * A {@code WayBuilder} builds JTS linestring or polygons from OSM ways.
@@ -33,15 +32,9 @@ public class WayBuilder extends GeometryBuilder<Way> {
   /**
    * Constructs a {code WayBuilder}.
    *
-   * @param coordinateTransform the {@code CoordinateTransform} used to project OSM coordinates
-   * @param geometryFactory     the {@code GeometryFactory} used to create polygons and multipolygons
    * @param coordinateCache     the {@code Store} used to retrieve the coordinates of a node
    */
-  public WayBuilder(
-      CoordinateTransform coordinateTransform,
-      GeometryFactory geometryFactory,
-      Cache<Long, Coordinate> coordinateCache) {
-    super(coordinateTransform);
+  public WayBuilder(GeometryFactory geometryFactory, Cache<Long, Coordinate> coordinateCache) {
     this.geometryFactory = geometryFactory;
     this.coordinateCache = coordinateCache;
   }
@@ -55,7 +48,6 @@ public class WayBuilder extends GeometryBuilder<Way> {
   public Geometry build(Way entity) {
     Coordinate[] coordinates =
         coordinateCache.getAll(entity.getNodes()).stream()
-            .map(coordinate -> toCoordinate(coordinate.getX(), coordinate.getY()))
             .toArray(Coordinate[]::new);
     if (coordinates.length > 3 && coordinates[0].equals(coordinates[coordinates.length - 1])) {
       return geometryFactory.createPolygon(coordinates);
