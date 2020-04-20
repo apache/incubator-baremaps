@@ -14,7 +14,6 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.cli.commands.Delta;
 import com.baremaps.cli.commands.Export;
 import com.baremaps.cli.commands.Import;
 import com.baremaps.cli.commands.Mixins;
@@ -28,7 +27,6 @@ import picocli.CommandLine.Command;
     name = "baremaps",
     description = "A toolkit for producing vector tiles.",
     subcommands = {
-        Delta.class,
         Import.class,
         Update.class,
         Export.class,

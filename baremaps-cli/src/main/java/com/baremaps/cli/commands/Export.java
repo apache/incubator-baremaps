@@ -39,8 +39,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
@@ -97,17 +95,16 @@ public class Export implements Callable<Integer> {
   private int maxZoom = 14;
 
   @Option(
-      names = {"--reader"},
-      paramLabel = "READER",
-      description = "The tile reader.")
-  private TileReaderOption tileReader = slow;
-
-  @Option(
       names = {"--delta"},
       paramLabel = "DELTA",
       description = "The input delta file.")
   private String delta;
 
+  @Option(
+      names = {"--reader"},
+      paramLabel = "READER",
+      description = "The tile reader.")
+  private TileReaderOption tileReader = slow;
 
   @Override
   public Integer call() throws SQLException, ParseException, IOException {
@@ -127,7 +124,7 @@ public class Export implements Callable<Integer> {
       TileWriter tileWriter = tileWriter(repository);
 
       // Export the tiles
-      Stream<Tile> tiles = tileStream(fetcher, datasource, delta, minZoom, maxZoom);
+      Stream<Tile> tiles = tileStream(fetcher, datasource);
       tiles.parallel().forEach(tile -> {
         try {
           byte[] bytes = tileReader.read(tile);
@@ -164,20 +161,19 @@ public class Export implements Callable<Integer> {
     }
   }
 
-  private Stream<Tile> tileStream(Fetcher fetcher, DataSource datasource, String delta, int minZoom, int maxZoom)
+  private Stream<Tile> tileStream(Fetcher fetcher, DataSource datasource)
       throws IOException, SQLException, ParseException {
     if (delta != null) {
-      try(BufferedReader reader = new BufferedReader(new InputStreamReader(fetcher.fetch(delta).getInputStream()))) {
-        List<Tile> list = new ArrayList<>();
-        while(reader.ready()) {
-          String line = reader.readLine();
+      try (Stream<String> lines = new BufferedReader(
+          new InputStreamReader(fetcher.fetch(delta).getInputStream())).lines()) {
+        return lines.flatMap(line -> {
           String[] array = line.split(",");
           int x = Integer.parseInt(array[0]);
           int y = Integer.parseInt(array[1]);
           int z = Integer.parseInt(array[2]);
-          list.add(new Tile(x, y, z));
-        }
-        return list.stream().flatMap(tile -> Tile.getTiles(tile.envelope(), minZoom, maxZoom)).distinct();
+          Tile tile = new Tile(x, y, z);
+          return Tile.getTiles(tile.envelope(), minZoom, maxZoom);
+        });
       }
     } else {
       try (Connection connection = datasource.getConnection()) {
