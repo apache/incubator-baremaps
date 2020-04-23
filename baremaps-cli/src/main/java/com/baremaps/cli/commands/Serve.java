@@ -17,7 +17,7 @@ package com.baremaps.cli.commands;
 import static com.baremaps.cli.options.TileReaderOption.slow;
 
 import com.baremaps.cli.options.TileReaderOption;
-import com.baremaps.core.fetch.Fetcher;
+import com.baremaps.core.fetch.FileReader;
 import com.baremaps.core.postgis.PostgisHelper;
 import com.baremaps.tiles.TileReader;
 import com.baremaps.tiles.config.Config;
@@ -98,15 +98,20 @@ public class Serve implements Callable<Integer> {
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     // Read the configuration toInputStream
-    Fetcher fetcher = new Fetcher(mixins.caching);
-    try(InputStream input = fetcher.fetch(this.config).getInputStream()) {
+    logger.info("Reading configuration.");
+    FileReader fileReader = new FileReader(mixins.caching);
+    try(InputStream input = fileReader.read(this.config)) {
       Config config = Config.load(input);
+
+      logger.info("Initializing datasource.");
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
       // Choose the tile reader
+      logger.info("Initializing tile reader.");
       TileReader tileReader = tileReader(datasource, config);
 
       // Create the http server
+      logger.info("Initializing server.");
       HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
       server.createContext("/", new ResourceHandler(Paths.get(directory)));
       server.createContext("/tiles/", new TileHandler(tileReader));

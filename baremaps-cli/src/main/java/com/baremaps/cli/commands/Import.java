@@ -16,8 +16,7 @@ package com.baremaps.cli.commands;
 
 import static org.lmdbjava.DbiFlags.MDB_CREATE;
 
-import com.baremaps.core.fetch.Data;
-import com.baremaps.core.fetch.Fetcher;
+import com.baremaps.core.fetch.FileReader;
 import com.baremaps.core.postgis.PostgisHelper;
 import com.baremaps.core.stream.BatchSpliterator;
 import com.baremaps.osm.cache.Cache;
@@ -57,7 +56,6 @@ import org.apache.logging.log4j.core.config.Configurator;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.CoordinateReferenceSystem;
@@ -145,18 +143,17 @@ public class Import implements Callable<Integer> {
     RelationBuilder relationBuilder = new RelationBuilder(coordinateCache, referenceCache);
 
     logger.info("Fetching input.");
-    Fetcher fetcher = new Fetcher(mixins.caching);
-    Data fetch = fetcher.fetch(this.input);
+    FileReader fileReader = new FileReader(mixins.caching);
 
     logger.info("Populating cache.");
-    try (DataInputStream input = new DataInputStream(fetch.getInputStream())) {
+    try (DataInputStream input = new DataInputStream(fileReader.read(this.input))) {
       Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(input), false);
       CacheImporter blockConsumer = new CacheImporter(nodeBuilder, coordinateCache, referenceCache);
       blocks.forEach(blockConsumer);
     }
 
     logger.info("Populating database.");
-    try (DataInputStream input = new DataInputStream(fetch.getInputStream())) {
+    try (DataInputStream input = new DataInputStream(fileReader.read(this.input))) {
       Stream<FileBlock> blocks = StreamSupport
           .stream(new BatchSpliterator<>(new FileBlockSpliterator(input), 10), true);
 
