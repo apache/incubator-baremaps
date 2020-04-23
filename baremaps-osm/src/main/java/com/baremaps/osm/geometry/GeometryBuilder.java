@@ -14,12 +14,7 @@
 
 package com.baremaps.osm.geometry;
 
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.util.GeometryTransformer;
-import org.locationtech.proj4j.CoordinateTransform;
-import org.locationtech.proj4j.ProjCoordinate;
 
 /**
  * A {@code GeometryBuilder} is a base class for building JTS geometries from OSM entities.

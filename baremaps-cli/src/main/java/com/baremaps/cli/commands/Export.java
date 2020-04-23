@@ -16,11 +16,8 @@ package com.baremaps.cli.commands;
 
 import static com.baremaps.cli.options.TileReaderOption.slow;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.AmazonS3URI;
 import com.baremaps.cli.options.TileReaderOption;
-import com.baremaps.core.fetch.Fetcher;
+import com.baremaps.core.fetch.FileReader;
 import com.baremaps.core.postgis.PostgisHelper;
 import com.baremaps.core.tile.Tile;
 import com.baremaps.tiles.TileReader;
@@ -35,6 +32,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -52,6 +51,7 @@ import org.locationtech.jts.io.ParseException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @Command(name = "export", description = "Export vector tiles from the Postgresql database.")
 public class Export implements Callable<Integer> {
@@ -112,10 +112,10 @@ public class Export implements Callable<Integer> {
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     // Initialize the fetcher
-    Fetcher fetcher = new Fetcher(mixins.caching);
+    FileReader fileReader = new FileReader(mixins.caching);
 
     // Read the configuration file
-    try (InputStream input = fetcher.fetch(this.config).getInputStream()) {
+    try (InputStream input = fileReader.read(this.config)) {
       Config config = Config.load(input);
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
@@ -124,7 +124,7 @@ public class Export implements Callable<Integer> {
       TileWriter tileWriter = tileWriter(repository);
 
       // Export the tiles
-      Stream<Tile> tiles = tileStream(fetcher, datasource);
+      Stream<Tile> tiles = tileStream(fileReader, datasource);
       tiles.parallel().forEach(tile -> {
         try {
           byte[] bytes = tileReader.read(tile);
@@ -153,19 +153,26 @@ public class Export implements Callable<Integer> {
     if (Files.exists(Paths.get(repository))) {
       return new FileTileStore(Paths.get(repository));
     } else if (repository.startsWith("s3://")) {
-      AmazonS3 client = AmazonS3ClientBuilder.standard().defaultClient();
-      AmazonS3URI uri = new AmazonS3URI(repository);
-      return new S3TileStore(client, uri);
+      try {
+        URI uri = new URI(repository);
+        String bucket = uri.getHost();
+        String root = uri.getPath().substring(1);
+        S3Client client = S3Client.builder().build();
+        return new S3TileStore(client, bucket, root);
+      } catch (URISyntaxException e) {
+        throw new IOException("Wrong repository url.");
+      }
     } else {
       throw new IOException("Wrong repository url.");
     }
   }
 
-  private Stream<Tile> tileStream(Fetcher fetcher, DataSource datasource)
+  private Stream<Tile> tileStream(FileReader fileReader, DataSource datasource)
       throws IOException, SQLException, ParseException {
     if (delta != null) {
-      try (Stream<String> lines = new BufferedReader(
-          new InputStreamReader(fetcher.fetch(delta).getInputStream())).lines()) {
+      try (BufferedReader reader = new BufferedReader(
+          new InputStreamReader(fileReader.read(delta)))) {
+        Stream<String> lines = reader.lines();
         return lines.flatMap(line -> {
           String[] array = line.split(",");
           int x = Integer.parseInt(array[0]);

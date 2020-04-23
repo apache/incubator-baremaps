@@ -87,7 +87,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <version.lib.aws-java-sdk-s3>1.11.756</version.lib.aws-java-sdk-s3>
     <version.lib.caffeine>2.8.1</version.lib.caffeine>
     <version.lib.commons-compress>1.19</version.lib.commons-compress>
     <version.lib.dbcp2>2.7.0</version.lib.dbcp2>
@@ -293,9 +292,9 @@
         <version>${version.lib.commons-compress}</version>
       </dependency>
       <dependency>
-        <artifactId>aws-java-sdk-s3</artifactId>
-        <groupId>com.amazonaws</groupId>
-        <version>${version.lib.aws-java-sdk-s3}</version>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>s3</artifactId>
+        <version>2.12.0</version>
       </dependency>
 
       <!-- Logging libraries -->
@@ -308,6 +307,16 @@
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-core</artifactId>
         <version>${version.lib.log4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${version.lib.log4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${version.lib.slf4j}</version>
       </dependency>
 
       <!-- Testing libraries -->
@@ -398,6 +407,14 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
     </dependency>
 
     <!-- Testing libraries -->

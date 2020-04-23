@@ -14,16 +14,14 @@
 
 package com.baremaps.tiles.s3;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3URI;
-import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.baremaps.core.tile.Tile;
-import com.baremaps.tiles.TileException;
 import com.baremaps.tiles.TileReader;
 import com.baremaps.tiles.TileWriter;
-import com.google.common.io.ByteStreams;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.core.sync.ResponseTransformer;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 public class S3TileStore implements TileReader, TileWriter {
 
@@ -31,40 +29,47 @@ public class S3TileStore implements TileReader, TileWriter {
 
   private static final String CONTENT_TYPE = "application/vnd.mapbox-vector-tile";
 
-  private final AmazonS3 client;
+  private final S3Client client;
 
-  private final AmazonS3URI uri;
+  private final String bucket;
 
-  public S3TileStore(AmazonS3 client, AmazonS3URI uri) {
+  private final String root;
+
+  public S3TileStore(S3Client client, String bucket, String root) {
     this.client = client;
-    this.uri = uri;
+    this.bucket = bucket;
+    this.root = root;
   }
 
   @Override
-  public byte[] read(Tile tile) throws TileException {
-    try {
+  public byte[] read(Tile tile) {
       String path = getPath(tile);
-      return ByteStreams.toByteArray(client.getObject(uri.getBucket(), path).getObjectContent());
-    } catch (IOException e) {
-      throw new TileException(e);
-    }
+      GetObjectRequest request = GetObjectRequest.builder()
+          .bucket(bucket)
+          .key(path)
+          .build();
+      return client.getObject(request, ResponseTransformer.toBytes()).asByteArray();
   }
 
   @Override
   public void write(Tile tile, byte[] bytes) {
     String path = getPath(tile);
-    ObjectMetadata metadata = new ObjectMetadata();
-    metadata.setContentEncoding(CONTENT_ENCODING);
-    metadata.setContentType(CONTENT_TYPE);
-    metadata.setContentLength(bytes.length);
-    client.putObject(uri.getBucket(), path, new ByteArrayInputStream(bytes), metadata);
+    PutObjectRequest request = PutObjectRequest.builder()
+        .bucket(bucket)
+        .key(path)
+        .contentEncoding(CONTENT_ENCODING)
+        .contentType(CONTENT_TYPE)
+        .contentLength(Long.valueOf(bytes.length))
+        .build();
+    RequestBody body = RequestBody.fromBytes(bytes);
+    client.putObject(request, body);
   }
 
   private String getPath(Tile tile) {
-    if (uri.getKey() == null) {
+    if (root == null || root.equals("")) {
       return String.format("%s/%s/%s.pbf", tile.getZ(), tile.getX(), tile.getY());
     } else {
-      return String.format("%s/%s/%s/%s.pbf", uri.getKey(), tile.getZ(), tile.getX(), tile.getY());
+      return String.format("%s/%s/%s/%s.pbf", root, tile.getZ(), tile.getX(), tile.getY());
     }
   }
 

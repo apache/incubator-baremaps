@@ -23,8 +23,6 @@ import com.baremaps.osm.osmpbf.PrimitiveBlock;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
 
 public class CacheImporter extends FileBlockConsumer {
 

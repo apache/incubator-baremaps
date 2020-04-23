@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
