@@ -17,7 +17,7 @@ package com.baremaps.cli.commands;
 import static com.baremaps.cli.options.TileReaderOption.slow;
 
 import com.baremaps.cli.options.TileReaderOption;
-import com.baremaps.core.fetch.FileReader;
+import com.baremaps.core.fs.FileSystem;
 import com.baremaps.core.postgis.PostgisHelper;
 import com.baremaps.tiles.TileReader;
 import com.baremaps.tiles.config.Config;
@@ -29,6 +29,7 @@ import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 import org.apache.commons.dbcp2.PoolingDataSource;
@@ -60,7 +61,7 @@ public class Serve implements Callable<Integer> {
       paramLabel= "YAML",
       description = "The YAML configuration file.",
       required = true)
-  private String config;
+  private URI config;
 
   @Option(
       names = {"--assets"},
@@ -99,7 +100,7 @@ public class Serve implements Callable<Integer> {
 
     // Read the configuration toInputStream
     logger.info("Reading configuration.");
-    FileReader fileReader = new FileReader(mixins.caching);
+    FileSystem fileReader = FileSystem.getDefault(mixins.caching);
     try(InputStream input = fileReader.read(this.config)) {
       Config config = Config.load(input);
 

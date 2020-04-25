@@ -16,7 +16,7 @@ package com.baremaps.cli.commands;
 
 import static org.lmdbjava.DbiFlags.MDB_CREATE;
 
-import com.baremaps.core.fetch.FileReader;
+import com.baremaps.core.fs.FileSystem;
 import com.baremaps.core.postgis.PostgisHelper;
 import com.baremaps.core.stream.BatchSpliterator;
 import com.baremaps.osm.cache.Cache;
@@ -37,6 +37,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -78,7 +79,7 @@ public class Import implements Callable<Integer> {
       paramLabel = "PBF",
       description = "The OpenStreetMap PBF file.",
       required = true)
-  private String input;
+  private URI input;
 
   @Option(
       names = {"--database"},
@@ -143,17 +144,17 @@ public class Import implements Callable<Integer> {
     RelationBuilder relationBuilder = new RelationBuilder(coordinateCache, referenceCache);
 
     logger.info("Fetching input.");
-    FileReader fileReader = new FileReader(mixins.caching);
+    FileSystem fileSystem = FileSystem.getDefault(mixins.caching);
 
     logger.info("Populating cache.");
-    try (DataInputStream input = new DataInputStream(fileReader.read(this.input))) {
+    try (DataInputStream input = new DataInputStream(fileSystem.read(this.input))) {
       Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(input), false);
       CacheImporter blockConsumer = new CacheImporter(nodeBuilder, coordinateCache, referenceCache);
       blocks.forEach(blockConsumer);
     }
 
     logger.info("Populating database.");
-    try (DataInputStream input = new DataInputStream(fileReader.read(this.input))) {
+    try (DataInputStream input = new DataInputStream(fileSystem.read(this.input))) {
       Stream<FileBlock> blocks = StreamSupport
           .stream(new BatchSpliterator<>(new FileBlockSpliterator(input), 10), true);
 

@@ -17,7 +17,7 @@ package com.baremaps.cli.commands;
 import static com.baremaps.cli.options.TileReaderOption.slow;
 
 import com.baremaps.cli.options.TileReaderOption;
-import com.baremaps.core.fetch.FileReader;
+import com.baremaps.core.fs.FileSystem;
 import com.baremaps.core.postgis.PostgisHelper;
 import com.baremaps.core.tile.Tile;
 import com.baremaps.tiles.TileReader;
@@ -73,7 +73,7 @@ public class Export implements Callable<Integer> {
       paramLabel = "YAML",
       description = "The YAML configuration file.",
       required = true)
-  private String config;
+  private URI config;
 
   @Option(
       names = {"--repository"},
@@ -98,7 +98,7 @@ public class Export implements Callable<Integer> {
       names = {"--delta"},
       paramLabel = "DELTA",
       description = "The input delta file.")
-  private String delta;
+  private URI delta;
 
   @Option(
       names = {"--reader"},
@@ -111,11 +111,11 @@ public class Export implements Callable<Integer> {
     Configurator.setRootLevel(Level.getLevel(mixins.level));
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
-    // Initialize the fetcher
-    FileReader fileReader = new FileReader(mixins.caching);
+    // Initialize the file system
+    FileSystem fileSystem = FileSystem.getDefault(mixins.caching);
 
     // Read the configuration file
-    try (InputStream input = fileReader.read(this.config)) {
+    try (InputStream input = fileSystem.read(this.config)) {
       Config config = Config.load(input);
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
@@ -124,7 +124,7 @@ public class Export implements Callable<Integer> {
       TileWriter tileWriter = tileWriter(repository);
 
       // Export the tiles
-      Stream<Tile> tiles = tileStream(fileReader, datasource);
+      Stream<Tile> tiles = tileStream(fileSystem, datasource);
       tiles.parallel().forEach(tile -> {
         try {
           byte[] bytes = tileReader.read(tile);
@@ -167,11 +167,11 @@ public class Export implements Callable<Integer> {
     }
   }
 
-  private Stream<Tile> tileStream(FileReader fileReader, DataSource datasource)
+  private Stream<Tile> tileStream(FileSystem fileSystem, DataSource datasource)
       throws IOException, SQLException, ParseException {
     if (delta != null) {
       try (BufferedReader reader = new BufferedReader(
-          new InputStreamReader(fileReader.read(delta)))) {
+          new InputStreamReader(fileSystem.read(delta)))) {
         Stream<String> lines = reader.lines();
         return lines.flatMap(line -> {
           String[] array = line.split(",");

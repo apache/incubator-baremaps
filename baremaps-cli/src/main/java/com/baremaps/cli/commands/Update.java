@@ -14,7 +14,7 @@
 
 package com.baremaps.cli.commands;
 
-import com.baremaps.core.fetch.FileReader;
+import com.baremaps.core.fs.FileSystem;
 import com.baremaps.core.postgis.PostgisHelper;
 import com.baremaps.core.tile.Tile;
 import com.baremaps.osm.cache.Cache;
@@ -40,6 +40,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Spliterator;
@@ -128,15 +129,15 @@ public class Update implements Callable<Integer> {
     HeaderBlock header = headerMapper.getLast();
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
 
+    FileSystem fileSystem = FileSystem.getDefault(mixins.caching);
+
     logger.info("Downloading changes.");
     String changePath = changePath(nextSequenceNumber);
-    String changeURL = String.format("%s/%s", input, changePath);
-    FileReader fileReader = new FileReader(mixins.caching);
-
+    URI changeURI = new URI(String.format("%s/%s", input, changePath));
 
     logger.info("Downloading state information.");
     String statePath = statePath(nextSequenceNumber);
-    String stateURL = String.format("%s/%s", input, statePath);
+    URI stateURI = new URI(String.format("%s/%s", input, statePath));
 
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransformFactory
         .createTransform(targetCRS, sourceCRS));
@@ -144,7 +145,7 @@ public class Update implements Callable<Integer> {
         wayStore, relationStore, projectionTransformer, zoom);
 
     logger.info("Computing differences.");
-    try (InputStream changeInputStream = new GZIPInputStream(fileReader.read(changeURL))) {
+    try (InputStream changeInputStream = new GZIPInputStream(fileSystem.read(changeURI))) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
       changeStream.forEach(deltaMaker);
@@ -158,7 +159,7 @@ public class Update implements Callable<Integer> {
     }
 
     logger.info("Updating database.");
-    try (InputStream changeInputStream = new GZIPInputStream(fileReader.read(changeURL))) {
+    try (InputStream changeInputStream = new GZIPInputStream(fileSystem.read(changeURI))) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
       DatabaseUpdater databaseUpdater = new DatabaseUpdater(nodeBuilder, wayBuilder, relationBuilder,
@@ -167,7 +168,7 @@ public class Update implements Callable<Integer> {
     }
 
     logger.info("Updating state information.");
-    try (InputStreamReader reader = new InputStreamReader(fileReader.read(stateURL), Charsets.UTF_8)) {
+    try (InputStreamReader reader = new InputStreamReader(fileSystem.read(stateURI), Charsets.UTF_8)) {
       String stateContent = CharStreams.toString(reader);
       State state = State.parse(stateContent);
       headerMapper.insert(new HeaderBlock(
