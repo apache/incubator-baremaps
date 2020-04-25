@@ -91,7 +91,7 @@ public class Update implements Callable<Integer> {
       paramLabel = "DELTA",
       description = "The output delta file.",
       required = true)
-  private String delta;
+  private URI delta;
 
   @Option(
       names = {"--zoom"},
@@ -152,7 +152,7 @@ public class Update implements Callable<Integer> {
     }
 
     logger.info("Saving differences.");
-    try (PrintWriter diffPrintWriter = new PrintWriter(new FileOutputStream(Paths.get(delta).toFile()))) {
+    try (PrintWriter diffPrintWriter = new PrintWriter(fileSystem.write(delta))) {
       for (Tile tile : deltaMaker.getTiles()) {
         diffPrintWriter.println(String.format("%d/%d/%d", tile.getX(), tile.getY(), tile.getZ()));
       }

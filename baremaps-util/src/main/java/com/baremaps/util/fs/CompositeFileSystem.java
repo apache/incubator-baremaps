@@ -23,16 +23,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class DefaultFileSystem extends FileSystem {
+public class CompositeFileSystem extends FileSystem {
 
-  private final List<FileSystem> fileSystems;
+  private final List<FileSystem> components;
 
-  public DefaultFileSystem(FileSystem... fileSystems) {
-    this.fileSystems = Arrays.asList(fileSystems);
+  public CompositeFileSystem(FileSystem... components) {
+    this.components = Arrays.asList(components);
   }
 
   private Optional<FileSystem> findFileSystem(URI uri) {
-    return fileSystems.stream().filter(fileStore -> fileStore.accept(uri)).findFirst();
+    return components.stream().filter(fileStore -> fileStore.accept(uri)).findFirst();
   }
 
   @Override

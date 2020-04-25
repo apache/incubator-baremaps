@@ -30,7 +30,7 @@ public abstract class FileSystem {
   public abstract void delete(URI uri) throws IOException;
 
   public static FileSystem getDefault(boolean caching) {
-    FileSystem fileSystem = new DefaultFileSystem(
+    FileSystem fileSystem = new CompositeFileSystem(
         new LocalFileSystem(),
         new HttpFileSystem(),
         new S3FileSystem());

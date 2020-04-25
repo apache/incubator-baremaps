@@ -25,7 +25,9 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 public class S3FileSystem extends FileSystem {
 
@@ -55,11 +57,15 @@ public class S3FileSystem extends FileSystem {
 
   @Override
   public InputStream read(URI uri) throws IOException {
-    GetObjectRequest request = GetObjectRequest.builder()
-        .bucket(uri.getHost())
-        .key(uri.getPath())
-        .build();
-    return client.getObject(request, ResponseTransformer.toInputStream());
+    try {
+      GetObjectRequest request = GetObjectRequest.builder()
+          .bucket(uri.getHost())
+          .key(uri.getPath().substring(1))
+          .build();
+      return client.getObject(request, ResponseTransformer.toInputStream());
+    } catch (S3Exception ex) {
+      throw new IOException(ex);
+    }
   }
 
   @Override
@@ -67,26 +73,31 @@ public class S3FileSystem extends FileSystem {
     return new ByteArrayOutputStream() {
       @Override
       public void close() throws IOException {
-        byte[] bytes = this.toByteArray();
-        PutObjectRequest request = PutObjectRequest.builder()
-            .bucket(uri.getHost())
-            .key(uri.getPath())
-            .contentEncoding(contentEncoding)
-            .contentType(contentType)
-            .contentLength(Long.valueOf(bytes.length))
-            .build();
-        client.putObject(request, RequestBody.fromBytes(bytes));
+        try {
+          byte[] bytes = this.toByteArray();
+          PutObjectRequest request = PutObjectRequest.builder()
+              .bucket(uri.getHost())
+              .key(uri.getPath().substring(1))
+              .build();
+          client.putObject(request, RequestBody.fromBytes(bytes));
+        } catch (S3Exception ex) {
+          throw new IOException(ex);
+        }
       }
     };
   }
 
   @Override
   public void delete(URI uri) throws IOException {
-    DeleteObjectRequest request = DeleteObjectRequest.builder()
-        .bucket(uri.getHost())
-        .key(uri.getPath())
-        .build();
-    client.deleteObject(request);
+    try {
+      DeleteObjectRequest request = DeleteObjectRequest.builder()
+          .bucket(uri.getHost())
+          .key(uri.getPath().substring(1))
+          .build();
+      client.deleteObject(request);
+    } catch (S3Exception ex) {
+      throw new IOException(ex);
+    }
   }
 
 }

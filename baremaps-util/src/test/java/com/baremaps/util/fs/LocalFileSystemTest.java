@@ -14,35 +14,40 @@
 
 package com.baremaps.util.fs;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 
-public class LocalFileSystem extends FileSystem {
+class LocalFileSystemTest extends FileSystemTest {
 
   @Override
-  public boolean accept(URI uri) {
-    return uri.getScheme() == null
-        && uri.getHost() == null
-        && uri.getPath() != null;
+  protected String createTestURI() throws IOException {
+    File file = File.createTempFile("baremaps_", ".test");
+    file.delete();
+    return file.getPath();
   }
 
   @Override
-  public InputStream read(URI uri) throws IOException {
-    return Files.newInputStream(Paths.get(uri.getPath()));
+  protected List<String> createWrongURIList() {
+    return Arrays.asList(
+        "http://www.test.com/test.txt",
+        "https://www.test.com/test.txt",
+        "s3://test/test/test.txt");
   }
 
   @Override
-  public OutputStream write(URI uri) throws IOException {
-    return Files.newOutputStream(Paths.get(uri.getPath()));
+  protected List<String> createValidURIList() {
+    return Arrays.asList(
+        "test.txt",
+        "/test.txt",
+        "test/test.txt",
+        "/test/test.txt");
   }
 
   @Override
-  public void delete(URI uri) throws IOException {
-    Files.delete(Paths.get(uri.getPath()));
+  protected FileSystem createFileSystem() {
+    return new LocalFileSystem();
   }
 
 }
