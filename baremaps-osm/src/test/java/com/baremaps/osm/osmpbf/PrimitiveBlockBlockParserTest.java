@@ -20,7 +20,7 @@ import static com.baremaps.osm.DataFiles.waysOsmPbf;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.baremaps.core.stream.HoldingConsumer;
+import com.baremaps.util.stream.HoldingConsumer;
 import com.baremaps.osm.binary.Osmformat;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;

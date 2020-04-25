@@ -12,33 +12,19 @@
  * the License.
  */
 
-package com.baremaps.core.stream;
+package com.baremaps.util.stream;
 
-import java.util.function.Consumer;
-
-/**
- * A {@code Consumer} that holds the latest value it accepted.
- *
- * @param <T>
- */
-public class HoldingConsumer<T> implements Consumer<T> {
-
-  private T value;
+public class StreamException extends RuntimeException {
 
   /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void accept(T value) {
-    this.value = value;
-  }
-
-  /**
-   * Returns the holded value.
+   * Creates a new stream exception with the specified cause. When a checked exception occurs in a stream, it
+   * is a good practice to wrap that exception in an unchecked exception, hence stopping the stream. This
+   * exception can then be catched and unwrapped within the block that initiated the stream.
    *
-   * @return the holded value.
+   * @param cause The throwable being wrapped.
    */
-  public T value() {
-    return value;
+  public StreamException(Throwable cause) {
+    super(cause);
   }
+
 }

@@ -12,18 +12,35 @@
  * the License.
  */
 
-package com.baremaps.core.tile;
+package com.baremaps.util.stream;
 
-import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
-class TileTest {
+/**
+ * A {@code Consumer} that accumulates the values it accepts.
+ *
+ * @param <T>
+ */
+public class AccumulatingConsumer<T> implements Consumer<T> {
 
-  @Test
-  void getTile() {
-    double lon = 1062451.988597151, lat = 5965417.348546229;
-    int z = 14;
-    Tile tile = Tile.getTile(lon, lat, 14);
-    int y = (int) ((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat)))
-        / Math.PI) / 2.0 * (1 << z));
+  private List<T> values = new ArrayList<>();
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void accept(T value) {
+    values.add(value);
+  }
+
+  /**
+   * Returns the accumulated values.
+   *
+   * @return the accumulated values.
+   */
+  public List<T> values() {
+    return values;
   }
 }

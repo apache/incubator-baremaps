@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.core.tile;
+package com.baremaps.util.tile;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;

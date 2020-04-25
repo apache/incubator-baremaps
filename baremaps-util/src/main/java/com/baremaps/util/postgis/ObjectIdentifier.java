@@ -1,7 +1,7 @@
 // Copyright (c) Philipp Wagner. All rights reserved.
 // Licensed under the MIT license.
 
-package com.baremaps.core.postgis;
+package com.baremaps.util.postgis;
 
 public class ObjectIdentifier {
 

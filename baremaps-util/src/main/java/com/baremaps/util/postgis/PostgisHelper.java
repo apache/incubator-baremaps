@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.core.postgis;
+package com.baremaps.util.postgis;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

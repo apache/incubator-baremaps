@@ -12,32 +12,37 @@
  * the License.
  */
 
-package com.baremaps.core.fs;
+package com.baremaps.util.fs;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-public abstract class FileSystem {
+public class LocalFileSystem extends FileSystem {
 
-  public abstract boolean accept(URI uri);
+  @Override
+  public boolean accept(URI uri) {
+    return uri.getScheme() == null
+        && uri.getHost() == null
+        && uri.getPath() != null;
+  }
 
-  public abstract InputStream read(URI uri) throws IOException;
+  @Override
+  public InputStream read(URI uri) throws IOException {
+    return Files.newInputStream(Paths.get(uri));
+  }
 
-  public abstract OutputStream write(URI uri) throws IOException;
+  @Override
+  public OutputStream write(URI uri) throws IOException {
+    return Files.newOutputStream(Paths.get(uri));
+  }
 
-  public abstract void delete(URI uri) throws IOException;
-
-  public static FileSystem getDefault(boolean caching) {
-    FileSystem fileSystem = new DefaultFileSystem(
-        new LocalFileSystem(),
-        new HttpFileSystem(),
-        new S3FileSystem());
-    if (caching) {
-      fileSystem = new CachedFileSystem(fileSystem);
-    }
-    return fileSystem;
+  @Override
+  public void delete(URI uri) throws IOException {
+    Files.delete(Paths.get(uri));
   }
 
 }

@@ -16,7 +16,7 @@ package com.baremaps.osm.osmxml;
 
 import static com.baremaps.osm.model.User.NO_USER;
 
-import com.baremaps.core.stream.StreamException;
+import com.baremaps.util.stream.StreamException;
 import com.baremaps.osm.model.Info;
 import com.baremaps.osm.model.Member;
 import com.baremaps.osm.model.Node;

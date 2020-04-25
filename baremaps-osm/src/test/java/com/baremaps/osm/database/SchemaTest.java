@@ -17,7 +17,7 @@ package com.baremaps.osm.database;
 import static com.baremaps.osm.database.DatabaseConstants.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.baremaps.core.postgis.PostgisHelper;
+import com.baremaps.util.postgis.PostgisHelper;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

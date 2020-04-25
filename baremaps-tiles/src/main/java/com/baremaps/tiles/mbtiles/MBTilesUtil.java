@@ -16,7 +16,7 @@ package com.baremaps.tiles.mbtiles;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.baremaps.core.tile.Tile;
+import com.baremaps.util.tile.Tile;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

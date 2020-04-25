@@ -14,7 +14,7 @@
 
 package com.baremaps.tiles.postgis;
 
-import com.baremaps.core.tile.Tile;
+import com.baremaps.util.tile.Tile;
 import com.baremaps.tiles.TileReader;
 import java.text.MessageFormat;
 import java.util.regex.Pattern;

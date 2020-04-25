@@ -12,19 +12,18 @@
  * the License.
  */
 
-package com.baremaps.core.stream;
+package com.baremaps.util.tile;
 
-public class StreamException extends RuntimeException {
+import org.junit.jupiter.api.Test;
 
-  /**
-   * Creates a new stream exception with the specified cause. When a checked exception occurs in a stream, it
-   * is a good practice to wrap that exception in an unchecked exception, hence stopping the stream. This
-   * exception can then be catched and unwrapped within the block that initiated the stream.
-   *
-   * @param cause The throwable being wrapped.
-   */
-  public StreamException(Throwable cause) {
-    super(cause);
+class TileTest {
+
+  @Test
+  void getTile() {
+    double lon = 1062451.988597151, lat = 5965417.348546229;
+    int z = 14;
+    Tile tile = Tile.getTile(lon, lat, 14);
+    int y = (int) ((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat)))
+        / Math.PI) / 2.0 * (1 << z));
   }
-
 }

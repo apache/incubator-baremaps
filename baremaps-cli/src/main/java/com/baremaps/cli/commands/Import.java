@@ -16,9 +16,9 @@ package com.baremaps.cli.commands;
 
 import static org.lmdbjava.DbiFlags.MDB_CREATE;
 
-import com.baremaps.core.fs.FileSystem;
-import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.core.stream.BatchSpliterator;
+import com.baremaps.util.fs.FileSystem;
+import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.stream.BatchSpliterator;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.LmdbCoordinateCache;
 import com.baremaps.osm.cache.LmdbReferenceCache;

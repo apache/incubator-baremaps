@@ -19,7 +19,7 @@ import static com.baremaps.osm.DataFiles.invalidOsmPbf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.baremaps.core.stream.StreamException;
+import com.baremaps.util.stream.StreamException;
 import java.io.DataInputStream;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;

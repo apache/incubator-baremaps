@@ -14,7 +14,7 @@
 
 package com.baremaps.tiles.s3;
 
-import com.baremaps.core.tile.Tile;
+import com.baremaps.util.tile.Tile;
 import com.baremaps.tiles.TileReader;
 import com.baremaps.tiles.TileWriter;
 import software.amazon.awssdk.core.sync.RequestBody;

@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.core.stream;
+package com.baremaps.util.stream;
 
 import java.util.concurrent.Callable;
 
