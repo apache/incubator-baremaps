@@ -47,7 +47,7 @@
     <module>baremaps-tiles</module>
     <module>baremaps-benchmarks</module>
     <module>baremaps-cli</module>
-    <module>baremaps-core</module>
+    <module>baremaps-util</module>
   </modules>
 
   <profiles>
@@ -200,7 +200,7 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-core</artifactId>
+        <artifactId>baremaps-util</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
