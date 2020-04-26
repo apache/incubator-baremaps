@@ -16,6 +16,7 @@ package com.baremaps.tiles.mbtiles;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.util.tile.Tile;
@@ -33,7 +34,7 @@ public class MBTilesUtilTest {
   @Test
   public void createDatabase() throws SQLException {
     Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
-    MBTilesUtil.createDatabase(connection);
+    MBTilesUtil.initializeDatabase(connection);
     DatabaseMetaData md = connection.getMetaData();
     ResultSet rs1 = md.getTables(null, null, "metadata", null);
     assertTrue(rs1.next());
@@ -47,7 +48,7 @@ public class MBTilesUtilTest {
   public void getMetadata() throws SQLException {
     String database = getClass().getClassLoader().getResource("schema.db").getPath();
     Connection connection = DriverManager.getConnection("jdbc:sqlite:" + database);
-    Map<String, String> metadata = MBTilesUtil.getMetadata(connection);
+    Map<String, String> metadata = MBTilesUtil.readMetadata(connection);
     assertTrue(metadata.size() > 0);
   }
 
@@ -55,28 +56,28 @@ public class MBTilesUtilTest {
   public void getTile() throws SQLException {
     String database = getClass().getClassLoader().getResource("schema.db").getPath();
     Connection connection = DriverManager.getConnection("jdbc:sqlite:" + database);
-    byte[] t1 = MBTilesUtil.getTile(connection, new Tile(0, 0, 0));
+    byte[] t1 = MBTilesUtil.readTile(connection, new Tile(0, 0, 0));
     assertNotNull(t1);
-    byte[] t2 = MBTilesUtil.getTile(connection, new Tile(1, 1, 1));
-    assertNull(t2);
+    assertThrows(SQLException.class, () -> MBTilesUtil.readTile(connection, new Tile(1, 1, 1)));
   }
 
   @Test
   public void setMetadata() throws SQLException {
     Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
-    MBTilesUtil.createDatabase(connection);
+    MBTilesUtil.initializeDatabase(connection);
     Map<String, String> m1 = new HashMap<>();
     m1.put("test", "test");
-    MBTilesUtil.setMetadata(connection, m1);
-    Map<String, String> m2 = MBTilesUtil.getMetadata(connection);
+    MBTilesUtil.writeMetadata(connection, m1);
+    Map<String, String> m2 = MBTilesUtil.readMetadata(connection);
     assertTrue(m2.size() > 0);
   }
 
   @Test
   public void setTile() throws SQLException {
     Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
-    MBTilesUtil.createDatabase(connection);
-    MBTilesUtil.setTile(connection, new Tile(0, 0, 0), "test".getBytes());
-    assertNotNull(MBTilesUtil.getTile(connection, new Tile(0, 0, 0)));
+    MBTilesUtil.initializeDatabase(connection);
+    MBTilesUtil.writeTile(connection, new Tile(0, 0, 0), "test".getBytes());
+    assertNotNull(MBTilesUtil.readTile(connection, new Tile(0, 0, 0)));
   }
+
 }

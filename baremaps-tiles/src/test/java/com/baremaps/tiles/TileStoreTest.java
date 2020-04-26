@@ -17,10 +17,8 @@ package com.baremaps.tiles;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.baremaps.tiles.TileStore;
 import com.baremaps.util.tile.Tile;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +26,7 @@ public abstract class TileStoreTest {
 
   @Test
   @Tag("integration")
-  void readWriteDeleteTile() throws IOException, URISyntaxException {
+  void readWriteDeleteTile() throws Exception {
     TileStore tileStore = createTileStore();
     Tile tile = new Tile(1, 2, 3);
     byte[] content = "tile_content".getBytes();
@@ -45,6 +43,6 @@ public abstract class TileStoreTest {
     assertThrows(IOException.class, () -> tileStore.read(tile));
   }
 
-  protected abstract TileStore createTileStore() throws IOException, URISyntaxException;
+  protected abstract TileStore createTileStore() throws Exception;
 
 }
