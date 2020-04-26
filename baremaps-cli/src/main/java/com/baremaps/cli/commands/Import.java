@@ -90,7 +90,7 @@ public class Import implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    Configurator.setRootLevel(Level.getLevel(mixins.level));
+    Configurator.setRootLevel(Level.getLevel(mixins.level.name()));
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);

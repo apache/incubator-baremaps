@@ -102,7 +102,7 @@ public class Export implements Callable<Integer> {
 
   @Override
   public Integer call() throws SQLException, ParseException, IOException {
-    Configurator.setRootLevel(Level.getLevel(mixins.level));
+    Configurator.setRootLevel(Level.getLevel(mixins.level.name()));
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     // Initialize the file system

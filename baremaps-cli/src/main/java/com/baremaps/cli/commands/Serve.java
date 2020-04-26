@@ -94,7 +94,7 @@ public class Serve implements Callable<Integer> {
 
   @Override
   public Integer call() throws IOException {
-    Configurator.setRootLevel(Level.getLevel(mixins.level));
+    Configurator.setRootLevel(Level.getLevel(mixins.level.name()));
 
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 

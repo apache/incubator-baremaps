@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 The Baremaps Authors
+ * Copyright (C) 2020 The Baremaps Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -12,22 +12,8 @@
  * the License.
  */
 
-package com.baremaps.cli.commands;
+package com.baremaps.cli.options;
 
-import com.baremaps.cli.options.LevelOption;
-import picocli.CommandLine.Option;
-
-public class Mixins {
-
-  @Option(
-      names = {"--level"},
-      paramLabel = "LEVEL",
-      description = {"The log level."})
-  protected LevelOption level = LevelOption.INFO;
-
-  @Option(
-      names = {"--caching"},
-      description = "Cache the fetched resources in temporary files.")
-  protected boolean caching = false;
-
+public enum LevelOption {
+  DEBUG, INFO, TRACE, ERROR
 }
