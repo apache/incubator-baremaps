@@ -142,7 +142,7 @@ public class Import implements Callable<Integer> {
 
     NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
     WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
-    RelationBuilder relationBuilder = new RelationBuilder(coordinateCache, referenceCache);
+    RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
 
     logger.info("Fetching input.");
     FileSystem fileSystem = FileSystem.getDefault(mixins.caching);

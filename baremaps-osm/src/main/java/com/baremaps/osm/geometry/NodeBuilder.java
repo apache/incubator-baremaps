@@ -32,6 +32,7 @@ public class NodeBuilder extends GeometryBuilder<Node> {
   /**
    * Constructs a {@code NodeBuilder}.
    *
+   * @param geometryFactory the {@code GeometryFactory} used to create geometries
    * @param coordinateTransform the {@code CoordinateTransform} used to project OSM coordinates
    */
   public NodeBuilder(GeometryFactory geometryFactory, CoordinateTransform coordinateTransform) {

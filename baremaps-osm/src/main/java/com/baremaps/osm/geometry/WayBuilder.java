@@ -32,6 +32,7 @@ public class WayBuilder extends GeometryBuilder<Way> {
   /**
    * Constructs a {code WayBuilder}.
    *
+   * @param geometryFactory the {@code GeometryFactory} used to create geometries
    * @param coordinateCache the {@code Store} used to retrieve the coordinates of a node
    */
   public WayBuilder(GeometryFactory geometryFactory, Cache<Long, Coordinate> coordinateCache) {

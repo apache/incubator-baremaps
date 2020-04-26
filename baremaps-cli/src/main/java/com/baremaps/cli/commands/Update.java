@@ -117,7 +117,7 @@ public class Update implements Callable<Integer> {
 
     NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
     WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
-    RelationBuilder relationBuilder = new RelationBuilder(coordinateCache, referenceCache);
+    RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
 
     NodeTable nodeStore = new NodeTable(datasource);
     WayTable wayStore = new WayTable(datasource);

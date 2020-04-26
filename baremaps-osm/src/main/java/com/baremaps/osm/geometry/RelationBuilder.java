@@ -41,11 +41,12 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
   /**
    * Constructs a {@code RelationBuilder}.
    *
+   * @param geometryFactory the {@code GeometryFactory} used to create geometries
    * @param coordinateCache the {@code Store} used to retrieve the coordinates of a node
    * @param referenceCache  the {@code Store} used to retrieve the nodes of a way
    */
-  public RelationBuilder(Cache<Long, Coordinate> coordinateCache, Cache<Long, List<Long>> referenceCache) {
-    this.geometryFactory = new GeometryFactory(new PrecisionModel(), 3);
+  public RelationBuilder(GeometryFactory geometryFactory, Cache<Long, Coordinate> coordinateCache, Cache<Long, List<Long>> referenceCache) {
+    this.geometryFactory = geometryFactory;
     this.coordinateCache = coordinateCache;
     this.referenceCache = referenceCache;
   }
