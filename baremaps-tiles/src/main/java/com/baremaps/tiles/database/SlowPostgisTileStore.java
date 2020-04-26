@@ -12,13 +12,13 @@
  * the License.
  */
 
-package com.baremaps.tiles.postgis;
+package com.baremaps.tiles.database;
 
-import com.baremaps.util.tile.Tile;
-import com.baremaps.tiles.TileException;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.config.Layer;
+import com.baremaps.util.tile.Tile;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -29,7 +29,7 @@ import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SlowTileReader extends AbstractTileReader {
+public class SlowPostgisTileStore extends PostgisTileStore {
 
   private static Logger logger = LogManager.getLogger();
 
@@ -54,13 +54,13 @@ public class SlowTileReader extends AbstractTileReader {
 
   private final Config config;
 
-  public SlowTileReader(PoolingDataSource datasource, Config config) {
+  public SlowPostgisTileStore(PoolingDataSource datasource, Config config) {
     this.datasource = datasource;
     this.config = config;
   }
 
   @Override
-  public byte[] read(Tile tile) throws TileException {
+  public byte[] read(Tile tile) throws IOException {
     try (Connection connection = datasource.getConnection();
         ByteArrayOutputStream data = new ByteArrayOutputStream();
         GZIPOutputStream gzip = new GZIPOutputStream(data)) {
@@ -79,7 +79,7 @@ public class SlowTileReader extends AbstractTileReader {
       gzip.close();
       return data.toByteArray();
     } catch (Exception e) {
-      throw new TileException(e);
+      throw new IOException(e);
     }
   }
 
@@ -99,6 +99,16 @@ public class SlowTileReader extends AbstractTileReader {
                         .orElse("")))
                 .collect(Collectors.joining(SQL_UNION_ALL)),
             envelope(tile)));
+  }
+
+  @Override
+  public void write(Tile tile, byte[] bytes) throws IOException {
+    throw new UnsupportedOperationException("The tile store is readonly");
+  }
+
+  @Override
+  public void delete(Tile tile) throws IOException {
+    throw new UnsupportedOperationException("The tile store is readonly");
   }
 
 }

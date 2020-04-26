@@ -14,15 +14,14 @@
 
 package com.baremaps.tiles.mbtiles;
 
+import com.baremaps.tiles.TileStore;
 import com.baremaps.util.tile.Tile;
-import com.baremaps.tiles.TileException;
-import com.baremaps.tiles.TileReader;
-import com.baremaps.tiles.TileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-public class MBTilesStore implements TileReader, TileWriter {
+public class MBTilesStore implements TileStore {
 
   public final org.sqlite.SQLiteDataSource dataSource;
 
@@ -40,11 +39,11 @@ public class MBTilesStore implements TileReader, TileWriter {
   }
 
   @Override
-  public byte[] read(Tile tile) throws TileException {
+  public byte[] read(Tile tile) throws IOException {
     try (Connection connection = dataSource.getConnection()) {
       return MBTilesUtil.getTile(connection, tile);
     } catch (SQLException e) {
-      throw new TileException(e);
+      throw new IOException(e);
     }
   }
 
@@ -56,11 +55,17 @@ public class MBTilesStore implements TileReader, TileWriter {
   }
 
   @Override
-  public void write(Tile tile, byte[] bytes) throws TileException {
+  public void write(Tile tile, byte[] bytes) throws IOException {
     try (Connection connection = dataSource.getConnection()) {
       MBTilesUtil.setTile(connection, tile, bytes);
     } catch (SQLException e) {
-      throw new TileException(e);
+      throw new IOException(e);
     }
+  }
+
+  @Override
+  public void delete(Tile tile) throws IOException {
+    // TODO: implement this operation
+    throw new UnsupportedOperationException("Not implemented yet");
   }
 }

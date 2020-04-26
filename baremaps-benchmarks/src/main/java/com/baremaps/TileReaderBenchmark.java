@@ -14,13 +14,13 @@
 
 package com.baremaps;
 
+import com.baremaps.tiles.TileStore;
+import com.baremaps.tiles.config.Config;
+import com.baremaps.tiles.database.FastPostgisTileStore;
+import com.baremaps.tiles.database.SlowPostgisTileStore;
+import com.baremaps.tiles.util.TileUtil;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.tile.Tile;
-import com.baremaps.tiles.TileReader;
-import com.baremaps.tiles.config.Config;
-import com.baremaps.tiles.postgis.FastTileReader;
-import com.baremaps.tiles.postgis.SlowTileReader;
-import com.baremaps.tiles.util.TileUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class TileReaderBenchmark {
 
   private Config config;
   private PoolingDataSource datasource;
-  private TileReader reader;
+  private TileStore reader;
 
   @Setup(Level.Invocation)
   public void prepare() throws IOException, ClassNotFoundException {
@@ -67,7 +67,7 @@ public class TileReaderBenchmark {
   @Warmup(iterations = 1)
   @Measurement(iterations = 2)
   public void basic() throws SQLException, ParseException {
-    reader = new SlowTileReader(datasource, config);
+    reader = new SlowPostgisTileStore(datasource, config);
     execute();
   }
 
@@ -76,7 +76,7 @@ public class TileReaderBenchmark {
   @Warmup(iterations = 1)
   @Measurement(iterations = 2)
   public void with() throws SQLException, ParseException {
-    reader = new FastTileReader(datasource, config);
+    reader = new FastPostgisTileStore(datasource, config);
     execute();
   }
 

@@ -25,7 +25,11 @@ public abstract class FileSystem {
 
   public abstract InputStream read(URI uri) throws IOException;
 
+  public abstract byte[] readByteArray(URI uri) throws IOException;
+
   public abstract OutputStream write(URI uri) throws IOException;
+
+  public abstract void writeByteArray(URI uri, byte[] bytes) throws IOException;
 
   public abstract void delete(URI uri) throws IOException;
 

@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.tiles.postgis;
+package com.baremaps.tiles.database;
 
 import com.baremaps.tiles.config.Layer;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class QueryParser {
   }
 
   private static List<String> split(String s) {
-    List<String> results = new ArrayList<String>();
+    List<String> results = new ArrayList<>();
     int level = 0;
     StringBuilder result = new StringBuilder();
     for (char c : s.toCharArray()) {

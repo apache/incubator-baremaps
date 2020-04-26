@@ -19,8 +19,8 @@ import java.util.Spliterators;
 import java.util.function.Consumer;
 
 /**
- * A {@code BatchSpliterator} wraps another spliterator and partition its elements according to a given batch size
- * when trySplit is invoked.
+ * A {@code BatchSpliterator} wraps another spliterator and partition its elements according to a given batch
+ * size when trySplit is invoked.
  *
  * @param <T>
  */

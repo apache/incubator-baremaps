@@ -14,9 +14,6 @@
 
 package com.baremaps.cli.commands;
 
-import com.baremaps.util.fs.FileSystem;
-import com.baremaps.util.postgis.PostgisHelper;
-import com.baremaps.util.tile.Tile;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.PostgisCoordinateCache;
 import com.baremaps.osm.cache.PostgisReferenceCache;
@@ -34,14 +31,15 @@ import com.baremaps.osm.osmxml.ChangeSpliterator;
 import com.baremaps.osm.osmxml.State;
 import com.baremaps.osm.stream.DatabaseUpdater;
 import com.baremaps.osm.stream.DeltaProducer;
+import com.baremaps.util.fs.FileSystem;
+import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.tile.Tile;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URI;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.concurrent.Callable;

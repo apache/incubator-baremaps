@@ -2422,7 +2422,10 @@
       },
       "paint": {
         "fill-extrusion-color": "#555",
-        "fill-extrusion-height": ["get", "building:height"],
+        "fill-extrusion-height": [
+          "get",
+          "building:height"
+        ],
         "fill-extrusion-base": 0,
         "fill-extrusion-opacity": 1
       }

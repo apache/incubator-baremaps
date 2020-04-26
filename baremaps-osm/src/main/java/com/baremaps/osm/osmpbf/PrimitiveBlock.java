@@ -205,6 +205,7 @@ public final class PrimitiveBlock {
   }
 
   protected LocalDateTime getTimestamp(long timestamp) {
-    return LocalDateTime.ofInstant(Instant.ofEpochMilli(dateGranularity * timestamp), TimeZone.getDefault().toZoneId());
+    return LocalDateTime
+        .ofInstant(Instant.ofEpochMilli(dateGranularity * timestamp), TimeZone.getDefault().toZoneId());
   }
 }

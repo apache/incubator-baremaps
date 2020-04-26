@@ -55,6 +55,16 @@ public class HttpFileSystem extends FileSystem {
   }
 
   @Override
+  public byte[] readByteArray(URI uri) throws IOException {
+    HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
+    conn.setDoOutput(true);
+    conn.setRequestMethod("GET");
+    try (InputStream inputStream = conn.getInputStream()) {
+      return ByteStreams.toByteArray(inputStream);
+    }
+  }
+
+  @Override
   public OutputStream write(URI uri) {
     return new ByteArrayOutputStream() {
       @Override
@@ -66,9 +76,26 @@ public class HttpFileSystem extends FileSystem {
         conn.setRequestProperty("Content-Type", contentType);
         conn.setRequestProperty("Content-Encoding", contentEncoding);
         conn.setRequestProperty("Content-Length", String.valueOf(bytes.length));
-        ByteStreams.copy(new ByteArrayInputStream(bytes), conn.getOutputStream());
+        try (OutputStream outputStream = conn.getOutputStream();
+            InputStream inputStream = new ByteArrayInputStream(bytes)) {
+          ByteStreams.copy(inputStream, outputStream);
+        }
       }
     };
+  }
+
+  @Override
+  public void writeByteArray(URI uri, byte[] bytes) throws IOException {
+    HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
+    conn.setDoOutput(true);
+    conn.setRequestMethod("PUT");
+    conn.setRequestProperty("Content-Type", contentType);
+    conn.setRequestProperty("Content-Encoding", contentEncoding);
+    conn.setRequestProperty("Content-Length", String.valueOf(bytes.length));
+    try (OutputStream outputStream = conn.getOutputStream();
+        InputStream inputStream = new ByteArrayInputStream(bytes)) {
+      ByteStreams.copy(inputStream, outputStream);
+    }
   }
 
   @Override

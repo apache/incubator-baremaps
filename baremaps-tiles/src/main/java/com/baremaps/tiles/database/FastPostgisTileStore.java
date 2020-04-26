@@ -12,16 +12,17 @@
  * the License.
  */
 
-package com.baremaps.tiles.postgis;
+package com.baremaps.tiles.database;
 
-import com.baremaps.util.tile.Tile;
-import com.baremaps.tiles.TileException;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.config.Layer;
-import com.baremaps.tiles.postgis.QueryParser.Query;
+import com.baremaps.tiles.database.QueryParser.Query;
+import com.baremaps.util.tile.Tile;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
 import java.util.List;
@@ -32,7 +33,7 @@ import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class FastTileReader extends AbstractTileReader {
+public class FastPostgisTileStore extends PostgisTileStore {
 
   private static Logger logger = LogManager.getLogger();
 
@@ -59,7 +60,7 @@ public class FastTileReader extends AbstractTileReader {
 
   private final Map<Layer, List<Query>> queries;
 
-  public FastTileReader(PoolingDataSource datasource, Config config) {
+  public FastPostgisTileStore(PoolingDataSource datasource, Config config) {
     this.datasource = datasource;
     this.config = config;
     this.queries = config.getLayers().stream()
@@ -68,7 +69,7 @@ public class FastTileReader extends AbstractTileReader {
   }
 
   @Override
-  public byte[] read(Tile tile) throws TileException {
+  public byte[] read(Tile tile) throws IOException {
     try (Connection connection = datasource.getConnection();
         ByteArrayOutputStream data = new ByteArrayOutputStream();
         GZIPOutputStream gzip = new GZIPOutputStream(data)) {
@@ -82,14 +83,15 @@ public class FastTileReader extends AbstractTileReader {
       }
       gzip.close();
       return data.toByteArray();
-    } catch (Exception e) {
-      throw new TileException(e);
+    } catch (SQLException e) {
+      throw new IOException(e);
     }
   }
 
   private String query(Tile tile) {
     String sources = queries.entrySet().stream()
-        .filter(entry -> entry.getKey().getMinZoom() <= tile.getZ() && entry.getKey().getMaxZoom() >= tile.getZ())
+        .filter(
+            entry -> entry.getKey().getMinZoom() <= tile.getZ() && entry.getKey().getMaxZoom() >= tile.getZ())
         .flatMap(entry -> entry.getValue().stream().map(query -> MessageFormat.format(SOURCE,
             query.getSource(),
             query.getId(),
@@ -101,7 +103,8 @@ public class FastTileReader extends AbstractTileReader {
         .stream()
         .collect(Collectors.joining(COMMA));
     String targets = queries.entrySet().stream()
-        .filter(entry -> entry.getKey().getMinZoom() <= tile.getZ() && entry.getKey().getMaxZoom() >= tile.getZ())
+        .filter(
+            entry -> entry.getKey().getMinZoom() <= tile.getZ() && entry.getKey().getMaxZoom() >= tile.getZ())
         .map(entry -> {
           String queries = entry.getValue().stream()
               .map(select -> {
@@ -120,6 +123,16 @@ public class FastTileReader extends AbstractTileReader {
         })
         .collect(Collectors.joining(UNION_ALL));
     return MessageFormat.format(WITH, sources, targets);
+  }
+
+  @Override
+  public void write(Tile tile, byte[] bytes) throws IOException {
+    throw new UnsupportedOperationException("The tile store is readonly");
+  }
+
+  @Override
+  public void delete(Tile tile) throws IOException {
+    throw new UnsupportedOperationException("The tile store is readonly");
   }
 
 }

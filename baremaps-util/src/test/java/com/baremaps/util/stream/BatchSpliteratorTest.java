@@ -41,7 +41,8 @@ public class BatchSpliteratorTest {
     for (int i = 0; i < spliteratorSize; i++) {
       ints.add(i);
     }
-    spliterator = new BatchSpliterator<Integer>(IntStream.range(0, spliteratorSize).spliterator(), batchSize) {
+    spliterator = new BatchSpliterator<Integer>(IntStream.range(0, spliteratorSize).spliterator(),
+        batchSize) {
       int i = 0;
 
       @Override

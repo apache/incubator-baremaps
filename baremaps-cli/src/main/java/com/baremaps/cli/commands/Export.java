@@ -17,25 +17,20 @@ package com.baremaps.cli.commands;
 import static com.baremaps.cli.options.TileReaderOption.slow;
 
 import com.baremaps.cli.options.TileReaderOption;
+import com.baremaps.tiles.store.FileSystemTileStore;
+import com.baremaps.tiles.TileStore;
+import com.baremaps.tiles.config.Config;
+import com.baremaps.tiles.database.FastPostgisTileStore;
+import com.baremaps.tiles.database.SlowPostgisTileStore;
+import com.baremaps.tiles.util.TileUtil;
 import com.baremaps.util.fs.FileSystem;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.tile.Tile;
-import com.baremaps.tiles.TileReader;
-import com.baremaps.tiles.TileWriter;
-import com.baremaps.tiles.config.Config;
-import com.baremaps.tiles.file.FileTileStore;
-import com.baremaps.tiles.postgis.FastTileReader;
-import com.baremaps.tiles.postgis.SlowTileReader;
-import com.baremaps.tiles.s3.S3TileStore;
-import com.baremaps.tiles.util.TileUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
@@ -51,7 +46,6 @@ import org.locationtech.jts.io.ParseException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
-import software.amazon.awssdk.services.s3.S3Client;
 
 @Command(name = "export", description = "Export vector tiles from the Postgresql database.")
 public class Export implements Callable<Integer> {
@@ -80,7 +74,7 @@ public class Export implements Callable<Integer> {
       paramLabel = "URL",
       description = "The tile repository URL.",
       required = true)
-  private String repository;
+  private URI repository;
 
   @Option(
       names = {"--minZoom"},
@@ -120,15 +114,15 @@ public class Export implements Callable<Integer> {
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
       // Initialize tile reader and writer
-      TileReader tileReader = tileReader(datasource, config);
-      TileWriter tileWriter = tileWriter(repository);
+      TileStore tileSource = tileSource(datasource, config);
+      TileStore tileTarget = tileTarget(repository);
 
       // Export the tiles
       Stream<Tile> tiles = tileStream(fileSystem, datasource);
       tiles.parallel().forEach(tile -> {
         try {
-          byte[] bytes = tileReader.read(tile);
-          tileWriter.write(tile, bytes);
+          byte[] bytes = tileSource.read(tile);
+          tileTarget.write(tile, bytes);
         } catch (Exception e) {
           e.printStackTrace();
         }
@@ -138,33 +132,19 @@ public class Export implements Callable<Integer> {
     return 0;
   }
 
-  public TileReader tileReader(PoolingDataSource dataSource, Config config) {
+  public TileStore tileSource(PoolingDataSource dataSource, Config config) {
     switch (tileReader) {
       case slow:
-        return new SlowTileReader(dataSource, config);
+        return new SlowPostgisTileStore(dataSource, config);
       case fast:
-        return new FastTileReader(dataSource, config);
+        return new FastPostgisTileStore(dataSource, config);
       default:
         throw new UnsupportedOperationException("Unsupported tile reader");
     }
   }
 
-  private TileWriter tileWriter(String repository) throws IOException {
-    if (Files.exists(Paths.get(repository))) {
-      return new FileTileStore(Paths.get(repository));
-    } else if (repository.startsWith("s3://")) {
-      try {
-        URI uri = new URI(repository);
-        String bucket = uri.getHost();
-        String root = uri.getPath().substring(1);
-        S3Client client = S3Client.builder().build();
-        return new S3TileStore(client, bucket, root);
-      } catch (URISyntaxException e) {
-        throw new IOException("Wrong repository url.");
-      }
-    } else {
-      throw new IOException("Wrong repository url.");
-    }
+  private TileStore tileTarget(URI repository) {
+      return new FileSystemTileStore(FileSystem.getDefault(false), repository);
   }
 
   private Stream<Tile> tileStream(FileSystem fileSystem, DataSource datasource)

@@ -25,7 +25,6 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
@@ -69,6 +68,19 @@ public class S3FileSystem extends FileSystem {
   }
 
   @Override
+  public byte[] readByteArray(URI uri) throws IOException {
+    try {
+      GetObjectRequest request = GetObjectRequest.builder()
+          .bucket(uri.getHost())
+          .key(uri.getPath().substring(1))
+          .build();
+      return client.getObject(request, ResponseTransformer.toBytes()).asByteArray();
+    } catch (S3Exception ex) {
+      throw new IOException(ex);
+    }
+  }
+
+  @Override
   public OutputStream write(URI uri) throws IOException {
     return new ByteArrayOutputStream() {
       @Override
@@ -85,6 +97,19 @@ public class S3FileSystem extends FileSystem {
         }
       }
     };
+  }
+
+  @Override
+  public void writeByteArray(URI uri, byte[] bytes) throws IOException {
+    try {
+      PutObjectRequest request = PutObjectRequest.builder()
+          .bucket(uri.getHost())
+          .key(uri.getPath().substring(1))
+          .build();
+      client.putObject(request, RequestBody.fromBytes(bytes));
+    } catch (S3Exception ex) {
+      throw new IOException(ex);
+    }
   }
 
   @Override

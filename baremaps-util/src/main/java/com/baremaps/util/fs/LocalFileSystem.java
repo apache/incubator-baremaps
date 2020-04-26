@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class LocalFileSystem extends FileSystem {
@@ -36,8 +37,26 @@ public class LocalFileSystem extends FileSystem {
   }
 
   @Override
+  public byte[] readByteArray(URI uri) throws IOException {
+    return Files.readAllBytes(Paths.get(uri.getPath()));
+  }
+
+  @Override
   public OutputStream write(URI uri) throws IOException {
+    Path path = Paths.get(uri.getPath());
+    if (!Files.exists(path.getParent())) {
+      Files.createDirectories(path.getParent());
+    }
     return Files.newOutputStream(Paths.get(uri.getPath()));
+  }
+
+  @Override
+  public void writeByteArray(URI uri, byte[] bytes) throws IOException {
+    Path path = Paths.get(uri.getPath());
+    if (!Files.exists(path.getParent())) {
+      Files.createDirectories(path.getParent());
+    }
+    Files.write(path, bytes);
   }
 
   @Override

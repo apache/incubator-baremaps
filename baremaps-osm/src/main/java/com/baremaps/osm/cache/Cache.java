@@ -16,7 +16,7 @@ package com.baremaps.osm.cache;
 
 import java.util.List;
 
-public interface Cache<K, V>  {
+public interface Cache<K, V> {
 
   V get(K key);
 

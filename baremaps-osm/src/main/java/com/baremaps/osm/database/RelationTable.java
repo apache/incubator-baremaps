@@ -14,9 +14,9 @@
 
 package com.baremaps.osm.database;
 
-import com.baremaps.util.postgis.CopyWriter;
 import com.baremaps.osm.database.RelationTable.Relation;
 import com.baremaps.osm.geometry.GeometryUtil;
+import com.baremaps.util.postgis.CopyWriter;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import java.sql.Connection;

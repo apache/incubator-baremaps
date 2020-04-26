@@ -16,9 +16,6 @@ package com.baremaps.cli.commands;
 
 import static org.lmdbjava.DbiFlags.MDB_CREATE;
 
-import com.baremaps.util.fs.FileSystem;
-import com.baremaps.util.postgis.PostgisHelper;
-import com.baremaps.util.stream.BatchSpliterator;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.LmdbCoordinateCache;
 import com.baremaps.osm.cache.LmdbReferenceCache;
@@ -33,6 +30,9 @@ import com.baremaps.osm.osmpbf.FileBlock;
 import com.baremaps.osm.osmpbf.FileBlockSpliterator;
 import com.baremaps.osm.stream.CacheImporter;
 import com.baremaps.osm.stream.DatabaseImporter;
+import com.baremaps.util.fs.FileSystem;
+import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.stream.BatchSpliterator;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import java.io.DataInputStream;
@@ -135,7 +135,8 @@ public class Import implements Callable<Integer> {
     CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
     CoordinateReferenceSystem targetCSR = crsFactory.createFromName("EPSG:3857");
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-    CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(sourceCRS, targetCSR);
+    CoordinateTransform coordinateTransform = coordinateTransformFactory
+        .createTransform(sourceCRS, targetCSR);
     HeaderTable headerMapper = new HeaderTable(datasource);
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
 

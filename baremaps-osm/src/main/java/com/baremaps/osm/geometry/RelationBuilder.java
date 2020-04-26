@@ -14,9 +14,9 @@
 
 package com.baremaps.osm.geometry;
 
-import com.baremaps.util.stream.Try;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.model.Relation;
+import com.baremaps.util.stream.Try;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,8 +41,8 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
   /**
    * Constructs a {@code RelationBuilder}.
    *
-   * @param coordinateCache     the {@code Store} used to retrieve the coordinates of a node
-   * @param referenceCache      the {@code Store} used to retrieve the nodes of a way
+   * @param coordinateCache the {@code Store} used to retrieve the coordinates of a node
+   * @param referenceCache  the {@code Store} used to retrieve the nodes of a way
    */
   public RelationBuilder(Cache<Long, Coordinate> coordinateCache, Cache<Long, List<Long>> referenceCache) {
     this.geometryFactory = new GeometryFactory(new PrecisionModel(), 3);

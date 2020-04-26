@@ -40,8 +40,7 @@ public class CachedFileSystem extends FileSystem {
     return fileSystem.accept(uri);
   }
 
-  @Override
-  public InputStream read(URI uri) throws IOException {
+  public Path readAndCache(URI uri) throws IOException {
     if (!cache.containsKey(uri)) {
       try (InputStream input = fileSystem.read(uri)) {
         File temp = File.createTempFile("baremaps_", ".tmp");
@@ -50,13 +49,29 @@ public class CachedFileSystem extends FileSystem {
         cache.put(uri, temp.toPath());
       }
     }
-    return Files.newInputStream(cache.get(uri));
+    return cache.get(uri);
+  }
+
+  @Override
+  public InputStream read(URI uri) throws IOException {
+    return Files.newInputStream(readAndCache(uri));
+  }
+
+  @Override
+  public byte[] readByteArray(URI uri) throws IOException {
+    return Files.readAllBytes(readAndCache(uri));
   }
 
   @Override
   public OutputStream write(URI uri) throws IOException {
     cache.remove(uri);
     return fileSystem.write(uri);
+  }
+
+  @Override
+  public void writeByteArray(URI uri, byte[] bytes) throws IOException {
+    cache.remove(uri);
+    fileSystem.writeByteArray(uri, bytes);
   }
 
   @Override

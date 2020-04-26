@@ -18,9 +18,8 @@ import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
+import com.baremaps.tiles.TileStore;
 import com.baremaps.util.tile.Tile;
-import com.baremaps.tiles.TileException;
-import com.baremaps.tiles.TileReader;
 import com.google.common.collect.Lists;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -44,10 +43,10 @@ public class TileHandler implements HttpHandler {
 
   private static final Pattern URL = Pattern.compile("/(\\d+)/(\\d+)/(\\d+)\\.pbf");
 
-  private final TileReader tileReader;
+  private final TileStore tileStore;
 
-  public TileHandler(TileReader tileReader) {
-    this.tileReader = tileReader;
+  public TileHandler(TileStore tileStore) {
+    this.tileStore = tileStore;
   }
 
   @Override
@@ -66,15 +65,14 @@ public class TileHandler implements HttpHandler {
     Tile tile = new Tile(x, y, z);
 
     try {
-      byte[] bytes = tileReader.read(tile);
+      byte[] bytes = tileStore.read(tile);
       exchange.getResponseHeaders().put(CONTENT_TYPE, TILE_MIME_TYPE);
       exchange.getResponseHeaders().put(CONTENT_ENCODING, TILE_ENCODING);
       exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, ORIGIN_WILDCARD);
       exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, Arrays.asList("*"));
       exchange.sendResponseHeaders(200, bytes.length);
       exchange.getResponseBody().write(bytes);
-    } catch (TileException e) {
-      e.printStackTrace();
+    } catch (IOException ex) {
       exchange.sendResponseHeaders(404, 0);
     } finally {
       exchange.close();

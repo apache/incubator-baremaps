@@ -17,7 +17,8 @@ package com.baremaps.tiles.postgis;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.tiles.config.Layer;
-import com.baremaps.tiles.postgis.QueryParser.Query;
+import com.baremaps.tiles.database.QueryParser;
+import com.baremaps.tiles.database.QueryParser.Query;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;

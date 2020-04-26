@@ -28,7 +28,7 @@ public abstract class Try<T> {
    * Creates a Try from a Callable
    *
    * @param callable the callable to be executed.
-   * @param <T> the return type of the callable.
+   * @param <T>      the return type of the callable.
    * @return a success or a failure.
    */
   public static <T> Try<T> of(Callable<T> callable) {

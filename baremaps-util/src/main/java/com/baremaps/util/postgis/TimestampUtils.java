@@ -20,12 +20,13 @@ public class TimestampUtils {
 
   private static final LocalDateTime PostgresEpoch = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
 
-  private static final long DaysBetweenJavaAndPostgresEpochs = ChronoUnit.DAYS.between(JavaEpoch, PostgresEpoch);
+  private static final long DaysBetweenJavaAndPostgresEpochs = ChronoUnit.DAYS
+      .between(JavaEpoch, PostgresEpoch);
 
 
   public static long convertToPostgresTimeStamp(LocalDateTime localDateTime) {
 
-    if(localDateTime == null) {
+    if (localDateTime == null) {
       throw new IllegalArgumentException("localDateTime");
     }
     // Extract the Time of the Day in Nanoseconds:
@@ -37,17 +38,18 @@ public class TimestampUtils {
     long timeInMicroseconds = timeInNanoseconds / 1000;
 
     // Now Calculate the Postgres Timestamp:
-    if(localDateTime.isBefore(PostgresEpoch)) {
-      long dateInMicroseconds = (localDateTime.toLocalDate().toEpochDay() - DaysBetweenJavaAndPostgresEpochs) * 86400000000L;
+    if (localDateTime.isBefore(PostgresEpoch)) {
+      long dateInMicroseconds =
+          (localDateTime.toLocalDate().toEpochDay() - DaysBetweenJavaAndPostgresEpochs) * 86400000000L;
       return dateInMicroseconds + timeInMicroseconds;
     } else {
-      long dateInMicroseconds = (DaysBetweenJavaAndPostgresEpochs - localDateTime.toLocalDate().toEpochDay()) * 86400000000L;
+      long dateInMicroseconds =
+          (DaysBetweenJavaAndPostgresEpochs - localDateTime.toLocalDate().toEpochDay()) * 86400000000L;
       return -(dateInMicroseconds - timeInMicroseconds);
     }
   }
 
-  public static int toPgDays(LocalDate date)
-  {
+  public static int toPgDays(LocalDate date) {
     // Adjust TimeZone Offset:
     LocalDateTime dateTime = date.atStartOfDay();
     // pg time 0 is 2000-01-01 00:00:00:
@@ -73,8 +75,9 @@ public class TimestampUtils {
   }
 
   /**
-   * Converts the given java seconds to postgresql seconds. The conversion is valid for any year 100 BC onwards.
-   *
+   * Converts the given java seconds to postgresql seconds. The conversion is valid for any year 100 BC
+   * onwards.
+   * <p>
    * from /org/postgresql/jdbc2/TimestampUtils.java
    *
    * @param seconds Postgresql seconds.

@@ -51,10 +51,30 @@ public class CompositeFileSystem extends FileSystem {
   }
 
   @Override
+  public byte[] readByteArray(URI uri) throws IOException {
+    Optional<FileSystem> fileStore = findFileSystem(uri);
+    if (fileStore.isPresent()) {
+      return fileStore.get().readByteArray(uri);
+    } else {
+      throw new IOException("Unsupported file system");
+    }
+  }
+
+  @Override
   public OutputStream write(URI uri) throws IOException {
     Optional<FileSystem> fileSystem = findFileSystem(uri);
     if (fileSystem.isPresent()) {
       return fileSystem.get().write(uri);
+    } else {
+      throw new IOException("Unsupported file system");
+    }
+  }
+
+  @Override
+  public void writeByteArray(URI uri, byte[] bytes) throws IOException {
+    Optional<FileSystem> fileSystem = findFileSystem(uri);
+    if (fileSystem.isPresent()) {
+      fileSystem.get().writeByteArray(uri, bytes);
     } else {
       throw new IOException("Unsupported file system");
     }

@@ -17,14 +17,14 @@ package com.baremaps.cli.commands;
 import static com.baremaps.cli.options.TileReaderOption.slow;
 
 import com.baremaps.cli.options.TileReaderOption;
-import com.baremaps.util.fs.FileSystem;
-import com.baremaps.util.postgis.PostgisHelper;
-import com.baremaps.tiles.TileReader;
+import com.baremaps.tiles.TileStore;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.http.ResourceHandler;
 import com.baremaps.tiles.http.TileHandler;
-import com.baremaps.tiles.postgis.FastTileReader;
-import com.baremaps.tiles.postgis.SlowTileReader;
+import com.baremaps.tiles.database.FastPostgisTileStore;
+import com.baremaps.tiles.database.SlowPostgisTileStore;
+import com.baremaps.util.fs.FileSystem;
+import com.baremaps.util.postgis.PostgisHelper;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,14 +51,14 @@ public class Serve implements Callable<Integer> {
 
   @Option(
       names = {"--database"},
-      paramLabel= "JDBC",
+      paramLabel = "JDBC",
       description = "The JDBC url of the Postgres database.",
       required = true)
   private String database;
 
   @Option(
       names = {"--config"},
-      paramLabel= "YAML",
+      paramLabel = "YAML",
       description = "The YAML configuration file.",
       required = true)
   private URI config;
@@ -81,12 +81,12 @@ public class Serve implements Callable<Integer> {
       description = "The tile reader.")
   private TileReaderOption tileReader = slow;
 
-  public TileReader tileReader(PoolingDataSource dataSource, Config config) {
+  public TileStore tileReader(PoolingDataSource dataSource, Config config) {
     switch (tileReader) {
       case slow:
-        return new SlowTileReader(dataSource, config);
+        return new SlowPostgisTileStore(dataSource, config);
       case fast:
-        return new FastTileReader(dataSource, config);
+        return new FastPostgisTileStore(dataSource, config);
       default:
         throw new UnsupportedOperationException("Unsupported tile reader");
     }
@@ -101,7 +101,7 @@ public class Serve implements Callable<Integer> {
     // Read the configuration toInputStream
     logger.info("Reading configuration.");
     FileSystem fileReader = FileSystem.getDefault(mixins.caching);
-    try(InputStream input = fileReader.read(this.config)) {
+    try (InputStream input = fileReader.read(this.config)) {
       Config config = Config.load(input);
 
       logger.info("Initializing datasource.");
@@ -109,19 +109,18 @@ public class Serve implements Callable<Integer> {
 
       // Choose the tile reader
       logger.info("Initializing tile reader.");
-      TileReader tileReader = tileReader(datasource, config);
+      TileStore tileStore = tileReader(datasource, config);
 
       // Create the http server
       logger.info("Initializing server.");
       HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
       server.createContext("/", new ResourceHandler(Paths.get(directory)));
-      server.createContext("/tiles/", new TileHandler(tileReader));
+      server.createContext("/tiles/", new TileHandler(tileStore));
       server.setExecutor(null);
       server.start();
 
       logger.info("Server started listening on port {}", port);
     }
-
 
     return 0;
   }

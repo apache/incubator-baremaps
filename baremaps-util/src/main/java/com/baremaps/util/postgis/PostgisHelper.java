@@ -53,7 +53,8 @@ public final class PostgisHelper {
     checkNotNull(username);
     checkNotNull(password);
     checkNotNull(allowMultiQueries);
-    return MessageFormat.format(DATABASE_URL, hostname, port, database, username, password, allowMultiQueries);
+    return MessageFormat
+        .format(DATABASE_URL, hostname, port, database, username, password, allowMultiQueries);
   }
 
   public static String url(String database, String user, String password) {

@@ -82,7 +82,7 @@ public class NodeTableTest {
     List<NodeTable.Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeTable.insert(nodes);
     nodeTable.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
-    assertIterableEquals( Arrays.asList(null, null, null),
+    assertIterableEquals(Arrays.asList(null, null, null),
         nodeTable.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 

@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.adobe.testing.s3mock.junit5.S3MockExtension;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import java.io.IOException;
@@ -31,9 +30,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
 public abstract class FileSystemTest {
 

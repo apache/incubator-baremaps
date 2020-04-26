@@ -43,5 +43,5 @@ public class GeometryUtil {
       throw new IllegalArgumentException(e);
     }
   }
-  
+
 }

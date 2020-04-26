@@ -15,9 +15,14 @@
 package com.baremaps.tiles;
 
 import com.baremaps.util.tile.Tile;
+import java.io.IOException;
 
-public interface TileReader {
+public interface TileStore {
 
-  byte[] read(Tile tile) throws TileException;
+  byte[] read(Tile tile) throws IOException;
+
+  void write(Tile tile, byte[] bytes) throws IOException;
+
+  void delete(Tile tile) throws IOException;
 
 }
