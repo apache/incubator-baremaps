@@ -14,6 +14,7 @@
 
 package com.baremaps.cli.commands;
 
+import static com.baremaps.cli.options.TileReaderOption.fast;
 import static com.baremaps.cli.options.TileReaderOption.slow;
 
 import com.baremaps.cli.options.TileReaderOption;
@@ -79,7 +80,7 @@ public class Serve implements Callable<Integer> {
       names = {"--reader"},
       paramLabel = "READER",
       description = "The tile reader.")
-  private TileReaderOption tileReader = slow;
+  private TileReaderOption tileReader = fast;
 
   public TileStore tileReader(PoolingDataSource dataSource, Config config) {
     switch (tileReader) {

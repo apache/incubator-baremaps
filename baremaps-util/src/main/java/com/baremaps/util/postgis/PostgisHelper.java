@@ -31,6 +31,7 @@ import org.apache.commons.dbcp2.PoolableConnectionFactory;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 public final class PostgisHelper {
 
@@ -62,13 +63,16 @@ public final class PostgisHelper {
   }
 
   public static PoolingDataSource poolingDataSource(String url) {
-    ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(url, null);
+    ConnectionFactory connectionFactory =
+        new DriverManagerConnectionFactory(url, null);
     PoolableConnectionFactory poolableConnectionFactory =
         new PoolableConnectionFactory(connectionFactory, null);
     ObjectPool<PoolableConnection> connectionPool =
         new GenericObjectPool<>(poolableConnectionFactory);
     poolableConnectionFactory.setPool(connectionPool);
-    return new PoolingDataSource<>(connectionPool);
+    PoolingDataSource<PoolableConnection> dataSource =
+        new PoolingDataSource<>(connectionPool);
+    return dataSource;
   }
 
   public static void executeScript(Connection connection, String script) throws IOException, SQLException {

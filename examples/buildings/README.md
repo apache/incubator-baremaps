@@ -33,8 +33,8 @@ To preview this example, start the tile server:
 ```bash
 baremaps serve \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
-  --config 'examples/buildings/config.yaml' \
-  --assets 'examples/buildings/static/' \
+  --config 'config.yaml' \
+  --assets 'static/' \
   --reader fast
 ```
 
