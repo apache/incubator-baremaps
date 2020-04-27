@@ -19,6 +19,7 @@ import com.baremaps.osm.geometry.GeometryUtil;
 import com.baremaps.util.postgis.CopyWriter;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -336,8 +337,7 @@ public class RelationTable implements Table<Relation> {
           writer.writeGeometry(row.getGeometry());
         }
       }
-    } catch (Exception ex) {
-      ex.printStackTrace();
+    } catch (IOException | SQLException ex) {
       throw new DatabaseException(ex);
     }
   }

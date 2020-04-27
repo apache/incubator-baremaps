@@ -18,6 +18,7 @@ import com.baremaps.osm.database.NodeTable.Node;
 import com.baremaps.osm.geometry.GeometryUtil;
 import com.baremaps.util.postgis.CopyWriter;
 import com.google.common.base.Objects;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -266,7 +267,7 @@ public class NodeTable implements Table<Node> {
           writer.writeGeometry(node.getPoint());
         }
       }
-    } catch (Exception e) {
+    } catch (IOException | SQLException e) {
       throw new DatabaseException(e);
     }
   }

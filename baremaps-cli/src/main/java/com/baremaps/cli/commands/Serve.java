@@ -18,10 +18,10 @@ import static com.baremaps.cli.options.TileReaderOption.fast;
 
 import com.baremaps.cli.options.TileReaderOption;
 import com.baremaps.tiles.TileStore;
-import com.baremaps.tiles.http.ResourceHandler;
-import com.baremaps.tiles.http.TileHandler;
 import com.baremaps.tiles.database.FastPostgisTileStore;
 import com.baremaps.tiles.database.SlowPostgisTileStore;
+import com.baremaps.tiles.http.ResourceHandler;
+import com.baremaps.tiles.http.TileHandler;
 import com.baremaps.util.fs.FileSystem;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.sun.net.httpserver.HttpServer;

@@ -229,7 +229,7 @@ public class CopyWriter implements AutoCloseable {
    * Close the writer.
    */
   @Override
-  public void close() throws Exception {
+  public void close() throws IOException {
     data.writeShort(-1);
     data.flush();
     data.close();

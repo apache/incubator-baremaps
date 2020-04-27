@@ -87,8 +87,8 @@ public class TileReaderBenchmark {
       coords.forEach(xyz -> {
         try {
           reader.read(xyz);
-        } catch (Exception e) {
-          e.printStackTrace();
+        } catch (IOException ex) {
+          ex.printStackTrace();
         }
       });
     }

@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
 import java.util.stream.Collectors;
@@ -78,8 +79,8 @@ public class SlowPostgisTileStore extends PostgisTileStore {
       }
       gzip.close();
       return data.toByteArray();
-    } catch (Exception e) {
-      throw new IOException(e);
+    } catch (IOException | SQLException ex) {
+      throw new IOException(ex);
     }
   }
 
