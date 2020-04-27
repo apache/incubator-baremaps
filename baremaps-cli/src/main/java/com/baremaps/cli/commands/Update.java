@@ -99,7 +99,7 @@ public class Update implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    Configurator.setRootLevel(Level.getLevel(mixins.level.name()));
+    Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
@@ -127,7 +127,7 @@ public class Update implements Callable<Integer> {
     HeaderBlock header = headerMapper.getLast();
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
 
-    FileSystem fileSystem = FileSystem.getDefault(mixins.caching);
+    FileSystem fileSystem = mixins.fileSystem();
 
     logger.info("Downloading changes.");
     String changePath = changePath(nextSequenceNumber);

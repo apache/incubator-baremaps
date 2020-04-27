@@ -15,19 +15,46 @@
 package com.baremaps.cli.commands;
 
 import com.baremaps.cli.options.LevelOption;
+import com.baremaps.util.fs.CachedFileSystem;
+import com.baremaps.util.fs.CompositeFileSystem;
+import com.baremaps.util.fs.FileSystem;
+import com.baremaps.util.fs.HttpFileSystem;
+import com.baremaps.util.fs.LocalFileSystem;
+import com.baremaps.util.fs.S3FileSystem;
+import java.util.Arrays;
+import java.util.List;
 import picocli.CommandLine.Option;
 
 public class Mixins {
 
   @Option(
-      names = {"--level"},
-      paramLabel = "LEVEL",
+      names = {"--log-level"},
+      paramLabel = "LOG_LEVEL",
       description = {"The log level."})
-  protected LevelOption level = LevelOption.INFO;
+  public LevelOption logLevel = LevelOption.INFO;
 
   @Option(
-      names = {"--caching"},
-      description = "Cache the fetched resources in temporary files.")
-  protected boolean caching = false;
+      names = {"--enable-caching"},
+      paramLabel = "ENABLE_CACHING",
+      description = "Cache downloaded resources in temporary files.")
+  public boolean enableCaching = false;
+
+  @Option(
+      names = {"--enable-aws"},
+      paramLabel = "ENABLE_AWS",
+      description = "Enable Amazon Web Service integration.")
+  public boolean enableAws = false;
+
+  public FileSystem fileSystem() {
+    List<FileSystem> components = Arrays.asList(new LocalFileSystem(), new HttpFileSystem());
+    if (enableAws) {
+      components.add(new S3FileSystem());
+    }
+    FileSystem fileSystem = new CompositeFileSystem(components);
+    if (enableCaching) {
+      fileSystem = new CachedFileSystem(fileSystem);
+    }
+    return fileSystem;
+  }
 
 }

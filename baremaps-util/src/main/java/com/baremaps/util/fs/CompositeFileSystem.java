@@ -28,7 +28,11 @@ public class CompositeFileSystem extends FileSystem {
   private final List<FileSystem> components;
 
   public CompositeFileSystem(FileSystem... components) {
-    this.components = Arrays.asList(components);
+    this(Arrays.asList(components));
+  }
+
+  public CompositeFileSystem(List<FileSystem> components) {
+    this.components = components;
   }
 
   private Optional<FileSystem> findFileSystem(URI uri) {
@@ -46,7 +50,7 @@ public class CompositeFileSystem extends FileSystem {
     if (fileStore.isPresent()) {
       return fileStore.get().read(uri);
     } else {
-      throw new IOException("Unsupported file system");
+      throw new RuntimeException("Unsupported URI: " + uri);
     }
   }
 
@@ -56,7 +60,7 @@ public class CompositeFileSystem extends FileSystem {
     if (fileStore.isPresent()) {
       return fileStore.get().readByteArray(uri);
     } else {
-      throw new IOException("Unsupported file system");
+      throw new RuntimeException("Unsupported URI: " + uri);
     }
   }
 
@@ -66,7 +70,7 @@ public class CompositeFileSystem extends FileSystem {
     if (fileSystem.isPresent()) {
       return fileSystem.get().write(uri);
     } else {
-      throw new IOException("Unsupported file system");
+      throw new RuntimeException("Unsupported URI: " + uri);
     }
   }
 
@@ -76,7 +80,7 @@ public class CompositeFileSystem extends FileSystem {
     if (fileSystem.isPresent()) {
       fileSystem.get().writeByteArray(uri, bytes);
     } else {
-      throw new IOException("Unsupported file system");
+      throw new RuntimeException("Unsupported URI: " + uri);
     }
   }
 
@@ -86,7 +90,7 @@ public class CompositeFileSystem extends FileSystem {
     if (fileStore.isPresent()) {
       fileStore.get().delete(uri);
     } else {
-      throw new IOException("Unsupported file system");
+      throw new RuntimeException("Unsupported URI: " + uri);
     }
   }
 

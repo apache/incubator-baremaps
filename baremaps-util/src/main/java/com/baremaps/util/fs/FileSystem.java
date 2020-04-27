@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 
 public abstract class FileSystem {
 
@@ -32,16 +34,5 @@ public abstract class FileSystem {
   public abstract void writeByteArray(URI uri, byte[] bytes) throws IOException;
 
   public abstract void delete(URI uri) throws IOException;
-
-  public static FileSystem getDefault(boolean caching) {
-    FileSystem fileSystem = new CompositeFileSystem(
-        new LocalFileSystem(),
-        new HttpFileSystem(),
-        new S3FileSystem());
-    if (caching) {
-      fileSystem = new CachedFileSystem(fileSystem);
-    }
-    return fileSystem;
-  }
 
 }

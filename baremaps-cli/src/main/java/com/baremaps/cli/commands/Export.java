@@ -15,14 +15,13 @@
 package com.baremaps.cli.commands;
 
 import static com.baremaps.cli.options.TileReaderOption.fast;
-import static com.baremaps.cli.options.TileReaderOption.slow;
 
 import com.baremaps.cli.options.TileReaderOption;
-import com.baremaps.tiles.store.FileSystemTileStore;
 import com.baremaps.tiles.TileStore;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.database.FastPostgisTileStore;
 import com.baremaps.tiles.database.SlowPostgisTileStore;
+import com.baremaps.tiles.store.FileSystemTileStore;
 import com.baremaps.tiles.util.TileUtil;
 import com.baremaps.util.fs.FileSystem;
 import com.baremaps.util.postgis.PostgisHelper;
@@ -103,20 +102,20 @@ public class Export implements Callable<Integer> {
 
   @Override
   public Integer call() throws SQLException, ParseException, IOException {
-    Configurator.setRootLevel(Level.getLevel(mixins.level.name()));
+    Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     // Initialize the file system
-    FileSystem fileSystem = FileSystem.getDefault(mixins.caching);
+    FileSystem fileSystem = mixins.fileSystem();
 
     // Read the configuration file
     try (InputStream input = fileSystem.read(this.config)) {
-      Config config = Config.load(input);
+      com.baremaps.tiles.config.Config config = com.baremaps.tiles.config.Config.load(input);
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
-      // Initialize tile reader and writer
+      // Initialize tile source and target tile stores
       TileStore tileSource = tileSource(datasource, config);
-      TileStore tileTarget = tileTarget(repository);
+      TileStore tileTarget = tileTarget(fileSystem, repository);
 
       // Export the tiles
       Stream<Tile> tiles = tileStream(fileSystem, datasource);
@@ -124,8 +123,8 @@ public class Export implements Callable<Integer> {
         try {
           byte[] bytes = tileSource.read(tile);
           tileTarget.write(tile, bytes);
-        } catch (Exception e) {
-          e.printStackTrace();
+        } catch (IOException ex) {
+          logger.error("Unable to create the tile", ex);
         }
       });
     }
@@ -135,17 +134,17 @@ public class Export implements Callable<Integer> {
 
   public TileStore tileSource(PoolingDataSource dataSource, Config config) {
     switch (tileReader) {
-      case slow:
-        return new SlowPostgisTileStore(dataSource, config);
       case fast:
         return new FastPostgisTileStore(dataSource, config);
+      case slow:
+        return new SlowPostgisTileStore(dataSource, config);
       default:
         throw new UnsupportedOperationException("Unsupported tile reader");
     }
   }
 
-  private TileStore tileTarget(URI repository) {
-      return new FileSystemTileStore(FileSystem.getDefault(false), repository);
+  private TileStore tileTarget(FileSystem fileSystem, URI repository) {
+    return new FileSystemTileStore(fileSystem, repository);
   }
 
   private Stream<Tile> tileStream(FileSystem fileSystem, DataSource datasource)

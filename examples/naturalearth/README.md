@@ -57,6 +57,5 @@ To preview the data, run the tile server with the following command:
 baremaps serve \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
   --config 'config.yaml' \
-  --assets 'static/' \
-  --reader fast
+  --assets 'static/'
 ```

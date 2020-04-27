@@ -90,7 +90,7 @@ public class Import implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    Configurator.setRootLevel(Level.getLevel(mixins.level.name()));
+    Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
@@ -145,7 +145,7 @@ public class Import implements Callable<Integer> {
     RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
 
     logger.info("Fetching input.");
-    FileSystem fileSystem = FileSystem.getDefault(mixins.caching);
+    FileSystem fileSystem =  mixins.fileSystem();
 
     logger.info("Populating cache.");
     try (DataInputStream input = new DataInputStream(fileSystem.read(this.input))) {

@@ -15,11 +15,9 @@
 package com.baremaps.cli.commands;
 
 import static com.baremaps.cli.options.TileReaderOption.fast;
-import static com.baremaps.cli.options.TileReaderOption.slow;
 
 import com.baremaps.cli.options.TileReaderOption;
 import com.baremaps.tiles.TileStore;
-import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.http.ResourceHandler;
 import com.baremaps.tiles.http.TileHandler;
 import com.baremaps.tiles.database.FastPostgisTileStore;
@@ -82,7 +80,7 @@ public class Serve implements Callable<Integer> {
       description = "The tile reader.")
   private TileReaderOption tileReader = fast;
 
-  public TileStore tileReader(PoolingDataSource dataSource, Config config) {
+  public TileStore tileReader(PoolingDataSource dataSource, com.baremaps.tiles.config.Config config) {
     switch (tileReader) {
       case slow:
         return new SlowPostgisTileStore(dataSource, config);
@@ -95,15 +93,15 @@ public class Serve implements Callable<Integer> {
 
   @Override
   public Integer call() throws IOException {
-    Configurator.setRootLevel(Level.getLevel(mixins.level.name()));
+    Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
 
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     // Read the configuration toInputStream
     logger.info("Reading configuration.");
-    FileSystem fileReader = FileSystem.getDefault(mixins.caching);
+    FileSystem fileReader =  mixins.fileSystem();
     try (InputStream input = fileReader.read(this.config)) {
-      Config config = Config.load(input);
+      com.baremaps.tiles.config.Config config = com.baremaps.tiles.config.Config.load(input);
 
       logger.info("Initializing datasource.");
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
