@@ -14,10 +14,11 @@
 
 package com.baremaps.osm.database;
 
-import com.baremaps.core.postgis.CopyWriter;
 import com.baremaps.osm.database.WayTable.Way;
 import com.baremaps.osm.geometry.GeometryUtil;
+import com.baremaps.util.postgis.CopyWriter;
 import com.google.common.base.Objects;
+import java.io.IOException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -294,8 +295,8 @@ public class WayTable implements Table<Way> {
           writer.writeGeometry(row.getGeometry());
         }
       }
-    } catch (Exception e) {
-      throw new DatabaseException(e);
+    } catch (IOException | SQLException ex) {
+      throw new DatabaseException(ex);
     }
   }
 

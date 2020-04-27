@@ -20,11 +20,11 @@ import static com.baremaps.osm.DataFiles.waysOsmPbf;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.baremaps.core.stream.HoldingConsumer;
 import com.baremaps.osm.binary.Osmformat;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
+import com.baremaps.util.stream.HoldingConsumer;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -38,7 +38,8 @@ public class PrimitiveBlockBlockParserTest {
     HoldingConsumer<FileBlock> consumer = new HoldingConsumer<>();
     Spliterator<FileBlock> fileBlockIterator = new FileBlockSpliterator(new DataInputStream(denseOsmPbf()));
     fileBlockIterator.tryAdvance(consumer);
-    PrimitiveBlock primitiveBlockReader = new PrimitiveBlock(Osmformat.PrimitiveBlock.parseFrom(consumer.value().getData()));
+    PrimitiveBlock primitiveBlockReader = new PrimitiveBlock(
+        Osmformat.PrimitiveBlock.parseFrom(consumer.value().getData()));
     List<Node> nodes = primitiveBlockReader.getDenseNodes();
     assertNotNull(nodes);
     assertFalse(nodes.isEmpty());
@@ -49,7 +50,8 @@ public class PrimitiveBlockBlockParserTest {
     HoldingConsumer<FileBlock> consumer = new HoldingConsumer<>();
     Spliterator<FileBlock> fileBlockIterator = new FileBlockSpliterator(new DataInputStream(waysOsmPbf()));
     fileBlockIterator.tryAdvance(consumer);
-    PrimitiveBlock primitiveBlockReader = new PrimitiveBlock(Osmformat.PrimitiveBlock.parseFrom(consumer.value().getData()));
+    PrimitiveBlock primitiveBlockReader = new PrimitiveBlock(
+        Osmformat.PrimitiveBlock.parseFrom(consumer.value().getData()));
     List<Way> ways = primitiveBlockReader.getWays();
     assertNotNull(ways);
     assertFalse(ways.isEmpty());
@@ -58,9 +60,11 @@ public class PrimitiveBlockBlockParserTest {
   @Test
   public void readRelations() throws IOException {
     HoldingConsumer<FileBlock> consumer = new HoldingConsumer<>();
-    Spliterator<FileBlock> fileBlockIterator = new FileBlockSpliterator(new DataInputStream(relationsOsmPbf()));
+    Spliterator<FileBlock> fileBlockIterator = new FileBlockSpliterator(
+        new DataInputStream(relationsOsmPbf()));
     fileBlockIterator.tryAdvance(consumer);
-    PrimitiveBlock primitiveBlockReader = new PrimitiveBlock(Osmformat.PrimitiveBlock.parseFrom(consumer.value().getData()));
+    PrimitiveBlock primitiveBlockReader = new PrimitiveBlock(
+        Osmformat.PrimitiveBlock.parseFrom(consumer.value().getData()));
     List<Relation> relations = primitiveBlockReader.getRelations();
     assertNotNull(relations);
     assertFalse(relations.isEmpty());

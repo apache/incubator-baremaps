@@ -33,9 +33,8 @@ To preview this example, start the tile server:
 ```bash
 baremaps serve \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
-  --config 'examples/buildings/config.yaml' \
-  --assets 'examples/buildings/static/' \
-  --reader fast
+  --config 'config.yaml' \
+  --assets 'static/'
 ```
 
 Well done, a map of London should appear in your browser ([http://localhost:9000/](http://localhost:9000/))!

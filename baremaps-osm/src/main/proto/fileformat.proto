@@ -19,7 +19,6 @@ package OSMPBF;
 
 //protoc --java_out=../.. fileformat.proto
 
-
 //
 //  STORAGE LAYER: Storing primitives.
 //
@@ -35,7 +34,7 @@ message Blob {
   optional bytes lzma_data = 4;
 
   // Formerly used for bzip2 compressed data. Depreciated in 2010.
-  optional bytes OBSOLETE_bzip2_data = 5 [deprecated=true]; // Don't reuse this tag number.
+  optional bytes OBSOLETE_bzip2_data = 5 [deprecated = true]; // Don't reuse this tag number.
 }
 
 /* A file contains an sequence of fileblock headers, each prefixed by

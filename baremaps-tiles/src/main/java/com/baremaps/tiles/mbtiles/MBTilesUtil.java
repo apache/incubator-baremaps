@@ -14,9 +14,7 @@
 
 package com.baremaps.tiles.mbtiles;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import com.baremaps.core.tile.Tile;
+import com.baremaps.util.tile.Tile;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,7 +29,7 @@ public final class MBTilesUtil {
       "CREATE TABLE metadata (name TEXT, value TEXT, PRIMARY KEY (name))";
 
   private static final String CREATE_TABLE_TILES =
-      "CREATE TABLE tiles (zoom_level INTEGER, tile_column INTEGER, tile_row INTEGER, tile_data BLOB)";
+      "CREATE TABLE tiles (zoom_level INTEGER, tile_column INTEGER, tile_row INTEGER, tile_data BLOB, PRIMARY KEY (zoom_level, tile_column, tile_row))";
 
   private static final String CREATE_INDEX_TILES =
       "CREATE UNIQUE INDEX tile_index on tiles (zoom_level, tile_column, tile_row)";
@@ -48,8 +46,12 @@ public final class MBTilesUtil {
   private static final String INSERT_TILE =
       "INSERT INTO tiles (zoom_level, tile_column, tile_row, tile_data) VALUES (?, ?, ?, ?)";
 
-  public static void createDatabase(Connection connection) throws SQLException {
-    checkNotNull(connection);
+  private static final String DELETE_TILE =
+      "DELETE FROM tiles WHERE zoom_level = ? AND tile_column = ? AND tile_row = ?";
+
+  public static final String TRUNCATE_METADATA = "TRUNCATE TABLE metadata";
+
+  public static void initializeDatabase(Connection connection) throws SQLException {
     try (Statement statement = connection.createStatement()) {
       statement.execute(CREATE_TABLE_METADATA);
       statement.execute(CREATE_TABLE_TILES);
@@ -57,8 +59,7 @@ public final class MBTilesUtil {
     }
   }
 
-  public static Map<String, String> getMetadata(Connection connection) throws SQLException {
-    checkNotNull(connection);
+  public static Map<String, String> readMetadata(Connection connection) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(SELECT_METADATA);
         ResultSet resultSet = statement.executeQuery()) {
       Map<String, String> metadata = new HashMap<>();
@@ -71,23 +72,19 @@ public final class MBTilesUtil {
     }
   }
 
-  public static byte[] getTile(Connection connection, Tile tile) throws SQLException {
-    checkNotNull(connection);
-    checkNotNull(tile);
-    try (PreparedStatement statement = getTileStatement(connection, tile);
+  public static byte[] readTile(Connection connection, Tile tile) throws SQLException {
+    try (PreparedStatement statement = readTileStatement(connection, tile);
         ResultSet resultSet = statement.executeQuery()) {
       if (resultSet.next()) {
         return resultSet.getBytes("tile_data");
       } else {
-        return null;
+        throw new SQLException("The tile does not exist");
       }
     }
   }
 
-  private static PreparedStatement getTileStatement(Connection connection, Tile tile)
+  private static PreparedStatement readTileStatement(Connection connection, Tile tile)
       throws SQLException {
-    checkNotNull(connection);
-    checkNotNull(tile);
     PreparedStatement statement = connection.prepareStatement(SELECT_TILE);
     statement.setInt(1, tile.getZ());
     statement.setInt(2, tile.getX());
@@ -95,10 +92,14 @@ public final class MBTilesUtil {
     return statement;
   }
 
-  public static void setMetadata(Connection connection, Map<String, String> metadata)
+  public static void truncateMetadata(Connection connection) throws SQLException {
+    try (Statement statement = connection.createStatement()) {
+      statement.execute(TRUNCATE_METADATA);
+    }
+  }
+
+  public static void writeMetadata(Connection connection, Map<String, String> metadata)
       throws SQLException {
-    checkNotNull(connection);
-    checkNotNull(metadata);
     try (PreparedStatement statement = connection.prepareStatement(INSERT_METADATA)) {
       for (Map.Entry<String, String> entry : metadata.entrySet()) {
         statement.setString(1, entry.getKey());
@@ -108,16 +109,22 @@ public final class MBTilesUtil {
     }
   }
 
-  public static void setTile(Connection connection, Tile tile, byte[] bytes) throws SQLException {
-    checkNotNull(connection);
-    checkNotNull(tile);
-    checkNotNull(bytes);
+  public static void writeTile(Connection connection, Tile tile, byte[] bytes) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
       statement.setInt(1, tile.getZ());
       statement.setInt(2, tile.getX());
-      statement.setInt(3, tile.getY());
+      statement.setInt(3, reverseY(tile.getY(), tile.getZ()));
       statement.setBytes(4, bytes);
       statement.executeUpdate();
+    }
+  }
+
+  public static void deleteTile(Connection connection, Tile tile) throws SQLException {
+    try (PreparedStatement statement = connection.prepareStatement(DELETE_TILE)) {
+      statement.setInt(1, tile.getZ());
+      statement.setInt(2, tile.getX());
+      statement.setInt(3, reverseY(tile.getY(), tile.getZ()));
+      statement.execute();
     }
   }
 

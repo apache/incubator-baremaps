@@ -16,7 +16,6 @@ package com.baremaps.osm.osmxml;
 
 import static com.baremaps.osm.model.User.NO_USER;
 
-import com.baremaps.core.stream.StreamException;
 import com.baremaps.osm.model.Info;
 import com.baremaps.osm.model.Member;
 import com.baremaps.osm.model.Node;
@@ -24,6 +23,7 @@ import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.User;
 import com.baremaps.osm.model.Way;
 import com.baremaps.osm.osmxml.Change.Type;
+import com.baremaps.util.stream.StreamException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <groupId>com.baremaps</groupId>
   <artifactId>baremaps</artifactId>
@@ -47,7 +48,7 @@
     <module>baremaps-tiles</module>
     <module>baremaps-benchmarks</module>
     <module>baremaps-cli</module>
-    <module>baremaps-core</module>
+    <module>baremaps-util</module>
   </modules>
 
   <profiles>
@@ -73,8 +74,12 @@
           <id>maven</id>
           <name>Maven Central</name>
           <url>https://repo1.maven.org/maven2</url>
-          <releases><enabled>true</enabled></releases>
-          <snapshots><enabled>true</enabled></snapshots>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
         </repository>
         <repository>
           <id>github</id>
@@ -107,6 +112,8 @@
     <version.lib.snakeyaml>1.26</version.lib.snakeyaml>
     <version.lib.sqlite>3.30.1</version.lib.sqlite>
     <version.lib.testng>7.1.0</version.lib.testng>
+    <version.lib.s3mock>2.1.19</version.lib.s3mock>
+    <version.lib.jackson>2.9.9</version.lib.jackson>
     <version.plugin.compiler>3.8.1</version.plugin.compiler>
     <version.plugin.jacoco>0.8.5</version.plugin.jacoco>
     <version.plugin.surefire>2.22.2</version.plugin.surefire>
@@ -183,8 +190,26 @@
           <goals>deploy</goals>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.1.1</version>
+        <configuration>
+          <configLocation>google_checks.xml</configLocation>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>3.0.0</version>
+      </plugin>
+    </plugins>
+  </reporting>
 
   <dependencyManagement>
     <dependencies>
@@ -200,7 +225,7 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-core</artifactId>
+        <artifactId>baremaps-util</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -362,6 +387,30 @@
         <scope>test</scope>
         <version>${version.lib.testng}</version>
       </dependency>
+      <dependency>
+        <groupId>com.adobe.testing</groupId>
+        <artifactId>s3mock</artifactId>
+        <version>${version.lib.s3mock}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.adobe.testing</groupId>
+        <artifactId>s3mock-testsupport-common</artifactId>
+        <version>${version.lib.s3mock}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.adobe.testing</groupId>
+        <artifactId>s3mock-junit5</artifactId>
+        <version>${version.lib.s3mock}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
+        <version>${version.lib.jackson}</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -409,10 +458,6 @@
       <artifactId>log4j-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
@@ -425,6 +470,22 @@
     <dependency>
       <artifactId>junit-jupiter-engine</artifactId>
       <groupId>org.junit.jupiter</groupId>
+    </dependency>
+    <dependency>
+      <groupId>com.adobe.testing</groupId>
+      <artifactId>s3mock</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.adobe.testing</groupId>
+      <artifactId>s3mock-testsupport-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.adobe.testing</groupId>
+      <artifactId>s3mock-junit5</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
     </dependency>
   </dependencies>
 

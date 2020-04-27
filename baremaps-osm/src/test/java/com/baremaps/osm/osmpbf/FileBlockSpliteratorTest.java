@@ -19,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.baremaps.core.stream.AccumulatingConsumer;
-import com.baremaps.core.stream.HoldingConsumer;
+import com.baremaps.util.stream.AccumulatingConsumer;
+import com.baremaps.util.stream.HoldingConsumer;
 import java.io.DataInputStream;
 import java.util.Spliterator;
 import org.junit.jupiter.api.Test;

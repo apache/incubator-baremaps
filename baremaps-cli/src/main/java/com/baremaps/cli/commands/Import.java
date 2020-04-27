@@ -16,9 +16,6 @@ package com.baremaps.cli.commands;
 
 import static org.lmdbjava.DbiFlags.MDB_CREATE;
 
-import com.baremaps.core.fetch.FileReader;
-import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.core.stream.BatchSpliterator;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.LmdbCoordinateCache;
 import com.baremaps.osm.cache.LmdbReferenceCache;
@@ -33,10 +30,14 @@ import com.baremaps.osm.osmpbf.FileBlock;
 import com.baremaps.osm.osmpbf.FileBlockSpliterator;
 import com.baremaps.osm.stream.CacheImporter;
 import com.baremaps.osm.stream.DatabaseImporter;
+import com.baremaps.util.fs.FileSystem;
+import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.stream.BatchSpliterator;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -78,7 +79,7 @@ public class Import implements Callable<Integer> {
       paramLabel = "PBF",
       description = "The OpenStreetMap PBF file.",
       required = true)
-  private String input;
+  private URI input;
 
   @Option(
       names = {"--database"},
@@ -89,7 +90,7 @@ public class Import implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    Configurator.setRootLevel(Level.getLevel(mixins.level));
+    Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
@@ -134,26 +135,27 @@ public class Import implements Callable<Integer> {
     CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
     CoordinateReferenceSystem targetCSR = crsFactory.createFromName("EPSG:3857");
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-    CoordinateTransform coordinateTransform = coordinateTransformFactory.createTransform(sourceCRS, targetCSR);
+    CoordinateTransform coordinateTransform = coordinateTransformFactory
+        .createTransform(sourceCRS, targetCSR);
     HeaderTable headerMapper = new HeaderTable(datasource);
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
 
     NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
     WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
-    RelationBuilder relationBuilder = new RelationBuilder(coordinateCache, referenceCache);
+    RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
 
     logger.info("Fetching input.");
-    FileReader fileReader = new FileReader(mixins.caching);
+    FileSystem fileSystem =  mixins.fileSystem();
 
     logger.info("Populating cache.");
-    try (DataInputStream input = new DataInputStream(fileReader.read(this.input))) {
+    try (DataInputStream input = new DataInputStream(fileSystem.read(this.input))) {
       Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(input), false);
       CacheImporter blockConsumer = new CacheImporter(nodeBuilder, coordinateCache, referenceCache);
       blocks.forEach(blockConsumer);
     }
 
     logger.info("Populating database.");
-    try (DataInputStream input = new DataInputStream(fileReader.read(this.input))) {
+    try (DataInputStream input = new DataInputStream(fileSystem.read(this.input))) {
       Stream<FileBlock> blocks = StreamSupport
           .stream(new BatchSpliterator<>(new FileBlockSpliterator(input), 10), true);
 

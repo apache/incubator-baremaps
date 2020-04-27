@@ -14,9 +14,6 @@
 
 package com.baremaps.cli.commands;
 
-import com.baremaps.core.fetch.FileReader;
-import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.core.tile.Tile;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.PostgisCoordinateCache;
 import com.baremaps.osm.cache.PostgisReferenceCache;
@@ -34,13 +31,15 @@ import com.baremaps.osm.osmxml.ChangeSpliterator;
 import com.baremaps.osm.osmxml.State;
 import com.baremaps.osm.stream.DatabaseUpdater;
 import com.baremaps.osm.stream.DeltaProducer;
+import com.baremaps.util.fs.FileSystem;
+import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.tile.Tile;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.nio.file.Paths;
+import java.net.URI;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.concurrent.Callable;
@@ -90,7 +89,7 @@ public class Update implements Callable<Integer> {
       paramLabel = "DELTA",
       description = "The output delta file.",
       required = true)
-  private String delta;
+  private URI delta;
 
   @Option(
       names = {"--zoom"},
@@ -100,7 +99,7 @@ public class Update implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    Configurator.setRootLevel(Level.getLevel(mixins.level));
+    Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
@@ -118,7 +117,7 @@ public class Update implements Callable<Integer> {
 
     NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
     WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
-    RelationBuilder relationBuilder = new RelationBuilder(coordinateCache, referenceCache);
+    RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
 
     NodeTable nodeStore = new NodeTable(datasource);
     WayTable wayStore = new WayTable(datasource);
@@ -128,15 +127,15 @@ public class Update implements Callable<Integer> {
     HeaderBlock header = headerMapper.getLast();
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
 
+    FileSystem fileSystem = mixins.fileSystem();
+
     logger.info("Downloading changes.");
     String changePath = changePath(nextSequenceNumber);
-    String changeURL = String.format("%s/%s", input, changePath);
-    FileReader fileReader = new FileReader(mixins.caching);
-
+    URI changeURI = new URI(String.format("%s/%s", input, changePath));
 
     logger.info("Downloading state information.");
     String statePath = statePath(nextSequenceNumber);
-    String stateURL = String.format("%s/%s", input, statePath);
+    URI stateURI = new URI(String.format("%s/%s", input, statePath));
 
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransformFactory
         .createTransform(targetCRS, sourceCRS));
@@ -144,21 +143,21 @@ public class Update implements Callable<Integer> {
         wayStore, relationStore, projectionTransformer, zoom);
 
     logger.info("Computing differences.");
-    try (InputStream changeInputStream = new GZIPInputStream(fileReader.read(changeURL))) {
+    try (InputStream changeInputStream = new GZIPInputStream(fileSystem.read(changeURI))) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
       changeStream.forEach(deltaMaker);
     }
 
     logger.info("Saving differences.");
-    try (PrintWriter diffPrintWriter = new PrintWriter(new FileOutputStream(Paths.get(delta).toFile()))) {
+    try (PrintWriter diffPrintWriter = new PrintWriter(fileSystem.write(delta))) {
       for (Tile tile : deltaMaker.getTiles()) {
         diffPrintWriter.println(String.format("%d/%d/%d", tile.getX(), tile.getY(), tile.getZ()));
       }
     }
 
     logger.info("Updating database.");
-    try (InputStream changeInputStream = new GZIPInputStream(fileReader.read(changeURL))) {
+    try (InputStream changeInputStream = new GZIPInputStream(fileSystem.read(changeURI))) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
       DatabaseUpdater databaseUpdater = new DatabaseUpdater(nodeBuilder, wayBuilder, relationBuilder,
@@ -167,7 +166,7 @@ public class Update implements Callable<Integer> {
     }
 
     logger.info("Updating state information.");
-    try (InputStreamReader reader = new InputStreamReader(fileReader.read(stateURL), Charsets.UTF_8)) {
+    try (InputStreamReader reader = new InputStreamReader(fileSystem.read(stateURI), Charsets.UTF_8)) {
       String stateContent = CharStreams.toString(reader);
       State state = State.parse(stateContent);
       headerMapper.insert(new HeaderBlock(

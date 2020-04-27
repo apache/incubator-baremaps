@@ -160,7 +160,7 @@ public class GeometryConstants {
           new Member(3l, Type.way, "inner"),
           new Member(4l, Type.way, "outer")));
 
-  public static final RelationBuilder RELATION_BUILDER = new RelationBuilder(
+  public static final RelationBuilder RELATION_BUILDER = new RelationBuilder(GEOMETRY_FACTORY,
       COORDINATE_CACHE, REFERENCE_CACHE);
 
 

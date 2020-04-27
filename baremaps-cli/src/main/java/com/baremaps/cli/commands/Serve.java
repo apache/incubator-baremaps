@@ -14,21 +14,21 @@
 
 package com.baremaps.cli.commands;
 
-import static com.baremaps.cli.options.TileReaderOption.slow;
+import static com.baremaps.cli.options.TileReaderOption.fast;
 
 import com.baremaps.cli.options.TileReaderOption;
-import com.baremaps.core.fetch.FileReader;
-import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.tiles.TileReader;
-import com.baremaps.tiles.config.Config;
+import com.baremaps.tiles.TileStore;
+import com.baremaps.tiles.database.FastPostgisTileStore;
+import com.baremaps.tiles.database.SlowPostgisTileStore;
 import com.baremaps.tiles.http.ResourceHandler;
 import com.baremaps.tiles.http.TileHandler;
-import com.baremaps.tiles.postgis.FastTileReader;
-import com.baremaps.tiles.postgis.SlowTileReader;
+import com.baremaps.util.fs.FileSystem;
+import com.baremaps.util.postgis.PostgisHelper;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 import org.apache.commons.dbcp2.PoolingDataSource;
@@ -50,17 +50,17 @@ public class Serve implements Callable<Integer> {
 
   @Option(
       names = {"--database"},
-      paramLabel= "JDBC",
+      paramLabel = "JDBC",
       description = "The JDBC url of the Postgres database.",
       required = true)
   private String database;
 
   @Option(
       names = {"--config"},
-      paramLabel= "YAML",
+      paramLabel = "YAML",
       description = "The YAML configuration file.",
       required = true)
-  private String config;
+  private URI config;
 
   @Option(
       names = {"--assets"},
@@ -78,14 +78,14 @@ public class Serve implements Callable<Integer> {
       names = {"--reader"},
       paramLabel = "READER",
       description = "The tile reader.")
-  private TileReaderOption tileReader = slow;
+  private TileReaderOption tileReader = fast;
 
-  public TileReader tileReader(PoolingDataSource dataSource, Config config) {
+  public TileStore tileReader(PoolingDataSource dataSource, com.baremaps.tiles.config.Config config) {
     switch (tileReader) {
       case slow:
-        return new SlowTileReader(dataSource, config);
+        return new SlowPostgisTileStore(dataSource, config);
       case fast:
-        return new FastTileReader(dataSource, config);
+        return new FastPostgisTileStore(dataSource, config);
       default:
         throw new UnsupportedOperationException("Unsupported tile reader");
     }
@@ -93,34 +93,33 @@ public class Serve implements Callable<Integer> {
 
   @Override
   public Integer call() throws IOException {
-    Configurator.setRootLevel(Level.getLevel(mixins.level));
+    Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
 
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     // Read the configuration toInputStream
     logger.info("Reading configuration.");
-    FileReader fileReader = new FileReader(mixins.caching);
-    try(InputStream input = fileReader.read(this.config)) {
-      Config config = Config.load(input);
+    FileSystem fileReader =  mixins.fileSystem();
+    try (InputStream input = fileReader.read(this.config)) {
+      com.baremaps.tiles.config.Config config = com.baremaps.tiles.config.Config.load(input);
 
       logger.info("Initializing datasource.");
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
       // Choose the tile reader
       logger.info("Initializing tile reader.");
-      TileReader tileReader = tileReader(datasource, config);
+      TileStore tileStore = tileReader(datasource, config);
 
       // Create the http server
       logger.info("Initializing server.");
       HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
       server.createContext("/", new ResourceHandler(Paths.get(directory)));
-      server.createContext("/tiles/", new TileHandler(tileReader));
+      server.createContext("/tiles/", new TileHandler(tileStore));
       server.setExecutor(null);
       server.start();
 
       logger.info("Server started listening on port {}", port);
     }
-
 
     return 0;
   }

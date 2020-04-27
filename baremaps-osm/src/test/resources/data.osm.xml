@@ -1,16 +1,21 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <osm generator="Osmosis %VERSION%" version="0.6">
-  <bounds maxlat="90.00000" maxlon="180.00000" minlat="-90.00000" minlon="-180.00000" origin="Osmosis %VERSION%"/>
-  <node changeset="11" id="1" lat="-1" lon="-2" timestamp="2008-01-02T03:04:05Z" uid="10" user="user10" version="10">
+  <bounds maxlat="90.00000" maxlon="180.00000" minlat="-90.00000" minlon="-180.00000"
+    origin="Osmosis %VERSION%"/>
+  <node changeset="11" id="1" lat="-1" lon="-2" timestamp="2008-01-02T03:04:05Z" uid="10" user="user10"
+    version="10">
     <tag k="created_by" v="Me1"/>
   </node>
-  <node changeset="21" id="2" lat="-3" lon="-4" timestamp="2008-01-02T03:04:05Z" uid="20" user="user20" version="11">
+  <node changeset="21" id="2" lat="-3" lon="-4" timestamp="2008-01-02T03:04:05Z" uid="20" user="user20"
+    version="11">
     <tag k="created_by" v="Me2"/>
   </node>
-  <node changeset="31" id="3" lat="-5" lon="-6" timestamp="2008-01-02T06:07:08Z" uid="30" user="user30" version="12">
+  <node changeset="31" id="3" lat="-5" lon="-6" timestamp="2008-01-02T06:07:08Z" uid="30" user="user30"
+    version="12">
     <tag k="created_by" v="Me3"/>
   </node>
-  <node changeset="41" id="4" lat="-7" lon="-8" timestamp="2008-01-02T09:10:11Z" uid="40" user="user40" version="13">
+  <node changeset="41" id="4" lat="-7" lon="-8" timestamp="2008-01-02T09:10:11Z" uid="40" user="user40"
+    version="13">
     <tag k="created_by" v="Me4"/>
   </node>
   <node changeset="91" id="5" lat="-9" lon="-10" timestamp="2008-01-02T12:13:14Z" version="14">

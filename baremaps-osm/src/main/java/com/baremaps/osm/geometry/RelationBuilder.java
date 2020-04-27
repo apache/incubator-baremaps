@@ -14,9 +14,9 @@
 
 package com.baremaps.osm.geometry;
 
-import com.baremaps.core.stream.Try;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.model.Relation;
+import com.baremaps.util.stream.Try;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,7 +24,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 
 /**
@@ -41,11 +40,12 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
   /**
    * Constructs a {@code RelationBuilder}.
    *
-   * @param coordinateCache     the {@code Store} used to retrieve the coordinates of a node
-   * @param referenceCache      the {@code Store} used to retrieve the nodes of a way
+   * @param geometryFactory the {@code GeometryFactory} used to create geometries
+   * @param coordinateCache the {@code Store} used to retrieve the coordinates of a node
+   * @param referenceCache  the {@code Store} used to retrieve the nodes of a way
    */
-  public RelationBuilder(Cache<Long, Coordinate> coordinateCache, Cache<Long, List<Long>> referenceCache) {
-    this.geometryFactory = new GeometryFactory(new PrecisionModel(), 3);
+  public RelationBuilder(GeometryFactory geometryFactory, Cache<Long, Coordinate> coordinateCache, Cache<Long, List<Long>> referenceCache) {
+    this.geometryFactory = geometryFactory;
     this.coordinateCache = coordinateCache;
     this.referenceCache = referenceCache;
   }

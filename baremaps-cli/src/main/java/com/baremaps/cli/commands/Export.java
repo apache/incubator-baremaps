@@ -14,28 +14,23 @@
 
 package com.baremaps.cli.commands;
 
-import static com.baremaps.cli.options.TileReaderOption.slow;
+import static com.baremaps.cli.options.TileReaderOption.fast;
 
 import com.baremaps.cli.options.TileReaderOption;
-import com.baremaps.core.fetch.FileReader;
-import com.baremaps.core.postgis.PostgisHelper;
-import com.baremaps.core.tile.Tile;
-import com.baremaps.tiles.TileReader;
-import com.baremaps.tiles.TileWriter;
+import com.baremaps.tiles.TileStore;
 import com.baremaps.tiles.config.Config;
-import com.baremaps.tiles.file.FileTileStore;
-import com.baremaps.tiles.postgis.FastTileReader;
-import com.baremaps.tiles.postgis.SlowTileReader;
-import com.baremaps.tiles.s3.S3TileStore;
+import com.baremaps.tiles.database.FastPostgisTileStore;
+import com.baremaps.tiles.database.SlowPostgisTileStore;
+import com.baremaps.tiles.store.FileSystemTileStore;
 import com.baremaps.tiles.util.TileUtil;
+import com.baremaps.util.fs.FileSystem;
+import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.tile.Tile;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
@@ -51,7 +46,6 @@ import org.locationtech.jts.io.ParseException;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
-import software.amazon.awssdk.services.s3.S3Client;
 
 @Command(name = "export", description = "Export vector tiles from the Postgresql database.")
 public class Export implements Callable<Integer> {
@@ -73,14 +67,14 @@ public class Export implements Callable<Integer> {
       paramLabel = "YAML",
       description = "The YAML configuration file.",
       required = true)
-  private String config;
+  private URI config;
 
   @Option(
       names = {"--repository"},
       paramLabel = "URL",
       description = "The tile repository URL.",
       required = true)
-  private String repository;
+  private URI repository;
 
   @Option(
       names = {"--minZoom"},
@@ -98,39 +92,39 @@ public class Export implements Callable<Integer> {
       names = {"--delta"},
       paramLabel = "DELTA",
       description = "The input delta file.")
-  private String delta;
+  private URI delta;
 
   @Option(
       names = {"--reader"},
       paramLabel = "READER",
       description = "The tile reader.")
-  private TileReaderOption tileReader = slow;
+  private TileReaderOption tileReader = fast;
 
   @Override
   public Integer call() throws SQLException, ParseException, IOException {
-    Configurator.setRootLevel(Level.getLevel(mixins.level));
+    Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
-    // Initialize the fetcher
-    FileReader fileReader = new FileReader(mixins.caching);
+    // Initialize the file system
+    FileSystem fileSystem = mixins.fileSystem();
 
     // Read the configuration file
-    try (InputStream input = fileReader.read(this.config)) {
-      Config config = Config.load(input);
+    try (InputStream input = fileSystem.read(this.config)) {
+      com.baremaps.tiles.config.Config config = com.baremaps.tiles.config.Config.load(input);
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
-      // Initialize tile reader and writer
-      TileReader tileReader = tileReader(datasource, config);
-      TileWriter tileWriter = tileWriter(repository);
+      // Initialize tile source and target tile stores
+      TileStore tileSource = tileSource(datasource, config);
+      TileStore tileTarget = tileTarget(fileSystem, repository);
 
       // Export the tiles
-      Stream<Tile> tiles = tileStream(fileReader, datasource);
+      Stream<Tile> tiles = tileStream(fileSystem, datasource);
       tiles.parallel().forEach(tile -> {
         try {
-          byte[] bytes = tileReader.read(tile);
-          tileWriter.write(tile, bytes);
-        } catch (Exception e) {
-          e.printStackTrace();
+          byte[] bytes = tileSource.read(tile);
+          tileTarget.write(tile, bytes);
+        } catch (IOException ex) {
+          logger.error("Unable to create the tile", ex);
         }
       });
     }
@@ -138,40 +132,26 @@ public class Export implements Callable<Integer> {
     return 0;
   }
 
-  public TileReader tileReader(PoolingDataSource dataSource, Config config) {
+  public TileStore tileSource(PoolingDataSource dataSource, Config config) {
     switch (tileReader) {
-      case slow:
-        return new SlowTileReader(dataSource, config);
       case fast:
-        return new FastTileReader(dataSource, config);
+        return new FastPostgisTileStore(dataSource, config);
+      case slow:
+        return new SlowPostgisTileStore(dataSource, config);
       default:
         throw new UnsupportedOperationException("Unsupported tile reader");
     }
   }
 
-  private TileWriter tileWriter(String repository) throws IOException {
-    if (Files.exists(Paths.get(repository))) {
-      return new FileTileStore(Paths.get(repository));
-    } else if (repository.startsWith("s3://")) {
-      try {
-        URI uri = new URI(repository);
-        String bucket = uri.getHost();
-        String root = uri.getPath().substring(1);
-        S3Client client = S3Client.builder().build();
-        return new S3TileStore(client, bucket, root);
-      } catch (URISyntaxException e) {
-        throw new IOException("Wrong repository url.");
-      }
-    } else {
-      throw new IOException("Wrong repository url.");
-    }
+  private TileStore tileTarget(FileSystem fileSystem, URI repository) {
+    return new FileSystemTileStore(fileSystem, repository);
   }
 
-  private Stream<Tile> tileStream(FileReader fileReader, DataSource datasource)
+  private Stream<Tile> tileStream(FileSystem fileSystem, DataSource datasource)
       throws IOException, SQLException, ParseException {
     if (delta != null) {
       try (BufferedReader reader = new BufferedReader(
-          new InputStreamReader(fileReader.read(delta)))) {
+          new InputStreamReader(fileSystem.read(delta)))) {
         Stream<String> lines = reader.lines();
         return lines.flatMap(line -> {
           String[] array = line.split(",");

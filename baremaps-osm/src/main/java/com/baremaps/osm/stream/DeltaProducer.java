@@ -14,7 +14,6 @@
 
 package com.baremaps.osm.stream;
 
-import com.baremaps.core.tile.Tile;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
@@ -27,6 +26,7 @@ import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
 import com.baremaps.osm.osmxml.Change;
+import com.baremaps.util.tile.Tile;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
