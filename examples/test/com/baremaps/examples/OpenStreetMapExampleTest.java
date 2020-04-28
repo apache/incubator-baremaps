@@ -84,15 +84,19 @@ public class OpenStreetMapExampleTest {
     assertEquals(0, exportExitCode);
     assertTrue(Files.exists(Paths.get("output/14/8626/5750.pbf")));
 
+
+    // Test the serve command in a separate thread
     new Thread(() -> {
-      // Test the serve command
       cmd.execute("serve",
           "--database", DATABASE_URL,
           "--config", "openstreetmap/config.yaml",
           "--assets", "openstreetmap/static/");
     }).run();
 
-    // Download the index file
+    // Wait for the server to start
+    Thread.sleep(1000);
+
+    // Download a static file
     HttpURLConnection indexConnection = (HttpURLConnection) new URL("http://localhost:9000/index.html")
         .openConnection();
     InputStream indexInputStream = indexConnection.getInputStream();
@@ -102,13 +106,11 @@ public class OpenStreetMapExampleTest {
     }
     assertEquals(indexConnection.getResponseCode(), 200);
 
-    // Download a tile
+    // Download a tile file
     HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:9000/tiles/14/8626/5750.pbf")
         .openConnection();
     connection.connect();
     assertEquals(connection.getResponseCode(), 200);
-
-
   }
 
 }
