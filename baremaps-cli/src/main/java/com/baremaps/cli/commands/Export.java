@@ -109,22 +109,27 @@ public class Export implements Callable<Integer> {
     FileSystem fileSystem = mixins.fileSystem();
 
     // Read the configuration file
+    logger.info("Reading configuration.");
     try (InputStream input = fileSystem.read(this.config)) {
-      com.baremaps.tiles.config.Config config = com.baremaps.tiles.config.Config.load(input);
+      Config config = Config.load(input);
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
       // Initialize tile source and target tile stores
+      logger.info("Initializing source and target tile stores.");
       TileStore tileSource = tileSource(datasource, config);
       TileStore tileTarget = tileTarget(fileSystem, repository);
 
       // Export the tiles
+      logger.info("Generating the tiles.");
       Stream<Tile> tiles = tileStream(fileSystem, datasource);
       tiles.parallel().forEach(tile -> {
         try {
           byte[] bytes = tileSource.read(tile);
-          tileTarget.write(tile, bytes);
+          if (bytes != null) {
+            tileTarget.write(tile, bytes);
+          }
         } catch (IOException ex) {
-          logger.error("Unable to create the tile", ex);
+          throw new RuntimeException("An error occurred while creating the tiles", ex);
         }
       });
     }
