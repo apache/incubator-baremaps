@@ -49,6 +49,7 @@
     <module>baremaps-benchmarks</module>
     <module>baremaps-cli</module>
     <module>baremaps-util</module>
+    <module>examples</module>
   </modules>
 
   <profiles>
@@ -392,6 +393,16 @@
         <artifactId>s3mock</artifactId>
         <version>${version.lib.s3mock}</version>
         <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-to-slf4j</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.adobe.testing</groupId>

@@ -9,8 +9,8 @@ jobs:
       - image: circleci/openjdk:8-jdk
       - image: circleci/postgres:10.6-postgis
         environment:
-          POSTGRES_USER: osm
-          POSTGRES_DB: osm
+          POSTGRES_USER: baremaps
+          POSTGRES_DB: baremaps
 
     working_directory: ~/repo
 
