@@ -42,8 +42,8 @@ public class SlowPostgisTileStore extends PostgisTileStore {
 
   private static final String SQL_SOURCE =
       "(SELECT id, "
-          + "(tags || hstore(''geometry'', "
-          + "hstore_to_jsonb_loose(lower(replace(st_geometrytype(geom), ''ST_'', ''''))))), "
+          + "hstore_to_jsonb_loose(tags || hstore(''geometry'', "
+          + "(lower(replace(st_geometrytype(geom), ''ST_'', ''''))))), "
           + "ST_AsMvtGeom(geom, {2}, 4096, 256, true) AS geom "
           + "FROM ({1}) AS layer "
           + "WHERE ST_Intersects(geom, {2})"
@@ -63,22 +63,31 @@ public class SlowPostgisTileStore extends PostgisTileStore {
   @Override
   public byte[] read(Tile tile) throws IOException {
     try (Connection connection = datasource.getConnection();
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
-        GZIPOutputStream gzip = new GZIPOutputStream(data)) {
+        ByteArrayOutputStream data = new ByteArrayOutputStream()) {
+
+      int length = 0;
+      GZIPOutputStream gzip = new GZIPOutputStream(data);
       for (Layer layer : config.getLayers()) {
         if (tile.getZ() >= layer.getMinZoom() && tile.getZ() <= layer.getMaxZoom()) {
           String sql = query(tile, layer);
           logger.debug("Executing tile query: {}", sql);
           try (Statement statement = connection.createStatement()) {
-            ResultSet result = statement.executeQuery(sql);
-            if (result.next()) {
-              gzip.write(result.getBytes(1));
+            ResultSet resultSet = statement.executeQuery(sql);
+            if (resultSet.next()) {
+              byte[] bytes = resultSet.getBytes(1);
+              length += bytes.length;
+              gzip.write(bytes);
             }
           }
         }
       }
       gzip.close();
-      return data.toByteArray();
+
+      if (length > 0) {
+        return data.toByteArray();
+      } else {
+        return null;
+      }
     } catch (IOException | SQLException ex) {
       throw new IOException(ex);
     }

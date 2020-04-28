@@ -66,12 +66,16 @@ public class TileHandler implements HttpHandler {
 
     try {
       byte[] bytes = tileStore.read(tile);
-      exchange.getResponseHeaders().put(CONTENT_TYPE, TILE_MIME_TYPE);
-      exchange.getResponseHeaders().put(CONTENT_ENCODING, TILE_ENCODING);
-      exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, ORIGIN_WILDCARD);
-      exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, Arrays.asList("*"));
-      exchange.sendResponseHeaders(200, bytes.length);
-      exchange.getResponseBody().write(bytes);
+      if (bytes != null) {
+        exchange.getResponseHeaders().put(CONTENT_TYPE, TILE_MIME_TYPE);
+        exchange.getResponseHeaders().put(CONTENT_ENCODING, TILE_ENCODING);
+        exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, ORIGIN_WILDCARD);
+        exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, Arrays.asList("*"));
+        exchange.sendResponseHeaders(200, bytes.length);
+        exchange.getResponseBody().write(bytes);
+      } else {
+        exchange.sendResponseHeaders(204, -1);
+      }
     } catch (IOException ex) {
       logger.error(ex);
       exchange.sendResponseHeaders(404, 0);

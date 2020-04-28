@@ -70,19 +70,29 @@ public class FastPostgisTileStore extends PostgisTileStore {
 
   @Override
   public byte[] read(Tile tile) throws IOException {
-    try (Connection connection = datasource.getConnection();
-        ByteArrayOutputStream data = new ByteArrayOutputStream();
-        GZIPOutputStream gzip = new GZIPOutputStream(data)) {
-      try (Statement statement = connection.createStatement()) {
+    try (Connection connection = datasource.getConnection()) {
+      try (Statement statement = connection.createStatement();
+          ByteArrayOutputStream data = new ByteArrayOutputStream()) {
+
         String sql = query(tile);
         logger.debug("Executing tile query: {}", sql);
-        ResultSet result = statement.executeQuery(sql);
-        while (result.next()) {
-          gzip.write(result.getBytes(1));
+        ResultSet resultSet = statement.executeQuery(sql);
+
+        int length = 0;
+        GZIPOutputStream gzip = new GZIPOutputStream(data);
+        while (resultSet.next()) {
+          byte[] bytes = resultSet.getBytes(1);
+          length += bytes.length;
+          gzip.write(bytes);
+        }
+        gzip.close();
+
+        if (length > 0) {
+          return data.toByteArray();
+        } else {
+          return null;
         }
       }
-      gzip.close();
-      return data.toByteArray();
     } catch (SQLException e) {
       throw new IOException(e);
     }
@@ -103,8 +113,8 @@ public class FastPostgisTileStore extends PostgisTileStore {
         .stream()
         .collect(Collectors.joining(COMMA));
     String targets = queries.entrySet().stream()
-        .filter(
-            entry -> entry.getKey().getMinZoom() <= tile.getZ() && entry.getKey().getMaxZoom() >= tile.getZ())
+        .filter(entry ->
+            entry.getKey().getMinZoom() <= tile.getZ() && entry.getKey().getMaxZoom() >= tile.getZ())
         .map(entry -> {
           String queries = entry.getValue().stream()
               .map(select -> {
