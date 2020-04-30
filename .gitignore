@@ -12,7 +12,7 @@ target/
 examples/output/
 
 # Release
-baremaps
+/baremaps/
 
 # JMH
 jmh-result.json

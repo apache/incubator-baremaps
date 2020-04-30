@@ -1,27 +1,15 @@
-/*
- * Copyright (C) 2011 The Baremaps Authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- */
 
 package com.baremaps.cli.commands;
 
 import static com.baremaps.cli.options.TileReaderOption.fast;
 
+import com.baremaps.cli.handlers.ResourceHandler;
+import com.baremaps.cli.handlers.TileHandler;
 import com.baremaps.cli.options.TileReaderOption;
 import com.baremaps.tiles.TileStore;
+import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.database.FastPostgisTileStore;
 import com.baremaps.tiles.database.SlowPostgisTileStore;
-import com.baremaps.tiles.http.ResourceHandler;
-import com.baremaps.tiles.http.TileHandler;
 import com.baremaps.util.fs.FileSystem;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.sun.net.httpserver.HttpServer;
@@ -29,7 +17,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
 import java.util.concurrent.Callable;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.Level;
@@ -66,7 +61,7 @@ public class Serve implements Callable<Integer> {
       names = {"--assets"},
       paramLabel = "ASSETS",
       description = "A directory containing assets.")
-  private String directory;
+  private URI assets;
 
   @Option(
       names = {"--port"},
@@ -80,7 +75,96 @@ public class Serve implements Callable<Integer> {
       description = "The tile reader.")
   private TileReaderOption tileReader = fast;
 
-  public TileStore tileReader(PoolingDataSource dataSource, com.baremaps.tiles.config.Config config) {
+  @Option(
+      names = {"--watch-changes"},
+      paramLabel = "WATCH_CHANGES",
+      description = "Watch for file changes.")
+  private boolean watchChanges = false;
+
+  private long lastChange = 0;
+
+  private HttpServer server;
+
+  @Override
+  public Integer call() throws IOException {
+    Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
+    logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
+
+    startServer();
+
+    Path assetsPath = Paths.get(assets.getPath());
+    Path configPath = Paths.get(config.getPath());
+    if (watchChanges && Files.exists(assetsPath) && Files.exists(configPath)) {
+      new Thread(() -> {
+        try {
+          WatchService watchService = FileSystems.getDefault().newWatchService();
+          assetsPath.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+          configPath.getParent().register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+          WatchKey key;
+          while ((key = watchService.take()) != null) {
+            Path dir = (Path) key.watchable();
+            for (WatchEvent<?> event : key.pollEvents()) {
+              Path path = dir.resolve((Path) event.context());
+              if (!path.endsWith("~")
+                  && Files.exists(path)
+                  && Files.getLastModifiedTime(path).toMillis() > lastChange) {
+                lastChange = Files.getLastModifiedTime(path).toMillis();
+                logger.info("- changes in the configuration.");
+                stopServer();
+                startServer();
+              }
+            }
+            key.reset();
+          }
+        } catch (InterruptedException e) {
+          logger.error(e);
+        } catch (IOException e) {
+          logger.error(e);
+        }
+      }).run();
+    }
+
+    return 0;
+  }
+
+  private void startServer() throws IOException {
+    FileSystem fileReader = mixins.fileSystem();
+    try (InputStream input = fileReader.read(this.config)) {
+      Config config = Config.load(input);
+
+      logger.info("Initializing datasource.");
+      PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
+
+      logger.info("Initializing tile reader.");
+      TileStore tileStore = tileReader(datasource, config);
+
+      logger.info("Initializing server.");
+      server = HttpServer.create(new InetSocketAddress(port), 0);
+      server.createContext("/", new ResourceHandler(Paths.get(assets.getPath())));
+      server.createContext("/tiles/", new TileHandler(tileStore));
+      server.createContext("/change/", exchange -> {
+        if (!watchChanges) {
+          exchange.sendResponseHeaders(204, -1);
+        } else {
+          logger.info("Waiting for changes.");
+        }
+      });
+      server.setExecutor(null);
+
+      logger.info("Start listening on port {}", port);
+      server.start();
+
+    } catch (Exception ex) {
+      logger.error("A problem occured while starting the server.", ex);
+    }
+  }
+
+  private void stopServer() throws IOException {
+    logger.info("Stopping the server.");
+    server.stop(0);
+  }
+
+  private TileStore tileReader(PoolingDataSource dataSource, com.baremaps.tiles.config.Config config) {
     switch (tileReader) {
       case slow:
         return new SlowPostgisTileStore(dataSource, config);
@@ -89,39 +173,6 @@ public class Serve implements Callable<Integer> {
       default:
         throw new UnsupportedOperationException("Unsupported tile reader");
     }
-  }
-
-  @Override
-  public Integer call() throws IOException {
-    Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
-
-    logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
-
-    // Read the configuration toInputStream
-    logger.info("Reading configuration.");
-    FileSystem fileReader =  mixins.fileSystem();
-    try (InputStream input = fileReader.read(this.config)) {
-      com.baremaps.tiles.config.Config config = com.baremaps.tiles.config.Config.load(input);
-
-      logger.info("Initializing datasource.");
-      PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
-
-      // Choose the tile reader
-      logger.info("Initializing tile reader.");
-      TileStore tileStore = tileReader(datasource, config);
-
-      // Create the http server
-      logger.info("Initializing server.");
-      HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
-      server.createContext("/", new ResourceHandler(Paths.get(directory)));
-      server.createContext("/tiles/", new TileHandler(tileStore));
-      server.setExecutor(null);
-      server.start();
-
-      logger.info("Server started listening on port {}", port);
-    }
-
-    return 0;
   }
 
 

@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.tiles.http;
+package com.baremaps.cli.handlers;
 
 import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
