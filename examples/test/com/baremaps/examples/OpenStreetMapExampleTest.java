@@ -102,7 +102,7 @@ public class OpenStreetMapExampleTest {
     InputStream indexInputStream = indexConnection.getInputStream();
     try (final Reader reader = new InputStreamReader(indexInputStream)) {
       String text = CharStreams.toString(reader);
-      assertTrue(text.contains("OpenStreetMap"));
+      assertTrue(text.contains("Baremaps"));
     }
     assertEquals(indexConnection.getResponseCode(), 200);
 
