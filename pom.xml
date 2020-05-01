@@ -96,7 +96,7 @@
     <version.lib.commons-compress>1.19</version.lib.commons-compress>
     <version.lib.dbcp2>2.7.0</version.lib.dbcp2>
     <version.lib.gson>2.8.6</version.lib.gson>
-    <version.lib.guava>28.2-jre</version.lib.guava>
+    <version.lib.guava>29.0-jre</version.lib.guava>
     <version.lib.dagger>2.27</version.lib.dagger>
     <version.lib.jts>1.16.1</version.lib.jts>
     <version.lib.junit>5.6.1</version.lib.junit>
