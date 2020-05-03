@@ -42,6 +42,8 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -56,7 +58,8 @@ public class TileReaderBenchmark {
   public void prepare() throws IOException, ClassNotFoundException {
     Class.forName("org.postgresql.Driver");
     try (FileInputStream fis = new FileInputStream(new File("./examples/openstreetmap/config.yaml"))) {
-      config = Config.load(fis);
+      Yaml yaml = new Yaml(new Constructor(Config.class));
+      config = yaml.load(fis);
       datasource = PostgisHelper.poolingDataSource(
           "jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps");
     }

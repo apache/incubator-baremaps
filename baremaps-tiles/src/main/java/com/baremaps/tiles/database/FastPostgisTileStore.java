@@ -32,6 +32,7 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.locationtech.jts.geom.Envelope;
 
 public class FastPostgisTileStore extends PostgisTileStore {
 
@@ -129,7 +130,7 @@ public class FastPostgisTileStore extends PostgisTileStore {
                 return l + r;
               })
               .collect(Collectors.joining(UNION_ALL));
-          return MessageFormat.format(LAYER, entry.getKey().getName(), queries);
+          return MessageFormat.format(LAYER, entry.getKey().getId(), queries);
         })
         .collect(Collectors.joining(UNION_ALL));
     return MessageFormat.format(WITH, sources, targets);

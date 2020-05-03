@@ -14,14 +14,115 @@
 
 package com.baremaps.tiles.config;
 
-import java.io.InputStream;
 import java.util.List;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
+import java.util.Map;
 
 public class Config {
 
+  private String id = "baremaps";
+
+  private String host = "localhost";
+
+  private int port = 9000;
+
+  private double lon = 0;
+
+  private double lat = 0;
+
+  private double zoom = 0;
+
+  private double minZoom = 0;
+
+  private double maxZoom = 22;
+
+  private double bearing = 0;
+
+  private double pitch = 0;
+
   private List<Layer> layers;
+
+  private List<Map<String, Object>> styles;
+
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getHost() {
+    return host;
+  }
+
+  public void setHost(String host) {
+    this.host = host;
+  }
+
+  public int getPort() {
+    return port;
+  }
+
+  public void setPort(int port) {
+    this.port = port;
+  }
+
+  public double getLon() {
+    return lon;
+  }
+
+  public void setLon(double lon) {
+    this.lon = lon;
+  }
+
+  public double getLat() {
+    return lat;
+  }
+
+  public void setLat(double lat) {
+    this.lat = lat;
+  }
+
+  public double getZoom() {
+    return zoom;
+  }
+
+  public void setZoom(double zoom) {
+    this.zoom = zoom;
+  }
+
+  public double getMinZoom() {
+    return minZoom;
+  }
+
+  public void setMinZoom(double minZoom) {
+    this.minZoom = minZoom;
+  }
+
+  public double getMaxZoom() {
+    return maxZoom;
+  }
+
+  public void setMaxZoom(double maxZoom) {
+    this.maxZoom = maxZoom;
+  }
+
+  public double getBearing() {
+    return bearing;
+  }
+
+  public void setBearing(double bearing) {
+    this.bearing = bearing;
+  }
+
+  public double getPitch() {
+    return pitch;
+  }
+
+  public void setPitch(double pitch) {
+    this.pitch = pitch;
+  }
 
   public List<Layer> getLayers() {
     return layers;
@@ -31,9 +132,12 @@ public class Config {
     this.layers = layers;
   }
 
-  public static Config load(InputStream input) {
-    Yaml yaml = new Yaml(new Constructor(Config.class));
-    return yaml.load(input);
+  public List<Map<String, Object>> getStyles() {
+    return styles;
+  }
+
+  public void setStyles(List<Map<String, Object>> styles) {
+    this.styles = styles;
   }
 
 }

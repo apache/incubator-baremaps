@@ -12,11 +12,11 @@
  * the License.
  */
 
-package com.baremaps.cli.commands;
+package com.baremaps.cli.command;
 
-import static com.baremaps.cli.options.TileReaderOption.fast;
+import static com.baremaps.cli.option.TileReaderOption.fast;
 
-import com.baremaps.cli.options.TileReaderOption;
+import com.baremaps.cli.option.TileReaderOption;
 import com.baremaps.tiles.TileStore;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.database.FastPostgisTileStore;
@@ -43,6 +43,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.io.ParseException;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
@@ -111,7 +113,8 @@ public class Export implements Callable<Integer> {
     // Read the configuration file
     logger.info("Reading configuration.");
     try (InputStream input = fileSystem.read(this.config)) {
-      Config config = Config.load(input);
+      Yaml yaml = new Yaml(new Constructor(Config.class));
+      Config config = yaml.load(input);
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
       // Initialize tile source and target tile stores

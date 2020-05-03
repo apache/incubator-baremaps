@@ -1,5 +1,5 @@
 layers:
-  - name: 'aster_dem'
+  - id: 'aster_dem'
     minZoom: 10
     maxZoom: 14
     queries:

@@ -1,11 +1,15 @@
 
-package com.baremaps.cli.commands;
+package com.baremaps.cli.command;
 
-import static com.baremaps.cli.options.TileReaderOption.fast;
+import static com.baremaps.cli.option.TileReaderOption.fast;
 
-import com.baremaps.cli.handlers.ResourceHandler;
-import com.baremaps.cli.handlers.TileHandler;
-import com.baremaps.cli.options.TileReaderOption;
+import com.baremaps.cli.handler.BlueprintHandler;
+import com.baremaps.cli.handler.ConfigHandler;
+import com.baremaps.cli.handler.FileHandler;
+import com.baremaps.cli.handler.ResourceHandler;
+import com.baremaps.cli.handler.StyleHandler;
+import com.baremaps.cli.handler.TileHandler;
+import com.baremaps.cli.option.TileReaderOption;
 import com.baremaps.tiles.TileStore;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.database.FastPostgisTileStore;
@@ -31,6 +35,8 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
@@ -64,12 +70,6 @@ public class Serve implements Callable<Integer> {
   private URI assets;
 
   @Option(
-      names = {"--port"},
-      paramLabel = "PORT",
-      description = "The port on which to listen.")
-  private int port = 9000;
-
-  @Option(
       names = {"--reader"},
       paramLabel = "READER",
       description = "The tile reader.")
@@ -92,8 +92,12 @@ public class Serve implements Callable<Integer> {
 
     startServer();
 
-    Path assetsPath = Paths.get(assets.getPath());
-    Path configPath = Paths.get(config.getPath());
+    Path assetsPath = Paths.get(assets.getPath()).toAbsolutePath();
+    Path configPath = Paths.get(config.getPath()).toAbsolutePath();
+
+    // Register a watch service in a separate thread to observe the changes occuring
+    // in the assets directory and in the configuration file. If a change occurs,
+    // the server is restarted, which triggers the browser to reload.
     if (watchChanges && Files.exists(assetsPath) && Files.exists(configPath)) {
       new Thread(() -> {
         try {
@@ -109,7 +113,7 @@ public class Serve implements Callable<Integer> {
                   && Files.exists(path)
                   && Files.getLastModifiedTime(path).toMillis() > lastChange) {
                 lastChange = Files.getLastModifiedTime(path).toMillis();
-                logger.info("- changes in the configuration.");
+                logger.info("Detected changes in the configuration.");
                 stopServer();
                 startServer();
               }
@@ -130,7 +134,8 @@ public class Serve implements Callable<Integer> {
   private void startServer() throws IOException {
     FileSystem fileReader = mixins.fileSystem();
     try (InputStream input = fileReader.read(this.config)) {
-      Config config = Config.load(input);
+      Yaml yaml = new Yaml(new Constructor(Config.class));
+      Config config = yaml.load(input);
 
       logger.info("Initializing datasource.");
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
@@ -139,9 +144,19 @@ public class Serve implements Callable<Integer> {
       TileStore tileStore = tileReader(datasource, config);
 
       logger.info("Initializing server.");
-      server = HttpServer.create(new InetSocketAddress(port), 0);
-      server.createContext("/", new ResourceHandler(Paths.get(assets.getPath())));
+      server = HttpServer.create(new InetSocketAddress(config.getHost(), config.getPort()), 0);
+
+      // Initialize the handlers
+      server.createContext("/", new BlueprintHandler(config));
+      server.createContext("/favicon.ico", new ResourceHandler("favicon.ico"));
+      server.createContext("/config.yaml", new ConfigHandler(config));
+      server.createContext("/style.json", new StyleHandler(config));
       server.createContext("/tiles/", new TileHandler(tileStore));
+      server.createContext("/assets/", new FileHandler(Paths.get(assets.getPath())));
+
+      // Keep a connection open with the browser.
+      // When the server restarts, for instance when a change occurs in the configuration,
+      // The browser reloads the webpage and displays the changes.
       server.createContext("/change/", exchange -> {
         if (!watchChanges) {
           exchange.sendResponseHeaders(204, -1);
@@ -149,9 +164,10 @@ public class Serve implements Callable<Integer> {
           logger.info("Waiting for changes.");
         }
       });
+
       server.setExecutor(null);
 
-      logger.info("Start listening on port {}", port);
+      logger.info("Start listening on port {}", config.getPort());
       server.start();
 
     } catch (Exception ex) {

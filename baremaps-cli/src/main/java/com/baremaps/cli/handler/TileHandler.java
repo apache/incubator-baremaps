@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.cli.handlers;
+package com.baremaps.cli.handler;
 
 import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
@@ -77,7 +77,7 @@ public class TileHandler implements HttpHandler {
         exchange.sendResponseHeaders(204, -1);
       }
     } catch (IOException ex) {
-      logger.error("Unable to send tile {}", path, ex);
+      logger.error("A problem occured {}", ex);
       exchange.sendResponseHeaders(404, 0);
     } finally {
       exchange.close();

@@ -15,10 +15,13 @@
 package com.baremaps.tiles.config;
 
 import java.util.List;
+import java.util.Map;
 
 public class Layer {
 
-  private String name;
+  private String id;
+
+  private String type;
 
   private int minZoom;
 
@@ -30,15 +33,18 @@ public class Layer {
 
   }
 
-  public Layer(String name, String geometry, int minZoom, int maxZoom, List<String> queries) {
-    this.name = name;
+  public Layer(
+      String id, String geometry,
+      int minZoom, int maxZoom,
+      List<String> queries, List<Map<String, Object>> styles) {
+    this.id = id;
     this.minZoom = minZoom;
     this.maxZoom = maxZoom;
     this.queries = queries;
   }
 
-  public String getName() {
-    return name;
+  public String getId() {
+    return id;
   }
 
   public int getMinZoom() {
@@ -53,8 +59,8 @@ public class Layer {
     return queries;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setId(String id) {
+    this.id = id;
   }
 
   public void setMinZoom(int minZoom) {
@@ -67,5 +73,13 @@ public class Layer {
 
   public void setQueries(List<String> queries) {
     this.queries = queries;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 }

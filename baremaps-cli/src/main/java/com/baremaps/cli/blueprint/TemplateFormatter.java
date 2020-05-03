@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 The Baremaps Authors
+ * Copyright (C) 2020 The baremaps Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -12,8 +12,18 @@
  * the License.
  */
 
-package com.baremaps.cli.options;
+package com.baremaps.cli.blueprint;
 
-public enum TileReaderOption {
-  slow, fast
+import java.util.Map;
+
+public class TemplateFormatter {
+
+  public static String format(String template, Map<String, Object> params) {
+    String result = template;
+    for (String key : params.keySet()) {
+      result = result.replace(String.format("{%s}", key), params.get(key).toString());
+    }
+    return result;
+  }
+
 }

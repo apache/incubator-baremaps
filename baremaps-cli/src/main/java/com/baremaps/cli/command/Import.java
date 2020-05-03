@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.cli.commands;
+package com.baremaps.cli.command;
 
 import static org.lmdbjava.DbiFlags.MDB_CREATE;
 

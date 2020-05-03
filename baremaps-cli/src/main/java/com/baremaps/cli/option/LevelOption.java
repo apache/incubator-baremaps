@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.cli.options;
+package com.baremaps.cli.option;
 
 public enum LevelOption {
   DEBUG, INFO, TRACE, ERROR

@@ -97,7 +97,6 @@
     <version.lib.dbcp2>2.7.0</version.lib.dbcp2>
     <version.lib.gson>2.8.6</version.lib.gson>
     <version.lib.guava>28.2-jre</version.lib.guava>
-    <version.lib.dagger>2.27</version.lib.dagger>
     <version.lib.jts>1.16.1</version.lib.jts>
     <version.lib.junit>5.6.1</version.lib.junit>
     <version.lib.lmdb>0.7.0</version.lib.lmdb>
@@ -131,11 +130,6 @@
           <source>1.8</source>
           <target>1.8</target>
           <annotationProcessorPaths>
-            <path>
-              <groupId>com.google.dagger</groupId>
-              <artifactId>dagger-compiler</artifactId>
-              <version>${version.lib.dagger}</version>
-            </path>
             <path>
               <groupId>info.picocli</groupId>
               <artifactId>picocli-codegen</artifactId>
@@ -247,9 +241,9 @@
         <version>${version.lib.guava}</version>
       </dependency>
       <dependency>
-        <groupId>com.google.dagger</groupId>
-        <artifactId>dagger</artifactId>
-        <version>${version.lib.dagger}</version>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>${version.lib.gson}</version>
       </dependency>
       <dependency>
         <artifactId>picocli</artifactId>
@@ -436,10 +430,6 @@
     <dependency>
       <artifactId>guava</artifactId>
       <groupId>com.google.guava</groupId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.dagger</groupId>
-      <artifactId>dagger</artifactId>
     </dependency>
     <dependency>
       <artifactId>picocli</artifactId>

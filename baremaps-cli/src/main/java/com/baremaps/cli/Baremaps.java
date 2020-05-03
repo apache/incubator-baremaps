@@ -14,11 +14,11 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.cli.commands.Export;
-import com.baremaps.cli.commands.Import;
-import com.baremaps.cli.commands.Mixins;
-import com.baremaps.cli.commands.Serve;
-import com.baremaps.cli.commands.Update;
+import com.baremaps.cli.command.Export;
+import com.baremaps.cli.command.Import;
+import com.baremaps.cli.command.Mixins;
+import com.baremaps.cli.command.Serve;
+import com.baremaps.cli.command.Update;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;

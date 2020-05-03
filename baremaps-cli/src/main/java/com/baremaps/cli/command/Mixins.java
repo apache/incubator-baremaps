@@ -12,9 +12,9 @@
  * the License.
  */
 
-package com.baremaps.cli.commands;
+package com.baremaps.cli.command;
 
-import com.baremaps.cli.options.LevelOption;
+import com.baremaps.cli.option.LevelOption;
 import com.baremaps.util.fs.CachedFileSystem;
 import com.baremaps.util.fs.CompositeFileSystem;
 import com.baremaps.util.fs.FileSystem;

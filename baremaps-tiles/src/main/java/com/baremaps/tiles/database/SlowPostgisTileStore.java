@@ -95,9 +95,9 @@ public class SlowPostgisTileStore extends PostgisTileStore {
 
   private String query(Tile tile, Layer layer) {
     return MessageFormat.format(SQL_LAYER,
-        layer.getName(),
+        layer.getId(),
         MessageFormat.format(SQL_SOURCE,
-            layer.getName(),
+            layer.getId(),
             layer.getQueries().stream()
                 .map(query -> QueryParser.parse(layer, query))
                 .map(query -> MessageFormat.format(SQL_QUERY,

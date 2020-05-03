@@ -12,18 +12,8 @@
  * the License.
  */
 
-package com.baremaps.tiles;
+package com.baremaps.cli.option;
 
-import com.baremaps.util.tile.Tile;
-import java.io.IOException;
-import org.locationtech.jts.geom.Envelope;
-
-public interface TileStore {
-
-  byte[] read(Tile tile) throws IOException;
-
-  void write(Tile tile, byte[] bytes) throws IOException;
-
-  void delete(Tile tile) throws IOException;
-
+public enum TileReaderOption {
+  slow, fast
 }

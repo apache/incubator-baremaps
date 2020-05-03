@@ -15,7 +15,7 @@ To preview the data, start the tile server:
 baremaps serve \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
   --config 'config.yaml' \
-  --assets 'static/'
+  --assets 'assets/'
 ```
 
 Well done, the tile server should have started and a map of liechtenstein should appear in your browser ([http://localhost:9000/](http://localhost:9000/))!
