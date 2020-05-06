@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.cli.commands;
+package com.baremaps.cli.command;
 
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.PostgisCoordinateCache;

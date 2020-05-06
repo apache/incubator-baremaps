@@ -90,7 +90,7 @@ public class OpenStreetMapExampleTest {
       cmd.execute("serve",
           "--database", DATABASE_URL,
           "--config", "openstreetmap/config.yaml",
-          "--assets", "openstreetmap/static/");
+          "--assets", "openstreetmap/assets/");
     }).run();
 
     // Wait for the server to start
