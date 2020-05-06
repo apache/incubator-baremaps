@@ -1,3 +1,9 @@
+id: 'openstreetmap'
+lon: 9.5554
+lat: 47.1660
+zoom: 15
+minZoom: 12
+maxZoom: 19
 layers:
   - id: 'ne_10m_admin_0_antarctic_claim_limit_lines'
     minZoom: 6

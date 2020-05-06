@@ -152,7 +152,11 @@ public class Serve implements Callable<Integer> {
       server.createContext("/config.yaml", new ConfigHandler(config));
       server.createContext("/style.json", new StyleHandler(config));
       server.createContext("/tiles/", new TileHandler(tileStore));
-      server.createContext("/assets/", new FileHandler(Paths.get(assets.getPath())));
+
+      // Initialize the assets handler if a path has been provided
+      if (assets != null) {
+        server.createContext("/assets/", new FileHandler(Paths.get(assets.getPath())));
+      }
 
       // Keep a connection open with the browser.
       // When the server restarts, for instance when a change occurs in the configuration,
