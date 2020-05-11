@@ -42,8 +42,8 @@ public class StyleHandler implements HttpHandler {
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     try {
-      BlueprintBuilder formatter = new BlueprintBuilder(config);
-      Map<String, Object> style = formatter.build();
+      BlueprintBuilder builder = new BlueprintBuilder(config);
+      Map<String, Object> style = builder.build();
 
       Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
       byte[] bytes = gson.toJson(style).getBytes(Charsets.UTF_8);

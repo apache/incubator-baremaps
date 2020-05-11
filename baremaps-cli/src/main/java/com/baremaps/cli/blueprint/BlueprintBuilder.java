@@ -49,7 +49,13 @@ public class BlueprintBuilder {
                 config.getPort())))
             .build())
         .build());
-    map.put("layers", buildStyles());
+
+    if (config.getLayers() == null || config.getStyles().isEmpty()) {
+      map.put("layers", buildStyles());
+    } else {
+      map.put("layers", config.getStyles());
+    }
+
     return map;
   }
 

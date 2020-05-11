@@ -1,184 +1,1438 @@
+id: openstreetmap
+host: localhost
+port: 9000
+lon: 9.5554
+lat: 47.166
+zoom: 15.0
+minZoom: 12.0
+maxZoom: 19.0
+bearing: 0.0
+pitch: 0.0
 layers:
-  - id: 'aeroway'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'aeroway'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'aeroway'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'aeroway' AND tags -> 'type' = 'multipolygon'
-  - id: 'waterway'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'waterway'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'waterway'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'waterway' AND tags -> 'type' = 'multipolygon'
-  - id: 'landuse'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'landuse'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'landuse'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse' AND tags -> 'type' = 'multipolygon'
-  - id: 'railway'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'railway'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'railway'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'railway' AND tags -> 'type' = 'multipolygon'
-  - id: 'highway'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'highway'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'highway'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'highway' AND tags -> 'type' = 'multipolygon'
-  - id: 'geological'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'geological'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'geological'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'geological' AND tags -> 'type' = 'multipolygon'
-  - id: 'public_transport'
-    minZoom: 12
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'public_transport'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'public_transport'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'public_transport' AND tags -> 'type' = 'multipolygon'
-  - id: 'aerialway'
-    minZoom: 12
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'aerialway'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'aerialway'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'aerialway' AND tags -> 'type' = 'multipolygon'
-  - id: 'geological'
-    minZoom: 12
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'geological'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'geological'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'geological' AND tags -> 'type' = 'multipolygon'
-  - id: 'building'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'building'
-      - SELECT id, tags || hstore('building:height'::text, ((CASE WHEN tags -> 'building:levels' ~ '^[0-9\.]+$' THEN tags -> 'building:levels' ELSE '1' END)::real * 3)::text), geom FROM osm_ways WHERE tags ? 'building'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'building' AND tags -> 'type' = 'multipolygon'
-  - id: 'amenity'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'amenity'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'amenity'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'amenity' AND tags -> 'type' = 'multipolygon'
-  - id: 'craft'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'craft'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'craft'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'craft' AND tags -> 'type' = 'multipolygon'
-  - id: 'emergency'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'emergency'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'emergency'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'emergency' AND tags -> 'type' = 'multipolygon'
-  - id: 'map'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'historic'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'historic'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'historic' AND tags -> 'type' = 'multipolygon'
-  - id: 'leisure'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'leisure'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'leisure'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'leisure' AND tags -> 'type' = 'multipolygon'
-  - id: 'man_made'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'man_made'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'man_made'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'man_made' AND tags -> 'type' = 'multipolygon'
-  - id: 'military'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'military'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'military'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'military' AND tags -> 'type' = 'multipolygon'
-  - id: 'natural'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'natural'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'natural'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'natural' AND tags -> 'type' = 'multipolygon'
-  - id: 'office'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'office'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'office'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'office' AND tags -> 'type' = 'multipolygon'
-  - id: 'place'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'place'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'place'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'place' AND tags -> 'type' = 'multipolygon'
-  - id: 'power'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'power'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'power'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'power' AND tags -> 'type' = 'multipolygon'
-  - id: 'route'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'route'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'route'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'route' AND tags -> 'type' = 'multipolygon'
-  - id: 'shop'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'shop'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'shop'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'shop' AND tags -> 'type' = 'multipolygon'
-  - id: 'sport'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'sport'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'sport'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'sport' AND tags -> 'type' = 'multipolygon'
-  - id: 'telecom'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'telecom'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'telecom'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'telecom' AND tags -> 'type' = 'multipolygon'
-  - id: 'tourism'
-    minZoom: 14
-    maxZoom: 14
-    queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'tourism'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'tourism'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'tourism' AND tags -> 'type' = 'multipolygon'
-
+- id: aerialway
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'aerialway'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'aerialway'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'aerialway' AND tags -> 'type' = 'multipolygon'
+- id: aeroway
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'aeroway'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'aeroway'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'aeroway' AND tags -> 'type' = 'multipolygon'
+- id: amenity
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'amenity'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'amenity'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'amenity' AND tags -> 'type' = 'multipolygon'
+- id: building
+  type: polygon
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'building'
+  - SELECT id, tags || hstore('building:height'::text, ((CASE WHEN tags -> 'building:levels' ~ '^[0-9\.]+$' THEN tags -> 'building:levels' ELSE '1' END)::real * 3)::text), geom FROM osm_ways WHERE tags ? 'building'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'building' AND tags -> 'type' = 'multipolygon'
+- id: craft
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'craft'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'craft'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'craft' AND tags -> 'type' = 'multipolygon'
+- id: emergency
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'emergency'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'emergency'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'emergency' AND tags -> 'type' = 'multipolygon'
+- id: geological
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'geological'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'geological'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'geological' AND tags -> 'type' = 'multipolygon'
+- id: highway
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'highway'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'highway'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'highway' AND tags -> 'type' = 'multipolygon'
+- id: historic
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'historic'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'historic'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'historic' AND tags -> 'type' = 'multipolygon'
+- id: landuse
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'landuse'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'landuse'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse' AND tags -> 'type' = 'multipolygon'
+- id: leisure
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'leisure'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'leisure'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'leisure' AND tags -> 'type' = 'multipolygon'
+- id: man_made
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'man_made'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'man_made'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'man_made' AND tags -> 'type' = 'multipolygon'
+- id: military
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'military'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'military'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'military' AND tags -> 'type' = 'multipolygon'
+- id: natural
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'natural'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'natural'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'natural' AND tags -> 'type' = 'multipolygon'
+- id: office
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'office'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'office'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'office' AND tags -> 'type' = 'multipolygon'
+- id: place
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'place'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'place'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'place' AND tags -> 'type' = 'multipolygon'
+- id: power
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'power'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'power'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'power' AND tags -> 'type' = 'multipolygon'
+- id: public_transport
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'public_transport'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'public_transport'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'public_transport' AND tags -> 'type' = 'multipolygon'
+- id: railway
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'railway'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'railway'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'railway' AND tags -> 'type' = 'multipolygon'
+- id: route
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'route'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'route'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'route' AND tags -> 'type' = 'multipolygon'
+- id: shop
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'shop'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'shop'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'shop' AND tags -> 'type' = 'multipolygon'
+- id: sport
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'sport'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'sport'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'sport' AND tags -> 'type' = 'multipolygon'
+- id: telecom
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'telecom'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'telecom'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'telecom' AND tags -> 'type' = 'multipolygon'
+- id: tourism
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'tourism'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'tourism'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'tourism' AND tags -> 'type' = 'multipolygon'
+- id: waterway
+  type: geometry
+  minZoom: 12
+  maxZoom: 20
+  queries:
+  - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'waterway'
+  - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'waterway'
+  - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'waterway' AND tags -> 'type' = 'multipolygon'
+styles:
+- id: background
+  type: background
+  layout:
+    visibility: visible
+  paint:
+    background-color: rgb(64, 92, 176)
+- id: aeroway_point
+  source: baremaps
+  source-layer: aeroway
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: aeroway_linestring
+  source: baremaps
+  source-layer: aeroway
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: aeroway_polygon
+  source: baremaps
+  source-layer: aeroway
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: waterway_point
+  source: baremaps
+  source-layer: waterway
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: waterway_linestring
+  source: baremaps
+  source-layer: waterway
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: waterway_polygon
+  source: baremaps
+  source-layer: waterway
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: landuse_point
+  source: baremaps
+  source-layer: landuse
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: landuse_linestring
+  source: baremaps
+  source-layer: landuse
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: landuse_polygon
+  source: baremaps
+  source-layer: landuse
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: railway_point
+  source: baremaps
+  source-layer: railway
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: railway_linestring
+  source: baremaps
+  source-layer: railway
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: railway_polygon
+  source: baremaps
+  source-layer: railway
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: highway_point
+  source: baremaps
+  source-layer: highway
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: highway_linestring
+  source: baremaps
+  source-layer: highway
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: highway_polygon
+  source: baremaps
+  source-layer: highway
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: public_transport_point
+  source: baremaps
+  source-layer: public_transport
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: public_transport_linestring
+  source: baremaps
+  source-layer: public_transport
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: public_transport_polygon
+  source: baremaps
+  source-layer: public_transport
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: aerialway_point
+  source: baremaps
+  source-layer: aerialway
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: aerialway_linestring
+  source: baremaps
+  source-layer: aerialway
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: aerialway_polygon
+  source: baremaps
+  source-layer: aerialway
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: geological_point
+  source: baremaps
+  source-layer: geological
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: geological_linestring
+  source: baremaps
+  source-layer: geological
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: geological_polygon
+  source: baremaps
+  source-layer: geological
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: building_extrusion
+  source: baremaps
+  source-layer: building
+  minZoom: 12
+  maxZoom: 20
+  type: fill-extrusion
+  layout:
+    visibility: visible
+  filter:
+    - all
+    - - ==
+      - geometry
+      - polygon
+  paint:
+    fill-extrusion-color: rgb(152, 174, 221)
+    fill-extrusion-height:
+      - get
+      - building:height
+    fill-extrusion-base: 0
+    fill-extrusion-opacity: 0.9
+- id: amenity_point
+  source: baremaps
+  source-layer: amenity
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: amenity_linestring
+  source: baremaps
+  source-layer: amenity
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: amenity_polygon
+  source: baremaps
+  source-layer: amenity
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: craft_point
+  source: baremaps
+  source-layer: craft
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: craft_linestring
+  source: baremaps
+  source-layer: craft
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: craft_polygon
+  source: baremaps
+  source-layer: craft
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: emergency_point
+  source: baremaps
+  source-layer: emergency
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: emergency_linestring
+  source: baremaps
+  source-layer: emergency
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: emergency_polygon
+  source: baremaps
+  source-layer: emergency
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: historic_point
+  source: baremaps
+  source-layer: historic
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: historic_linestring
+  source: baremaps
+  source-layer: historic
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: historic_polygon
+  source: baremaps
+  source-layer: historic
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: leisure_point
+  source: baremaps
+  source-layer: leisure
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: leisure_linestring
+  source: baremaps
+  source-layer: leisure
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: leisure_polygon
+  source: baremaps
+  source-layer: leisure
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: man_made_point
+  source: baremaps
+  source-layer: man_made
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: man_made_linestring
+  source: baremaps
+  source-layer: man_made
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: man_made_polygon
+  source: baremaps
+  source-layer: man_made
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: military_point
+  source: baremaps
+  source-layer: military
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: military_linestring
+  source: baremaps
+  source-layer: military
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: military_polygon
+  source: baremaps
+  source-layer: military
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: natural_point
+  source: baremaps
+  source-layer: natural
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: natural_linestring
+  source: baremaps
+  source-layer: natural
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: natural_polygon
+  source: baremaps
+  source-layer: natural
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: office_point
+  source: baremaps
+  source-layer: office
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: office_linestring
+  source: baremaps
+  source-layer: office
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: office_polygon
+  source: baremaps
+  source-layer: office
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: place_point
+  source: baremaps
+  source-layer: place
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: place_linestring
+  source: baremaps
+  source-layer: place
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: place_polygon
+  source: baremaps
+  source-layer: place
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: power_point
+  source: baremaps
+  source-layer: power
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: power_linestring
+  source: baremaps
+  source-layer: power
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: power_polygon
+  source: baremaps
+  source-layer: power
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: route_point
+  source: baremaps
+  source-layer: route
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: route_linestring
+  source: baremaps
+  source-layer: route
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: route_polygon
+  source: baremaps
+  source-layer: route
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: shop_point
+  source: baremaps
+  source-layer: shop
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: shop_linestring
+  source: baremaps
+  source-layer: shop
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: shop_polygon
+  source: baremaps
+  source-layer: shop
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: sport_point
+  source: baremaps
+  source-layer: sport
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: sport_linestring
+  source: baremaps
+  source-layer: sport
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: sport_polygon
+  source: baremaps
+  source-layer: sport
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: telecom_point
+  source: baremaps
+  source-layer: telecom
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: telecom_linestring
+  source: baremaps
+  source-layer: telecom
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: telecom_polygon
+  source: baremaps
+  source-layer: telecom
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
+- id: tourism_point
+  source: baremaps
+  source-layer: tourism
+  minZoom: 12
+  maxZoom: 20
+  type: circle
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - point
+  paint:
+    circle-color: rgb(229, 235, 247)
+    circle-radius: 2
+- id: tourism_linestring
+  source: baremaps
+  source-layer: tourism
+  minZoom: 12
+  maxZoom: 20
+  type: line
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - linestring
+  paint:
+    line-color: rgb(152, 174, 221)
+    line-width: 1
+- id: tourism_polygon
+  source: baremaps
+  source-layer: tourism
+  minZoom: 12
+  maxZoom: 20
+  type: fill
+  layout:
+    visibility: visible
+  filter:
+  - all
+  - - ==
+    - geometry
+    - polygon
+  paint:
+    fill-antialias: true
+    fill-color: rgba(152, 174, 221, 0.1)
+    fill-opacity: 1
+    fill-outline-color: rgb(152, 174, 221)
