@@ -4,8 +4,8 @@ port: 9000
 lon: 9.5554
 lat: 47.166
 zoom: 15.0
-minZoom: 12.0
-maxZoom: 19.0
+minZoom: 12
+maxZoom: 20
 bearing: 0.0
 pitch: 0.0
 layers:

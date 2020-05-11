@@ -92,18 +92,23 @@ public class Serve implements Callable<Integer> {
 
     startServer();
 
-    Path assetsPath = Paths.get(assets.getPath()).toAbsolutePath();
     Path configPath = Paths.get(config.getPath()).toAbsolutePath();
 
     // Register a watch service in a separate thread to observe the changes occuring
     // in the assets directory and in the configuration file. If a change occurs,
     // the server is restarted, which triggers the browser to reload.
-    if (watchChanges && Files.exists(assetsPath) && Files.exists(configPath)) {
+    if (watchChanges && Files.exists(configPath)) {
       new Thread(() -> {
         try {
           WatchService watchService = FileSystems.getDefault().newWatchService();
-          assetsPath.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
           configPath.getParent().register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+
+          // Watch the optional assets directory
+          if (assets != null) {
+            Path assetsPath = Paths.get(assets.getPath()).toAbsolutePath();
+            assetsPath.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+          }
+
           WatchKey key;
           while ((key = watchService.take()) != null) {
             Path dir = (Path) key.watchable();

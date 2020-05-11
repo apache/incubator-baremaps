@@ -68,7 +68,7 @@ public class SlowPostgisTileStore extends PostgisTileStore {
       int length = 0;
       GZIPOutputStream gzip = new GZIPOutputStream(data);
       for (Layer layer : config.getLayers()) {
-        if (tile.getZ() >= layer.getMinZoom() && tile.getZ() <= layer.getMaxZoom()) {
+        if (layer.getMinZoom() <= tile.getZ() && tile.getZ() < layer.getMaxZoom()) {
           String sql = query(tile, layer);
           logger.debug("Executing tile query: {}", sql);
           try (Statement statement = connection.createStatement()) {

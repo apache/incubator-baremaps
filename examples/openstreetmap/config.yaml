@@ -3,7 +3,7 @@ lon: 9.5554
 lat: 47.1660
 zoom: 15
 minZoom: 12
-maxZoom: 19
+maxZoom: 20
 layers:
   - id: 'aeroway'
     type: 'geometry'

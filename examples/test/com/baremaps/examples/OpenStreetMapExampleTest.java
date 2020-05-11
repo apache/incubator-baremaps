@@ -89,8 +89,7 @@ public class OpenStreetMapExampleTest {
     new Thread(() -> {
       cmd.execute("serve",
           "--database", DATABASE_URL,
-          "--config", "openstreetmap/config.yaml",
-          "--assets", "openstreetmap/assets/");
+          "--config", "openstreetmap/config.yaml");
     }).run();
 
     // Wait for the server to start

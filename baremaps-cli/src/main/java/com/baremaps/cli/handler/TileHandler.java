@@ -77,7 +77,7 @@ public class TileHandler implements HttpHandler {
         exchange.sendResponseHeaders(204, -1);
       }
     } catch (IOException ex) {
-      logger.error("A problem occured {}", ex);
+      logger.error(ex);
       exchange.sendResponseHeaders(404, 0);
     } finally {
       exchange.close();

@@ -50,7 +50,7 @@ public class BlueprintBuilder {
             .build())
         .build());
 
-    if (config.getLayers() == null || config.getStyles().isEmpty()) {
+    if (config.getStyles() == null || config.getStyles().isEmpty()) {
       map.put("layers", buildStyles());
     } else {
       map.put("layers", config.getStyles());

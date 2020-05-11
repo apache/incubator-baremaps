@@ -27,6 +27,7 @@ import java.sql.Statement;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 import org.apache.commons.dbcp2.PoolingDataSource;
@@ -102,7 +103,7 @@ public class FastPostgisTileStore extends PostgisTileStore {
   private String query(Tile tile) {
     String sources = queries.entrySet().stream()
         .filter(
-            entry -> entry.getKey().getMinZoom() <= tile.getZ() && entry.getKey().getMaxZoom() >= tile.getZ())
+            entry -> entry.getKey().getMinZoom() <= tile.getZ() &&  tile.getZ() < entry.getKey().getMaxZoom())
         .flatMap(entry -> entry.getValue().stream().map(query -> MessageFormat.format(SOURCE,
             query.getSource(),
             query.getId(),
@@ -115,7 +116,7 @@ public class FastPostgisTileStore extends PostgisTileStore {
         .collect(Collectors.joining(COMMA));
     String targets = queries.entrySet().stream()
         .filter(entry ->
-            entry.getKey().getMinZoom() <= tile.getZ() && entry.getKey().getMaxZoom() >= tile.getZ())
+            entry.getKey().getMinZoom() <= tile.getZ() &&  tile.getZ() < entry.getKey().getMaxZoom())
         .map(entry -> {
           String queries = entry.getValue().stream()
               .map(select -> {
