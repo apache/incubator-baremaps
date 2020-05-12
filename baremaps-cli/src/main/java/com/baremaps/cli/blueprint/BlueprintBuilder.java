@@ -110,7 +110,7 @@ public class BlueprintBuilder {
     map.put("layout", ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")
         .build());
-    map.put("filter", Arrays.asList("all", Arrays.asList("==", "geometry", "point")));
+    map.put("filter", Arrays.asList("any", Arrays.asList("==", "geometry", "point"), Arrays.asList("==", "geometry", "multipoint")));
     map.put("paint", ImmutableSortedMap.naturalOrder()
         .put("circle-color", "rgb(229, 235, 247)")
         .put("circle-radius", 2)
@@ -129,7 +129,7 @@ public class BlueprintBuilder {
     map.put("layout", ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")
         .build());
-    map.put("filter", Arrays.asList("all", Arrays.asList("==", "geometry", "linestring")));
+    map.put("filter", Arrays.asList("any", Arrays.asList("==", "geometry", "linestring"), Arrays.asList("==", "geometry", "multilinestring")));
     map.put("paint", ImmutableSortedMap.naturalOrder()
         .put("line-color", "rgb(152, 174, 221)")
         .put("line-width", 1)
@@ -148,7 +148,7 @@ public class BlueprintBuilder {
     map.put("layout", ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")
         .build());
-    map.put("filter", Arrays.asList("all", Arrays.asList("==", "geometry", "polygon")));
+    map.put("filter", Arrays.asList("any", Arrays.asList("==", "geometry", "polygon"), Arrays.asList("==", "geometry", "multipolygon")));
     map.put("paint", ImmutableSortedMap.naturalOrder()
         .put("fill-color", "rgba(152, 174, 221, 0.1)")
         .put("fill-outline-color", "rgb(152, 174, 221)")
