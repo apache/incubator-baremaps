@@ -35,15 +35,15 @@ public class ConfigFormatter {
     map.put("id", config.getId());
     map.put("host", config.getHost());
     map.put("port", config.getPort());
-    map.put("lon", config.getLon());
-    map.put("lat", config.getLat());
-    map.put("zoom", config.getZoom());
-    map.put("minZoom", config.getMinZoom());
-    map.put("maxZoom", config.getMaxZoom());
-    map.put("bearing", config.getBearing());
-    map.put("pitch", config.getPitch());
+
+    // Group the properties used by the blueprint
+    map.put("center", config.getCenter());
+    map.put("bounds", config.getBounds());
+
+    // Put the nested properties at the end
     map.put("layers", formatLayers(config.getLayers()));
     map.put("styles", formatStyles(config.getStyles()));
+
     return map;
   }
 

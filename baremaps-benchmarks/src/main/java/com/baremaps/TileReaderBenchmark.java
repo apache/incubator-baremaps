@@ -16,6 +16,7 @@ package com.baremaps;
 
 import com.baremaps.tiles.TileStore;
 import com.baremaps.tiles.config.Config;
+import com.baremaps.tiles.config.ConfigConstructor;
 import com.baremaps.tiles.database.FastPostgisTileStore;
 import com.baremaps.tiles.database.SlowPostgisTileStore;
 import com.baremaps.tiles.util.TileUtil;
@@ -58,7 +59,7 @@ public class TileReaderBenchmark {
   public void prepare() throws IOException, ClassNotFoundException {
     Class.forName("org.postgresql.Driver");
     try (FileInputStream fis = new FileInputStream(new File("./examples/openstreetmap/config.yaml"))) {
-      Yaml yaml = new Yaml(new Constructor(Config.class));
+      Yaml yaml = new Yaml(new ConfigConstructor());
       config = yaml.load(fis);
       datasource = PostgisHelper.poolingDataSource(
           "jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps");

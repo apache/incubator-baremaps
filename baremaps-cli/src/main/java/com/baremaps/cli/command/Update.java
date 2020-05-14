@@ -130,11 +130,11 @@ public class Update implements Callable<Integer> {
     FileSystem fileSystem = mixins.fileSystem();
 
     logger.info("Downloading changes.");
-    String changePath = changePath(nextSequenceNumber);
+    String changePath =  path(nextSequenceNumber) + ".osc.gz";
     URI changeURI = new URI(String.format("%s/%s", input, changePath));
 
     logger.info("Downloading state information.");
-    String statePath = statePath(nextSequenceNumber);
+    String statePath = path(nextSequenceNumber) + ".state.txt";;
     URI stateURI = new URI(String.format("%s/%s", input, statePath));
 
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransformFactory
@@ -152,7 +152,7 @@ public class Update implements Callable<Integer> {
     logger.info("Saving differences.");
     try (PrintWriter diffPrintWriter = new PrintWriter(fileSystem.write(delta))) {
       for (Tile tile : deltaMaker.getTiles()) {
-        diffPrintWriter.println(String.format("%d/%d/%d", tile.getX(), tile.getY(), tile.getZ()));
+        diffPrintWriter.println(String.format("%d/%d/%d", tile.x(), tile.y(), tile.z()));
       }
     }
 
@@ -187,14 +187,5 @@ public class Update implements Callable<Integer> {
         + leading.substring(3, 6) + "/"
         + leading.substring(6, 9);
   }
-
-  public String changePath(long sequenceNumber) {
-    return path(sequenceNumber) + ".osc.gz";
-  }
-
-  public String statePath(long sequenceNumber) {
-    return path(sequenceNumber) + ".state.txt";
-  }
-
 
 }

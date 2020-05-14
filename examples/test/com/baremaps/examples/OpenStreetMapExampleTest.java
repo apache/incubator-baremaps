@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 The baremaps Authors
+ * Copyright (C) 2020 The Baremaps Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -21,6 +21,7 @@ import com.baremaps.cli.Baremaps;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.google.common.io.CharStreams;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,10 +31,13 @@ import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Comparator;
 import javax.sql.DataSource;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -42,9 +46,7 @@ import picocli.CommandLine;
 public class OpenStreetMapExampleTest {
 
   public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps";
-
   public DataSource dataSource;
-
   public NodeTable nodeTable;
 
   @BeforeEach
@@ -57,6 +59,15 @@ public class OpenStreetMapExampleTest {
       PostgisHelper.executeScript(connection, "osm_create_tables.sql");
       PostgisHelper.executeScript(connection, "osm_create_primary_keys.sql");
     }
+  }
+
+  @AfterEach
+  public void clean() throws IOException {
+    Path repository = Paths.get("repository");
+    Files.walk(repository)
+        .sorted(Comparator.reverseOrder())
+        .map(Path::toFile)
+        .forEach(File::delete);
   }
 
   @Test
@@ -78,12 +89,9 @@ public class OpenStreetMapExampleTest {
     int exportExitCode = cmd.execute("export",
         "--database", DATABASE_URL,
         "--config", "openstreetmap/config.yaml",
-        "--repository", "output/",
-        "--minZoom", "14",
-        "--maxZoom", "14");
+        "--repository", "repository/");
     assertEquals(0, exportExitCode);
-    assertTrue(Files.exists(Paths.get("output/14/8626/5750.pbf")));
-
+    assertTrue(Files.exists(Paths.get("repository/14/8626/5750.pbf")));
 
     // Test the serve command in a separate thread
     new Thread(() -> {
@@ -111,5 +119,4 @@ public class OpenStreetMapExampleTest {
     connection.connect();
     assertEquals(connection.getResponseCode(), 200);
   }
-
 }

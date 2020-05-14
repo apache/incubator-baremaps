@@ -1,9 +1,4 @@
 id: 'naturalearth'
-lon: 0
-lat: 0
-zoom: 1
-minZoom: 0
-maxZoom: 12
 layers:
   - id: 'ne_110m_admin_0_boundary_lines_land'
     type: geometry

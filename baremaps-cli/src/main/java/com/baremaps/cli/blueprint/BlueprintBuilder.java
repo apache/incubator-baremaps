@@ -42,8 +42,11 @@ public class BlueprintBuilder {
     map.put("sources", ImmutableSortedMap.naturalOrder()
         .put("baremaps", ImmutableSortedMap.naturalOrder()
             .put("type", "vector")
-            .put("minzoom", config.getMinZoom())
-            .put("maxzoom", config.getMaxZoom())
+            .put("minzoom", config.getBounds().getMinZoom())
+            .put("maxzoom", config.getBounds().getMaxZoom())
+            .put("bounds", new double[] {
+                config.getBounds().getMinLon(), config.getBounds().getMinLat(),
+                config.getBounds().getMaxLon(), config.getBounds().getMaxLat()})
             .put("tiles", Arrays.asList(String.format("http://%s:%s/tiles/{z}/{x}/{y}.pbf",
                 config.getHost(),
                 config.getPort())))

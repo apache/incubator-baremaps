@@ -1,13 +1,19 @@
 id: openstreetmap
 host: localhost
 port: 9000
-lon: 9.5554
-lat: 47.166
-zoom: 15.0
-minZoom: 12
-maxZoom: 20
-bearing: 0.0
-pitch: 0.0
+center:
+  lon: 0.1278
+  lat: 51.5074
+  zoom: 15.0
+  bearing: 0.0
+  pitch: 0.0
+bounds:
+  minLon: -0.511482
+  maxLon: 0.335437
+  minLat: 51.28554
+  maxLat: 51.69344
+  minZoom: 12
+  maxZoom: 20
 layers:
 - id: aerialway
   type: geometry

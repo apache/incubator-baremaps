@@ -11,19 +11,25 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+package com.baremaps.tiles.stream;
 
-package com.baremaps.cli.blueprint;
+import com.baremaps.util.tile.Tile;
+import java.util.function.Predicate;
 
-import java.util.Map;
+public class BatchFilter implements Predicate<Tile> {
 
-public class TemplateFormatter {
+  private final int batchArraySize;
 
-  public static String format(String template, Map<String, Object> params) {
-    String result = template;
-    for (String key : params.keySet()) {
-      result = result.replace(String.format("{%s}", key), params.get(key).toString());
-    }
-    return result;
+  private final int batchArrayIndex;
+
+  public BatchFilter(int batchArraySize, int batchArrayIndex) {
+    this.batchArraySize = batchArraySize;
+    this.batchArrayIndex = batchArrayIndex;
+  }
+
+  @Override
+  public boolean test(Tile tile) {
+    return batchArraySize <= 1 || tile.index() % batchArraySize == batchArrayIndex;
   }
 
 }
