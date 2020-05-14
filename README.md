@@ -13,24 +13,26 @@
 Baremaps is a vector tile server and pipeline for producing Mapbox vector tiles from [OpenStreetMap](https://www.openstreetmap.org) and other data sources. The project is licensed under [Apache License 2.0](LICENSE) and supported by [Camptocamp](https://www.camptocamp.com/en/solutions/geospatial-solutions/).
 
 It is inspired by [Osmosis](https://github.com/openstreetmap/osmosis), but it comes with additional features, such as the ability to:
--   Process data in parallel with the [Stream API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html) of Java
+-   Process data in parallel with the [Stream API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html) introduced in Java 8
 -   Import data faster with the [COPY API](https://www.postgresql.org/docs/11/sql-copy.html) of Postgresql
 -   Create postgis geometries on the fly with [JTS](https://github.com/locationtech/jts)
 -   Create and serve customized [Mapbox Vector Tiles](https://docs.mapbox.com/vector-tiles/specification/)
 
 On the longer run, the aim of the project is to work with a variety of data sources in order to create highly specialized and customized maps.
 
-## State of the map
+## Preview
 
-[![State of the map](https://github.com/baremaps/baremaps/raw/master/screenshots/2019-12-27.png)](https://www.baremaps.com/)
+![State of the map](examples/openstreetmap/screenshot.png)
 
-## Quick Start
+## Installation
 
-In order to run Baremaps, you first need to install [Java 8](https://sdkman.io/).
+In order to run Baremaps, you first need to install Java 8 or a later version. 
+[SDKMAN](https://sdkman.io/) provides a convenient Command Line Interface (CLI) to install and upgrade Java.
 
-Download and unzip the latest distribution. Add the `/bin` folder to your `PATH` variable:
+To install baremaps, download and unzip the latest [release](https://github.com/baremaps/baremaps/releases). 
+Then, add the `/bin` folder to your `PATH` variable:
 
-```bash
+```
 wget https://github.com/baremaps/baremaps/releases/latest/download/baremaps.zip
 unzip baremaps.zip
 export PATH=$PATH:`pwd`/baremaps/bin
@@ -38,19 +40,20 @@ export PATH=$PATH:`pwd`/baremaps/bin
 
 Calling the `baremaps` command should now result in an output similar to the following:
 
-```bash
+```
 Usage: baremaps [COMMAND]
+A toolkit for producing vector tiles.
 Commands:
-  import
-  update
-  export
-  serve
+  import  Import OpenStreetMap data in the Postgresql database.
+  update  Update OpenStreetMap data in the Postgresql database.
+  export  Export vector tiles from the Postgresql database.
+  serve   Serve vector tiles from the the Postgresql database.
 ```
 
-In order to run Baremaps, you need to setup a postgis database.
+In order to run Baremaps, you need to setup a [postgis](https://postgis.net/) database.
 The following docker image will allow you to jump start this installation:
 
-```bash
+```
 docker run \
   --name baremaps-postgis \
   --publish 5432:5432 \
@@ -60,20 +63,22 @@ docker run \
   -d baremaps/postgis:latest
 ```
 
-You can then start and stop the container with the following commands:
+You can then stop and start the container with the following commands:
 
-```bash
-docker start baremaps-postgis
+```
 docker stop baremaps-postgis
+docker start baremaps-postgis
 ```
 
-## Examples
+## Quickstart
 
-Several examples illustrate how to import datasets in postgis and produce vector tiles.
--   The [OpenStreetMap](examples/openstreetmap/README.md) example shows how to produce high resolution vector tiles.
+Start with the [OpenStreetMap](examples/openstreetmap/README.md) example, which introduces the Baremap toolkit and shows how to produce high resolution vector tiles.
+
+Additional examples illustrate how to import other datasets in postgis to produce different kind of vector tiles.
 -   The [NaturalEarth](examples/naturalearth/README.md) example shows how to produce low resolution vector tiles.
--   The [Contour](examples/contour/README.md) example shows how to produce contours from a digital elevation model (DEM).
+-   The [Contour](examples/contour/README.md) example shows how to produce contour lines from a digital elevation model (DEM).
 -   The [Buildings](examples/buildings/README.md) example shows how to 3D buildings from openstreetmap data.
+
 ## Contributing
 
 Contributions are welcome and encouraged. Please,checkout our [code of conduct](CODE_OF_CONDUCT.md) and [contributing guidelines](CONTRIBUTING.md).
