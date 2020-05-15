@@ -14,6 +14,7 @@
 
 package com.baremaps.tiles.config;
 
+import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Map;
 
@@ -25,24 +26,13 @@ public class Config {
 
   private int port = 9000;
 
-  private double lon = 0;
+  private Center center = new Center();
 
-  private double lat = 0;
+  private Bounds bounds = new Bounds();
 
-  private double zoom = 0;
+  private List<Layer> layers = Lists.newArrayList();
 
-  private double minZoom = 0;
-
-  private double maxZoom = 22;
-
-  private double bearing = 0;
-
-  private double pitch = 0;
-
-  private List<Layer> layers;
-
-  private List<Map<String, Object>> styles;
-
+  private List<Map<String, Object>> styles = Lists.newArrayList();
 
   public String getId() {
     return id;
@@ -68,60 +58,20 @@ public class Config {
     this.port = port;
   }
 
-  public double getLon() {
-    return lon;
+  public Bounds getBounds() {
+    return bounds;
   }
 
-  public void setLon(double lon) {
-    this.lon = lon;
+  public void setBounds(Bounds bounds) {
+    this.bounds = bounds;
   }
 
-  public double getLat() {
-    return lat;
+  public Center getCenter() {
+    return center;
   }
 
-  public void setLat(double lat) {
-    this.lat = lat;
-  }
-
-  public double getZoom() {
-    return zoom;
-  }
-
-  public void setZoom(double zoom) {
-    this.zoom = zoom;
-  }
-
-  public double getMinZoom() {
-    return minZoom;
-  }
-
-  public void setMinZoom(double minZoom) {
-    this.minZoom = minZoom;
-  }
-
-  public double getMaxZoom() {
-    return maxZoom;
-  }
-
-  public void setMaxZoom(double maxZoom) {
-    this.maxZoom = maxZoom;
-  }
-
-  public double getBearing() {
-    return bearing;
-  }
-
-  public void setBearing(double bearing) {
-    this.bearing = bearing;
-  }
-
-  public double getPitch() {
-    return pitch;
-  }
-
-  public void setPitch(double pitch) {
-    this.pitch = pitch;
+  public void setCenter(Center center) {
+    this.center = center;
   }
 
   public List<Layer> getLayers() {

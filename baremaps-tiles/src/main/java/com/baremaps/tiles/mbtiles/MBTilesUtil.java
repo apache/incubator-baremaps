@@ -86,9 +86,9 @@ public final class MBTilesUtil {
   private static PreparedStatement readTileStatement(Connection connection, Tile tile)
       throws SQLException {
     PreparedStatement statement = connection.prepareStatement(SELECT_TILE);
-    statement.setInt(1, tile.getZ());
-    statement.setInt(2, tile.getX());
-    statement.setInt(3, reverseY(tile.getY(), tile.getZ()));
+    statement.setInt(1, tile.z());
+    statement.setInt(2, tile.x());
+    statement.setInt(3, reverseY(tile.y(), tile.z()));
     return statement;
   }
 
@@ -111,9 +111,9 @@ public final class MBTilesUtil {
 
   public static void writeTile(Connection connection, Tile tile, byte[] bytes) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
-      statement.setInt(1, tile.getZ());
-      statement.setInt(2, tile.getX());
-      statement.setInt(3, reverseY(tile.getY(), tile.getZ()));
+      statement.setInt(1, tile.z());
+      statement.setInt(2, tile.x());
+      statement.setInt(3, reverseY(tile.y(), tile.z()));
       statement.setBytes(4, bytes);
       statement.executeUpdate();
     }
@@ -121,9 +121,9 @@ public final class MBTilesUtil {
 
   public static void deleteTile(Connection connection, Tile tile) throws SQLException {
     try (PreparedStatement statement = connection.prepareStatement(DELETE_TILE)) {
-      statement.setInt(1, tile.getZ());
-      statement.setInt(2, tile.getX());
-      statement.setInt(3, reverseY(tile.getY(), tile.getZ()));
+      statement.setInt(1, tile.z());
+      statement.setInt(2, tile.x());
+      statement.setInt(3, reverseY(tile.y(), tile.z()));
       statement.execute();
     }
   }

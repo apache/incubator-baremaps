@@ -11,19 +11,23 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+package com.baremaps.tiles.config;
 
-package com.baremaps.cli.blueprint;
+import org.yaml.snakeyaml.constructor.AbstractConstruct;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.Tag;
 
-import java.util.Map;
+public class ConfigConstructor extends Constructor {
 
-public class TemplateFormatter {
-
-  public static String format(String template, Map<String, Object> params) {
-    String result = template;
-    for (String key : params.keySet()) {
-      result = result.replace(String.format("{%s}", key), params.get(key).toString());
-    }
-    return result;
+  public ConfigConstructor() {
+    super(Config.class);
+    this.yamlConstructors.put(Tag.NULL, new AbstractConstruct() {
+      @Override
+      public Object construct(Node node) {
+        return new Config();
+      }
+    });
   }
 
 }

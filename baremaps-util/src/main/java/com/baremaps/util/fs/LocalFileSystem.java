@@ -61,7 +61,7 @@ public class LocalFileSystem extends FileSystem {
 
   @Override
   public void delete(URI uri) throws IOException {
-    Files.delete(Paths.get(uri.getPath()));
+    Files.deleteIfExists(Paths.get(uri.getPath()));
   }
 
 }

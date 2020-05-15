@@ -47,7 +47,7 @@ public class FileSystemTileStore implements TileStore {
   }
 
   public URI getURI(Tile tile) {
-    return uri.resolve(String.format("%s/%s/%s.pbf", tile.getZ(), tile.getX(), tile.getY()));
+    return uri.resolve(String.format("%s/%s/%s.pbf", tile.z(), tile.x(), tile.y()));
   }
 
 }

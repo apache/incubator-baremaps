@@ -1,5 +1,5 @@
-package com.baremaps.cli.handler;/*
- * Copyright (C) 2020 The baremaps Authors
+/*
+ * Copyright (C) 2020 The Baremaps Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -11,6 +11,7 @@ package com.baremaps.cli.handler;/*
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+package com.baremaps.cli.handler;
 
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
@@ -46,13 +47,13 @@ public class BlueprintHandler implements HttpHandler {
       String template = Resources.toString(url, Charsets.UTF_8);
 
       ImmutableMap<String, Object> params = ImmutableMap.<String, Object>builder()
-          .put("lon", config.getLon())
-          .put("lat", config.getLat())
-          .put("zoom", config.getZoom())
-          .put("bearing", config.getBearing())
-          .put("pitch", config.getPitch())
-          .put("minZoom", config.getMinZoom())
-          .put("maxZoom", config.getMaxZoom())
+          .put("lon", config.getCenter().getLon())
+          .put("lat", config.getCenter().getLat())
+          .put("zoom", config.getCenter().getZoom())
+          .put("bearing", config.getCenter().getBearing())
+          .put("pitch", config.getCenter().getPitch())
+          .put("minZoom", config.getBounds().getMinZoom())
+          .put("maxZoom", config.getBounds().getMaxZoom())
           .build();
       String result = TemplateFormatter.format(template, params);
       byte[] bytes = result.getBytes(Charsets.UTF_8);

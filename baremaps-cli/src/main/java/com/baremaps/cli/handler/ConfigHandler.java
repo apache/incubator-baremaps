@@ -18,6 +18,7 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
 import com.baremaps.cli.blueprint.ConfigFormatter;
 import com.baremaps.tiles.config.Config;
+import com.baremaps.tiles.config.ConfigConstructor;
 import com.google.common.base.Charsets;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -48,7 +49,7 @@ public class ConfigHandler implements HttpHandler {
       ConfigFormatter configBuilder = new ConfigFormatter(this.config);
       Map<String, Object> config = configBuilder.format();
 
-      Constructor constructor = new Constructor(Config.class);
+      Constructor constructor = new ConfigConstructor();
       Representer representer = new Representer();
       DumperOptions options = new DumperOptions();
       options.setDefaultFlowStyle(FlowStyle.BLOCK);

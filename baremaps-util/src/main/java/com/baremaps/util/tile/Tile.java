@@ -16,13 +16,28 @@ package com.baremaps.util.tile;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import com.google.common.math.IntMath;
+import com.google.common.math.LongMath;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import org.locationtech.jts.geom.Envelope;
 
 public final class Tile {
+
+  private static final int[] sides = IntStream.range(0, 30)
+      .map(i -> IntMath.pow(2, i))
+      .toArray();
+
+  private static final long[] squares = LongStream.range(0, 30)
+      .map(i -> LongMath.pow(IntMath.pow(2, (int) i), 2))
+      .toArray();
+
+  private static final long[] offsets = LongStream.range(0, 30).map(i -> LongStream.range(0, i)
+      .map(j -> LongMath.pow(IntMath.pow(2, (int) j), 2)).sum())
+      .toArray();
 
   private final int x, y, z;
 
@@ -32,15 +47,21 @@ public final class Tile {
     this.z = z;
   }
 
-  public int getX() {
+  public long index() {
+    long offset = offsets[z];
+    long position = x + y * sides[z];
+    return offset + position;
+  }
+
+  public int x() {
     return x;
   }
 
-  public int getY() {
+  public int y() {
     return y;
   }
 
-  public int getZ() {
+  public int z() {
     return z;
   }
 
@@ -113,20 +134,49 @@ public final class Tile {
     if (envelope == null) {
       return Stream.empty();
     }
-    Tile min = getTile(envelope.getMinX(), envelope.getMaxY(), z);
-    Tile max = getTile(envelope.getMaxX(), envelope.getMinY(), z);
-    return IntStream.rangeClosed(min.getX(), max.getX()).boxed()
+    Tile min = fromLonLat(envelope.getMinX(), envelope.getMaxY(), z);
+    Tile max = fromLonLat(envelope.getMaxX(), envelope.getMinY(), z);
+    return IntStream.rangeClosed(min.x(), max.x()).boxed()
         .flatMap(x -> IntStream
-            .rangeClosed(min.getY(), max.getY())
+            .rangeClosed(min.y(), max.y())
             .boxed()
             .map(y -> new Tile(x, y, z)));
   }
 
-  public static Tile getTile(double lon, double lat, int z) {
+  public static Tile fromLonLat(double lon, double lat, int z) {
     int x = (int) ((lon + 180.0) / 360.0 * (1 << z));
     int y = (int) ((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat)))
         / Math.PI) / 2.0 * (1 << z));
     return new Tile(x, y, z);
+  }
+
+  public static Tile fromIndex(Long value) {
+    int zoom = 0;
+    long offset = 0;
+    long count = 1;
+    while (value >= offset + count) {
+      zoom += 1;
+      offset += count;
+      count = squares[zoom];
+    }
+    long position = value - offset;
+    int x = (int) position % sides[zoom];
+    int y = (int) position / sides[zoom];
+    return new Tile(x, y, zoom);
+  }
+
+  public static void main(String[] args) {
+    int count = 0;
+    for (int z = 0; z <= 14; z++) {
+      for (int y = 0; y < LongMath.pow(2, z); y++) {
+        for (int x = 0; x < LongMath.pow(2, z); x++) {
+          Tile t1 = new Tile(x, y, z);
+          Tile t2 = fromIndex(t1.index());
+          count++;
+        }
+      }
+    }
+    System.out.println(count);
   }
 
 }

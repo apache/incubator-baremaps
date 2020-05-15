@@ -12,6 +12,7 @@ import com.baremaps.cli.handler.TileHandler;
 import com.baremaps.cli.option.TileReaderOption;
 import com.baremaps.tiles.TileStore;
 import com.baremaps.tiles.config.Config;
+import com.baremaps.tiles.config.ConfigConstructor;
 import com.baremaps.tiles.database.FastPostgisTileStore;
 import com.baremaps.tiles.database.SlowPostgisTileStore;
 import com.baremaps.util.fs.FileSystem;
@@ -139,14 +140,24 @@ public class Serve implements Callable<Integer> {
   private void startServer() throws IOException {
     FileSystem fileReader = mixins.fileSystem();
     try (InputStream input = fileReader.read(this.config)) {
-      Yaml yaml = new Yaml(new Constructor(Config.class));
+      Yaml yaml = new Yaml(new ConfigConstructor());
       Config config = yaml.load(input);
 
       logger.info("Initializing datasource.");
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
       logger.info("Initializing tile reader.");
-      TileStore tileStore = tileReader(datasource, config);
+      final TileStore tileStore;
+      switch (tileReader) {
+        case slow:
+          tileStore = new SlowPostgisTileStore(datasource, config);
+          break;
+        case fast:
+          tileStore = new FastPostgisTileStore(datasource, config);
+          break;
+        default:
+          throw new UnsupportedOperationException("Unsupported tile reader");
+      }
 
       logger.info("Initializing server.");
       server = HttpServer.create(new InetSocketAddress(config.getHost(), config.getPort()), 0);
@@ -188,17 +199,5 @@ public class Serve implements Callable<Integer> {
     logger.info("Stopping the server.");
     server.stop(0);
   }
-
-  private TileStore tileReader(PoolingDataSource dataSource, com.baremaps.tiles.config.Config config) {
-    switch (tileReader) {
-      case slow:
-        return new SlowPostgisTileStore(dataSource, config);
-      case fast:
-        return new FastPostgisTileStore(dataSource, config);
-      default:
-        throw new UnsupportedOperationException("Unsupported tile reader");
-    }
-  }
-
 
 }

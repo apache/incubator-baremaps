@@ -17,12 +17,14 @@ package com.baremaps.cli.command;
 import static com.baremaps.cli.option.TileReaderOption.fast;
 
 import com.baremaps.cli.option.TileReaderOption;
+import com.baremaps.tiles.stream.BatchFilter;
+import com.baremaps.tiles.stream.TileHandler;
 import com.baremaps.tiles.TileStore;
 import com.baremaps.tiles.config.Config;
+import com.baremaps.tiles.config.ConfigConstructor;
 import com.baremaps.tiles.database.FastPostgisTileStore;
 import com.baremaps.tiles.database.SlowPostgisTileStore;
 import com.baremaps.tiles.store.FileSystemTileStore;
-import com.baremaps.tiles.util.TileUtil;
 import com.baremaps.util.fs.FileSystem;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.tile.Tile;
@@ -31,11 +33,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
-import javax.sql.DataSource;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -44,7 +44,6 @@ import org.apache.logging.log4j.core.config.Configurator;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.io.ParseException;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
@@ -79,18 +78,6 @@ public class Export implements Callable<Integer> {
   private URI repository;
 
   @Option(
-      names = {"--minZoom"},
-      paramLabel = "MIN",
-      description = "The minimal zoom level.")
-  private int minZoom = 0;
-
-  @Option(
-      names = {"--maxZoom"},
-      paramLabel = "MAX",
-      description = "The maximal zoom level.")
-  private int maxZoom = 14;
-
-  @Option(
       names = {"--delta"},
       paramLabel = "DELTA",
       description = "The input delta file.")
@@ -101,6 +88,18 @@ public class Export implements Callable<Integer> {
       paramLabel = "READER",
       description = "The tile reader.")
   private TileReaderOption tileReader = fast;
+
+  @Option(
+      names = {"--batch-array-size"},
+      paramLabel = "BATCH_ARRAY_SIZE",
+      description = "The size of the batch array.")
+  private int batchArraySize = 1;
+
+  @Option(
+      names = {"--batch-array-index"},
+      paramLabel = "READER",
+      description = "The index of the batch in the array.")
+  private int batchArrayIndex = 0;
 
   @Override
   public Integer call() throws SQLException, ParseException, IOException {
@@ -113,69 +112,59 @@ public class Export implements Callable<Integer> {
     // Read the configuration file
     logger.info("Reading configuration.");
     try (InputStream input = fileSystem.read(this.config)) {
-      Yaml yaml = new Yaml(new Constructor(Config.class));
+      Yaml yaml = new Yaml(new ConfigConstructor());
       Config config = yaml.load(input);
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
       // Initialize tile source and target tile stores
-      logger.info("Initializing source and target tile stores.");
-      TileStore tileSource = tileSource(datasource, config);
-      TileStore tileTarget = tileTarget(fileSystem, repository);
+      logger.info("Initializing the tile source.");
+      final TileStore tileSource;
+      switch (tileReader) {
+        case fast:
+          tileSource = new FastPostgisTileStore(datasource, config);
+          break;
+        case slow:
+          tileSource = new SlowPostgisTileStore(datasource, config);
+          break;
+        default:
+          throw new UnsupportedOperationException("Unsupported tile reader");
+      }
+
+      logger.info("Initializing the tile target.");
+      final TileStore tileTarget = new FileSystemTileStore(fileSystem, repository);
 
       // Export the tiles
       logger.info("Generating the tiles.");
-      Stream<Tile> tiles = tileStream(fileSystem, datasource);
-      tiles.parallel().forEach(tile -> {
-        try {
-          byte[] bytes = tileSource.read(tile);
-          if (bytes != null) {
-            tileTarget.write(tile, bytes);
-          }
-        } catch (IOException ex) {
-          throw new RuntimeException("An error occurred while creating the tiles", ex);
+
+      final Stream<Tile> stream;
+      if (delta == null) {
+        Envelope envelope = new Envelope(
+            config.getBounds().getMinLon(), config.getBounds().getMaxLon(),
+            config.getBounds().getMinLat(), config.getBounds().getMaxLat());
+        stream = Tile.getTiles(envelope,
+            (int) config.getBounds().getMinZoom(),
+            (int) config.getBounds().getMaxZoom());
+      } else {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(fileSystem.read(delta)))) {
+          stream = reader.lines().flatMap(line -> {
+            String[] array = line.split(",");
+            int x = Integer.parseInt(array[0]);
+            int y = Integer.parseInt(array[1]);
+            int z = Integer.parseInt(array[2]);
+            Tile tile = new Tile(x, y, z);
+            return Tile.getTiles(tile.envelope(),
+                (int) config.getBounds().getMinZoom(),
+                (int) config.getBounds().getMaxZoom());
+          });
         }
-      });
+      }
+
+      stream.parallel()
+          .filter(new BatchFilter(batchArraySize, batchArrayIndex))
+          .forEach(new TileHandler(tileSource, tileTarget));
     }
 
     return 0;
-  }
-
-  public TileStore tileSource(PoolingDataSource dataSource, Config config) {
-    switch (tileReader) {
-      case fast:
-        return new FastPostgisTileStore(dataSource, config);
-      case slow:
-        return new SlowPostgisTileStore(dataSource, config);
-      default:
-        throw new UnsupportedOperationException("Unsupported tile reader");
-    }
-  }
-
-  private TileStore tileTarget(FileSystem fileSystem, URI repository) {
-    return new FileSystemTileStore(fileSystem, repository);
-  }
-
-  private Stream<Tile> tileStream(FileSystem fileSystem, DataSource datasource)
-      throws IOException, SQLException, ParseException {
-    if (delta != null) {
-      try (BufferedReader reader = new BufferedReader(
-          new InputStreamReader(fileSystem.read(delta)))) {
-        Stream<String> lines = reader.lines();
-        return lines.flatMap(line -> {
-          String[] array = line.split(",");
-          int x = Integer.parseInt(array[0]);
-          int y = Integer.parseInt(array[1]);
-          int z = Integer.parseInt(array[2]);
-          Tile tile = new Tile(x, y, z);
-          return Tile.getTiles(tile.envelope(), minZoom, maxZoom);
-        });
-      }
-    } else {
-      try (Connection connection = datasource.getConnection()) {
-        Envelope envelope = TileUtil.envelope(connection);
-        return Tile.getTiles(envelope, minZoom, maxZoom);
-      }
-    }
   }
 
 }
