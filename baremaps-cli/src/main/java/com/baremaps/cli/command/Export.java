@@ -18,7 +18,7 @@ import static com.baremaps.cli.option.TileReaderOption.fast;
 
 import com.baremaps.cli.option.TileReaderOption;
 import com.baremaps.tiles.stream.BatchFilter;
-import com.baremaps.tiles.stream.TileHandler;
+import com.baremaps.tiles.stream.TileFactory;
 import com.baremaps.tiles.TileStore;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.config.ConfigConstructor;
@@ -161,7 +161,7 @@ public class Export implements Callable<Integer> {
 
       stream.parallel()
           .filter(new BatchFilter(batchArraySize, batchArrayIndex))
-          .forEach(new TileHandler(tileSource, tileTarget));
+          .forEach(new TileFactory(tileSource, tileTarget));
     }
 
     return 0;

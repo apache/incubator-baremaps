@@ -18,15 +18,22 @@ import com.baremaps.util.tile.Tile;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-public class TileHandler implements Consumer<Tile> {
+public class TileFactory implements Consumer<Tile> {
 
   public final TileStore tileSource;
 
   public final TileStore tileTarget;
 
-  public TileHandler(TileStore tileSource, TileStore tileTarget) {
+  public final boolean deleteEmptyTiles;
+
+  public TileFactory(TileStore tileSource, TileStore tileTarget) {
+    this(tileSource, tileTarget, false);
+  }
+
+  public TileFactory(TileStore tileSource, TileStore tileTarget, boolean deleteEmptyTiles) {
     this.tileSource = tileSource;
     this.tileTarget = tileTarget;
+    this.deleteEmptyTiles = deleteEmptyTiles;
   }
 
   @Override
@@ -35,7 +42,7 @@ public class TileHandler implements Consumer<Tile> {
       byte[] bytes = tileSource.read(tile);
       if (bytes != null) {
         tileTarget.write(tile, bytes);
-      } else {
+      } else if (deleteEmptyTiles) {
         tileTarget.delete(tile);
       }
     } catch (IOException ex) {
