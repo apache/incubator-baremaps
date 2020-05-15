@@ -3,7 +3,7 @@
 Baremaps is aimed at being the most productive toolkit for publishing custom vector tiles from OpenStreetMap data. 
 
 In this tutorial, we'll learn how to use Baremaps to import OpenStreetMap data in a Postgis database and how to publish vector tiles from this data.
-Notice that the following steps assume that Baremaps and Postgis are [installed](../../README.md).
+Notice that the following steps assume that Baremaps and Postgis are [installed](../../README.md#installation).
 Also, if you are in a hurry, consider skipping the "under the hood" sections.
 
 ## Dataset
