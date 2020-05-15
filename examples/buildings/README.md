@@ -9,7 +9,7 @@ wget https://download.geofabrik.de/europe/great-britain/england/greater-london-l
 
 You can then import the data in Postgresql using the following command:
 
-```bash
+```
 baremaps import \
   --input 'greater-london-latest.osm.pbf' \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps'
@@ -30,7 +30,7 @@ FROM osm_ways WHERE tags ? 'building'
 This property is then used in the style to extrude the buildings.
 To preview this example, start the tile server:
 
-```bash
+```
 baremaps serve \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
   --config 'config.yaml'
