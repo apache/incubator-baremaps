@@ -48,6 +48,8 @@ public final class Tile {
   }
 
   public long index() {
+    long x = this.x;
+    long y = this.y;
     long offset = offsets[z];
     long position = x + y * sides[z];
     return offset + position;
@@ -163,20 +165,6 @@ public final class Tile {
     int x = (int) position % sides[zoom];
     int y = (int) position / sides[zoom];
     return new Tile(x, y, zoom);
-  }
-
-  public static void main(String[] args) {
-    int count = 0;
-    for (int z = 0; z <= 14; z++) {
-      for (int y = 0; y < LongMath.pow(2, z); y++) {
-        for (int x = 0; x < LongMath.pow(2, z); x++) {
-          Tile t1 = new Tile(x, y, z);
-          Tile t2 = fromIndex(t1.index());
-          count++;
-        }
-      }
-    }
-    System.out.println(count);
   }
 
 }
