@@ -16,7 +16,6 @@ package com.baremaps.tiles;
 
 import com.baremaps.util.tile.Tile;
 import java.io.IOException;
-import org.locationtech.jts.geom.Envelope;
 
 public interface TileStore {
 

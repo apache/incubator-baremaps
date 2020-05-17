@@ -12,7 +12,6 @@ import com.baremaps.cli.handler.TileHandler;
 import com.baremaps.cli.option.TileReaderOption;
 import com.baremaps.tiles.TileStore;
 import com.baremaps.tiles.config.Config;
-import com.baremaps.tiles.config.ConfigConstructor;
 import com.baremaps.tiles.database.FastPostgisTileStore;
 import com.baremaps.tiles.database.SlowPostgisTileStore;
 import com.baremaps.util.fs.FileSystem;
@@ -36,8 +35,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
@@ -140,8 +137,7 @@ public class Serve implements Callable<Integer> {
   private void startServer() throws IOException {
     FileSystem fileReader = mixins.fileSystem();
     try (InputStream input = fileReader.read(this.config)) {
-      Yaml yaml = new Yaml(new ConfigConstructor());
-      Config config = yaml.load(input);
+      Config config = Config.load(input);
 
       logger.info("Initializing datasource.");
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);

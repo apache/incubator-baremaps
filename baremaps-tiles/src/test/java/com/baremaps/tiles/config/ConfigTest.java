@@ -16,31 +16,34 @@ package com.baremaps.tiles.config;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.google.common.io.CharSource;
+import java.io.IOException;
+import java.io.InputStream;
 import org.junit.jupiter.api.Test;
-import org.yaml.snakeyaml.Yaml;
+import org.postgresql.util.ReaderInputStream;
 
 class ConfigTest {
 
   @Test
-  public void loadEmptyYamlConfig() {
-    Yaml yaml = new Yaml(new ConfigConstructor());
-    Config config = yaml.load("");
+  public void loadEmptyYamlConfig() throws IOException {
+    InputStream input = new ReaderInputStream(CharSource.wrap("").openStream());
+    Config config = Config.load(input);
     assertNotNull(config);
     assertEquals(config.getId(), "baremaps");
   }
 
   @Test
-  public void loadYamlConfig() {
-    Yaml yaml = new Yaml(new ConfigConstructor());
-    Config config = yaml.load("id: test");
+  public void loadYamlConfig() throws IOException {
+    InputStream input = new ReaderInputStream(CharSource.wrap("id: test").openStream());
+    Config config = Config.load(input);
     assertNotNull(config);
     assertEquals(config.getId(), "test");
   }
 
   @Test
-  public void checkOverrideBehavior() {
-    Yaml yaml = new Yaml(new ConfigConstructor());
-    Config config = yaml.load("{id: test, center: {lon: 10}}");
+  public void checkOverrideBehavior() throws IOException {
+    InputStream input = new ReaderInputStream(CharSource.wrap("{id: test, center: {lon: 10}}").openStream());
+    Config config = Config.load(input);
     assertNotNull(config);
     assertEquals(config.getId(), "test");
     assertEquals(config.getCenter().getLon(), 10);

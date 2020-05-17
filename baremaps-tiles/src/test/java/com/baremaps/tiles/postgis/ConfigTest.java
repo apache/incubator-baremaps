@@ -18,19 +18,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.tiles.config.Config;
-import com.baremaps.tiles.config.ConfigConstructor;
 import java.io.InputStream;
 import org.junit.jupiter.api.Test;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 public class ConfigTest {
 
   @Test
   public void load() {
     InputStream input = this.getClass().getClassLoader().getResourceAsStream("config.yaml");
-    Yaml yaml = new Yaml(new ConfigConstructor());
-    Config config = yaml.load(input);
+    Config config = Config.load(input);
     assertNotNull(config);
     assertTrue(config.getLayers().size() == 2);
   }

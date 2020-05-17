@@ -15,8 +15,11 @@
 package com.baremaps.tiles.config;
 
 import com.google.common.collect.Lists;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 public class Config {
 
@@ -88,6 +91,16 @@ public class Config {
 
   public void setStyles(List<Map<String, Object>> styles) {
     this.styles = styles;
+  }
+
+  public static Config load(InputStream input) {
+    Yaml yaml = new Yaml(new Constructor(Config.class));
+    Config config = yaml.load(input);
+    if (config == null) {
+      return new Config();
+    } else {
+      return config;
+    }
   }
 
 }
