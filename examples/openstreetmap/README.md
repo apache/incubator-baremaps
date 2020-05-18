@@ -16,7 +16,9 @@ The [GitHub directory](./) associated with this example contains a tiny extract 
 
 ## Importing OpenStreetMap Data
 
-To import the sample OSM data (`liechtenstein-latest.osm.pbf`) in Postgis with Baremaps, download the sample file to your current working directory and execute the following command in a terminal.
+To begin with the tutorial, make sure you have the source files of the tutorial in your current working directory.
+
+To import the sample OSM data (`liechtenstein-latest.osm.pbf`) in Postgis with Baremaps, execute the following command in a terminal.
 
 ```
 baremaps import \
@@ -72,7 +74,7 @@ baremaps serve \
   --watch-changes
 ```
 
-Well done, a local tile server should have started and a map of Liechtenstein should appear in your browser ([http://localhost:9000/](http://localhost:9000/))!
+Well done, a local tile server should have started and you can open a map of Liechtenstein in your browser ([http://localhost:9000/](http://localhost:9000/))!
 Baremaps dynamically generates a blueprint [Mapbox Style](https://docs.mapbox.com/mapbox-gl-js/style-spec/) from the YAML configuration file. 
 It is aimed at quickly previsualizing the data and provides a foundation for creating more complex styles. 
 Here, notice the flag `--watch-changes`, it enables the browser to reload automatically whenever the configuration file changes, which greatly accelerates the process of composing vector tiles.
