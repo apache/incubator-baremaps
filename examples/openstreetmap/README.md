@@ -1,8 +1,8 @@
 # OpenStreetMap Example
 
-Baremaps is aimed at being the most productive toolkit for publishing custom vector tiles from OpenStreetMap data. 
+Baremaps is aimed at being the most productive toolkit for creating custom vector tiles from OpenStreetMap data. 
 
-In this tutorial, we'll learn how to use Baremaps to import OpenStreetMap data in a Postgis database and how to publish vector tiles from this data.
+In this tutorial, we'll learn how to use Baremaps to import OpenStreetMap data in a Postgis database and how to create vector tiles from this data.
 Notice that the following steps assume that Baremaps and Postgis are [installed](../../README.md#installation).
 Also, if you are in a hurry, consider skipping the "Under the Hood" sections.
 
@@ -60,7 +60,7 @@ The following Figure displays the schema of the Postgis database created by Bare
 
 ![Postgis database](database.png)
 
-## Publishing Vector Tiles
+## Creating Vector Tiles
 
 In order to create vector tiles, Baremaps uses a YAML configuration file.
 This file defines general properties, a list of layers containing SQL queries to be executed against Postgis, and, optionally, styling rules. This example contains a sample configuration file (`config.yaml`) which you can download to your current working directory.
@@ -126,7 +126,7 @@ Then, add the `--enable-aws` flag to the previous command and replace the `tiles
 
 ## Conclusion
 
-In this tutorial, we learnt how to import OpenStreetMap data in Postgis and how to publish vector tiles with Baremaps.
+In this tutorial, we learnt how to import OpenStreetMap data in Postgis and how to create vector tiles with Baremaps.
 Prior to the release of Baremaps, we believe that creating a pipeline for publishing vector tiles from OpenStreetMap data was a rather time consuming task.
 
 As shown in this demonstration, Baremaps literally brings back the fun to creating a web mapping pipeline!
