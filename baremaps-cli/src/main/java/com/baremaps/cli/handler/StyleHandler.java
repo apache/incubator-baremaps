@@ -18,9 +18,7 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
 import com.baremaps.cli.blueprint.BlueprintBuilder;
 import com.baremaps.tiles.config.Config;
-import com.google.common.base.Charsets;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
@@ -45,8 +43,11 @@ public class StyleHandler implements HttpHandler {
       BlueprintBuilder builder = new BlueprintBuilder(config);
       Map<String, Object> style = builder.build();
 
-      Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-      byte[] bytes = gson.toJson(style).getBytes(Charsets.UTF_8);
+      ObjectMapper mapper = new ObjectMapper();
+      byte[] bytes = mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(style);
+
+
+
       exchange.getResponseHeaders().put(CONTENT_TYPE, Arrays.asList("application/json"));
       exchange.getResponseHeaders().put(CONTENT_ENCODING, Arrays.asList("utf-8"));
       exchange.sendResponseHeaders(200, bytes.length);

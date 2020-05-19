@@ -42,8 +42,8 @@ public class BlueprintBuilder {
     map.put("sources", ImmutableSortedMap.naturalOrder()
         .put("baremaps", ImmutableSortedMap.naturalOrder()
             .put("type", "vector")
-            .put("minzoom", config.getBounds().getMinZoom())
-            .put("maxzoom", config.getBounds().getMaxZoom())
+            .put("minZoom", config.getBounds().getMinZoom())
+            .put("maxZoom", config.getBounds().getMaxZoom())
             .put("bounds", new double[] {
                 config.getBounds().getMinLon(), config.getBounds().getMinLat(),
                 config.getBounds().getMaxLon(), config.getBounds().getMaxLat()})
@@ -107,8 +107,8 @@ public class BlueprintBuilder {
     map.put("id", id);
     map.put("source", "baremaps");
     map.put("source-layer", layer.getId());
-    map.put("minzoom", layer.getMinZoom());
-    map.put("maxzoom", layer.getMaxZoom());
+    map.put("minZoom", layer.getMinZoom());
+    map.put("maxZoom", layer.getMaxZoom());
     map.put("type", "circle");
     map.put("layout", ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")
@@ -126,8 +126,8 @@ public class BlueprintBuilder {
     map.put("id", id);
     map.put("source", "baremaps");
     map.put("source-layer", layer.getId());
-    map.put("minzoom", layer.getMinZoom());
-    map.put("maxzoom", layer.getMaxZoom());
+    map.put("minZoom", layer.getMinZoom());
+    map.put("maxZoom", layer.getMaxZoom());
     map.put("type", "line");
     map.put("layout", ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")
@@ -145,8 +145,8 @@ public class BlueprintBuilder {
     map.put("id", id);
     map.put("source", "baremaps");
     map.put("source-layer", layer.getId());
-    map.put("minzoom", layer.getMinZoom());
-    map.put("maxzoom", layer.getMaxZoom());
+    map.put("minZoom", layer.getMinZoom());
+    map.put("maxZoom", layer.getMaxZoom());
     map.put("type", "fill");
     map.put("layout", ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")

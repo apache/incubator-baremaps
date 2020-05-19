@@ -14,12 +14,14 @@
 
 package com.baremaps.tiles.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.collect.Lists;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 public class Config {
 
@@ -93,13 +95,14 @@ public class Config {
     this.styles = styles;
   }
 
-  public static Config load(InputStream input) {
-    Yaml yaml = new Yaml(new Constructor(Config.class));
-    Config config = yaml.load(input);
-    if (config == null) {
-      return new Config();
-    } else {
+  public static Config load(InputStream input) throws IOException {
+    try {
+      ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+      Config config = mapper.readValue(input, Config.class);
       return config;
+    } catch (MismatchedInputException e) {
+      // return the default Config if the input is empty
+      return new Config();
     }
   }
 

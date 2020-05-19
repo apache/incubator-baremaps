@@ -95,7 +95,6 @@
     <version.lib.caffeine>2.8.2</version.lib.caffeine>
     <version.lib.commons-compress>1.19</version.lib.commons-compress>
     <version.lib.dbcp2>2.7.0</version.lib.dbcp2>
-    <version.lib.gson>2.8.6</version.lib.gson>
     <version.lib.guava>28.2-jre</version.lib.guava>
     <version.lib.jts>1.16.1</version.lib.jts>
     <version.lib.junit>5.6.2</version.lib.junit>
@@ -108,7 +107,6 @@
     <version.lib.protobuf>3.11.4</version.lib.protobuf>
     <version.lib.selenium>3.141.59</version.lib.selenium>
     <version.lib.slf4j>1.7.30</version.lib.slf4j>
-    <version.lib.snakeyaml>1.26</version.lib.snakeyaml>
     <version.lib.sqlite>3.30.1</version.lib.sqlite>
     <version.lib.testng>7.1.0</version.lib.testng>
     <version.lib.s3mock>2.1.19</version.lib.s3mock>
@@ -241,11 +239,6 @@
         <version>${version.lib.guava}</version>
       </dependency>
       <dependency>
-        <groupId>com.google.code.gson</groupId>
-        <artifactId>gson</artifactId>
-        <version>${version.lib.gson}</version>
-      </dependency>
-      <dependency>
         <artifactId>picocli</artifactId>
         <groupId>info.picocli</groupId>
         <version>${version.lib.picocli}</version>
@@ -296,11 +289,6 @@
         <version>${version.lib.lmdb}</version>
       </dependency>
       <dependency>
-        <artifactId>snakeyaml</artifactId>
-        <groupId>org.yaml</groupId>
-        <version>${version.lib.snakeyaml}</version>
-      </dependency>
-      <dependency>
         <artifactId>protobuf-java</artifactId>
         <groupId>com.google.protobuf</groupId>
         <version>${version.lib.protobuf}</version>
@@ -314,6 +302,16 @@
         <groupId>software.amazon.awssdk</groupId>
         <artifactId>s3</artifactId>
         <version>2.13.7</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${version.lib.jackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-yaml</artifactId>
+        <version>${version.lib.jackson}</version>
       </dependency>
 
       <!-- Logging libraries -->
