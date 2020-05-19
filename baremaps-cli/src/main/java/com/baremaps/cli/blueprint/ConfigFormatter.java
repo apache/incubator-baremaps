@@ -59,8 +59,8 @@ public class ConfigFormatter {
     Map<String, Object> map = new LinkedHashMap<>();
     map.put("name", layer.getId());
     map.put("type", layer.getType());
-    map.put("minzoom", layer.getMinZoom());
-    map.put("maxzoom", layer.getMaxZoom());
+    map.put("minZoom", layer.getMinZoom());
+    map.put("maxZoom", layer.getMaxZoom());
     map.put("queries", layer.getQueries());
     return map;
   }
@@ -82,8 +82,8 @@ public class ConfigFormatter {
     map.put("id", style.get("id"));
     map.put("source", style.get("source"));
     map.put("source-layer", style.get("source-layer"));
-    map.put("minzoom", style.get("minzoom"));
-    map.put("maxzoom", style.get("maxzoom"));
+    map.put("minZoom", style.get("minZoom"));
+    map.put("maxZoom", style.get("maxZoom"));
     map.put("type", style.get("type"));
     map.putAll(style);
     return map;

@@ -18,6 +18,9 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
 import com.baremaps.cli.blueprint.ConfigFormatter;
 import com.baremaps.tiles.config.Config;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature;
 import com.google.common.base.Charsets;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -26,11 +29,6 @@ import java.util.Arrays;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.DumperOptions.FlowStyle;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.representer.Representer;
 
 public class ConfigHandler implements HttpHandler {
 
@@ -45,17 +43,13 @@ public class ConfigHandler implements HttpHandler {
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     try {
-      ConfigFormatter configBuilder = new ConfigFormatter(this.config);
-      Map<String, Object> config = configBuilder.format();
+      ConfigFormatter configFormatter = new ConfigFormatter(this.config);
+      Map<String, Object> config = configFormatter.format();
 
-      Constructor constructor = new Constructor(Config.class);
-      Representer representer = new Representer();
-      DumperOptions options = new DumperOptions();
-      options.setDefaultFlowStyle(FlowStyle.BLOCK);
-      options.setSplitLines(false);
-
-      Yaml yaml = new Yaml(constructor, representer, options);
-      byte[] bytes = yaml.dump(config).getBytes(Charsets.UTF_8);
+      ObjectMapper mapper = new ObjectMapper(new YAMLFactory()
+          .disable(Feature.WRITE_DOC_START_MARKER)
+          .disable(Feature.SPLIT_LINES));
+      byte[] bytes = mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(config);
 
       exchange.getResponseHeaders().put(CONTENT_TYPE, Arrays.asList("text/plain"));
       exchange.getResponseHeaders().put(CONTENT_ENCODING, Arrays.asList("utf-8"));

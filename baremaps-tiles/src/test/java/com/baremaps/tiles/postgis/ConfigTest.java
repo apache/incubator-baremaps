@@ -18,13 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.tiles.config.Config;
+import java.io.IOException;
 import java.io.InputStream;
 import org.junit.jupiter.api.Test;
 
 public class ConfigTest {
 
   @Test
-  public void load() {
+  public void load() throws IOException {
     InputStream input = this.getClass().getClassLoader().getResourceAsStream("config.yaml");
     Config config = Config.load(input);
     assertNotNull(config);
