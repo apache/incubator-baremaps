@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 The Baremaps Authors
+ * Copyright (C) 2020 The Baremaps Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -27,9 +27,15 @@ public class Config {
 
   private String id = "baremaps";
 
-  private String host = "localhost";
+  private String version = "0.1";
 
-  private int port = 9000;
+  private String type = "baselayer";
+
+  private String description = "";
+
+  private String attribution = "";
+
+  private Server server = new Server();
 
   private Center center = new Center();
 
@@ -45,22 +51,6 @@ public class Config {
 
   public void setId(String id) {
     this.id = id;
-  }
-
-  public String getHost() {
-    return host;
-  }
-
-  public void setHost(String host) {
-    this.host = host;
-  }
-
-  public int getPort() {
-    return port;
-  }
-
-  public void setPort(int port) {
-    this.port = port;
   }
 
   public Bounds getBounds() {
@@ -106,4 +96,43 @@ public class Config {
     }
   }
 
+  public String getVersion() {
+    return version;
+  }
+
+  public void setVersion(String version) {
+    this.version = version;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getAttribution() {
+    return attribution;
+  }
+
+  public void setAttribution(String attribution) {
+    this.attribution = attribution;
+  }
+
+  public Server getServer() {
+    return server;
+  }
+
+  public void setServer(Server server) {
+    this.server = server;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
 }

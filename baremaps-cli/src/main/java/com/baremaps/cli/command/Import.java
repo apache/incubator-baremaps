@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 The Baremaps Authors
+ * Copyright (C) 2020 The Baremaps Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -145,7 +145,7 @@ public class Import implements Callable<Integer> {
     RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
 
     logger.info("Fetching input.");
-    FileSystem fileSystem =  mixins.fileSystem();
+    FileSystem fileSystem =  mixins.filesystem();
 
     logger.info("Populating cache.");
     try (DataInputStream input = new DataInputStream(fileSystem.read(this.input))) {
