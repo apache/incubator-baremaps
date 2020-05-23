@@ -12,43 +12,28 @@
  * the License.
  */
 
-package com.baremaps.osm.cache;
+package com.baremaps.tiles.config;
 
-import java.util.List;
+public class Server {
 
-public interface Cache<K, V> {
+  private String host = "localhost";
 
-  V get(K key);
+  private int port = 9000;
 
-  List<V> getAll(List<K> keys);
+  public String getHost() {
+    return host;
+  }
 
-  void put(K key, V values);
+  public void setHost(String host) {
+    this.host = host;
+  }
 
-  void putAll(List<Entry<K, V>> entries);
+  public int getPort() {
+    return port;
+  }
 
-  void delete(K key);
-
-  void deleteAll(List<K> keys);
-
-  void importAll(List<Entry<K, V>> values);
-
-  class Entry<K, V> {
-
-    private final K key;
-    private final V value;
-
-    public Entry(K key, V value) {
-      this.key = key;
-      this.value = value;
-    }
-
-    public K key() {
-      return key;
-    }
-
-    public V value() {
-      return value;
-    }
+  public void setPort(int port) {
+    this.port = port;
   }
 
 }

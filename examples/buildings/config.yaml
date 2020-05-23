@@ -1,6 +1,7 @@
 id: openstreetmap
-host: localhost
-port: 9000
+server:
+  host: localhost
+  port: 9000
 center:
   lon: 0.1278
   lat: 51.5074

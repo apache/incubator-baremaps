@@ -48,8 +48,8 @@ public class BlueprintBuilder {
                 config.getBounds().getMinLon(), config.getBounds().getMinLat(),
                 config.getBounds().getMaxLon(), config.getBounds().getMaxLat()})
             .put("tiles", Arrays.asList(String.format("http://%s:%s/tiles/{z}/{x}/{y}.pbf",
-                config.getHost(),
-                config.getPort())))
+                config.getServer().getHost(),
+                config.getServer().getPort())))
             .build())
         .build());
 

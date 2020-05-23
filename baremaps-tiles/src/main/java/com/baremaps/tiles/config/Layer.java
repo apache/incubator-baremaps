@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 The Baremaps Authors
+ * Copyright (C) 2020 The Baremaps Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -14,6 +14,7 @@
 
 package com.baremaps.tiles.config;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,28 +24,22 @@ public class Layer {
 
   private String type;
 
+  private String description;
+
   private int minZoom;
 
   private int maxZoom;
 
+  private Map<String, String> fields = new HashMap<>();
+
   private List<String> queries;
-
-  public Layer() {
-
-  }
-
-  public Layer(
-      String id, String geometry,
-      int minZoom, int maxZoom,
-      List<String> queries, List<Map<String, Object>> styles) {
-    this.id = id;
-    this.minZoom = minZoom;
-    this.maxZoom = maxZoom;
-    this.queries = queries;
-  }
 
   public String getId() {
     return id;
+  }
+
+  public String getDescription() {
+    return description;
   }
 
   public int getMinZoom() {
@@ -55,6 +50,10 @@ public class Layer {
     return maxZoom;
   }
 
+  public Map<String, String> getFields() {
+    return fields;
+  }
+
   public List<String> getQueries() {
     return queries;
   }
@@ -63,12 +62,20 @@ public class Layer {
     this.id = id;
   }
 
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
   public void setMinZoom(int minZoom) {
     this.minZoom = minZoom;
   }
 
   public void setMaxZoom(int maxZoom) {
     this.maxZoom = maxZoom;
+  }
+
+  public void setFields(Map<String, String> fields) {
+    this.fields = fields;
   }
 
   public void setQueries(List<String> queries) {
@@ -82,4 +89,5 @@ public class Layer {
   public void setType(String type) {
     this.type = type;
   }
+
 }

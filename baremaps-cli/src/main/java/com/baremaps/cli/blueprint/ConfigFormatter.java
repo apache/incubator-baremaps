@@ -33,12 +33,11 @@ public class ConfigFormatter {
     // Order the config properties
     Map<String, Object> map = new LinkedHashMap<>();
     map.put("id", config.getId());
-    map.put("host", config.getHost());
-    map.put("port", config.getPort());
 
     // Group the properties used by the blueprint
     map.put("center", config.getCenter());
     map.put("bounds", config.getBounds());
+    map.put("server", config.getServer());
 
     // Put the nested properties at the end
     map.put("layers", formatLayers(config.getLayers()));

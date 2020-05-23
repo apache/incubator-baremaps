@@ -14,15 +14,21 @@
 
 package com.baremaps.tiles.mbtiles;
 
-import com.baremaps.tiles.TileStore;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.baremaps.tiles.TileStoreTest;
 import java.io.File;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
 import org.sqlite.SQLiteDataSource;
 
 class MBTilesTileStoreTest extends TileStoreTest {
 
   @Override
-  protected TileStore createTileStore() throws Exception {
+  protected MBTilesTileStore createTileStore() throws Exception {
     File file = File.createTempFile("baremaps_", ".db");
     file.deleteOnExit();
     SQLiteDataSource dataSource = new SQLiteDataSource();
@@ -30,6 +36,21 @@ class MBTilesTileStoreTest extends TileStoreTest {
     MBTilesTileStore tilesStore = new MBTilesTileStore(dataSource);
     tilesStore.initializeDatabase();
     return tilesStore;
+  }
+
+  @Test
+  public void readWriteMetadata() throws Exception {
+    MBTilesTileStore tileStore = createTileStore();
+    Map<String, String> metadata = tileStore.readMetadata();
+    assertTrue(metadata.size() == 0);
+
+    Map<String, String> m1 = new HashMap<>();
+    m1.put("test", "test");
+    tileStore.writeMetadata(m1);
+
+    Map<String, String> m2 = tileStore.readMetadata();
+    assertTrue(m2.size() == 1);
+    assertEquals(m2.get("test"), "test");
   }
 
 }

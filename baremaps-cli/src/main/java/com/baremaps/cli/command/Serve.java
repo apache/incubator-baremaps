@@ -135,7 +135,7 @@ public class Serve implements Callable<Integer> {
   }
 
   private void startServer() throws IOException {
-    FileSystem fileReader = mixins.fileSystem();
+    FileSystem fileReader = mixins.filesystem();
     try (InputStream input = fileReader.read(this.config)) {
       Config config = Config.load(input);
 
@@ -156,7 +156,9 @@ public class Serve implements Callable<Integer> {
       }
 
       logger.info("Initializing server.");
-      server = HttpServer.create(new InetSocketAddress(config.getHost(), config.getPort()), 0);
+      String host = config.getServer().getHost();
+      Integer port = config.getServer().getPort();
+      server = HttpServer.create(new InetSocketAddress(host, port), 0);
 
       // Initialize the handlers
       server.createContext("/", new BlueprintHandler(config));
@@ -183,7 +185,7 @@ public class Serve implements Callable<Integer> {
 
       server.setExecutor(null);
 
-      logger.info("Start listening on port {}", config.getPort());
+      logger.info("Start listening on port {}", config.getServer().getPort());
       server.start();
 
     } catch (Exception ex) {
