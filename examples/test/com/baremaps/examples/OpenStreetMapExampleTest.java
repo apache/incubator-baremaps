@@ -101,10 +101,10 @@ public class OpenStreetMapExampleTest {
     }).run();
 
     // Wait for the server to start
-    Thread.sleep(1000);
+    Thread.sleep(5000);
 
     // Download a static file
-    HttpURLConnection indexConnection = (HttpURLConnection) new URL("http://localhost:9000/index.html")
+    HttpURLConnection indexConnection = (HttpURLConnection) new URL("http://localhost:9000/")
         .openConnection();
     InputStream indexInputStream = indexConnection.getInputStream();
     try (final Reader reader = new InputStreamReader(indexInputStream)) {

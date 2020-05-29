@@ -63,10 +63,10 @@ to display its metadata.
   var map = new mapboxgl.Map({
     container: 'map',
     style: '/style.json',
-    center: [{lon}, {lat}],
-    zoom: {zoom},
-    minZoom: {minZoom},
-    maxZoom: {maxZoom}
+    center: [${center.lon}, ${center.lat}],
+    zoom: ${center.zoom},
+    minZoom: ${bounds.minZoom},
+    maxZoom: ${bounds.maxZoom}
   });
 
   // Recenter the map according to the location saved in the url
@@ -85,7 +85,7 @@ to display its metadata.
 
   // Changes the hash of the url when the location changes
   map.on('moveend', ev => {
-    location.hash = `#${map.getZoom()}/${map.getCenter().lng}/${map.getCenter().lat}/${map.getBearing()}/${map.getPitch()}`;
+    location.hash = "#" + map.getZoom()+ "/" + map.getCenter().lng + "/" + map.getCenter().lat + "/" + map.getBearing() + "/" + map.getPitch();
   });
 
   map.on('click', function (e) {
@@ -93,8 +93,13 @@ to display its metadata.
     document.getElementById('features').innerHTML = JSON.stringify(features, null, 2);
   });
 
-  // reload the webpage when this connection gets closed by the server
-  fetch("/change/").catch(_ => setTimeout(() => location.reload(), 200));
+  // Reload the webpage when this connection gets closed by the server
+  function watch() {
+    fetch("/change/")
+      .then(_ => watch())
+      .catch(_ => setTimeout(() => location.reload(), 200));
+  }
+  watch();
 
 </script>
 </body>

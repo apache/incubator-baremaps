@@ -13,25 +13,37 @@
  */
 package com.baremaps.cli.handler;
 
+import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
-import com.baremaps.cli.blueprint.TemplateFormatter;
 import com.baremaps.tiles.config.Config;
-import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Resources;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
+import com.linecorp.armeria.common.HttpRequest;
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.common.HttpStatus;
+import com.linecorp.armeria.common.MediaType;
+import com.linecorp.armeria.common.ResponseHeaders;
+import com.linecorp.armeria.server.AbstractHttpService;
+import com.linecorp.armeria.server.ServiceRequestContext;
+import freemarker.cache.TemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
 import java.io.IOException;
-import java.net.URL;
-import java.util.Arrays;
+import java.io.StringWriter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class BlueprintHandler implements HttpHandler {
+public class BlueprintHandler extends AbstractHttpService {
 
   private static Logger logger = LogManager.getLogger();
+
+  private static final ResponseHeaders headers = ResponseHeaders.builder(200)
+      .add(CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
+      .add(CONTENT_ENCODING, "gzip")
+      .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+      .build();
 
   public final Config config;
 
@@ -40,33 +52,19 @@ public class BlueprintHandler implements HttpHandler {
   }
 
   @Override
-  public void handle(HttpExchange exchange) throws IOException {
-    try {
-      URL url = Resources.getResource("blueprint.html");
-      String template = Resources.toString(url, Charsets.UTF_8);
-
-      ImmutableMap<String, Object> params = ImmutableMap.<String, Object>builder()
-          .put("lon", config.getCenter().getLon())
-          .put("lat", config.getCenter().getLat())
-          .put("zoom", config.getCenter().getZoom())
-          .put("bearing", config.getCenter().getBearing())
-          .put("pitch", config.getCenter().getPitch())
-          .put("minZoom", config.getBounds().getMinZoom())
-          .put("maxZoom", config.getBounds().getMaxZoom())
-          .build();
-      String result = TemplateFormatter.format(template, params);
-      byte[] bytes = result.getBytes(Charsets.UTF_8);
-
-      exchange.getResponseHeaders().put(CONTENT_TYPE, Arrays.asList("text/html"));
-      exchange.getResponseHeaders().put(CONTENT_ENCODING, Arrays.asList("utf-8"));
-      exchange.sendResponseHeaders(200, bytes.length);
-      exchange.getResponseBody().write(bytes);
-    } catch (IOException ex) {
-      logger.error(ex);
-      exchange.sendResponseHeaders(404, 0);
-    } finally {
-      exchange.close();
-    }
+  protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req)
+      throws IOException, TemplateException {
+    StringWriter output = new StringWriter();
+    Configuration cfg = new Configuration(Configuration.VERSION_2_3_29);
+    cfg.setClassForTemplateLoading(this.getClass(), "/");
+    cfg.setDefaultEncoding("UTF-8");
+    cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+    cfg.setLogTemplateExceptions(false);
+    cfg.setWrapUncheckedExceptions(true);
+    cfg.setFallbackOnNullLoopVariable(false);
+    Template blueprintTemplate = cfg.getTemplate("blueprint.ftl");
+    blueprintTemplate.process(config, output);
+    return HttpResponse.of(HttpStatus.OK, MediaType.HTML_UTF_8, output.toString());
   }
 
 }

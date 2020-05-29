@@ -20,28 +20,32 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
 import com.baremaps.tiles.TileStore;
 import com.baremaps.util.tile.Tile;
-import com.google.common.collect.Lists;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
+import com.linecorp.armeria.common.HttpData;
+import com.linecorp.armeria.common.HttpRequest;
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.common.ResponseHeaders;
+import com.linecorp.armeria.server.AbstractHttpService;
+import com.linecorp.armeria.server.ServiceRequestContext;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TileHandler implements HttpHandler {
+public class TileHandler extends AbstractHttpService {
 
   private static Logger logger = LogManager.getLogger();
 
-  public static final List<String> TILE_ENCODING = Lists.newArrayList("gzip");
-
-  public static final List<String> TILE_MIME_TYPE = Lists.newArrayList("application/vnd.mapbox-vector-tile");
-
-  public static final List<String> ORIGIN_WILDCARD = Lists.newArrayList("*");
-
-  private static final Pattern URL = Pattern.compile("/(\\d+)/(\\d+)/(\\d+)\\.pbf");
+  private static final ResponseHeaders headers = ResponseHeaders.builder(200)
+      .add(CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
+      .add(CONTENT_ENCODING, "gzip")
+      .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+      .build();
 
   private final TileStore tileStore;
 
@@ -50,37 +54,24 @@ public class TileHandler implements HttpHandler {
   }
 
   @Override
-  public void handle(HttpExchange exchange) throws IOException {
-    String path = exchange.getRequestURI().getPath();
-    logger.info("GET {}", path);
-
-    Matcher matcher = URL.matcher(path);
-    if (!matcher.find()) {
-      exchange.sendResponseHeaders(404, 0);
-    }
-
-    int z = Integer.parseInt(matcher.group(1));
-    int x = Integer.parseInt(matcher.group(2));
-    int y = Integer.parseInt(matcher.group(3));
-    Tile tile = new Tile(x, y, z);
-
-    try {
-      byte[] bytes = tileStore.read(tile);
-      if (bytes != null) {
-        exchange.getResponseHeaders().put(CONTENT_TYPE, TILE_MIME_TYPE);
-        exchange.getResponseHeaders().put(CONTENT_ENCODING, TILE_ENCODING);
-        exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, ORIGIN_WILDCARD);
-        exchange.getResponseHeaders().put(ACCESS_CONTROL_ALLOW_ORIGIN, Arrays.asList("*"));
-        exchange.sendResponseHeaders(200, bytes.length);
-        exchange.getResponseBody().write(bytes);
-      } else {
-        exchange.sendResponseHeaders(204, -1);
+  protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) {
+    return HttpResponse.from(CompletableFuture.supplyAsync(() -> {
+      int z = Integer.parseInt(ctx.pathParam("z"));
+      int x = Integer.parseInt(ctx.pathParam("x"));
+      int y = Integer.parseInt(ctx.pathParam("y"));
+      Tile tile = new Tile(x, y, z);
+      try {
+        byte[] bytes = tileStore.read(tile);
+        if (bytes != null) {
+          HttpData data = HttpData.wrap(bytes);
+          return HttpResponse.of(headers, data);
+        } else {
+          return HttpResponse.of(204);
+        }
+      } catch (IOException ex) {
+        return HttpResponse.of(404);
       }
-    } catch (IOException ex) {
-      logger.error(ex);
-      exchange.sendResponseHeaders(404, 0);
-    } finally {
-      exchange.close();
-    }
+    }, ctx.blockingTaskExecutor()));
   }
+
 }
