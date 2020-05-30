@@ -41,7 +41,11 @@ public class ConfigFormatter {
 
     // Put the nested properties at the end
     map.put("layers", formatLayers(config.getLayers()));
-    map.put("styles", formatStyles(config.getStyles()));
+    if (config.getStyles() == null || config.getStyles().isEmpty()) {
+      map.put("styles", new BlueprintBuilder(config).buildStyles());
+    } else {
+      map.put("styles", config.getStyles());
+    }
 
     return map;
   }

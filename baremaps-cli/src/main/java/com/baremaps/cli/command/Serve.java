@@ -5,8 +5,6 @@ import static com.baremaps.cli.option.TileReaderOption.fast;
 
 import com.baremaps.cli.handler.BlueprintHandler;
 import com.baremaps.cli.handler.ConfigHandler;
-import com.baremaps.cli.handler.FileHandler;
-import com.baremaps.cli.handler.ResourceHandler;
 import com.baremaps.cli.handler.StyleHandler;
 import com.baremaps.cli.handler.TileHandler;
 import com.baremaps.cli.option.TileReaderOption;
@@ -16,10 +14,12 @@ import com.baremaps.tiles.database.FastPostgisTileStore;
 import com.baremaps.tiles.database.SlowPostgisTileStore;
 import com.baremaps.util.fs.FileSystem;
 import com.baremaps.util.postgis.PostgisHelper;
-import com.sun.net.httpserver.HttpServer;
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.server.Server;
+import com.linecorp.armeria.server.ServerBuilder;
+import com.linecorp.armeria.server.file.FileService;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -29,6 +29,7 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.time.Duration;
 import java.util.concurrent.Callable;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.Level;
@@ -81,12 +82,12 @@ public class Serve implements Callable<Integer> {
 
   private long lastChange = 0;
 
-  private HttpServer server;
+  private Server server;
 
   @Override
   public Integer call() throws IOException {
     Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
-    logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
+    logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
     startServer();
 
@@ -116,7 +117,7 @@ public class Serve implements Callable<Integer> {
                   && Files.exists(path)
                   && Files.getLastModifiedTime(path).toMillis() > lastChange) {
                 lastChange = Files.getLastModifiedTime(path).toMillis();
-                logger.info("Detected changes in the configuration.");
+                logger.info("Detected changes in the configuration");
                 stopServer();
                 startServer();
               }
@@ -139,10 +140,10 @@ public class Serve implements Callable<Integer> {
     try (InputStream input = fileReader.read(this.config)) {
       Config config = Config.load(input);
 
-      logger.info("Initializing datasource.");
+      logger.info("Initializing datasource");
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
-      logger.info("Initializing tile reader.");
+      logger.info("Initializing tile reader");
       final TileStore tileStore;
       switch (tileReader) {
         case slow:
@@ -155,47 +156,49 @@ public class Serve implements Callable<Integer> {
           throw new UnsupportedOperationException("Unsupported tile reader");
       }
 
-      logger.info("Initializing server.");
-      String host = config.getServer().getHost();
-      Integer port = config.getServer().getPort();
-      server = HttpServer.create(new InetSocketAddress(host, port), 0);
+      logger.info("Initializing server");
 
-      // Initialize the handlers
-      server.createContext("/", new BlueprintHandler(config));
-      server.createContext("/favicon.ico", new ResourceHandler("favicon.ico"));
-      server.createContext("/config.yaml", new ConfigHandler(config));
-      server.createContext("/style.json", new StyleHandler(config));
-      server.createContext("/tiles/", new TileHandler(tileStore));
+      String host = config.getServer().getHost();
+      int port = config.getServer().getPort();
+      ServerBuilder builder = Server.builder()
+          .defaultHostname(host)
+          .http(port)
+          .service("/", new BlueprintHandler(config))
+          .service("/favicon.ico",
+              FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico"))
+          .service("/config.yaml", new ConfigHandler(config))
+          .service("/style.json", new StyleHandler(config))
+          .service("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).pbf$",
+              new TileHandler(tileStore));
 
       // Initialize the assets handler if a path has been provided
       if (assets != null) {
-        server.createContext("/assets/", new FileHandler(Paths.get(assets.getPath())));
+        builder.service("/assets/", FileService.of(Paths.get(assets.getPath())));
       }
 
       // Keep a connection open with the browser.
       // When the server restarts, for instance when a change occurs in the configuration,
       // The browser reloads the webpage and displays the changes.
-      server.createContext("/change/", exchange -> {
+      builder.service("/change/", (ctx, req) -> {
         if (!watchChanges) {
-          exchange.sendResponseHeaders(204, -1);
+          return HttpResponse.of(200);
         } else {
-          logger.info("Waiting for changes.");
+          logger.info("Waiting for changes");
+          return HttpResponse.streaming();
         }
       });
 
-      server.setExecutor(null);
-
-      logger.info("Start listening on port {}", config.getServer().getPort());
+      server = builder.build();
       server.start();
 
     } catch (Exception ex) {
-      logger.error("A problem occured while starting the server.", ex);
+      logger.error("A problem occured while starting the server", ex);
     }
   }
 
   private void stopServer() throws IOException {
-    logger.info("Stopping the server.");
-    server.stop(0);
+    logger.info("Stopping the server");
+    server.stop();
   }
 
 }

@@ -13,21 +13,19 @@
  */
 package com.baremaps.cli.handler;
 
-import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
-import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
-
 import com.baremaps.cli.blueprint.BlueprintBuilder;
 import com.baremaps.tiles.config.Config;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import java.io.IOException;
-import java.util.Arrays;
+import com.linecorp.armeria.common.HttpRequest;
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.server.AbstractHttpService;
+import com.linecorp.armeria.server.ServiceRequestContext;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class StyleHandler implements HttpHandler {
+public class StyleHandler extends AbstractHttpService {
 
   private static Logger logger = LogManager.getLogger();
 
@@ -38,26 +36,12 @@ public class StyleHandler implements HttpHandler {
   }
 
   @Override
-  public void handle(HttpExchange exchange) throws IOException {
-    try {
-      BlueprintBuilder builder = new BlueprintBuilder(config);
-      Map<String, Object> style = builder.build();
-
-      ObjectMapper mapper = new ObjectMapper();
-      byte[] bytes = mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(style);
-
-
-
-      exchange.getResponseHeaders().put(CONTENT_TYPE, Arrays.asList("application/json"));
-      exchange.getResponseHeaders().put(CONTENT_ENCODING, Arrays.asList("utf-8"));
-      exchange.sendResponseHeaders(200, bytes.length);
-      exchange.getResponseBody().write(bytes);
-    } catch (Exception ex) {
-      logger.error("A problem occured {}", ex);
-      exchange.sendResponseHeaders(404, 0);
-    } finally {
-      exchange.close();
-    }
+  protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) throws JsonProcessingException {
+    BlueprintBuilder builder = new BlueprintBuilder(config);
+    Map<String, Object> style = builder.build();
+    ObjectMapper mapper = new ObjectMapper();
+    String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(style);
+    return HttpResponse.of(output);
   }
 
 }

@@ -116,7 +116,7 @@ public class Export implements Callable<Integer> {
   @Override
   public Integer call() throws SQLException, ParseException, IOException {
     Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
-    logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
+    logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
     // Initialize the datasource
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
@@ -125,18 +125,18 @@ public class Export implements Callable<Integer> {
     FileSystem filesystem = mixins.filesystem();
 
     // Read the configuration file
-    logger.info("Reading configuration.");
+    logger.info("Reading configuration");
     try (InputStream input = filesystem.read(this.config)) {
       Config config = Config.load(input);
 
-      logger.info("Initializing the source tile store.");
+      logger.info("Initializing the source tile store");
       final TileStore tileSource = sourceTileStore(config, datasource);
 
-      logger.info("Initializing the target tile store.");
+      logger.info("Initializing the target tile store");
       final TileStore tileTarget = targetTileStore(config, filesystem);
 
       // Export the tiles
-      logger.info("Generating the tiles.");
+      logger.info("Generating the tiles");
 
       final Stream<Tile> stream;
       if (delta == null) {

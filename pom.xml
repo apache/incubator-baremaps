@@ -92,6 +92,8 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <version.lib.armeria>0.99.6</version.lib.armeria>
+    <version.lib.freemarker>2.3.30</version.lib.freemarker>
     <version.lib.caffeine>2.8.2</version.lib.caffeine>
     <version.lib.commons-compress>1.19</version.lib.commons-compress>
     <version.lib.dbcp2>2.7.0</version.lib.dbcp2>
@@ -269,19 +271,24 @@
         <version>${version.lib.jts}</version>
       </dependency>
       <dependency>
-        <artifactId>proj4j</artifactId>
-        <groupId>org.locationtech.proj4j</groupId>
-        <version>${version.lib.proj4j}</version>
-      </dependency>
-      <dependency>
         <artifactId>jts-io-common</artifactId>
         <groupId>org.locationtech.jts.io</groupId>
         <version>${version.lib.jts}</version>
       </dependency>
       <dependency>
-        <artifactId>slf4j-api</artifactId>
-        <groupId>org.slf4j</groupId>
-        <version>${version.lib.slf4j}</version>
+        <artifactId>proj4j</artifactId>
+        <groupId>org.locationtech.proj4j</groupId>
+        <version>${version.lib.proj4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.linecorp.armeria</groupId>
+        <artifactId>armeria</artifactId>
+        <version>${version.lib.armeria}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.freemarker</groupId>
+        <artifactId>freemarker</artifactId>
+        <version>${version.lib.freemarker}</version>
       </dependency>
       <dependency>
         <artifactId>lmdbjava</artifactId>

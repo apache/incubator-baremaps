@@ -13,24 +13,21 @@
  */
 package com.baremaps.cli.handler;
 
-import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
-import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
-
 import com.baremaps.cli.blueprint.ConfigFormatter;
 import com.baremaps.tiles.config.Config;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature;
-import com.google.common.base.Charsets;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import java.io.IOException;
-import java.util.Arrays;
+import com.linecorp.armeria.common.HttpRequest;
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.server.AbstractHttpService;
+import com.linecorp.armeria.server.ServiceRequestContext;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ConfigHandler implements HttpHandler {
+public class ConfigHandler extends AbstractHttpService {
 
   private static Logger logger = LogManager.getLogger();
 
@@ -41,26 +38,13 @@ public class ConfigHandler implements HttpHandler {
   }
 
   @Override
-  public void handle(HttpExchange exchange) throws IOException {
-    try {
-      ConfigFormatter configFormatter = new ConfigFormatter(this.config);
-      Map<String, Object> config = configFormatter.format();
-
-      ObjectMapper mapper = new ObjectMapper(new YAMLFactory()
-          .disable(Feature.WRITE_DOC_START_MARKER)
-          .disable(Feature.SPLIT_LINES));
-      byte[] bytes = mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(config);
-
-      exchange.getResponseHeaders().put(CONTENT_TYPE, Arrays.asList("text/plain"));
-      exchange.getResponseHeaders().put(CONTENT_ENCODING, Arrays.asList("utf-8"));
-      exchange.sendResponseHeaders(200, bytes.length);
-      exchange.getResponseBody().write(bytes);
-    } catch (IOException ex) {
-      logger.error("A problem occured {}", ex);
-      exchange.sendResponseHeaders(404, 0);
-    } finally {
-      exchange.close();
-    }
+  protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) throws JsonProcessingException {
+    ConfigFormatter configFormatter = new ConfigFormatter(this.config);
+    Map<String, Object> config = configFormatter.format();
+    ObjectMapper mapper = new ObjectMapper(new YAMLFactory()
+        .disable(Feature.WRITE_DOC_START_MARKER)
+        .disable(Feature.SPLIT_LINES));
+    return HttpResponse.of(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(config));
   }
 
 }

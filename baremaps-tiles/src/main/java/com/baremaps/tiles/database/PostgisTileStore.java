@@ -17,7 +17,6 @@ package com.baremaps.tiles.database;
 import com.baremaps.tiles.TileStore;
 import com.baremaps.util.tile.Tile;
 import java.text.MessageFormat;
-import java.util.regex.Pattern;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.proj4j.CRSFactory;

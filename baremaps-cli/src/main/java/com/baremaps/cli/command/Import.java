@@ -91,10 +91,10 @@ public class Import implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
-    logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
+    logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
-    logger.info("Dropping tables.");
+    logger.info("Dropping tables");
     loadStatements("osm_drop_tables.sql").forEach(query -> {
       try (Connection connection = datasource.getConnection();
           Statement statement = connection.createStatement()) {
@@ -104,7 +104,7 @@ public class Import implements Callable<Integer> {
       }
     });
 
-    logger.info("Creating tables.");
+    logger.info("Creating tables");
     loadStatements("osm_create_tables.sql").forEach(query -> {
       try (Connection connection = datasource.getConnection();
           Statement statement = connection.createStatement()) {
@@ -114,7 +114,7 @@ public class Import implements Callable<Integer> {
       }
     });
 
-    logger.info("Creating primary keys.");
+    logger.info("Creating primary keys");
     loadStatements("osm_create_primary_keys.sql").forEach(query -> {
       try (Connection connection = datasource.getConnection();
           Statement statement = connection.createStatement()) {
@@ -144,17 +144,17 @@ public class Import implements Callable<Integer> {
     WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
     RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
 
-    logger.info("Fetching input.");
+    logger.info("Fetching input");
     FileSystem fileSystem =  mixins.filesystem();
 
-    logger.info("Populating cache.");
+    logger.info("Populating cache");
     try (DataInputStream input = new DataInputStream(fileSystem.read(this.input))) {
       Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(input), false);
       CacheImporter blockConsumer = new CacheImporter(nodeBuilder, coordinateCache, referenceCache);
       blocks.forEach(blockConsumer);
     }
 
-    logger.info("Populating database.");
+    logger.info("Populating database");
     try (DataInputStream input = new DataInputStream(fileSystem.read(this.input))) {
       Stream<FileBlock> blocks = StreamSupport
           .stream(new BatchSpliterator<>(new FileBlockSpliterator(input), 10), true);
@@ -169,7 +169,7 @@ public class Import implements Callable<Integer> {
       blocks.forEach(blockConsumer);
     }
 
-    logger.info("Indexing geometries.");
+    logger.info("Indexing geometries");
     loadStatements("osm_create_gist_indexes.sql").forEach(query -> {
       try (Connection connection = datasource.getConnection();
           Statement statement = connection.createStatement()) {
@@ -179,7 +179,7 @@ public class Import implements Callable<Integer> {
       }
     });
 
-    logger.info("Indexing attributes.");
+    logger.info("Indexing attributes");
     loadStatements("osm_create_gin_indexes.sql").forEach(query -> {
       try (Connection connection = datasource.getConnection();
           Statement statement = connection.createStatement()) {

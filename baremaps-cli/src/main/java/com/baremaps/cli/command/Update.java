@@ -129,11 +129,11 @@ public class Update implements Callable<Integer> {
 
     FileSystem fileSystem = mixins.filesystem();
 
-    logger.info("Downloading changes.");
+    logger.info("Downloading changes");
     String changePath =  path(nextSequenceNumber) + ".osc.gz";
     URI changeURI = new URI(String.format("%s/%s", input, changePath));
 
-    logger.info("Downloading state information.");
+    logger.info("Downloading state information");
     String statePath = path(nextSequenceNumber) + ".state.txt";;
     URI stateURI = new URI(String.format("%s/%s", input, statePath));
 
@@ -142,21 +142,21 @@ public class Update implements Callable<Integer> {
     DeltaProducer deltaMaker = new DeltaProducer(nodeBuilder, wayBuilder, relationBuilder, nodeStore,
         wayStore, relationStore, projectionTransformer, zoom);
 
-    logger.info("Computing differences.");
+    logger.info("Computing differences");
     try (InputStream changeInputStream = new GZIPInputStream(fileSystem.read(changeURI))) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
       changeStream.forEach(deltaMaker);
     }
 
-    logger.info("Saving differences.");
+    logger.info("Saving differences");
     try (PrintWriter diffPrintWriter = new PrintWriter(fileSystem.write(delta))) {
       for (Tile tile : deltaMaker.getTiles()) {
         diffPrintWriter.println(String.format("%d/%d/%d", tile.x(), tile.y(), tile.z()));
       }
     }
 
-    logger.info("Updating database.");
+    logger.info("Updating database");
     try (InputStream changeInputStream = new GZIPInputStream(fileSystem.read(changeURI))) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
@@ -165,7 +165,7 @@ public class Update implements Callable<Integer> {
       changeStream.forEach(databaseUpdater);
     }
 
-    logger.info("Updating state information.");
+    logger.info("Updating state information");
     try (InputStreamReader reader = new InputStreamReader(fileSystem.read(stateURI), Charsets.UTF_8)) {
       String stateContent = CharStreams.toString(reader);
       State state = State.parse(stateContent);
