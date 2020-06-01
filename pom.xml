@@ -3,7 +3,7 @@
 
   <groupId>com.baremaps</groupId>
   <artifactId>baremaps</artifactId>
-  <version>0.2.3</version>
+  <version>0.2.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
 
