@@ -3,7 +3,7 @@
 
   <groupId>com.baremaps</groupId>
   <artifactId>baremaps</artifactId>
-  <version>0.2.4</version>
+  <version>0.2.5-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
 
@@ -31,7 +31,7 @@
     <url>scm:git:git@github.com:baremaps/baremaps.git</url>
     <connection>scm:git:git@github.com:baremaps/baremaps.git</connection>
     <developerConnection>scm:git:git@github.com:baremaps/baremaps.git</developerConnection>
-    <tag>v0.2.4</tag>
+    <tag>v0.2.3</tag>
   </scm>
 
   <distributionManagement>
