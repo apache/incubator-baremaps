@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.cli.handler;
+package com.baremaps.cli.service;
 
 import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
@@ -28,16 +28,10 @@ import com.linecorp.armeria.server.AbstractHttpService;
 import com.linecorp.armeria.server.ServiceRequestContext;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.Executor;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TileHandler extends AbstractHttpService {
+public class TileService extends AbstractHttpService {
 
   private static Logger logger = LogManager.getLogger();
 
@@ -49,7 +43,7 @@ public class TileHandler extends AbstractHttpService {
 
   private final TileStore tileStore;
 
-  public TileHandler(TileStore tileStore) {
+  public TileService(TileStore tileStore) {
     this.tileStore = tileStore;
   }
 

@@ -101,7 +101,7 @@ public class OpenStreetMapExampleTest {
     }).run();
 
     // Wait for the server to start
-    Thread.sleep(5000);
+    Thread.sleep(1000);
 
     // Download a static file
     HttpURLConnection indexConnection = (HttpURLConnection) new URL("http://localhost:9000/")

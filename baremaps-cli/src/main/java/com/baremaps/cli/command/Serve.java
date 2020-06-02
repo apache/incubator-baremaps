@@ -3,11 +3,11 @@ package com.baremaps.cli.command;
 
 import static com.baremaps.cli.option.TileReaderOption.fast;
 
-import com.baremaps.cli.handler.BlueprintHandler;
-import com.baremaps.cli.handler.ConfigHandler;
-import com.baremaps.cli.handler.StyleHandler;
-import com.baremaps.cli.handler.TileHandler;
 import com.baremaps.cli.option.TileReaderOption;
+import com.baremaps.cli.service.BlueprintService;
+import com.baremaps.cli.service.ConfigService;
+import com.baremaps.cli.service.StyleService;
+import com.baremaps.cli.service.TileService;
 import com.baremaps.tiles.TileStore;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.database.FastPostgisTileStore;
@@ -163,13 +163,13 @@ public class Serve implements Callable<Integer> {
       ServerBuilder builder = Server.builder()
           .defaultHostname(host)
           .http(port)
-          .service("/", new BlueprintHandler(config))
+          .service("/", new BlueprintService(config))
           .service("/favicon.ico",
               FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico"))
-          .service("/config.yaml", new ConfigHandler(config))
-          .service("/style.json", new StyleHandler(config))
+          .service("/config.yaml", new ConfigService(config))
+          .service("/style.json", new StyleService(config))
           .service("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).pbf$",
-              new TileHandler(tileStore));
+              new TileService(tileStore));
 
       // Initialize the assets handler if a path has been provided
       if (assets != null) {
@@ -179,14 +179,13 @@ public class Serve implements Callable<Integer> {
       // Keep a connection open with the browser.
       // When the server restarts, for instance when a change occurs in the configuration,
       // The browser reloads the webpage and displays the changes.
-      builder.service("/change/", (ctx, req) -> {
-        if (!watchChanges) {
-          return HttpResponse.of(200);
-        } else {
+      if (watchChanges) {
+        builder.service("/change/", (ctx, req) -> {
           logger.info("Waiting for changes");
+          ctx.setRequestTimeout(Duration.ofMillis(Long.MAX_VALUE));
           return HttpResponse.streaming();
-        }
-      });
+        });
+      }
 
       server = builder.build();
       server.start();

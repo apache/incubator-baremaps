@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.baremaps.cli.handler;
+package com.baremaps.cli.service;
 
 import com.baremaps.cli.blueprint.ConfigFormatter;
 import com.baremaps.tiles.config.Config;
@@ -27,13 +27,13 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ConfigHandler extends AbstractHttpService {
+public class ConfigService extends AbstractHttpService {
 
   private static Logger logger = LogManager.getLogger();
 
   private final Config config;
 
-  public ConfigHandler(Config config) {
+  public ConfigService(Config config) {
     this.config = config;
   }
 

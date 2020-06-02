@@ -94,12 +94,7 @@ to display its metadata.
   });
 
   // Reload the webpage when this connection gets closed by the server
-  function watch() {
-    fetch("/change/")
-      .then(_ => watch())
-      .catch(_ => setTimeout(() => location.reload(), 200));
-  }
-  watch();
+  fetch("/change/").catch(_ => setTimeout(() => location.reload(), 1000));
 
 </script>
 </body>
