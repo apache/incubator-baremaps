@@ -15,7 +15,7 @@
 package com.baremaps.tiles.mbtiles;
 
 import com.baremaps.tiles.TileStore;
-import com.baremaps.util.tile.Tile;
+import com.baremaps.tiles.Tile;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

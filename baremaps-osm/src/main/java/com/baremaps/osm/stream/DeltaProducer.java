@@ -26,7 +26,7 @@ import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
 import com.baremaps.osm.osmxml.Change;
-import com.baremaps.util.tile.Tile;
+import com.baremaps.tiles.Tile;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;

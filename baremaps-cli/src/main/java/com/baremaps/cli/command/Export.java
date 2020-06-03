@@ -27,7 +27,7 @@ import com.baremaps.tiles.stream.BatchFilter;
 import com.baremaps.tiles.stream.TileFactory;
 import com.baremaps.util.fs.FileSystem;
 import com.baremaps.util.postgis.PostgisHelper;
-import com.baremaps.util.tile.Tile;
+import com.baremaps.tiles.Tile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;

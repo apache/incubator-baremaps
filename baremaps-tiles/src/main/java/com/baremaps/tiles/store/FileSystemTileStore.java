@@ -16,7 +16,7 @@ package com.baremaps.tiles.store;
 
 import com.baremaps.tiles.TileStore;
 import com.baremaps.util.fs.FileSystem;
-import com.baremaps.util.tile.Tile;
+import com.baremaps.tiles.Tile;
 import java.io.IOException;
 import java.net.URI;
 

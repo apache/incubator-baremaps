@@ -15,7 +15,7 @@ package com.baremaps.tiles.stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.baremaps.util.tile.Tile;
+import com.baremaps.tiles.Tile;
 import com.google.common.math.IntMath;
 import java.util.ArrayList;
 import java.util.Comparator;

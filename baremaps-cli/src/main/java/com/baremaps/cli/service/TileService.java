@@ -19,7 +19,7 @@ import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
 import com.baremaps.tiles.TileStore;
-import com.baremaps.util.tile.Tile;
+import com.baremaps.tiles.Tile;
 import com.linecorp.armeria.common.HttpData;
 import com.linecorp.armeria.common.HttpRequest;
 import com.linecorp.armeria.common.HttpResponse;

@@ -17,7 +17,7 @@ package com.baremaps.tiles.database;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.config.Layer;
 import com.baremaps.tiles.database.QueryParser.Query;
-import com.baremaps.util.tile.Tile;
+import com.baremaps.tiles.Tile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;

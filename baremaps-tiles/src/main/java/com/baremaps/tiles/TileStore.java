@@ -14,7 +14,6 @@
 
 package com.baremaps.tiles;
 
-import com.baremaps.util.tile.Tile;
 import java.io.IOException;
 
 public interface TileStore {

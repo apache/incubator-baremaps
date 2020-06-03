@@ -13,7 +13,7 @@
  */
 package com.baremaps.tiles.stream;
 
-import com.baremaps.util.tile.Tile;
+import com.baremaps.tiles.Tile;
 import java.util.function.Predicate;
 
 public class BatchFilter implements Predicate<Tile> {

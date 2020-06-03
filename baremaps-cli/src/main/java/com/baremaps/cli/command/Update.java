@@ -33,7 +33,7 @@ import com.baremaps.osm.stream.DatabaseUpdater;
 import com.baremaps.osm.stream.DeltaProducer;
 import com.baremaps.util.fs.FileSystem;
 import com.baremaps.util.postgis.PostgisHelper;
-import com.baremaps.util.tile.Tile;
+import com.baremaps.tiles.Tile;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import java.io.InputStream;

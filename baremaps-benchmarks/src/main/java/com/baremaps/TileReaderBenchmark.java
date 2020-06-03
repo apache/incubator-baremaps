@@ -20,7 +20,7 @@ import com.baremaps.tiles.database.FastPostgisTileStore;
 import com.baremaps.tiles.database.SlowPostgisTileStore;
 import com.baremaps.tiles.util.TileUtil;
 import com.baremaps.util.postgis.PostgisHelper;
-import com.baremaps.util.tile.Tile;
+import com.baremaps.tiles.Tile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
