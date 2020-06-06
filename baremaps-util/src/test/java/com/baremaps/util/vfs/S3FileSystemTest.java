@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.util.fs;
+package com.baremaps.util.vfs;
 
 import com.adobe.testing.s3mock.junit5.S3MockExtension;
 import java.io.IOException;

@@ -29,7 +29,7 @@ import org.locationtech.jts.operation.polygonize.Polygonizer;
 /**
  * A {@code RelationBuilder} builds JTS polygons and multipolygons from OSM relations.
  */
-public class RelationBuilder extends GeometryBuilder<Relation> {
+public class RelationBuilder extends EntityBuilder<Relation> {
 
   private final GeometryFactory geometryFactory;
 

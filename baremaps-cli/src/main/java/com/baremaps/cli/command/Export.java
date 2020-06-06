@@ -14,20 +14,16 @@
 
 package com.baremaps.cli.command;
 
-import static com.baremaps.cli.option.TileReaderOption.fast;
-
-import com.baremaps.cli.option.TileReaderOption;
-import com.baremaps.tiles.TileStore;
+import com.baremaps.tiles.Tile;
 import com.baremaps.tiles.config.Config;
-import com.baremaps.tiles.database.FastPostgisTileStore;
-import com.baremaps.tiles.database.SlowPostgisTileStore;
-import com.baremaps.tiles.mbtiles.MBTilesTileStore;
 import com.baremaps.tiles.store.FileSystemTileStore;
+import com.baremaps.tiles.store.MBTilesTileStore;
+import com.baremaps.tiles.store.PostgisTileStore;
+import com.baremaps.tiles.store.TileStore;
 import com.baremaps.tiles.stream.BatchFilter;
 import com.baremaps.tiles.stream.TileFactory;
-import com.baremaps.util.fs.FileSystem;
 import com.baremaps.util.postgis.PostgisHelper;
-import com.baremaps.tiles.Tile;
+import com.baremaps.util.vfs.FileSystem;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
@@ -88,12 +84,6 @@ public class Export implements Callable<Integer> {
       paramLabel = "DELTA",
       description = "The input delta file.")
   private URI delta;
-
-  @Option(
-      names = {"--reader"},
-      paramLabel = "READER",
-      description = "The tile reader.")
-  private TileReaderOption tileReader = fast;
 
   @Option(
       names = {"--batch-array-size"},
@@ -170,18 +160,10 @@ public class Export implements Callable<Integer> {
   }
 
   private TileStore sourceTileStore(Config config, PoolingDataSource datasource) {
-    switch (tileReader) {
-      case fast:
-        return new FastPostgisTileStore(datasource, config);
-      case slow:
-        return new SlowPostgisTileStore(datasource, config);
-      default:
-        throw new UnsupportedOperationException("Unsupported tile reader");
-    }
+    return new PostgisTileStore(datasource, config);
   }
 
-  private TileStore targetTileStore(Config config, FileSystem fileSystem)
-      throws IOException {
+  private TileStore targetTileStore(Config config, FileSystem fileSystem) throws IOException {
     if (mbtiles) {
       SQLiteDataSource dataSource = new SQLiteDataSource();
       dataSource.setUrl("jdbc:sqlite:" + repository.getPath());
@@ -194,8 +176,7 @@ public class Export implements Callable<Integer> {
     }
   }
 
-  private Map<String, String> metadata(Config config)
-      throws JsonProcessingException {
+  private Map<String, String> metadata(Config config) throws JsonProcessingException {
     Map<String, String> metadata = new HashMap<>();
     metadata.put("name", config.getId());
     metadata.put("version", config.getVersion());

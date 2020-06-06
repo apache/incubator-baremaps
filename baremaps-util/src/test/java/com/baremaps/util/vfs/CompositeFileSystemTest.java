@@ -12,14 +12,32 @@
  * the License.
  */
 
-package com.baremaps.util.fs;
+package com.baremaps.util.vfs;
 
+import com.adobe.testing.s3mock.junit5.S3MockExtension;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
-public class CachedFileSystemTest extends FileSystemTest {
+public class CompositeFileSystemTest extends FileSystemTest {
+
+  @RegisterExtension
+  static final S3MockExtension S3_MOCK = S3MockExtension.builder()
+      .silent()
+      .withSecureConnection(false)
+      .build();
+
+  private final S3Client s3Client = S3_MOCK.createS3ClientV2();
+
+  @BeforeEach
+  void initAll() {
+    s3Client.createBucket(CreateBucketRequest.builder().bucket("test").build());
+  }
 
   @Override
   protected String createTestURI() throws IOException {
@@ -32,8 +50,7 @@ public class CachedFileSystemTest extends FileSystemTest {
   protected List<String> createWrongURIList() {
     return Arrays.asList(
         "http://www.test.com/test.txt",
-        "https://www.test.com/test.txt",
-        "s3://test/test/test.txt");
+        "https://www.test.com/test.txt");
   }
 
   @Override
@@ -42,12 +59,15 @@ public class CachedFileSystemTest extends FileSystemTest {
         "test.txt",
         "/test.txt",
         "test/test.txt",
-        "/test/test.txt");
+        "/test/test.txt",
+        "s3://test/test/test.txt");
   }
 
   @Override
   protected FileSystem createFileSystem() {
-    return new CachedFileSystem(new LocalFileSystem());
+    return new CompositeFileSystem(
+        new LocalFileSystem(),
+        new S3FileSystem("utf-8", "application/octet-stream", s3Client));
   }
 
 }

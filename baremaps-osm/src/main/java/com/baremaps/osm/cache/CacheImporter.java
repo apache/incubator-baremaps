@@ -12,9 +12,8 @@
  * the License.
  */
 
-package com.baremaps.osm.stream;
+package com.baremaps.osm.cache;
 
-import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.Cache.Entry;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.osmpbf.FileBlockConsumer;

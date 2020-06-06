@@ -12,56 +12,72 @@
  * the License.
  */
 
-package com.baremaps.util.fs;
+package com.baremaps.util.vfs;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
 
-public class LocalFileSystem extends FileSystem {
+public class CachedFileSystem extends FileSystem {
+
+  private final Map<URI, Path> cache = new HashMap<>();
+
+  private final FileSystem fileSystem;
+
+  public CachedFileSystem(FileSystem FileSystem) {
+    this.fileSystem = FileSystem;
+  }
 
   @Override
   public boolean accept(URI uri) {
-    return uri.getScheme() == null
-        && uri.getHost() == null
-        && uri.getPath() != null;
+    return fileSystem.accept(uri);
+  }
+
+  public Path readAndCache(URI uri) throws IOException {
+    if (!cache.containsKey(uri)) {
+      try (InputStream input = fileSystem.read(uri)) {
+        File temp = File.createTempFile("baremaps_", ".tmp");
+        temp.deleteOnExit();
+        Files.copy(input, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        cache.put(uri, temp.toPath());
+      }
+    }
+    return cache.get(uri);
   }
 
   @Override
   public InputStream read(URI uri) throws IOException {
-    return Files.newInputStream(Paths.get(uri.getPath()));
+    return Files.newInputStream(readAndCache(uri));
   }
 
   @Override
   public byte[] readByteArray(URI uri) throws IOException {
-    return Files.readAllBytes(Paths.get(uri.getPath()));
+    return Files.readAllBytes(readAndCache(uri));
   }
 
   @Override
   public OutputStream write(URI uri) throws IOException {
-    Path path = Paths.get(uri.getPath());
-    if (!Files.exists(path.getParent())) {
-      Files.createDirectories(path.getParent());
-    }
-    return Files.newOutputStream(Paths.get(uri.getPath()));
+    cache.remove(uri);
+    return fileSystem.write(uri);
   }
 
   @Override
   public void writeByteArray(URI uri, byte[] bytes) throws IOException {
-    Path path = Paths.get(uri.getPath());
-    if (!Files.exists(path.getParent())) {
-      Files.createDirectories(path.getParent());
-    }
-    Files.write(path, bytes);
+    cache.remove(uri);
+    fileSystem.writeByteArray(uri, bytes);
   }
 
   @Override
   public void delete(URI uri) throws IOException {
-    Files.deleteIfExists(Paths.get(uri.getPath()));
+    cache.remove(uri);
+    fileSystem.delete(uri);
   }
 
 }

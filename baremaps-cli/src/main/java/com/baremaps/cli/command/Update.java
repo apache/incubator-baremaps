@@ -17,6 +17,8 @@ package com.baremaps.cli.command;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.PostgisCoordinateCache;
 import com.baremaps.osm.cache.PostgisReferenceCache;
+import com.baremaps.osm.database.DatabaseDiffer;
+import com.baremaps.osm.database.DatabaseUpdater;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
@@ -29,11 +31,9 @@ import com.baremaps.osm.osmpbf.HeaderBlock;
 import com.baremaps.osm.osmxml.Change;
 import com.baremaps.osm.osmxml.ChangeSpliterator;
 import com.baremaps.osm.osmxml.State;
-import com.baremaps.osm.stream.DatabaseUpdater;
-import com.baremaps.osm.stream.DeltaProducer;
-import com.baremaps.util.fs.FileSystem;
-import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.tiles.Tile;
+import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.vfs.FileSystem;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import java.io.InputStream;
@@ -139,7 +139,7 @@ public class Update implements Callable<Integer> {
 
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransformFactory
         .createTransform(targetCRS, sourceCRS));
-    DeltaProducer deltaMaker = new DeltaProducer(nodeBuilder, wayBuilder, relationBuilder, nodeStore,
+    DatabaseDiffer deltaMaker = new DatabaseDiffer(nodeBuilder, wayBuilder, relationBuilder, nodeStore,
         wayStore, relationStore, projectionTransformer, zoom);
 
     logger.info("Computing differences");

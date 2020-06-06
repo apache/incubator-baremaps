@@ -12,25 +12,23 @@
  * the License.
  */
 
-package com.baremaps.util.fs;
+package com.baremaps.osm.geometry;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
+import org.locationtech.jts.geom.Geometry;
 
-public abstract class FileSystem {
+/**
+ * A {@code GeometryBuilder} is a base class for building JTS geometries from OSM entities.
+ *
+ * @param <T> the type of the entity to build geometries from.
+ */
+public abstract class EntityBuilder<T> {
 
-  public abstract boolean accept(URI uri);
-
-  public abstract InputStream read(URI uri) throws IOException;
-
-  public abstract byte[] readByteArray(URI uri) throws IOException;
-
-  public abstract OutputStream write(URI uri) throws IOException;
-
-  public abstract void writeByteArray(URI uri, byte[] bytes) throws IOException;
-
-  public abstract void delete(URI uri) throws IOException;
+  /**
+   * Builds a JTS geometry from an OSM entity.
+   *
+   * @param entity an entity
+   * @return a geometry corresponding to the entity
+   */
+  public abstract Geometry build(T entity);
 
 }

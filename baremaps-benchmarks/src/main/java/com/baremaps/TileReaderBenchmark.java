@@ -14,17 +14,13 @@
 
 package com.baremaps;
 
-import com.baremaps.tiles.TileStore;
-import com.baremaps.tiles.config.Config;
-import com.baremaps.tiles.database.FastPostgisTileStore;
-import com.baremaps.tiles.database.SlowPostgisTileStore;
-import com.baremaps.tiles.util.TileUtil;
-import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.tiles.Tile;
+import com.baremaps.tiles.config.Config;
+import com.baremaps.tiles.store.PostgisTileStore;
+import com.baremaps.util.postgis.PostgisHelper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -50,7 +46,7 @@ public class TileReaderBenchmark {
 
   private Config config;
   private PoolingDataSource datasource;
-  private TileStore reader;
+  private PostgisTileStore reader;
 
   @Setup(Level.Invocation)
   public void prepare() throws IOException, ClassNotFoundException {
@@ -66,32 +62,21 @@ public class TileReaderBenchmark {
   @BenchmarkMode(Mode.SingleShotTime)
   @Warmup(iterations = 1)
   @Measurement(iterations = 2)
-  public void basic() throws SQLException, ParseException {
-    reader = new SlowPostgisTileStore(datasource, config);
-    execute();
-  }
-
-  @Benchmark
-  @BenchmarkMode(Mode.SingleShotTime)
-  @Warmup(iterations = 1)
-  @Measurement(iterations = 2)
   public void with() throws SQLException, ParseException {
-    reader = new FastPostgisTileStore(datasource, config);
+    reader = new PostgisTileStore(datasource, config);
     execute();
   }
 
   public void execute() throws SQLException, ParseException {
-    try (Connection connection = datasource.getConnection()) {
-      Envelope geometry = TileUtil.envelope(connection);
-      Stream<Tile> coords = Tile.getTiles(geometry, 14);
-      coords.forEach(xyz -> {
-        try {
-          reader.read(xyz);
-        } catch (IOException ex) {
-          ex.printStackTrace();
-        }
-      });
-    }
+    Envelope geometry = reader.envelope();
+    Stream<Tile> coords = Tile.getTiles(geometry, 14);
+    coords.forEach(xyz -> {
+      try {
+        reader.read(xyz);
+      } catch (IOException ex) {
+        ex.printStackTrace();
+      }
+    });
   }
 
 

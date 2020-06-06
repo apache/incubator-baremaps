@@ -13,8 +13,8 @@
  */
 package com.baremaps.tiles.stream;
 
-import com.baremaps.tiles.TileStore;
 import com.baremaps.tiles.Tile;
+import com.baremaps.tiles.store.TileStore;
 import java.io.IOException;
 import java.util.function.Consumer;
 

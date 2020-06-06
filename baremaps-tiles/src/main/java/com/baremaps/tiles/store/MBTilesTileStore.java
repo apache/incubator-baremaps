@@ -12,9 +12,8 @@
  * the License.
  */
 
-package com.baremaps.tiles.mbtiles;
+package com.baremaps.tiles.store;
 
-import com.baremaps.tiles.TileStore;
 import com.baremaps.tiles.Tile;
 import java.io.IOException;
 import java.sql.Connection;

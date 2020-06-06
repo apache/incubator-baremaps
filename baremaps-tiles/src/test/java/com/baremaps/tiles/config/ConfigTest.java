@@ -15,6 +15,7 @@ package com.baremaps.tiles.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.common.io.CharSource;
 import java.io.IOException;
@@ -23,6 +24,14 @@ import org.junit.jupiter.api.Test;
 import org.postgresql.util.ReaderInputStream;
 
 class ConfigTest {
+
+  @Test
+  public void load() throws IOException {
+    InputStream input = this.getClass().getClassLoader().getResourceAsStream("config.yaml");
+    Config config = Config.load(input);
+    assertNotNull(config);
+    assertTrue(config.getLayers().size() == 2);
+  }
 
   @Test
   public void loadEmptyYamlConfig() throws IOException {

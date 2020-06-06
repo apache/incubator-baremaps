@@ -24,7 +24,7 @@ import org.locationtech.proj4j.ProjCoordinate;
 /**
  * A {@code NodeBuilder} builds JTS points from OSM nodes.
  */
-public class NodeBuilder extends GeometryBuilder<Node> {
+public class NodeBuilder extends EntityBuilder<Node> {
 
   protected final CoordinateTransform coordinateTransform;
   protected final GeometryFactory geometryFactory;

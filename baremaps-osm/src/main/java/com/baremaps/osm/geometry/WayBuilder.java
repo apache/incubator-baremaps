@@ -23,7 +23,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 /**
  * A {@code WayBuilder} builds JTS linestring or polygons from OSM ways.
  */
-public class WayBuilder extends GeometryBuilder<Way> {
+public class WayBuilder extends EntityBuilder<Way> {
 
   private final GeometryFactory geometryFactory;
 

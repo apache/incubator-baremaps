@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.util.fs;
+package com.baremaps.util.vfs;
 
 
 import java.io.IOException;

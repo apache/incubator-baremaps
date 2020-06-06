@@ -12,24 +12,25 @@
  * the License.
  */
 
-package com.baremaps.tiles.postgis;
+package com.baremaps.util.vfs;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import com.baremaps.tiles.config.Config;
 import java.io.IOException;
 import java.io.InputStream;
-import org.junit.jupiter.api.Test;
+import java.io.OutputStream;
+import java.net.URI;
 
-public class ConfigTest {
+public abstract class FileSystem {
 
-  @Test
-  public void load() throws IOException {
-    InputStream input = this.getClass().getClassLoader().getResourceAsStream("config.yaml");
-    Config config = Config.load(input);
-    assertNotNull(config);
-    assertTrue(config.getLayers().size() == 2);
-  }
+  public abstract boolean accept(URI uri);
+
+  public abstract InputStream read(URI uri) throws IOException;
+
+  public abstract byte[] readByteArray(URI uri) throws IOException;
+
+  public abstract OutputStream write(URI uri) throws IOException;
+
+  public abstract void writeByteArray(URI uri, byte[] bytes) throws IOException;
+
+  public abstract void delete(URI uri) throws IOException;
 
 }

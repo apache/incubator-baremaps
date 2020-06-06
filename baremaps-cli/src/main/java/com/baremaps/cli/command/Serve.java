@@ -1,19 +1,15 @@
 
 package com.baremaps.cli.command;
 
-import static com.baremaps.cli.option.TileReaderOption.fast;
-
-import com.baremaps.cli.option.TileReaderOption;
 import com.baremaps.cli.service.BlueprintService;
 import com.baremaps.cli.service.ConfigService;
 import com.baremaps.cli.service.StyleService;
 import com.baremaps.cli.service.TileService;
-import com.baremaps.tiles.TileStore;
 import com.baremaps.tiles.config.Config;
-import com.baremaps.tiles.database.FastPostgisTileStore;
-import com.baremaps.tiles.database.SlowPostgisTileStore;
-import com.baremaps.util.fs.FileSystem;
+import com.baremaps.tiles.store.PostgisTileStore;
+import com.baremaps.tiles.store.TileStore;
 import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.vfs.FileSystem;
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
@@ -67,12 +63,6 @@ public class Serve implements Callable<Integer> {
       paramLabel = "ASSETS",
       description = "A directory containing assets.")
   private URI assets;
-
-  @Option(
-      names = {"--reader"},
-      paramLabel = "READER",
-      description = "The tile reader.")
-  private TileReaderOption tileReader = fast;
 
   @Option(
       names = {"--watch-changes"},
@@ -144,20 +134,9 @@ public class Serve implements Callable<Integer> {
       PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
       logger.info("Initializing tile reader");
-      final TileStore tileStore;
-      switch (tileReader) {
-        case slow:
-          tileStore = new SlowPostgisTileStore(datasource, config);
-          break;
-        case fast:
-          tileStore = new FastPostgisTileStore(datasource, config);
-          break;
-        default:
-          throw new UnsupportedOperationException("Unsupported tile reader");
-      }
+      final TileStore tileStore = new PostgisTileStore(datasource, config);
 
       logger.info("Initializing server");
-
       String host = config.getServer().getHost();
       int port = config.getServer().getPort();
       ServerBuilder builder = Server.builder()

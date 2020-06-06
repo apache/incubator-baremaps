@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.util.fs;
+package com.baremaps.util.vfs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

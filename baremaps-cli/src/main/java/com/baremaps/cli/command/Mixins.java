@@ -15,12 +15,12 @@
 package com.baremaps.cli.command;
 
 import com.baremaps.cli.option.LevelOption;
-import com.baremaps.util.fs.CachedFileSystem;
-import com.baremaps.util.fs.CompositeFileSystem;
-import com.baremaps.util.fs.FileSystem;
-import com.baremaps.util.fs.HttpFileSystem;
-import com.baremaps.util.fs.LocalFileSystem;
-import com.baremaps.util.fs.S3FileSystem;
+import com.baremaps.util.vfs.CachedFileSystem;
+import com.baremaps.util.vfs.CompositeFileSystem;
+import com.baremaps.util.vfs.FileSystem;
+import com.baremaps.util.vfs.HttpFileSystem;
+import com.baremaps.util.vfs.LocalFileSystem;
+import com.baremaps.util.vfs.S3FileSystem;
 import java.util.Arrays;
 import java.util.List;
 import picocli.CommandLine.Option;

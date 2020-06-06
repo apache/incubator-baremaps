@@ -12,19 +12,18 @@
  * the License.
  */
 
-package com.baremaps.tiles.postgis;
+package com.baremaps.tiles.store;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.tiles.config.Layer;
-import com.baremaps.tiles.database.QueryParser;
-import com.baremaps.tiles.database.QueryParser.Query;
+import com.baremaps.tiles.store.PostgisQueryParser.Query;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-class QueryParserTest {
+class PostgisQueryParserTest {
 
   private class TestQuery {
 
@@ -84,7 +83,7 @@ class QueryParserTest {
   @Test
   void parse() {
     for (TestQuery testQuery : testQueries) {
-      Query q1 = QueryParser.parse(new Layer(), testQuery.query);
+      Query q1 = PostgisQueryParser.parse(new Layer(), testQuery.query);
       assertEquals(q1.getId(), testQuery.id);
       assertEquals(q1.getTags(), testQuery.tags);
       assertEquals(q1.getGeom(), testQuery.geom);

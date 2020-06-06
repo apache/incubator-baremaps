@@ -12,14 +12,14 @@
  * the License.
  */
 
-package com.baremaps.util.fs;
+package com.baremaps.util.vfs;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-class LocalFileSystemTest extends FileSystemTest {
+public class CachedFileSystemTest extends FileSystemTest {
 
   @Override
   protected String createTestURI() throws IOException {
@@ -47,7 +47,7 @@ class LocalFileSystemTest extends FileSystemTest {
 
   @Override
   protected FileSystem createFileSystem() {
-    return new LocalFileSystem();
+    return new CachedFileSystem(new LocalFileSystem());
   }
 
 }

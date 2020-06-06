@@ -12,15 +12,16 @@
  * the License.
  */
 
-package com.baremaps.tiles.database;
+package com.baremaps.tiles.store;
 
+import com.baremaps.tiles.Tile;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.config.Layer;
-import com.baremaps.tiles.database.QueryParser.Query;
-import com.baremaps.tiles.Tile;
+import com.baremaps.tiles.store.PostgisQueryParser.Query;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -32,10 +33,21 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBReader;
+import org.locationtech.proj4j.CRSFactory;
+import org.locationtech.proj4j.CoordinateReferenceSystem;
+import org.locationtech.proj4j.CoordinateTransform;
+import org.locationtech.proj4j.CoordinateTransformFactory;
+import org.locationtech.proj4j.ProjCoordinate;
 
-public class FastPostgisTileStore extends PostgisTileStore {
+public class PostgisTileStore implements TileStore {
 
-  private static Logger logger = LogManager.getLogger();
+  public static final String BBOX = "SELECT st_asewkb(st_transform(st_setsrid(st_extent(geom), 3857), 4326)) as table_extent FROM osm_nodes";
+
+  private static final Logger logger = LogManager.getLogger();
 
   private static final String WITH = "WITH {0} {1}";
 
@@ -54,21 +66,45 @@ public class FastPostgisTileStore extends PostgisTileStore {
 
   private static final String UNION_ALL = " UNION All ";
 
+  private static final String ENVELOPE = "ST_MakeEnvelope({0}, {1}, {2}, {3}, 3857)";
+
+  private final CRSFactory crsFactory = new CRSFactory();
+
+  private final CoordinateReferenceSystem epsg4326 = crsFactory.createFromName("EPSG:4326");
+
+  private final CoordinateReferenceSystem epsg3857 = crsFactory.createFromName("EPSG:3857");
+
+  private final CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
+
+  private final CoordinateTransform coordinateTransform = coordinateTransformFactory
+      .createTransform(epsg4326, epsg3857);
+
   private final PoolingDataSource datasource;
 
   private final Config config;
 
   private final Map<Layer, List<Query>> queries;
 
-  public FastPostgisTileStore(PoolingDataSource datasource, Config config) {
+  public PostgisTileStore(PoolingDataSource datasource, Config config) {
     this.datasource = datasource;
     this.config = config;
     this.queries = config.getLayers().stream()
-        .flatMap(layer -> layer.getQueries().stream().map(query -> QueryParser.parse(layer, query)))
+        .flatMap(layer -> layer.getQueries().stream().map(query -> PostgisQueryParser.parse(layer, query)))
         .collect(Collectors.groupingBy(q -> q.getLayer()));
   }
 
-  @Override
+  public Envelope envelope() throws SQLException, ParseException {
+    try (Connection connection = datasource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(BBOX)) {
+      ResultSet result = statement.executeQuery();
+      if (result.next()) {
+        return new WKBReader().read(result.getBytes(1)).getEnvelopeInternal();
+      } else {
+        return null;
+      }
+    }
+  }
+
   public byte[] read(Tile tile) throws IOException {
     try (Connection connection = datasource.getConnection()) {
       try (Statement statement = connection.createStatement();
@@ -101,7 +137,7 @@ public class FastPostgisTileStore extends PostgisTileStore {
   private String query(Tile tile) {
     String sources = queries.entrySet().stream()
         .filter(
-            entry -> entry.getKey().getMinZoom() <= tile.z() &&  tile.z() < entry.getKey().getMaxZoom())
+            entry -> entry.getKey().getMinZoom() <= tile.z() && tile.z() < entry.getKey().getMaxZoom())
         .flatMap(entry -> entry.getValue().stream().map(query -> MessageFormat.format(SOURCE,
             query.getSource(),
             query.getId(),
@@ -114,7 +150,7 @@ public class FastPostgisTileStore extends PostgisTileStore {
         .collect(Collectors.joining(COMMA));
     String targets = queries.entrySet().stream()
         .filter(entry ->
-            entry.getKey().getMinZoom() <= tile.z() &&  tile.z() < entry.getKey().getMaxZoom())
+            entry.getKey().getMinZoom() <= tile.z() && tile.z() < entry.getKey().getMaxZoom())
         .map(entry -> {
           String queries = entry.getValue().stream()
               .map(select -> {
@@ -135,12 +171,27 @@ public class FastPostgisTileStore extends PostgisTileStore {
     return MessageFormat.format(WITH, sources, targets);
   }
 
-  @Override
+  private String envelope(Tile tile) {
+    Envelope envelope = tile.envelope();
+    Coordinate min = coordinate(envelope.getMinX(), envelope.getMinY());
+    Coordinate max = coordinate(envelope.getMaxX(), envelope.getMaxY());
+    return MessageFormat.format(
+        ENVELOPE,
+        Double.toString(min.getX()),
+        Double.toString(min.getY()),
+        Double.toString(max.getX()),
+        Double.toString(max.getY()));
+  }
+
+  private Coordinate coordinate(double x, double y) {
+    ProjCoordinate coordinate = coordinateTransform.transform(new ProjCoordinate(x, y), new ProjCoordinate());
+    return new Coordinate(coordinate.x, coordinate.y);
+  }
+
   public void write(Tile tile, byte[] bytes) throws IOException {
     throw new UnsupportedOperationException("The tile store is readonly");
   }
 
-  @Override
   public void delete(Tile tile) throws IOException {
     throw new UnsupportedOperationException("The tile store is readonly");
   }

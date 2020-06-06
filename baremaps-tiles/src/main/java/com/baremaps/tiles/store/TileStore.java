@@ -12,23 +12,17 @@
  * the License.
  */
 
-package com.baremaps.osm.geometry;
+package com.baremaps.tiles.store;
 
-import org.locationtech.jts.geom.Geometry;
+import com.baremaps.tiles.Tile;
+import java.io.IOException;
 
-/**
- * A {@code GeometryBuilder} is a base class for building JTS geometries from OSM entities.
- *
- * @param <T> the type of the entity to build geometries from.
- */
-public abstract class GeometryBuilder<T> {
+public interface TileStore {
 
-  /**
-   * Builds a JTS geometry from an OSM entity.
-   *
-   * @param entity an entity
-   * @return a geometry corresponding to the entity
-   */
-  public abstract Geometry build(T entity);
+  byte[] read(Tile tile) throws IOException;
+
+  void write(Tile tile, byte[] bytes) throws IOException;
+
+  void delete(Tile tile) throws IOException;
 
 }

@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.util.fs;
+package com.baremaps.util.vfs;
 
 import com.google.common.base.Charsets;
 import java.io.ByteArrayOutputStream;

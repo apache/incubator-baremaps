@@ -14,9 +14,7 @@
 
 package com.baremaps.tiles.store;
 
-import com.baremaps.tiles.TileStore;
-import com.baremaps.tiles.TileStoreTest;
-import com.baremaps.util.fs.LocalFileSystem;
+import com.baremaps.util.vfs.LocalFileSystem;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;

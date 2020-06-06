@@ -12,11 +12,8 @@
  * the License.
  */
 
-package com.baremaps.osm.stream;
+package com.baremaps.osm.database;
 
-import com.baremaps.osm.database.NodeTable;
-import com.baremaps.osm.database.RelationTable;
-import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.geometry.RelationBuilder;
@@ -33,7 +30,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Geometry;
 
-public class DeltaProducer implements Consumer<Change> {
+public class DatabaseDiffer implements Consumer<Change> {
 
   private final ProjectionTransformer projectionTransformer;
 
@@ -49,7 +46,7 @@ public class DeltaProducer implements Consumer<Change> {
 
   private final Set<Tile> tiles = new HashSet<>();
 
-  public DeltaProducer(
+  public DatabaseDiffer(
       NodeBuilder nodeBuilder, WayBuilder wayBuilder, RelationBuilder relationBuilder,
       NodeTable nodeStore, WayTable wayStore, RelationTable relationStore,
       ProjectionTransformer projectionTransformer,
