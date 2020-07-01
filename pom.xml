@@ -112,7 +112,7 @@
     <version.lib.sqlite>3.31.1</version.lib.sqlite>
     <version.lib.testng>7.1.0</version.lib.testng>
     <version.lib.s3mock>2.1.22</version.lib.s3mock>
-    <version.lib.jackson>2.11.0</version.lib.jackson>
+    <version.lib.jackson>2.11.1</version.lib.jackson>
     <version.plugin.compiler>3.8.1</version.plugin.compiler>
     <version.plugin.jacoco>0.8.5</version.plugin.jacoco>
     <version.plugin.surefire>2.22.2</version.plugin.surefire>
