@@ -88,6 +88,12 @@ public class Import implements Callable<Integer> {
       required = true)
   private String database;
 
+  @Option(
+      names = {"--lmdb-cache"},
+      paramLabel = "LMDB_CACHE",
+      description = "The directory used by LMDB to cache data.")
+  private Path lmdbCache;
+
   @Override
   public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
@@ -124,8 +130,10 @@ public class Import implements Callable<Integer> {
       }
     });
 
-    Path lmdbPath = Files.createTempDirectory("baremaps_");
-    Env<ByteBuffer> env = Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(lmdbPath.toFile());
+    if (lmdbCache == null) {
+      lmdbCache = Files.createTempDirectory("baremaps_");
+    }
+    Env<ByteBuffer> env = Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(lmdbCache.toFile());
     Cache<Long, Coordinate> coordinateCache = new LmdbCoordinateCache(env,
         env.openDbi("coordinates", MDB_CREATE));
     Cache<Long, List<Long>> referenceCache = new LmdbReferenceCache(env,
