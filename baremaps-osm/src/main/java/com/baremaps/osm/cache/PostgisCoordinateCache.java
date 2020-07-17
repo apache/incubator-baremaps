@@ -95,9 +95,4 @@ public class PostgisCoordinateCache implements Cache<Long, Coordinate> {
     throw new UnsupportedOperationException();
   }
 
-  @Override
-  public void importAll(List<Entry<Long, Coordinate>> values) {
-    throw new UnsupportedOperationException();
-  }
-
 }

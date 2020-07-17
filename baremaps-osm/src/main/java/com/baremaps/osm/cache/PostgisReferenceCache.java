@@ -103,9 +103,4 @@ public class PostgisReferenceCache implements Cache<Long, List<Long>> {
     throw new UnsupportedOperationException();
   }
 
-  @Override
-  public void importAll(List<Entry<Long, List<Long>>> values) {
-    throw new UnsupportedOperationException();
-  }
-
 }

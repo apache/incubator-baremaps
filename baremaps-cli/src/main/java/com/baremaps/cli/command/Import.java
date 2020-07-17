@@ -18,6 +18,7 @@ import static org.lmdbjava.DbiFlags.MDB_CREATE;
 
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheImporter;
+import com.baremaps.osm.cache.InMemoryCache;
 import com.baremaps.osm.cache.LmdbCoordinateCache;
 import com.baremaps.osm.cache.LmdbReferenceCache;
 import com.baremaps.osm.database.DatabaseImporter;
@@ -36,6 +37,7 @@ import com.baremaps.util.vfs.FileSystem;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -45,6 +47,7 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
@@ -71,6 +74,10 @@ public class Import implements Callable<Integer> {
 
   private static Logger logger = LogManager.getLogger();
 
+  private enum CacheType {
+    lmdb, inmemory
+  }
+
   @Mixin
   private Mixins mixins;
 
@@ -89,10 +96,16 @@ public class Import implements Callable<Integer> {
   private String database;
 
   @Option(
-      names = {"--lmdb-cache"},
-      paramLabel = "LMDB_CACHE",
-      description = "The directory used by LMDB to cache data.")
-  private Path lmdbCache;
+      names = {"--cache-type"},
+      paramLabel = "CACHE_TYPE",
+      description = "The type of cache to be used when importing data.")
+  private CacheType cacheType = CacheType.lmdb;
+
+  @Option(
+      names = {"--cache-directory"},
+      paramLabel = "CACHE_DIRECTORY",
+      description = "The directory used by the cache data.")
+  private Path cacheDirectory;
 
   @Override
   public Integer call() throws Exception {
@@ -130,14 +143,32 @@ public class Import implements Callable<Integer> {
       }
     });
 
-    if (lmdbCache == null) {
-      lmdbCache = Files.createTempDirectory("baremaps_");
+    // Initialize the caches
+    final Cache<Long, Coordinate> coordinateCache;
+    final Cache<Long, List<Long>> referenceCache;
+    switch (cacheType) {
+      case inmemory:
+        logger.info("Initilizing in-memory cache");
+        coordinateCache = new InMemoryCache<>();
+        referenceCache = new InMemoryCache<>();
+        break;
+      case lmdb:
+        logger.info("Initilizing lmdb cache");
+        if (cacheDirectory != null) {
+          cacheDirectory = Files.createDirectories(cacheDirectory);
+        } else {
+          cacheDirectory = Files.createTempDirectory("baremaps_");
+        }
+        Env<ByteBuffer> env = Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3)
+            .open(cacheDirectory.toFile());
+        coordinateCache = new LmdbCoordinateCache(env,
+            env.openDbi("coordinates", MDB_CREATE));
+        referenceCache = new LmdbReferenceCache(env,
+            env.openDbi("references", MDB_CREATE));
+        break;
+      default:
+        throw new UnsupportedOperationException("Unsupported cache type");
     }
-    Env<ByteBuffer> env = Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(lmdbCache.toFile());
-    Cache<Long, Coordinate> coordinateCache = new LmdbCoordinateCache(env,
-        env.openDbi("coordinates", MDB_CREATE));
-    Cache<Long, List<Long>> referenceCache = new LmdbReferenceCache(env,
-        env.openDbi("references", MDB_CREATE));
 
     CRSFactory crsFactory = new CRSFactory();
     CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
@@ -153,7 +184,7 @@ public class Import implements Callable<Integer> {
     RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
 
     logger.info("Fetching input");
-    FileSystem fileSystem =  mixins.filesystem();
+    FileSystem fileSystem = mixins.filesystem();
 
     logger.info("Populating cache");
     try (DataInputStream input = new DataInputStream(fileSystem.read(this.input))) {
@@ -196,6 +227,14 @@ public class Import implements Callable<Integer> {
         throw new RuntimeException(e);
       }
     });
+
+    if (CacheType.inmemory.equals(CacheType.lmdb)) {
+      logger.info("Cleaning cache");
+      Files.walk(cacheDirectory)
+          .sorted(Comparator.reverseOrder())
+          .map(Path::toFile)
+          .forEach(File::delete);
+    }
 
     return 0;
   }

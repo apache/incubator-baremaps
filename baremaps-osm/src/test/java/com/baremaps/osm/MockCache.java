@@ -60,9 +60,4 @@ public class MockCache<T> implements Cache<Long, T> {
     throw new UnsupportedOperationException();
   }
 
-  @Override
-  public void importAll(List<Entry<Long, T>> values) {
-    throw new UnsupportedOperationException();
-  }
-
 };

@@ -22,15 +22,13 @@ public interface Cache<K, V> {
 
   List<V> getAll(List<K> keys);
 
-  void put(K key, V values);
+  void put(K key, V value);
 
   void putAll(List<Entry<K, V>> entries);
 
   void delete(K key);
 
   void deleteAll(List<K> keys);
-
-  void importAll(List<Entry<K, V>> values);
 
   class Entry<K, V> {
 
