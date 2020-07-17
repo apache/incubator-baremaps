@@ -43,7 +43,6 @@ public abstract class LmdbCache<K, V> implements Cache<K, V> {
     }
   }
 
-
   public void putAll(List<Entry<K, V>> entries) {
     try (Txn<ByteBuffer> txn = env.txnWrite()) {
       for (Entry<K, V> entry : entries) {
@@ -52,7 +51,6 @@ public abstract class LmdbCache<K, V> implements Cache<K, V> {
       txn.commit();
     }
   }
-
 
   @Override
   public void delete(K key) {
