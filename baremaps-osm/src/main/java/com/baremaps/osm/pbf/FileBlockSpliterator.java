@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.osmpbf;
+package com.baremaps.osm.pbf;
 
 import com.baremaps.osm.binary.Fileformat;
 import com.baremaps.osm.binary.Fileformat.Blob;

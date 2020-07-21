@@ -12,13 +12,14 @@
  * the License.
  */
 
-package com.baremaps.osm.osmxml;
+package com.baremaps.osm.xml;
 
 import static com.baremaps.osm.DataFiles.dataOscXml;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.baremaps.osm.model.Change;
 import com.baremaps.util.stream.AccumulatingConsumer;
 import com.baremaps.util.stream.HoldingConsumer;
 import java.util.Spliterator;

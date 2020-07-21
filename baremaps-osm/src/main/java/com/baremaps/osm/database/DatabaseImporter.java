@@ -17,26 +17,34 @@ package com.baremaps.osm.database;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
-import com.baremaps.osm.osmpbf.FileBlockConsumer;
-import com.baremaps.osm.osmpbf.HeaderBlock;
-import com.baremaps.osm.osmpbf.PrimitiveBlock;
+import com.baremaps.osm.pbf.FileBlock;
+import com.baremaps.osm.pbf.HeaderBlock;
+import com.baremaps.osm.pbf.PrimitiveBlock;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class DatabaseImporter extends FileBlockConsumer {
+public class DatabaseImporter implements Consumer<FileBlock> {
 
   private final HeaderTable headerTable;
 
   private final NodeBuilder nodeBuilder;
+
   private final WayBuilder wayBuilder;
+
   private final RelationBuilder relationBuilder;
 
   private final NodeTable nodeTable;
+
   private final WayTable wayTable;
+
   private final RelationTable relationTable;
 
   public DatabaseImporter(
       HeaderTable headerTable,
-      NodeBuilder nodeBuilder, WayBuilder wayBuilder, RelationBuilder relationBuilder, NodeTable nodeTable,
+      NodeBuilder nodeBuilder,
+      WayBuilder wayBuilder,
+      RelationBuilder relationBuilder,
+      NodeTable nodeTable,
       WayTable wayTable,
       RelationTable relationTable) {
     this.headerTable = headerTable;
@@ -49,7 +57,20 @@ public class DatabaseImporter extends FileBlockConsumer {
   }
 
   @Override
-  public void accept(HeaderBlock headerBlock) {
+  public void accept(FileBlock block) {
+    switch (block.getType()) {
+      case OSMHeader:
+        accept(block.toHeaderBlock());
+        break;
+      case OSMData:
+        accept(block.toPrimitiveBlock());
+        break;
+      default:
+        break;
+    }
+  }
+
+  private void accept(HeaderBlock headerBlock) {
     try {
       headerTable.insert(headerBlock);
     } catch (Exception e) {
@@ -57,8 +78,7 @@ public class DatabaseImporter extends FileBlockConsumer {
     }
   }
 
-  @Override
-  public void accept(PrimitiveBlock primitiveBlock) {
+  private void accept(PrimitiveBlock primitiveBlock) {
     try {
       nodeTable.copy(
           primitiveBlock.getDenseNodes().stream()

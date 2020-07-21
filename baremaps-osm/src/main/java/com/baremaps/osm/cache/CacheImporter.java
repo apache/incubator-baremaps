@@ -16,14 +16,15 @@ package com.baremaps.osm.cache;
 
 import com.baremaps.osm.cache.Cache.Entry;
 import com.baremaps.osm.geometry.NodeBuilder;
-import com.baremaps.osm.osmpbf.FileBlockConsumer;
-import com.baremaps.osm.osmpbf.HeaderBlock;
-import com.baremaps.osm.osmpbf.PrimitiveBlock;
+import com.baremaps.osm.pbf.FileBlock;
+import com.baremaps.osm.pbf.FileBlock.Type;
+import com.baremaps.osm.pbf.PrimitiveBlock;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
 
-public class CacheImporter extends FileBlockConsumer {
+public class CacheImporter implements Consumer<FileBlock> {
 
   private final NodeBuilder nodeBuilder;
   private final Cache<Long, Coordinate> coordinateCache;
@@ -39,20 +40,20 @@ public class CacheImporter extends FileBlockConsumer {
   }
 
   @Override
-  public void accept(HeaderBlock headerBlock) {
-  }
-
-  @Override
-  public void accept(PrimitiveBlock primitiveBlock) {
-    try {
-      coordinateCache.putAll(primitiveBlock.getDenseNodes().stream()
-          .map(n -> new Entry<>(n.getInfo().getId(), nodeBuilder.build(n).getCoordinate()))
-          .collect(Collectors.toList()));
-      referenceCache.putAll(primitiveBlock.getWays().stream()
-          .map(w -> new Entry<>(w.getInfo().getId(), w.getNodes()))
-          .collect(Collectors.toList()));
-    } catch (Exception e) {
-      e.printStackTrace();
+  public void accept(FileBlock block) {
+    if (block.getType().equals(Type.OSMData)) {
+      PrimitiveBlock primitiveBlock = block.toPrimitiveBlock();
+      try {
+        coordinateCache.putAll(primitiveBlock.getDenseNodes().stream()
+            .map(n -> new Entry<>(n.getInfo().getId(), nodeBuilder.build(n).getCoordinate()))
+            .collect(Collectors.toList()));
+        referenceCache.putAll(primitiveBlock.getWays().stream()
+            .map(w -> new Entry<>(w.getInfo().getId(), w.getNodes()))
+            .collect(Collectors.toList()));
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
   }
+
 }

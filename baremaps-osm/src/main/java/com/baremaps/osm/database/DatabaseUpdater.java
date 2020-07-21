@@ -21,7 +21,7 @@ import com.baremaps.osm.model.Entity;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
-import com.baremaps.osm.osmxml.Change;
+import com.baremaps.osm.model.Change;
 import java.util.function.Consumer;
 
 public class DatabaseUpdater implements Consumer<Change> {

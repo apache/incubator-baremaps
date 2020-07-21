@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.osmpbf;
+package com.baremaps.osm.pbf;
 
 import static com.baremaps.osm.DataFiles.denseOsmPbf;
 import static com.baremaps.osm.DataFiles.relationsOsmPbf;

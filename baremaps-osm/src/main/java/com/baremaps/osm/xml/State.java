@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.osmxml;
+package com.baremaps.osm.xml;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

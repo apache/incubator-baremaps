@@ -12,27 +12,27 @@
  * the License.
  */
 
-package com.baremaps.osm.osmpbf;
+package com.baremaps.osm.model;
 
-import java.util.function.Consumer;
+import com.baremaps.osm.model.Entity;
 
-public abstract class FileBlockConsumer implements Consumer<FileBlock> {
+public final class Change {
 
-  @Override
-  public void accept(FileBlock block) {
-    switch (block.getType()) {
-      case OSMHeader:
-        accept(block.toHeaderBlock());
-        break;
-      case OSMData:
-        accept(block.toPrimitiveBlock());
-        break;
-      default:
-        break;
-    }
+  public enum Type {delete, create, modify}
+
+  private final Type type;
+  private final Entity entity;
+
+  public Change(Type type, Entity entity) {
+    this.type = type;
+    this.entity = entity;
   }
 
-  public abstract void accept(HeaderBlock headerBlock);
+  public Type getType() {
+    return type;
+  }
 
-  public abstract void accept(PrimitiveBlock primitiveBlock);
+  public Entity getEntity() {
+    return entity;
+  }
 }

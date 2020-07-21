@@ -29,8 +29,8 @@ import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
-import com.baremaps.osm.osmpbf.FileBlock;
-import com.baremaps.osm.osmpbf.FileBlockSpliterator;
+import com.baremaps.osm.pbf.FileBlock;
+import com.baremaps.osm.pbf.FileBlockSpliterator;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.stream.BatchSpliterator;
 import com.baremaps.util.vfs.FileSystem;
@@ -176,7 +176,7 @@ public class Import implements Callable<Integer> {
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
     CoordinateTransform coordinateTransform = coordinateTransformFactory
         .createTransform(sourceCRS, targetCSR);
-    HeaderTable headerMapper = new HeaderTable(datasource);
+    HeaderTable headerTable = new HeaderTable(datasource);
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
 
     NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
@@ -202,7 +202,7 @@ public class Import implements Callable<Integer> {
       WayTable wayTable = new WayTable(datasource);
       RelationTable relationTable = new RelationTable(datasource);
 
-      DatabaseImporter blockConsumer = new DatabaseImporter(headerMapper, nodeBuilder, wayBuilder,
+      DatabaseImporter blockConsumer = new DatabaseImporter(headerTable, nodeBuilder, wayBuilder,
           relationBuilder, nodeTable, wayTable, relationTable);
 
       blocks.forEach(blockConsumer);

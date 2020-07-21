@@ -12,42 +12,33 @@
  * the License.
  */
 
-package com.baremaps.osm.osmpbf;
+package com.baremaps.osm.pbf;
 
 import static com.baremaps.osm.DataFiles.dataOsmPbf;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.baremaps.util.stream.AccumulatingConsumer;
+import com.baremaps.util.stream.HoldingConsumer;
 import java.io.DataInputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Spliterator;
 import org.junit.jupiter.api.Test;
 
-public class FileBlockConsumerTest {
+public class FileBlockSpliteratorTest {
 
   @Test
-  public void accept() {
-    HolderFileBlockConsumer consumer = new HolderFileBlockConsumer();
+  public void tryAdvance() {
     Spliterator<FileBlock> spliterator = new FileBlockSpliterator(new DataInputStream(dataOsmPbf()));
-    spliterator.forEachRemaining(consumer);
-    assertEquals(consumer.headerBlocks.size(), 1);
-    assertEquals(consumer.primitiveBlocks.size(), 9);
+    spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
+    assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
   }
 
-  class HolderFileBlockConsumer extends FileBlockConsumer {
-
-    public List<HeaderBlock> headerBlocks = new ArrayList<>();
-
-    public List<PrimitiveBlock> primitiveBlocks = new ArrayList<>();
-
-    @Override
-    public void accept(HeaderBlock headerBlock) {
-      headerBlocks.add(headerBlock);
-    }
-
-    @Override
-    public void accept(PrimitiveBlock primitiveBlock) {
-      primitiveBlocks.add(primitiveBlock);
-    }
+  @Test
+  public void forEachRemaining() {
+    Spliterator<FileBlock> spliterator = new FileBlockSpliterator(new DataInputStream(dataOsmPbf()));
+    AccumulatingConsumer<FileBlock> accumulator = new AccumulatingConsumer<>();
+    spliterator.forEachRemaining(accumulator);
+    assertTrue(accumulator.values().size() == 10);
   }
 }

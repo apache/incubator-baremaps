@@ -15,7 +15,7 @@
 package com.baremaps.osm.database;
 
 import com.baremaps.osm.geometry.GeometryUtil;
-import com.baremaps.osm.osmpbf.HeaderBlock;
+import com.baremaps.osm.pbf.HeaderBlock;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

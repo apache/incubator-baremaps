@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.osmpbf;
+package com.baremaps.osm.pbf;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

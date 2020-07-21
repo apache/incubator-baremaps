@@ -14,8 +14,8 @@
 
 package com.baremaps.osm;
 
-import com.baremaps.osm.osmpbf.FileBlock;
-import com.baremaps.osm.osmpbf.FileBlock.Type;
+import com.baremaps.osm.pbf.FileBlock;
+import com.baremaps.osm.pbf.FileBlock.Type;
 import com.google.protobuf.ByteString;
 import java.io.InputStream;
 
