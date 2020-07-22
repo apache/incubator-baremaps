@@ -15,6 +15,7 @@
 package com.baremaps.tiles.store;
 
 import com.baremaps.tiles.config.Layer;
+import com.baremaps.tiles.config.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -34,8 +35,8 @@ public class PostgisQueryParser {
 
   }
 
-  public static Query parse(Layer layer, String sql) {
-    Matcher matcher = QUERY_PATTERN.matcher(sql);
+  public static Parse parse(Layer layer, Query query) {
+    Matcher matcher = QUERY_PATTERN.matcher(query.getSql());
     if (!matcher.matches()) {
       throw new IllegalArgumentException("The SQL query malformed");
     }
@@ -55,7 +56,7 @@ public class PostgisQueryParser {
 
     String source = "H" + Math.abs(Objects.hash(id, tags, geom, from));
 
-    return new Query(layer, source, id, tags, geom, from, where);
+    return new Parse(layer, query, source, id, tags, geom, from, where);
   }
 
   private static List<String> split(String s) {
@@ -89,9 +90,10 @@ public class PostgisQueryParser {
   }
 
 
-  public static class Query {
+  public static class Parse {
 
     private final Layer layer;
+    private final Query query;
     private final String source;
     private final String id;
     private final String tags;
@@ -99,9 +101,17 @@ public class PostgisQueryParser {
     private final String from;
     private final Optional<String> where;
 
-    private Query(Layer layer, String source, String id, String tags, String geom, String from,
+    private Parse(
+        Layer layer,
+        Query query,
+        String source,
+        String id,
+        String tags,
+        String geom,
+        String from,
         Optional<String> where) {
       this.layer = layer;
+      this.query = query;
       this.source = source;
       this.id = id;
       this.tags = tags;
@@ -112,6 +122,10 @@ public class PostgisQueryParser {
 
     public Layer getLayer() {
       return layer;
+    }
+
+    public Query getQuery() {
+      return query;
     }
 
     public String getSource() {

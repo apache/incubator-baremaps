@@ -62,8 +62,6 @@ public class ConfigFormatter {
     Map<String, Object> map = new LinkedHashMap<>();
     map.put("name", layer.getId());
     map.put("type", layer.getType());
-    map.put("minZoom", layer.getMinZoom());
-    map.put("maxZoom", layer.getMaxZoom());
     map.put("queries", layer.getQueries());
     return map;
   }

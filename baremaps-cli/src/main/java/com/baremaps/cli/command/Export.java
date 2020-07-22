@@ -16,6 +16,7 @@ package com.baremaps.cli.command;
 
 import com.baremaps.tiles.Tile;
 import com.baremaps.tiles.config.Config;
+import com.baremaps.tiles.config.Query;
 import com.baremaps.tiles.store.FileSystemTileStore;
 import com.baremaps.tiles.store.MBTilesTileStore;
 import com.baremaps.tiles.store.PostgisTileStore;
@@ -194,8 +195,8 @@ public class Export implements Callable<Integer> {
       Map<String, Object> map = new HashMap<>();
       map.put("id", layer.getId());
       map.put("description", layer.getDescription());
-      map.put("minzoom", Integer.toString(layer.getMinZoom()));
-      map.put("maxzoom", Integer.toString(layer.getMaxZoom()));
+      map.put("minzoom", layer.getQueries().stream().mapToInt(Query::getMinZoom).min().getAsInt());
+      map.put("maxzoom", layer.getQueries().stream().mapToInt(Query::getMaxZoom).max().getAsInt());
       map.put("fields", layer.getFields());
       return map;
     }).collect(Collectors.toList());

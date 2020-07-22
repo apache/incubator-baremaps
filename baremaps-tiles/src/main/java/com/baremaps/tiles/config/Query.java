@@ -1,4 +1,4 @@
-package com.baremaps.tiles.config;/*
+/*
  * Copyright (C) 2020 The baremaps Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -11,7 +11,36 @@ package com.baremaps.tiles.config;/*
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+package com.baremaps.tiles.config;
 
 public class Query {
+
+  private int minZoom;
+
+  private int maxZoom;
+
+  private String sql;
+
+  public Query() {
+
+  }
+
+  public Query(int minZoom, int maxZoom, String sql) {
+    this.minZoom = minZoom;
+    this.maxZoom = maxZoom;
+    this.sql = sql;
+  }
+
+  public String getSql() {
+    return sql;
+  }
+
+  public int getMinZoom() {
+    return minZoom;
+  }
+
+  public int getMaxZoom() {
+    return maxZoom;
+  }
 
 }

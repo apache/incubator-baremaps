@@ -16,6 +16,7 @@ package com.baremaps.cli.blueprint;
 
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.config.Layer;
+import com.baremaps.tiles.config.Query;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Lists;
 import java.util.Arrays;
@@ -107,8 +108,8 @@ public class BlueprintBuilder {
     map.put("id", id);
     map.put("source", "baremaps");
     map.put("source-layer", layer.getId());
-    map.put("minZoom", layer.getMinZoom());
-    map.put("maxZoom", layer.getMaxZoom());
+    map.put("minzoom", layer.getQueries().stream().mapToInt(Query::getMinZoom).min().getAsInt());
+    map.put("maxzoom", layer.getQueries().stream().mapToInt(Query::getMaxZoom).max().getAsInt());
     map.put("type", "circle");
     map.put("layout", ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")
@@ -126,8 +127,8 @@ public class BlueprintBuilder {
     map.put("id", id);
     map.put("source", "baremaps");
     map.put("source-layer", layer.getId());
-    map.put("minZoom", layer.getMinZoom());
-    map.put("maxZoom", layer.getMaxZoom());
+    map.put("minzoom", layer.getQueries().stream().mapToInt(Query::getMinZoom).min().getAsInt());
+    map.put("maxzoom", layer.getQueries().stream().mapToInt(Query::getMaxZoom).max().getAsInt());
     map.put("type", "line");
     map.put("layout", ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")
@@ -145,8 +146,8 @@ public class BlueprintBuilder {
     map.put("id", id);
     map.put("source", "baremaps");
     map.put("source-layer", layer.getId());
-    map.put("minZoom", layer.getMinZoom());
-    map.put("maxZoom", layer.getMaxZoom());
+    map.put("minzoom", layer.getQueries().stream().mapToInt(Query::getMinZoom).min().getAsInt());
+    map.put("maxzoom", layer.getQueries().stream().mapToInt(Query::getMaxZoom).max().getAsInt());
     map.put("type", "fill");
     map.put("layout", ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")

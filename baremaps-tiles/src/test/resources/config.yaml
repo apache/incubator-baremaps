@@ -1,11 +1,11 @@
 layers:
   - id: "buildings"
-    minZoom: 0
-    maxZoom: 18
     queries:
-      - SELECT id, tags::jsonb, geom FROM osm_ways WHERE tags -> 'building' = 'yes' AND ST_Area(ST_Envelope(geom)) > {pixelArea}
+      - minZoom: 0
+        maxZoom: 18
+        sql: SELECT id, tags::jsonb, geom FROM osm_ways WHERE tags -> 'building' = 'yes' AND ST_Area(ST_Envelope(geom)) > {pixelArea}
   - id: "highways"
-    minZoom: 0
-    maxZoom: 18
     queries:
-      - SELECT id, tags::jsonb, geom FROM osm_ways WHERE tags ? 'highway'
+      - minZoom: 0
+        maxZoom: 18
+        sql: SELECT id, tags::jsonb, geom FROM osm_ways WHERE tags ? 'highway'

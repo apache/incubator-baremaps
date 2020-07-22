@@ -26,13 +26,9 @@ public class Layer {
 
   private String description;
 
-  private int minZoom;
-
-  private int maxZoom;
-
   private Map<String, String> fields = new HashMap<>();
 
-  private List<String> queries;
+  private List<Query> queries;
 
   public String getId() {
     return id;
@@ -42,19 +38,11 @@ public class Layer {
     return description;
   }
 
-  public int getMinZoom() {
-    return minZoom;
-  }
-
-  public int getMaxZoom() {
-    return maxZoom;
-  }
-
   public Map<String, String> getFields() {
     return fields;
   }
 
-  public List<String> getQueries() {
+  public List<Query> getQueries() {
     return queries;
   }
 
@@ -66,19 +54,11 @@ public class Layer {
     this.description = description;
   }
 
-  public void setMinZoom(int minZoom) {
-    this.minZoom = minZoom;
-  }
-
-  public void setMaxZoom(int maxZoom) {
-    this.maxZoom = maxZoom;
-  }
-
   public void setFields(Map<String, String> fields) {
     this.fields = fields;
   }
 
-  public void setQueries(List<String> queries) {
+  public void setQueries(List<Query> queries) {
     this.queries = queries;
   }
 

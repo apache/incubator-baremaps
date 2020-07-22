@@ -17,7 +17,7 @@ package com.baremaps.tiles.store;
 import com.baremaps.tiles.Tile;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.config.Layer;
-import com.baremaps.tiles.store.PostgisQueryParser.Query;
+import com.baremaps.tiles.store.PostgisQueryParser.Parse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -83,12 +83,12 @@ public class PostgisTileStore implements TileStore {
 
   private final Config config;
 
-  private final Map<Layer, List<Query>> queries;
+  private final Map<Layer, List<Parse>> parses;
 
   public PostgisTileStore(PoolingDataSource datasource, Config config) {
     this.datasource = datasource;
     this.config = config;
-    this.queries = config.getLayers().stream()
+    this.parses = config.getLayers().stream()
         .flatMap(layer -> layer.getQueries().stream().map(query -> PostgisQueryParser.parse(layer, query)))
         .collect(Collectors.groupingBy(q -> q.getLayer()));
   }
@@ -135,31 +135,32 @@ public class PostgisTileStore implements TileStore {
   }
 
   private String query(Tile tile) {
-    String sources = queries.entrySet().stream()
-        .filter(
-            entry -> entry.getKey().getMinZoom() <= tile.z() && tile.z() < entry.getKey().getMaxZoom())
-        .flatMap(entry -> entry.getValue().stream().map(query -> MessageFormat.format(SOURCE,
-            query.getSource(),
-            query.getId(),
-            query.getTags(),
-            query.getGeom(),
-            query.getFrom(),
-            envelope(tile))))
+    String sources = parses.entrySet().stream()
+        .flatMap(entry -> entry.getValue().stream()
+            .filter(parse ->
+                parse.getQuery().getMinZoom() <= tile.z() && tile.z() < parse.getQuery().getMaxZoom())
+            .map(parse -> MessageFormat.format(SOURCE,
+                parse.getSource(),
+                parse.getId(),
+                parse.getTags(),
+                parse.getGeom(),
+                parse.getFrom(),
+                envelope(tile))))
         .collect(Collectors.toSet())
         .stream()
         .collect(Collectors.joining(COMMA));
-    String targets = queries.entrySet().stream()
-        .filter(entry ->
-            entry.getKey().getMinZoom() <= tile.z() && tile.z() < entry.getKey().getMaxZoom())
+    String targets = parses.entrySet().stream()
         .map(entry -> {
           String queries = entry.getValue().stream()
-              .map(select -> {
+              .filter(parse ->
+                  parse.getQuery().getMinZoom() <= tile.z() && tile.z() < parse.getQuery().getMaxZoom())
+              .map(parse -> {
                 String l = MessageFormat.format(QUERY,
-                    select.getId(),
-                    select.getTags(),
-                    select.getGeom(),
-                    select.getSource());
-                String r = select.getWhere()
+                    parse.getId(),
+                    parse.getTags(),
+                    parse.getGeom(),
+                    parse.getSource());
+                String r = parse.getWhere()
                     .map(s -> MessageFormat.format(WHERE, s))
                     .orElse("");
                 return l + r;
