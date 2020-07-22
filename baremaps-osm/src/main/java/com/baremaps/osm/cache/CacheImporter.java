@@ -47,6 +47,9 @@ public class CacheImporter implements Consumer<FileBlock> {
         coordinateCache.putAll(primitiveBlock.getDenseNodes().stream()
             .map(n -> new Entry<>(n.getInfo().getId(), nodeBuilder.build(n).getCoordinate()))
             .collect(Collectors.toList()));
+        coordinateCache.putAll(primitiveBlock.getNodes().stream()
+            .map(n -> new Entry<>(n.getInfo().getId(), nodeBuilder.build(n).getCoordinate()))
+            .collect(Collectors.toList()));
         referenceCache.putAll(primitiveBlock.getWays().stream()
             .map(w -> new Entry<>(w.getInfo().getId(), w.getNodes()))
             .collect(Collectors.toList()));

@@ -91,6 +91,17 @@ public class DatabaseImporter implements Consumer<FileBlock> {
                   node.getInfo().getTags(),
                   nodeBuilder.build(node)))
               .collect(Collectors.toList()));
+      nodeTable.copy(
+          primitiveBlock.getNodes().stream()
+              .map(node -> new NodeTable.Node(
+                  node.getInfo().getId(),
+                  node.getInfo().getVersion(),
+                  node.getInfo().getTimestamp(),
+                  node.getInfo().getChangeset(),
+                  node.getInfo().getUserId(),
+                  node.getInfo().getTags(),
+                  nodeBuilder.build(node)))
+              .collect(Collectors.toList()));
       wayTable.copy(
           primitiveBlock.getWays().stream()
               .map(way -> new WayTable.Way(
