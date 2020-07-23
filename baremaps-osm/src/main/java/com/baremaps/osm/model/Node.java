@@ -14,29 +14,30 @@
 
 package com.baremaps.osm.model;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
+import org.locationtech.jts.geom.Geometry;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
-
-public final class Node implements Entity {
-
-  private final Info info;
+public final class Node extends Entity {
 
   private final double lon;
 
   private final double lat;
 
-  public Node(Info info, double lon, double lat) {
-    checkNotNull(info);
-    this.info = info;
-    this.lon = lon;
-    this.lat = lat;
+  private final Geometry geometry;
+
+  public Node(long id, int version, LocalDateTime timestamp, long changeset, int userId,
+      Map<String, String> tags, double lon, double lat) {
+    this(id, version, timestamp, changeset, userId, tags, lon, lat, null);
   }
 
-  @Override
-  public Info getInfo() {
-    return info;
+  public Node(long id, int version, LocalDateTime timestamp, long changeset, int userId,
+      Map<String, String> tags, double lon, double lat, Geometry geometry) {
+    super(id, version, timestamp, changeset, userId, tags);
+    this.lon = lon;
+    this.lat = lat;
+    this.geometry = geometry;
   }
 
   public double getLon() {
@@ -47,32 +48,8 @@ public final class Node implements Entity {
     return lat;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Node node = (Node) o;
-    return Double.compare(node.lon, lon) == 0
-        && Double.compare(node.lat, lat) == 0
-        && Objects.equal(info, node.info);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(info, lon, lat);
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("info", info)
-        .add("lon", lon)
-        .add("lat", lat)
-        .toString();
+  public Optional<Geometry> getGeometry() {
+    return Optional.ofNullable(geometry);
   }
 
 }

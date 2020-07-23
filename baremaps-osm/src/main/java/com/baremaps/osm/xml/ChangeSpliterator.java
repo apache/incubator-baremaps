@@ -17,13 +17,12 @@ package com.baremaps.osm.xml;
 import static com.baremaps.osm.model.User.NO_USER;
 
 import com.baremaps.osm.model.Change;
-import com.baremaps.osm.model.Info;
+import com.baremaps.osm.model.Change.Type;
 import com.baremaps.osm.model.Member;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.User;
 import com.baremaps.osm.model.Way;
-import com.baremaps.osm.model.Change.Type;
 import com.baremaps.util.stream.StreamException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
@@ -96,26 +95,44 @@ public class ChangeSpliterator implements Spliterator<Change> {
   private Node readNode(StartElement element)
       throws XMLStreamException {
     List<StartElement> children = readChildren(element);
-    Info info = readInfo(element, children);
+    long id = Long.parseLong(element.getAttributeByName(QName.valueOf(ID)).getValue());
+    int version = Integer.parseInt(element.getAttributeByName(QName.valueOf(VERSION)).getValue());
+    LocalDateTime timestamp = LocalDateTime
+        .parse(element.getAttributeByName(QName.valueOf(TIMESTAMP)).getValue(), format);
+    long changeset = readChangeset(element);
+    int userId = readUser(element).getId();
+    Map<String, String> tags = readTags(children);
     double lat = Double.parseDouble(element.getAttributeByName(QName.valueOf(LAT)).getValue());
     double lon = Double.parseDouble(element.getAttributeByName(QName.valueOf(LON)).getValue());
-    return new Node(info, lon, lat);
+    return new Node(id, version, timestamp, changeset, userId, tags, lon, lat);
   }
 
   private Way readWay(StartElement element)
       throws XMLStreamException {
     List<StartElement> children = readChildren(element);
-    Info info = readInfo(element, children);
+    long id = Long.parseLong(element.getAttributeByName(QName.valueOf(ID)).getValue());
+    int version = Integer.parseInt(element.getAttributeByName(QName.valueOf(VERSION)).getValue());
+    LocalDateTime timestamp = LocalDateTime
+        .parse(element.getAttributeByName(QName.valueOf(TIMESTAMP)).getValue(), format);
+    long changeset = readChangeset(element);
+    int userId = readUser(element).getId();
+    Map<String, String> tags = readTags(children);
     List<Long> nodes = readNodes(children);
-    return new Way(info, nodes);
+    return new Way(id, version, timestamp, changeset, userId, tags, nodes);
   }
 
   private Relation readRelation(StartElement element)
       throws XMLStreamException {
     List<StartElement> children = readChildren(element);
-    Info info = readInfo(element, children);
+    long id = Long.parseLong(element.getAttributeByName(QName.valueOf(ID)).getValue());
+    int version = Integer.parseInt(element.getAttributeByName(QName.valueOf(VERSION)).getValue());
+    LocalDateTime timestamp = LocalDateTime
+        .parse(element.getAttributeByName(QName.valueOf(TIMESTAMP)).getValue(), format);
+    long changeset = readChangeset(element);
+    int userId = readUser(element).getId();
+    Map<String, String> tags = readTags(children);
     List<Member> members = readMembers(children);
-    return new Relation(info, members);
+    return new Relation(id, version, timestamp, changeset, userId, tags, members);
   }
 
   private List<StartElement> readChildren(StartElement element)
@@ -134,17 +151,6 @@ public class ChangeSpliterator implements Spliterator<Change> {
       }
     }
     return children;
-  }
-
-  private Info readInfo(StartElement element, List<StartElement> children) {
-    long id = Long.parseLong(element.getAttributeByName(QName.valueOf(ID)).getValue());
-    int version = Integer.parseInt(element.getAttributeByName(QName.valueOf(VERSION)).getValue());
-    LocalDateTime timestamp = LocalDateTime
-        .parse(element.getAttributeByName(QName.valueOf(TIMESTAMP)).getValue(), format);
-    long changeset = readChangeset(element);
-    User user = readUser(element);
-    Map<String, String> tags = readTags(children);
-    return new Info(id, version, timestamp, changeset, user.getId(), tags);
   }
 
   private long readChangeset(StartElement element) {

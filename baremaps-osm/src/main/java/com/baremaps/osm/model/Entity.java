@@ -14,15 +14,53 @@
 
 package com.baremaps.osm.model;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+
 /**
  * An entity in the OSM dataset.
  */
-public interface Entity {
+public abstract class Entity {
 
-  /**
-   * Returns the metadata of the entity.
-   *
-   * @return the metadata
-   */
-  Info getInfo();
+  protected final long id;
+  protected final int version;
+  protected final LocalDateTime timestamp;
+  protected final long changeset;
+  protected final int userId;
+  protected final Map<String, String> tags;
+
+  protected Entity(long id, int version, LocalDateTime timestamp, long changeset, int userId,
+      Map<String, String> tags) {
+    this.id = id;
+    this.version = version;
+    this.timestamp = timestamp;
+    this.changeset = changeset;
+    this.userId = userId;
+    this.tags = tags;
+  }
+
+  public long getId() {
+    return id;
+  }
+
+  public int getVersion() {
+    return version;
+  }
+
+  public LocalDateTime getTimestamp() {
+    return timestamp;
+  }
+
+  public long getChangeset() {
+    return changeset;
+  }
+
+  public int getUserId() {
+    return userId;
+  }
+
+  public Map<String, String> getTags() {
+    return tags;
+  }
+
 }

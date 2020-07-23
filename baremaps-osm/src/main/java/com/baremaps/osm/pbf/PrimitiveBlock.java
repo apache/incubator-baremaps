@@ -18,7 +18,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.baremaps.osm.binary.Osmformat;
 import com.baremaps.osm.binary.Osmformat.PrimitiveGroup;
-import com.baremaps.osm.model.Info;
 import com.baremaps.osm.model.Member;
 import com.baremaps.osm.model.Member.Type;
 import com.baremaps.osm.model.Node;
@@ -98,8 +97,8 @@ public final class PrimitiveBlock {
         j++; // Skip over the '0' delimiter.
       }
 
-      Info data = new Info(id, version, getTimestamp(timestamp), changeset, uid, tags);
-      nodes.add(new Node(data, getLon(lon), getLat(lat)));
+      nodes.add(
+          new Node(id, version, getTimestamp(timestamp), changeset, uid, tags, getLon(lon), getLat(lat)));
     }
     return nodes.stream();
   }
@@ -113,11 +112,19 @@ public final class PrimitiveBlock {
 
   private Stream<Node> readNodes(List<Osmformat.Node> input) {
     List<Node> nodes = new ArrayList<>();
-    for (Osmformat.Node e : input) {
-      Info info = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
-      long lon = e.getLon();
-      long lat = e.getLat();
-      nodes.add(new Node(info, getLon(lon), getLat(lat)));
+    for (Osmformat.Node node : input) {
+      long id = node.getId();
+      int version = node.getInfo().getVersion();
+      LocalDateTime timestamp = getTimestamp(node.getInfo().getTimestamp());
+      long changeset = node.getInfo().getChangeset();
+      int uid = node.getInfo().getUid();
+      Map<String, String> tags = new HashMap<>();
+      for (int t = 0; t < node.getKeysList().size(); t++) {
+        tags.put(getString(node.getKeysList().get(t)), getString(node.getKeysList().get(t)));
+      }
+      double lon = getLon(node.getLon());
+      double lat = getLat(node.getLat());
+      nodes.add(new Node(id, version, timestamp, changeset, uid, tags, lon, lat));
     }
     return nodes.stream();
   }
@@ -125,15 +132,22 @@ public final class PrimitiveBlock {
   public List<Way> getWays() {
     List<Way> ways = new ArrayList<>();
     for (PrimitiveGroup group : primitiveBlock.getPrimitivegroupList()) {
-      for (Osmformat.Way e : group.getWaysList()) {
-        Info info = createEntityData(e.getId(), e.getInfo(), e.getKeysList(), e.getValsList());
+      for (Osmformat.Way way : group.getWaysList()) {
+        long id = way.getId();
+        int version = way.getInfo().getVersion();
+        LocalDateTime timestamp = getTimestamp(way.getInfo().getTimestamp());
+        long changeset = way.getInfo().getChangeset();
+        int uid = way.getInfo().getUid();
+        Map<String, String> tags = getTags(way.getKeysList(), way.getValsList());
+
         long nid = 0;
         List<Long> nodes = new ArrayList<>();
-        for (int index = 0; index < e.getRefsCount(); index++) {
-          nid = nid + e.getRefs(index);
+        for (int index = 0; index < way.getRefsCount(); index++) {
+          nid = nid + way.getRefs(index);
           nodes.add(nid);
         }
-        ways.add(new Way(info, nodes));
+
+        ways.add(new Way(id, version, timestamp, changeset, uid, tags, nodes));
       }
     }
     return ways;
@@ -148,17 +162,23 @@ public final class PrimitiveBlock {
 
   protected Stream<Relation> readRelations(List<Osmformat.Relation> input) {
     List<Relation> relations = new ArrayList<>();
-    for (Osmformat.Relation r : input) {
-      Info info = createEntityData(r.getId(), r.getInfo(), r.getKeysList(), r.getValsList());
+    for (Osmformat.Relation relation : input) {
+      long id = relation.getId();
+      int version = relation.getInfo().getVersion();
+      LocalDateTime timestamp = getTimestamp(relation.getInfo().getTimestamp());
+      long changeset = relation.getInfo().getChangeset();
+      int uid = relation.getInfo().getUid();
+      Map<String, String> tags = getTags(relation.getKeysList(), relation.getValsList());
+
       long mid = 0;
       List<Member> members = new ArrayList<>();
-      for (int j = 0; j < r.getMemidsCount(); j++) {
-        mid = mid + r.getMemids(j);
-        String role = getString(r.getRolesSid(j));
-        Member.Type type = type(r.getTypes(j));
+      for (int j = 0; j < relation.getMemidsCount(); j++) {
+        mid = mid + relation.getMemids(j);
+        String role = getString(relation.getRolesSid(j));
+        Member.Type type = type(relation.getTypes(j));
         members.add(new Member(mid, type, role));
       }
-      relations.add(new Relation(info, members));
+      relations.add(new Relation(id, version, timestamp, changeset, uid, tags, members));
     }
     return relations.stream();
   }
@@ -176,26 +196,6 @@ public final class PrimitiveBlock {
     }
   }
 
-
-  protected Info createEntityData(
-      long id, Osmformat.Info info, List<Integer> keys, List<Integer> vals) {
-    LocalDateTime timestamp = getTimestamp(info.getTimestamp());
-    int version = info.getVersion();
-    long changeset = info.getChangeset();
-    int uid = info.getUid();
-
-    Map<String, String> tags = new HashMap<>();
-    for (int t = 0; t < keys.size(); t++) {
-      tags.put(getString(keys.get(t)), getString(vals.get(t)));
-    }
-
-    return new Info(id, version, timestamp, changeset, uid, tags);
-  }
-
-  protected String getString(int id) {
-    return stringTable[id];
-  }
-
   protected double getLat(long lat) {
     return (granularity * lat + latOffset) * .000000001;
   }
@@ -208,4 +208,17 @@ public final class PrimitiveBlock {
     return LocalDateTime
         .ofInstant(Instant.ofEpochMilli(dateGranularity * timestamp), TimeZone.getDefault().toZoneId());
   }
+
+  protected Map<String, String> getTags(List<Integer> keys, List<Integer> vals) {
+    Map<String, String> tags = new HashMap<>();
+    for (int t = 0; t < keys.size(); t++) {
+      tags.put(getString(keys.get(t)), getString(vals.get(t)));
+    }
+    return tags;
+  }
+
+  protected String getString(int id) {
+    return stringTable[id];
+  }
+
 }

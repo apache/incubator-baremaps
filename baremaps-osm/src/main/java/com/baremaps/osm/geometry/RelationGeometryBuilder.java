@@ -58,7 +58,7 @@ public class RelationGeometryBuilder extends GeometryBuilder<Relation> {
    */
   public Geometry build(Relation entity) {
     // Check whether the relation is a multipolygon
-    Map<String, String> tags = entity.getInfo().getTags();
+    Map<String, String> tags = entity.getTags();
     if (!"multipolygon".equals(tags.get("type"))) {
       return null;
     }

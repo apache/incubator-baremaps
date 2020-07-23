@@ -45,13 +45,13 @@ public class CacheImporter implements Consumer<FileBlock> {
       PrimitiveBlock primitiveBlock = block.toPrimitiveBlock();
       try {
         coordinateCache.putAll(primitiveBlock.getDenseNodes().stream()
-            .map(n -> new Entry<>(n.getInfo().getId(), nodeGeometryBuilder.build(n).getCoordinate()))
+            .map(n -> new Entry<>(n.getId(), nodeGeometryBuilder.build(n).getCoordinate()))
             .collect(Collectors.toList()));
         coordinateCache.putAll(primitiveBlock.getNodes().stream()
-            .map(n -> new Entry<>(n.getInfo().getId(), nodeGeometryBuilder.build(n).getCoordinate()))
+            .map(n -> new Entry<>(n.getId(), nodeGeometryBuilder.build(n).getCoordinate()))
             .collect(Collectors.toList()));
         referenceCache.putAll(primitiveBlock.getWays().stream()
-            .map(w -> new Entry<>(w.getInfo().getId(), w.getNodes()))
+            .map(w -> new Entry<>(w.getId(), w.getNodes()))
             .collect(Collectors.toList()));
       } catch (Exception e) {
         e.printStackTrace();

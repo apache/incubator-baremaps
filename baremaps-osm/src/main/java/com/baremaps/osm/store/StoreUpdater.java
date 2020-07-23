@@ -55,12 +55,12 @@ public class StoreUpdater implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          nodeStore.put(new NodeEntity(node.getInfo().getId(), node.getInfo().getVersion(),
-              node.getInfo().getTimestamp(), node.getInfo().getChangeset(), node.getInfo().getUserId(),
-              node.getInfo().getTags(), nodeGeometryBuilder.build(node)));
+          nodeStore.put(new NodeEntity(node.getId(), node.getVersion(),
+              node.getTimestamp(), node.getChangeset(), node.getUserId(),
+              node.getTags(), nodeGeometryBuilder.build(node)));
           break;
         case delete:
-          nodeStore.delete(node.getInfo().getId());
+          nodeStore.delete(node.getId());
           break;
         default:
           break;
@@ -70,12 +70,12 @@ public class StoreUpdater implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          wayStore.put(new WayEntity(way.getInfo().getId(), way.getInfo().getVersion(),
-              way.getInfo().getTimestamp(), way.getInfo().getChangeset(), way.getInfo().getUserId(),
-              way.getInfo().getTags(), way.getNodes(), wayGeometryBuilder.build(way)));
+          wayStore.put(new WayEntity(way.getId(), way.getVersion(),
+              way.getTimestamp(), way.getChangeset(), way.getUserId(),
+              way.getTags(), way.getNodes(), wayGeometryBuilder.build(way)));
           break;
         case delete:
-          wayStore.delete(way.getInfo().getId());
+          wayStore.delete(way.getId());
           break;
         default:
           break;
@@ -86,19 +86,19 @@ public class StoreUpdater implements Consumer<Change> {
         case create:
         case modify:
           relationStore.put(new RelationEntity(
-              relation.getInfo().getId(),
-              relation.getInfo().getVersion(),
-              relation.getInfo().getTimestamp(),
-              relation.getInfo().getChangeset(),
-              relation.getInfo().getUserId(),
-              relation.getInfo().getTags(),
+              relation.getId(),
+              relation.getVersion(),
+              relation.getTimestamp(),
+              relation.getChangeset(),
+              relation.getUserId(),
+              relation.getTags(),
               relation.getMembers().stream().map(m -> m.getRef()).toArray(Long[]::new),
               relation.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new),
               relation.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new),
               relationGeometryBuilder.build(relation)));
           break;
         case delete:
-          relationStore.delete(relation.getInfo().getId());
+          relationStore.delete(relation.getId());
           break;
         default:
           break;

@@ -14,47 +14,36 @@
 
 package com.baremaps.osm.model;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import com.google.common.base.Objects;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import org.locationtech.jts.geom.Geometry;
 
-public final class Way implements Entity {
-
-  private final Info info;
+public final class Way extends Entity {
 
   private final List<Long> nodes;
 
-  public Way(Info info, List<Long> nodes) {
-    checkNotNull(info);
-    checkNotNull(nodes);
-    this.info = info;
-    this.nodes = nodes;
+  private final Geometry geometry;
+
+  public Way(long id, int version, LocalDateTime timestamp, long changeset, int userId,
+      Map<String, String> tags, List<Long> nodes) {
+    this(id, version, timestamp, changeset, userId, tags, nodes, null);
   }
 
-  @Override
-  public Info getInfo() {
-    return info;
+  public Way(long id, int version, LocalDateTime timestamp, long changeset, int userId,
+      Map<String, String> tags, List<Long> nodes, Geometry geometry) {
+    super(id, version, timestamp, changeset, userId, tags);
+    this.nodes = nodes;
+    this.geometry = geometry;
   }
 
   public List<Long> getNodes() {
     return nodes;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Way way = (Way) o;
-    return Objects.equal(info, way.info) && Objects.equal(nodes, way.nodes);
+  public Optional<Geometry> getGeometry() {
+    return Optional.ofNullable(geometry);
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(info, nodes);
-  }
 }

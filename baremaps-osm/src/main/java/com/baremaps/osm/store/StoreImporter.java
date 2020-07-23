@@ -83,46 +83,46 @@ public class StoreImporter implements Consumer<FileBlock> {
       nodeStore.copy(
           primitiveBlock.getDenseNodes().stream()
               .map(node -> new NodeEntity(
-                  node.getInfo().getId(),
-                  node.getInfo().getVersion(),
-                  node.getInfo().getTimestamp(),
-                  node.getInfo().getChangeset(),
-                  node.getInfo().getUserId(),
-                  node.getInfo().getTags(),
+                  node.getId(),
+                  node.getVersion(),
+                  node.getTimestamp(),
+                  node.getChangeset(),
+                  node.getUserId(),
+                  node.getTags(),
                   nodeGeometryBuilder.build(node)))
               .collect(Collectors.toList()));
       nodeStore.copy(
           primitiveBlock.getNodes().stream()
               .map(node -> new NodeEntity(
-                  node.getInfo().getId(),
-                  node.getInfo().getVersion(),
-                  node.getInfo().getTimestamp(),
-                  node.getInfo().getChangeset(),
-                  node.getInfo().getUserId(),
-                  node.getInfo().getTags(),
+                  node.getId(),
+                  node.getVersion(),
+                  node.getTimestamp(),
+                  node.getChangeset(),
+                  node.getUserId(),
+                  node.getTags(),
                   nodeGeometryBuilder.build(node)))
               .collect(Collectors.toList()));
       wayStore.copy(
           primitiveBlock.getWays().stream()
               .map(way -> new WayEntity(
-                  way.getInfo().getId(),
-                  way.getInfo().getVersion(),
-                  way.getInfo().getTimestamp(),
-                  way.getInfo().getChangeset(),
-                  way.getInfo().getUserId(),
-                  way.getInfo().getTags(),
+                  way.getId(),
+                  way.getVersion(),
+                  way.getTimestamp(),
+                  way.getChangeset(),
+                  way.getUserId(),
+                  way.getTags(),
                   way.getNodes(),
                   wayGeometryBuilder.build(way)))
               .collect(Collectors.toList()));
       relationStore.copy(
           primitiveBlock.getRelations().stream()
               .map(relation -> new RelationEntity(
-                  relation.getInfo().getId(),
-                  relation.getInfo().getVersion(),
-                  relation.getInfo().getTimestamp(),
-                  relation.getInfo().getChangeset(),
-                  relation.getInfo().getUserId(),
-                  relation.getInfo().getTags(),
+                  relation.getId(),
+                  relation.getVersion(),
+                  relation.getTimestamp(),
+                  relation.getChangeset(),
+                  relation.getUserId(),
+                  relation.getTags(),
                   relation.getMembers().stream().map(m -> m.getRef()).toArray(Long[]::new),
                   relation.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new),
                   relation.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new),

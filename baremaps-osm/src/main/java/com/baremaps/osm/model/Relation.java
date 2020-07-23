@@ -14,47 +14,37 @@
 
 package com.baremaps.osm.model;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.base.Objects;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import org.locationtech.jts.geom.Geometry;
 
-public final class Relation implements Entity {
-
-  private final Info info;
+public final class Relation extends Entity {
 
   private final List<Member> members;
 
-  public Relation(Info info, List<Member> members) {
-    checkNotNull(info);
-    checkNotNull(members);
-    this.info = info;
-    this.members = members;
+  private final Geometry geometry;
+
+  public Relation(long id, int version, LocalDateTime timestamp, long changeset, int userId,
+      Map<String, String> tags, List<Member> members) {
+    this(id, version, timestamp, changeset, userId, tags, members, null);
   }
 
-  @Override
-  public Info getInfo() {
-    return info;
+  public Relation(long id, int version, LocalDateTime timestamp, long changeset, int userId,
+      Map<String, String> tags, List<Member> members, Geometry geometry) {
+    super(id, version, timestamp, changeset, userId, tags);
+    this.members = members;
+    this.geometry = geometry;
   }
 
   public List<Member> getMembers() {
     return members;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Relation relation = (Relation) o;
-    return Objects.equal(info, relation.info) && Objects.equal(members, relation.members);
+  public Optional<Geometry> getGeometry() {
+    return Optional.ofNullable(geometry);
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(info, members);
-  }
 }
