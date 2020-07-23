@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 
-class RelationBuilderTest {
+class RelationGeometryBuilderTest {
 
   @Test
   public void build() {

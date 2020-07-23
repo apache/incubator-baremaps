@@ -12,12 +12,12 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.store;
 
-import static com.baremaps.osm.database.DatabaseConstants.DATABASE_URL;
-import static com.baremaps.osm.database.DatabaseConstants.WAY_1;
-import static com.baremaps.osm.database.DatabaseConstants.WAY_2;
-import static com.baremaps.osm.database.DatabaseConstants.WAY_3;
+import static com.baremaps.osm.store.DatabaseConstants.DATABASE_URL;
+import static com.baremaps.osm.store.DatabaseConstants.RELATION_2;
+import static com.baremaps.osm.store.DatabaseConstants.RELATION_3;
+import static com.baremaps.osm.store.DatabaseConstants.RELATION_4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,16 +34,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class WayTableTest {
+class RelationStoreTest {
 
   public DataSource dataSource;
 
-  public WayTable wayStore;
+  public PostgisRelationStore relationStore;
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
     dataSource = PostgisHelper.poolingDataSource(DATABASE_URL);
-    wayStore = new WayTable(dataSource);
+    relationStore = new PostgisRelationStore(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
       PostgisHelper.executeScript(connection, "osm_drop_tables.sql");
@@ -55,46 +55,49 @@ class WayTableTest {
   @Test
   @Tag("integration")
   public void insert() {
-    wayStore.insert(WAY_1);
-    assertEquals(WAY_1, wayStore.select(WAY_1.getId()));
+    relationStore.put(RELATION_2);
+    assertEquals(RELATION_2, relationStore.get(RELATION_2.getId()));
   }
 
   @Test
   @Tag("integration")
   public void insertAll() {
-    List<WayTable.Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
-    wayStore.insert(ways);
+    List<RelationEntity> relations = Arrays
+        .asList(RELATION_2, RELATION_3, RELATION_4);
+    relationStore.put(relations);
     assertIterableEquals(
-        ways,
-        wayStore.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        relations,
+        relationStore.get(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void delete() {
-    wayStore.insert(WAY_1);
-    wayStore.delete(WAY_1.getId());
-    assertThrows(IllegalArgumentException.class, () -> wayStore.select(WAY_1.getId()));
+    relationStore.put(RELATION_2);
+    relationStore.delete(RELATION_2.getId());
+    assertThrows(IllegalArgumentException.class, () -> relationStore.get(RELATION_2.getId()));
   }
 
   @Test
   @Tag("integration")
   public void deleteAll() {
-    List<WayTable.Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
-    wayStore.insert(ways);
-    wayStore.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
+    List<RelationEntity> relations = Arrays
+        .asList(RELATION_2, RELATION_3, RELATION_4);
+    relationStore.put(relations);
+    relationStore.delete(relations.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
         Arrays.asList(null, null, null),
-        wayStore.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        relationStore.get(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void copy() {
-    List<WayTable.Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
-    wayStore.copy(ways);
+    List<RelationEntity> relations = Arrays
+        .asList(RELATION_2, RELATION_3, RELATION_4);
+    relationStore.copy(relations);
     assertIterableEquals(
-        ways,
-        wayStore.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        relations,
+        relationStore.get(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

@@ -17,16 +17,16 @@ package com.baremaps.cli.command;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.PostgisCoordinateCache;
 import com.baremaps.osm.cache.PostgisReferenceCache;
-import com.baremaps.osm.database.DatabaseDiffer;
-import com.baremaps.osm.database.DatabaseUpdater;
-import com.baremaps.osm.database.HeaderTable;
-import com.baremaps.osm.database.NodeTable;
-import com.baremaps.osm.database.RelationTable;
-import com.baremaps.osm.database.WayTable;
-import com.baremaps.osm.geometry.NodeBuilder;
+import com.baremaps.osm.store.StoreDiffer;
+import com.baremaps.osm.store.StoreUpdater;
+import com.baremaps.osm.store.PostgisHeaderStore;
+import com.baremaps.osm.store.PostgisNodeStore;
+import com.baremaps.osm.store.PostgisRelationStore;
+import com.baremaps.osm.store.PostgisWayStore;
+import com.baremaps.osm.geometry.NodeGeometryBuilder;
 import com.baremaps.osm.geometry.ProjectionTransformer;
-import com.baremaps.osm.geometry.RelationBuilder;
-import com.baremaps.osm.geometry.WayBuilder;
+import com.baremaps.osm.geometry.RelationGeometryBuilder;
+import com.baremaps.osm.geometry.WayGeometryBuilder;
 import com.baremaps.osm.pbf.HeaderBlock;
 import com.baremaps.osm.model.Change;
 import com.baremaps.osm.xml.ChangeSpliterator;
@@ -115,15 +115,15 @@ public class Update implements Callable<Integer> {
     Cache<Long, Coordinate> coordinateCache = new PostgisCoordinateCache(datasource);
     Cache<Long, List<Long>> referenceCache = new PostgisReferenceCache(datasource);
 
-    NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
-    WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
-    RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
+    NodeGeometryBuilder nodeGeometryBuilder = new NodeGeometryBuilder(geometryFactory, coordinateTransform);
+    WayGeometryBuilder wayGeometryBuilder = new WayGeometryBuilder(geometryFactory, coordinateCache);
+    RelationGeometryBuilder relationGeometryBuilder = new RelationGeometryBuilder(geometryFactory, coordinateCache, referenceCache);
 
-    NodeTable nodeStore = new NodeTable(datasource);
-    WayTable wayStore = new WayTable(datasource);
-    RelationTable relationStore = new RelationTable(datasource);
+    PostgisNodeStore nodeStore = new PostgisNodeStore(datasource);
+    PostgisWayStore wayStore = new PostgisWayStore(datasource);
+    PostgisRelationStore relationStore = new PostgisRelationStore(datasource);
 
-    HeaderTable headerMapper = new HeaderTable(datasource);
+    PostgisHeaderStore headerMapper = new PostgisHeaderStore(datasource);
     HeaderBlock header = headerMapper.getLast();
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
 
@@ -139,7 +139,7 @@ public class Update implements Callable<Integer> {
 
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransformFactory
         .createTransform(targetCRS, sourceCRS));
-    DatabaseDiffer deltaMaker = new DatabaseDiffer(nodeBuilder, wayBuilder, relationBuilder, nodeStore,
+    StoreDiffer deltaMaker = new StoreDiffer(nodeGeometryBuilder, wayGeometryBuilder, relationGeometryBuilder, nodeStore,
         wayStore, relationStore, projectionTransformer, zoom);
 
     logger.info("Computing differences");
@@ -160,7 +160,8 @@ public class Update implements Callable<Integer> {
     try (InputStream changeInputStream = new GZIPInputStream(fileSystem.read(changeURI))) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
-      DatabaseUpdater databaseUpdater = new DatabaseUpdater(nodeBuilder, wayBuilder, relationBuilder,
+      StoreUpdater databaseUpdater = new StoreUpdater(nodeGeometryBuilder, wayGeometryBuilder,
+          relationGeometryBuilder,
           nodeStore, wayStore, relationStore);
       changeStream.forEach(databaseUpdater);
     }

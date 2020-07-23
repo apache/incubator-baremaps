@@ -12,13 +12,10 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.store;
 
-import com.baremaps.osm.database.RelationTable.Relation;
 import com.baremaps.osm.geometry.GeometryUtil;
 import com.baremaps.util.postgis.CopyWriter;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,137 +32,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class RelationTable implements Table<Relation> {
-
-  public static class Relation {
-
-    private final long id;
-
-    private final int version;
-
-    private final LocalDateTime timestamp;
-
-    private final long changeset;
-
-    private final int userId;
-
-    private final Map<String, String> tags;
-
-    private final Long[] memberRefs;
-
-    private final String[] memberTypes;
-
-    private final String[] memberRoles;
-
-    private final Geometry geometry;
-
-    public Relation(
-        long id,
-        int version,
-        LocalDateTime timestamp,
-        long changeset,
-        int userId,
-        Map<String, String> tags,
-        Long[] memberRefs,
-        String[] memberTypes,
-        String[] memberRoles,
-        Geometry geometry) {
-      this.id = id;
-      this.version = version;
-      this.timestamp = timestamp;
-      this.changeset = changeset;
-      this.userId = userId;
-      this.tags = tags;
-      this.memberRefs = memberRefs;
-      this.memberTypes = memberTypes;
-      this.memberRoles = memberRoles;
-      this.geometry = geometry;
-    }
-
-    public long getId() {
-      return id;
-    }
-
-    public int getVersion() {
-      return version;
-    }
-
-    public LocalDateTime getTimestamp() {
-      return timestamp;
-    }
-
-    public long getChangeset() {
-      return changeset;
-    }
-
-    public int getUserId() {
-      return userId;
-    }
-
-    public Map<String, String> getTags() {
-      return tags;
-    }
-
-    public Long[] getMemberRefs() {
-      return memberRefs;
-    }
-
-    public String[] getMemberTypes() {
-      return memberTypes;
-    }
-
-    public String[] getMemberRoles() {
-      return memberRoles;
-    }
-
-    public Geometry getGeometry() {
-      return geometry;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      Relation relation = (Relation) o;
-      return id == relation.id &&
-          version == relation.version &&
-          changeset == relation.changeset &&
-          userId == relation.userId &&
-          Objects.equal(timestamp, relation.timestamp) &&
-          Objects.equal(tags, relation.tags) &&
-          Arrays.deepEquals(memberRefs, relation.memberRefs) &&
-          Arrays.deepEquals(memberTypes, relation.memberTypes) &&
-          Arrays.deepEquals(memberRoles, relation.memberRoles) &&
-          Objects.equal(geometry, relation.geometry);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects
-          .hashCode(id, version, timestamp, changeset, userId, tags, memberRefs, memberTypes, memberRoles,
-              geometry);
-    }
-
-    @Override
-    public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("id", id)
-          .add("version", version)
-          .add("timestamp", timestamp)
-          .add("changeset", changeset)
-          .add("userId", userId)
-          .add("tags", tags)
-          .add("memberRefs", memberRefs)
-          .add("memberTypes", memberTypes)
-          .add("memberRoles", memberRoles)
-          .add("geometry", geometry)
-          .toString();
-    }
-  }
+public class PostgisRelationStore implements Store<RelationEntity> {
 
   private static final String SELECT =
       "SELECT version, uid, timestamp, changeset, tags, member_refs, member_types, member_roles, st_asbinary(geom) FROM osm_relations WHERE id = ?";
@@ -194,11 +61,11 @@ public class RelationTable implements Table<Relation> {
 
   private final DataSource dataSource;
 
-  public RelationTable(DataSource dataSource) {
+  public PostgisRelationStore(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
-  public Relation select(Long id) {
+  public RelationEntity get(Long id) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
@@ -213,23 +80,23 @@ public class RelationTable implements Table<Relation> {
         String[] types = (String[]) result.getArray(7).getArray();
         String[] roles = (String[]) result.getArray(8).getArray();
         Geometry geometry = GeometryUtil.deserialize(result.getBytes(9));
-        return new RelationTable.Relation(id, version, timestamp, changeset, uid, tags, refs, types, roles,
+        return new RelationEntity(id, version, timestamp, changeset, uid, tags, refs, types, roles,
             geometry);
       } else {
         throw new IllegalArgumentException();
       }
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new StoreException(e);
     }
   }
 
   @Override
-  public List<Relation> select(List<Long> ids) {
+  public List<RelationEntity> get(List<Long> ids) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
       ResultSet result = statement.executeQuery();
-      Map<Long, Relation> relations = new HashMap<>();
+      Map<Long, RelationEntity> relations = new HashMap<>();
       while (result.next()) {
         long id = result.getLong(1);
         int version = result.getInt(2);
@@ -242,38 +109,38 @@ public class RelationTable implements Table<Relation> {
         String[] roles = (String[]) result.getArray(9).getArray();
         Geometry geometry = GeometryUtil.deserialize(result.getBytes(10));
         relations.put(id,
-            new Relation(id, version, timestamp, changeset, uid, tags, refs, types, roles, geometry));
+            new RelationEntity(id, version, timestamp, changeset, uid, tags, refs, types, roles, geometry));
       }
       return ids.stream().map(id -> relations.get(id)).collect(Collectors.toList());
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new StoreException(e);
     }
   }
 
-  public void insert(Relation row) {
+  public void put(RelationEntity entity) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      statement.setLong(1, row.getId());
-      statement.setInt(2, row.getVersion());
-      statement.setInt(3, row.getUserId());
-      statement.setObject(4, row.getTimestamp());
-      statement.setLong(5, row.getChangeset());
-      statement.setObject(6, row.getTags());
-      statement.setObject(7, connection.createArrayOf("bigint", row.getMemberRefs()));
-      statement.setObject(8, row.getMemberTypes());
-      statement.setObject(9, row.getMemberRoles());
-      statement.setBytes(10, GeometryUtil.serialize(row.getGeometry()));
+      statement.setLong(1, entity.getId());
+      statement.setInt(2, entity.getVersion());
+      statement.setInt(3, entity.getUserId());
+      statement.setObject(4, entity.getTimestamp());
+      statement.setLong(5, entity.getChangeset());
+      statement.setObject(6, entity.getTags());
+      statement.setObject(7, connection.createArrayOf("bigint", entity.getMemberRefs()));
+      statement.setObject(8, entity.getMemberTypes());
+      statement.setObject(9, entity.getMemberRoles());
+      statement.setBytes(10, GeometryUtil.serialize(entity.getGeometry()));
       statement.execute();
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new StoreException(e);
     }
   }
 
   @Override
-  public void insert(List<Relation> rows) {
+  public void put(List<RelationEntity> entities) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      for (Relation row : rows) {
+      for (RelationEntity row : entities) {
         statement.clearParameters();
         statement.setLong(1, row.getId());
         statement.setInt(2, row.getVersion());
@@ -289,7 +156,7 @@ public class RelationTable implements Table<Relation> {
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new StoreException(e);
     }
   }
 
@@ -299,7 +166,7 @@ public class RelationTable implements Table<Relation> {
       statement.setLong(1, id);
       statement.execute();
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new StoreException(e);
     }
   }
 
@@ -314,16 +181,16 @@ public class RelationTable implements Table<Relation> {
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new StoreException(e);
     }
   }
 
-  public void copy(List<Relation> rows) {
+  public void copy(List<RelationEntity> entities) {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
         writer.writeHeader();
-        for (Relation row : rows) {
+        for (RelationEntity row : entities) {
           writer.startRow(10);
           writer.writeLong(row.getId());
           writer.writeInteger(row.getVersion());
@@ -338,7 +205,7 @@ public class RelationTable implements Table<Relation> {
         }
       }
     } catch (IOException | SQLException ex) {
-      throw new DatabaseException(ex);
+      throw new StoreException(ex);
     }
   }
 

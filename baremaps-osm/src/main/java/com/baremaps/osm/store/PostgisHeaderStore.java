@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.store;
 
 import com.baremaps.osm.geometry.GeometryUtil;
 import com.baremaps.osm.pbf.HeaderBlock;
@@ -25,7 +25,7 @@ import java.util.List;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Geometry;
 
-public class HeaderTable {
+public class PostgisHeaderStore {
 
   private static final String SELECT =
       "SELECT replication_timestamp, replication_sequence_number, replication_url, source, writing_program, st_asewkb(bbox) FROM osm_headers ORDER BY replication_timestamp DESC";
@@ -35,7 +35,7 @@ public class HeaderTable {
 
   private final DataSource dataSource;
 
-  public HeaderTable(DataSource dataSource) {
+  public PostgisHeaderStore(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 

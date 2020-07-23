@@ -12,48 +12,48 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.store;
 
-import com.baremaps.osm.geometry.NodeBuilder;
-import com.baremaps.osm.geometry.RelationBuilder;
-import com.baremaps.osm.geometry.WayBuilder;
+import com.baremaps.osm.geometry.NodeGeometryBuilder;
+import com.baremaps.osm.geometry.RelationGeometryBuilder;
+import com.baremaps.osm.geometry.WayGeometryBuilder;
 import com.baremaps.osm.pbf.FileBlock;
 import com.baremaps.osm.pbf.HeaderBlock;
 import com.baremaps.osm.pbf.PrimitiveBlock;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class DatabaseImporter implements Consumer<FileBlock> {
+public class StoreImporter implements Consumer<FileBlock> {
 
-  private final HeaderTable headerTable;
+  private final PostgisHeaderStore headerTable;
 
-  private final NodeBuilder nodeBuilder;
+  private final NodeGeometryBuilder nodeGeometryBuilder;
 
-  private final WayBuilder wayBuilder;
+  private final WayGeometryBuilder wayGeometryBuilder;
 
-  private final RelationBuilder relationBuilder;
+  private final RelationGeometryBuilder relationGeometryBuilder;
 
-  private final NodeTable nodeTable;
+  private final Store<NodeEntity> nodeStore;
 
-  private final WayTable wayTable;
+  private final Store<WayEntity> wayStore;
 
-  private final RelationTable relationTable;
+  private final Store<RelationEntity> relationStore;
 
-  public DatabaseImporter(
-      HeaderTable headerTable,
-      NodeBuilder nodeBuilder,
-      WayBuilder wayBuilder,
-      RelationBuilder relationBuilder,
-      NodeTable nodeTable,
-      WayTable wayTable,
-      RelationTable relationTable) {
+  public StoreImporter(
+      PostgisHeaderStore headerTable,
+      NodeGeometryBuilder nodeGeometryBuilder,
+      WayGeometryBuilder wayGeometryBuilder,
+      RelationGeometryBuilder relationGeometryBuilder,
+      Store<NodeEntity> nodeStore,
+      Store<WayEntity> wayStore,
+      Store<RelationEntity> relationStore) {
     this.headerTable = headerTable;
-    this.nodeBuilder = nodeBuilder;
-    this.nodeTable = nodeTable;
-    this.wayBuilder = wayBuilder;
-    this.wayTable = wayTable;
-    this.relationBuilder = relationBuilder;
-    this.relationTable = relationTable;
+    this.nodeGeometryBuilder = nodeGeometryBuilder;
+    this.nodeStore = nodeStore;
+    this.wayGeometryBuilder = wayGeometryBuilder;
+    this.wayStore = wayStore;
+    this.relationGeometryBuilder = relationGeometryBuilder;
+    this.relationStore = relationStore;
   }
 
   @Override
@@ -80,31 +80,31 @@ public class DatabaseImporter implements Consumer<FileBlock> {
 
   private void accept(PrimitiveBlock primitiveBlock) {
     try {
-      nodeTable.copy(
+      nodeStore.copy(
           primitiveBlock.getDenseNodes().stream()
-              .map(node -> new NodeTable.Node(
+              .map(node -> new NodeEntity(
                   node.getInfo().getId(),
                   node.getInfo().getVersion(),
                   node.getInfo().getTimestamp(),
                   node.getInfo().getChangeset(),
                   node.getInfo().getUserId(),
                   node.getInfo().getTags(),
-                  nodeBuilder.build(node)))
+                  nodeGeometryBuilder.build(node)))
               .collect(Collectors.toList()));
-      nodeTable.copy(
+      nodeStore.copy(
           primitiveBlock.getNodes().stream()
-              .map(node -> new NodeTable.Node(
+              .map(node -> new NodeEntity(
                   node.getInfo().getId(),
                   node.getInfo().getVersion(),
                   node.getInfo().getTimestamp(),
                   node.getInfo().getChangeset(),
                   node.getInfo().getUserId(),
                   node.getInfo().getTags(),
-                  nodeBuilder.build(node)))
+                  nodeGeometryBuilder.build(node)))
               .collect(Collectors.toList()));
-      wayTable.copy(
+      wayStore.copy(
           primitiveBlock.getWays().stream()
-              .map(way -> new WayTable.Way(
+              .map(way -> new WayEntity(
                   way.getInfo().getId(),
                   way.getInfo().getVersion(),
                   way.getInfo().getTimestamp(),
@@ -112,11 +112,11 @@ public class DatabaseImporter implements Consumer<FileBlock> {
                   way.getInfo().getUserId(),
                   way.getInfo().getTags(),
                   way.getNodes(),
-                  wayBuilder.build(way)))
+                  wayGeometryBuilder.build(way)))
               .collect(Collectors.toList()));
-      relationTable.copy(
+      relationStore.copy(
           primitiveBlock.getRelations().stream()
-              .map(relation -> new RelationTable.Relation(
+              .map(relation -> new RelationEntity(
                   relation.getInfo().getId(),
                   relation.getInfo().getVersion(),
                   relation.getInfo().getTimestamp(),
@@ -126,7 +126,7 @@ public class DatabaseImporter implements Consumer<FileBlock> {
                   relation.getMembers().stream().map(m -> m.getRef()).toArray(Long[]::new),
                   relation.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new),
                   relation.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new),
-                  relationBuilder.build(relation)))
+                  relationGeometryBuilder.build(relation)))
               .collect(Collectors.toList()));
     } catch (Exception e) {
       e.printStackTrace();

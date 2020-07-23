@@ -23,7 +23,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 /**
  * A {@code WayBuilder} builds JTS linestring or polygons from OSM ways.
  */
-public class WayBuilder extends EntityBuilder<Way> {
+public class WayGeometryBuilder extends GeometryBuilder<Way> {
 
   private final GeometryFactory geometryFactory;
 
@@ -35,7 +35,7 @@ public class WayBuilder extends EntityBuilder<Way> {
    * @param geometryFactory the {@code GeometryFactory} used to create geometries
    * @param coordinateCache the {@code Store} used to retrieve the coordinates of a node
    */
-  public WayBuilder(GeometryFactory geometryFactory, Cache<Long, Coordinate> coordinateCache) {
+  public WayGeometryBuilder(GeometryFactory geometryFactory, Cache<Long, Coordinate> coordinateCache) {
     this.geometryFactory = geometryFactory;
     this.coordinateCache = coordinateCache;
   }

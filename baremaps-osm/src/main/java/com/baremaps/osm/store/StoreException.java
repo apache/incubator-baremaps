@@ -12,24 +12,16 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.store;
 
-import java.util.List;
+public class StoreException extends RuntimeException {
 
-public interface Table<Row> {
+  public StoreException() {
+    super();
+  }
 
-  Row select(Long id);
-
-  List<Row> select(List<Long> ids);
-
-  void insert(Row row);
-
-  void insert(List<Row> rows);
-
-  void delete(Long id);
-
-  void delete(List<Long> ids);
-
-  void copy(List<Row> rows);
+  public StoreException(Exception e) {
+    super(e);
+  }
 
 }

@@ -26,7 +26,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 
-class WayBuilderTest {
+class WayGeometryBuilderTest {
 
   @Test
   public void build() {

@@ -12,12 +12,10 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.store;
 
-import com.baremaps.osm.database.WayTable.Way;
 import com.baremaps.osm.geometry.GeometryUtil;
 import com.baremaps.util.postgis.CopyWriter;
-import com.google.common.base.Objects;
 import java.io.IOException;
 import java.sql.Array;
 import java.sql.Connection;
@@ -36,101 +34,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class WayTable implements Table<Way> {
-
-  public static class Way {
-
-    private final long id;
-
-    private final int version;
-
-    private final LocalDateTime timestamp;
-
-    private final long changeset;
-
-    private final int userId;
-
-    private final Map<String, String> tags;
-
-    private final List<Long> nodes;
-
-    private final Geometry geometry;
-
-    public Way(
-        long id,
-        int version,
-        LocalDateTime timestamp,
-        long changeset,
-        int userId,
-        Map<String, String> tags,
-        List<Long> nodes,
-        Geometry geometry) {
-      this.id = id;
-      this.version = version;
-      this.timestamp = timestamp;
-      this.changeset = changeset;
-      this.userId = userId;
-      this.tags = tags;
-      this.nodes = nodes;
-      this.geometry = geometry;
-    }
-
-    public long getId() {
-      return id;
-    }
-
-    public int getVersion() {
-      return version;
-    }
-
-    public LocalDateTime getTimestamp() {
-      return timestamp;
-    }
-
-    public long getChangeset() {
-      return changeset;
-    }
-
-    public int getUserId() {
-      return userId;
-    }
-
-    public Map<String, String> getTags() {
-      return tags;
-    }
-
-    public List<Long> getNodes() {
-      return nodes;
-    }
-
-    public Geometry getGeometry() {
-      return geometry;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      Way way = (Way) o;
-      return id == way.id &&
-          version == way.version &&
-          changeset == way.changeset &&
-          userId == way.userId &&
-          Objects.equal(timestamp, way.timestamp) &&
-          Objects.equal(tags, way.tags) &&
-          Objects.equal(nodes, way.nodes) &&
-          Objects.equal(geometry, way.geometry);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hashCode(id, version, timestamp, changeset, userId, tags, nodes, geometry);
-    }
-  }
+public class PostgisWayStore implements Store<WayEntity> {
 
   private static final String SELECT =
       "SELECT version, uid, timestamp, changeset, tags, nodes, st_asbinary(geom) FROM osm_ways WHERE id = ?";
@@ -156,11 +60,11 @@ public class WayTable implements Table<Way> {
 
   private final DataSource dataSource;
 
-  public WayTable(DataSource dataSource) {
+  public PostgisWayStore(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
-  public WayTable.Way select(Long id) {
+  public WayEntity get(Long id) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
@@ -177,22 +81,22 @@ public class WayTable implements Table<Way> {
           nodes = Arrays.asList((Long[]) array.getArray());
         }
         Geometry geometry = GeometryUtil.deserialize(result.getBytes(7));
-        return new WayTable.Way(id, version, timestamp, changeset, uid, tags, nodes, geometry);
+        return new WayEntity(id, version, timestamp, changeset, uid, tags, nodes, geometry);
       } else {
         throw new IllegalArgumentException();
       }
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new StoreException(e);
     }
   }
 
   @Override
-  public List<Way> select(List<Long> ids) {
+  public List<WayEntity> get(List<Long> ids) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
       ResultSet result = statement.executeQuery();
-      Map<Long, Way> ways = new HashMap<>();
+      Map<Long, WayEntity> ways = new HashMap<>();
       while (result.next()) {
         long id = result.getLong(1);
         int version = result.getInt(2);
@@ -206,36 +110,36 @@ public class WayTable implements Table<Way> {
           nodes = Arrays.asList((Long[]) array.getArray());
         }
         Geometry geometry = GeometryUtil.deserialize(result.getBytes(8));
-        ways.put(id, new Way(id, version, timestamp, changeset, uid, tags, nodes, geometry));
+        ways.put(id, new WayEntity(id, version, timestamp, changeset, uid, tags, nodes, geometry));
       }
       return ids.stream().map(key -> ways.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new StoreException(e);
     }
   }
 
-  public void insert(Way row) {
+  public void put(WayEntity entity) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      statement.setLong(1, row.getId());
-      statement.setInt(2, row.getVersion());
-      statement.setInt(3, row.getUserId());
-      statement.setObject(4, row.getTimestamp());
-      statement.setLong(5, row.getChangeset());
-      statement.setObject(6, row.getTags());
-      statement.setObject(7, row.getNodes().stream().mapToLong(Long::longValue).toArray());
-      statement.setBytes(8, GeometryUtil.serialize(row.getGeometry()));
+      statement.setLong(1, entity.getId());
+      statement.setInt(2, entity.getVersion());
+      statement.setInt(3, entity.getUserId());
+      statement.setObject(4, entity.getTimestamp());
+      statement.setLong(5, entity.getChangeset());
+      statement.setObject(6, entity.getTags());
+      statement.setObject(7, entity.getNodes().stream().mapToLong(Long::longValue).toArray());
+      statement.setBytes(8, GeometryUtil.serialize(entity.getGeometry()));
       statement.execute();
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new StoreException(e);
     }
   }
 
   @Override
-  public void insert(List<Way> rows) {
+  public void put(List<WayEntity> entities) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      for (Way row : rows) {
+      for (WayEntity row : entities) {
         statement.clearParameters();
         statement.setLong(1, row.getId());
         statement.setInt(2, row.getVersion());
@@ -249,7 +153,7 @@ public class WayTable implements Table<Way> {
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new StoreException(e);
     }
   }
 
@@ -259,7 +163,7 @@ public class WayTable implements Table<Way> {
       statement.setLong(1, id);
       statement.execute();
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new StoreException(e);
     }
   }
 
@@ -274,16 +178,16 @@ public class WayTable implements Table<Way> {
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new StoreException(e);
     }
   }
 
-  public void copy(List<Way> rows) {
+  public void copy(List<WayEntity> entities) {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
         writer.writeHeader();
-        for (Way row : rows) {
+        for (WayEntity row : entities) {
           writer.startRow(8);
           writer.writeLong(row.getId());
           writer.writeInteger(row.getVersion());
@@ -296,7 +200,7 @@ public class WayTable implements Table<Way> {
         }
       }
     } catch (IOException | SQLException ex) {
-      throw new DatabaseException(ex);
+      throw new StoreException(ex);
     }
   }
 

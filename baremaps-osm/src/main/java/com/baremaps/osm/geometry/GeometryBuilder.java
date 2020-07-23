@@ -21,7 +21,7 @@ import org.locationtech.jts.geom.Geometry;
  *
  * @param <T> the type of the entity to build geometries from.
  */
-public abstract class EntityBuilder<T> {
+public abstract class GeometryBuilder<T> {
 
   /**
    * Builds a JTS geometry from an OSM entity.

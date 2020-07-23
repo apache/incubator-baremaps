@@ -29,7 +29,7 @@ import org.locationtech.jts.operation.polygonize.Polygonizer;
 /**
  * A {@code RelationBuilder} builds JTS polygons and multipolygons from OSM relations.
  */
-public class RelationBuilder extends EntityBuilder<Relation> {
+public class RelationGeometryBuilder extends GeometryBuilder<Relation> {
 
   private final GeometryFactory geometryFactory;
 
@@ -44,7 +44,7 @@ public class RelationBuilder extends EntityBuilder<Relation> {
    * @param coordinateCache the {@code Store} used to retrieve the coordinates of a node
    * @param referenceCache  the {@code Store} used to retrieve the nodes of a way
    */
-  public RelationBuilder(GeometryFactory geometryFactory, Cache<Long, Coordinate> coordinateCache, Cache<Long, List<Long>> referenceCache) {
+  public RelationGeometryBuilder(GeometryFactory geometryFactory, Cache<Long, Coordinate> coordinateCache, Cache<Long, List<Long>> referenceCache) {
     this.geometryFactory = geometryFactory;
     this.coordinateCache = coordinateCache;
     this.referenceCache = referenceCache;

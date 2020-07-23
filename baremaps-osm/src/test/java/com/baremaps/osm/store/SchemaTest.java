@@ -12,9 +12,9 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.store;
 
-import static com.baremaps.osm.database.DatabaseConstants.DATABASE_URL;
+import static com.baremaps.osm.store.DatabaseConstants.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.util.postgis.PostgisHelper;

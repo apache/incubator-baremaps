@@ -12,23 +12,24 @@
  * the License.
  */
 
-package com.baremaps.osm.geometry;
+package com.baremaps.osm.store;
 
-import static com.baremaps.osm.geometry.GeometryConstants.NODE_BUILDER;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.List;
 
-import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.Point;
+public interface Store<T> {
 
-public class NodeBuilderTest {
+  T get(Long id);
 
-  @Test
-  public void build() {
-    Point p0 = NODE_BUILDER.build(GeometryConstants.NODE_0);
-    assertEquals(p0.getX(), 0);
-    assertEquals(p0.getY(), 0);
-    Point p1 = NODE_BUILDER.build(GeometryConstants.NODE_2);
-    assertEquals(p1.getX(), 3);
-    assertEquals(p1.getY(), 3);
-  }
+  List<T> get(List<Long> ids);
+
+  void put(T entity);
+
+  void put(List<T> entities);
+
+  void delete(Long id);
+
+  void delete(List<Long> ids);
+
+  void copy(List<T> entities);
+
 }

@@ -12,12 +12,12 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.store;
 
-import com.baremaps.osm.geometry.NodeBuilder;
+import com.baremaps.osm.geometry.NodeGeometryBuilder;
 import com.baremaps.osm.geometry.ProjectionTransformer;
-import com.baremaps.osm.geometry.RelationBuilder;
-import com.baremaps.osm.geometry.WayBuilder;
+import com.baremaps.osm.geometry.RelationGeometryBuilder;
+import com.baremaps.osm.geometry.WayGeometryBuilder;
 import com.baremaps.osm.model.Entity;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
@@ -30,31 +30,31 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Geometry;
 
-public class DatabaseDiffer implements Consumer<Change> {
+public class StoreDiffer implements Consumer<Change> {
 
   private final ProjectionTransformer projectionTransformer;
 
-  private final WayBuilder wayBuilder;
-  private final RelationBuilder relationBuilder;
-  private final NodeBuilder nodeBuilder;
+  private final WayGeometryBuilder wayGeometryBuilder;
+  private final RelationGeometryBuilder relationGeometryBuilder;
+  private final NodeGeometryBuilder nodeGeometryBuilder;
 
-  private final NodeTable nodeStore;
-  private final WayTable wayStore;
-  private final RelationTable relationStore;
+  private final PostgisNodeStore nodeStore;
+  private final PostgisWayStore wayStore;
+  private final PostgisRelationStore relationStore;
 
   private final int zoom;
 
   private final Set<Tile> tiles = new HashSet<>();
 
-  public DatabaseDiffer(
-      NodeBuilder nodeBuilder, WayBuilder wayBuilder, RelationBuilder relationBuilder,
-      NodeTable nodeStore, WayTable wayStore, RelationTable relationStore,
+  public StoreDiffer(
+      NodeGeometryBuilder nodeGeometryBuilder, WayGeometryBuilder wayGeometryBuilder, RelationGeometryBuilder relationGeometryBuilder,
+      PostgisNodeStore nodeStore, PostgisWayStore wayStore, PostgisRelationStore relationStore,
       ProjectionTransformer projectionTransformer,
       int zoom) {
     this.projectionTransformer = projectionTransformer;
-    this.nodeBuilder = nodeBuilder;
-    this.wayBuilder = wayBuilder;
-    this.relationBuilder = relationBuilder;
+    this.nodeGeometryBuilder = nodeGeometryBuilder;
+    this.wayGeometryBuilder = wayGeometryBuilder;
+    this.relationGeometryBuilder = relationGeometryBuilder;
     this.nodeStore = nodeStore;
     this.wayStore = wayStore;
     this.relationStore = relationStore;
@@ -77,21 +77,21 @@ public class DatabaseDiffer implements Consumer<Change> {
       case delete:
       case modify:
         if (entity instanceof Node) {
-          return nodeStore.select(entity.getInfo().getId()).getPoint();
+          return nodeStore.get(entity.getInfo().getId()).getPoint();
         } else if (entity instanceof Way) {
-          return wayStore.select(entity.getInfo().getId()).getGeometry();
+          return wayStore.get(entity.getInfo().getId()).getGeometry();
         } else if (entity instanceof Relation) {
-          return relationStore.select(entity.getInfo().getId()).getGeometry();
+          return relationStore.get(entity.getInfo().getId()).getGeometry();
         } else {
           return null;
         }
       case create:
         if (entity instanceof Node) {
-          return nodeBuilder.build((Node) entity);
+          return nodeGeometryBuilder.build((Node) entity);
         } else if (entity instanceof Way) {
-          return wayBuilder.build((Way) entity);
+          return wayGeometryBuilder.build((Way) entity);
         } else if (entity instanceof Relation) {
-          return relationBuilder.build((Relation) entity);
+          return relationGeometryBuilder.build((Relation) entity);
         } else {
           return null;
         }

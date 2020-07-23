@@ -100,7 +100,7 @@ public class GeometryConstants {
   public static final Node NODE_11 = new Node(new Info(11, 0, TIMESTAMP, 0, 0,
       ImmutableMap.of()), 5, 1);
 
-  public static final NodeBuilder NODE_BUILDER = new NodeBuilder(GEOMETRY_FACTORY, COORDINATE_TRANSFORM);
+  public static final NodeGeometryBuilder NODE_BUILDER = new NodeGeometryBuilder(GEOMETRY_FACTORY, COORDINATE_TRANSFORM);
 
   public static final Cache<Long, Coordinate> COORDINATE_CACHE = new MockCache(
       Arrays.asList(NODE_0, NODE_1, NODE_2, NODE_3, NODE_4, NODE_5,
@@ -128,7 +128,7 @@ public class GeometryConstants {
       new Info(4, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
       ImmutableList.of(4l, 5l, 6l, 7l, 4l));
 
-  public static final WayBuilder WAY_BUILDER = new WayBuilder(GEOMETRY_FACTORY,
+  public static final WayGeometryBuilder WAY_BUILDER = new WayGeometryBuilder(GEOMETRY_FACTORY,
       COORDINATE_CACHE);
 
   public static final Cache<Long, List<Long>> REFERENCE_CACHE = new MockCache(
@@ -160,7 +160,7 @@ public class GeometryConstants {
           new Member(3l, Type.way, "inner"),
           new Member(4l, Type.way, "outer")));
 
-  public static final RelationBuilder RELATION_BUILDER = new RelationBuilder(GEOMETRY_FACTORY,
+  public static final RelationGeometryBuilder RELATION_BUILDER = new RelationGeometryBuilder(GEOMETRY_FACTORY,
       COORDINATE_CACHE, REFERENCE_CACHE);
 
 

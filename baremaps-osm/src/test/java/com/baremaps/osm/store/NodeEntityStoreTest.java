@@ -12,12 +12,12 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.store;
 
-import static com.baremaps.osm.database.DatabaseConstants.DATABASE_URL;
-import static com.baremaps.osm.database.DatabaseConstants.NODE_0;
-import static com.baremaps.osm.database.DatabaseConstants.NODE_1;
-import static com.baremaps.osm.database.DatabaseConstants.NODE_2;
+import static com.baremaps.osm.store.DatabaseConstants.DATABASE_URL;
+import static com.baremaps.osm.store.DatabaseConstants.NODE_0;
+import static com.baremaps.osm.store.DatabaseConstants.NODE_1;
+import static com.baremaps.osm.store.DatabaseConstants.NODE_2;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,16 +34,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class NodeTableTest {
+public class NodeEntityStoreTest {
 
   public DataSource dataSource;
 
-  public NodeTable nodeTable;
+  public PostgisNodeStore nodeStore;
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
     dataSource = PostgisHelper.poolingDataSource(DATABASE_URL);
-    nodeTable = new NodeTable(dataSource);
+    nodeStore = new PostgisNodeStore(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
       PostgisHelper.executeScript(connection, "osm_drop_tables.sql");
@@ -55,43 +55,43 @@ public class NodeTableTest {
   @Test
   @Tag("integration")
   public void insert() {
-    nodeTable.insert(NODE_0);
-    assertEquals(NODE_0, nodeTable.select(NODE_0.getId()));
+    nodeStore.put(NODE_0);
+    assertEquals(NODE_0, nodeStore.get(NODE_0.getId()));
   }
 
   @Test
   @Tag("integration")
   public void insertAll() {
-    List<NodeTable.Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
-    nodeTable.insert(nodes);
+    List<NodeEntity> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
+    nodeStore.put(nodes);
     assertIterableEquals(nodes,
-        nodeTable.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeStore.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void delete() {
-    nodeTable.insert(NODE_0);
-    nodeTable.delete(NODE_0.getId());
-    assertThrows(IllegalArgumentException.class, () -> nodeTable.select(NODE_0.getId()));
+    nodeStore.put(NODE_0);
+    nodeStore.delete(NODE_0.getId());
+    assertThrows(IllegalArgumentException.class, () -> nodeStore.get(NODE_0.getId()));
   }
 
   @Test
   @Tag("integration")
   public void deleteAll() {
-    List<NodeTable.Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
-    nodeTable.insert(nodes);
-    nodeTable.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
+    List<NodeEntity> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
+    nodeStore.put(nodes);
+    nodeStore.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(Arrays.asList(null, null, null),
-        nodeTable.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeStore.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   public void copy() {
-    List<NodeTable.Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
-    nodeTable.copy(nodes);
+    List<NodeEntity> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
+    nodeStore.copy(nodes);
     assertIterableEquals(nodes,
-        nodeTable.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeStore.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

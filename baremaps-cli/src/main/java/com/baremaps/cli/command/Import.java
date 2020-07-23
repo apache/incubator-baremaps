@@ -21,14 +21,14 @@ import com.baremaps.osm.cache.CacheImporter;
 import com.baremaps.osm.cache.InMemoryCache;
 import com.baremaps.osm.cache.LmdbCoordinateCache;
 import com.baremaps.osm.cache.LmdbReferenceCache;
-import com.baremaps.osm.database.DatabaseImporter;
-import com.baremaps.osm.database.HeaderTable;
-import com.baremaps.osm.database.NodeTable;
-import com.baremaps.osm.database.RelationTable;
-import com.baremaps.osm.database.WayTable;
-import com.baremaps.osm.geometry.NodeBuilder;
-import com.baremaps.osm.geometry.RelationBuilder;
-import com.baremaps.osm.geometry.WayBuilder;
+import com.baremaps.osm.store.StoreImporter;
+import com.baremaps.osm.store.PostgisHeaderStore;
+import com.baremaps.osm.store.PostgisNodeStore;
+import com.baremaps.osm.store.PostgisRelationStore;
+import com.baremaps.osm.store.PostgisWayStore;
+import com.baremaps.osm.geometry.NodeGeometryBuilder;
+import com.baremaps.osm.geometry.RelationGeometryBuilder;
+import com.baremaps.osm.geometry.WayGeometryBuilder;
 import com.baremaps.osm.pbf.FileBlock;
 import com.baremaps.osm.pbf.FileBlockSpliterator;
 import com.baremaps.util.postgis.PostgisHelper;
@@ -176,12 +176,12 @@ public class Import implements Callable<Integer> {
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
     CoordinateTransform coordinateTransform = coordinateTransformFactory
         .createTransform(sourceCRS, targetCSR);
-    HeaderTable headerTable = new HeaderTable(datasource);
+    PostgisHeaderStore headerTable = new PostgisHeaderStore(datasource);
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
 
-    NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
-    WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
-    RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
+    NodeGeometryBuilder nodeGeometryBuilder = new NodeGeometryBuilder(geometryFactory, coordinateTransform);
+    WayGeometryBuilder wayGeometryBuilder = new WayGeometryBuilder(geometryFactory, coordinateCache);
+    RelationGeometryBuilder relationGeometryBuilder = new RelationGeometryBuilder(geometryFactory, coordinateCache, referenceCache);
 
     logger.info("Fetching input");
     FileSystem fileSystem = mixins.filesystem();
@@ -189,7 +189,7 @@ public class Import implements Callable<Integer> {
     logger.info("Populating cache");
     try (DataInputStream input = new DataInputStream(fileSystem.read(this.input))) {
       Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(input), false);
-      CacheImporter blockConsumer = new CacheImporter(nodeBuilder, coordinateCache, referenceCache);
+      CacheImporter blockConsumer = new CacheImporter(nodeGeometryBuilder, coordinateCache, referenceCache);
       blocks.forEach(blockConsumer);
     }
 
@@ -198,12 +198,12 @@ public class Import implements Callable<Integer> {
       Stream<FileBlock> blocks = StreamSupport
           .stream(new BatchSpliterator<>(new FileBlockSpliterator(input), 10), true);
 
-      NodeTable nodeTable = new NodeTable(datasource);
-      WayTable wayTable = new WayTable(datasource);
-      RelationTable relationTable = new RelationTable(datasource);
+      PostgisNodeStore nodeStore = new PostgisNodeStore(datasource);
+      PostgisWayStore wayStore = new PostgisWayStore(datasource);
+      PostgisRelationStore relationStore = new PostgisRelationStore(datasource);
 
-      DatabaseImporter blockConsumer = new DatabaseImporter(headerTable, nodeBuilder, wayBuilder,
-          relationBuilder, nodeTable, wayTable, relationTable);
+      StoreImporter blockConsumer = new StoreImporter(headerTable, nodeGeometryBuilder, wayGeometryBuilder,
+          relationGeometryBuilder, nodeStore, wayStore, relationStore);
 
       blocks.forEach(blockConsumer);
     }

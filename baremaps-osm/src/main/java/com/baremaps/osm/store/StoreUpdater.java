@@ -12,11 +12,11 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.store;
 
-import com.baremaps.osm.geometry.NodeBuilder;
-import com.baremaps.osm.geometry.RelationBuilder;
-import com.baremaps.osm.geometry.WayBuilder;
+import com.baremaps.osm.geometry.NodeGeometryBuilder;
+import com.baremaps.osm.geometry.RelationGeometryBuilder;
+import com.baremaps.osm.geometry.WayGeometryBuilder;
 import com.baremaps.osm.model.Entity;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
@@ -24,27 +24,27 @@ import com.baremaps.osm.model.Way;
 import com.baremaps.osm.model.Change;
 import java.util.function.Consumer;
 
-public class DatabaseUpdater implements Consumer<Change> {
+public class StoreUpdater implements Consumer<Change> {
 
-  private final WayBuilder wayBuilder;
-  private final RelationBuilder relationBuilder;
-  private final NodeBuilder nodeBuilder;
+  private final WayGeometryBuilder wayGeometryBuilder;
+  private final RelationGeometryBuilder relationGeometryBuilder;
+  private final NodeGeometryBuilder nodeGeometryBuilder;
 
-  private final NodeTable nodeTable;
-  private final WayTable wayTable;
-  private final RelationTable relationTable;
+  private final PostgisNodeStore nodeStore;
+  private final PostgisWayStore wayStore;
+  private final PostgisRelationStore relationStore;
 
-  public DatabaseUpdater(
-      NodeBuilder nodeBuilder, WayBuilder wayBuilder,
-      RelationBuilder relationBuilder, NodeTable nodeTable,
-      WayTable wayTable,
-      RelationTable relationTable) {
-    this.nodeBuilder = nodeBuilder;
-    this.wayBuilder = wayBuilder;
-    this.relationBuilder = relationBuilder;
-    this.nodeTable = nodeTable;
-    this.wayTable = wayTable;
-    this.relationTable = relationTable;
+  public StoreUpdater(
+      NodeGeometryBuilder nodeGeometryBuilder, WayGeometryBuilder wayGeometryBuilder,
+      RelationGeometryBuilder relationGeometryBuilder, PostgisNodeStore nodeStore,
+      PostgisWayStore wayStore,
+      PostgisRelationStore relationStore) {
+    this.nodeGeometryBuilder = nodeGeometryBuilder;
+    this.wayGeometryBuilder = wayGeometryBuilder;
+    this.relationGeometryBuilder = relationGeometryBuilder;
+    this.nodeStore = nodeStore;
+    this.wayStore = wayStore;
+    this.relationStore = relationStore;
   }
 
   @Override
@@ -55,12 +55,12 @@ public class DatabaseUpdater implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          nodeTable.insert(new NodeTable.Node(node.getInfo().getId(), node.getInfo().getVersion(),
+          nodeStore.put(new NodeEntity(node.getInfo().getId(), node.getInfo().getVersion(),
               node.getInfo().getTimestamp(), node.getInfo().getChangeset(), node.getInfo().getUserId(),
-              node.getInfo().getTags(), nodeBuilder.build(node)));
+              node.getInfo().getTags(), nodeGeometryBuilder.build(node)));
           break;
         case delete:
-          nodeTable.delete(node.getInfo().getId());
+          nodeStore.delete(node.getInfo().getId());
           break;
         default:
           break;
@@ -70,12 +70,12 @@ public class DatabaseUpdater implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          wayTable.insert(new WayTable.Way(way.getInfo().getId(), way.getInfo().getVersion(),
+          wayStore.put(new WayEntity(way.getInfo().getId(), way.getInfo().getVersion(),
               way.getInfo().getTimestamp(), way.getInfo().getChangeset(), way.getInfo().getUserId(),
-              way.getInfo().getTags(), way.getNodes(), wayBuilder.build(way)));
+              way.getInfo().getTags(), way.getNodes(), wayGeometryBuilder.build(way)));
           break;
         case delete:
-          wayTable.delete(way.getInfo().getId());
+          wayStore.delete(way.getInfo().getId());
           break;
         default:
           break;
@@ -85,7 +85,7 @@ public class DatabaseUpdater implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          relationTable.insert(new RelationTable.Relation(
+          relationStore.put(new RelationEntity(
               relation.getInfo().getId(),
               relation.getInfo().getVersion(),
               relation.getInfo().getTimestamp(),
@@ -95,10 +95,10 @@ public class DatabaseUpdater implements Consumer<Change> {
               relation.getMembers().stream().map(m -> m.getRef()).toArray(Long[]::new),
               relation.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new),
               relation.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new),
-              relationBuilder.build(relation)));
+              relationGeometryBuilder.build(relation)));
           break;
         case delete:
-          relationTable.delete(relation.getInfo().getId());
+          relationStore.delete(relation.getInfo().getId());
           break;
         default:
           break;
