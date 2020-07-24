@@ -39,7 +39,7 @@ public class PostgisHeaderStore {
     this.dataSource = dataSource;
   }
 
-  public List<HeaderBlock> select() throws SQLException {
+  public List<HeaderBlock> select() throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       ResultSet result = statement.executeQuery();
@@ -61,14 +61,16 @@ public class PostgisHeaderStore {
                 bbox));
       }
       return headerBlocks;
+    } catch (SQLException e) {
+      throw new StoreException(e);
     }
   }
 
-  public HeaderBlock getLast() throws SQLException {
+  public HeaderBlock getLast() throws StoreException {
     return select().get(0);
   }
 
-  public void insert(HeaderBlock headerBlock) throws SQLException {
+  public void insert(HeaderBlock headerBlock) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
       statement.setLong(1, headerBlock.getReplicationTimestamp());
@@ -78,6 +80,8 @@ public class PostgisHeaderStore {
       statement.setString(5, headerBlock.getWritingProgram());
       statement.setBytes(6, GeometryUtil.serialize(headerBlock.getBbox()));
       statement.execute();
+    } catch (SQLException e) {
+      throw new StoreException(e);
     }
   }
 

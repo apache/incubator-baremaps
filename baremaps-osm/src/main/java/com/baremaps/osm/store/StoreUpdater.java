@@ -49,49 +49,53 @@ public class StoreUpdater implements Consumer<Change> {
 
   @Override
   public void accept(Change change) {
-    Entity entity = change.getEntity();
-    if (entity instanceof Node) {
-      Node node = (Node) entity;
-      switch (change.getType()) {
-        case create:
-        case modify:
-          node.setGeometry(nodeGeometryBuilder.build(node));
-          nodeStore.put(node);
-          break;
-        case delete:
-          nodeStore.delete(node.getId());
-          break;
-        default:
-          break;
+    try {
+      Entity entity = change.getEntity();
+      if (entity instanceof Node) {
+        Node node = (Node) entity;
+        switch (change.getType()) {
+          case create:
+          case modify:
+            node.setGeometry(nodeGeometryBuilder.build(node));
+            nodeStore.put(node);
+            break;
+          case delete:
+            nodeStore.delete(node.getId());
+            break;
+          default:
+            break;
+        }
+      } else if (entity instanceof Way) {
+        Way way = (Way) entity;
+        switch (change.getType()) {
+          case create:
+          case modify:
+            way.setGeometry(wayGeometryBuilder.build(way));
+            wayStore.put(way);
+            break;
+          case delete:
+            wayStore.delete(way.getId());
+            break;
+          default:
+            break;
+        }
+      } else if (entity instanceof Relation) {
+        Relation relation = (Relation) entity;
+        switch (change.getType()) {
+          case create:
+          case modify:
+            relation.setGeometry(relationGeometryBuilder.build(relation));
+            relationStore.put(relation);
+            break;
+          case delete:
+            relationStore.delete(relation.getId());
+            break;
+          default:
+            break;
+        }
       }
-    } else if (entity instanceof Way) {
-      Way way = (Way) entity;
-      switch (change.getType()) {
-        case create:
-        case modify:
-          way.setGeometry( wayGeometryBuilder.build(way));
-          wayStore.put(way);
-          break;
-        case delete:
-          wayStore.delete(way.getId());
-          break;
-        default:
-          break;
-      }
-    } else if (entity instanceof Relation) {
-      Relation relation = (Relation) entity;
-      switch (change.getType()) {
-        case create:
-        case modify:
-          relation.setGeometry(relationGeometryBuilder.build(relation));
-          relationStore.put(relation);
-          break;
-        case delete:
-          relationStore.delete(relation.getId());
-          break;
-        default:
-          break;
-      }
+    } catch (StoreException e) {
+      throw new RuntimeException(e);
     }
   }
 

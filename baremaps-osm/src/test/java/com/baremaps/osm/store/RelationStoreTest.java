@@ -55,14 +55,14 @@ class RelationStoreTest {
 
   @Test
   @Tag("integration")
-  public void insert() {
+  public void insert() throws StoreException {
     relationStore.put(RELATION_2);
     assertEquals(RELATION_2, relationStore.get(RELATION_2.getId()));
   }
 
   @Test
   @Tag("integration")
-  public void insertAll() {
+  public void insertAll() throws StoreException {
     List<Relation> relations = Arrays
         .asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.put(relations);
@@ -73,7 +73,7 @@ class RelationStoreTest {
 
   @Test
   @Tag("integration")
-  public void delete() {
+  public void delete() throws StoreException {
     relationStore.put(RELATION_2);
     relationStore.delete(RELATION_2.getId());
     assertThrows(IllegalArgumentException.class, () -> relationStore.get(RELATION_2.getId()));
@@ -81,7 +81,7 @@ class RelationStoreTest {
 
   @Test
   @Tag("integration")
-  public void deleteAll() {
+  public void deleteAll() throws StoreException {
     List<Relation> relations = Arrays
         .asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.put(relations);
@@ -93,7 +93,7 @@ class RelationStoreTest {
 
   @Test
   @Tag("integration")
-  public void copy() {
+  public void copy() throws StoreException {
     List<Relation> relations = Arrays
         .asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.copy(relations);

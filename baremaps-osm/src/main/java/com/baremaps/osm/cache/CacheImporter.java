@@ -43,19 +43,15 @@ public class CacheImporter implements Consumer<FileBlock> {
   public void accept(FileBlock block) {
     if (block.getType().equals(Type.OSMData)) {
       PrimitiveBlock primitiveBlock = block.toPrimitiveBlock();
-      try {
-        coordinateCache.putAll(primitiveBlock.getDenseNodes().stream()
-            .map(n -> new Entry<>(n.getId(), nodeGeometryBuilder.build(n).getCoordinate()))
-            .collect(Collectors.toList()));
-        coordinateCache.putAll(primitiveBlock.getNodes().stream()
-            .map(n -> new Entry<>(n.getId(), nodeGeometryBuilder.build(n).getCoordinate()))
-            .collect(Collectors.toList()));
-        referenceCache.putAll(primitiveBlock.getWays().stream()
-            .map(w -> new Entry<>(w.getId(), w.getNodes()))
-            .collect(Collectors.toList()));
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+      coordinateCache.putAll(primitiveBlock.getDenseNodes().stream()
+          .map(n -> new Entry<>(n.getId(), nodeGeometryBuilder.build(n).getCoordinate()))
+          .collect(Collectors.toList()));
+      coordinateCache.putAll(primitiveBlock.getNodes().stream()
+          .map(n -> new Entry<>(n.getId(), nodeGeometryBuilder.build(n).getCoordinate()))
+          .collect(Collectors.toList()));
+      referenceCache.putAll(primitiveBlock.getWays().stream()
+          .map(w -> new Entry<>(w.getId(), w.getNodes()))
+          .collect(Collectors.toList()));
     }
   }
 

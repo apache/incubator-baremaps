@@ -65,7 +65,7 @@ public class PostgisNodeStore implements Store<Node> {
     this.dataSource = dataSource;
   }
 
-  public Node get(Long id) {
+  public Node get(Long id) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
@@ -88,7 +88,7 @@ public class PostgisNodeStore implements Store<Node> {
     }
   }
 
-  public List<Node> get(List<Long> ids) {
+  public List<Node> get(List<Long> ids) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
@@ -112,7 +112,7 @@ public class PostgisNodeStore implements Store<Node> {
     }
   }
 
-  public void put(Node entity) {
+  public void put(Node entity) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
       statement.setLong(1, entity.getId());
@@ -130,7 +130,7 @@ public class PostgisNodeStore implements Store<Node> {
     }
   }
 
-  public void put(List<Node> entities) {
+  public void put(List<Node> entities) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
       for (Node entity : entities) {
@@ -152,7 +152,7 @@ public class PostgisNodeStore implements Store<Node> {
     }
   }
 
-  public void delete(Long id) {
+  public void delete(Long id) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE)) {
       statement.setLong(1, id);
@@ -162,7 +162,7 @@ public class PostgisNodeStore implements Store<Node> {
     }
   }
 
-  public void delete(List<Long> ids) {
+  public void delete(List<Long> ids) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE)) {
       for (Long id : ids) {
@@ -176,7 +176,7 @@ public class PostgisNodeStore implements Store<Node> {
     }
   }
 
-  public void copy(List<Node> entities) {
+  public void copy(List<Node> entities) throws StoreException {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {

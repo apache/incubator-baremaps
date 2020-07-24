@@ -66,7 +66,7 @@ public class PostgisWayStore implements Store<Way> {
     this.dataSource = dataSource;
   }
 
-  public Way get(Long id) {
+  public Way get(Long id) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
@@ -88,13 +88,12 @@ public class PostgisWayStore implements Store<Way> {
         throw new IllegalArgumentException();
       }
     } catch (SQLException e) {
-      e.printStackTrace();
       throw new StoreException(e);
     }
   }
 
   @Override
-  public List<Way> get(List<Long> ids) {
+  public List<Way> get(List<Long> ids) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
@@ -117,12 +116,11 @@ public class PostgisWayStore implements Store<Way> {
       }
       return ids.stream().map(key -> ways.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
-      e.printStackTrace();
       throw new StoreException(e);
     }
   }
 
-  public void put(Way entity) {
+  public void put(Way entity) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
       statement.setLong(1, entity.getId());
@@ -135,13 +133,12 @@ public class PostgisWayStore implements Store<Way> {
       statement.setBytes(8, GeometryUtil.serialize(entity.getGeometry().orElse(null)));
       statement.execute();
     } catch (SQLException e) {
-      e.printStackTrace();
       throw new StoreException(e);
     }
   }
 
   @Override
-  public void put(List<Way> entities) {
+  public void put(List<Way> entities) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
       for (Way entity : entities) {
@@ -158,24 +155,22 @@ public class PostgisWayStore implements Store<Way> {
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      e.printStackTrace();
       throw new StoreException(e);
     }
   }
 
-  public void delete(Long id) {
+  public void delete(Long id) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE)) {
       statement.setLong(1, id);
       statement.execute();
     } catch (SQLException e) {
-      e.printStackTrace();
       throw new StoreException(e);
     }
   }
 
   @Override
-  public void delete(List<Long> ids) {
+  public void delete(List<Long> ids) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE)) {
       for (Long id : ids) {
@@ -185,12 +180,11 @@ public class PostgisWayStore implements Store<Way> {
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      e.printStackTrace();
       throw new StoreException(e);
     }
   }
 
-  public void copy(List<Way> entities) {
+  public void copy(List<Way> entities) throws StoreException {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
@@ -208,7 +202,6 @@ public class PostgisWayStore implements Store<Way> {
         }
       }
     } catch (IOException | SQLException e) {
-      e.printStackTrace();
       throw new StoreException(e);
     }
   }

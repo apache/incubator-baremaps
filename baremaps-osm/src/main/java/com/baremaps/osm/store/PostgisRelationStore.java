@@ -67,7 +67,7 @@ public class PostgisRelationStore implements Store<Relation> {
     this.dataSource = dataSource;
   }
 
-  public Relation get(Long id) {
+  public Relation get(Long id) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
@@ -96,7 +96,7 @@ public class PostgisRelationStore implements Store<Relation> {
   }
 
   @Override
-  public List<Relation> get(List<Long> ids) {
+  public List<Relation> get(List<Long> ids) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
@@ -125,7 +125,7 @@ public class PostgisRelationStore implements Store<Relation> {
     }
   }
 
-  public void put(Relation entity) {
+  public void put(Relation entity) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
       statement.setLong(1, entity.getId());
@@ -148,7 +148,7 @@ public class PostgisRelationStore implements Store<Relation> {
   }
 
   @Override
-  public void put(List<Relation> entities) {
+  public void put(List<Relation> entities) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
       for (Relation entity : entities) {
@@ -174,7 +174,7 @@ public class PostgisRelationStore implements Store<Relation> {
     }
   }
 
-  public void delete(Long id) {
+  public void delete(Long id) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE)) {
       statement.setLong(1, id);
@@ -185,7 +185,7 @@ public class PostgisRelationStore implements Store<Relation> {
   }
 
   @Override
-  public void delete(List<Long> ids) {
+  public void delete(List<Long> ids) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE)) {
       for (Long id : ids) {
@@ -199,7 +199,7 @@ public class PostgisRelationStore implements Store<Relation> {
     }
   }
 
-  public void copy(List<Relation> entities) {
+  public void copy(List<Relation> entities) throws StoreException {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {

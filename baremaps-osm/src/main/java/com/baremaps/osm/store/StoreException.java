@@ -14,7 +14,7 @@
 
 package com.baremaps.osm.store;
 
-public class StoreException extends RuntimeException {
+public class StoreException extends Exception {
 
   public StoreException() {
     super();

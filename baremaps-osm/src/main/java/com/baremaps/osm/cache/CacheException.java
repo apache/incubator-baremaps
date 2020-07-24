@@ -14,7 +14,7 @@
 
 package com.baremaps.osm.cache;
 
-public class CacheException extends RuntimeException {
+public class CacheException extends Exception {
 
   public CacheException() {
     super();

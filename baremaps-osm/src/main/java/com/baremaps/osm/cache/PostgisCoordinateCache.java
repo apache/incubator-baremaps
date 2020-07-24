@@ -41,7 +41,7 @@ public class PostgisCoordinateCache implements Cache<Long, Coordinate> {
     this.dataSource = dataSource;
   }
 
-  public Coordinate get(Long id) {
+  public Coordinate get(Long id) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
@@ -58,7 +58,7 @@ public class PostgisCoordinateCache implements Cache<Long, Coordinate> {
   }
 
   @Override
-  public List<Coordinate> getAll(List<Long> keys) {
+  public List<Coordinate> getAll(List<Long> keys) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));

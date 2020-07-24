@@ -41,7 +41,7 @@ public class PostgisReferenceCache implements Cache<Long, List<Long>> {
     this.dataSource = dataSource;
   }
 
-  public List<Long> get(Long id) {
+  public List<Long> get(Long id) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
@@ -62,7 +62,7 @@ public class PostgisReferenceCache implements Cache<Long, List<Long>> {
   }
 
   @Override
-  public List<List<Long>> getAll(List<Long> keys) {
+  public List<List<Long>> getAll(List<Long> keys) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));

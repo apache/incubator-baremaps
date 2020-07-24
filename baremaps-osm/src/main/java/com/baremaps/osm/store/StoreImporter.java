@@ -76,8 +76,8 @@ public class StoreImporter implements Consumer<FileBlock> {
   private void accept(HeaderBlock headerBlock) {
     try {
       headerTable.insert(headerBlock);
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (StoreException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -99,8 +99,8 @@ public class StoreImporter implements Consumer<FileBlock> {
         relation.setGeometry(relationGeometryBuilder.build(relation));
         return relation;
       }).collect(Collectors.toList()));
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (StoreException e) {
+      throw new RuntimeException(e);
     }
   }
 }

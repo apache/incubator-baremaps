@@ -15,6 +15,7 @@
 package com.baremaps.osm.geometry;
 
 import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.cache.CacheException;
 import com.baremaps.osm.model.Way;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -47,14 +48,18 @@ public class WayGeometryBuilder extends GeometryBuilder<Way> {
    * @return a JTS linestring or polygons corresponding to the way
    */
   public Geometry build(Way entity) {
-    Coordinate[] coordinates =
-        coordinateCache.getAll(entity.getNodes()).stream()
-            .toArray(Coordinate[]::new);
-    if (coordinates.length > 3 && coordinates[0].equals(coordinates[coordinates.length - 1])) {
-      return geometryFactory.createPolygon(coordinates);
-    } else if (coordinates.length > 1) {
-      return geometryFactory.createLineString(coordinates);
-    } else {
+    try {
+      Coordinate[] coordinates =
+          coordinateCache.getAll(entity.getNodes()).stream()
+              .toArray(Coordinate[]::new);
+      if (coordinates.length > 3 && coordinates[0].equals(coordinates[coordinates.length - 1])) {
+        return geometryFactory.createPolygon(coordinates);
+      } else if (coordinates.length > 1) {
+        return geometryFactory.createLineString(coordinates);
+      } else {
+        return null;
+      }
+    } catch (CacheException e) {
       return null;
     }
   }

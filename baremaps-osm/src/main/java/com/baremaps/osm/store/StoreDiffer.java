@@ -72,31 +72,35 @@ public class StoreDiffer implements Consumer<Change> {
   }
 
   private final Geometry geometry(Change change) {
-    Entity entity = change.getEntity();
-    switch (change.getType()) {
-      case delete:
-      case modify:
-        if (entity instanceof Node) {
-          return nodeStore.get(entity.getId()).getGeometry().get();
-        } else if (entity instanceof Way) {
-          return wayStore.get(entity.getId()).getGeometry().get();
-        } else if (entity instanceof Relation) {
-          return relationStore.get(entity.getId()).getGeometry().get();
-        } else {
+    try {
+      Entity entity = change.getEntity();
+      switch (change.getType()) {
+        case delete:
+        case modify:
+          if (entity instanceof Node) {
+            return nodeStore.get(entity.getId()).getGeometry().get();
+          } else if (entity instanceof Way) {
+            return wayStore.get(entity.getId()).getGeometry().get();
+          } else if (entity instanceof Relation) {
+            return relationStore.get(entity.getId()).getGeometry().get();
+          } else {
+            return null;
+          }
+        case create:
+          if (entity instanceof Node) {
+            return nodeGeometryBuilder.build((Node) entity);
+          } else if (entity instanceof Way) {
+            return wayGeometryBuilder.build((Way) entity);
+          } else if (entity instanceof Relation) {
+            return relationGeometryBuilder.build((Relation) entity);
+          } else {
+            return null;
+          }
+        default:
           return null;
-        }
-      case create:
-        if (entity instanceof Node) {
-          return nodeGeometryBuilder.build((Node) entity);
-        } else if (entity instanceof Way) {
-          return wayGeometryBuilder.build((Way) entity);
-        } else if (entity instanceof Relation) {
-          return relationGeometryBuilder.build((Relation) entity);
-        } else {
-          return null;
-        }
-      default:
-        return null;
+      }
+    } catch (StoreException e) {
+      throw new RuntimeException(e);
     }
   }
 

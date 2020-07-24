@@ -66,9 +66,9 @@ public class RelationGeometryBuilder extends GeometryBuilder<Relation> {
     // Collect the members of the relation
     List<LineString> members = entity.getMembers()
         .stream()
-        .map(member -> referenceCache.get(member.getRef()))
-        .filter(reference -> reference != null)
-        .map(reference -> Try.of(() -> coordinateCache.getAll(reference).stream()
+        .map(member -> Try.of(()-> referenceCache.get(member.getRef())))
+        .filter(reference -> reference.isSuccess() && reference.value() != null)
+        .map(reference -> Try.of(() -> coordinateCache.getAll(reference.value()).stream()
             .filter(point -> point != null)
             .toArray(Coordinate[]::new)))
         .filter(t -> t.isSuccess())

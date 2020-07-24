@@ -55,14 +55,14 @@ public class NodeStoreTest {
 
   @Test
   @Tag("integration")
-  public void insert() {
+  public void insert() throws StoreException {
     nodeStore.put(NODE_0);
     assertEquals(NODE_0, nodeStore.get(NODE_0.getId()));
   }
 
   @Test
   @Tag("integration")
-  public void insertAll() {
+  public void insertAll() throws StoreException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeStore.put(nodes);
     assertIterableEquals(nodes,
@@ -71,7 +71,7 @@ public class NodeStoreTest {
 
   @Test
   @Tag("integration")
-  public void delete() {
+  public void delete() throws StoreException {
     nodeStore.put(NODE_0);
     nodeStore.delete(NODE_0.getId());
     assertThrows(IllegalArgumentException.class, () -> nodeStore.get(NODE_0.getId()));
@@ -79,7 +79,7 @@ public class NodeStoreTest {
 
   @Test
   @Tag("integration")
-  public void deleteAll() {
+  public void deleteAll() throws StoreException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeStore.put(nodes);
     nodeStore.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
@@ -89,7 +89,7 @@ public class NodeStoreTest {
 
   @Test
   @Tag("integration")
-  public void copy() {
+  public void copy() throws StoreException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeStore.copy(nodes);
     assertIterableEquals(nodes,

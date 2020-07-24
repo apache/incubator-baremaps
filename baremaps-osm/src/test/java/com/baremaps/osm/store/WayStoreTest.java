@@ -55,14 +55,14 @@ class WayStoreTest {
 
   @Test
   @Tag("integration")
-  public void insert() {
+  public void insert() throws StoreException {
     wayStore.put(WAY_1);
     assertEquals(WAY_1, wayStore.get(WAY_1.getId()));
   }
 
   @Test
   @Tag("integration")
-  public void insertAll() {
+  public void insertAll() throws StoreException {
     List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayStore.put(ways);
     assertIterableEquals(
@@ -72,7 +72,7 @@ class WayStoreTest {
 
   @Test
   @Tag("integration")
-  public void delete() {
+  public void delete() throws StoreException {
     wayStore.put(WAY_1);
     wayStore.delete(WAY_1.getId());
     assertThrows(IllegalArgumentException.class, () -> wayStore.get(WAY_1.getId()));
@@ -80,7 +80,7 @@ class WayStoreTest {
 
   @Test
   @Tag("integration")
-  public void deleteAll() {
+  public void deleteAll() throws StoreException {
     List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayStore.put(ways);
     wayStore.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
@@ -91,7 +91,7 @@ class WayStoreTest {
 
   @Test
   @Tag("integration")
-  public void copy() {
+  public void copy() throws StoreException {
     List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayStore.copy(ways);
     assertIterableEquals(
