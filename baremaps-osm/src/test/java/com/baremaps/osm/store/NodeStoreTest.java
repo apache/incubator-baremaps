@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.baremaps.osm.model.Node;
 import com.baremaps.util.postgis.PostgisHelper;
 import java.io.IOException;
 import java.sql.Connection;
@@ -34,7 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class NodeEntityStoreTest {
+public class NodeStoreTest {
 
   public DataSource dataSource;
 
@@ -62,7 +63,7 @@ public class NodeEntityStoreTest {
   @Test
   @Tag("integration")
   public void insertAll() {
-    List<NodeEntity> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
+    List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeStore.put(nodes);
     assertIterableEquals(nodes,
         nodeStore.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
@@ -79,7 +80,7 @@ public class NodeEntityStoreTest {
   @Test
   @Tag("integration")
   public void deleteAll() {
-    List<NodeEntity> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
+    List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeStore.put(nodes);
     nodeStore.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(Arrays.asList(null, null, null),
@@ -89,7 +90,7 @@ public class NodeEntityStoreTest {
   @Test
   @Tag("integration")
   public void copy() {
-    List<NodeEntity> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
+    List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeStore.copy(nodes);
     assertIterableEquals(nodes,
         nodeStore.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));

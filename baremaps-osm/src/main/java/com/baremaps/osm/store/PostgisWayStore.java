@@ -15,6 +15,7 @@
 package com.baremaps.osm.store;
 
 import com.baremaps.osm.geometry.GeometryUtil;
+import com.baremaps.osm.model.Way;
 import com.baremaps.util.postgis.CopyWriter;
 import java.io.IOException;
 import java.sql.Array;
@@ -34,7 +35,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class PostgisWayStore implements Store<WayEntity> {
+public class PostgisWayStore implements Store<Way> {
 
   private static final String SELECT =
       "SELECT version, uid, timestamp, changeset, tags, nodes, st_asbinary(geom) FROM osm_ways WHERE id = ?";
@@ -53,7 +54,8 @@ public class PostgisWayStore implements Store<WayEntity> {
           + "nodes = excluded.nodes, "
           + "geom = excluded.geom";
 
-  private static final String DELETE = "DELETE FROM osm_ways WHERE id = ?";
+  private static final String DELETE =
+      "DELETE FROM osm_ways WHERE id = ?";
 
   private static final String COPY =
       "COPY osm_ways (id, version, uid, timestamp, changeset, tags, nodes, geom) FROM STDIN BINARY";
@@ -64,7 +66,7 @@ public class PostgisWayStore implements Store<WayEntity> {
     this.dataSource = dataSource;
   }
 
-  public WayEntity get(Long id) {
+  public Way get(Long id) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
@@ -81,22 +83,23 @@ public class PostgisWayStore implements Store<WayEntity> {
           nodes = Arrays.asList((Long[]) array.getArray());
         }
         Geometry geometry = GeometryUtil.deserialize(result.getBytes(7));
-        return new WayEntity(id, version, timestamp, changeset, uid, tags, nodes, geometry);
+        return new Way(id, version, timestamp, changeset, uid, tags, nodes, geometry);
       } else {
         throw new IllegalArgumentException();
       }
     } catch (SQLException e) {
+      e.printStackTrace();
       throw new StoreException(e);
     }
   }
 
   @Override
-  public List<WayEntity> get(List<Long> ids) {
+  public List<Way> get(List<Long> ids) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
       ResultSet result = statement.executeQuery();
-      Map<Long, WayEntity> ways = new HashMap<>();
+      Map<Long, Way> ways = new HashMap<>();
       while (result.next()) {
         long id = result.getLong(1);
         int version = result.getInt(2);
@@ -110,15 +113,16 @@ public class PostgisWayStore implements Store<WayEntity> {
           nodes = Arrays.asList((Long[]) array.getArray());
         }
         Geometry geometry = GeometryUtil.deserialize(result.getBytes(8));
-        ways.put(id, new WayEntity(id, version, timestamp, changeset, uid, tags, nodes, geometry));
+        ways.put(id, new Way(id, version, timestamp, changeset, uid, tags, nodes, geometry));
       }
       return ids.stream().map(key -> ways.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
+      e.printStackTrace();
       throw new StoreException(e);
     }
   }
 
-  public void put(WayEntity entity) {
+  public void put(Way entity) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
       statement.setLong(1, entity.getId());
@@ -128,31 +132,33 @@ public class PostgisWayStore implements Store<WayEntity> {
       statement.setLong(5, entity.getChangeset());
       statement.setObject(6, entity.getTags());
       statement.setObject(7, entity.getNodes().stream().mapToLong(Long::longValue).toArray());
-      statement.setBytes(8, GeometryUtil.serialize(entity.getGeometry()));
+      statement.setBytes(8, GeometryUtil.serialize(entity.getGeometry().orElse(null)));
       statement.execute();
     } catch (SQLException e) {
+      e.printStackTrace();
       throw new StoreException(e);
     }
   }
 
   @Override
-  public void put(List<WayEntity> entities) {
+  public void put(List<Way> entities) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      for (WayEntity row : entities) {
+      for (Way entity : entities) {
         statement.clearParameters();
-        statement.setLong(1, row.getId());
-        statement.setInt(2, row.getVersion());
-        statement.setInt(3, row.getUserId());
-        statement.setObject(4, row.getTimestamp());
-        statement.setLong(5, row.getChangeset());
-        statement.setObject(6, row.getTags());
-        statement.setObject(7, row.getNodes().stream().mapToLong(Long::longValue).toArray());
-        statement.setBytes(8, GeometryUtil.serialize(row.getGeometry()));
+        statement.setLong(1, entity.getId());
+        statement.setInt(2, entity.getVersion());
+        statement.setInt(3, entity.getUserId());
+        statement.setObject(4, entity.getTimestamp());
+        statement.setLong(5, entity.getChangeset());
+        statement.setObject(6, entity.getTags());
+        statement.setObject(7, entity.getNodes().stream().mapToLong(Long::longValue).toArray());
+        statement.setBytes(8, GeometryUtil.serialize(entity.getGeometry().orElse(null)));
         statement.addBatch();
       }
       statement.executeBatch();
     } catch (SQLException e) {
+      e.printStackTrace();
       throw new StoreException(e);
     }
   }
@@ -163,6 +169,7 @@ public class PostgisWayStore implements Store<WayEntity> {
       statement.setLong(1, id);
       statement.execute();
     } catch (SQLException e) {
+      e.printStackTrace();
       throw new StoreException(e);
     }
   }
@@ -178,29 +185,31 @@ public class PostgisWayStore implements Store<WayEntity> {
       }
       statement.executeBatch();
     } catch (SQLException e) {
+      e.printStackTrace();
       throw new StoreException(e);
     }
   }
 
-  public void copy(List<WayEntity> entities) {
+  public void copy(List<Way> entities) {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, COPY))) {
         writer.writeHeader();
-        for (WayEntity row : entities) {
+        for (Way entity : entities) {
           writer.startRow(8);
-          writer.writeLong(row.getId());
-          writer.writeInteger(row.getVersion());
-          writer.writeInteger(row.getUserId());
-          writer.writeLocalDateTime(row.getTimestamp());
-          writer.writeLong(row.getChangeset());
-          writer.writeHstore(row.getTags());
-          writer.writeLongList(row.getNodes());
-          writer.writeGeometry(row.getGeometry());
+          writer.writeLong(entity.getId());
+          writer.writeInteger(entity.getVersion());
+          writer.writeInteger(entity.getUserId());
+          writer.writeLocalDateTime(entity.getTimestamp());
+          writer.writeLong(entity.getChangeset());
+          writer.writeHstore(entity.getTags());
+          writer.writeLongList(entity.getNodes());
+          writer.writeGeometry(entity.getGeometry().orElse(null));
         }
       }
-    } catch (IOException | SQLException ex) {
-      throw new StoreException(ex);
+    } catch (IOException | SQLException e) {
+      e.printStackTrace();
+      throw new StoreException(e);
     }
   }
 

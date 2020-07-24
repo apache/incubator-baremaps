@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.baremaps.osm.model.Way;
 import com.baremaps.util.postgis.PostgisHelper;
 import java.io.IOException;
 import java.sql.Connection;
@@ -62,7 +63,7 @@ class WayStoreTest {
   @Test
   @Tag("integration")
   public void insertAll() {
-    List<WayEntity> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
+    List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayStore.put(ways);
     assertIterableEquals(
         ways,
@@ -80,7 +81,7 @@ class WayStoreTest {
   @Test
   @Tag("integration")
   public void deleteAll() {
-    List<WayEntity> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
+    List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayStore.put(ways);
     wayStore.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
@@ -91,7 +92,7 @@ class WayStoreTest {
   @Test
   @Tag("integration")
   public void copy() {
-    List<WayEntity> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
+    List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayStore.copy(ways);
     assertIterableEquals(
         ways,

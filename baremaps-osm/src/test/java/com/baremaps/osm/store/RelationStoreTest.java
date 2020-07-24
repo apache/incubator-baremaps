@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.baremaps.osm.model.Relation;
 import com.baremaps.util.postgis.PostgisHelper;
 import java.io.IOException;
 import java.sql.Connection;
@@ -62,7 +63,7 @@ class RelationStoreTest {
   @Test
   @Tag("integration")
   public void insertAll() {
-    List<RelationEntity> relations = Arrays
+    List<Relation> relations = Arrays
         .asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.put(relations);
     assertIterableEquals(
@@ -81,7 +82,7 @@ class RelationStoreTest {
   @Test
   @Tag("integration")
   public void deleteAll() {
-    List<RelationEntity> relations = Arrays
+    List<Relation> relations = Arrays
         .asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.put(relations);
     relationStore.delete(relations.stream().map(e -> e.getId()).collect(Collectors.toList()));
@@ -93,7 +94,7 @@ class RelationStoreTest {
   @Test
   @Tag("integration")
   public void copy() {
-    List<RelationEntity> relations = Arrays
+    List<Relation> relations = Arrays
         .asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.copy(relations);
     assertIterableEquals(

@@ -14,18 +14,39 @@
 
 package com.baremaps.osm.model;
 
+import com.google.common.base.Objects;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
+import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 public final class Node extends Entity {
 
-  private final double lon;
+  private double lon;
 
-  private final double lat;
+  private double lat;
 
-  private final Geometry geometry;
+  private Geometry geometry;
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Node.class.getSimpleName() + "[", "]")
+        .add("id=" + id)
+        .add("version=" + version)
+        .add("timestamp=" + timestamp)
+        .add("changeset=" + changeset)
+        .add("userId=" + userId)
+        .add("tags=" + tags)
+        .add("lon=" + lon)
+        .add("lat=" + lat)
+        .add("geometry=" + geometry)
+        .toString();
+  }
+
+  public Node() {
+
+  }
 
   public Node(long id, int version, LocalDateTime timestamp, long changeset, int userId,
       Map<String, String> tags, double lon, double lat) {
@@ -52,4 +73,37 @@ public final class Node extends Entity {
     return Optional.ofNullable(geometry);
   }
 
+  public void setLon(double lon) {
+    this.lon = lon;
+  }
+
+  public void setLat(double lat) {
+    this.lat = lat;
+  }
+
+  public void setGeometry(Geometry geometry) {
+    this.geometry = geometry;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    Node node = (Node) o;
+    return Double.compare(node.lon, lon) == 0 &&
+        Double.compare(node.lat, lat) == 0 &&
+        Objects.equal(geometry, node.geometry);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(super.hashCode(), lon, lat, geometry);
+  }
 }

@@ -17,11 +17,11 @@ package com.baremaps.osm.store;
 import com.baremaps.osm.geometry.NodeGeometryBuilder;
 import com.baremaps.osm.geometry.RelationGeometryBuilder;
 import com.baremaps.osm.geometry.WayGeometryBuilder;
+import com.baremaps.osm.model.Change;
 import com.baremaps.osm.model.Entity;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
-import com.baremaps.osm.model.Change;
 import java.util.function.Consumer;
 
 public class StoreUpdater implements Consumer<Change> {
@@ -55,9 +55,8 @@ public class StoreUpdater implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          nodeStore.put(new NodeEntity(node.getId(), node.getVersion(),
-              node.getTimestamp(), node.getChangeset(), node.getUserId(),
-              node.getTags(), nodeGeometryBuilder.build(node)));
+          node.setGeometry(nodeGeometryBuilder.build(node));
+          nodeStore.put(node);
           break;
         case delete:
           nodeStore.delete(node.getId());
@@ -70,9 +69,8 @@ public class StoreUpdater implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          wayStore.put(new WayEntity(way.getId(), way.getVersion(),
-              way.getTimestamp(), way.getChangeset(), way.getUserId(),
-              way.getTags(), way.getNodes(), wayGeometryBuilder.build(way)));
+          way.setGeometry( wayGeometryBuilder.build(way));
+          wayStore.put(way);
           break;
         case delete:
           wayStore.delete(way.getId());
@@ -85,17 +83,8 @@ public class StoreUpdater implements Consumer<Change> {
       switch (change.getType()) {
         case create:
         case modify:
-          relationStore.put(new RelationEntity(
-              relation.getId(),
-              relation.getVersion(),
-              relation.getTimestamp(),
-              relation.getChangeset(),
-              relation.getUserId(),
-              relation.getTags(),
-              relation.getMembers().stream().map(m -> m.getRef()).toArray(Long[]::new),
-              relation.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new),
-              relation.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new),
-              relationGeometryBuilder.build(relation)));
+          relation.setGeometry(relationGeometryBuilder.build(relation));
+          relationStore.put(relation);
           break;
         case delete:
           relationStore.delete(relation.getId());

@@ -19,13 +19,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 public final class Relation extends Entity {
 
-  private final List<Member> members;
+  private List<Member> members;
 
-  private final Geometry geometry;
+  private Geometry geometry;
+
+  public Relation() {
+
+  }
 
   public Relation(long id, int version, LocalDateTime timestamp, long changeset, int userId,
       Map<String, String> tags, List<Member> members) {
@@ -45,6 +50,50 @@ public final class Relation extends Entity {
 
   public Optional<Geometry> getGeometry() {
     return Optional.ofNullable(geometry);
+  }
+
+
+  public void setMembers(List<Member> members) {
+    this.members = members;
+  }
+
+  public void setGeometry(Geometry geometry) {
+    this.geometry = geometry;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    Relation relation = (Relation) o;
+    return Objects.equal(members, relation.members) &&
+        Objects.equal(geometry, relation.geometry);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(super.hashCode(), members, geometry);
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Relation.class.getSimpleName() + "[", "]")
+        .add("id=" + id)
+        .add("version=" + version)
+        .add("timestamp=" + timestamp)
+        .add("changeset=" + changeset)
+        .add("userId=" + userId)
+        .add("tags=" + tags)
+        .add("members=" + members)
+        .add("geometry=" + geometry)
+        .toString();
   }
 
 }

@@ -15,6 +15,9 @@
 package com.baremaps.osm.store;
 
 import com.baremaps.osm.model.Member;
+import com.baremaps.osm.model.Node;
+import com.baremaps.osm.model.Relation;
+import com.baremaps.osm.model.Way;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.time.LocalDateTime;
@@ -30,100 +33,93 @@ public class DatabaseConstants {
 
   public static final LocalDateTime TIMESTAMP = LocalDateTime.of(2020, 1, 1, 0, 0);
 
-  public static final NodeEntity NODE_0 = new NodeEntity(0, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+  public static final Node NODE_0 = new Node(0, 0, TIMESTAMP, 0, 0, ImmutableMap.of(), 0, 0,
       GEOMETRY_FACTORY.createPoint(new Coordinate(0, 0)));
 
-  public static final NodeEntity NODE_1 = new NodeEntity(
-      1, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+  public static final Node NODE_1 = new Node(
+      1, 0, TIMESTAMP, 0, 0, ImmutableMap.of(), 0, 0,
       GEOMETRY_FACTORY.createPoint(new Coordinate(0, 3)));
 
-  public static final NodeEntity NODE_2 = new NodeEntity(
-      2, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+  public static final Node NODE_2 = new Node(
+      2, 0, TIMESTAMP, 0, 0, ImmutableMap.of(), 0, 0,
       GEOMETRY_FACTORY.createPoint(new Coordinate(3, 3)));
 
-  public static final NodeEntity NODE_3 = new NodeEntity(
-      3, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+  public static final Node NODE_3 = new Node(
+      3, 0, TIMESTAMP, 0, 0, ImmutableMap.of(), 0, 0,
       GEOMETRY_FACTORY.createPoint(new Coordinate(3, 0)));
 
-  public static final NodeEntity NODE_4 = new NodeEntity(
-      4, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+  public static final Node NODE_4 = new Node(
+      4, 0, TIMESTAMP, 0, 0, ImmutableMap.of(), 0, 0,
       GEOMETRY_FACTORY.createPoint(new Coordinate(1, 1)));
 
-  public static final NodeEntity NODE_5 = new NodeEntity(
-      5, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+  public static final Node NODE_5 = new Node(
+      5, 0, TIMESTAMP, 0, 0, ImmutableMap.of(), 0, 0,
       GEOMETRY_FACTORY.createPoint(new Coordinate(1, 2)));
 
-  public static final NodeEntity NODE_6 = new NodeEntity(
-      6, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+  public static final Node NODE_6 = new Node(
+      6, 0, TIMESTAMP, 0, 0, ImmutableMap.of(), 0, 0,
       GEOMETRY_FACTORY.createPoint(new Coordinate(2, 2)));
 
-  public static final NodeEntity NODE_7 = new NodeEntity(
-      7, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+  public static final Node NODE_7 = new Node(
+      7, 0, TIMESTAMP, 0, 0, ImmutableMap.of(), 0, 0,
       GEOMETRY_FACTORY.createPoint(new Coordinate(2, 1)));
 
-  public static final NodeEntity NODE_8 = new NodeEntity(
-      8, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+  public static final Node NODE_8 = new Node(
+      8, 0, TIMESTAMP, 0, 0, ImmutableMap.of(), 0, 0,
       GEOMETRY_FACTORY.createPoint(new Coordinate(4, 1)));
 
-  public static final NodeEntity NODE_9 = new NodeEntity(
-      9, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+  public static final Node NODE_9 = new Node(
+      9, 0, TIMESTAMP, 0, 0, ImmutableMap.of(), 0, 0,
       GEOMETRY_FACTORY.createPoint(new Coordinate(4, 2)));
 
-  public static final NodeEntity NODE_10 = new NodeEntity(
-      10, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+  public static final Node NODE_10 = new Node(
+      10, 0, TIMESTAMP, 0, 0, ImmutableMap.of(), 0, 0,
       GEOMETRY_FACTORY.createPoint(new Coordinate(5, 2)));
 
-  public static final NodeEntity NODE_11 = new NodeEntity(
-      11, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+  public static final Node NODE_11 = new Node(
+      11, 0, TIMESTAMP, 0, 0, ImmutableMap.of(), 0, 0,
       GEOMETRY_FACTORY.createPoint(new Coordinate(5, 1)));
 
-  public static final WayEntity WAY_0 = new WayEntity(0, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
+  public static final Way WAY_0 = new Way(0, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
       ImmutableList.of(), null);
 
-  public static final WayEntity WAY_1 = new WayEntity(
+  public static final Way WAY_1 = new Way(
       1, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
       ImmutableList.of(0l, 1l, 2l, 3l), null);
 
-  public static final WayEntity WAY_2 = new WayEntity(
+  public static final Way WAY_2 = new Way(
       2, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
       ImmutableList.of(0l, 1l, 2l, 3l, 0l), null);
 
-  public static final WayEntity WAY_3 = new WayEntity(
+  public static final Way WAY_3 = new Way(
       3, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
       ImmutableList.of(8l, 9l, 10l, 11l, 8l), null);
 
-  public static final WayEntity WAY_4 = new WayEntity(
+  public static final Way WAY_4 = new Way(
       4, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
       ImmutableList.of(4l, 5l, 6l, 7l, 4l), null);
 
-  public static final RelationEntity RELATION_0 = new RelationEntity(
-      0, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
-      new Long[0], new String[0], new String[0], null);
+  public static final Relation RELATION_0 = new Relation(
+      0, 0, TIMESTAMP, 0, 0, ImmutableMap.of(), ImmutableList.of(), null);
 
-  public static final RelationEntity RELATION_1 = new RelationEntity(
-      1, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon"),
-      new Long[0], new String[0], new String[0], null);
+  public static final Relation RELATION_1 = new Relation(
+      1, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon"), ImmutableList.of(), null);
 
-  public static final RelationEntity RELATION_2 = new RelationEntity(
+  public static final Relation RELATION_2 = new Relation(
       2, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon"),
-      new Long[]{2l},
-      new String[]{Member.Type.way.name()},
-      new String[]{"outer"},
+      ImmutableList.of(new Member(2, "way", "outer")),
       null);
 
-  public static final RelationEntity RELATION_3 = new RelationEntity(
+  public static final Relation RELATION_3 = new Relation(
       3, 0, TIMESTAMP, 0, 0,
       ImmutableMap.of("type", "multipolygon"),
-      new Long[]{2l, 3l},
-      new String[]{Member.Type.way.name(), Member.Type.way.name()},
-      new String[]{"outer", "inner"},
+      ImmutableList.of(new Member(2, "way", "outer"), new Member(3, "way", "inner")),
       null);
 
-  public static final RelationEntity RELATION_4 = new RelationEntity(
+  public static final Relation RELATION_4 = new Relation(
       4, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon"),
-      new Long[]{2l, 3l, 4l},
-      new String[]{Member.Type.way.name(), Member.Type.way.name(), Member.Type.way.name()},
-      new String[]{"outer", "inner", "outer"},
+      ImmutableList.of(new Member(2, "way", "outer"), new Member(3, "way", "inner"),
+          new Member(4, "way", "outer")),
       null);
 
 }

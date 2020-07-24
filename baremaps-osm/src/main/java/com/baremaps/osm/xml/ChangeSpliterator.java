@@ -204,7 +204,7 @@ public class ChangeSpliterator implements Spliterator<Change> {
         long ref = Long.parseLong(element.getAttributeByName(QName.valueOf(REF)).getValue());
         String type = element.getAttributeByName(QName.valueOf(TYPE)).getValue();
         String role = element.getAttributeByName(QName.valueOf(ROLE)).getValue();
-        nodes.add(new Member(ref, Member.Type.valueOf(type), role));
+        nodes.add(new Member(ref, type, role));
       }
     }
     return nodes;

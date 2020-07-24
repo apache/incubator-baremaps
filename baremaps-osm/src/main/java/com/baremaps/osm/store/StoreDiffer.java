@@ -77,11 +77,11 @@ public class StoreDiffer implements Consumer<Change> {
       case delete:
       case modify:
         if (entity instanceof Node) {
-          return nodeStore.get(entity.getId()).getPoint();
+          return nodeStore.get(entity.getId()).getGeometry().get();
         } else if (entity instanceof Way) {
-          return wayStore.get(entity.getId()).getGeometry();
+          return wayStore.get(entity.getId()).getGeometry().get();
         } else if (entity instanceof Relation) {
-          return relationStore.get(entity.getId()).getGeometry();
+          return relationStore.get(entity.getId()).getGeometry().get();
         } else {
           return null;
         }

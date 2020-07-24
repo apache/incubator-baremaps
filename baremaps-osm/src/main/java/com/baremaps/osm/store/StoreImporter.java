@@ -17,6 +17,9 @@ package com.baremaps.osm.store;
 import com.baremaps.osm.geometry.NodeGeometryBuilder;
 import com.baremaps.osm.geometry.RelationGeometryBuilder;
 import com.baremaps.osm.geometry.WayGeometryBuilder;
+import com.baremaps.osm.model.Node;
+import com.baremaps.osm.model.Relation;
+import com.baremaps.osm.model.Way;
 import com.baremaps.osm.pbf.FileBlock;
 import com.baremaps.osm.pbf.HeaderBlock;
 import com.baremaps.osm.pbf.PrimitiveBlock;
@@ -33,20 +36,20 @@ public class StoreImporter implements Consumer<FileBlock> {
 
   private final RelationGeometryBuilder relationGeometryBuilder;
 
-  private final Store<NodeEntity> nodeStore;
+  private final Store<Node> nodeStore;
 
-  private final Store<WayEntity> wayStore;
+  private final Store<Way> wayStore;
 
-  private final Store<RelationEntity> relationStore;
+  private final Store<Relation> relationStore;
 
   public StoreImporter(
       PostgisHeaderStore headerTable,
       NodeGeometryBuilder nodeGeometryBuilder,
       WayGeometryBuilder wayGeometryBuilder,
       RelationGeometryBuilder relationGeometryBuilder,
-      Store<NodeEntity> nodeStore,
-      Store<WayEntity> wayStore,
-      Store<RelationEntity> relationStore) {
+      Store<Node> nodeStore,
+      Store<Way> wayStore,
+      Store<Relation> relationStore) {
     this.headerTable = headerTable;
     this.nodeGeometryBuilder = nodeGeometryBuilder;
     this.nodeStore = nodeStore;
@@ -80,54 +83,22 @@ public class StoreImporter implements Consumer<FileBlock> {
 
   private void accept(PrimitiveBlock primitiveBlock) {
     try {
-      nodeStore.copy(
-          primitiveBlock.getDenseNodes().stream()
-              .map(node -> new NodeEntity(
-                  node.getId(),
-                  node.getVersion(),
-                  node.getTimestamp(),
-                  node.getChangeset(),
-                  node.getUserId(),
-                  node.getTags(),
-                  nodeGeometryBuilder.build(node)))
-              .collect(Collectors.toList()));
-      nodeStore.copy(
-          primitiveBlock.getNodes().stream()
-              .map(node -> new NodeEntity(
-                  node.getId(),
-                  node.getVersion(),
-                  node.getTimestamp(),
-                  node.getChangeset(),
-                  node.getUserId(),
-                  node.getTags(),
-                  nodeGeometryBuilder.build(node)))
-              .collect(Collectors.toList()));
-      wayStore.copy(
-          primitiveBlock.getWays().stream()
-              .map(way -> new WayEntity(
-                  way.getId(),
-                  way.getVersion(),
-                  way.getTimestamp(),
-                  way.getChangeset(),
-                  way.getUserId(),
-                  way.getTags(),
-                  way.getNodes(),
-                  wayGeometryBuilder.build(way)))
-              .collect(Collectors.toList()));
-      relationStore.copy(
-          primitiveBlock.getRelations().stream()
-              .map(relation -> new RelationEntity(
-                  relation.getId(),
-                  relation.getVersion(),
-                  relation.getTimestamp(),
-                  relation.getChangeset(),
-                  relation.getUserId(),
-                  relation.getTags(),
-                  relation.getMembers().stream().map(m -> m.getRef()).toArray(Long[]::new),
-                  relation.getMembers().stream().map(m -> m.getType().name()).toArray(String[]::new),
-                  relation.getMembers().stream().map(m -> m.getRole()).toArray(String[]::new),
-                  relationGeometryBuilder.build(relation)))
-              .collect(Collectors.toList()));
+      nodeStore.copy(primitiveBlock.getDenseNodes().stream().map(node -> {
+        node.setGeometry(nodeGeometryBuilder.build(node));
+        return node;
+      }).collect(Collectors.toList()));
+      nodeStore.copy(primitiveBlock.getNodes().stream().map(node -> {
+        node.setGeometry(nodeGeometryBuilder.build(node));
+        return node;
+      }).collect(Collectors.toList()));
+      wayStore.copy(primitiveBlock.getWays().stream().map(way -> {
+        way.setGeometry(wayGeometryBuilder.build(way));
+        return way;
+      }).collect(Collectors.toList()));
+      relationStore.copy(primitiveBlock.getRelations().stream().map(relation -> {
+        relation.setGeometry(relationGeometryBuilder.build(relation));
+        return relation;
+      }).collect(Collectors.toList()));
     } catch (Exception e) {
       e.printStackTrace();
     }

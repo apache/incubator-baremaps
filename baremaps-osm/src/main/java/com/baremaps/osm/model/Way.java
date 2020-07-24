@@ -14,17 +14,23 @@
 
 package com.baremaps.osm.model;
 
+import com.google.common.base.Objects;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 public final class Way extends Entity {
 
-  private final List<Long> nodes;
+  private List<Long> nodes;
 
-  private final Geometry geometry;
+  private Geometry geometry;
+
+  public Way() {
+
+  }
 
   public Way(long id, int version, LocalDateTime timestamp, long changeset, int userId,
       Map<String, String> tags, List<Long> nodes) {
@@ -46,4 +52,46 @@ public final class Way extends Entity {
     return Optional.ofNullable(geometry);
   }
 
+  public void setNodes(List<Long> nodes) {
+    this.nodes = nodes;
+  }
+
+  public void setGeometry(Geometry geometry) {
+    this.geometry = geometry;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    Way way = (Way) o;
+    return Objects.equal(nodes, way.nodes) &&
+        Objects.equal(geometry, way.geometry);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(super.hashCode(), nodes, geometry);
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Way.class.getSimpleName() + "[", "]")
+        .add("id=" + id)
+        .add("version=" + version)
+        .add("timestamp=" + timestamp)
+        .add("changeset=" + changeset)
+        .add("userId=" + userId)
+        .add("tags=" + tags)
+        .add("nodes=" + nodes)
+        .add("geometry=" + geometry)
+        .toString();
+  }
 }

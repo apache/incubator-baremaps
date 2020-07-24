@@ -19,7 +19,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.baremaps.osm.binary.Osmformat;
 import com.baremaps.osm.binary.Osmformat.PrimitiveGroup;
 import com.baremaps.osm.model.Member;
-import com.baremaps.osm.model.Member.Type;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
@@ -175,7 +174,7 @@ public final class PrimitiveBlock {
       for (int j = 0; j < relation.getMemidsCount(); j++) {
         mid = mid + relation.getMemids(j);
         String role = getString(relation.getRolesSid(j));
-        Member.Type type = type(relation.getTypes(j));
+        String type = type(relation.getTypes(j));
         members.add(new Member(mid, type, role));
       }
       relations.add(new Relation(id, version, timestamp, changeset, uid, tags, members));
@@ -183,17 +182,8 @@ public final class PrimitiveBlock {
     return relations.stream();
   }
 
-  protected Member.Type type(Osmformat.Relation.MemberType type) {
-    switch (type) {
-      case WAY:
-        return Type.way;
-      case NODE:
-        return Type.node;
-      case RELATION:
-        return Type.relation;
-      default:
-        throw new IllegalArgumentException("Unsupported MemberType");
-    }
+  protected String type(Osmformat.Relation.MemberType type) {
+    return type.name();
   }
 
   protected double getLat(long lat) {
