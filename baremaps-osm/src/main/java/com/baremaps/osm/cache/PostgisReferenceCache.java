@@ -25,7 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
 import javax.sql.DataSource;
+import jnr.ffi.annotations.In;
 
 public class PostgisReferenceCache implements Cache<Long, List<Long>> {
 
@@ -37,6 +39,7 @@ public class PostgisReferenceCache implements Cache<Long, List<Long>> {
 
   private final DataSource dataSource;
 
+  @Inject
   public PostgisReferenceCache(DataSource dataSource) {
     this.dataSource = dataSource;
   }

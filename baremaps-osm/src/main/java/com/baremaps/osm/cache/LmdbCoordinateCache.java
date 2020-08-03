@@ -15,14 +15,16 @@
 package com.baremaps.osm.cache;
 
 import java.nio.ByteBuffer;
-import org.lmdbjava.Dbi;
+import javax.inject.Inject;
+import org.lmdbjava.DbiFlags;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 
 public class LmdbCoordinateCache extends LmdbCache<Long, Coordinate> {
 
-  public LmdbCoordinateCache(Env<ByteBuffer> env, Dbi<ByteBuffer> database) {
-    super(env, database);
+  @Inject
+  public LmdbCoordinateCache(Env<ByteBuffer> env) {
+    super(env, env.openDbi("coordinate", DbiFlags.MDB_CREATE));
   }
 
   @Override

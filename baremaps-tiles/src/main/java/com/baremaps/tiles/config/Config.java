@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.collect.Lists;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -85,17 +84,6 @@ public class Config {
     this.styles = styles;
   }
 
-  public static Config load(InputStream input) throws IOException {
-    try {
-      ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-      Config config = mapper.readValue(input, Config.class);
-      return config;
-    } catch (MismatchedInputException e) {
-      // return the default Config if the input is empty
-      return new Config();
-    }
-  }
-
   public String getVersion() {
     return version;
   }
@@ -135,4 +123,16 @@ public class Config {
   public void setType(String type) {
     this.type = type;
   }
+
+  public static Config load(byte[] input) throws IOException {
+    try {
+      ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+      Config config = mapper.readValue(input, Config.class);
+      return config;
+    } catch (MismatchedInputException e) {
+      // return the default Config if the input is empty
+      return new Config();
+    }
+  }
+
 }

@@ -23,7 +23,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
 import javax.sql.DataSource;
+import jnr.ffi.annotations.In;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 
@@ -37,6 +39,7 @@ public class PostgisCoordinateCache implements Cache<Long, Coordinate> {
 
   private final DataSource dataSource;
 
+  @Inject
   public PostgisCoordinateCache(DataSource dataSource) {
     this.dataSource = dataSource;
   }

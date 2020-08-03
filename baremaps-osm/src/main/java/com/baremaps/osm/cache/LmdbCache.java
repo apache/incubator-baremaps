@@ -19,6 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import org.lmdbjava.Dbi;
 import org.lmdbjava.Env;
 import org.lmdbjava.Txn;
@@ -86,10 +87,6 @@ public abstract class LmdbCache<K, V> implements Cache<K, V> {
       }
     }
     return list;
-  }
-
-  public void importAll(List<Entry<K, V>> values) {
-    throw new UnsupportedOperationException();
   }
 
   public abstract ByteBuffer buffer(K key);

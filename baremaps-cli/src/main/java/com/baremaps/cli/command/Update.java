@@ -17,23 +17,23 @@ package com.baremaps.cli.command;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.PostgisCoordinateCache;
 import com.baremaps.osm.cache.PostgisReferenceCache;
-import com.baremaps.osm.store.StoreDiffer;
-import com.baremaps.osm.store.StoreUpdater;
+import com.baremaps.osm.geometry.NodeBuilder;
+import com.baremaps.osm.geometry.ProjectionTransformer;
+import com.baremaps.osm.geometry.RelationBuilder;
+import com.baremaps.osm.geometry.WayBuilder;
+import com.baremaps.osm.model.Change;
+import com.baremaps.osm.model.Header;
+import com.baremaps.osm.model.State;
+import com.baremaps.osm.parser.ChangeSpliterator;
 import com.baremaps.osm.store.PostgisHeaderStore;
 import com.baremaps.osm.store.PostgisNodeStore;
 import com.baremaps.osm.store.PostgisRelationStore;
 import com.baremaps.osm.store.PostgisWayStore;
-import com.baremaps.osm.geometry.NodeGeometryBuilder;
-import com.baremaps.osm.geometry.ProjectionTransformer;
-import com.baremaps.osm.geometry.RelationGeometryBuilder;
-import com.baremaps.osm.geometry.WayGeometryBuilder;
-import com.baremaps.osm.pbf.HeaderBlock;
-import com.baremaps.osm.model.Change;
-import com.baremaps.osm.xml.ChangeSpliterator;
-import com.baremaps.osm.xml.State;
+import com.baremaps.osm.store.StoreDiffer;
+import com.baremaps.osm.store.StoreUpdateHandler;
 import com.baremaps.tiles.Tile;
 import com.baremaps.util.postgis.PostgisHelper;
-import com.baremaps.util.vfs.FileSystem;
+import com.baremaps.util.storage.BlobStore;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import java.io.InputStream;
@@ -115,19 +115,19 @@ public class Update implements Callable<Integer> {
     Cache<Long, Coordinate> coordinateCache = new PostgisCoordinateCache(datasource);
     Cache<Long, List<Long>> referenceCache = new PostgisReferenceCache(datasource);
 
-    NodeGeometryBuilder nodeGeometryBuilder = new NodeGeometryBuilder(geometryFactory, coordinateTransform);
-    WayGeometryBuilder wayGeometryBuilder = new WayGeometryBuilder(geometryFactory, coordinateCache);
-    RelationGeometryBuilder relationGeometryBuilder = new RelationGeometryBuilder(geometryFactory, coordinateCache, referenceCache);
+    NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
+    WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
+    RelationBuilder relationGeometryBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
 
     PostgisNodeStore nodeStore = new PostgisNodeStore(datasource);
     PostgisWayStore wayStore = new PostgisWayStore(datasource);
     PostgisRelationStore relationStore = new PostgisRelationStore(datasource);
 
     PostgisHeaderStore headerMapper = new PostgisHeaderStore(datasource);
-    HeaderBlock header = headerMapper.getLast();
+    Header header = headerMapper.getLast();
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
 
-    FileSystem fileSystem = mixins.filesystem();
+    BlobStore blobStore = mixins.blobStore();
 
     logger.info("Downloading changes");
     String changePath =  path(nextSequenceNumber) + ".osc.gz";
@@ -139,38 +139,38 @@ public class Update implements Callable<Integer> {
 
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransformFactory
         .createTransform(targetCRS, sourceCRS));
-    StoreDiffer deltaMaker = new StoreDiffer(nodeGeometryBuilder, wayGeometryBuilder, relationGeometryBuilder, nodeStore,
+    StoreDiffer deltaMaker = new StoreDiffer(nodeBuilder, wayBuilder, relationGeometryBuilder, nodeStore,
         wayStore, relationStore, projectionTransformer, zoom);
 
     logger.info("Computing differences");
-    try (InputStream changeInputStream = new GZIPInputStream(fileSystem.read(changeURI))) {
+    try (InputStream changeInputStream = new GZIPInputStream(blobStore.read(changeURI))) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
       changeStream.forEach(deltaMaker);
     }
 
     logger.info("Saving differences");
-    try (PrintWriter diffPrintWriter = new PrintWriter(fileSystem.write(delta))) {
+    try (PrintWriter diffPrintWriter = new PrintWriter(blobStore.write(delta))) {
       for (Tile tile : deltaMaker.getTiles()) {
         diffPrintWriter.println(String.format("%d/%d/%d", tile.x(), tile.y(), tile.z()));
       }
     }
 
     logger.info("Updating database");
-    try (InputStream changeInputStream = new GZIPInputStream(fileSystem.read(changeURI))) {
+    try (InputStream changeInputStream = new GZIPInputStream(blobStore.read(changeURI))) {
       Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
       Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
-      StoreUpdater databaseUpdater = new StoreUpdater(nodeGeometryBuilder, wayGeometryBuilder,
+      StoreUpdateHandler databaseUpdater = new StoreUpdateHandler(nodeBuilder, wayBuilder,
           relationGeometryBuilder,
           nodeStore, wayStore, relationStore);
       changeStream.forEach(databaseUpdater);
     }
 
     logger.info("Updating state information");
-    try (InputStreamReader reader = new InputStreamReader(fileSystem.read(stateURI), Charsets.UTF_8)) {
+    try (InputStreamReader reader = new InputStreamReader(blobStore.read(stateURI), Charsets.UTF_8)) {
       String stateContent = CharStreams.toString(reader);
       State state = State.parse(stateContent);
-      headerMapper.insert(new HeaderBlock(
+      headerMapper.insert(new Header(
           state.timestamp,
           state.sequenceNumber,
           header.getReplicationUrl(),

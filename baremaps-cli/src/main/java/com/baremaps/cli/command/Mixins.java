@@ -15,12 +15,11 @@
 package com.baremaps.cli.command;
 
 import com.baremaps.cli.option.LevelOption;
-import com.baremaps.util.vfs.CachedFileSystem;
-import com.baremaps.util.vfs.CompositeFileSystem;
-import com.baremaps.util.vfs.FileSystem;
-import com.baremaps.util.vfs.HttpFileSystem;
-import com.baremaps.util.vfs.LocalFileSystem;
-import com.baremaps.util.vfs.S3FileSystem;
+import com.baremaps.util.storage.BlobStore;
+import com.baremaps.util.storage.CompositeBlobStore;
+import com.baremaps.util.storage.HttpBlobStore;
+import com.baremaps.util.storage.LocalBlobStore;
+import com.baremaps.util.storage.S3BlobStore;
 import java.util.Arrays;
 import java.util.List;
 import picocli.CommandLine.Option;
@@ -34,27 +33,17 @@ public class Mixins {
   public LevelOption logLevel = LevelOption.INFO;
 
   @Option(
-      names = {"--enable-caching"},
-      paramLabel = "ENABLE_CACHING",
-      description = "Cache downloaded resources in temporary files.")
-  public boolean enableCaching = false;
-
-  @Option(
       names = {"--enable-aws"},
       paramLabel = "ENABLE_AWS",
       description = "Enable Amazon Web Service integration.")
   public boolean enableAws = false;
 
-  public FileSystem filesystem() {
-    List<FileSystem> components = Arrays.asList(new LocalFileSystem(), new HttpFileSystem());
+  public BlobStore blobStore() {
+    List<BlobStore> components = Arrays.asList(new LocalBlobStore(), new HttpBlobStore());
     if (enableAws) {
-      components.add(new S3FileSystem());
+      components.add(new S3BlobStore());
     }
-    FileSystem fileSystem = new CompositeFileSystem(components);
-    if (enableCaching) {
-      fileSystem = new CachedFileSystem(fileSystem);
-    }
-    return fileSystem;
+    return new CompositeBlobStore(components);
   }
 
 }

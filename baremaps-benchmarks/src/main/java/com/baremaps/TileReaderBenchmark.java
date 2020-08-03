@@ -18,9 +18,9 @@ import com.baremaps.tiles.Tile;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.store.PostgisTileStore;
 import com.baremaps.util.postgis.PostgisHelper;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -51,11 +51,11 @@ public class TileReaderBenchmark {
   @Setup(Level.Invocation)
   public void prepare() throws IOException, ClassNotFoundException {
     Class.forName("org.postgresql.Driver");
-    try (FileInputStream fis = new FileInputStream(new File("./examples/openstreetmap/config.yaml"))) {
-      config = Config.load(fis);
-      datasource = PostgisHelper.poolingDataSource(
-          "jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps");
-    }
+    byte[] bytes = Files.readAllBytes(Paths.get("./examples/openstreetmap/config.yaml"));
+    config = Config.load(bytes);
+    datasource = PostgisHelper.poolingDataSource(
+        "jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps");
+
   }
 
   @Benchmark

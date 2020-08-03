@@ -15,13 +15,14 @@
 package com.baremaps.osm.store;
 
 import com.baremaps.osm.geometry.GeometryUtil;
-import com.baremaps.osm.pbf.HeaderBlock;
+import com.baremaps.osm.model.Header;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Geometry;
 
@@ -35,15 +36,16 @@ public class PostgisHeaderStore {
 
   private final DataSource dataSource;
 
+  @Inject
   public PostgisHeaderStore(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
-  public List<HeaderBlock> select() throws StoreException {
+  public List<Header> select() throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       ResultSet result = statement.executeQuery();
-      List<HeaderBlock> headerBlocks = new ArrayList<>();
+      List<Header> headers = new ArrayList<>();
       while (result.next()) {
         long replicationTimestamp = result.getLong(1);
         long replicationSequenceNumber = result.getLong(2);
@@ -51,34 +53,33 @@ public class PostgisHeaderStore {
         String source = result.getString(4);
         String writingProgram = result.getString(5);
         Geometry bbox = GeometryUtil.deserialize(result.getBytes(6));
-        headerBlocks.add(
-            new HeaderBlock(
-                replicationTimestamp,
-                replicationSequenceNumber,
-                replicationUrl,
-                source,
-                writingProgram,
-                bbox));
+        headers.add(new Header(
+            replicationTimestamp,
+            replicationSequenceNumber,
+            replicationUrl,
+            source,
+            writingProgram,
+            bbox));
       }
-      return headerBlocks;
+      return headers;
     } catch (SQLException e) {
       throw new StoreException(e);
     }
   }
 
-  public HeaderBlock getLast() throws StoreException {
+  public Header getLast() throws StoreException {
     return select().get(0);
   }
 
-  public void insert(HeaderBlock headerBlock) throws StoreException {
+  public void insert(Header header) throws StoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      statement.setLong(1, headerBlock.getReplicationTimestamp());
-      statement.setLong(2, headerBlock.getReplicationSequenceNumber());
-      statement.setString(3, headerBlock.getReplicationUrl());
-      statement.setString(4, headerBlock.getSource());
-      statement.setString(5, headerBlock.getWritingProgram());
-      statement.setBytes(6, GeometryUtil.serialize(headerBlock.getBbox()));
+      statement.setLong(1, header.getReplicationTimestamp());
+      statement.setLong(2, header.getReplicationSequenceNumber());
+      statement.setString(3, header.getReplicationUrl());
+      statement.setString(4, header.getSource());
+      statement.setString(5, header.getWritingProgram());
+      statement.setBytes(6, GeometryUtil.serialize(header.getBbox()));
       statement.execute();
     } catch (SQLException e) {
       throw new StoreException(e);

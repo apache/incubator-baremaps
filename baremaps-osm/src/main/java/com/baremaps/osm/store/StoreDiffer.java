@@ -14,29 +14,30 @@
 
 package com.baremaps.osm.store;
 
-import com.baremaps.osm.geometry.NodeGeometryBuilder;
+import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.ProjectionTransformer;
-import com.baremaps.osm.geometry.RelationGeometryBuilder;
-import com.baremaps.osm.geometry.WayGeometryBuilder;
+import com.baremaps.osm.geometry.RelationBuilder;
+import com.baremaps.osm.geometry.WayBuilder;
+import com.baremaps.osm.model.Change;
 import com.baremaps.osm.model.Entity;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
-import com.baremaps.osm.model.Change;
 import com.baremaps.tiles.Tile;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
 import org.locationtech.jts.geom.Geometry;
 
 public class StoreDiffer implements Consumer<Change> {
 
   private final ProjectionTransformer projectionTransformer;
 
-  private final WayGeometryBuilder wayGeometryBuilder;
-  private final RelationGeometryBuilder relationGeometryBuilder;
-  private final NodeGeometryBuilder nodeGeometryBuilder;
+  private final WayBuilder wayBuilder;
+  private final RelationBuilder relationGeometryBuilder;
+  private final NodeBuilder nodeBuilder;
 
   private final PostgisNodeStore nodeStore;
   private final PostgisWayStore wayStore;
@@ -46,14 +47,15 @@ public class StoreDiffer implements Consumer<Change> {
 
   private final Set<Tile> tiles = new HashSet<>();
 
+  @Inject
   public StoreDiffer(
-      NodeGeometryBuilder nodeGeometryBuilder, WayGeometryBuilder wayGeometryBuilder, RelationGeometryBuilder relationGeometryBuilder,
+      NodeBuilder nodeBuilder, WayBuilder wayBuilder, RelationBuilder relationGeometryBuilder,
       PostgisNodeStore nodeStore, PostgisWayStore wayStore, PostgisRelationStore relationStore,
       ProjectionTransformer projectionTransformer,
       int zoom) {
     this.projectionTransformer = projectionTransformer;
-    this.nodeGeometryBuilder = nodeGeometryBuilder;
-    this.wayGeometryBuilder = wayGeometryBuilder;
+    this.nodeBuilder = nodeBuilder;
+    this.wayBuilder = wayBuilder;
     this.relationGeometryBuilder = relationGeometryBuilder;
     this.nodeStore = nodeStore;
     this.wayStore = wayStore;
@@ -88,9 +90,9 @@ public class StoreDiffer implements Consumer<Change> {
           }
         case create:
           if (entity instanceof Node) {
-            return nodeGeometryBuilder.build((Node) entity);
+            return nodeBuilder.build((Node) entity);
           } else if (entity instanceof Way) {
-            return wayGeometryBuilder.build((Way) entity);
+            return wayBuilder.build((Way) entity);
           } else if (entity instanceof Relation) {
             return relationGeometryBuilder.build((Relation) entity);
           } else {

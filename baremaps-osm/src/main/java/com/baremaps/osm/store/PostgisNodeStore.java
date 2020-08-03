@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
@@ -61,6 +62,7 @@ public class PostgisNodeStore implements Store<Node> {
 
   private final DataSource dataSource;
 
+  @Inject
   public PostgisNodeStore(DataSource dataSource) {
     this.dataSource = dataSource;
   }
