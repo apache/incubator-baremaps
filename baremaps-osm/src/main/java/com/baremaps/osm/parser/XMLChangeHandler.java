@@ -13,20 +13,47 @@
  */
 package com.baremaps.osm.parser;
 
-import com.baremaps.osm.model.Header;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
-import java.util.List;
+import com.baremaps.util.stream.StreamException;
 
-public interface PBFFileBlockHandler {
+public interface XMLChangeHandler {
 
-  default void onHeader(Header header) throws Exception {};
+  default void onNodeCreate(Node node) throws Exception {
 
-  default void onNodes(List<Node> nodes) throws Exception {};
+  }
 
-  default void onWays(List<Way> ways) throws Exception {};
+  default void onNodeModify(Node node) throws Exception {
 
-  default void onRelations(List<Relation> relations) throws Exception {};
+  }
+
+  default void onNodeDelete(Node node) throws Exception {
+
+  }
+
+  default void onWayCreate(Way way) throws Exception {
+
+  }
+
+  default void onWayModify(Way way) throws Exception {
+
+  }
+
+  default void onWayDelete(Way way) throws Exception {
+
+  }
+
+  default void onRelationCreate(Relation relation) throws Exception {
+
+  }
+
+  default void onRelationModify(Relation relation) throws Exception {
+
+  }
+
+  default void onRelationDelete(Relation relation) throws Exception {
+
+  }
 
 }

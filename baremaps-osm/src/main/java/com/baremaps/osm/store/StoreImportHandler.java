@@ -22,7 +22,7 @@ import com.baremaps.osm.parser.PBFFileBlockHandler;
 import java.util.List;
 import javax.inject.Inject;
 
-public class StoreImportFileBlockHandler implements PBFFileBlockHandler {
+public class StoreImportHandler implements PBFFileBlockHandler {
 
   private final PostgisHeaderStore headerTable;
 
@@ -33,7 +33,7 @@ public class StoreImportFileBlockHandler implements PBFFileBlockHandler {
   private final Store<Relation> relationStore;
 
   @Inject
-  public StoreImportFileBlockHandler(
+  public StoreImportHandler(
       PostgisHeaderStore headerTable,
       Store<Node> nodeStore,
       Store<Way> wayStore,
@@ -64,13 +64,4 @@ public class StoreImportFileBlockHandler implements PBFFileBlockHandler {
     relationStore.copy(relations);
   }
 
-  @Override
-  public void onComplete() {
-
-  }
-
-  @Override
-  public void onError(Throwable error) {
-
-  }
 }

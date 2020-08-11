@@ -17,11 +17,11 @@ package com.baremaps.cli.command;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.InMemoryCache;
 import com.baremaps.osm.parser.PBFFileBlockGeometryParser;
+import com.baremaps.osm.store.StoreImportHandler;
 import com.baremaps.osm.store.PostgisHeaderStore;
 import com.baremaps.osm.store.PostgisNodeStore;
 import com.baremaps.osm.store.PostgisRelationStore;
 import com.baremaps.osm.store.PostgisWayStore;
-import com.baremaps.osm.store.StoreImportFileBlockHandler;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -41,6 +41,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.proj4j.CRSFactory;
+import org.locationtech.proj4j.CoordinateReferenceSystem;
+import org.locationtech.proj4j.CoordinateTransform;
+import org.locationtech.proj4j.CoordinateTransformFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
@@ -123,14 +129,24 @@ public class Import implements Callable<Integer> {
     Path path = mixins.blobStore().fetch(input);
 
     logger.info("Importing data");
+
+    CRSFactory crsFactory = new CRSFactory();
+    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
+    CoordinateReferenceSystem targetCRS = crsFactory.createFromName("EPSG:3857");
+    CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
+    CoordinateTransform coordinateTransform = coordinateTransformFactory
+        .createTransform(sourceCRS, targetCRS);
+    GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
+
     PostgisHeaderStore headerTable = new PostgisHeaderStore(datasource);
     PostgisNodeStore nodeStore = new PostgisNodeStore(datasource);
     PostgisWayStore wayStore = new PostgisWayStore(datasource);
     PostgisRelationStore relationStore = new PostgisRelationStore(datasource);
-    StoreImportFileBlockHandler storeImportHandler = new StoreImportFileBlockHandler(headerTable, nodeStore, wayStore, relationStore);
+    StoreImportHandler storeImportHandler = new StoreImportHandler(headerTable, nodeStore, wayStore, relationStore);
     Cache<Long, Coordinate> coordinateCache = new InMemoryCache<>();
     Cache<Long, List<Long>> referencesCache = new InMemoryCache<>();
-    PBFFileBlockGeometryParser parser = new PBFFileBlockGeometryParser(coordinateCache, referencesCache);
+
+    PBFFileBlockGeometryParser parser = new PBFFileBlockGeometryParser(geometryFactory, coordinateTransform, coordinateCache, referencesCache);
     parser.parse(path, storeImportHandler);
 
     logger.info("Indexing geometries");

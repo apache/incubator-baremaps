@@ -68,13 +68,4 @@ class PBFFileBlockGeometryHandler implements PBFFileBlockHandler {
     handler.onRelations(relations);
   }
 
-  @Override
-  public void onComplete() throws Exception {
-    handler.onComplete();
-  }
-
-  @Override
-  public void onError(Throwable error) throws Exception {
-    handler.onError(error);
-  }
 }

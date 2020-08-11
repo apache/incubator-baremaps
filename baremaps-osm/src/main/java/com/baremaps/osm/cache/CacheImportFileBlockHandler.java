@@ -65,14 +65,4 @@ public class CacheImportFileBlockHandler implements PBFFileBlockHandler {
   public void onRelations(List<Relation> relations) {
 
   }
-
-  @Override
-  public void onComplete() {
-
-  }
-
-  @Override
-  public void onError(Throwable error) {
-
-  }
 }

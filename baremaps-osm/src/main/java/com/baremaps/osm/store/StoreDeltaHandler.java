@@ -18,29 +18,31 @@ import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
-import com.baremaps.osm.model.Change;
-import com.baremaps.osm.model.Entity;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
+import com.baremaps.osm.parser.XMLChangeHandler;
 import com.baremaps.tiles.Tile;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import org.locationtech.jts.geom.Geometry;
 
-public class StoreDiffer implements Consumer<Change> {
+public class StoreDeltaHandler implements XMLChangeHandler {
 
   private final ProjectionTransformer projectionTransformer;
 
   private final WayBuilder wayBuilder;
+
   private final RelationBuilder relationGeometryBuilder;
+
   private final NodeBuilder nodeBuilder;
 
   private final PostgisNodeStore nodeStore;
+
   private final PostgisWayStore wayStore;
+
   private final PostgisRelationStore relationStore;
 
   private final int zoom;
@@ -48,15 +50,19 @@ public class StoreDiffer implements Consumer<Change> {
   private final Set<Tile> tiles = new HashSet<>();
 
   @Inject
-  public StoreDiffer(
-      NodeBuilder nodeBuilder, WayBuilder wayBuilder, RelationBuilder relationGeometryBuilder,
-      PostgisNodeStore nodeStore, PostgisWayStore wayStore, PostgisRelationStore relationStore,
+  public StoreDeltaHandler(
+      NodeBuilder nodeBuilder,
+      WayBuilder wayBuilder,
+      RelationBuilder relationBuilder,
+      PostgisNodeStore nodeStore,
+      PostgisWayStore wayStore,
+      PostgisRelationStore relationStore,
       ProjectionTransformer projectionTransformer,
       int zoom) {
     this.projectionTransformer = projectionTransformer;
     this.nodeBuilder = nodeBuilder;
     this.wayBuilder = wayBuilder;
-    this.relationGeometryBuilder = relationGeometryBuilder;
+    this.relationGeometryBuilder = relationBuilder;
     this.nodeStore = nodeStore;
     this.wayStore = wayStore;
     this.relationStore = relationStore;
@@ -64,46 +70,52 @@ public class StoreDiffer implements Consumer<Change> {
   }
 
   @Override
-  public void accept(Change change) {
-    Geometry geometry = geometry(change);
-    if (geometry != null) {
-      tiles.addAll(
-          Tile.getTiles(projectionTransformer.transform(geometry).getEnvelopeInternal(), zoom)
-              .collect(Collectors.toList()));
-    }
+  public void onNodeModify(Node node) throws Exception {
+    nodeStore.get(node.getId())
+        .getGeometry()
+        .ifPresent(this::handleGeometry);
   }
 
-  private final Geometry geometry(Change change) {
-    try {
-      Entity entity = change.getEntity();
-      switch (change.getType()) {
-        case delete:
-        case modify:
-          if (entity instanceof Node) {
-            return nodeStore.get(entity.getId()).getGeometry().get();
-          } else if (entity instanceof Way) {
-            return wayStore.get(entity.getId()).getGeometry().get();
-          } else if (entity instanceof Relation) {
-            return relationStore.get(entity.getId()).getGeometry().get();
-          } else {
-            return null;
-          }
-        case create:
-          if (entity instanceof Node) {
-            return nodeBuilder.build((Node) entity);
-          } else if (entity instanceof Way) {
-            return wayBuilder.build((Way) entity);
-          } else if (entity instanceof Relation) {
-            return relationGeometryBuilder.build((Relation) entity);
-          } else {
-            return null;
-          }
-        default:
-          return null;
-      }
-    } catch (StoreException e) {
-      throw new RuntimeException(e);
-    }
+  @Override
+  public void onNodeDelete(Node node) throws Exception {
+    nodeStore.get(node.getId())
+        .getGeometry()
+        .ifPresent(this::handleGeometry);
+  }
+
+
+  @Override
+  public void onWayModify(Way way) throws Exception {
+    nodeStore.get(way.getId())
+        .getGeometry()
+        .ifPresent(this::handleGeometry);
+  }
+
+  @Override
+  public void onWayDelete(Way way) throws Exception {
+    nodeStore.get(way.getId())
+        .getGeometry()
+        .ifPresent(this::handleGeometry);
+  }
+
+  @Override
+  public void onRelationModify(Relation relation) throws Exception {
+    nodeStore.get(relation.getId())
+        .getGeometry()
+        .ifPresent(this::handleGeometry);
+  }
+
+  @Override
+  public void onRelationDelete(Relation relation) throws Exception {
+    nodeStore.get(relation.getId())
+        .getGeometry()
+        .ifPresent(this::handleGeometry);
+  }
+
+  private void handleGeometry(Geometry geometry) {
+    tiles.addAll(
+        Tile.getTiles(projectionTransformer.transform(geometry).getEnvelopeInternal(), zoom)
+            .collect(Collectors.toList()));
   }
 
   public Set<Tile> getTiles() {

@@ -12,9 +12,8 @@
  * the License.
  */
 
-package com.baremaps.osm;
+package com.baremaps.osm.parser;
 
-import com.baremaps.osm.parser.FileBlock;
 import com.baremaps.osm.parser.FileBlock.Type;
 import com.google.protobuf.ByteString;
 import java.io.InputStream;

@@ -16,7 +16,7 @@ package com.baremaps.osm.parser;
 
 import com.google.protobuf.ByteString;
 
-public class FileBlock {
+class FileBlock {
 
   public enum Type {
     OSMHeader,

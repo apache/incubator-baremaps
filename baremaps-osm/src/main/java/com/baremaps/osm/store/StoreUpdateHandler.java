@@ -17,86 +17,73 @@ package com.baremaps.osm.store;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
-import com.baremaps.osm.model.Change;
-import com.baremaps.osm.model.Entity;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
-import java.util.function.Consumer;
+import com.baremaps.osm.parser.XMLChangeHandler;
+import javax.inject.Inject;
 
-public class StoreUpdateHandler implements Consumer<Change> {
+public class StoreUpdateHandler implements XMLChangeHandler {
 
   private final WayBuilder wayBuilder;
-  private final RelationBuilder relationGeometryBuilder;
+
+  private final RelationBuilder relationBuilder;
+
   private final NodeBuilder nodeBuilder;
 
   private final PostgisNodeStore nodeStore;
+
   private final PostgisWayStore wayStore;
+
   private final PostgisRelationStore relationStore;
 
+  @Inject
   public StoreUpdateHandler(
-      NodeBuilder nodeBuilder, WayBuilder wayBuilder,
-      RelationBuilder relationGeometryBuilder, PostgisNodeStore nodeStore,
+      NodeBuilder nodeBuilder,
+      WayBuilder wayBuilder,
+      RelationBuilder relationBuilder,
+      PostgisNodeStore nodeStore,
       PostgisWayStore wayStore,
       PostgisRelationStore relationStore) {
     this.nodeBuilder = nodeBuilder;
     this.wayBuilder = wayBuilder;
-    this.relationGeometryBuilder = relationGeometryBuilder;
+    this.relationBuilder = relationBuilder;
     this.nodeStore = nodeStore;
     this.wayStore = wayStore;
     this.relationStore = relationStore;
   }
 
   @Override
-  public void accept(Change change) {
-    try {
-      Entity entity = change.getEntity();
-      if (entity instanceof Node) {
-        Node node = (Node) entity;
-        switch (change.getType()) {
-          case create:
-          case modify:
-            node.setGeometry(nodeBuilder.build(node));
-            nodeStore.put(node);
-            break;
-          case delete:
-            nodeStore.delete(node.getId());
-            break;
-          default:
-            break;
-        }
-      } else if (entity instanceof Way) {
-        Way way = (Way) entity;
-        switch (change.getType()) {
-          case create:
-          case modify:
-            way.setGeometry(wayBuilder.build(way));
-            wayStore.put(way);
-            break;
-          case delete:
-            wayStore.delete(way.getId());
-            break;
-          default:
-            break;
-        }
-      } else if (entity instanceof Relation) {
-        Relation relation = (Relation) entity;
-        switch (change.getType()) {
-          case create:
-          case modify:
-            relation.setGeometry(relationGeometryBuilder.build(relation));
-            relationStore.put(relation);
-            break;
-          case delete:
-            relationStore.delete(relation.getId());
-            break;
-          default:
-            break;
-        }
-      }
-    } catch (StoreException e) {
-      throw new RuntimeException(e);
-    }
+  public void onNodeModify(Node node) throws StoreException {
+    node.setGeometry(nodeBuilder.build(node));
+    nodeStore.put(node);
+  }
+
+  @Override
+  public void onNodeDelete(Node node) throws StoreException {
+    nodeStore.delete(node.getId());
+  }
+
+  @Override
+  public void onWayModify(Way way) throws StoreException {
+    way.setGeometry(wayBuilder.build(way));
+    wayStore.put(way);
+  }
+
+  @Override
+  public void onWayDelete(Way way) throws StoreException {
+    wayStore.delete(way.getId());
+  }
+
+  @Override
+  public void onRelationModify(Relation relation) throws StoreException {
+    relation.setGeometry(relationBuilder.build(relation));
+    relationStore.put(relation);
+  }
+
+  @Override
+  public void onRelationDelete(Relation relation) throws StoreException {
+    relationStore.delete(relation.getId());
   }
 
 }

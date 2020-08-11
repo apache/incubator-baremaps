@@ -21,15 +21,15 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
-class HeaderBlockDecorator {
+class HeaderBlockWrapper {
 
   private final Osmformat.HeaderBlock headerBlock;
 
-  public HeaderBlockDecorator(FileBlock fileBlock) throws InvalidProtocolBufferException {
+  public HeaderBlockWrapper(FileBlock fileBlock) throws InvalidProtocolBufferException {
     this.headerBlock = Osmformat.HeaderBlock.parseFrom(fileBlock.getData());
   }
 
-  public Header parseHeader() {
+  public Header getHeader() {
     HeaderBBox headerBBox = headerBlock.getBbox();
     double x1 = headerBBox.getLeft() * .000000001;
     double x2 = headerBBox.getRight() * .000000001;

@@ -14,9 +14,9 @@
 
 package com.baremaps.osm.parser;
 
-import static com.baremaps.osm.DataFiles.denseOsmPbf;
-import static com.baremaps.osm.DataFiles.relationsOsmPbf;
-import static com.baremaps.osm.DataFiles.waysOsmPbf;
+import static com.baremaps.osm.parser.DataFiles.denseOsmPbf;
+import static com.baremaps.osm.parser.DataFiles.relationsOsmPbf;
+import static com.baremaps.osm.parser.DataFiles.waysOsmPbf;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

@@ -17,13 +17,8 @@ import com.baremaps.osm.model.Header;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
-import com.baremaps.util.stream.StreamException;
-import java.io.DataInputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.stream.StreamSupport;
 
 public class PBFEntityParser {
 
@@ -53,16 +48,6 @@ public class PBFEntityParser {
         for (Relation relation : relations) {
           handler.onRelation(relation);
         }
-      }
-
-      @Override
-      public void onComplete() throws Exception {
-        handler.onComplete();
-      }
-
-      @Override
-      public void onError(Throwable error) throws Exception {
-        handler.onError(error);
       }
     });
   }

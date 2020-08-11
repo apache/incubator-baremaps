@@ -18,6 +18,7 @@ import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
 import com.baremaps.util.stream.StreamException;
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -26,14 +27,12 @@ import java.util.stream.StreamSupport;
 
 public class PBFFileBlockParser {
 
-  public void parse(Path path, PBFFileBlockHandler handler) throws Exception {
-    try {
-      DataInputStream data = new DataInputStream(Files.newInputStream(path));
+  public void parse(Path path, PBFFileBlockHandler handler) throws ParserException {
+    try (DataInputStream data = new DataInputStream(Files.newInputStream(path))) {
       Spliterator<FileBlock> spliterator = new FileBlockSpliterator(data);
       StreamSupport.stream(spliterator, true).forEach(b -> parseBlock(b, handler));
-      handler.onComplete();
-    } catch (StreamException e) {
-      handler.onError(e.getCause());
+    } catch (StreamException | IOException e) {
+      throw new ParserException(e.getCause());
     }
   }
 
@@ -53,7 +52,7 @@ public class PBFFileBlockParser {
 
   private void parseHeader(FileBlock fileBlock, PBFFileBlockHandler handler) {
     try {
-      handler.onHeader(new HeaderBlockDecorator(fileBlock).parseHeader());
+      handler.onHeader(new HeaderBlockWrapper(fileBlock).getHeader());
     } catch (Exception e) {
       throw new StreamException(e);
     }
@@ -61,20 +60,20 @@ public class PBFFileBlockParser {
 
   private void parseData(FileBlock fileBlock, PBFFileBlockHandler handler) {
     try {
-      DataBlockDecorator parser = new DataBlockDecorator(fileBlock);
-      List<Node> denseNodes = parser.parseDenseNodes();
+      DataBlockWrapper parser = new DataBlockWrapper(fileBlock);
+      List<Node> denseNodes = parser.getDenseNodes();
       if (denseNodes.size() > 0) {
         handler.onNodes(denseNodes);
       }
-      List<Node> nodes = parser.parseNodes();
+      List<Node> nodes = parser.getNodes();
       if (nodes.size() > 0) {
         handler.onNodes(nodes);
       }
-      List<Way> ways = parser.parseWays();
+      List<Way> ways = parser.getWays();
       if (ways.size() > 0) {
         handler.onWays(ways);
       }
-      List<Relation> relations = parser.parseRelations();
+      List<Relation> relations = parser.getRelations();
       if (relations.size() > 0) {
         handler.onRelations(relations);
       }

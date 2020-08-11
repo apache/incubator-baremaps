@@ -30,7 +30,7 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class DataBlockDecorator {
+class DataBlockWrapper {
 
   private final Osmformat.PrimitiveBlock primitiveBlock;
   private final int granularity;
@@ -40,7 +40,7 @@ public class DataBlockDecorator {
   private final String[] stringTable;
 
 
-  public DataBlockDecorator(FileBlock fileBlock) throws InvalidProtocolBufferException {
+  public DataBlockWrapper(FileBlock fileBlock) throws InvalidProtocolBufferException {
     this.primitiveBlock =  Osmformat.PrimitiveBlock.parseFrom(fileBlock.getData());
     this.granularity = primitiveBlock.getGranularity();
     this.latOffset = primitiveBlock.getLatOffset();
@@ -52,15 +52,15 @@ public class DataBlockDecorator {
     }
   }
 
-  public List<Node> parseDenseNodes() {
+  public List<Node> getDenseNodes() {
     return primitiveBlock.getPrimitivegroupList()
         .stream()
         .map(PrimitiveGroup::getDense)
-        .flatMap(this::parseDenseNodes)
+        .flatMap(this::getDenseNodes)
         .collect(Collectors.toList());
   }
 
-  private Stream<Node> parseDenseNodes(Osmformat.DenseNodes input) {
+  private Stream<Node> getDenseNodes(Osmformat.DenseNodes input) {
     List<Node> nodes = new ArrayList<>();
     long id = 0;
     long lat = 0;
@@ -101,15 +101,15 @@ public class DataBlockDecorator {
     return nodes.stream();
   }
 
-  public List<Node> parseNodes() {
+  public List<Node> getNodes() {
     return primitiveBlock.getPrimitivegroupList()
         .stream()
         .map(PrimitiveGroup::getNodesList)
-        .flatMap(this::parseNodes)
+        .flatMap(this::getNodes)
         .collect(Collectors.toList());
   }
 
-  private Stream<Node> parseNodes(List<Osmformat.Node> input) {
+  private Stream<Node> getNodes(List<Osmformat.Node> input) {
     List<Node> nodes = new ArrayList<>();
     for (Osmformat.Node node : input) {
       long id = node.getId();
@@ -128,7 +128,7 @@ public class DataBlockDecorator {
     return nodes.stream();
   }
 
-  public List<Way> parseWays() {
+  public List<Way> getWays() {
     List<Way> ways = new ArrayList<>();
     for (PrimitiveGroup group : primitiveBlock.getPrimitivegroupList()) {
       for (Osmformat.Way way : group.getWaysList()) {
@@ -150,15 +150,15 @@ public class DataBlockDecorator {
     return ways;
   }
 
-  public List<Relation> parseRelations() {
+  public List<Relation> getRelations() {
     return primitiveBlock.getPrimitivegroupList()
         .stream()
         .map(PrimitiveGroup::getRelationsList)
-        .flatMap(this::parseRelations)
+        .flatMap(this::getRelations)
         .collect(Collectors.toList());
   }
 
-  protected Stream<Relation> parseRelations(List<Osmformat.Relation> input) {
+  protected Stream<Relation> getRelations(List<Osmformat.Relation> input) {
     List<Relation> relations = new ArrayList<>();
     for (Osmformat.Relation relation : input) {
       long id = relation.getId();

@@ -40,7 +40,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-public class ChangeSpliterator implements Spliterator<Change> {
+class ChangeSpliterator implements Spliterator<Change> {
 
   public static final String CREATE = "create";
   public static final String MODIFY = "modify";

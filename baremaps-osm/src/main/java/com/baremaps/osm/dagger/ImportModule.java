@@ -23,13 +23,18 @@ import com.baremaps.osm.store.PostgisNodeStore;
 import com.baremaps.osm.store.PostgisRelationStore;
 import com.baremaps.osm.store.PostgisWayStore;
 import com.baremaps.osm.store.Store;
-import com.baremaps.osm.store.StoreImportFileBlockHandler;
+import com.baremaps.osm.store.StoreImportHandler;
 import dagger.Module;
 import dagger.Provides;
 import java.util.List;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.proj4j.CRSFactory;
+import org.locationtech.proj4j.CoordinateReferenceSystem;
+import org.locationtech.proj4j.CoordinateTransform;
+import org.locationtech.proj4j.CoordinateTransformFactory;
 
 @Module
 public class ImportModule {
@@ -51,54 +56,71 @@ public class ImportModule {
 
   @Provides
   @Singleton
-  public Cache<Long, Coordinate> coordinateCache() {
+  public GeometryFactory providesGeometryFactory() {
+    return new GeometryFactory();
+  }
+
+  @Provides
+  @Singleton
+  public CoordinateTransform providesCoordinateTranform() {
+    CRSFactory crsFactory = new CRSFactory();
+    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
+    CoordinateReferenceSystem targetCRS = crsFactory.createFromName("EPSG:3857");
+    CoordinateTransformFactory factory = new CoordinateTransformFactory();
+    CoordinateTransform coordinateTransform = factory.createTransform(sourceCRS, targetCRS);
+    return coordinateTransform;
+  }
+
+  @Provides
+  @Singleton
+  public Cache<Long, Coordinate> providesCoordinateCache() {
     return coordinateCache;
   }
 
   @Provides
   @Singleton
-  public Cache<Long, List<Long>> referenceCache() {
+  public Cache<Long, List<Long>> providesReferenceCache() {
     return referenceCache;
   }
 
   @Provides
   @Singleton
-  public DataSource dataSource() {
+  public DataSource providesDataSource() {
     return dataSource;
   }
 
   @Provides
   @Singleton
-  public PostgisHeaderStore headerStore(DataSource dataSource) {
+  public PostgisHeaderStore providesHeaderStore(DataSource dataSource) {
     return new PostgisHeaderStore(dataSource);
   }
 
   @Provides
   @Singleton
-  public Store<Node> nodeStore(PostgisNodeStore nodeStore) {
+  public Store<Node> providesNodeStore(PostgisNodeStore nodeStore) {
     return nodeStore;
   }
 
   @Provides
   @Singleton
-  public Store<Way> wayStore(DataSource dataSource) {
+  public Store<Way> providesWayStore(DataSource dataSource) {
     return new PostgisWayStore(dataSource);
   }
 
   @Provides
   @Singleton
-  public Store<Relation> referenceStore(DataSource dataSource) {
+  public Store<Relation> providesReferenceStore(DataSource dataSource) {
     return new PostgisRelationStore(dataSource);
   }
 
   @Provides
   @Singleton
-  public PBFFileBlockHandler storeHandler(
+  public PBFFileBlockHandler providesFileBlockHandler(
       PostgisHeaderStore headerStore,
       Store<Node> nodeStore,
       Store<Way> wayStore,
       Store<Relation> referenceStore) {
-    return new StoreImportFileBlockHandler(headerStore, nodeStore, wayStore, referenceStore);
+    return new StoreImportHandler(headerStore, nodeStore, wayStore, referenceStore);
   }
 
 }

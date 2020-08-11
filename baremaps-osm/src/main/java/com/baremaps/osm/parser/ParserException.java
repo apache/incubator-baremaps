@@ -13,20 +13,18 @@
  */
 package com.baremaps.osm.parser;
 
-import com.baremaps.osm.model.Header;
-import com.baremaps.osm.model.Node;
-import com.baremaps.osm.model.Relation;
-import com.baremaps.osm.model.Way;
-import java.util.List;
+public class ParserException extends Exception {
 
-public interface PBFFileBlockHandler {
+  public ParserException() {
+    super();
+  }
 
-  default void onHeader(Header header) throws Exception {};
+  public ParserException(Exception e) {
+    super(e);
+  }
 
-  default void onNodes(List<Node> nodes) throws Exception {};
-
-  default void onWays(List<Way> ways) throws Exception {};
-
-  default void onRelations(List<Relation> relations) throws Exception {};
+  public ParserException(Throwable e) {
+    super(e);
+  }
 
 }

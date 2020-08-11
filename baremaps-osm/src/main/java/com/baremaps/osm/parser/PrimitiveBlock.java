@@ -32,7 +32,7 @@ import java.util.TimeZone;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class PrimitiveBlock {
+class PrimitiveBlock {
 
   public final Osmformat.PrimitiveBlock primitiveBlock;
   private final int granularity;
