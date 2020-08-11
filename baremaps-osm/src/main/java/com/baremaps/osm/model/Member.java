@@ -17,16 +17,15 @@ package com.baremaps.osm.model;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.base.Objects;
+import java.util.StringJoiner;
 
 public final class Member {
 
-  public enum Type {node, way, relation}
-
   private final long ref;
-  private final Type type;
+  private final String type;
   private final String role;
 
-  public Member(long ref, Type type, String role) {
+  public Member(long ref, String type, String role) {
     checkNotNull(type);
     checkNotNull(role);
     this.ref = ref;
@@ -38,7 +37,7 @@ public final class Member {
     return ref;
   }
 
-  public Type getType() {
+  public String getType() {
     return type;
   }
 
@@ -55,7 +54,9 @@ public final class Member {
       return false;
     }
     Member member = (Member) o;
-    return ref == member.ref && type == member.type && Objects.equal(role, member.role);
+    return ref == member.ref &&
+        Objects.equal(type, member.type) &&
+        Objects.equal(role, member.role);
   }
 
   @Override
@@ -63,5 +64,12 @@ public final class Member {
     return Objects.hashCode(ref, type, role);
   }
 
-
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Member.class.getSimpleName() + "[", "]")
+        .add("ref=" + ref)
+        .add("type='" + type + "'")
+        .add("role='" + role + "'")
+        .toString();
+  }
 }

@@ -16,9 +16,7 @@ package com.baremaps.osm.geometry;
 
 import com.baremaps.osm.MockCache;
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.model.Info;
 import com.baremaps.osm.model.Member;
-import com.baremaps.osm.model.Member.Type;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
@@ -64,43 +62,44 @@ public class GeometryConstants {
 
   public static final LocalDateTime TIMESTAMP = LocalDateTime.of(2020, 1, 1, 0, 0);
 
-  public static final Node NODE_0 = new Node(new Info(0, 0, TIMESTAMP, 0, 0,
-      ImmutableMap.of()), 0, 0);
+  public static final Node NODE_0 = new Node(0, 0, TIMESTAMP, 0, 0,
+      ImmutableMap.of(), 0, 0);
 
-  public static final Node NODE_1 = new Node(new Info(1, 0, TIMESTAMP, 0, 0,
-      ImmutableMap.of()), 0, 3);
+  public static final Node NODE_1 = new Node(1, 0, TIMESTAMP, 0, 0,
+      ImmutableMap.of(), 0, 3);
 
-  public static final Node NODE_2 = new Node(new Info(2, 0, TIMESTAMP, 0, 0,
-      ImmutableMap.of()), 3, 3);
+  public static final Node NODE_2 = new Node(2, 0, TIMESTAMP, 0, 0,
+      ImmutableMap.of(), 3, 3);
 
-  public static final Node NODE_3 = new Node(new Info(3, 0, TIMESTAMP, 0, 0,
-      ImmutableMap.of()), 3, 0);
+  public static final Node NODE_3 = new Node(3, 0, TIMESTAMP, 0, 0,
+      ImmutableMap.of(), 3, 0);
 
-  public static final Node NODE_4 = new Node(new Info(4, 0, TIMESTAMP, 0, 0,
-      ImmutableMap.of()), 1, 1);
+  public static final Node NODE_4 = new Node(4, 0, TIMESTAMP, 0, 0,
+      ImmutableMap.of(), 1, 1);
 
-  public static final Node NODE_5 = new Node(new Info(5, 0, TIMESTAMP, 0, 0,
-      ImmutableMap.of()), 1, 2);
+  public static final Node NODE_5 = new Node(5, 0, TIMESTAMP, 0, 0,
+      ImmutableMap.of(), 1, 2);
 
-  public static final Node NODE_6 = new Node(new Info(6, 0, TIMESTAMP, 0, 0,
-      ImmutableMap.of()), 2, 2);
+  public static final Node NODE_6 = new Node(6, 0, TIMESTAMP, 0, 0,
+      ImmutableMap.of(), 2, 2);
 
-  public static final Node NODE_7 = new Node(new Info(7, 0, TIMESTAMP, 0, 0,
-      ImmutableMap.of()), 2, 1);
+  public static final Node NODE_7 = new Node(7, 0, TIMESTAMP, 0, 0,
+      ImmutableMap.of(), 2, 1);
 
-  public static final Node NODE_8 = new Node(new Info(8, 0, TIMESTAMP, 0, 0,
-      ImmutableMap.of()), 4, 1);
+  public static final Node NODE_8 = new Node(8, 0, TIMESTAMP, 0, 0,
+      ImmutableMap.of(), 4, 1);
 
-  public static final Node NODE_9 = new Node(new Info(9, 0, TIMESTAMP, 0, 0,
-      ImmutableMap.of()), 4, 1);
+  public static final Node NODE_9 = new Node(9, 0, TIMESTAMP, 0, 0,
+      ImmutableMap.of(), 4, 1);
 
-  public static final Node NODE_10 = new Node(new Info(10, 0, TIMESTAMP, 0, 0,
-      ImmutableMap.of()), 5, 2);
+  public static final Node NODE_10 = new Node(10, 0, TIMESTAMP, 0, 0,
+      ImmutableMap.of(), 5, 2);
 
-  public static final Node NODE_11 = new Node(new Info(11, 0, TIMESTAMP, 0, 0,
-      ImmutableMap.of()), 5, 1);
+  public static final Node NODE_11 = new Node(11, 0, TIMESTAMP, 0, 0,
+      ImmutableMap.of(), 5, 1);
 
-  public static final NodeBuilder NODE_BUILDER = new NodeBuilder(GEOMETRY_FACTORY, COORDINATE_TRANSFORM);
+  public static final NodeBuilder NODE_BUILDER = new NodeBuilder(GEOMETRY_FACTORY,
+      COORDINATE_TRANSFORM);
 
   public static final Cache<Long, Coordinate> COORDINATE_CACHE = new MockCache(
       Arrays.asList(NODE_0, NODE_1, NODE_2, NODE_3, NODE_4, NODE_5,
@@ -109,23 +108,23 @@ public class GeometryConstants {
           .collect(Collectors.toList()));
 
   public static final Way WAY_0 = new Way(
-      new Info(0, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
+      0, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
       ImmutableList.of());
 
   public static final Way WAY_1 = new Way(
-      new Info(1, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
+      1, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
       ImmutableList.of(0l, 1l, 2l, 3l));
 
   public static final Way WAY_2 = new Way(
-      new Info(2, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
+      2, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
       ImmutableList.of(0l, 1l, 2l, 3l, 0l));
 
   public static final Way WAY_3 = new Way(
-      new Info(3, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
+      3, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
       ImmutableList.of(8l, 9l, 10l, 11l, 8l));
 
   public static final Way WAY_4 = new Way(
-      new Info(4, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
+      4, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
       ImmutableList.of(4l, 5l, 6l, 7l, 4l));
 
   public static final WayBuilder WAY_BUILDER = new WayBuilder(GEOMETRY_FACTORY,
@@ -136,29 +135,29 @@ public class GeometryConstants {
           .map(w -> w.getNodes()).collect(Collectors.toList()));
 
   public static final Relation RELATION_0 = new Relation(
-      new Info(0, 0, TIMESTAMP, 0, 0, ImmutableMap.of()),
+      0, 0, TIMESTAMP, 0, 0, ImmutableMap.of(),
       Arrays.asList());
 
   public static final Relation RELATION_1 = new Relation(
-      new Info(1, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon")),
+      1, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon"),
       Arrays.asList());
 
   public static final Relation RELATION_2 = new Relation(
-      new Info(2, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon")),
-      Arrays.asList(new Member(2l, Type.way, "outer")));
+      2, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon"),
+      Arrays.asList(new Member(2l, "way", "outer")));
 
   public static final Relation RELATION_3 = new Relation(
-      new Info(3, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon")),
+      3, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon"),
       Arrays.asList(
-          new Member(2l, Type.way, "outer"),
-          new Member(3l, Type.way, "inner")));
+          new Member(2l, "way", "outer"),
+          new Member(3l, "way", "inner")));
 
   public static final Relation RELATION_4 = new Relation(
-      new Info(4, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon")),
+      4, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon"),
       Arrays.asList(
-          new Member(2l, Type.way, "outer"),
-          new Member(3l, Type.way, "inner"),
-          new Member(4l, Type.way, "outer")));
+          new Member(2l, "way", "outer"),
+          new Member(3l, "way", "inner"),
+          new Member(4l, "way", "outer")));
 
   public static final RelationBuilder RELATION_BUILDER = new RelationBuilder(GEOMETRY_FACTORY,
       COORDINATE_CACHE, REFERENCE_CACHE);

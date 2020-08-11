@@ -17,17 +17,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.google.common.io.CharSource;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
-import org.postgresql.util.ReaderInputStream;
 
 class ConfigTest {
 
   @Test
-  public void load() throws IOException {
-    InputStream input = this.getClass().getClassLoader().getResourceAsStream("config.yaml");
+  public void load() throws IOException, URISyntaxException {
+    URL url = this.getClass().getClassLoader().getResource("config.yaml");
+    byte[] input =  Files.readAllBytes(Paths.get(url.toURI()));
     Config config = Config.load(input);
     assertNotNull(config);
     assertTrue(config.getLayers().size() == 2);
@@ -35,7 +37,7 @@ class ConfigTest {
 
   @Test
   public void loadEmptyYamlConfig() throws IOException {
-    InputStream input = new ReaderInputStream(CharSource.wrap("").openStream());
+    byte[] input = "".getBytes();
     Config config = Config.load(input);
     assertNotNull(config);
     assertEquals(config.getId(), "baremaps");
@@ -43,7 +45,7 @@ class ConfigTest {
 
   @Test
   public void loadYamlConfig() throws IOException {
-    InputStream input = new ReaderInputStream(CharSource.wrap("id: test").openStream());
+    byte[] input = "id: test".getBytes();
     Config config = Config.load(input);
     assertNotNull(config);
     assertEquals(config.getId(), "test");
@@ -51,7 +53,7 @@ class ConfigTest {
 
   @Test
   public void checkOverrideBehavior() throws IOException {
-    InputStream input = new ReaderInputStream(CharSource.wrap("{id: test, center: {lon: 10}}").openStream());
+    byte[] input = "{id: test, center: {lon: 10}}".getBytes();
     Config config = Config.load(input);
     assertNotNull(config);
     assertEquals(config.getId(), "test");

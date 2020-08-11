@@ -14,8 +14,6 @@
 
 package com.baremaps.osm.model;
 
-import com.baremaps.osm.model.Entity;
-
 public final class Change {
 
   public enum Type {delete, create, modify}

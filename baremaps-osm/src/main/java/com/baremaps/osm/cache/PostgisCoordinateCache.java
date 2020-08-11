@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
@@ -37,11 +38,12 @@ public class PostgisCoordinateCache implements Cache<Long, Coordinate> {
 
   private final DataSource dataSource;
 
+  @Inject
   public PostgisCoordinateCache(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
-  public Coordinate get(Long id) {
+  public Coordinate get(Long id) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
@@ -58,7 +60,7 @@ public class PostgisCoordinateCache implements Cache<Long, Coordinate> {
   }
 
   @Override
-  public List<Coordinate> getAll(List<Long> keys) {
+  public List<Coordinate> getAll(List<Long> keys) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));

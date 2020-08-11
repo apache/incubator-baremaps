@@ -88,10 +88,6 @@ public abstract class LmdbCache<K, V> implements Cache<K, V> {
     return list;
   }
 
-  public void importAll(List<Entry<K, V>> values) {
-    throw new UnsupportedOperationException();
-  }
-
   public abstract ByteBuffer buffer(K key);
 
   public abstract V read(ByteBuffer buffer);

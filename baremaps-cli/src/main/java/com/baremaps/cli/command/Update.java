@@ -17,35 +17,30 @@ package com.baremaps.cli.command;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.PostgisCoordinateCache;
 import com.baremaps.osm.cache.PostgisReferenceCache;
-import com.baremaps.osm.database.DatabaseDiffer;
-import com.baremaps.osm.database.DatabaseUpdater;
-import com.baremaps.osm.database.HeaderTable;
-import com.baremaps.osm.database.NodeTable;
-import com.baremaps.osm.database.RelationTable;
-import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
-import com.baremaps.osm.pbf.HeaderBlock;
-import com.baremaps.osm.model.Change;
-import com.baremaps.osm.xml.ChangeSpliterator;
-import com.baremaps.osm.xml.State;
+import com.baremaps.osm.model.Header;
+import com.baremaps.osm.model.State;
+import com.baremaps.osm.parser.XMLChangeParser;
+import com.baremaps.osm.store.PostgisHeaderStore;
+import com.baremaps.osm.store.PostgisNodeStore;
+import com.baremaps.osm.store.PostgisRelationStore;
+import com.baremaps.osm.store.PostgisWayStore;
+import com.baremaps.osm.store.StoreDeltaHandler;
+import com.baremaps.osm.store.StoreUpdateHandler;
 import com.baremaps.tiles.Tile;
 import com.baremaps.util.postgis.PostgisHelper;
-import com.baremaps.util.vfs.FileSystem;
+import com.baremaps.util.storage.BlobStore;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.Spliterator;
 import java.util.concurrent.Callable;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-import java.util.zip.GZIPInputStream;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -119,57 +114,52 @@ public class Update implements Callable<Integer> {
     WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
     RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
 
-    NodeTable nodeStore = new NodeTable(datasource);
-    WayTable wayStore = new WayTable(datasource);
-    RelationTable relationStore = new RelationTable(datasource);
+    PostgisNodeStore nodeStore = new PostgisNodeStore(datasource);
+    PostgisWayStore wayStore = new PostgisWayStore(datasource);
+    PostgisRelationStore relationStore = new PostgisRelationStore(datasource);
 
-    HeaderTable headerMapper = new HeaderTable(datasource);
-    HeaderBlock header = headerMapper.getLast();
+    PostgisHeaderStore headerMapper = new PostgisHeaderStore(datasource);
+    Header header = headerMapper.getLast();
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
 
-    FileSystem fileSystem = mixins.filesystem();
+    BlobStore blobStore = mixins.blobStore();
 
     logger.info("Downloading changes");
-    String changePath =  path(nextSequenceNumber) + ".osc.gz";
+    String changePath = path(nextSequenceNumber) + ".osc.gz";
     URI changeURI = new URI(String.format("%s/%s", input, changePath));
 
     logger.info("Downloading state information");
-    String statePath = path(nextSequenceNumber) + ".state.txt";;
+    String statePath = path(nextSequenceNumber) + ".state.txt";
     URI stateURI = new URI(String.format("%s/%s", input, statePath));
 
-    ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransformFactory
-        .createTransform(targetCRS, sourceCRS));
-    DatabaseDiffer deltaMaker = new DatabaseDiffer(nodeBuilder, wayBuilder, relationBuilder, nodeStore,
-        wayStore, relationStore, projectionTransformer, zoom);
+    ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransform);
+    StoreDeltaHandler deltaHandler = new StoreDeltaHandler(
+        nodeStore, wayStore, relationStore,
+        projectionTransformer, zoom);
+
+    Path path = blobStore.fetch(changeURI);
 
     logger.info("Computing differences");
-    try (InputStream changeInputStream = new GZIPInputStream(fileSystem.read(changeURI))) {
-      Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
-      Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
-      changeStream.forEach(deltaMaker);
-    }
+    new XMLChangeParser().parse(path, deltaHandler);
 
     logger.info("Saving differences");
-    try (PrintWriter diffPrintWriter = new PrintWriter(fileSystem.write(delta))) {
-      for (Tile tile : deltaMaker.getTiles()) {
+    try (PrintWriter diffPrintWriter = new PrintWriter(blobStore.write(delta))) {
+      for (Tile tile : deltaHandler.getTiles()) {
         diffPrintWriter.println(String.format("%d/%d/%d", tile.x(), tile.y(), tile.z()));
       }
     }
 
     logger.info("Updating database");
-    try (InputStream changeInputStream = new GZIPInputStream(fileSystem.read(changeURI))) {
-      Spliterator<Change> spliterator = new ChangeSpliterator(changeInputStream);
-      Stream<Change> changeStream = StreamSupport.stream(spliterator, true);
-      DatabaseUpdater databaseUpdater = new DatabaseUpdater(nodeBuilder, wayBuilder, relationBuilder,
-          nodeStore, wayStore, relationStore);
-      changeStream.forEach(databaseUpdater);
-    }
+    StoreUpdateHandler updateHandler = new StoreUpdateHandler(
+        nodeBuilder, wayBuilder, relationBuilder,
+        nodeStore, wayStore, relationStore);
+    new XMLChangeParser().parse(path, updateHandler);
 
     logger.info("Updating state information");
-    try (InputStreamReader reader = new InputStreamReader(fileSystem.read(stateURI), Charsets.UTF_8)) {
+    try (InputStreamReader reader = new InputStreamReader(blobStore.read(stateURI), Charsets.UTF_8)) {
       String stateContent = CharStreams.toString(reader);
       State state = State.parse(stateContent);
-      headerMapper.insert(new HeaderBlock(
+      headerMapper.insert(new Header(
           state.timestamp,
           state.sequenceNumber,
           header.getReplicationUrl(),

@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
 import javax.sql.DataSource;
 
 public class PostgisReferenceCache implements Cache<Long, List<Long>> {
@@ -37,11 +38,12 @@ public class PostgisReferenceCache implements Cache<Long, List<Long>> {
 
   private final DataSource dataSource;
 
+  @Inject
   public PostgisReferenceCache(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
-  public List<Long> get(Long id) {
+  public List<Long> get(Long id) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
@@ -62,7 +64,7 @@ public class PostgisReferenceCache implements Cache<Long, List<Long>> {
   }
 
   @Override
-  public List<List<Long>> getAll(List<Long> keys) {
+  public List<List<Long>> getAll(List<Long> keys) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));

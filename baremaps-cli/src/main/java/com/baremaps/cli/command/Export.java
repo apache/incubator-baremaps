@@ -17,22 +17,20 @@ package com.baremaps.cli.command;
 import com.baremaps.tiles.Tile;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.config.Query;
-import com.baremaps.tiles.store.FileSystemTileStore;
+import com.baremaps.tiles.store.BlobTileStore;
 import com.baremaps.tiles.store.MBTilesTileStore;
 import com.baremaps.tiles.store.PostgisTileStore;
 import com.baremaps.tiles.store.TileStore;
 import com.baremaps.tiles.stream.BatchFilter;
 import com.baremaps.tiles.stream.TileFactory;
 import com.baremaps.util.postgis.PostgisHelper;
-import com.baremaps.util.vfs.FileSystem;
+import com.baremaps.util.storage.BlobStore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,57 +103,55 @@ public class Export implements Callable<Integer> {
   private boolean mbtiles = false;
 
   @Override
-  public Integer call() throws SQLException, ParseException, IOException {
+  public Integer call() throws ParseException, IOException {
     Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
     // Initialize the datasource
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
-    // Initialize the filesystem
-    FileSystem filesystem = mixins.filesystem();
+    // Initialize the blob store
+    BlobStore blobStore = mixins.blobStore();
 
     // Read the configuration file
     logger.info("Reading configuration");
-    try (InputStream input = filesystem.read(this.config)) {
-      Config config = Config.load(input);
+    Config config = Config.load(blobStore.readByteArray(this.config));
 
-      logger.info("Initializing the source tile store");
-      final TileStore tileSource = sourceTileStore(config, datasource);
+    logger.info("Initializing the source tile store");
+    final TileStore tileSource = sourceTileStore(config, datasource);
 
-      logger.info("Initializing the target tile store");
-      final TileStore tileTarget = targetTileStore(config, filesystem);
+    logger.info("Initializing the target tile store");
+    final TileStore tileTarget = targetTileStore(config, blobStore);
 
-      // Export the tiles
-      logger.info("Generating the tiles");
+    // Export the tiles
+    logger.info("Generating the tiles");
 
-      final Stream<Tile> stream;
-      if (delta == null) {
-        Envelope envelope = new Envelope(
-            config.getBounds().getMinLon(), config.getBounds().getMaxLon(),
-            config.getBounds().getMinLat(), config.getBounds().getMaxLat());
-        stream = Tile.getTiles(envelope,
-            (int) config.getBounds().getMinZoom(),
-            (int) config.getBounds().getMaxZoom());
-      } else {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(filesystem.read(delta)))) {
-          stream = reader.lines().flatMap(line -> {
-            String[] array = line.split(",");
-            int x = Integer.parseInt(array[0]);
-            int y = Integer.parseInt(array[1]);
-            int z = Integer.parseInt(array[2]);
-            Tile tile = new Tile(x, y, z);
-            return Tile.getTiles(tile.envelope(),
-                (int) config.getBounds().getMinZoom(),
-                (int) config.getBounds().getMaxZoom());
-          });
-        }
+    final Stream<Tile> stream;
+    if (delta == null) {
+      Envelope envelope = new Envelope(
+          config.getBounds().getMinLon(), config.getBounds().getMaxLon(),
+          config.getBounds().getMinLat(), config.getBounds().getMaxLat());
+      stream = Tile.getTiles(envelope,
+          (int) config.getBounds().getMinZoom(),
+          (int) config.getBounds().getMaxZoom());
+    } else {
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(blobStore.read(delta)))) {
+        stream = reader.lines().flatMap(line -> {
+          String[] array = line.split(",");
+          int x = Integer.parseInt(array[0]);
+          int y = Integer.parseInt(array[1]);
+          int z = Integer.parseInt(array[2]);
+          Tile tile = new Tile(x, y, z);
+          return Tile.getTiles(tile.envelope(),
+              (int) config.getBounds().getMinZoom(),
+              (int) config.getBounds().getMaxZoom());
+        });
       }
-
-      stream.parallel()
-          .filter(new BatchFilter(batchArraySize, batchArrayIndex))
-          .forEach(new TileFactory(tileSource, tileTarget));
     }
+
+    stream.parallel()
+        .filter(new BatchFilter(batchArraySize, batchArrayIndex))
+        .forEach(new TileFactory(tileSource, tileTarget));
 
     return 0;
   }
@@ -164,7 +160,7 @@ public class Export implements Callable<Integer> {
     return new PostgisTileStore(datasource, config);
   }
 
-  private TileStore targetTileStore(Config config, FileSystem fileSystem) throws IOException {
+  private TileStore targetTileStore(Config config, BlobStore blobStore) throws IOException {
     if (mbtiles) {
       SQLiteDataSource dataSource = new SQLiteDataSource();
       dataSource.setUrl("jdbc:sqlite:" + repository.getPath());
@@ -173,7 +169,7 @@ public class Export implements Callable<Integer> {
       tilesStore.writeMetadata(metadata(config));
       return tilesStore;
     } else {
-      return new FileSystemTileStore(fileSystem, repository);
+      return new BlobTileStore(blobStore, repository);
     }
   }
 

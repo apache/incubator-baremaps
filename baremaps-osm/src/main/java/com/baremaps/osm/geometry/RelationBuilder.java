@@ -20,6 +20,7 @@ import com.baremaps.util.stream.Try;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javax.inject.Inject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -29,7 +30,7 @@ import org.locationtech.jts.operation.polygonize.Polygonizer;
 /**
  * A {@code RelationBuilder} builds JTS polygons and multipolygons from OSM relations.
  */
-public class RelationBuilder extends EntityBuilder<Relation> {
+public class RelationBuilder extends GeometryBuilder<Relation> {
 
   private final GeometryFactory geometryFactory;
 
@@ -38,13 +39,15 @@ public class RelationBuilder extends EntityBuilder<Relation> {
   private final Cache<Long, List<Long>> referenceCache;
 
   /**
-   * Constructs a {@code RelationBuilder}.
+   * Constructs a {@code RelationGeometryBuilder}.
    *
    * @param geometryFactory the {@code GeometryFactory} used to create geometries
    * @param coordinateCache the {@code Store} used to retrieve the coordinates of a node
    * @param referenceCache  the {@code Store} used to retrieve the nodes of a way
    */
-  public RelationBuilder(GeometryFactory geometryFactory, Cache<Long, Coordinate> coordinateCache, Cache<Long, List<Long>> referenceCache) {
+  @Inject
+  public RelationBuilder(GeometryFactory geometryFactory, Cache<Long, Coordinate> coordinateCache,
+      Cache<Long, List<Long>> referenceCache) {
     this.geometryFactory = geometryFactory;
     this.coordinateCache = coordinateCache;
     this.referenceCache = referenceCache;
@@ -58,7 +61,7 @@ public class RelationBuilder extends EntityBuilder<Relation> {
    */
   public Geometry build(Relation entity) {
     // Check whether the relation is a multipolygon
-    Map<String, String> tags = entity.getInfo().getTags();
+    Map<String, String> tags = entity.getTags();
     if (!"multipolygon".equals(tags.get("type"))) {
       return null;
     }
@@ -66,9 +69,9 @@ public class RelationBuilder extends EntityBuilder<Relation> {
     // Collect the members of the relation
     List<LineString> members = entity.getMembers()
         .stream()
-        .map(member -> referenceCache.get(member.getRef()))
-        .filter(reference -> reference != null)
-        .map(reference -> Try.of(() -> coordinateCache.getAll(reference).stream()
+        .map(member -> Try.of(() -> referenceCache.get(member.getRef())))
+        .filter(reference -> reference.isSuccess() && reference.value() != null)
+        .map(reference -> Try.of(() -> coordinateCache.getAll(reference.value()).stream()
             .filter(point -> point != null)
             .toArray(Coordinate[]::new)))
         .filter(t -> t.isSuccess())

@@ -14,30 +14,19 @@
 
 package com.baremaps.cli.command;
 
-import static org.lmdbjava.DbiFlags.MDB_CREATE;
-
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.CacheImporter;
 import com.baremaps.osm.cache.InMemoryCache;
 import com.baremaps.osm.cache.LmdbCoordinateCache;
-import com.baremaps.osm.cache.LmdbReferenceCache;
-import com.baremaps.osm.database.DatabaseImporter;
-import com.baremaps.osm.database.HeaderTable;
-import com.baremaps.osm.database.NodeTable;
-import com.baremaps.osm.database.RelationTable;
-import com.baremaps.osm.database.WayTable;
-import com.baremaps.osm.geometry.NodeBuilder;
-import com.baremaps.osm.geometry.RelationBuilder;
-import com.baremaps.osm.geometry.WayBuilder;
-import com.baremaps.osm.pbf.FileBlock;
-import com.baremaps.osm.pbf.FileBlockSpliterator;
+import com.baremaps.osm.cache.LmdbReferencesCache;
+import com.baremaps.osm.parser.PBFFileBlockGeometryParser;
+import com.baremaps.osm.store.PostgisHeaderStore;
+import com.baremaps.osm.store.PostgisNodeStore;
+import com.baremaps.osm.store.PostgisRelationStore;
+import com.baremaps.osm.store.PostgisWayStore;
+import com.baremaps.osm.store.StoreImportHandler;
 import com.baremaps.util.postgis.PostgisHelper;
-import com.baremaps.util.stream.BatchSpliterator;
-import com.baremaps.util.vfs.FileSystem;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import java.io.DataInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -47,11 +36,10 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import javax.sql.DataSource;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -113,113 +101,76 @@ public class Import implements Callable<Integer> {
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
+
     logger.info("Dropping tables");
-    loadStatements("osm_drop_tables.sql").forEach(query -> {
-      try (Connection connection = datasource.getConnection();
-          Statement statement = connection.createStatement()) {
-        statement.execute(query);
-      } catch (SQLException e) {
-        throw new RuntimeException(e);
-      }
-    });
+    executeStatements("osm_drop_tables.sql", datasource);
 
     logger.info("Creating tables");
-    loadStatements("osm_create_tables.sql").forEach(query -> {
-      try (Connection connection = datasource.getConnection();
-          Statement statement = connection.createStatement()) {
-        statement.execute(query);
-      } catch (SQLException e) {
-        throw new RuntimeException(e);
-      }
-    });
+    executeStatements("osm_create_tables.sql", datasource);
 
     logger.info("Creating primary keys");
-    loadStatements("osm_create_primary_keys.sql").forEach(query -> {
-      try (Connection connection = datasource.getConnection();
-          Statement statement = connection.createStatement()) {
-        statement.execute(query);
-      } catch (SQLException e) {
-        throw new RuntimeException(e);
-      }
-    });
+    executeStatements("osm_create_primary_keys.sql", datasource);
 
-    // Initialize the caches
+    logger.info("Fetching data");
+    Path path = mixins.blobStore().fetch(input);
+
+    CRSFactory crsFactory = new CRSFactory();
+    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
+    CoordinateReferenceSystem targetCRS = crsFactory.createFromName("EPSG:3857");
+    CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
+    CoordinateTransform coordinateTransform = coordinateTransformFactory
+        .createTransform(sourceCRS, targetCRS);
+    GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
+
+    PostgisHeaderStore headerTable = new PostgisHeaderStore(datasource);
+    PostgisNodeStore nodeStore = new PostgisNodeStore(datasource);
+    PostgisWayStore wayStore = new PostgisWayStore(datasource);
+    PostgisRelationStore relationStore = new PostgisRelationStore(datasource);
+    StoreImportHandler storeImportHandler = new StoreImportHandler(headerTable, nodeStore, wayStore,
+        relationStore);
+
     final Cache<Long, Coordinate> coordinateCache;
-    final Cache<Long, List<Long>> referenceCache;
+    final Cache<Long, List<Long>> referencesCache;
     switch (cacheType) {
       case inmemory:
-        logger.info("Initilizing in-memory cache");
+        logger.info("Initializing in-memory cache");
         coordinateCache = new InMemoryCache<>();
-        referenceCache = new InMemoryCache<>();
+        referencesCache = new InMemoryCache<>();
         break;
       case lmdb:
-        logger.info("Initilizing lmdb cache");
+        logger.info("Initializing lmdb cache");
         if (cacheDirectory != null) {
           cacheDirectory = Files.createDirectories(cacheDirectory);
         } else {
           cacheDirectory = Files.createTempDirectory("baremaps_");
         }
-        Env<ByteBuffer> env = Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3)
+        Env<ByteBuffer> env = Env.create()
+            .setMapSize(1_000_000_000_000L)
+            .setMaxDbs(3)
             .open(cacheDirectory.toFile());
-        coordinateCache = new LmdbCoordinateCache(env,
-            env.openDbi("coordinates", MDB_CREATE));
-        referenceCache = new LmdbReferenceCache(env,
-            env.openDbi("references", MDB_CREATE));
+        coordinateCache = new LmdbCoordinateCache(env);
+        referencesCache = new LmdbReferencesCache(env);
         break;
       default:
         throw new UnsupportedOperationException("Unsupported cache type");
     }
 
-    CRSFactory crsFactory = new CRSFactory();
-    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
-    CoordinateReferenceSystem targetCSR = crsFactory.createFromName("EPSG:3857");
-    CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-    CoordinateTransform coordinateTransform = coordinateTransformFactory
-        .createTransform(sourceCRS, targetCSR);
-    HeaderTable headerTable = new HeaderTable(datasource);
-    GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
-
-    NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
-    WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
-    RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
-
-    logger.info("Fetching input");
-    FileSystem fileSystem = mixins.filesystem();
-
-    logger.info("Populating cache");
-    try (DataInputStream input = new DataInputStream(fileSystem.read(this.input))) {
-      Stream<FileBlock> blocks = StreamSupport.stream(new FileBlockSpliterator(input), false);
-      CacheImporter blockConsumer = new CacheImporter(nodeBuilder, coordinateCache, referenceCache);
-      blocks.forEach(blockConsumer);
-    }
-
-    logger.info("Populating database");
-    try (DataInputStream input = new DataInputStream(fileSystem.read(this.input))) {
-      Stream<FileBlock> blocks = StreamSupport
-          .stream(new BatchSpliterator<>(new FileBlockSpliterator(input), 10), true);
-
-      NodeTable nodeTable = new NodeTable(datasource);
-      WayTable wayTable = new WayTable(datasource);
-      RelationTable relationTable = new RelationTable(datasource);
-
-      DatabaseImporter blockConsumer = new DatabaseImporter(headerTable, nodeBuilder, wayBuilder,
-          relationBuilder, nodeTable, wayTable, relationTable);
-
-      blocks.forEach(blockConsumer);
-    }
+    logger.info("Importing data");
+    PBFFileBlockGeometryParser parser = new PBFFileBlockGeometryParser(
+        geometryFactory, coordinateTransform, coordinateCache, referencesCache);
+    parser.parse(path, storeImportHandler);
 
     logger.info("Indexing geometries");
-    loadStatements("osm_create_gist_indexes.sql").forEach(query -> {
-      try (Connection connection = datasource.getConnection();
-          Statement statement = connection.createStatement()) {
-        statement.execute(query);
-      } catch (SQLException e) {
-        throw new RuntimeException(e);
-      }
-    });
+    executeStatements("osm_create_gist_indexes.sql", datasource);
 
     logger.info("Indexing attributes");
-    loadStatements("osm_create_gin_indexes.sql").forEach(query -> {
+    executeStatements("osm_create_gin_indexes.sql", datasource);
+
+    return 0;
+  }
+
+  public void executeStatements(String path, DataSource datasource) throws IOException {
+    loadStatements(path).forEach(query -> {
       try (Connection connection = datasource.getConnection();
           Statement statement = connection.createStatement()) {
         statement.execute(query);
@@ -227,16 +178,6 @@ public class Import implements Callable<Integer> {
         throw new RuntimeException(e);
       }
     });
-
-    if (CacheType.inmemory.equals(CacheType.lmdb)) {
-      logger.info("Cleaning cache");
-      Files.walk(cacheDirectory)
-          .sorted(Comparator.reverseOrder())
-          .map(Path::toFile)
-          .forEach(File::delete);
-    }
-
-    return 0;
   }
 
   public Stream<String> loadStatements(String path) throws IOException {

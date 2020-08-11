@@ -14,29 +14,51 @@
 
 package com.baremaps.osm.model;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
+import java.util.StringJoiner;
+import org.locationtech.jts.geom.Geometry;
 
-public final class Node implements Entity {
+public final class Node extends Entity {
 
-  private final Info info;
+  private double lon;
 
-  private final double lon;
+  private double lat;
 
-  private final double lat;
-
-  public Node(Info info, double lon, double lat) {
-    checkNotNull(info);
-    this.info = info;
-    this.lon = lon;
-    this.lat = lat;
-  }
+  private Geometry geometry;
 
   @Override
-  public Info getInfo() {
-    return info;
+  public String toString() {
+    return new StringJoiner(", ", Node.class.getSimpleName() + "[", "]")
+        .add("id=" + id)
+        .add("version=" + version)
+        .add("timestamp=" + timestamp)
+        .add("changeset=" + changeset)
+        .add("userId=" + userId)
+        .add("tags=" + tags)
+        .add("lon=" + lon)
+        .add("lat=" + lat)
+        .add("geometry=" + geometry)
+        .toString();
+  }
+
+  public Node() {
+
+  }
+
+  public Node(long id, int version, LocalDateTime timestamp, long changeset, int userId,
+      Map<String, String> tags, double lon, double lat) {
+    this(id, version, timestamp, changeset, userId, tags, lon, lat, null);
+  }
+
+  public Node(long id, int version, LocalDateTime timestamp, long changeset, int userId,
+      Map<String, String> tags, double lon, double lat, Geometry geometry) {
+    super(id, version, timestamp, changeset, userId, tags);
+    this.lon = lon;
+    this.lat = lat;
+    this.geometry = geometry;
   }
 
   public double getLon() {
@@ -47,6 +69,22 @@ public final class Node implements Entity {
     return lat;
   }
 
+  public Optional<Geometry> getGeometry() {
+    return Optional.ofNullable(geometry);
+  }
+
+  public void setLon(double lon) {
+    this.lon = lon;
+  }
+
+  public void setLat(double lat) {
+    this.lat = lat;
+  }
+
+  public void setGeometry(Geometry geometry) {
+    this.geometry = geometry;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -55,24 +93,17 @@ public final class Node implements Entity {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
+    if (!super.equals(o)) {
+      return false;
+    }
     Node node = (Node) o;
-    return Double.compare(node.lon, lon) == 0
-        && Double.compare(node.lat, lat) == 0
-        && Objects.equal(info, node.info);
+    return Double.compare(node.lon, lon) == 0 &&
+        Double.compare(node.lat, lat) == 0 &&
+        Objects.equal(geometry, node.geometry);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(info, lon, lat);
+    return Objects.hashCode(super.hashCode(), lon, lat, geometry);
   }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("info", info)
-        .add("lon", lon)
-        .add("lat", lat)
-        .toString();
-  }
-
 }

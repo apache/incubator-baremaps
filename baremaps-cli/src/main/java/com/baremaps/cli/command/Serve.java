@@ -9,13 +9,12 @@ import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.store.PostgisTileStore;
 import com.baremaps.tiles.store.TileStore;
 import com.baremaps.util.postgis.PostgisHelper;
-import com.baremaps.util.vfs.FileSystem;
+import com.baremaps.util.storage.BlobStore;
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
 import com.linecorp.armeria.server.file.FileService;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -126,52 +125,48 @@ public class Serve implements Callable<Integer> {
   }
 
   private void startServer() throws IOException {
-    FileSystem fileReader = mixins.filesystem();
-    try (InputStream input = fileReader.read(this.config)) {
-      Config config = Config.load(input);
+    BlobStore blobStore = mixins.blobStore();
+    Config config = Config.load(blobStore.readByteArray(this.config));
 
-      logger.info("Initializing datasource");
-      PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
+    logger.info("Initializing datasource");
+    PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
-      logger.info("Initializing tile reader");
-      final TileStore tileStore = new PostgisTileStore(datasource, config);
+    logger.info("Initializing tile reader");
+    final TileStore tileStore = new PostgisTileStore(datasource, config);
 
-      logger.info("Initializing server");
-      String host = config.getServer().getHost();
-      int port = config.getServer().getPort();
-      ServerBuilder builder = Server.builder()
-          .defaultHostname(host)
-          .http(port)
-          .service("/", new BlueprintService(config))
-          .service("/favicon.ico",
-              FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico"))
-          .service("/config.yaml", new ConfigService(config))
-          .service("/style.json", new StyleService(config))
-          .service("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).pbf$",
-              new TileService(tileStore));
+    logger.info("Initializing server");
+    String host = config.getServer().getHost();
+    int port = config.getServer().getPort();
+    ServerBuilder builder = Server.builder()
+        .defaultHostname(host)
+        .http(port)
+        .service("/", new BlueprintService(config))
+        .service("/favicon.ico",
+            FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico"))
+        .service("/config.yaml", new ConfigService(config))
+        .service("/style.json", new StyleService(config))
+        .service("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).pbf$",
+            new TileService(tileStore));
 
-      // Initialize the assets handler if a path has been provided
-      if (assets != null) {
-        builder.service("/assets/", FileService.of(Paths.get(assets.getPath())));
-      }
-
-      // Keep a connection open with the browser.
-      // When the server restarts, for instance when a change occurs in the configuration,
-      // The browser reloads the webpage and displays the changes.
-      if (watchChanges) {
-        builder.service("/change/", (ctx, req) -> {
-          logger.info("Waiting for changes");
-          ctx.setRequestTimeout(Duration.ofMillis(Long.MAX_VALUE));
-          return HttpResponse.streaming();
-        });
-      }
-
-      server = builder.build();
-      server.start();
-
-    } catch (Exception ex) {
-      logger.error("A problem occured while starting the server", ex);
+    // Initialize the assets handler if a path has been provided
+    if (assets != null) {
+      builder.service("/assets/", FileService.of(Paths.get(assets.getPath())));
     }
+
+    // Keep a connection open with the browser.
+    // When the server restarts, for instance when a change occurs in the configuration,
+    // The browser reloads the webpage and displays the changes.
+    if (watchChanges) {
+      builder.service("/change/", (ctx, req) -> {
+        logger.info("Waiting for changes");
+        ctx.setRequestTimeout(Duration.ofMillis(Long.MAX_VALUE));
+        return HttpResponse.streaming();
+      });
+    }
+
+    server = builder.build();
+    server.start();
+
   }
 
   private void stopServer() throws IOException {

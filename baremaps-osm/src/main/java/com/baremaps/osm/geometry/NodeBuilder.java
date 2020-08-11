@@ -15,6 +15,7 @@
 package com.baremaps.osm.geometry;
 
 import com.baremaps.osm.model.Node;
+import javax.inject.Inject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
@@ -24,7 +25,7 @@ import org.locationtech.proj4j.ProjCoordinate;
 /**
  * A {@code NodeBuilder} builds JTS points from OSM nodes.
  */
-public class NodeBuilder extends EntityBuilder<Node> {
+public class NodeBuilder extends GeometryBuilder<Node> {
 
   protected final CoordinateTransform coordinateTransform;
   protected final GeometryFactory geometryFactory;
@@ -35,6 +36,7 @@ public class NodeBuilder extends EntityBuilder<Node> {
    * @param geometryFactory the {@code GeometryFactory} used to create geometries
    * @param coordinateTransform the {@code CoordinateTransform} used to project OSM coordinates
    */
+  @Inject
   public NodeBuilder(GeometryFactory geometryFactory, CoordinateTransform coordinateTransform) {
     this.coordinateTransform = coordinateTransform;
     this.geometryFactory = geometryFactory;

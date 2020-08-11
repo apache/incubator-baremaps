@@ -15,7 +15,9 @@
 package com.baremaps.osm.geometry;
 
 import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.cache.CacheException;
 import com.baremaps.osm.model.Way;
+import javax.inject.Inject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -23,18 +25,19 @@ import org.locationtech.jts.geom.GeometryFactory;
 /**
  * A {@code WayBuilder} builds JTS linestring or polygons from OSM ways.
  */
-public class WayBuilder extends EntityBuilder<Way> {
+public class WayBuilder extends GeometryBuilder<Way> {
 
   private final GeometryFactory geometryFactory;
 
   private final Cache<Long, Coordinate> coordinateCache;
 
   /**
-   * Constructs a {code WayBuilder}.
+   * Constructs a {code WayGeometryBuilder}.
    *
    * @param geometryFactory the {@code GeometryFactory} used to create geometries
    * @param coordinateCache the {@code Store} used to retrieve the coordinates of a node
    */
+  @Inject
   public WayBuilder(GeometryFactory geometryFactory, Cache<Long, Coordinate> coordinateCache) {
     this.geometryFactory = geometryFactory;
     this.coordinateCache = coordinateCache;
@@ -47,14 +50,16 @@ public class WayBuilder extends EntityBuilder<Way> {
    * @return a JTS linestring or polygons corresponding to the way
    */
   public Geometry build(Way entity) {
-    Coordinate[] coordinates =
-        coordinateCache.getAll(entity.getNodes()).stream()
-            .toArray(Coordinate[]::new);
-    if (coordinates.length > 3 && coordinates[0].equals(coordinates[coordinates.length - 1])) {
-      return geometryFactory.createPolygon(coordinates);
-    } else if (coordinates.length > 1) {
-      return geometryFactory.createLineString(coordinates);
-    } else {
+    try {
+      Coordinate[] coords = coordinateCache.getAll(entity.getNodes()).stream().toArray(Coordinate[]::new);
+      if (coords.length > 3 && coords[0].equals(coords[coords.length - 1])) {
+        return geometryFactory.createPolygon(coords);
+      } else if (coords.length > 1) {
+        return geometryFactory.createLineString(coords);
+      } else {
+        return null;
+      }
+    } catch (CacheException e) {
       return null;
     }
   }

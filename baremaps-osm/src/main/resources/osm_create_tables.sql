@@ -15,6 +15,8 @@ CREATE TABLE osm_nodes
     timestamp timestamp without time zone NOT NULL,
     changeset bigint                      NOT NULL,
     tags      hstore,
+    lon       float,
+    lat       float,
     geom      geometry(point)
 );
 CREATE TABLE osm_ways
