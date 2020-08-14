@@ -21,6 +21,7 @@ import com.baremaps.tiles.store.BlobTileStore;
 import com.baremaps.tiles.store.MBTilesTileStore;
 import com.baremaps.tiles.store.PostgisTileStore;
 import com.baremaps.tiles.store.TileStore;
+import com.baremaps.tiles.store.TileStoreException;
 import com.baremaps.tiles.stream.BatchFilter;
 import com.baremaps.tiles.stream.TileFactory;
 import com.baremaps.util.postgis.PostgisHelper;
@@ -103,7 +104,7 @@ public class Export implements Callable<Integer> {
   private boolean mbtiles = false;
 
   @Override
-  public Integer call() throws ParseException, IOException {
+  public Integer call() throws TileStoreException, IOException {
     Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
@@ -160,7 +161,8 @@ public class Export implements Callable<Integer> {
     return new PostgisTileStore(datasource, config);
   }
 
-  private TileStore targetTileStore(Config config, BlobStore blobStore) throws IOException {
+  private TileStore targetTileStore(Config config, BlobStore blobStore)
+      throws TileStoreException, IOException {
     if (mbtiles) {
       SQLiteDataSource dataSource = new SQLiteDataSource();
       dataSource.setUrl("jdbc:sqlite:" + repository.getPath());

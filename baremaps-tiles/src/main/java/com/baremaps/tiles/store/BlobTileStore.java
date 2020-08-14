@@ -31,18 +31,30 @@ public class BlobTileStore implements TileStore {
   }
 
   @Override
-  public byte[] read(Tile tile) throws IOException {
-    return blobStore.readByteArray(getURI(tile));
+  public byte[] read(Tile tile) throws TileStoreException {
+    try {
+      return blobStore.readByteArray(getURI(tile));
+    } catch (IOException e) {
+      throw new TileStoreException(e);
+    }
   }
 
   @Override
-  public void write(Tile tile, byte[] bytes) throws IOException {
-    blobStore.writeByteArray(getURI(tile), bytes);
+  public void write(Tile tile, byte[] bytes) throws TileStoreException {
+    try {
+      blobStore.writeByteArray(getURI(tile), bytes);
+    } catch (IOException e) {
+      throw new TileStoreException(e);
+    }
   }
 
   @Override
-  public void delete(Tile tile) throws IOException {
-    blobStore.delete(getURI(tile));
+  public void delete(Tile tile) throws TileStoreException {
+    try {
+      blobStore.delete(getURI(tile));
+    } catch (IOException e) {
+      throw new TileStoreException(e);
+    }
   }
 
   public URI getURI(Tile tile) {

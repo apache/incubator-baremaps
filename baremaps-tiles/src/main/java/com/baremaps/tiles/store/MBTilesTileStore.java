@@ -60,7 +60,7 @@ public class MBTilesTileStore implements TileStore {
   }
 
   @Override
-  public byte[] read(Tile tile) throws IOException {
+  public byte[] read(Tile tile) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_TILE)) {
       statement.setInt(1, tile.z());
@@ -74,12 +74,12 @@ public class MBTilesTileStore implements TileStore {
         }
       }
     } catch (SQLException e) {
-      throw new IOException(e);
+      throw new TileStoreException(e);
     }
   }
 
   @Override
-  public void write(Tile tile, byte[] bytes) throws IOException {
+  public void write(Tile tile, byte[] bytes) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
       statement.setInt(1, tile.z());
@@ -88,12 +88,12 @@ public class MBTilesTileStore implements TileStore {
       statement.setBytes(4, bytes);
       statement.executeUpdate();
     } catch (SQLException e) {
-      throw new IOException(e);
+      throw new TileStoreException(e);
     }
   }
 
   @Override
-  public void delete(Tile tile) throws IOException {
+  public void delete(Tile tile) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE_TILE)) {
       statement.setInt(1, tile.z());
@@ -101,18 +101,18 @@ public class MBTilesTileStore implements TileStore {
       statement.setInt(3, reverseY(tile.y(), tile.z()));
       statement.execute();
     } catch (SQLException e) {
-      throw new IOException(e);
+      throw new TileStoreException(e);
     }
   }
 
-  public void initializeDatabase() throws IOException {
+  public void initializeDatabase() throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         Statement statement = connection.createStatement()) {
       statement.execute(CREATE_TABLE_METADATA);
       statement.execute(CREATE_TABLE_TILES);
       statement.execute(CREATE_INDEX_TILES);
     } catch (SQLException ex) {
-      throw new IOException(ex);
+      throw new TileStoreException(ex);
     }
   }
 

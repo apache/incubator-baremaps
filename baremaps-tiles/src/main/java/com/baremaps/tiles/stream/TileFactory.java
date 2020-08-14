@@ -15,6 +15,7 @@ package com.baremaps.tiles.stream;
 
 import com.baremaps.tiles.Tile;
 import com.baremaps.tiles.store.TileStore;
+import com.baremaps.tiles.store.TileStoreException;
 import java.io.IOException;
 import java.util.function.Consumer;
 
@@ -45,7 +46,7 @@ public class TileFactory implements Consumer<Tile> {
       } else if (deleteEmptyTiles) {
         tileTarget.delete(tile);
       }
-    } catch (IOException ex) {
+    } catch (TileStoreException ex) {
       throw new RuntimeException("An error occurred while creating the tiles", ex);
     }
   }

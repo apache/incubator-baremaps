@@ -105,7 +105,7 @@ public class PostgisTileStore implements TileStore {
     }
   }
 
-  public byte[] read(Tile tile) throws IOException {
+  public byte[] read(Tile tile) throws TileStoreException {
     try (Connection connection = datasource.getConnection()) {
       try (Statement statement = connection.createStatement();
           ByteArrayOutputStream data = new ByteArrayOutputStream()) {
@@ -129,17 +129,17 @@ public class PostgisTileStore implements TileStore {
           return null;
         }
       }
-    } catch (SQLException e) {
-      throw new IOException(e);
+    } catch (SQLException | IOException e) {
+      throw new TileStoreException(e);
     }
   }
 
   private String query(Tile tile) {
     String sources = parses.entrySet().stream()
         .flatMap(entry -> entry.getValue().stream()
-            .filter(parse ->
-                parse.getQuery().getMinZoom() <= tile.z() && tile.z() < parse.getQuery().getMaxZoom())
-            .map(parse -> MessageFormat.format(SOURCE,
+            .filter(parse -> zoomFilter(tile, parse))
+            .map(parse -> MessageFormat.format(
+                SOURCE,
                 parse.getSource(),
                 parse.getId(),
                 parse.getTags(),
@@ -150,26 +150,33 @@ public class PostgisTileStore implements TileStore {
         .stream()
         .collect(Collectors.joining(COMMA));
     String targets = parses.entrySet().stream()
-        .map(entry -> {
-          String queries = entry.getValue().stream()
-              .filter(parse ->
-                  parse.getQuery().getMinZoom() <= tile.z() && tile.z() < parse.getQuery().getMaxZoom())
-              .map(parse -> {
-                String l = MessageFormat.format(QUERY,
-                    parse.getId(),
-                    parse.getTags(),
-                    parse.getGeom(),
-                    parse.getSource());
-                String r = parse.getWhere()
-                    .map(s -> MessageFormat.format(WHERE, s))
-                    .orElse("");
-                return l + r;
-              })
-              .collect(Collectors.joining(UNION_ALL));
-          return MessageFormat.format(LAYER, entry.getKey().getId(), queries);
-        })
+        .filter(entry -> entry.getValue().stream()
+            .filter(parse -> zoomFilter(tile, parse))
+            .count() > 0)
+        .map(entry -> MessageFormat.format(
+            LAYER,
+            entry.getKey().getId(),
+            entry.getValue().stream()
+                .filter(parse -> zoomFilter(tile, parse))
+                .map(parse -> new StringBuilder()
+                    .append(MessageFormat.format(
+                        QUERY,
+                        parse.getId(),
+                        parse.getTags(),
+                        parse.getGeom(),
+                        parse.getSource()))
+                    .append(parse.getWhere()
+                        .map(s -> MessageFormat.format(WHERE, s))
+                        .orElse(""))
+                    .toString())
+                .collect(Collectors.joining(UNION_ALL))))
         .collect(Collectors.joining(UNION_ALL));
     return MessageFormat.format(WITH, sources, targets);
+  }
+
+  private boolean zoomFilter(Tile tile, Parse parse) {
+    return parse.getQuery().getMinZoom() <= tile.z()
+        && tile.z() < parse.getQuery().getMaxZoom();
   }
 
   private String envelope(Tile tile) {
@@ -189,12 +196,12 @@ public class PostgisTileStore implements TileStore {
     return new Coordinate(coordinate.x, coordinate.y);
   }
 
-  public void write(Tile tile, byte[] bytes) throws IOException {
-    throw new UnsupportedOperationException("The tile store is readonly");
+  public void write(Tile tile, byte[] bytes) {
+    throw new UnsupportedOperationException("The postgis tile store is read only");
   }
 
-  public void delete(Tile tile) throws IOException {
-    throw new UnsupportedOperationException("The tile store is readonly");
+  public void delete(Tile tile) {
+    throw new UnsupportedOperationException("The postgis tile store is read only");
   }
 
 }

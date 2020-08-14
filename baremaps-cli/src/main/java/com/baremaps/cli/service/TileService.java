@@ -20,6 +20,7 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
 import com.baremaps.tiles.Tile;
 import com.baremaps.tiles.store.TileStore;
+import com.baremaps.tiles.store.TileStoreException;
 import com.linecorp.armeria.common.HttpData;
 import com.linecorp.armeria.common.HttpRequest;
 import com.linecorp.armeria.common.HttpResponse;
@@ -62,7 +63,8 @@ public class TileService extends AbstractHttpService {
         } else {
           return HttpResponse.of(204);
         }
-      } catch (IOException ex) {
+      } catch (TileStoreException ex) {
+        logger.error(ex);
         return HttpResponse.of(404);
       }
     }, ctx.blockingTaskExecutor()));

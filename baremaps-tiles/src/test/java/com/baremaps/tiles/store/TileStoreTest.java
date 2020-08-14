@@ -40,7 +40,7 @@ public abstract class TileStoreTest {
 
     // Delete the data
     tileStore.delete(tile);
-    assertThrows(IOException.class, () -> tileStore.read(tile));
+    assertThrows(TileStoreException.class, () -> tileStore.read(tile));
   }
 
   protected abstract TileStore createTileStore() throws Exception;

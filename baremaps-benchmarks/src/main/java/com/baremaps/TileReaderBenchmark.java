@@ -17,6 +17,7 @@ package com.baremaps;
 import com.baremaps.tiles.Tile;
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.store.PostgisTileStore;
+import com.baremaps.tiles.store.TileStoreException;
 import com.baremaps.util.postgis.PostgisHelper;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -55,7 +56,6 @@ public class TileReaderBenchmark {
     config = Config.load(bytes);
     datasource = PostgisHelper.poolingDataSource(
         "jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps");
-
   }
 
   @Benchmark
@@ -73,7 +73,7 @@ public class TileReaderBenchmark {
     coords.forEach(xyz -> {
       try {
         reader.read(xyz);
-      } catch (IOException ex) {
+      } catch (TileStoreException ex) {
         ex.printStackTrace();
       }
     });

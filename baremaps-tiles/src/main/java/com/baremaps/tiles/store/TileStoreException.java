@@ -11,18 +11,12 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.tiles.store;
 
-import com.baremaps.tiles.Tile;
-import java.io.IOException;
+public class TileStoreException extends Exception {
 
-public interface TileStore {
-
-  byte[] read(Tile tile) throws TileStoreException;
-
-  void write(Tile tile, byte[] bytes) throws TileStoreException;
-
-  void delete(Tile tile) throws TileStoreException;
+  public TileStoreException(Throwable e) {
+    super(e);
+  }
 
 }
