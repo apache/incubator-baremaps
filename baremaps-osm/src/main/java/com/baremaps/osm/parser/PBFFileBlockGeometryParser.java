@@ -55,13 +55,11 @@ public class PBFFileBlockGeometryParser {
     PBFFileBlockParser parser = new PBFFileBlockParser();
 
     // Parse the file a first time to create the cache
-    logger.info("Creating cache for nodes and references");
     NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
     CacheImportFileBlockHandler cacheImportHandler = new CacheImportFileBlockHandler(nodeBuilder, coordinateCache, referencesCache);
     parser.parse(path, cacheImportHandler);
 
     // Parse the file a second time to denormalize the geometries
-    logger.info("Denormalizing geometries for nodes, ways and relations");
     WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
     RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referencesCache);
     PBFFileBlockGeometryHandler decorator = new PBFFileBlockGeometryHandler(nodeBuilder, wayBuilder, relationBuilder, handler);

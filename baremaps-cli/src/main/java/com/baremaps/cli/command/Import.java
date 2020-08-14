@@ -170,20 +170,14 @@ public class Import implements Callable<Integer> {
   }
 
   public void executeStatements(String path, DataSource datasource) throws IOException {
-    loadStatements(path).forEach(query -> {
-      try (Connection connection = datasource.getConnection();
-          Statement statement = connection.createStatement()) {
-        statement.execute(query);
-      } catch (SQLException e) {
-        throw new RuntimeException(e);
-      }
-    });
-  }
-
-  public Stream<String> loadStatements(String path) throws IOException {
     URL url = Resources.getResource(path);
     String sql = Resources.toString(url, Charsets.UTF_8);
-    return Stream.of(sql.split(";")).map(statement -> statement.trim()).parallel();
+    try (Connection connection = datasource.getConnection();
+        Statement statement = connection.createStatement()) {
+      statement.execute(sql);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }
