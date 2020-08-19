@@ -31,6 +31,8 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Locale;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -55,6 +57,7 @@ public class BlueprintService extends AbstractHttpService {
       throws IOException, TemplateException {
     StringWriter output = new StringWriter();
     Configuration config = new Configuration(Configuration.VERSION_2_3_29);
+    config.setLocale(Locale.US);
     config.setClassForTemplateLoading(this.getClass(), "/");
     config.setDefaultEncoding("UTF-8");
     config.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
