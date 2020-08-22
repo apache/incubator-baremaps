@@ -26,6 +26,10 @@ public class Layer {
 
   private String description;
 
+  private String lineColor = "rgb(152, 174, 221)";
+
+  private String fillColor = "rgba(152, 174, 221, 0.1)";
+
   private Map<String, String> fields = new HashMap<>();
 
   private List<Query> queries;
@@ -70,4 +74,19 @@ public class Layer {
     this.type = type;
   }
 
+  public String getLineColor() {
+    return lineColor;
+  }
+
+  public void setLineColor(String lineColor) {
+    this.lineColor = lineColor;
+  }
+
+  public String getFillColor() {
+    return fillColor;
+  }
+
+  public void setFillColor(String fillColor) {
+    this.fillColor = fillColor;
+  }
 }

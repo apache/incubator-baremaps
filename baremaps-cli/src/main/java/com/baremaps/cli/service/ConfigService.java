@@ -13,7 +13,6 @@
  */
 package com.baremaps.cli.service;
 
-import com.baremaps.cli.blueprint.ConfigFormatter;
 import com.baremaps.tiles.config.Config;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +38,7 @@ public class ConfigService extends AbstractHttpService {
 
   @Override
   protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) throws JsonProcessingException {
-    ConfigFormatter configFormatter = new ConfigFormatter(this.config);
+    ConfigBuilder configFormatter = new ConfigBuilder(this.config);
     Map<String, Object> config = configFormatter.format();
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory()
         .disable(Feature.WRITE_DOC_START_MARKER)

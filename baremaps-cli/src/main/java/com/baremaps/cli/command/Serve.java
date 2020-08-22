@@ -1,7 +1,7 @@
 
 package com.baremaps.cli.command;
 
-import com.baremaps.cli.service.BlueprintService;
+import com.baremaps.cli.service.TemplateService;
 import com.baremaps.cli.service.ConfigService;
 import com.baremaps.cli.service.StyleService;
 import com.baremaps.cli.service.TileService;
@@ -26,6 +26,7 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.time.Duration;
 import java.util.concurrent.Callable;
+
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -140,7 +141,7 @@ public class Serve implements Callable<Integer> {
     ServerBuilder builder = Server.builder()
         .defaultHostname(host)
         .http(port)
-        .service("/", new BlueprintService(config))
+        .service("/", new TemplateService(config))
         .service("/favicon.ico",
             FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico"))
         .service("/config.yaml", new ConfigService(config))

@@ -54,7 +54,7 @@ public class PostgisTileStore implements TileStore {
   private static final String SOURCE = "{0} AS (SELECT id, "
       + "(tags || hstore(''geometry'', lower(replace(st_geometrytype(geom), ''ST_'', '''')))) as tags, "
       + "ST_AsMvtGeom(geom, {5}, 4096, 256, true) AS geom "
-      + "FROM (SELECT {1} as id, {2} as tags, {3} as geom FROM {4}) AS {0} WHERE ST_Intersects(geom, {5}))";
+      + "FROM (SELECT {1} as id, {2} as tags, {3} as geom FROM {4}) AS q WHERE ST_Intersects(geom, {5}))";
 
   private static final String LAYER = "SELECT ST_AsMVT(mvt_geom, ''{0}'', 4096) FROM ({1}) as mvt_geom";
 

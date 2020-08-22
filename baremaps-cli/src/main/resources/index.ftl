@@ -63,8 +63,8 @@ to display its metadata.
   var map = new mapboxgl.Map({
     container: 'map',
     style: '/style.json',
-    center: [${center.lon}, ${center.lat}],
-    zoom: ${center.zoom},
+    center: [${center.lon?string["0.######"]}, ${center.lat?string["0.######"]}],
+    zoom: ${center.zoom?string["0.####"]},
     minZoom: ${bounds.minZoom},
     maxZoom: ${bounds.maxZoom}
   });
@@ -85,7 +85,12 @@ to display its metadata.
 
   // Changes the hash of the url when the location changes
   map.on('moveend', ev => {
-    location.hash = "#" + map.getZoom()+ "/" + map.getCenter().lng + "/" + map.getCenter().lat + "/" + map.getBearing() + "/" + map.getPitch();
+    location.hash = "#"
+        + map.getZoom().toFixed(4) + "/"
+        + map.getCenter().lng.toFixed(6) + "/"
+        + map.getCenter().lat.toFixed(6) + "/"
+        + map.getBearing().toFixed(6) + "/"
+        + map.getPitch().toFixed(6);
   });
 
   map.on('click', function (e) {

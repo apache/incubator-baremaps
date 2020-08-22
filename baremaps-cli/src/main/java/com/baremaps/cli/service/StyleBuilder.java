@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.cli.blueprint;
+package com.baremaps.cli.service;
 
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.config.Layer;
@@ -26,11 +26,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class BlueprintBuilder {
+public class StyleBuilder {
 
   private final Config config;
 
-  public BlueprintBuilder(Config config) {
+  public StyleBuilder(Config config) {
     this.config = config;
   }
 
@@ -45,7 +45,7 @@ public class BlueprintBuilder {
             .put("type", "vector")
             .put("minZoom", config.getBounds().getMinZoom())
             .put("maxZoom", config.getBounds().getMaxZoom())
-            .put("bounds", new double[] {
+            .put("bounds", new double[]{
                 config.getBounds().getMinLon(), config.getBounds().getMinLat(),
                 config.getBounds().getMaxLon(), config.getBounds().getMaxLat()})
             .put("tiles", Arrays.asList(String.format("http://%s:%s/tiles/{z}/{x}/{y}.pbf",
@@ -80,7 +80,7 @@ public class BlueprintBuilder {
         .put("visibility", "visible")
         .build());
     map.put("paint", ImmutableSortedMap.naturalOrder()
-        .put("background-color", "rgb(64, 92, 176)")
+        .put("background-color", config.getBackgroundColor())
         .build());
     return map;
   }
@@ -114,7 +114,6 @@ public class BlueprintBuilder {
     map.put("layout", ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")
         .build());
-    map.put("filter", Arrays.asList("any", Arrays.asList("==", "geometry", "point"), Arrays.asList("==", "geometry", "multipoint")));
     map.put("paint", ImmutableSortedMap.naturalOrder()
         .put("circle-color", "rgb(229, 235, 247)")
         .put("circle-radius", 2)
@@ -133,9 +132,8 @@ public class BlueprintBuilder {
     map.put("layout", ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")
         .build());
-    map.put("filter", Arrays.asList("any", Arrays.asList("==", "geometry", "linestring"), Arrays.asList("==", "geometry", "multilinestring")));
     map.put("paint", ImmutableSortedMap.naturalOrder()
-        .put("line-color", "rgb(152, 174, 221)")
+        .put("line-color", layer.getLineColor())
         .put("line-width", 1)
         .build());
     return map;
@@ -152,10 +150,9 @@ public class BlueprintBuilder {
     map.put("layout", ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")
         .build());
-    map.put("filter", Arrays.asList("any", Arrays.asList("==", "geometry", "polygon"), Arrays.asList("==", "geometry", "multipolygon")));
     map.put("paint", ImmutableSortedMap.naturalOrder()
-        .put("fill-color", "rgba(152, 174, 221, 0.1)")
-        .put("fill-outline-color", "rgb(152, 174, 221)")
+        .put("fill-outline-color", layer.getLineColor())
+        .put("fill-color", layer.getFillColor())
         .put("fill-opacity", 1)
         .put("fill-antialias", true)
         .build());

@@ -34,6 +34,8 @@ public class Config {
 
   private String attribution = "";
 
+  private String backgroundColor = "rgb(64, 92, 176)";
+
   private Server server = new Server();
 
   private Center center = new Center();
@@ -135,4 +137,11 @@ public class Config {
     }
   }
 
+  public String getBackgroundColor() {
+    return backgroundColor;
+  }
+
+  public void setBackgroundColor(String backgroundColor) {
+    this.backgroundColor = backgroundColor;
+  }
 }

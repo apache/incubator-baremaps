@@ -36,7 +36,7 @@ import java.util.Locale;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class BlueprintService extends AbstractHttpService {
+public class TemplateService extends AbstractHttpService {
 
   private static Logger logger = LogManager.getLogger();
 
@@ -48,7 +48,7 @@ public class BlueprintService extends AbstractHttpService {
 
   public final Config config;
 
-  public BlueprintService(Config config) {
+  public TemplateService(Config config) {
     this.config = config;
   }
 
@@ -64,7 +64,7 @@ public class BlueprintService extends AbstractHttpService {
     config.setLogTemplateExceptions(false);
     config.setWrapUncheckedExceptions(true);
     config.setFallbackOnNullLoopVariable(false);
-    Template blueprintTemplate = config.getTemplate("blueprint.ftl");
+    Template blueprintTemplate = config.getTemplate("index.ftl");
     blueprintTemplate.process(this.config, output);
     return HttpResponse.of(HttpStatus.OK, MediaType.HTML_UTF_8, output.toString());
   }

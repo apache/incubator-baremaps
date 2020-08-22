@@ -13,7 +13,6 @@
  */
 package com.baremaps.cli.service;
 
-import com.baremaps.cli.blueprint.BlueprintBuilder;
 import com.baremaps.tiles.config.Config;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,7 +36,7 @@ public class StyleService extends AbstractHttpService {
 
   @Override
   protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) throws JsonProcessingException {
-    BlueprintBuilder builder = new BlueprintBuilder(config);
+    StyleBuilder builder = new StyleBuilder(config);
     Map<String, Object> style = builder.build();
     ObjectMapper mapper = new ObjectMapper();
     String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(style);
