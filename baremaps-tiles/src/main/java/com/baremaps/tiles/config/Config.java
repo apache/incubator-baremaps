@@ -14,13 +14,8 @@
 
 package com.baremaps.tiles.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.collect.Lists;
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 public class Config {
 
@@ -28,13 +23,9 @@ public class Config {
 
   private String version = "0.1";
 
-  private String type = "baselayer";
-
   private String description = "";
 
   private String attribution = "";
-
-  private String backgroundColor = "rgb(64, 92, 176)";
 
   private Server server = new Server();
 
@@ -44,7 +35,7 @@ public class Config {
 
   private List<Layer> layers = Lists.newArrayList();
 
-  private List<Map<String, Object>> styles = Lists.newArrayList();
+  private List<Component> components = Lists.newArrayList();
 
   public String getId() {
     return id;
@@ -52,38 +43,6 @@ public class Config {
 
   public void setId(String id) {
     this.id = id;
-  }
-
-  public Bounds getBounds() {
-    return bounds;
-  }
-
-  public void setBounds(Bounds bounds) {
-    this.bounds = bounds;
-  }
-
-  public Center getCenter() {
-    return center;
-  }
-
-  public void setCenter(Center center) {
-    this.center = center;
-  }
-
-  public List<Layer> getLayers() {
-    return layers;
-  }
-
-  public void setLayers(List<Layer> layers) {
-    this.layers = layers;
-  }
-
-  public List<Map<String, Object>> getStyles() {
-    return styles;
-  }
-
-  public void setStyles(List<Map<String, Object>> styles) {
-    this.styles = styles;
   }
 
   public String getVersion() {
@@ -118,30 +77,36 @@ public class Config {
     this.server = server;
   }
 
-  public String getType() {
-    return type;
+  public Center getCenter() {
+    return center;
   }
 
-  public void setType(String type) {
-    this.type = type;
+  public void setCenter(Center center) {
+    this.center = center;
   }
 
-  public static Config load(byte[] input) throws IOException {
-    try {
-      ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-      Config config = mapper.readValue(input, Config.class);
-      return config;
-    } catch (MismatchedInputException e) {
-      // return the default Config if the input is empty
-      return new Config();
-    }
+  public Bounds getBounds() {
+    return bounds;
   }
 
-  public String getBackgroundColor() {
-    return backgroundColor;
+  public void setBounds(Bounds bounds) {
+    this.bounds = bounds;
   }
 
-  public void setBackgroundColor(String backgroundColor) {
-    this.backgroundColor = backgroundColor;
+  public List<Layer> getLayers() {
+    return layers;
   }
+
+  public void setLayers(List<Layer> layers) {
+    this.layers = layers;
+  }
+
+  public List<Component> getComponents() {
+    return components;
+  }
+
+  public void setComponents(List<Component> components) {
+    this.components = components;
+  }
+
 }

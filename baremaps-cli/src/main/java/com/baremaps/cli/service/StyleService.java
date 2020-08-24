@@ -14,6 +14,7 @@
 package com.baremaps.cli.service;
 
 import com.baremaps.tiles.config.Config;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.linecorp.armeria.common.HttpRequest;
@@ -21,6 +22,7 @@ import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.server.AbstractHttpService;
 import com.linecorp.armeria.server.ServiceRequestContext;
 import java.util.Map;
+import javax.inject.Provider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,17 +30,18 @@ public class StyleService extends AbstractHttpService {
 
   private static Logger logger = LogManager.getLogger();
 
-  private final Config config;
+  private final Provider<Config> config;
 
-  public StyleService(Config config) {
+  public StyleService(Provider<Config> config) {
     this.config = config;
   }
 
   @Override
   protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) throws JsonProcessingException {
-    StyleBuilder builder = new StyleBuilder(config);
+    StyleBuilder builder = new StyleBuilder(config.get());
     Map<String, Object> style = builder.build();
     ObjectMapper mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(Include.NON_NULL);
     String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(style);
     return HttpResponse.of(output);
   }

@@ -27,8 +27,6 @@ import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.common.ResponseHeaders;
 import com.linecorp.armeria.server.AbstractHttpService;
 import com.linecorp.armeria.server.ServiceRequestContext;
-import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -50,24 +48,22 @@ public class TileService extends AbstractHttpService {
 
   @Override
   protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) {
-    return HttpResponse.from(CompletableFuture.supplyAsync(() -> {
-      int z = Integer.parseInt(ctx.pathParam("z"));
-      int x = Integer.parseInt(ctx.pathParam("x"));
-      int y = Integer.parseInt(ctx.pathParam("y"));
-      Tile tile = new Tile(x, y, z);
-      try {
-        byte[] bytes = tileStore.read(tile);
-        if (bytes != null) {
-          HttpData data = HttpData.wrap(bytes);
-          return HttpResponse.of(headers, data);
-        } else {
-          return HttpResponse.of(204);
-        }
-      } catch (TileStoreException ex) {
-        logger.error(ex);
-        return HttpResponse.of(404);
+    int z = Integer.parseInt(ctx.pathParam("z"));
+    int x = Integer.parseInt(ctx.pathParam("x"));
+    int y = Integer.parseInt(ctx.pathParam("y"));
+    Tile tile = new Tile(x, y, z);
+    try {
+      byte[] bytes = tileStore.read(tile);
+      if (bytes != null) {
+        HttpData data = HttpData.wrap(bytes);
+        return HttpResponse.of(headers, data);
+      } else {
+        return HttpResponse.of(204);
       }
-    }, ctx.blockingTaskExecutor()));
+    } catch (TileStoreException ex) {
+      logger.error(ex);
+      return HttpResponse.of(404);
+    }
   }
 
 }

@@ -32,7 +32,7 @@ import freemarker.template.TemplateExceptionHandler;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Locale;
-
+import javax.inject.Provider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,9 +46,9 @@ public class TemplateService extends AbstractHttpService {
       .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
       .build();
 
-  public final Config config;
+  public final Provider<Config> config;
 
-  public TemplateService(Config config) {
+  public TemplateService(Provider<Config> config) {
     this.config = config;
   }
 
@@ -65,7 +65,7 @@ public class TemplateService extends AbstractHttpService {
     config.setWrapUncheckedExceptions(true);
     config.setFallbackOnNullLoopVariable(false);
     Template blueprintTemplate = config.getTemplate("index.ftl");
-    blueprintTemplate.process(this.config, output);
+    blueprintTemplate.process(this.config.get(), output);
     return HttpResponse.of(HttpStatus.OK, MediaType.HTML_UTF_8, output.toString());
   }
 

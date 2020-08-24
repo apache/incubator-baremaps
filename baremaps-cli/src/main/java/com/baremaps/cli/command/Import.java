@@ -38,7 +38,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.Level;
@@ -99,7 +98,6 @@ public class Import implements Callable<Integer> {
   public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
-
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
     logger.info("Dropping tables");

@@ -14,9 +14,9 @@
 
 package com.baremaps.tiles.config;
 
-import java.util.HashMap;
+import com.google.common.collect.Lists;
 import java.util.List;
-import java.util.Map;
+
 
 public class Layer {
 
@@ -26,13 +26,7 @@ public class Layer {
 
   private String description;
 
-  private String lineColor = "rgb(152, 174, 221)";
-
-  private String fillColor = "rgba(152, 174, 221, 0.1)";
-
-  private Map<String, String> fields = new HashMap<>();
-
-  private List<Query> queries;
+  private List<Query> queries = Lists.newArrayList();
 
   public String getId() {
     return id;
@@ -40,10 +34,6 @@ public class Layer {
 
   public String getDescription() {
     return description;
-  }
-
-  public Map<String, String> getFields() {
-    return fields;
   }
 
   public List<Query> getQueries() {
@@ -58,10 +48,6 @@ public class Layer {
     this.description = description;
   }
 
-  public void setFields(Map<String, String> fields) {
-    this.fields = fields;
-  }
-
   public void setQueries(List<Query> queries) {
     this.queries = queries;
   }
@@ -74,19 +60,4 @@ public class Layer {
     this.type = type;
   }
 
-  public String getLineColor() {
-    return lineColor;
-  }
-
-  public void setLineColor(String lineColor) {
-    this.lineColor = lineColor;
-  }
-
-  public String getFillColor() {
-    return fillColor;
-  }
-
-  public void setFillColor(String fillColor) {
-    this.fillColor = fillColor;
-  }
 }

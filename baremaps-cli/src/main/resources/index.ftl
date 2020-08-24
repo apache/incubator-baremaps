@@ -99,7 +99,11 @@ to display its metadata.
   });
 
   // Reload the webpage when this connection gets closed by the server
-  fetch("/change/").catch(_ => setTimeout(() => location.reload(), 1000));
+  var source = new EventSource("/changes/");
+  source.onmessage = function(event) {
+    console.log(event);
+    map.setStyle('/style.json');
+  };
 
 </script>
 </body>

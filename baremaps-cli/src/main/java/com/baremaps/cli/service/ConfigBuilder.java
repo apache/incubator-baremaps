@@ -41,11 +41,6 @@ public class ConfigBuilder {
 
     // Put the nested properties at the end
     map.put("layers", formatLayers(config.getLayers()));
-    if (config.getStyles() == null || config.getStyles().isEmpty()) {
-      map.put("styles", new StyleBuilder(config).buildStyles());
-    } else {
-      map.put("styles", config.getStyles());
-    }
 
     return map;
   }
@@ -62,30 +57,6 @@ public class ConfigBuilder {
     Map<String, Object> map = new LinkedHashMap<>();
     map.put("name", layer.getId());
     map.put("queries", layer.getQueries());
-    return map;
-  }
-
-  private List<Map<String, Object>> formatStyles(List<Map<String, Object>> styles) {
-    if (config.getStyles() == null) {
-      StyleBuilder builder = new StyleBuilder(config);
-      return builder.buildStyles();
-    } else {
-      return styles.stream()
-          .map(style -> formatStyle(style))
-          .collect(Collectors.toList());
-    }
-  }
-
-  private Map<String, Object> formatStyle(Map<String, Object> style) {
-    // Order the style properties
-    Map<String, Object> map = new LinkedHashMap<>();
-    map.put("id", style.get("id"));
-    map.put("source", style.get("source"));
-    map.put("source-layer", style.get("source-layer"));
-    map.put("minZoom", style.get("minZoom"));
-    map.put("maxZoom", style.get("maxZoom"));
-    map.put("type", style.get("type"));
-    map.putAll(style);
     return map;
   }
 

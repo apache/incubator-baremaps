@@ -23,6 +23,7 @@ import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.server.AbstractHttpService;
 import com.linecorp.armeria.server.ServiceRequestContext;
 import java.util.Map;
+import javax.inject.Provider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,15 +31,15 @@ public class ConfigService extends AbstractHttpService {
 
   private static Logger logger = LogManager.getLogger();
 
-  private final Config config;
+  private final Provider<Config> config;
 
-  public ConfigService(Config config) {
+  public ConfigService(Provider<Config> config) {
     this.config = config;
   }
 
   @Override
   protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) throws JsonProcessingException {
-    ConfigBuilder configFormatter = new ConfigBuilder(this.config);
+    ConfigBuilder configFormatter = new ConfigBuilder(this.config.get());
     Map<String, Object> config = configFormatter.format();
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory()
         .disable(Feature.WRITE_DOC_START_MARKER)
