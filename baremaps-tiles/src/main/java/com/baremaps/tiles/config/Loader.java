@@ -21,19 +21,19 @@ public class Loader {
     this.blobStore = blobStore;
   }
 
-  private ObjectMapper objectMapper() {
+  private ObjectMapper mapper() {
     return new ObjectMapper(new YAMLFactory());
   }
 
-  private ObjectMapper loadingObjectMapper(URI uri) {
+  private ObjectMapper loadingMapper(URI uri) {
     SimpleModule module = new SimpleModule();
     module.addDeserializer(Layer.class, new LoadingDeserializer<>(Layer.class, uri));
     module.addDeserializer(Component.class, new LoadingDeserializer<>(Component.class, uri));
-    return objectMapper().registerModules(module);
+    return mapper().registerModules(module);
   }
 
   public Config load(URI uri) throws IOException {
-    return loadingObjectMapper(uri).readValue(blobStore.readByteArray(uri), Config.class);
+    return loadingMapper(uri).readValue(blobStore.readByteArray(uri), Config.class);
   }
 
   private class LoadingDeserializer<T> extends StdDeserializer<T> {
@@ -51,13 +51,11 @@ public class Loader {
     @Override
     public T deserialize(JsonParser parser, DeserializationContext context) throws IOException {
       JsonNode node = parser.getCodec().readTree(parser);
-      if (node.has("ref")) {
-        URI ref = uri.resolve(node.get("ref").asText());
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        return mapper.readValue(blobStore.readByteArray(ref), type);
+      if (node.isTextual()) {
+        URI ref = uri.resolve(node.asText());
+        return mapper().readValue(blobStore.readByteArray(ref), type);
       } else {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-        return  mapper.readValue(node.traverse(), type);
+        return mapper().readValue(node.traverse(), type);
       }
     }
   }

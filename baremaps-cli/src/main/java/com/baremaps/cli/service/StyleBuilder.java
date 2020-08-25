@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -56,10 +57,10 @@ public class StyleBuilder {
             .build())
         .build());
 
-    map.put("layers", styles().stream().map(style -> {
+    List styles = styles().stream().map(style -> {
           Map<String, Object> layer = new TreeMap<>();
           layer.put("id", style.getId());
-          layer.put("source", "baremaps");
+          layer.put("source", Optional.ofNullable(style.getSource()).orElse("baremaps"));
           layer.put("source-layer", style.getLayer());
           layer.put("type", style.getType());
           layer.put("minzoom", style.getMinZoom());
@@ -70,7 +71,9 @@ public class StyleBuilder {
           layer.put("paint", style.getPaint());
           return layer;
         }
-    ).collect(Collectors.toList()));
+    ).collect(Collectors.toList());
+
+    map.put("layers", styles);
 
     return map;
   }

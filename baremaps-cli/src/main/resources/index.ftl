@@ -10,23 +10,6 @@
       height: 100%;
     }
 
-    #map canvas {
-      cursor: crosshair;
-    }
-
-    #heading {
-      font-family: 'Montserrat', sans-serif;
-      color: rgb(255, 255, 255);
-      background: rgb(40, 40, 40);
-      position: fixed;
-      top: 0px;
-      left: 0px;
-      bottom: 0px;
-      padding: 30px;
-      width: 450px;
-      overflow: auto;
-    }
-
     h1 {
       font-family: 'Roboto', sans-serif;
       margin: 0;
@@ -46,17 +29,6 @@
 </head>
 <body style="margin: 0">
 <div id="map"></div>
-<div id="heading">
-  <h1>Blueprint</h1>
-  <p>
-    The blueprint lets you explore and improve the tiles generated with your <a href="/config.yaml" download="config.yaml">configuration</a> file.
-    In addition, it can be used to generate a mapbox <a href="/style.json" download="style.json">stylesheet</a>.
-  </p>
-  <pre id='features'>
-Select a feature on the map
-to display its metadata.
-  </pre>
-</div>
 <script>
 
   // Initialize the map
@@ -91,11 +63,6 @@ to display its metadata.
         + map.getCenter().lat.toFixed(6) + "/"
         + map.getBearing().toFixed(6) + "/"
         + map.getPitch().toFixed(6);
-  });
-
-  map.on('click', function (e) {
-    var features = map.queryRenderedFeatures(e.point);
-    document.getElementById('features').innerHTML = JSON.stringify(features, null, 2);
   });
 
   // Reload the webpage when this connection gets closed by the server

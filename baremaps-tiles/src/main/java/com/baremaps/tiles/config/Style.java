@@ -14,6 +14,8 @@ public class Style {
 
   private int maxZoom;
 
+  private String source;
+
   private String layer;
 
   private List<Object> filter;
@@ -94,4 +96,11 @@ public class Style {
     this.paint = paint;
   }
 
+  public String getSource() {
+    return source;
+  }
+
+  public void setSource(String source) {
+    this.source = source;
+  }
 }
