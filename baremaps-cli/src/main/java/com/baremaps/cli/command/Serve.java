@@ -68,8 +68,6 @@ public class Serve implements Callable<Integer> {
       description = "Watch for file changes.")
   private boolean watchChanges = false;
 
-  private long lastChange = 0;
-
   private Server server;
 
   @Override
@@ -77,9 +75,9 @@ public class Serve implements Callable<Integer> {
     Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
+    BlobStore blobStore = mixins.blobStore();
+    Loader loader = new Loader(blobStore);
     Provider<Config> provider = () -> {
-      BlobStore blobStore = mixins.blobStore();
-      Loader loader = new Loader(blobStore);
       try {
         return loader.load(this.config);
       } catch (IOException e) {
@@ -88,6 +86,9 @@ public class Serve implements Callable<Integer> {
     };
 
     Config config = provider.get();
+    if (!watchChanges) {
+      provider = () -> config;
+    }
 
     logger.info("Initializing datasource");
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);

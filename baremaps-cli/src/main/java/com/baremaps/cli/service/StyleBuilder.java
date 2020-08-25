@@ -83,7 +83,7 @@ public class StyleBuilder {
       List<Style> styles = new ArrayList<>();
       styles.add(background());
       for (Layer layer : config.getLayers()) {
-        styles.addAll(blueprint(layer));
+        styles.addAll(layerBlueprint(layer));
       }
       return styles;
     } else {
@@ -107,25 +107,25 @@ public class StyleBuilder {
     return style;
   }
 
-  private List<Style> blueprint(Layer layer) {
+  private List<Style> layerBlueprint(Layer layer) {
     switch (layer.getType()) {
       case "point":
-        return Arrays.asList(buildPointStyle(layer, String.format("%s_point", layer.getId())));
+        return Arrays.asList(pointBlueprint(layer, String.format("%s_point", layer.getId())));
       case "line":
-        return Arrays.asList(buildLinestringStyle(layer, String.format("%s_linestring", layer.getId())));
+        return Arrays.asList(linestringBlueprint(layer, String.format("%s_linestring", layer.getId())));
       case "polygon":
-        return Arrays.asList(buildPolygonStyle(layer, String.format("%s_polygon", layer.getId())));
+        return Arrays.asList(polygonBlueprint(layer, String.format("%s_polygon", layer.getId())));
       case "geometry":
         return Arrays.asList(
-            buildPointStyle(layer, String.format("%s_point", layer.getId())),
-            buildLinestringStyle(layer, String.format("%s_linestring", layer.getId())),
-            buildPolygonStyle(layer, String.format("%s_polygon", layer.getId())));
+            pointBlueprint(layer, String.format("%s_point", layer.getId())),
+            linestringBlueprint(layer, String.format("%s_linestring", layer.getId())),
+            polygonBlueprint(layer, String.format("%s_polygon", layer.getId())));
       default:
         return Arrays.asList();
     }
   }
 
-  private Style buildPointStyle(Layer layer, String id) {
+  private Style pointBlueprint(Layer layer, String id) {
     Style style = new Style();
     style.setId(id);
     style.setLayer(layer.getId());
@@ -136,12 +136,13 @@ public class StyleBuilder {
         .put("visibility", "visible")
         .build());
     style.setPaint(ImmutableSortedMap.naturalOrder()
-        .put("circle-color", "rgb(229, 235, 247)")
-        .put("circle-radius", 2));
+        .put("circle-color", "rgba(229, 235, 247, 0.8)")
+        .put("circle-radius", 2)
+        .build());
     return style;
   }
 
-  private Style buildLinestringStyle(Layer layer, String id) {
+  private Style linestringBlueprint(Layer layer, String id) {
     Style style = new Style();
     style.setId(id);
     style.setLayer(layer.getId());
@@ -152,13 +153,13 @@ public class StyleBuilder {
         .put("visibility", "visible")
         .build());
     style.setPaint(ImmutableSortedMap.naturalOrder()
-        .put("line-color", "rgb(229, 235, 247)")
+        .put("line-color", "rgba(229, 235, 247, 0.8)")
         .put("line-width", 1)
         .build());
     return style;
   }
 
-  private Style buildPolygonStyle(Layer layer, String id) {
+  private Style polygonBlueprint(Layer layer, String id) {
     Style style = new Style();
     style.setId(id);
     style.setLayer(layer.getId());
@@ -169,7 +170,7 @@ public class StyleBuilder {
         .put("visibility", "visible")
         .build());
     style.setPaint(ImmutableSortedMap.naturalOrder()
-        .put("fill-outline-color", "rgb(229, 235, 247)")
+        .put("fill-outline-color", "rgba(229, 235, 247, 0.8)")
         .put("fill-color", "rgba(229, 235, 247, 0.1)")
         .put("fill-opacity", 1)
         .put("fill-antialias", true)
