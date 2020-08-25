@@ -79,7 +79,7 @@ public class StyleBuilder {
   }
 
   private List<Style> styles() {
-    if (config.getComponents().isEmpty()) {
+    if (config.getStylesheets().isEmpty()) {
       List<Style> styles = new ArrayList<>();
       styles.add(background());
       for (Layer layer : config.getLayers()) {
@@ -87,7 +87,7 @@ public class StyleBuilder {
       }
       return styles;
     } else {
-      List<Style> styles = config.getComponents().stream()
+      List<Style> styles = config.getStylesheets().stream()
           .flatMap(component -> component.getStyles().stream())
           .collect(Collectors.toList());
       return Lists.reverse(styles);

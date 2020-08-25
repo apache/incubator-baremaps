@@ -3,7 +3,7 @@ package com.baremaps.tiles.config;
 import com.google.common.collect.Lists;
 import java.util.List;
 
-public class Component {
+public class Stylesheet {
 
   private String id;
 

@@ -35,7 +35,7 @@ public class Config {
 
   private List<Layer> layers = Lists.newArrayList();
 
-  private List<Component> components = Lists.newArrayList();
+  private List<Stylesheet> stylesheets = Lists.newArrayList();
 
   public String getId() {
     return id;
@@ -101,12 +101,12 @@ public class Config {
     this.layers = layers;
   }
 
-  public List<Component> getComponents() {
-    return components;
+  public List<Stylesheet> getStylesheets() {
+    return stylesheets;
   }
 
-  public void setComponents(List<Component> components) {
-    this.components = components;
+  public void setStylesheets(List<Stylesheet> stylesheets) {
+    this.stylesheets = stylesheets;
   }
 
 }

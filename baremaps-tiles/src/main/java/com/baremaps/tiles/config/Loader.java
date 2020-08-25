@@ -28,7 +28,7 @@ public class Loader {
   private ObjectMapper loadingMapper(URI uri) {
     SimpleModule module = new SimpleModule();
     module.addDeserializer(Layer.class, new LoadingDeserializer<>(Layer.class, uri));
-    module.addDeserializer(Component.class, new LoadingDeserializer<>(Component.class, uri));
+    module.addDeserializer(Stylesheet.class, new LoadingDeserializer<>(Stylesheet.class, uri));
     return mapper().registerModules(module);
   }
 
