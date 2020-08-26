@@ -4,10 +4,10 @@ center:
   lat: 47.1660
   zoom: 15
 bounds:
-  minLon: -180
-  minLat: -85.05113
-  maxLon: 180
-  maxLat: 85.05113
+  minLon: 9.471078
+  maxLon: 9.636217
+  minLat: 47.04774
+  maxLat: 47.27128
   minZoom: 12
   maxZoom: 16
 layers:
