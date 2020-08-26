@@ -25,7 +25,7 @@ public class Bounds {
 
   private double minZoom = 0;
 
-  private double maxZoom = 22;
+  private double maxZoom = 20;
 
   public double getMinLon() {
     return minLon;

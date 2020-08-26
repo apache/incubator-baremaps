@@ -36,9 +36,11 @@ public class PostgisQueryParser {
   }
 
   public static Parse parse(Layer layer, Query query) {
-    Matcher matcher = QUERY_PATTERN.matcher(query.getSql());
+    String sql = query.getSql().replaceAll("\\s+"," ").trim();
+    Matcher matcher = QUERY_PATTERN.matcher(sql);
+
     if (!matcher.matches()) {
-      throw new IllegalArgumentException("The SQL query malformed");
+      throw new IllegalArgumentException("The SQL query is malformed");
     }
 
     String select = matcher.group(1).trim();

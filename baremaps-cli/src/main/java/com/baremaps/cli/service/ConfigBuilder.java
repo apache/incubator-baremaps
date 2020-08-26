@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.baremaps.cli.blueprint;
+package com.baremaps.cli.service;
 
 import com.baremaps.tiles.config.Config;
 import com.baremaps.tiles.config.Layer;
@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ConfigFormatter {
+public class ConfigBuilder {
 
   private final Config config;
 
-  public ConfigFormatter(Config config) {
+  public ConfigBuilder(Config config) {
     this.config = config;
   }
 
@@ -41,11 +41,6 @@ public class ConfigFormatter {
 
     // Put the nested properties at the end
     map.put("layers", formatLayers(config.getLayers()));
-    if (config.getStyles() == null || config.getStyles().isEmpty()) {
-      map.put("styles", new BlueprintBuilder(config).buildStyles());
-    } else {
-      map.put("styles", config.getStyles());
-    }
 
     return map;
   }
@@ -61,32 +56,7 @@ public class ConfigFormatter {
     // Order the layer properties
     Map<String, Object> map = new LinkedHashMap<>();
     map.put("name", layer.getId());
-    map.put("type", layer.getType());
     map.put("queries", layer.getQueries());
-    return map;
-  }
-
-  private List<Map<String, Object>> formatStyles(List<Map<String, Object>> styles) {
-    if (config.getStyles() == null) {
-      BlueprintBuilder builder = new BlueprintBuilder(config);
-      return builder.buildStyles();
-    } else {
-      return styles.stream()
-          .map(style -> formatStyle(style))
-          .collect(Collectors.toList());
-    }
-  }
-
-  private Map<String, Object> formatStyle(Map<String, Object> style) {
-    // Order the style properties
-    Map<String, Object> map = new LinkedHashMap<>();
-    map.put("id", style.get("id"));
-    map.put("source", style.get("source"));
-    map.put("source-layer", style.get("source-layer"));
-    map.put("minZoom", style.get("minZoom"));
-    map.put("maxZoom", style.get("maxZoom"));
-    map.put("type", style.get("type"));
-    map.putAll(style);
     return map;
   }
 

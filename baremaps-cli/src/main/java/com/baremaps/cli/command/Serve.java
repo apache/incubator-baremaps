@@ -1,31 +1,30 @@
 
 package com.baremaps.cli.command;
 
-import com.baremaps.cli.service.BlueprintService;
+import com.baremaps.cli.service.ChangePublisher;
 import com.baremaps.cli.service.ConfigService;
 import com.baremaps.cli.service.StyleService;
+import com.baremaps.cli.service.TemplateService;
 import com.baremaps.cli.service.TileService;
 import com.baremaps.tiles.config.Config;
+import com.baremaps.tiles.config.Loader;
 import com.baremaps.tiles.store.PostgisTileStore;
 import com.baremaps.tiles.store.TileStore;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.storage.BlobStore;
-import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
 import com.linecorp.armeria.server.file.FileService;
+import com.linecorp.armeria.server.streaming.ServerSentEvents;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardWatchEventKinds;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
-import java.time.Duration;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import javax.inject.Provider;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -69,8 +68,6 @@ public class Serve implements Callable<Integer> {
       description = "Watch for file changes.")
   private boolean watchChanges = false;
 
-  private long lastChange = 0;
-
   private Server server;
 
   @Override
@@ -78,75 +75,43 @@ public class Serve implements Callable<Integer> {
     Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
-    startServer();
-
-    Path configPath = Paths.get(config.getPath()).toAbsolutePath();
-
-    // Register a watch service in a separate thread to observe the changes occuring
-    // in the assets directory and in the configuration file. If a change occurs,
-    // the server is restarted, which triggers the browser to reload.
-    if (watchChanges && Files.exists(configPath)) {
-      new Thread(() -> {
-        try {
-          WatchService watchService = FileSystems.getDefault().newWatchService();
-          configPath.getParent().register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
-
-          // Watch the optional assets directory
-          if (assets != null) {
-            Path assetsPath = Paths.get(assets.getPath()).toAbsolutePath();
-            assetsPath.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
-          }
-
-          WatchKey key;
-          while ((key = watchService.take()) != null) {
-            Path dir = (Path) key.watchable();
-            for (WatchEvent<?> event : key.pollEvents()) {
-              Path path = dir.resolve((Path) event.context());
-              if (!path.endsWith("~")
-                  && Files.exists(path)
-                  && Files.getLastModifiedTime(path).toMillis() > lastChange) {
-                lastChange = Files.getLastModifiedTime(path).toMillis();
-                logger.info("Detected changes in the configuration");
-                stopServer();
-                startServer();
-              }
-            }
-            key.reset();
-          }
-        } catch (InterruptedException e) {
-          logger.error(e);
-        } catch (IOException e) {
-          logger.error(e);
-        }
-      }).run();
-    }
-
-    return 0;
-  }
-
-  private void startServer() throws IOException {
     BlobStore blobStore = mixins.blobStore();
-    Config config = Config.load(blobStore.readByteArray(this.config));
+    Loader loader = new Loader(blobStore);
+    Provider<Config> provider = () -> {
+      try {
+        return loader.load(this.config);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    };
+
+    Config config = provider.get();
+    if (!watchChanges) {
+      provider = () -> config;
+    }
 
     logger.info("Initializing datasource");
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
     logger.info("Initializing tile reader");
-    final TileStore tileStore = new PostgisTileStore(datasource, config);
+    final TileStore tileStore = new PostgisTileStore(datasource, provider);
 
     logger.info("Initializing server");
     String host = config.getServer().getHost();
     int port = config.getServer().getPort();
+    int threads = Runtime.getRuntime().availableProcessors();
+    ScheduledExecutorService executor = Executors.newScheduledThreadPool(threads);
     ServerBuilder builder = Server.builder()
         .defaultHostname(host)
         .http(port)
-        .service("/", new BlueprintService(config))
+        .service("/", new TemplateService(provider))
         .service("/favicon.ico",
             FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico"))
-        .service("/config.yaml", new ConfigService(config))
-        .service("/style.json", new StyleService(config))
+        .service("/config.yaml", new ConfigService(provider))
+        .service("/style.json", new StyleService(provider))
         .service("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).pbf$",
-            new TileService(tileStore));
+            new TileService(tileStore))
+        .blockingTaskExecutor(executor, true);
 
     // Initialize the assets handler if a path has been provided
     if (assets != null) {
@@ -156,22 +121,20 @@ public class Serve implements Callable<Integer> {
     // Keep a connection open with the browser.
     // When the server restarts, for instance when a change occurs in the configuration,
     // The browser reloads the webpage and displays the changes.
-    if (watchChanges) {
-      builder.service("/change/", (ctx, req) -> {
-        logger.info("Waiting for changes");
-        ctx.setRequestTimeout(Duration.ofMillis(Long.MAX_VALUE));
-        return HttpResponse.streaming();
+    Path directory = Paths.get(this.config.getPath()).toAbsolutePath().getParent();
+    if (watchChanges && Files.exists(directory)) {
+      ChangePublisher publisher = new ChangePublisher(directory);
+      builder.service("/changes/", (ctx, req) -> {
+        ctx.clearRequestTimeout();
+        return ServerSentEvents.fromPublisher(publisher);
       });
     }
 
     server = builder.build();
     server.start();
 
+    return 0;
   }
 
-  private void stopServer() throws IOException {
-    logger.info("Stopping the server");
-    server.stop();
-  }
 
 }

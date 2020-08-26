@@ -16,11 +16,13 @@ package com.baremaps;
 
 import com.baremaps.tiles.Tile;
 import com.baremaps.tiles.config.Config;
+import com.baremaps.tiles.config.Loader;
 import com.baremaps.tiles.store.PostgisTileStore;
 import com.baremaps.tiles.store.TileStoreException;
 import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.storage.LocalBlobStore;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.net.URI;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
@@ -52,8 +54,9 @@ public class TileReaderBenchmark {
   @Setup(Level.Invocation)
   public void prepare() throws IOException, ClassNotFoundException {
     Class.forName("org.postgresql.Driver");
-    byte[] bytes = Files.readAllBytes(Paths.get("./examples/openstreetmap/config.yaml"));
-    config = Config.load(bytes);
+    URI uri = Paths.get("./examples/openstreetmap/config.yaml").toUri();
+    Loader loader = new Loader(new LocalBlobStore());
+    Config config = loader.load(uri);
     datasource = PostgisHelper.poolingDataSource(
         "jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps");
   }
@@ -63,7 +66,7 @@ public class TileReaderBenchmark {
   @Warmup(iterations = 1)
   @Measurement(iterations = 2)
   public void with() throws SQLException, ParseException {
-    reader = new PostgisTileStore(datasource, config);
+    reader = new PostgisTileStore(datasource, () -> config);
     execute();
   }
 

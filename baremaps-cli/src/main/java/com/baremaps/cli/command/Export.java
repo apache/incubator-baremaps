@@ -16,6 +16,7 @@ package com.baremaps.cli.command;
 
 import com.baremaps.tiles.Tile;
 import com.baremaps.tiles.config.Config;
+import com.baremaps.tiles.config.Loader;
 import com.baremaps.tiles.config.Query;
 import com.baremaps.tiles.store.BlobTileStore;
 import com.baremaps.tiles.store.MBTilesTileStore;
@@ -44,7 +45,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.io.ParseException;
 import org.sqlite.SQLiteDataSource;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
@@ -116,7 +116,8 @@ public class Export implements Callable<Integer> {
 
     // Read the configuration file
     logger.info("Reading configuration");
-    Config config = Config.load(blobStore.readByteArray(this.config));
+    Loader loader = new Loader(blobStore);
+    Config config = loader.load(this.config);
 
     logger.info("Initializing the source tile store");
     final TileStore tileSource = sourceTileStore(config, datasource);
@@ -158,7 +159,7 @@ public class Export implements Callable<Integer> {
   }
 
   private TileStore sourceTileStore(Config config, PoolingDataSource datasource) {
-    return new PostgisTileStore(datasource, config);
+    return new PostgisTileStore(datasource, () -> config);
   }
 
   private TileStore targetTileStore(Config config, BlobStore blobStore)
@@ -181,7 +182,7 @@ public class Export implements Callable<Integer> {
     metadata.put("version", config.getVersion());
     metadata.put("description", config.getDescription());
     metadata.put("attribution", config.getAttribution());
-    metadata.put("type", config.getType());
+    metadata.put("type", "baselayer");
     metadata.put("format", "pbf");
     metadata.put("center", String.format("%f, %f", config.getCenter().getLon(), config.getCenter().getLat()));
     metadata.put("bounds", String.format("%f, %f, %f, %f",
@@ -195,7 +196,6 @@ public class Export implements Callable<Integer> {
       map.put("description", layer.getDescription());
       map.put("minzoom", layer.getQueries().stream().mapToInt(Query::getMinZoom).min().getAsInt());
       map.put("maxzoom", layer.getQueries().stream().mapToInt(Query::getMaxZoom).max().getAsInt());
-      map.put("fields", layer.getFields());
       return map;
     }).collect(Collectors.toList());
     metadata.put("json", new ObjectMapper().writeValueAsString(layers));

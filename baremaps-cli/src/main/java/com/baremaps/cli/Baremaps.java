@@ -41,13 +41,9 @@ public class Baremaps implements Callable<Integer> {
   }
 
   public static void main(String[] args) {
-
-
-
     CommandLine cmd = new CommandLine(new Baremaps())
         .setUsageHelpLongOptionsMaxWidth(30)
         .addMixin("logging", new Mixins());
-
     cmd.execute(args);
   }
 

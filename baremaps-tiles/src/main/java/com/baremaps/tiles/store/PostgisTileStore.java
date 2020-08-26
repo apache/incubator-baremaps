@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
+import javax.inject.Provider;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,7 +55,7 @@ public class PostgisTileStore implements TileStore {
   private static final String SOURCE = "{0} AS (SELECT id, "
       + "(tags || hstore(''geometry'', lower(replace(st_geometrytype(geom), ''ST_'', '''')))) as tags, "
       + "ST_AsMvtGeom(geom, {5}, 4096, 256, true) AS geom "
-      + "FROM (SELECT {1} as id, {2} as tags, {3} as geom FROM {4}) AS {0} WHERE ST_Intersects(geom, {5}))";
+      + "FROM (SELECT {1} as id, {2} as tags, {3} as geom FROM {4}) AS q WHERE ST_Intersects(geom, {5}))";
 
   private static final String LAYER = "SELECT ST_AsMVT(mvt_geom, ''{0}'', 4096) FROM ({1}) as mvt_geom";
 
@@ -81,16 +82,12 @@ public class PostgisTileStore implements TileStore {
 
   private final PoolingDataSource datasource;
 
-  private final Config config;
+  private final Provider<Config> provider;
 
-  private final Map<Layer, List<Parse>> parses;
-
-  public PostgisTileStore(PoolingDataSource datasource, Config config) {
+  public PostgisTileStore(PoolingDataSource datasource, Provider<Config> provider) {
     this.datasource = datasource;
-    this.config = config;
-    this.parses = config.getLayers().stream()
-        .flatMap(layer -> layer.getQueries().stream().map(query -> PostgisQueryParser.parse(layer, query)))
-        .collect(Collectors.groupingBy(q -> q.getLayer()));
+    this.provider = provider;
+
   }
 
   public Envelope envelope() throws SQLException, ParseException {
@@ -135,6 +132,9 @@ public class PostgisTileStore implements TileStore {
   }
 
   private String query(Tile tile) {
+    Map<Layer, List<Parse>> parses = provider.get().getLayers().stream()
+        .flatMap(layer -> layer.getQueries().stream().map(query -> PostgisQueryParser.parse(layer, query)))
+        .collect(Collectors.groupingBy(q -> q.getLayer()));
     String sources = parses.entrySet().stream()
         .flatMap(entry -> entry.getValue().stream()
             .filter(parse -> zoomFilter(tile, parse))

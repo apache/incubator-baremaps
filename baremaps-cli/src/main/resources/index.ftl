@@ -10,23 +10,6 @@
       height: 100%;
     }
 
-    #map canvas {
-      cursor: crosshair;
-    }
-
-    #heading {
-      font-family: 'Montserrat', sans-serif;
-      color: rgb(255, 255, 255);
-      background: rgb(40, 40, 40);
-      position: fixed;
-      top: 0px;
-      left: 0px;
-      bottom: 0px;
-      padding: 30px;
-      width: 450px;
-      overflow: auto;
-    }
-
     h1 {
       font-family: 'Roboto', sans-serif;
       margin: 0;
@@ -46,25 +29,14 @@
 </head>
 <body style="margin: 0">
 <div id="map"></div>
-<div id="heading">
-  <h1>Blueprint</h1>
-  <p>
-    The blueprint lets you explore and improve the tiles generated with your <a href="/config.yaml" download="config.yaml">configuration</a> file.
-    In addition, it can be used to generate a mapbox <a href="/style.json" download="style.json">stylesheet</a>.
-  </p>
-  <pre id='features'>
-Select a feature on the map
-to display its metadata.
-  </pre>
-</div>
 <script>
 
   // Initialize the map
   var map = new mapboxgl.Map({
     container: 'map',
     style: '/style.json',
-    center: [${center.lon}, ${center.lat}],
-    zoom: ${center.zoom},
+    center: [${center.lon?string["0.######"]}, ${center.lat?string["0.######"]}],
+    zoom: ${center.zoom?string["0.####"]},
     minZoom: ${bounds.minZoom},
     maxZoom: ${bounds.maxZoom}
   });
@@ -85,16 +57,20 @@ to display its metadata.
 
   // Changes the hash of the url when the location changes
   map.on('moveend', ev => {
-    location.hash = "#" + map.getZoom()+ "/" + map.getCenter().lng + "/" + map.getCenter().lat + "/" + map.getBearing() + "/" + map.getPitch();
-  });
-
-  map.on('click', function (e) {
-    var features = map.queryRenderedFeatures(e.point);
-    document.getElementById('features').innerHTML = JSON.stringify(features, null, 2);
+    location.hash = "#"
+        + map.getZoom().toFixed(4) + "/"
+        + map.getCenter().lng.toFixed(6) + "/"
+        + map.getCenter().lat.toFixed(6) + "/"
+        + map.getBearing().toFixed(6) + "/"
+        + map.getPitch().toFixed(6);
   });
 
   // Reload the webpage when this connection gets closed by the server
-  fetch("/change/").catch(_ => setTimeout(() => location.reload(), 1000));
+  var source = new EventSource("/changes/");
+  source.onmessage = function(event) {
+    console.log(event);
+    map.setStyle('/style.json');
+  };
 
 </script>
 </body>
