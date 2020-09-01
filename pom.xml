@@ -111,7 +111,7 @@
     <version.lib.slf4j>1.7.30</version.lib.slf4j>
     <version.lib.sqlite>3.32.3.2</version.lib.sqlite>
     <version.lib.testng>7.3.0</version.lib.testng>
-    <version.lib.s3mock>2.1.22</version.lib.s3mock>
+    <version.lib.s3mock>2.1.26</version.lib.s3mock>
     <version.lib.jackson>2.11.2</version.lib.jackson>
     <version.plugin.compiler>3.8.1</version.plugin.compiler>
     <version.plugin.jacoco>0.8.5</version.plugin.jacoco>
