@@ -171,7 +171,9 @@ public class PostgisTileStore implements TileStore {
                     .toString())
                 .collect(Collectors.joining(UNION_ALL))))
         .collect(Collectors.joining(UNION_ALL));
-    return MessageFormat.format(WITH, sources, targets);
+    String query = MessageFormat.format(WITH, sources, targets)
+        .replace("${zoom}", String.valueOf(tile.z()));
+    return query;
   }
 
   private boolean zoomFilter(Tile tile, Parse parse) {
