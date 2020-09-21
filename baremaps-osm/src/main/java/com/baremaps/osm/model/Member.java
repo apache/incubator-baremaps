@@ -16,16 +16,39 @@ package com.baremaps.osm.model;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.baremaps.osm.binary.Osmformat;
+import com.baremaps.osm.binary.Osmformat.Relation.MemberType;
 import com.google.common.base.Objects;
 import java.util.StringJoiner;
 
 public final class Member {
 
+  public enum MemberType {
+    node(0),
+    way(1),
+    relation(2);
+    private final int value;
+    MemberType(int i) {
+      this.value = i;
+    }
+    public final int getNumber() {
+      return value;
+    }
+    public static MemberType forNumber(int value) {
+      switch (value) {
+        case 0: return node;
+        case 1: return way;
+        case 2: return relation;
+        default: return null;
+      }
+    }
+  }
+
   private final long ref;
-  private final String type;
+  private final MemberType type;
   private final String role;
 
-  public Member(long ref, String type, String role) {
+  public Member(long ref, MemberType type, String role) {
     checkNotNull(type);
     checkNotNull(role);
     this.ref = ref;
@@ -37,7 +60,7 @@ public final class Member {
     return ref;
   }
 
-  public String getType() {
+  public MemberType getType() {
     return type;
   }
 
@@ -68,7 +91,7 @@ public final class Member {
   public String toString() {
     return new StringJoiner(", ", Member.class.getSimpleName() + "[", "]")
         .add("ref=" + ref)
-        .add("type='" + type + "'")
+        .add("type='" + type.name() + "'")
         .add("role='" + role + "'")
         .toString();
   }

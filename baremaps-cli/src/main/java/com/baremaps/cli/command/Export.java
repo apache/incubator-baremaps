@@ -14,20 +14,20 @@
 
 package com.baremaps.cli.command;
 
-import com.baremaps.tiles.Tile;
-import com.baremaps.tiles.config.Config;
-import com.baremaps.tiles.config.Loader;
-import com.baremaps.tiles.config.Query;
-import com.baremaps.tiles.store.BlobTileStore;
-import com.baremaps.tiles.store.MBTilesTileStore;
-import com.baremaps.tiles.store.PostgisTileStore;
-import com.baremaps.tiles.store.TileStore;
-import com.baremaps.tiles.store.TileStoreException;
-import com.baremaps.tiles.stream.BatchFilter;
-import com.baremaps.tiles.stream.TileFactory;
+import com.baremaps.exporter.Tile;
+import com.baremaps.exporter.config.Config;
+import com.baremaps.exporter.config.Loader;
+import com.baremaps.exporter.config.Query;
+import com.baremaps.exporter.store.BlobTileStore;
+import com.baremaps.exporter.store.MBTilesTileStore;
+import com.baremaps.exporter.store.PostgisTileStore;
+import com.baremaps.exporter.store.TileStore;
+import com.baremaps.exporter.store.TileStoreException;
+import com.baremaps.exporter.stream.BatchFilter;
+import com.baremaps.exporter.stream.TileFactory;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.storage.BlobStore;
-import com.baremaps.util.stream.StreamProgress;
+import com.baremaps.osm.stream.StreamProgress;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;

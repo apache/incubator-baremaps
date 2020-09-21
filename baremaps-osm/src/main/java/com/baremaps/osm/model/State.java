@@ -16,22 +16,26 @@ package com.baremaps.osm.model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
 public class State {
 
-  public final long sequenceNumber;
+  private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-  public final long timestamp;
+  private final long sequenceNumber;
 
-  public State(long sequenceNumber, long timestamp) {
+  private final LocalDateTime timestamp;
+
+  public State(long sequenceNumber, LocalDateTime timestamp) {
     this.sequenceNumber = sequenceNumber;
     this.timestamp = timestamp;
   }
 
-  public static State parse(String state) throws ParseException {
+  public static State read(String state) throws ParseException {
     Map<String, String> map = new HashMap<>();
     for (String line : state.split("\n")) {
       String[] array = line.split("=");
@@ -40,10 +44,15 @@ public class State {
       }
     }
     long sequenceNumber = Long.parseLong(map.get("sequenceNumber"));
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH\\:mm\\:ss'Z'");
-    format.setTimeZone(TimeZone.getTimeZone("GMT"));
-    long timestamp = format.parse(map.get("timestamp")).getTime() / 1000;
+    LocalDateTime timestamp = LocalDateTime.parse(map.get("timestamp"), format);
     return new State(sequenceNumber, timestamp);
   }
 
+  public long getSequenceNumber() {
+    return sequenceNumber;
+  }
+
+  public LocalDateTime getTimestamp() {
+    return timestamp;
+  }
 }

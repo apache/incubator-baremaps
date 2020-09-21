@@ -15,8 +15,8 @@
 package com.baremaps.osm.geometry;
 
 import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.cache.CacheException;
 import com.baremaps.osm.model.Relation;
-import com.baremaps.util.stream.Try;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -69,13 +69,24 @@ public class RelationBuilder extends GeometryBuilder<Relation> {
     // Collect the members of the relation
     List<LineString> members = entity.getMembers()
         .stream()
-        .map(member -> Try.of(() -> referenceCache.get(member.getRef())))
-        .filter(reference -> reference.isSuccess() && reference.value() != null)
-        .map(reference -> Try.of(() -> coordinateCache.getAll(reference.value()).stream()
-            .filter(point -> point != null)
-            .toArray(Coordinate[]::new)))
-        .filter(t -> t.isSuccess())
-        .map(t -> t.value())
+        .map(member -> {
+          try {
+            return referenceCache.get(member.getRef());
+          } catch (CacheException e) {
+            return null;
+          }
+        })
+        .filter(reference -> reference != null)
+        .map(reference -> {
+          try {
+            return coordinateCache.getAll(reference).stream()
+                .filter(point -> point != null)
+                .toArray(Coordinate[]::new);
+          } catch (CacheException e) {
+            return null;
+          }
+        })
+        .filter(t -> t != null)
         .map(t -> geometryFactory.createLineString(t))
         .collect(Collectors.toList());
 

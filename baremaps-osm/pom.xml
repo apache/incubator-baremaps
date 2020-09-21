@@ -40,15 +40,4 @@
     </plugins>
   </build>
 
-  <dependencies>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-tiles</artifactId>
-    </dependency>
-    <dependency>
-      <artifactId>lmdbjava</artifactId>
-      <groupId>org.lmdbjava</groupId>
-    </dependency>
-  </dependencies>
-
 </project>

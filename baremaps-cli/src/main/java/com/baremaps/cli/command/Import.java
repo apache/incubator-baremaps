@@ -14,16 +14,16 @@
 
 package com.baremaps.cli.command;
 
+import com.baremaps.importer.cache.LmdbCoordinateCache;
+import com.baremaps.importer.cache.LmdbReferencesCache;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.InMemoryCache;
-import com.baremaps.osm.cache.LmdbCoordinateCache;
-import com.baremaps.osm.cache.LmdbReferencesCache;
-import com.baremaps.osm.parser.PBFFileBlockGeometryParser;
-import com.baremaps.osm.store.PostgisHeaderStore;
-import com.baremaps.osm.store.PostgisNodeStore;
-import com.baremaps.osm.store.PostgisRelationStore;
-import com.baremaps.osm.store.PostgisWayStore;
-import com.baremaps.osm.store.StoreImportHandler;
+import com.baremaps.osm.reader.pbf.FileBlockGeometryReader;
+import com.baremaps.importer.store.PostgisHeaderStore;
+import com.baremaps.importer.store.PostgisNodeStore;
+import com.baremaps.importer.store.PostgisRelationStore;
+import com.baremaps.importer.store.PostgisWayStore;
+import com.baremaps.importer.store.StoreImportHandler;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -120,8 +120,7 @@ public class Import implements Callable<Integer> {
     PostgisNodeStore nodeStore = new PostgisNodeStore(datasource);
     PostgisWayStore wayStore = new PostgisWayStore(datasource);
     PostgisRelationStore relationStore = new PostgisRelationStore(datasource);
-    StoreImportHandler storeImportHandler = new StoreImportHandler(headerTable, nodeStore, wayStore,
-        relationStore);
+    StoreImportHandler storeImportHandler = new StoreImportHandler(headerTable, nodeStore, wayStore, relationStore);
 
     final Cache<Long, Coordinate> coordinateCache;
     final Cache<Long, List<Long>> referencesCache;
@@ -149,9 +148,9 @@ public class Import implements Callable<Integer> {
     }
 
     logger.info("Importing data");
-    PBFFileBlockGeometryParser parser = new PBFFileBlockGeometryParser(
+    FileBlockGeometryReader parser = new FileBlockGeometryReader(
         geometryFactory, coordinateTransform, coordinateCache, referencesCache);
-    parser.parse(path, storeImportHandler);
+    parser.read(path, storeImportHandler);
 
     logger.info("Indexing geometries");
     executeStatements("osm_create_gist_indexes.sql", datasource);

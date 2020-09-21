@@ -70,6 +70,7 @@ message HeaderBlock {
   optional string osmosis_replication_base_url = 34;
 }
 
+
 /** The bounding box field in the OSM header. BBOX, as used in the OSM
 header. Units are always in nanodegrees -- they do not obey
 granularity rules. */
@@ -80,6 +81,7 @@ message HeaderBBox {
   required sint64 top = 3;
   required sint64 bottom = 4;
 }
+
 
 ///////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////
@@ -98,18 +100,20 @@ message PrimitiveBlock {
   // Granularity of dates, normally represented in units of milliseconds since the 1970 epoch.
   optional int32 date_granularity = 18 [default = 1000];
 
+
   // Proposed extension:
   //optional BBox bbox = XX;
 }
 
 // Group of OSMPrimitives. All primitives in a group must be the same type.
 message PrimitiveGroup {
-  repeated Node nodes = 1;
+  repeated Node     nodes = 1;
   optional DenseNodes dense = 2;
-  repeated Way ways = 3;
+  repeated Way      ways = 3;
   repeated Relation relations = 4;
   repeated ChangeSet changesets = 5;
 }
+
 
 /** String table, contains the common strings in each block.
  Note that we reserve index '0' as a delimiter, so the entry at that
@@ -156,6 +160,7 @@ message DenseInfo {
   // set.
   repeated bool visible = 6 [packed = true];
 }
+
 
 // THIS IS STUB DESIGN FOR CHANGESETS. NOT USED RIGHT NOW.
 // TODO:    REMOVE THIS?
@@ -218,7 +223,7 @@ message Way {
 
   optional Info info = 4;
 
-  repeated sint64 refs = 8 [packed = true]; // DELTA coded
+  repeated sint64 refs = 8 [packed = true];  // DELTA coded
 
   repeated sint64 lat = 9 [packed = true];
   repeated sint64 lon = 10 [packed = true];
