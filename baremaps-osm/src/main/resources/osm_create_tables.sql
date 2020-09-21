@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS osm_headers
 (
-    replication_timestamp       bigint NOT NULL,
+    replication_timestamp       timestamp without time zone NOT NULL,
     replication_sequence_number bigint NOT NULL,
     replication_url             text   NOT NULL,
     source                      text,
@@ -39,7 +39,7 @@ CREATE TABLE osm_relations
     changeset    bigint                      NOT NULL,
     tags         hstore,
     member_refs  bigint[],
-    member_types text[],
+    member_types int[],
     member_roles text[],
     geom         geometry
 );

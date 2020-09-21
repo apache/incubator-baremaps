@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.cli.Baremaps;
-import com.baremaps.osm.store.PostgisNodeStore;
+import com.baremaps.importer.store.PostgisNodeStore;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.google.common.io.CharStreams;
 import java.io.File;

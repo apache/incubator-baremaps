@@ -13,7 +13,7 @@
  */
 package com.baremaps.cli.service;
 
-import com.baremaps.tiles.config.Config;
+import com.baremaps.exporter.config.Config;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

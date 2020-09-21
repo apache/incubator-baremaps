@@ -17,6 +17,7 @@ package com.baremaps.osm.geometry;
 import com.baremaps.osm.MockCache;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.model.Member;
+import com.baremaps.osm.model.Member.MemberType;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
@@ -144,20 +145,20 @@ public class GeometryConstants {
 
   public static final Relation RELATION_2 = new Relation(
       2, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon"),
-      Arrays.asList(new Member(2l, "way", "outer")));
+      Arrays.asList(new Member(2l, MemberType.way, "outer")));
 
   public static final Relation RELATION_3 = new Relation(
       3, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon"),
       Arrays.asList(
-          new Member(2l, "way", "outer"),
-          new Member(3l, "way", "inner")));
+          new Member(2l, MemberType.way, "outer"),
+          new Member(3l, MemberType.way, "inner")));
 
   public static final Relation RELATION_4 = new Relation(
       4, 0, TIMESTAMP, 0, 0, ImmutableMap.of("type", "multipolygon"),
       Arrays.asList(
-          new Member(2l, "way", "outer"),
-          new Member(3l, "way", "inner"),
-          new Member(4l, "way", "outer")));
+          new Member(2l, MemberType.way, "outer"),
+          new Member(3l, MemberType.way, "inner"),
+          new Member(4l, MemberType.way, "outer")));
 
   public static final RelationBuilder RELATION_BUILDER = new RelationBuilder(GEOMETRY_FACTORY,
       COORDINATE_CACHE, REFERENCE_CACHE);
