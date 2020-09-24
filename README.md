@@ -22,7 +22,7 @@ On the longer run, the aim of the project is to work with a variety of data sour
 
 ## Preview
 
-![State of the map](examples/openstreetmap/screenshot.png)
+[![State of the map](https://github.com/baremaps/openstreetmap-vecto/blob/master/screenshot.png)](https://github.com/baremaps/openstreetmap-vecto/)
 
 ## Installation
 
