@@ -114,7 +114,7 @@
     <version.lib.s3mock>2.1.22</version.lib.s3mock>
     <version.lib.jackson>2.11.2</version.lib.jackson>
     <version.plugin.compiler>3.8.1</version.plugin.compiler>
-    <version.plugin.jacoco>0.8.5</version.plugin.jacoco>
+    <version.plugin.jacoco>0.8.6</version.plugin.jacoco>
     <version.plugin.surefire>2.22.2</version.plugin.surefire>
     <version.plugin.surefire.provider.junit>1.3.2</version.plugin.surefire.provider.junit>
   </properties>
