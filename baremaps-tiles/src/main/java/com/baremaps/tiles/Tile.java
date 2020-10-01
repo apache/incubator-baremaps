@@ -128,6 +128,16 @@ public final class Tile {
         .toString();
   }
 
+  public static long countTiles(Envelope envelope, int minZ, int maxZ) {
+    return IntStream.rangeClosed(minZ, maxZ).mapToLong(z -> countTiles(envelope, z)).sum();
+  }
+
+  public static long countTiles(Envelope envelope, int z) {
+    Tile min = fromLonLat(envelope.getMinX(), envelope.getMaxY(), z);
+    Tile max = fromLonLat(envelope.getMaxX(), envelope.getMinY(), z);
+    return (max.x() - min.x() + 1) * (max.y() - min.y() + 1);
+  }
+
   public static Stream<Tile> getTiles(Envelope envelope, int minZ, int maxZ) {
     return IntStream.rangeClosed(minZ, maxZ).boxed().flatMap(z -> getTiles(envelope, z));
   }
