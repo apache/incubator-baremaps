@@ -16,6 +16,7 @@ package com.baremaps.osm.parser;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
+import com.baremaps.util.stream.StreamProgress;
 import com.baremaps.util.stream.StreamException;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -30,7 +31,9 @@ public class PBFFileBlockParser {
   public void parse(Path path, PBFFileBlockHandler handler) throws ParserException {
     try (DataInputStream data = new DataInputStream(Files.newInputStream(path))) {
       Spliterator<FileBlock> spliterator = new FileBlockSpliterator(data);
-      StreamSupport.stream(spliterator, true).forEach(b -> parseBlock(b, handler));
+      StreamSupport.stream(spliterator, true)
+          .peek(new StreamProgress<>(Files.size(path), b -> b.size()))
+          .forEach(b -> parseBlock(b, handler));
     } catch (StreamException | IOException e) {
       throw new ParserException(e.getCause());
     }

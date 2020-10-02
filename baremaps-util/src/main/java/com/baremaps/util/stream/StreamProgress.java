@@ -6,7 +6,7 @@ import java.util.function.Function;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ProgressPeeker<T> implements Consumer<T> {
+public class StreamProgress<T> implements Consumer<T> {
 
   private static Logger logger = LogManager.getLogger();
 
@@ -18,34 +18,34 @@ public class ProgressPeeker<T> implements Consumer<T> {
 
   private final AtomicLong timestamp;
 
-  public ProgressPeeker(long size) {
-    this(size, e -> 1l);
+  private final Function<T, Long> increment;
 
+  public StreamProgress(long size) {
+    this(size, e -> 1l);
   }
 
-  public ProgressPeeker(long size, Function<T, Long> increment) {
+  public StreamProgress(long size, Function<T, Long> increment) {
     this.size = size;
     this.position = new AtomicLong(0);
     this.start = System.currentTimeMillis();
     this.timestamp = new AtomicLong(System.currentTimeMillis());
+    this.increment = increment;
   }
 
   @Override
   public void accept(T e) {
-    long p = position.incrementAndGet();
+    long i = increment.apply(e);
+    long p = position.addAndGet(i);
     long t = System.currentTimeMillis();
     long l = timestamp.get();
-    double duration = (t - start) / 1000d;
-    if (t - l >= 1000) {
+    if (t - l >= 5000) {
       timestamp.set(t);
       double progress = Math.round(p * 10000d / size) / 100d;
-      double eta = (duration / progress * 100) - duration;
-      logger.info("progress: {}%, duration: {}s, ETA: {}s", progress, Math.round(duration), Math.round(eta));
+      logger.info("Progress: {}%", progress);
     }
     if (p == size) {
       double progress = 100d;
-      double eta = (duration / progress * 100) - duration;
-      logger.info("progress: {}%, duration: {}s, ETA: {}s", progress, Math.round(duration), Math.round(eta));
+      logger.info("Progress: {}%", progress);
     }
   }
 

@@ -26,11 +26,13 @@ class FileBlock {
   private final Type type;
   private final ByteString index;
   private final ByteString data;
+  private final long size;
 
-  public FileBlock(Type type, ByteString index, ByteString data) {
+  public FileBlock(Type type, ByteString index, ByteString data, long size) {
     this.type = type;
     this.index = index;
     this.data = data;
+    this.size = size;
   }
 
   public Type getType() {
@@ -43,6 +45,10 @@ class FileBlock {
 
   public ByteString getData() {
     return data;
+  }
+
+  public long size() {
+    return size;
   }
 
 }
