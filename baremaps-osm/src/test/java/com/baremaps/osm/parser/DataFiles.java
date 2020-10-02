@@ -37,7 +37,7 @@ public class DataFiles {
   }
 
   public static FileBlock invalidOsmPbf() {
-    return new FileBlock(Type.OSMHeader, ByteString.copyFromUtf8(""), ByteString.copyFromUtf8(""));
+    return new FileBlock(Type.OSMHeader, ByteString.copyFromUtf8(""), ByteString.copyFromUtf8(""), 0);
   }
 
   public static InputStream dataOsmXml() {

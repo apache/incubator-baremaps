@@ -27,6 +27,7 @@ import com.baremaps.tiles.stream.BatchFilter;
 import com.baremaps.tiles.stream.TileFactory;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.storage.BlobStore;
+import com.baremaps.util.stream.StreamProgress;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
@@ -133,9 +134,13 @@ public class Export implements Callable<Integer> {
       Envelope envelope = new Envelope(
           config.getBounds().getMinLon(), config.getBounds().getMaxLon(),
           config.getBounds().getMinLat(), config.getBounds().getMaxLat());
-      stream = Tile.getTiles(envelope,
+      long count = Tile.countTiles(envelope,
           (int) config.getBounds().getMinZoom(),
           (int) config.getBounds().getMaxZoom());
+      stream = Tile.getTiles(envelope,
+          (int) config.getBounds().getMinZoom(),
+          (int) config.getBounds().getMaxZoom())
+          .peek(new StreamProgress<>(count));
     } else {
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(blobStore.read(delta)))) {
         stream = reader.lines().flatMap(line -> {

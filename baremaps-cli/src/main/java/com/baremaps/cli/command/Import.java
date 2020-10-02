@@ -100,13 +100,9 @@ public class Import implements Callable<Integer> {
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
-    logger.info("Dropping tables");
+    logger.info("Initializing database");
     executeStatements("osm_drop_tables.sql", datasource);
-
-    logger.info("Creating tables");
     executeStatements("osm_create_tables.sql", datasource);
-
-    logger.info("Creating primary keys");
     executeStatements("osm_create_primary_keys.sql", datasource);
 
     logger.info("Fetching data");
@@ -131,12 +127,11 @@ public class Import implements Callable<Integer> {
     final Cache<Long, List<Long>> referencesCache;
     switch (cacheType) {
       case inmemory:
-        logger.info("Initializing in-memory cache");
+
         coordinateCache = new InMemoryCache<>();
         referencesCache = new InMemoryCache<>();
         break;
       case lmdb:
-        logger.info("Initializing lmdb cache");
         if (cacheDirectory != null) {
           cacheDirectory = Files.createDirectories(cacheDirectory);
         } else {
