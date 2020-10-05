@@ -134,8 +134,12 @@ public final class Tile {
 
   public static long countTiles(Envelope envelope, int z) {
     Tile min = fromLonLat(envelope.getMinX(), envelope.getMaxY(), z);
+    long minX = min.x();
+    long minY = min.y();
     Tile max = fromLonLat(envelope.getMaxX(), envelope.getMinY(), z);
-    return (max.x() - min.x() + 1) * (max.y() - min.y() + 1);
+    long maxX = max.x();
+    long maxY = max.y();
+    return (maxX - minX + 1) * (maxY - minY + 1);
   }
 
   public static Stream<Tile> getTiles(Envelope envelope, int minZ, int maxZ) {
