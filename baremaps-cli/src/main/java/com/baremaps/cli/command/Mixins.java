@@ -20,6 +20,7 @@ import com.baremaps.util.storage.CompositeBlobStore;
 import com.baremaps.util.storage.HttpBlobStore;
 import com.baremaps.util.storage.LocalBlobStore;
 import com.baremaps.util.storage.S3BlobStore;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import picocli.CommandLine.Option;
@@ -39,7 +40,9 @@ public class Mixins {
   public boolean enableAws = false;
 
   public BlobStore blobStore() {
-    List<BlobStore> components = Arrays.asList(new LocalBlobStore(), new HttpBlobStore());
+    List<BlobStore> components = new ArrayList<>();
+    components.add(new LocalBlobStore());
+    components.add(new HttpBlobStore());
     if (enableAws) {
       components.add(new S3BlobStore());
     }
