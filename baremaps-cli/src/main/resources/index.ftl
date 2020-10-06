@@ -65,6 +65,8 @@
         + map.getPitch().toFixed(6);
   });
 
+  map.addControl(new mapboxgl.NavigationControl());
+
   // Reload the webpage when this connection gets closed by the server
   var source = new EventSource("/changes/");
   source.onmessage = function(event) {

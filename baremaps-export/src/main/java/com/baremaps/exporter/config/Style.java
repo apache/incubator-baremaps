@@ -10,9 +10,9 @@ public class Style {
 
   private String metadata;
 
-  private int minZoom;
+  private Integer minZoom;
 
-  private int maxZoom;
+  private Integer maxZoom;
 
   private String source;
 
@@ -48,7 +48,7 @@ public class Style {
     this.metadata = metadata;
   }
 
-  public int getMinZoom() {
+  public Integer getMinZoom() {
     return minZoom;
   }
 
@@ -56,7 +56,7 @@ public class Style {
     this.minZoom = minZoom;
   }
 
-  public int getMaxZoom() {
+  public Integer getMaxZoom() {
     return maxZoom;
   }
 

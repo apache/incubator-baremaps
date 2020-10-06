@@ -177,8 +177,7 @@ public class PostgisTileStore implements TileStore {
   }
 
   private boolean zoomFilter(Tile tile, Parse parse) {
-    return parse.getQuery().getMinZoom() <= tile.z()
-        && tile.z() < parse.getQuery().getMaxZoom();
+    return parse.getQuery().getMinZoom() <= tile.z() && tile.z() < parse.getQuery().getMaxZoom();
   }
 
   private String envelope(Tile tile) {
