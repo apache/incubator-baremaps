@@ -14,18 +14,19 @@
 
 package com.baremaps.osm.model;
 
+import java.time.LocalDateTime;
 import org.locationtech.jts.geom.Geometry;
 
 public class Header {
 
-  private final long replicationTimestamp;
+  private final LocalDateTime replicationTimestamp;
   private final long replicationSequenceNumber;
   private final String replicationUrl;
   private final String source;
   private final String writingProgram;
   private final Geometry bbox;
 
-  public Header(long replicationTimestamp, long replicationSequenceNumber, String replicationUrl,
+  public Header(LocalDateTime replicationTimestamp, long replicationSequenceNumber, String replicationUrl,
       String source,
       String writingProgram, Geometry bbox) {
     this.replicationTimestamp = replicationTimestamp;
@@ -36,7 +37,7 @@ public class Header {
     this.bbox = bbox;
   }
 
-  public long getReplicationTimestamp() {
+  public LocalDateTime getReplicationTimestamp() {
     return replicationTimestamp;
   }
 

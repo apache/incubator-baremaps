@@ -43,11 +43,12 @@
   </distributionManagement>
 
   <modules>
-    <module>baremaps-osm</module>
-    <module>baremaps-tiles</module>
-    <module>baremaps-benchmarks</module>
     <module>baremaps-cli</module>
+    <module>baremaps-export</module>
+    <module>baremaps-import</module>
+    <module>baremaps-osm</module>
     <module>baremaps-util</module>
+    <module>baremaps-benchmarks</module>
     <module>examples</module>
   </modules>
 
@@ -92,7 +93,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <version.lib.armeria>1.0.0</version.lib.armeria>
+    <version.lib.armeria>1.1.0</version.lib.armeria>
     <version.lib.freemarker>2.3.30</version.lib.freemarker>
     <version.lib.caffeine>2.8.5</version.lib.caffeine>
     <version.lib.commons-compress>1.19</version.lib.commons-compress>
@@ -239,7 +240,12 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-tiles</artifactId>
+        <artifactId>baremaps-export</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-import</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>

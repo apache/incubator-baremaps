@@ -13,8 +13,8 @@
  */
 package com.baremaps.cli.service;
 
-import com.baremaps.tiles.config.Config;
-import com.baremaps.tiles.config.Layer;
+import com.baremaps.exporter.config.Config;
+import com.baremaps.exporter.config.Layer;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;

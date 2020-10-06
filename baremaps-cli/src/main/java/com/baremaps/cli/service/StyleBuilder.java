@@ -14,9 +14,9 @@
 
 package com.baremaps.cli.service;
 
-import com.baremaps.tiles.config.Config;
-import com.baremaps.tiles.config.Layer;
-import com.baremaps.tiles.config.Style;
+import com.baremaps.exporter.config.Config;
+import com.baremaps.exporter.config.Layer;
+import com.baremaps.exporter.config.Style;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;

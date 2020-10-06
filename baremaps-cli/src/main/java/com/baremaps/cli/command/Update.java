@@ -14,23 +14,23 @@
 
 package com.baremaps.cli.command;
 
+import com.baremaps.importer.cache.PostgisCoordinateCache;
+import com.baremaps.importer.cache.PostgisReferenceCache;
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.PostgisCoordinateCache;
-import com.baremaps.osm.cache.PostgisReferenceCache;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.model.Header;
 import com.baremaps.osm.model.State;
-import com.baremaps.osm.parser.XMLChangeParser;
-import com.baremaps.osm.store.PostgisHeaderStore;
-import com.baremaps.osm.store.PostgisNodeStore;
-import com.baremaps.osm.store.PostgisRelationStore;
-import com.baremaps.osm.store.PostgisWayStore;
-import com.baremaps.osm.store.StoreDeltaHandler;
-import com.baremaps.osm.store.StoreUpdateHandler;
-import com.baremaps.tiles.Tile;
+import com.baremaps.osm.reader.xml.XmlChangeReader;
+import com.baremaps.importer.store.PostgisHeaderStore;
+import com.baremaps.importer.store.PostgisNodeStore;
+import com.baremaps.importer.store.PostgisRelationStore;
+import com.baremaps.importer.store.PostgisWayStore;
+import com.baremaps.importer.store.StoreDeltaHandler;
+import com.baremaps.importer.store.StoreUpdateHandler;
+import com.baremaps.exporter.Tile;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.storage.BlobStore;
 import com.google.common.base.Charsets;
@@ -140,7 +140,7 @@ public class Update implements Callable<Integer> {
     Path path = blobStore.fetch(changeURI);
 
     logger.info("Computing differences");
-    new XMLChangeParser().parse(path, deltaHandler);
+    new XmlChangeReader().parse(path, deltaHandler);
 
     logger.info("Saving differences");
     try (PrintWriter diffPrintWriter = new PrintWriter(blobStore.write(delta))) {
@@ -153,15 +153,15 @@ public class Update implements Callable<Integer> {
     StoreUpdateHandler updateHandler = new StoreUpdateHandler(
         nodeBuilder, wayBuilder, relationBuilder,
         nodeStore, wayStore, relationStore);
-    new XMLChangeParser().parse(path, updateHandler);
+    new XmlChangeReader().parse(path, updateHandler);
 
     logger.info("Updating state information");
     try (InputStreamReader reader = new InputStreamReader(blobStore.read(stateURI), Charsets.UTF_8)) {
       String stateContent = CharStreams.toString(reader);
-      State state = State.parse(stateContent);
+      State state = State.read(stateContent);
       headerMapper.insert(new Header(
-          state.timestamp,
-          state.sequenceNumber,
+          state.getTimestamp(),
+          state.getSequenceNumber(),
           header.getReplicationUrl(),
           header.getSource(),
           header.getWritingProgram(),
