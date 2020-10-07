@@ -2,10 +2,8 @@
 
 This image enables to play with Baremaps without having to install java locally.
 
-It can be built from the root of the project directory using the following command:
-
 ```bash
-docker build -t baremaps/baremaps -f docker/baremaps/Dockerfile .
+docker build -t baremaps/baremaps .
 ```
 
 This image is published on docker hub with the fol:
