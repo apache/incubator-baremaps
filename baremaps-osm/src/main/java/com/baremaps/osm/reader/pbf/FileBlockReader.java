@@ -32,8 +32,8 @@ import java.util.stream.StreamSupport;
 public class FileBlockReader implements Reader<FileBlockHandler> {
 
   public void read(Path path, FileBlockHandler handler) throws ReaderException {
-    try (InputStream inputStream = Files.newInputStream(path)) {
-      DataInputStream dataInputStream = new DataInputStream(inputStream);
+    try (InputStream inputStream = Files.newInputStream(path);
+        DataInputStream dataInputStream = new DataInputStream(inputStream)) {
       Spliterator<FileBlock> spliterator = new FileBlockSpliterator(dataInputStream);
       StreamSupport.stream(spliterator, true)
           .peek(new StreamProgress<>(Files.size(path), b -> b.size()))

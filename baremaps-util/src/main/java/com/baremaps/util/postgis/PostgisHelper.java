@@ -17,13 +17,18 @@ package com.baremaps.util.postgis;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Splitter;
 import com.google.common.io.Resources;
+
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.MessageFormat;
+
 import org.apache.commons.dbcp2.ConnectionFactory;
 import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp2.PoolableConnection;
@@ -31,6 +36,8 @@ import org.apache.commons.dbcp2.PoolableConnectionFactory;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
+
+import javax.sql.DataSource;
 
 public final class PostgisHelper {
 
@@ -74,11 +81,26 @@ public final class PostgisHelper {
     return dataSource;
   }
 
-  public static void executeScript(Connection connection, String script) throws IOException, SQLException {
-    URL url = Resources.getResource(script);
-    String sql = Resources.toString(url, Charsets.UTF_8);
+  public static void execute(Connection connection, String resource) throws IOException, SQLException {
+    String queries = Resources.toString(Resources.getResource(resource), Charsets.UTF_8);
     try (Statement statement = connection.createStatement()) {
-      statement.execute(sql);
+      statement.execute(queries);
+    }
+  }
+
+  public static void executeParallel(DataSource dataSource, String resource) throws IOException, SQLException {
+    String queries = Resources.toString(Resources.getResource(resource), Charsets.UTF_8);
+    try {
+      Splitter.on(";").splitToStream(queries).parallel().forEach(query -> {
+        try (Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement()) {
+          statement.execute(query);
+        } catch (SQLException e) {
+          throw new RuntimeException(e);
+        }
+      });
+    } catch (RuntimeException e) {
+      throw (SQLException) e.getCause();
     }
   }
 

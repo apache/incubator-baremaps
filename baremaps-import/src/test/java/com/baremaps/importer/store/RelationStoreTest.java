@@ -46,10 +46,9 @@ class RelationStoreTest {
     dataSource = PostgisHelper.poolingDataSource(DATABASE_URL);
     relationStore = new PostgisRelationStore(dataSource);
     try (Connection connection = dataSource.getConnection()) {
-      PostgisHelper.executeScript(connection, "osm_create_extensions.sql");
-      PostgisHelper.executeScript(connection, "osm_drop_tables.sql");
-      PostgisHelper.executeScript(connection, "osm_create_tables.sql");
-      PostgisHelper.executeScript(connection, "osm_create_primary_keys.sql");
+      PostgisHelper.execute(connection, "osm_create_extensions.sql");
+      PostgisHelper.execute(connection, "osm_drop_tables.sql");
+      PostgisHelper.execute(connection, "osm_create_tables.sql");
     }
   }
 

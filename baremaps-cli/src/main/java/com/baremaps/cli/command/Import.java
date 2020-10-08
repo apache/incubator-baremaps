@@ -94,16 +94,63 @@ public class Import implements Callable<Integer> {
       description = "The directory used by the cache data.")
   private Path cacheDirectory;
 
+  @Option(
+      names = {"--drop-tables"},
+      paramLabel = "DROP_TABLES",
+      description = "Drop the OpenStreetMap tables.")
+  private boolean dropTables = true;
+
+  @Option(
+      names = {"--create-tables"},
+      paramLabel = "CREATE_TABLES",
+      description = "Create the OpenStreetMap tables.")
+  private boolean createTables = true;
+
+  @Option(
+      names = {"--truncate-tables"},
+      paramLabel = "TRUNCATE_TABLES",
+      description = "Truncate the OpenStreetMap tables.")
+  private boolean truncateTables = false;
+
+  @Option(
+      names = {"--create-gist-indexes"},
+      paramLabel = "CREATE_GIST_INDEXES",
+      description = "Index the geometries with GIST indexes.")
+  private boolean createGistIndexes = true;
+
+  @Option(
+      names = {"--create-spgist-indexes"},
+      paramLabel = "CREATE_SPGIST_INDEXES",
+      description = "Index the geometries with SPGIST indexes.")
+  private boolean createSpGistIndexes = false;
+
+  @Option(
+      names = {"--create-gin-indexes"},
+      paramLabel = "CREATE_GIN_INDEXES",
+      description = "Index the attributes with GIN indexes.")
+  private boolean createGinIndexes = true;
+
   @Override
   public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
-    logger.info("Initializing database");
-    executeStatements("osm_drop_tables.sql", datasource);
-    executeStatements("osm_create_tables.sql", datasource);
-    executeStatements("osm_create_primary_keys.sql", datasource);
+
+    if (dropTables) {
+      logger.info("Dropping tables");
+      PostgisHelper.executeParallel(datasource, "osm_drop_tables.sql");
+    }
+
+    if (truncateTables) {
+      logger.info("Truncating tables");
+      PostgisHelper.executeParallel(datasource, "osm_truncate_tables.sql");
+    }
+
+    if (createTables) {
+      logger.info("Creating tables");
+      PostgisHelper.executeParallel(datasource, "osm_create_tables.sql");
+    }
 
     logger.info("Fetching data");
     Path path = mixins.blobStore().fetch(input);
@@ -152,24 +199,23 @@ public class Import implements Callable<Integer> {
         geometryFactory, coordinateTransform, coordinateCache, referencesCache);
     parser.read(path, storeImportHandler);
 
-    logger.info("Indexing geometries");
-    executeStatements("osm_create_gist_indexes.sql", datasource);
+    if (createGistIndexes) {
+      logger.info("Indexing geometries (GIST)");
+      PostgisHelper.executeParallel(datasource, "osm_create_gist_indexes.sql");
+    }
 
-    logger.info("Indexing attributes");
-    executeStatements("osm_create_gin_indexes.sql", datasource);
+    if (createSpGistIndexes) {
+      logger.info("Indexing geometries (SPGIST)");
+      PostgisHelper.executeParallel(datasource, "osm_create_spgist_indexes.sql");
+    }
+
+    if (createGinIndexes) {
+      logger.info("Indexing attributes (GIN)");
+      PostgisHelper.executeParallel(datasource, "osm_create_gin_indexes.sql");
+    }
 
     return 0;
   }
 
-  public void executeStatements(String path, DataSource datasource) throws IOException {
-    URL url = Resources.getResource(path);
-    String sql = Resources.toString(url, Charsets.UTF_8);
-    try (Connection connection = datasource.getConnection();
-        Statement statement = connection.createStatement()) {
-      statement.execute(sql);
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
-  }
 
 }
