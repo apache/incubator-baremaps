@@ -14,7 +14,7 @@
 
 package com.baremaps;
 
-import com.baremaps.exporter.Tile;
+import com.baremaps.util.tile.Tile;
 import com.baremaps.exporter.config.Config;
 import com.baremaps.exporter.config.Loader;
 import com.baremaps.exporter.store.PostgisTileStore;

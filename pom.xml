@@ -44,8 +44,9 @@
 
   <modules>
     <module>baremaps-cli</module>
-    <module>baremaps-export</module>
-    <module>baremaps-import</module>
+    <module>baremaps-exporter</module>
+    <module>baremaps-importer</module>
+    <module>baremaps-server</module>
     <module>baremaps-osm</module>
     <module>baremaps-util</module>
     <module>baremaps-benchmarks</module>
@@ -240,12 +241,17 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-export</artifactId>
+        <artifactId>baremaps-exporter</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-import</artifactId>
+        <artifactId>baremaps-importer</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-server</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>

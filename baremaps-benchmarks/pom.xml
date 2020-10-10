@@ -61,7 +61,7 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-export</artifactId>
+      <artifactId>baremaps-exporter</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.annotation</groupId>
