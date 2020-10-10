@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.importer.store;
+package com.baremaps.importer.database;
 
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.model.Node;
@@ -26,31 +26,31 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import org.locationtech.jts.geom.Geometry;
 
-public class StoreDeltaHandler implements ChangeHandler {
+public class DeltaHandler implements ChangeHandler {
 
   private final ProjectionTransformer projectionTransformer;
 
-  private final PostgisNodeStore nodeStore;
+  private final NodeTable nodeTable;
 
-  private final PostgisWayStore wayStore;
+  private final WayTable wayTable;
 
-  private final PostgisRelationStore relationStore;
+  private final RelationTable relationTable;
 
   private final int zoom;
 
   private final Set<Tile> tiles = new HashSet<>();
 
   @Inject
-  public StoreDeltaHandler(
-      PostgisNodeStore nodeStore,
-      PostgisWayStore wayStore,
-      PostgisRelationStore relationStore,
+  public DeltaHandler(
+      NodeTable nodeTable,
+      WayTable wayTable,
+      RelationTable relationTable,
       ProjectionTransformer projectionTransformer,
       int zoom) {
     this.projectionTransformer = projectionTransformer;
-    this.nodeStore = nodeStore;
-    this.wayStore = wayStore;
-    this.relationStore = relationStore;
+    this.nodeTable = nodeTable;
+    this.wayTable = wayTable;
+    this.relationTable = relationTable;
     this.zoom = zoom;
   }
 
@@ -61,14 +61,14 @@ public class StoreDeltaHandler implements ChangeHandler {
 
   @Override
   public void onNodeModify(Node node) throws Exception {
-    nodeStore.get(node.getId())
+    nodeTable.select(node.getId())
         .getGeometry()
         .ifPresent(this::handleGeometry);
   }
 
   @Override
   public void onNodeDelete(Node node) throws Exception {
-    nodeStore.get(node.getId())
+    nodeTable.select(node.getId())
         .getGeometry()
         .ifPresent(this::handleGeometry);
   }
@@ -81,14 +81,14 @@ public class StoreDeltaHandler implements ChangeHandler {
 
   @Override
   public void onWayModify(Way way) throws Exception {
-    wayStore.get(way.getId())
+    wayTable.select(way.getId())
         .getGeometry()
         .ifPresent(this::handleGeometry);
   }
 
   @Override
   public void onWayDelete(Way way) throws Exception {
-    wayStore.get(way.getId())
+    wayTable.select(way.getId())
         .getGeometry()
         .ifPresent(this::handleGeometry);
   }
@@ -100,14 +100,14 @@ public class StoreDeltaHandler implements ChangeHandler {
 
   @Override
   public void onRelationModify(Relation relation) throws Exception {
-    relationStore.get(relation.getId())
+    relationTable.select(relation.getId())
         .getGeometry()
         .ifPresent(this::handleGeometry);
   }
 
   @Override
   public void onRelationDelete(Relation relation) throws Exception {
-    relationStore.get(relation.getId())
+    relationTable.select(relation.getId())
         .getGeometry()
         .ifPresent(this::handleGeometry);
   }

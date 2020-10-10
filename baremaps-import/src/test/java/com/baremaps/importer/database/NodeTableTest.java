@@ -12,12 +12,12 @@
  * the License.
  */
 
-package com.baremaps.importer.store;
+package com.baremaps.importer.database;
 
-import static com.baremaps.importer.store.DatabaseConstants.DATABASE_URL;
-import static com.baremaps.importer.store.DatabaseConstants.NODE_0;
-import static com.baremaps.importer.store.DatabaseConstants.NODE_1;
-import static com.baremaps.importer.store.DatabaseConstants.NODE_2;
+import static com.baremaps.importer.database.DatabaseConstants.DATABASE_URL;
+import static com.baremaps.importer.database.DatabaseConstants.NODE_0;
+import static com.baremaps.importer.database.DatabaseConstants.NODE_1;
+import static com.baremaps.importer.database.DatabaseConstants.NODE_2;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,16 +35,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class NodeStoreTest {
+public class NodeTableTest {
 
   public DataSource dataSource;
 
-  public PostgisNodeStore nodeStore;
+  public NodeTable nodeStore;
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
     dataSource = PostgisHelper.poolingDataSource(DATABASE_URL);
-    nodeStore = new PostgisNodeStore(dataSource);
+    nodeStore = new NodeTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgisHelper.execute(connection, "osm_create_extensions.sql");
       PostgisHelper.execute(connection, "osm_drop_tables.sql");
@@ -54,44 +54,44 @@ public class NodeStoreTest {
 
   @Test
   @Tag("integration")
-  public void insert() throws StoreException {
-    nodeStore.put(NODE_0);
-    assertEquals(NODE_0, nodeStore.get(NODE_0.getId()));
+  public void insert() throws DatabaseException {
+    nodeStore.insert(NODE_0);
+    assertEquals(NODE_0, nodeStore.select(NODE_0.getId()));
   }
 
   @Test
   @Tag("integration")
-  public void insertAll() throws StoreException {
+  public void insertAll() throws DatabaseException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
-    nodeStore.put(nodes);
+    nodeStore.insert(nodes);
     assertIterableEquals(nodes,
-        nodeStore.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeStore.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
-  public void delete() throws StoreException {
-    nodeStore.put(NODE_0);
+  public void delete() throws DatabaseException {
+    nodeStore.insert(NODE_0);
     nodeStore.delete(NODE_0.getId());
-    assertThrows(IllegalArgumentException.class, () -> nodeStore.get(NODE_0.getId()));
+    assertThrows(IllegalArgumentException.class, () -> nodeStore.select(NODE_0.getId()));
   }
 
   @Test
   @Tag("integration")
-  public void deleteAll() throws StoreException {
+  public void deleteAll() throws DatabaseException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
-    nodeStore.put(nodes);
+    nodeStore.insert(nodes);
     nodeStore.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(Arrays.asList(null, null, null),
-        nodeStore.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeStore.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
-  public void copy() throws StoreException {
+  public void copy() throws DatabaseException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeStore.copy(nodes);
     assertIterableEquals(nodes,
-        nodeStore.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeStore.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

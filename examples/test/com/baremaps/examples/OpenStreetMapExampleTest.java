@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.cli.Baremaps;
-import com.baremaps.importer.store.PostgisNodeStore;
+import com.baremaps.importer.database.NodeTable;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.google.common.io.CharStreams;
 import java.io.File;
@@ -47,12 +47,12 @@ public class OpenStreetMapExampleTest {
 
   public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps";
   public DataSource dataSource;
-  public PostgisNodeStore nodeStore;
+  public NodeTable nodeStore;
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
     dataSource = PostgisHelper.poolingDataSource(DATABASE_URL);
-    nodeStore = new PostgisNodeStore(dataSource);
+    nodeStore = new NodeTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgisHelper.execute(connection, "osm_create_extensions.sql");
       PostgisHelper.execute(connection, "osm_drop_tables.sql");

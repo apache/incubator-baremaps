@@ -12,17 +12,17 @@
  * the License.
  */
 
-package com.baremaps.importer.store;
+package com.baremaps.importer.database;
 
-import static com.baremaps.importer.store.DatabaseConstants.DATABASE_URL;
-import static com.baremaps.importer.store.DatabaseConstants.WAY_1;
-import static com.baremaps.importer.store.DatabaseConstants.WAY_2;
-import static com.baremaps.importer.store.DatabaseConstants.WAY_3;
+import static com.baremaps.importer.database.DatabaseConstants.DATABASE_URL;
+import static com.baremaps.importer.database.DatabaseConstants.RELATION_2;
+import static com.baremaps.importer.database.DatabaseConstants.RELATION_3;
+import static com.baremaps.importer.database.DatabaseConstants.RELATION_4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.baremaps.osm.model.Way;
+import com.baremaps.osm.model.Relation;
 import com.baremaps.util.postgis.PostgisHelper;
 import java.io.IOException;
 import java.sql.Connection;
@@ -35,16 +35,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class WayStoreTest {
+class RelationTableTest {
 
   public DataSource dataSource;
 
-  public PostgisWayStore wayStore;
+  public RelationTable relationStore;
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
     dataSource = PostgisHelper.poolingDataSource(DATABASE_URL);
-    wayStore = new PostgisWayStore(dataSource);
+    relationStore = new RelationTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgisHelper.execute(connection, "osm_create_extensions.sql");
       PostgisHelper.execute(connection, "osm_drop_tables.sql");
@@ -54,47 +54,50 @@ class WayStoreTest {
 
   @Test
   @Tag("integration")
-  public void insert() throws StoreException {
-    wayStore.put(WAY_1);
-    assertEquals(WAY_1, wayStore.get(WAY_1.getId()));
+  public void insert() throws DatabaseException {
+    relationStore.insert(RELATION_2);
+    assertEquals(RELATION_2, relationStore.select(RELATION_2.getId()));
   }
 
   @Test
   @Tag("integration")
-  public void insertAll() throws StoreException {
-    List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
-    wayStore.put(ways);
+  public void insertAll() throws DatabaseException {
+    List<Relation> relations = Arrays
+        .asList(RELATION_2, RELATION_3, RELATION_4);
+    relationStore.insert(relations);
     assertIterableEquals(
-        ways,
-        wayStore.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        relations,
+        relationStore.select(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
-  public void delete() throws StoreException {
-    wayStore.put(WAY_1);
-    wayStore.delete(WAY_1.getId());
-    assertThrows(IllegalArgumentException.class, () -> wayStore.get(WAY_1.getId()));
+  public void delete() throws DatabaseException {
+    relationStore.insert(RELATION_2);
+    relationStore.delete(RELATION_2.getId());
+    assertThrows(IllegalArgumentException.class, () -> relationStore.select(RELATION_2.getId()));
   }
 
   @Test
   @Tag("integration")
-  public void deleteAll() throws StoreException {
-    List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
-    wayStore.put(ways);
-    wayStore.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
+  public void deleteAll() throws DatabaseException {
+    List<Relation> relations = Arrays
+        .asList(RELATION_2, RELATION_3, RELATION_4);
+    relationStore.insert(relations);
+    relationStore.delete(relations.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
         Arrays.asList(null, null, null),
-        wayStore.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        relationStore.select(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
-  public void copy() throws StoreException {
-    List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
-    wayStore.copy(ways);
+  public void copy() throws DatabaseException {
+    List<Relation> relations = Arrays
+        .asList(RELATION_2, RELATION_3, RELATION_4);
+    relationStore.copy(relations);
     assertIterableEquals(
-        ways,
-        wayStore.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        relations,
+        relationStore.select(relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

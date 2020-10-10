@@ -16,6 +16,10 @@ package com.baremaps.cli.command;
 
 import com.baremaps.importer.cache.PostgisCoordinateCache;
 import com.baremaps.importer.cache.PostgisReferenceCache;
+import com.baremaps.importer.database.DeltaHandler;
+import com.baremaps.importer.database.HeaderTable;
+import com.baremaps.importer.database.RelationTable;
+import com.baremaps.importer.database.WayTable;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.ProjectionTransformer;
@@ -24,12 +28,8 @@ import com.baremaps.osm.geometry.WayBuilder;
 import com.baremaps.osm.model.Header;
 import com.baremaps.osm.model.State;
 import com.baremaps.osm.reader.xml.XmlChangeReader;
-import com.baremaps.importer.store.PostgisHeaderStore;
-import com.baremaps.importer.store.PostgisNodeStore;
-import com.baremaps.importer.store.PostgisRelationStore;
-import com.baremaps.importer.store.PostgisWayStore;
-import com.baremaps.importer.store.StoreDeltaHandler;
-import com.baremaps.importer.store.StoreUpdateHandler;
+import com.baremaps.importer.database.NodeTable;
+import com.baremaps.importer.database.UpdateHandler;
 import com.baremaps.exporter.Tile;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.storage.BlobStore;
@@ -114,11 +114,11 @@ public class Update implements Callable<Integer> {
     WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
     RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
 
-    PostgisNodeStore nodeStore = new PostgisNodeStore(datasource);
-    PostgisWayStore wayStore = new PostgisWayStore(datasource);
-    PostgisRelationStore relationStore = new PostgisRelationStore(datasource);
+    NodeTable nodeStore = new NodeTable(datasource);
+    WayTable wayStore = new WayTable(datasource);
+    RelationTable relationStore = new RelationTable(datasource);
 
-    PostgisHeaderStore headerMapper = new PostgisHeaderStore(datasource);
+    HeaderTable headerMapper = new HeaderTable(datasource);
     Header header = headerMapper.getLast();
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
 
@@ -133,7 +133,7 @@ public class Update implements Callable<Integer> {
     URI stateURI = new URI(String.format("%s/%s", input, statePath));
 
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransform);
-    StoreDeltaHandler deltaHandler = new StoreDeltaHandler(
+    DeltaHandler deltaHandler = new DeltaHandler(
         nodeStore, wayStore, relationStore,
         projectionTransformer, zoom);
 
@@ -150,7 +150,7 @@ public class Update implements Callable<Integer> {
     }
 
     logger.info("Updating database");
-    StoreUpdateHandler updateHandler = new StoreUpdateHandler(
+    UpdateHandler updateHandler = new UpdateHandler(
         nodeBuilder, wayBuilder, relationBuilder,
         nodeStore, wayStore, relationStore);
     new XmlChangeReader().parse(path, updateHandler);

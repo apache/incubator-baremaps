@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.importer.store;
+package com.baremaps.importer.database;
 
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.RelationBuilder;
@@ -23,7 +23,7 @@ import com.baremaps.osm.model.Way;
 import com.baremaps.osm.reader.ChangeHandler;
 import javax.inject.Inject;
 
-public class StoreUpdateHandler implements ChangeHandler {
+public class UpdateHandler implements ChangeHandler {
 
   private final WayBuilder wayBuilder;
 
@@ -31,26 +31,26 @@ public class StoreUpdateHandler implements ChangeHandler {
 
   private final NodeBuilder nodeBuilder;
 
-  private final PostgisNodeStore nodeStore;
+  private final NodeTable nodeTable;
 
-  private final PostgisWayStore wayStore;
+  private final WayTable wayTable;
 
-  private final PostgisRelationStore relationStore;
+  private final RelationTable relationTable;
 
   @Inject
-  public StoreUpdateHandler(
+  public UpdateHandler(
       NodeBuilder nodeBuilder,
       WayBuilder wayBuilder,
       RelationBuilder relationBuilder,
-      PostgisNodeStore nodeStore,
-      PostgisWayStore wayStore,
-      PostgisRelationStore relationStore) {
+      NodeTable nodeTable,
+      WayTable wayTable,
+      RelationTable relationTable) {
     this.nodeBuilder = nodeBuilder;
     this.wayBuilder = wayBuilder;
     this.relationBuilder = relationBuilder;
-    this.nodeStore = nodeStore;
-    this.wayStore = wayStore;
-    this.relationStore = relationStore;
+    this.nodeTable = nodeTable;
+    this.wayTable = wayTable;
+    this.relationTable = relationTable;
   }
 
   @Override
@@ -59,14 +59,14 @@ public class StoreUpdateHandler implements ChangeHandler {
   }
 
   @Override
-  public void onNodeModify(Node node) throws StoreException {
+  public void onNodeModify(Node node) throws DatabaseException {
     node.setGeometry(nodeBuilder.build(node));
-    nodeStore.put(node);
+    nodeTable.insert(node);
   }
 
   @Override
-  public void onNodeDelete(Node node) throws StoreException {
-    nodeStore.delete(node.getId());
+  public void onNodeDelete(Node node) throws DatabaseException {
+    nodeTable.delete(node.getId());
   }
 
   @Override
@@ -75,14 +75,14 @@ public class StoreUpdateHandler implements ChangeHandler {
   }
 
   @Override
-  public void onWayModify(Way way) throws StoreException {
+  public void onWayModify(Way way) throws DatabaseException {
     way.setGeometry(wayBuilder.build(way));
-    wayStore.put(way);
+    wayTable.insert(way);
   }
 
   @Override
-  public void onWayDelete(Way way) throws StoreException {
-    wayStore.delete(way.getId());
+  public void onWayDelete(Way way) throws DatabaseException {
+    wayTable.delete(way.getId());
   }
 
   @Override
@@ -91,14 +91,14 @@ public class StoreUpdateHandler implements ChangeHandler {
   }
 
   @Override
-  public void onRelationModify(Relation relation) throws StoreException {
+  public void onRelationModify(Relation relation) throws DatabaseException {
     relation.setGeometry(relationBuilder.build(relation));
-    relationStore.put(relation);
+    relationTable.insert(relation);
   }
 
   @Override
-  public void onRelationDelete(Relation relation) throws StoreException {
-    relationStore.delete(relation.getId());
+  public void onRelationDelete(Relation relation) throws DatabaseException {
+    relationTable.delete(relation.getId());
   }
 
 }

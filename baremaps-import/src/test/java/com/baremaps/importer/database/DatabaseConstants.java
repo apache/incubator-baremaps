@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.importer.store;
+package com.baremaps.importer.database;
 
 import com.baremaps.osm.model.Member;
 import com.baremaps.osm.model.Member.MemberType;

@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.importer.store;
+package com.baremaps.importer.database;
 
 import com.baremaps.osm.model.Header;
 import com.baremaps.osm.model.Node;
@@ -22,46 +22,46 @@ import com.baremaps.osm.reader.pbf.FileBlockHandler;
 import java.util.List;
 import javax.inject.Inject;
 
-public class StoreImportHandler implements FileBlockHandler {
+public class ImportHandler implements FileBlockHandler {
 
-  private final PostgisHeaderStore headerTable;
+  private final HeaderTable headerTable;
 
-  private final Store<Node> nodeStore;
+  private final Table<Node> nodeTable;
 
-  private final Store<Way> wayStore;
+  private final Table<Way> wayTable;
 
-  private final Store<Relation> relationStore;
+  private final Table<Relation> relationTable;
 
   @Inject
-  public StoreImportHandler(
-      PostgisHeaderStore headerTable,
-      Store<Node> nodeStore,
-      Store<Way> wayStore,
-      Store<Relation> relationStore) {
+  public ImportHandler(
+      HeaderTable headerTable,
+      Table<Node> nodeTable,
+      Table<Way> wayTable,
+      Table<Relation> relationTable) {
     this.headerTable = headerTable;
-    this.nodeStore = nodeStore;
-    this.wayStore = wayStore;
-    this.relationStore = relationStore;
+    this.nodeTable = nodeTable;
+    this.wayTable = wayTable;
+    this.relationTable = relationTable;
   }
 
   @Override
-  public void onHeader(Header header) throws StoreException {
+  public void onHeader(Header header) throws DatabaseException {
     headerTable.insert(header);
   }
 
   @Override
-  public void onNodes(List<Node> nodes) throws StoreException {
-    nodeStore.copy(nodes);
+  public void onNodes(List<Node> nodes) throws DatabaseException {
+    nodeTable.copy(nodes);
   }
 
   @Override
-  public void onWays(List<Way> ways) throws StoreException {
-    wayStore.copy(ways);
+  public void onWays(List<Way> ways) throws DatabaseException {
+    wayTable.copy(ways);
   }
 
   @Override
-  public void onRelations(List<Relation> relations) throws StoreException {
-    relationStore.copy(relations);
+  public void onRelations(List<Relation> relations) throws DatabaseException {
+    relationTable.copy(relations);
   }
 
 }

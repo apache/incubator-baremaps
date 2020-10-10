@@ -12,24 +12,16 @@
  * the License.
  */
 
-package com.baremaps.importer.store;
+package com.baremaps.importer.database;
 
-import java.util.List;
+public class DatabaseException extends Exception {
 
-public interface Store<T> {
+  public DatabaseException() {
+    super();
+  }
 
-  T get(Long id) throws StoreException;
-
-  List<T> get(List<Long> ids) throws StoreException;
-
-  void put(T entity) throws StoreException;
-
-  void put(List<T> entities) throws StoreException;
-
-  void delete(Long id) throws StoreException;
-
-  void delete(List<Long> ids) throws StoreException;
-
-  void copy(List<T> entities) throws StoreException;
+  public DatabaseException(Exception e) {
+    super(e);
+  }
 
 }

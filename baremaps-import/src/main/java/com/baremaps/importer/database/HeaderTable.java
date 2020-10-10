@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.importer.store;
+package com.baremaps.importer.database;
 
 import com.baremaps.osm.geometry.GeometryUtil;
 import com.baremaps.osm.model.Header;
@@ -27,7 +27,7 @@ import javax.inject.Inject;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Geometry;
 
-public class PostgisHeaderStore {
+public class HeaderTable {
 
   private static final String SELECT =
       "SELECT replication_timestamp, replication_sequence_number, replication_url, source, writing_program, st_asewkb(bbox) FROM osm_headers ORDER BY replication_timestamp DESC";
@@ -38,11 +38,11 @@ public class PostgisHeaderStore {
   private final DataSource dataSource;
 
   @Inject
-  public PostgisHeaderStore(DataSource dataSource) {
+  public HeaderTable(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
-  public List<Header> select() throws StoreException {
+  public List<Header> select() throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       ResultSet result = statement.executeQuery();
@@ -64,15 +64,15 @@ public class PostgisHeaderStore {
       }
       return headers;
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 
-  public Header getLast() throws StoreException {
+  public Header getLast() throws DatabaseException {
     return select().get(0);
   }
 
-  public void insert(Header header) throws StoreException {
+  public void insert(Header header) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
       statement.setObject(1, header.getReplicationTimestamp());
@@ -83,7 +83,7 @@ public class PostgisHeaderStore {
       statement.setBytes(6, GeometryUtil.serialize(header.getBbox()));
       statement.execute();
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DatabaseException(e);
     }
   }
 

@@ -16,29 +16,21 @@ package com.baremaps.cli.command;
 
 import com.baremaps.importer.cache.LmdbCoordinateCache;
 import com.baremaps.importer.cache.LmdbReferencesCache;
+import com.baremaps.importer.database.HeaderTable;
+import com.baremaps.importer.database.WayTable;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.InMemoryCache;
 import com.baremaps.osm.reader.pbf.FileBlockGeometryReader;
-import com.baremaps.importer.store.PostgisHeaderStore;
-import com.baremaps.importer.store.PostgisNodeStore;
-import com.baremaps.importer.store.PostgisRelationStore;
-import com.baremaps.importer.store.PostgisWayStore;
-import com.baremaps.importer.store.StoreImportHandler;
+import com.baremaps.importer.database.NodeTable;
+import com.baremaps.importer.database.RelationTable;
+import com.baremaps.importer.database.ImportHandler;
 import com.baremaps.util.postgis.PostgisHelper;
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.Callable;
-import javax.sql.DataSource;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -163,11 +155,11 @@ public class Import implements Callable<Integer> {
         .createTransform(sourceCRS, targetCRS);
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
 
-    PostgisHeaderStore headerTable = new PostgisHeaderStore(datasource);
-    PostgisNodeStore nodeStore = new PostgisNodeStore(datasource);
-    PostgisWayStore wayStore = new PostgisWayStore(datasource);
-    PostgisRelationStore relationStore = new PostgisRelationStore(datasource);
-    StoreImportHandler storeImportHandler = new StoreImportHandler(headerTable, nodeStore, wayStore, relationStore);
+    HeaderTable headerTable = new HeaderTable(datasource);
+    NodeTable nodeStore = new NodeTable(datasource);
+    WayTable wayStore = new WayTable(datasource);
+    RelationTable relationStore = new RelationTable(datasource);
+    ImportHandler importHandler = new ImportHandler(headerTable, nodeStore, wayStore, relationStore);
 
     final Cache<Long, Coordinate> coordinateCache;
     final Cache<Long, List<Long>> referencesCache;
@@ -197,7 +189,7 @@ public class Import implements Callable<Integer> {
     logger.info("Importing data");
     FileBlockGeometryReader parser = new FileBlockGeometryReader(
         geometryFactory, coordinateTransform, coordinateCache, referencesCache);
-    parser.read(path, storeImportHandler);
+    parser.read(path, importHandler);
 
     if (createGistIndexes) {
       logger.info("Indexing geometries (GIST)");
