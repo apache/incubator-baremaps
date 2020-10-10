@@ -10,7 +10,6 @@
     <version>0.2.9-SNAPSHOT</version>
   </parent>
 
-
   <build>
     <extensions>
       <extension>

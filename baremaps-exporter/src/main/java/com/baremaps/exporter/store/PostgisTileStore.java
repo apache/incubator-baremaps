@@ -58,7 +58,7 @@ public class PostgisTileStore implements TileStore {
 
   private static final String LAYER = "SELECT ST_AsMVT(mvt_geom, '%1$s', 4096) FROM (%2$s) as mvt_geom";
 
-  private static final String QUERY = "SELECT id, hstore_to_jsonb_loose(tags), geom FROM %4$s";
+  private static final String QUERY = "SELECT id, hstore_to_jsonb_loose(tags), geom FROM %1$s";
 
   private static final String WHERE = " WHERE %1$s";
 
@@ -159,12 +159,7 @@ public class PostgisTileStore implements TileStore {
             entry.getValue().stream()
                 .filter(parse -> zoomFilter(tile, parse))
                 .map(parse -> new StringBuilder()
-                    .append(String.format(
-                        QUERY,
-                        parse.getId(),
-                        parse.getTags(),
-                        parse.getGeom(),
-                        parse.getSource()))
+                    .append(String.format(QUERY, parse.getSource()))
                     .append(parse.getWhere()
                         .map(s -> String.format(WHERE, s))
                         .orElse(""))
