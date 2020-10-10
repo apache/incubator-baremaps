@@ -14,7 +14,6 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.util.tile.Tile;
 import com.baremaps.exporter.config.Config;
 import com.baremaps.exporter.config.Loader;
 import com.baremaps.exporter.config.Query;
@@ -25,9 +24,10 @@ import com.baremaps.exporter.store.TileStore;
 import com.baremaps.exporter.store.TileStoreException;
 import com.baremaps.exporter.stream.BatchFilter;
 import com.baremaps.exporter.stream.TileFactory;
+import com.baremaps.osm.stream.StreamProgress;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.storage.BlobStore;
-import com.baremaps.osm.stream.StreamProgress;
+import com.baremaps.util.tile.Tile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;

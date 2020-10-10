@@ -14,8 +14,8 @@
 
 package com.baremaps.exporter.store;
 
-import com.baremaps.util.tile.Tile;
 import com.baremaps.util.storage.BlobStore;
+import com.baremaps.util.tile.Tile;
 import java.io.IOException;
 import java.net.URI;
 

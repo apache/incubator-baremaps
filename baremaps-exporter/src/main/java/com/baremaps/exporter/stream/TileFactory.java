@@ -13,9 +13,9 @@
  */
 package com.baremaps.exporter.stream;
 
-import com.baremaps.util.tile.Tile;
 import com.baremaps.exporter.store.TileStore;
 import com.baremaps.exporter.store.TileStoreException;
+import com.baremaps.util.tile.Tile;
 import java.util.function.Consumer;
 
 public class TileFactory implements Consumer<Tile> {

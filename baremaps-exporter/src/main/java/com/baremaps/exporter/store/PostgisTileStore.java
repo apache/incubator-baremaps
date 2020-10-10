@@ -14,10 +14,10 @@
 
 package com.baremaps.exporter.store;
 
-import com.baremaps.util.tile.Tile;
 import com.baremaps.exporter.config.Config;
 import com.baremaps.exporter.config.Layer;
 import com.baremaps.exporter.store.PostgisQueryParser.Parse;
+import com.baremaps.util.tile.Tile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -25,7 +25,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -50,24 +49,24 @@ public class PostgisTileStore implements TileStore {
 
   private static final Logger logger = LogManager.getLogger();
 
-  private static final String WITH = "WITH {0} {1}";
+  private static final String WITH = "WITH %1$s %2$s";
 
-  private static final String SOURCE = "{0} AS (SELECT id, "
-      + "(tags || hstore(''geometry'', lower(replace(st_geometrytype(geom), ''ST_'', '''')))) as tags, "
-      + "ST_AsMvtGeom(geom, {5}, 4096, 256, true) AS geom "
-      + "FROM (SELECT {1} as id, {2} as tags, {3} as geom FROM {4}) AS q WHERE ST_Intersects(geom, {5}))";
+  private static final String SOURCE = "%1$s AS (SELECT id, "
+      + "(tags || hstore('geometry', lower(replace(st_geometrytype(geom), 'ST_', '')))) as tags, "
+      + "ST_AsMvtGeom(geom, %6$s, 4096, 256, true) AS geom "
+      + "FROM (SELECT %2$s as id, %3$s as tags, %4$s as geom FROM %5$s) AS q WHERE ST_Intersects(geom, %6$s))";
 
-  private static final String LAYER = "SELECT ST_AsMVT(mvt_geom, ''{0}'', 4096) FROM ({1}) as mvt_geom";
+  private static final String LAYER = "SELECT ST_AsMVT(mvt_geom, '%1$s', 4096) FROM (%2$s) as mvt_geom";
 
-  private static final String QUERY = "SELECT id, hstore_to_jsonb_loose(tags), geom FROM {3}";
+  private static final String QUERY = "SELECT id, hstore_to_jsonb_loose(tags), geom FROM %4$s";
 
-  private static final String WHERE = " WHERE {0}";
+  private static final String WHERE = " WHERE %1$s";
 
   private static final String COMMA = ", ";
 
   private static final String UNION_ALL = " UNION All ";
 
-  private static final String ENVELOPE = "ST_MakeEnvelope({0}, {1}, {2}, {3}, 3857)";
+  private static final String ENVELOPE = "ST_MakeEnvelope(%1$s, %2$s, %3$s, %4$s, 3857)";
 
   private final CRSFactory crsFactory = new CRSFactory();
 
@@ -108,6 +107,7 @@ public class PostgisTileStore implements TileStore {
           ByteArrayOutputStream data = new ByteArrayOutputStream()) {
 
         String sql = query(tile);
+
         logger.debug("Executing tile query: {}", sql);
         ResultSet resultSet = statement.executeQuery(sql);
 
@@ -138,7 +138,7 @@ public class PostgisTileStore implements TileStore {
     String sources = parses.entrySet().stream()
         .flatMap(entry -> entry.getValue().stream()
             .filter(parse -> zoomFilter(tile, parse))
-            .map(parse -> MessageFormat.format(
+            .map(parse -> String.format(
                 SOURCE,
                 parse.getSource(),
                 parse.getId(),
@@ -153,25 +153,25 @@ public class PostgisTileStore implements TileStore {
         .filter(entry -> entry.getValue().stream()
             .filter(parse -> zoomFilter(tile, parse))
             .count() > 0)
-        .map(entry -> MessageFormat.format(
+        .map(entry -> String.format(
             LAYER,
             entry.getKey().getId(),
             entry.getValue().stream()
                 .filter(parse -> zoomFilter(tile, parse))
                 .map(parse -> new StringBuilder()
-                    .append(MessageFormat.format(
+                    .append(String.format(
                         QUERY,
                         parse.getId(),
                         parse.getTags(),
                         parse.getGeom(),
                         parse.getSource()))
                     .append(parse.getWhere()
-                        .map(s -> MessageFormat.format(WHERE, s))
+                        .map(s -> String.format(WHERE, s))
                         .orElse(""))
                     .toString())
                 .collect(Collectors.joining(UNION_ALL))))
         .collect(Collectors.joining(UNION_ALL));
-    String query = MessageFormat.format(WITH, sources, targets)
+    String query = String.format(WITH, sources, targets)
         .replace("${zoom}", String.valueOf(tile.z()));
     return query;
   }
@@ -184,12 +184,12 @@ public class PostgisTileStore implements TileStore {
     Envelope envelope = tile.envelope();
     Coordinate min = coordinate(envelope.getMinX(), envelope.getMinY());
     Coordinate max = coordinate(envelope.getMaxX(), envelope.getMaxY());
-    return MessageFormat.format(
+    return String.format(
         ENVELOPE,
-        Double.toString(min.getX()),
-        Double.toString(min.getY()),
-        Double.toString(max.getX()),
-        Double.toString(max.getY()));
+        min.getX(),
+        min.getY(),
+        max.getX(),
+        max.getY());
   }
 
   private Coordinate coordinate(double x, double y) {

@@ -14,7 +14,6 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.cli.LevelOption;
 import com.baremaps.util.storage.BlobStore;
 import com.baremaps.util.storage.CompositeBlobStore;
 import com.baremaps.util.storage.HttpBlobStore;

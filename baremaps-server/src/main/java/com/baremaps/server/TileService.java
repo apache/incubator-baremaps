@@ -18,9 +18,9 @@ import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
-import com.baremaps.util.tile.Tile;
 import com.baremaps.exporter.store.TileStore;
 import com.baremaps.exporter.store.TileStoreException;
+import com.baremaps.util.tile.Tile;
 import com.linecorp.armeria.common.HttpData;
 import com.linecorp.armeria.common.HttpRequest;
 import com.linecorp.armeria.common.HttpResponse;

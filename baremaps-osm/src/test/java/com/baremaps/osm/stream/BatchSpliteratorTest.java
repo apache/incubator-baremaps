@@ -20,8 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.baremaps.osm.stream.AccumulatingConsumer;
-import com.baremaps.osm.stream.BatchSpliterator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Spliterator;

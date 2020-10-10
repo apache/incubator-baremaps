@@ -16,8 +16,6 @@ package com.baremaps.osm.model;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.baremaps.osm.binary.Osmformat;
-import com.baremaps.osm.binary.Osmformat.Relation.MemberType;
 import com.google.common.base.Objects;
 import java.util.StringJoiner;
 

@@ -14,13 +14,13 @@
 
 package com.baremaps;
 
-import com.baremaps.util.tile.Tile;
 import com.baremaps.exporter.config.Config;
 import com.baremaps.exporter.config.Loader;
 import com.baremaps.exporter.store.PostgisTileStore;
 import com.baremaps.exporter.store.TileStoreException;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.storage.LocalBlobStore;
+import com.baremaps.util.tile.Tile;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Paths;

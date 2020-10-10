@@ -19,16 +19,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
 import com.google.common.io.Resources;
-
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.MessageFormat;
-
+import javax.sql.DataSource;
 import org.apache.commons.dbcp2.ConnectionFactory;
 import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp2.PoolableConnection;
@@ -37,15 +32,13 @@ import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
 
-import javax.sql.DataSource;
-
 public final class PostgisHelper {
 
   private PostgisHelper() {
 
   }
 
-  private static final String DATABASE_URL = "jdbc:postgresql://{0}:{1}/{2}?user={3}&password={4}&allowMultiQueries={5}";
+  private static final String DATABASE_URL = "jdbc:postgresql://%s:%s/%s?user=%s&password=%s&allowMultiQueries=%s";
 
   public static String url(
       String hostname,
@@ -60,8 +53,7 @@ public final class PostgisHelper {
     checkNotNull(username);
     checkNotNull(password);
     checkNotNull(allowMultiQueries);
-    return MessageFormat
-        .format(DATABASE_URL, hostname, port, database, username, password, allowMultiQueries);
+    return String.format(DATABASE_URL, hostname, port, database, username, password, allowMultiQueries);
   }
 
   public static String url(String database, String user, String password) {
