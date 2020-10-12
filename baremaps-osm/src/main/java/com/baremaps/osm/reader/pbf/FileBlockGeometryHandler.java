@@ -16,7 +16,6 @@ package com.baremaps.osm.reader.pbf;
 import com.baremaps.osm.geometry.NodeBuilder;
 import com.baremaps.osm.geometry.RelationBuilder;
 import com.baremaps.osm.geometry.WayBuilder;
-import com.baremaps.osm.model.Header;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
@@ -46,26 +45,28 @@ public class FileBlockGeometryHandler implements FileBlockHandler {
   }
 
   @Override
-  public void onHeader(Header header) throws Exception {
-    handler.onHeader(header);
+  public void onHeaderBlock(HeaderBlock headerBlock) throws Exception {
+    handler.onHeaderBlock(headerBlock);
   }
 
   @Override
-  public void onNodes(List<Node> nodes) throws Exception {
-    nodes.forEach(node -> node.setGeometry(nodeBuilder.build(node)));
-    handler.onNodes(nodes);
+  public void onDataBlock(DataBlock dataBlock) throws Exception {
+    List<Node> denseNodes = dataBlock.getDenseNodes();
+    for (Node node : denseNodes) {
+      node.setGeometry(nodeBuilder.build(node));
+    }
+    List<Node> nodes = dataBlock.getNodes();
+    for (Node node: nodes) {
+      node.setGeometry(nodeBuilder.build(node));
+    }
+    List<Way> ways = dataBlock.getWays();
+    for (Way way : ways) {
+      way.setGeometry(wayBuilder.build(way));
+    }
+    List<Relation> relations = dataBlock.getRelations();
+    for (Relation relation : relations) {
+      relation.setGeometry(relationBuilder.build(relation));
+    }
+    handler.onDataBlock(new DataBlock(denseNodes, nodes, ways, relations));
   }
-
-  @Override
-  public void onWays(List<Way> ways) throws Exception {
-    ways.forEach(way -> way.setGeometry(wayBuilder.build(way)));
-    handler.onWays(ways);
-  }
-
-  @Override
-  public void onRelations(List<Relation> relations) throws Exception {
-    relations.forEach(relation -> relation.setGeometry(relationBuilder.build(relation)));
-    handler.onRelations(relations);
-  }
-
 }

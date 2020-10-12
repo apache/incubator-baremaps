@@ -49,7 +49,7 @@
     <module>baremaps-server</module>
     <module>baremaps-osm</module>
     <module>baremaps-util</module>
-    <module>baremaps-benchmarks</module>
+    <module>benchmarks</module>
     <module>examples</module>
   </modules>
 
@@ -124,6 +124,19 @@
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <groupId>org.apache.maven.plugins</groupId>

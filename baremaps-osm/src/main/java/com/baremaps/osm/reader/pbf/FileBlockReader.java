@@ -13,31 +13,18 @@
  */
 package com.baremaps.osm.reader.pbf;
 
-import com.baremaps.osm.model.Node;
-import com.baremaps.osm.model.Relation;
-import com.baremaps.osm.model.Way;
 import com.baremaps.osm.reader.Reader;
 import com.baremaps.osm.reader.ReaderException;
 import com.baremaps.osm.stream.StreamException;
-import com.baremaps.osm.stream.StreamProgress;
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Spliterator;
-import java.util.stream.StreamSupport;
 
 public class FileBlockReader implements Reader<FileBlockHandler> {
 
   public void read(Path path, FileBlockHandler handler) throws ReaderException {
-    try (InputStream inputStream = Files.newInputStream(path);
-        DataInputStream dataInputStream = new DataInputStream(inputStream)) {
-      Spliterator<FileBlock> spliterator = new FileBlockSpliterator(dataInputStream);
-      StreamSupport.stream(spliterator, true)
-          .peek(new StreamProgress<>(Files.size(path), b -> b.size()))
-          .forEach(b -> parseBlock(b, handler));
+    try {
+      new FileBlockStreamer().stream(path, true, true)
+          .forEach(block -> handle(block, handler));
     } catch (StreamException e) {
       throw new ReaderException(e.getCause());
     } catch (IOException e) {
@@ -45,46 +32,12 @@ public class FileBlockReader implements Reader<FileBlockHandler> {
     }
   }
 
-  private void parseBlock(FileBlock fileBlock, FileBlockHandler handler) {
-    switch (fileBlock.getType()) {
-      case OSMHeader:
-        parseHeader(fileBlock, handler);
-        break;
-      case OSMData:
-        parseData(fileBlock, handler);
-        break;
-      default:
-        // skip unknown file block types
-        break;
-    }
-  }
-
-  private void parseHeader(FileBlock fileBlock, FileBlockHandler handler) {
+  private void handle(FileBlock block, FileBlockHandler handler) {
     try {
-      handler.onHeader(new HeaderBlockReader(fileBlock).getHeader());
-    } catch (Exception e) {
-      throw new StreamException(e);
-    }
-  }
-
-  private void parseData(FileBlock fileBlock, FileBlockHandler handler) {
-    try {
-      DataBlockReader parser = new DataBlockReader(fileBlock);
-      List<Node> denseNodes = parser.getDenseNodes();
-      if (denseNodes.size() > 0) {
-        handler.onNodes(denseNodes);
-      }
-      List<Node> nodes = parser.getNodes();
-      if (nodes.size() > 0) {
-        handler.onNodes(nodes);
-      }
-      List<Way> ways = parser.getWays();
-      if (ways.size() > 0) {
-        handler.onWays(ways);
-      }
-      List<Relation> relations = parser.getRelations();
-      if (relations.size() > 0) {
-        handler.onRelations(relations);
+      if (block instanceof HeaderBlock) {
+        handler.onHeaderBlock((HeaderBlock) block);
+      } else if (block instanceof DataBlock) {
+        handler.onDataBlock((DataBlock) block);
       }
     } catch (Exception e) {
       throw new StreamException(e);

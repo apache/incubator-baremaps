@@ -14,11 +14,12 @@
 
 package com.baremaps.importer.database;
 
-import com.baremaps.osm.model.Header;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
+import com.baremaps.osm.reader.pbf.DataBlock;
 import com.baremaps.osm.reader.pbf.FileBlockHandler;
+import com.baremaps.osm.reader.pbf.HeaderBlock;
 import java.util.List;
 import javax.inject.Inject;
 
@@ -45,23 +46,28 @@ public class ImportHandler implements FileBlockHandler {
   }
 
   @Override
-  public void onHeader(Header header) throws DatabaseException {
-    headerTable.insert(header);
+  public void onHeaderBlock(HeaderBlock headerBlock) throws DatabaseException {
+    headerTable.insert(headerBlock.getHeader());
   }
 
   @Override
-  public void onNodes(List<Node> nodes) throws DatabaseException {
-    nodeTable.copy(nodes);
-  }
-
-  @Override
-  public void onWays(List<Way> ways) throws DatabaseException {
-    wayTable.copy(ways);
-  }
-
-  @Override
-  public void onRelations(List<Relation> relations) throws DatabaseException {
-    relationTable.copy(relations);
+  public void onDataBlock(DataBlock dataBlock) throws DatabaseException {
+    List<Node> denseNodes = dataBlock.getDenseNodes();
+    if (denseNodes.size() > 0) {
+      nodeTable.copy(denseNodes);
+    }
+    List<Node> nodes = dataBlock.getNodes();
+    if (nodes.size() > 0) {
+      nodeTable.copy(nodes);
+    }
+    List<Way> ways = dataBlock.getWays();
+    if (ways.size() > 0) {
+      wayTable.copy(ways);
+    }
+    List<Relation> relations = dataBlock.getRelations();
+    if (relations.size() > 0) {
+      relationTable.copy(relations);
+    }
   }
 
 }

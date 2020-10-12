@@ -14,9 +14,6 @@
 
 package com.baremaps.osm.reader;
 
-import com.baremaps.osm.reader.pbf.FileBlock;
-import com.baremaps.osm.reader.pbf.FileBlock.Type;
-import com.google.protobuf.ByteString;
 import java.io.InputStream;
 
 public class DataFiles {
@@ -35,10 +32,6 @@ public class DataFiles {
 
   public static InputStream relationsOsmPbf() {
     return DataFiles.class.getClassLoader().getResourceAsStream("relations.osm.pbf");
-  }
-
-  public static FileBlock invalidOsmPbf() {
-    return new FileBlock(Type.OSMHeader, ByteString.copyFromUtf8(""), ByteString.copyFromUtf8(""), 0);
   }
 
   public static InputStream dataOsmXml() {

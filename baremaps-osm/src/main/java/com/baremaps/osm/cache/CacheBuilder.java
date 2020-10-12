@@ -16,11 +16,11 @@ package com.baremaps.osm.cache;
 
 import com.baremaps.osm.cache.Cache.Entry;
 import com.baremaps.osm.geometry.NodeBuilder;
-import com.baremaps.osm.model.Header;
 import com.baremaps.osm.model.Node;
-import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
+import com.baremaps.osm.reader.pbf.DataBlock;
 import com.baremaps.osm.reader.pbf.FileBlockHandler;
+import com.baremaps.osm.reader.pbf.HeaderBlock;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
@@ -43,26 +43,30 @@ public class CacheBuilder implements FileBlockHandler {
   }
 
   @Override
-  public void onHeader(Header header) {
-    // do nothing
+  public void onHeaderBlock(HeaderBlock headerBlock) throws Exception {
+    // Do nothing
   }
 
   @Override
-  public void onNodes(List<Node> nodes) {
-    coordinateCache.putAll(nodes.stream()
-        .map(n -> new Entry<>(n.getId(), nodeBuilder.build(n).getCoordinate()))
-        .collect(Collectors.toList()));
+  public void onDataBlock(DataBlock dataBlock) throws Exception {
+    List<Node> denseNodes = dataBlock.getDenseNodes();
+    if (denseNodes.size() > 0) {
+      coordinateCache.putAll(denseNodes.stream()
+          .map(n -> new Entry<>(n.getId(), nodeBuilder.build(n).getCoordinate()))
+          .collect(Collectors.toList()));
+    }
+    List<Node> nodes = dataBlock.getNodes();
+    if (nodes.size() > 0) {
+      coordinateCache.putAll(nodes.stream()
+          .map(n -> new Entry<>(n.getId(), nodeBuilder.build(n).getCoordinate()))
+          .collect(Collectors.toList()));
+    }
+    List<Way> ways = dataBlock.getWays();
+    if (ways.size() > 0) {
+      referenceCache.putAll(ways.stream()
+          .map(w -> new Entry<>(w.getId(), w.getNodes()))
+          .collect(Collectors.toList()));
+    }
   }
 
-  @Override
-  public void onWays(List<Way> ways) {
-    referenceCache.putAll(ways.stream()
-        .map(w -> new Entry<>(w.getId(), w.getNodes()))
-        .collect(Collectors.toList()));
-  }
-
-  @Override
-  public void onRelations(List<Relation> relations) {
-    // do nothing
-  }
 }

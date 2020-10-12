@@ -1,6 +1,5 @@
 package com.baremaps.osm.reader.pbf;
 
-import com.baremaps.osm.model.Header;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
 import com.baremaps.osm.model.Way;
@@ -8,7 +7,6 @@ import com.baremaps.osm.reader.EntityHandler;
 import com.baremaps.osm.reader.EntityReader;
 import com.baremaps.osm.reader.ReaderException;
 import java.nio.file.Path;
-import java.util.List;
 
 public class PbfEntityReader implements EntityReader {
 
@@ -16,27 +14,22 @@ public class PbfEntityReader implements EntityReader {
     FileBlockReader reader = new FileBlockReader();
     reader.read(path, new FileBlockHandler() {
       @Override
-      public void onHeader(Header header) throws Exception {
-        handler.onHeader(header);
+      public void onHeaderBlock(HeaderBlock header) throws Exception {
+        handler.onHeader(header.getHeader());
       }
 
       @Override
-      public void onNodes(List<Node> nodes) throws Exception {
-        for (Node node : nodes) {
+      public void onDataBlock(DataBlock dataBlock) throws Exception {
+        for (Node node : dataBlock.getDenseNodes()) {
           handler.onNode(node);
         }
-      }
-
-      @Override
-      public void onWays(List<Way> ways) throws Exception {
-        for (Way way : ways) {
+        for (Node node : dataBlock.getNodes()) {
+          handler.onNode(node);
+        }
+        for (Way way : dataBlock.getWays()) {
           handler.onWay(way);
         }
-      }
-
-      @Override
-      public void onRelations(List<Relation> relations) throws Exception {
-        for (Relation relation : relations) {
+        for (Relation relation : dataBlock.getRelations()) {
           handler.onRelation(relation);
         }
       }

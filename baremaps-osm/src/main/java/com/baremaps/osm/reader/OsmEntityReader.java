@@ -5,7 +5,7 @@ import com.baremaps.osm.reader.xml.XmlEntityReader;
 import com.baremaps.osm.reader.xml.XmlGzipEntityReader;
 import java.nio.file.Path;
 
-public class OsmEntityReader implements EntityReader{
+public class OsmEntityReader implements EntityReader {
 
   @Override
   public void read(Path path, EntityHandler handler) throws ReaderException {

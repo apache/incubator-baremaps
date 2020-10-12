@@ -13,20 +13,10 @@
  */
 package com.baremaps.osm.reader.pbf;
 
-import com.baremaps.osm.model.Header;
-import com.baremaps.osm.model.Node;
-import com.baremaps.osm.model.Relation;
-import com.baremaps.osm.model.Way;
-import java.util.List;
-
 public interface FileBlockHandler {
 
-  void onHeader(Header header) throws Exception;
+  void onHeaderBlock(HeaderBlock headerBlock) throws Exception;
 
-  void onNodes(List<Node> nodes) throws Exception;
-
-  void onWays(List<Way> ways) throws Exception;
-
-  void onRelations(List<Relation> relations) throws Exception;
+  void onDataBlock(DataBlock dataBlock) throws Exception;
 
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <artifactId>baremaps-benchmarks</artifactId>
-  <name>baremaps-benchmarks</name>
+  <artifactId>benchmarks</artifactId>
+  <name>benchmarks</name>
   <packaging>jar</packaging>
   <modelVersion>4.0.0</modelVersion>
 
@@ -21,35 +21,20 @@
   <build>
     <plugins>
       <plugin>
-        <artifactId>maven-shade-plugin</artifactId>
+        <artifactId>maven-compiler-plugin</artifactId>
         <groupId>org.apache.maven.plugins</groupId>
-        <version>3.2.4</version>
-        <executions>
-          <execution>
-            <configuration>
-              <filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
-                  </excludes>
-                </filter>
-              </filters>
-              <finalName>${uberjar.name}</finalName>
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>org.openjdk.jmh.Main</mainClass>
-                </transformer>
-              </transformers>
-            </configuration>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <phase>package</phase>
-          </execution>
-        </executions>
+        <version>${version.plugin.compiler}</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.openjdk.jmh</groupId>
+              <artifactId>jmh-generator-annprocess</artifactId>
+              <version>${jmh.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -58,6 +43,14 @@
     <dependency>
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-util</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-osm</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-importer</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>

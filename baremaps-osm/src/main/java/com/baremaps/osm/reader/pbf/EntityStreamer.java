@@ -1,5 +1,5 @@
 package com.baremaps.osm.reader.pbf;
 
-public interface FileBlock {
+public class EntityStreamer {
 
 }

@@ -90,8 +90,7 @@ public class XmlEntitySpliterator implements Spliterator<Object> {
     return factory.createXMLEventReader(file);
   }
 
-  private Header readHeader(StartElement element)
-      throws XMLStreamException {
+  private Header readHeader(StartElement element) {
     return new Header(readReplicationTimestamp(element), 0, "", "", "", null);
   }
 

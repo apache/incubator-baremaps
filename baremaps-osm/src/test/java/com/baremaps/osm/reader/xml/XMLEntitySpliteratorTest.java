@@ -12,36 +12,33 @@
  * the License.
  */
 
-package com.baremaps.osm.reader.oscxml;
+package com.baremaps.osm.reader.xml;
 
-import static com.baremaps.osm.reader.DataFiles.dataOscXml;
+import static com.baremaps.osm.reader.DataFiles.dataOsmXml;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.baremaps.osm.model.Change;
-import com.baremaps.osm.reader.xml.XmlChangeSpliterator;
 import com.baremaps.osm.stream.AccumulatingConsumer;
 import com.baremaps.osm.stream.HoldingConsumer;
 import java.util.Spliterator;
 import javax.xml.stream.XMLStreamException;
 import org.junit.jupiter.api.Test;
 
-public class XMLChangeSpliteratorTest {
+public class XMLEntitySpliteratorTest {
 
   @Test
   public void tryAdvance() throws XMLStreamException {
-    Spliterator<Change> spliterator = new XmlChangeSpliterator(dataOscXml());
+    Spliterator<Object> spliterator = new XmlEntitySpliterator(dataOsmXml());
     spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
     assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
   }
 
   @Test
   public void forEachRemaining() throws XMLStreamException {
-    Spliterator<Change> spliterator = new XmlChangeSpliterator(dataOscXml());
-    AccumulatingConsumer<Change> accumulator = new AccumulatingConsumer<>();
+    Spliterator<Object> spliterator = new XmlEntitySpliterator(dataOsmXml());
+    AccumulatingConsumer<Object> accumulator = new AccumulatingConsumer<>();
     spliterator.forEachRemaining(accumulator);
-    assertEquals(accumulator.values().size(), 51);
+    assertEquals(accumulator.values().size(), 11);
   }
-  
 }

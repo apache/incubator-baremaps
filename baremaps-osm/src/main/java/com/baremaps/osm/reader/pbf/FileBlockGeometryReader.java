@@ -41,7 +41,6 @@ public class FileBlockGeometryReader implements Reader<FileBlockHandler> {
 
   private final Cache<Long, List<Long>> referencesCache;
 
-  @Inject
   public FileBlockGeometryReader(
       GeometryFactory geometryFactory,
       CoordinateTransform coordinateTransform,
@@ -54,20 +53,20 @@ public class FileBlockGeometryReader implements Reader<FileBlockHandler> {
   }
 
   public void read(Path path, FileBlockHandler handler) throws ReaderException {
-    FileBlockReader parser = new FileBlockReader();
+    FileBlockReader reader = new FileBlockReader();
 
     // Parse the file a first time to create the cache
     logger.info("Initializing cache");
     NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
     CacheBuilder cacheImportHandler = new CacheBuilder(nodeBuilder, coordinateCache, referencesCache);
-    parser.read(path, cacheImportHandler);
+    reader.read(path, cacheImportHandler);
 
     // Parse the file a second time to denormalize the geometries
     logger.info("Parsing geometries");
     WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
     RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referencesCache);
     FileBlockGeometryHandler decorator = new FileBlockGeometryHandler(nodeBuilder, wayBuilder, relationBuilder, handler);
-    parser.read(path, decorator);
+    reader.read(path, decorator);
   }
 
 }
