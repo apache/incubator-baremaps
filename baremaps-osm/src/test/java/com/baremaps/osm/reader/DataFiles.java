@@ -22,7 +22,7 @@ public class DataFiles {
     return DataFiles.class.getClassLoader().getResourceAsStream("data.osm.pbf");
   }
 
-  public static InputStream denseOsmPbf() {
+  public static InputStream denseNodesOsmPbf() {
     return DataFiles.class.getClassLoader().getResourceAsStream("dense.osm.pbf");
   }
 

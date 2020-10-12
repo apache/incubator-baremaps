@@ -1,4 +1,4 @@
 ignore:
+  - "baremaps-osm/src/main/java/com/baremaps/osm/model"
   - "baremaps-osm/target"
   - "baremaps-export/target"
-  - "baremaps-osm/src/main/java/io/baremaps/osm/model"

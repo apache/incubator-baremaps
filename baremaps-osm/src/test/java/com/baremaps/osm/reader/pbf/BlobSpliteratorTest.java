@@ -14,7 +14,7 @@
 
 package com.baremaps.osm.reader.pbf;
 
-import static com.baremaps.osm.reader.DataFiles.denseOsmPbf;
+import static com.baremaps.osm.reader.DataFiles.denseNodesOsmPbf;
 import static com.baremaps.osm.reader.DataFiles.relationsOsmPbf;
 import static com.baremaps.osm.reader.DataFiles.waysOsmPbf;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -28,42 +28,49 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Spliterator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.Test;
 
-public class DataFileBlockWrapperTest {
-/*
+public class BlobSpliteratorTest {
+
   @Test
-  public void readDenseNodes() throws IOException {
-    HoldingConsumer<Blob> consumer = new HoldingConsumer<>();
-    Spliterator<Blob> fileBlockIterator = new BlobSpliterator(new DataInputStream(denseOsmPbf()));
-    fileBlockIterator.tryAdvance(consumer);
-    DataBlock primitiveBlockReader = new DataBlock(consumer.value());
-    List<Node> nodes = primitiveBlockReader.getDenseNodes();
+  public void readDenseNodes() {
+    BlobSpliterator spliterator = new BlobSpliterator(denseNodesOsmPbf());
+    DataBlock dataBlock = StreamSupport.stream(spliterator, false)
+        .map(FileBlockStreamer::toFileBlock)
+        .filter(fileBlock -> fileBlock instanceof DataBlock)
+        .map(fileBlock -> (DataBlock) fileBlock)
+        .findFirst().get();
+    List<Node> nodes = dataBlock.getDenseNodes();
     assertNotNull(nodes);
     assertFalse(nodes.isEmpty());
   }
 
   @Test
-  public void readWays() throws IOException {
-    HoldingConsumer<Blob> consumer = new HoldingConsumer<>();
-    Spliterator<Blob> fileBlockIterator = new BlobSpliterator(new DataInputStream(waysOsmPbf()));
-    fileBlockIterator.tryAdvance(consumer);
-    DataBlock primitiveBlockReader = new DataBlock(consumer.value());
-    List<Way> ways = primitiveBlockReader.getWays();
+  public void readWays() {
+    BlobSpliterator spliterator = new BlobSpliterator(waysOsmPbf());
+    DataBlock dataBlock = StreamSupport.stream(spliterator, false)
+        .map(FileBlockStreamer::toFileBlock)
+        .filter(fileBlock -> fileBlock instanceof DataBlock)
+        .map(fileBlock -> (DataBlock) fileBlock)
+        .findFirst().get();
+    List<Way> ways = dataBlock.getWays();
     assertNotNull(ways);
     assertFalse(ways.isEmpty());
   }
 
   @Test
-  public void readRelations() throws IOException {
-    HoldingConsumer<Blob> consumer = new HoldingConsumer<>();
-    Spliterator<Blob> fileBlockIterator = new BlobSpliterator(
-        new DataInputStream(relationsOsmPbf()));
-    fileBlockIterator.tryAdvance(consumer);
-    DataBlock primitiveBlockReader = new DataBlock(consumer.value());
-    List<Relation> relations = primitiveBlockReader.getRelations();
+  public void readRelations() {
+    BlobSpliterator spliterator = new BlobSpliterator(relationsOsmPbf());
+    DataBlock dataBlock = StreamSupport.stream(spliterator, false)
+        .map(FileBlockStreamer::toFileBlock)
+        .filter(fileBlock -> fileBlock instanceof DataBlock)
+        .map(fileBlock -> (DataBlock) fileBlock)
+        .findFirst().get();
+    List<Relation> relations = dataBlock.getRelations();
     assertNotNull(relations);
     assertFalse(relations.isEmpty());
   }
- */
+
 }

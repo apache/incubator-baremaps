@@ -28,7 +28,7 @@ public class FileBlockStreamer {
     return stream.map(FileBlockStreamer::toFileBlock);
   }
 
-  private static FileBlock toFileBlock(Blob blob) {
+  public static FileBlock toFileBlock(Blob blob) {
     try {
       switch (blob.header().getType()) {
         case "OSMHeader":
