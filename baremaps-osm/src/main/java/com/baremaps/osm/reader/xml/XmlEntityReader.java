@@ -27,7 +27,7 @@ public class XmlEntityReader implements EntityReader {
   public void read(Path path, EntityHandler handler) throws ReaderException {
     try (InputStream inputStream = open(path)) {
       Spliterator<Object> spliterator = new XmlEntitySpliterator(inputStream);
-      Stream<Object> stream = StreamSupport.stream(spliterator, true);
+      Stream<Object> stream = StreamSupport.stream(spliterator, false);
       stream.forEach(entity -> {
         try {
           handle(entity, handler);

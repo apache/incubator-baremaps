@@ -21,7 +21,7 @@ public class FileBlockStreamer {
     if (parallel) {
       spliterator = new BatchSpliterator<>(spliterator, 1);
     }
-    Stream<Blob> stream = StreamSupport.stream(spliterator, true);
+    Stream<Blob> stream = StreamSupport.stream(spliterator, parallel);
     if (progress) {
       stream = stream.peek(new StreamProgress<>(Files.size(path), b -> b.size()));
     }
