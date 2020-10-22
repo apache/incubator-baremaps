@@ -51,7 +51,7 @@ and the `èxamples/` directory showcase how to use Baremaps with different datas
 The source code of Baremaps is organized in modules:
 - `baremaps-util` contains general purpose classes used by other modules;
 - `baremaps-osm` contains code for parsing, handling and importing OSM data in Postgres;
-- `baremaps-tiles` contains code for producing vector tiles from Postgres;
+- `baremaps-export` contains code for producing vector tiles from Postgres;
 - `baremaps-cli` contains the command line utilities.
 
 Knowing that, you should be able to checkout and build Baremaps from source, and start hacking:

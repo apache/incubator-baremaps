@@ -2,213 +2,312 @@ id: 'openstreetmap'
 center:
   lon: 9.5554
   lat: 47.1660
-  zoom: 15
+  zoom: 14
 bounds:
   minLon: 9.471078
   maxLon: 9.636217
   minLat: 47.04774
   maxLat: 47.27128
   minZoom: 12
-  maxZoom: 16
+  maxZoom: 14
 layers:
   - id: 'aeroway'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'aeroway'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'aeroway'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'aeroway' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'aeroway'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'aeroway'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'aeroway' AND tags -> 'type' = 'multipolygon'
   - id: 'waterway'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'waterway'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'waterway'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'waterway' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'waterway'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'waterway'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'waterway' AND tags -> 'type' = 'multipolygon'
   - id: 'landuse'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'landuse'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'landuse'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'landuse'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'landuse'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse' AND tags -> 'type' = 'multipolygon'
   - id: 'railway'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'railway'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'railway'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'railway' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'railway'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'railway'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'railway' AND tags -> 'type' = 'multipolygon'
   - id: 'highway'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'highway'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'highway'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'highway' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'highway'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'highway'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'highway' AND tags -> 'type' = 'multipolygon'
   - id: 'public_transport'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'public_transport'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'public_transport'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'public_transport' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'public_transport'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'public_transport'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'public_transport' AND tags -> 'type' = 'multipolygon'
   - id: 'aerialway'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'aerialway'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'aerialway'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'aerialway' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'aerialway'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'aerialway'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'aerialway' AND tags -> 'type' = 'multipolygon'
   - id: 'geological'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'geological'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'geological'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'geological' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'geological'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'geological'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'geological' AND tags -> 'type' = 'multipolygon'
   - id: 'building'
     type: 'polygon'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'building'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'building'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'building' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'building'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'building'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'building' AND tags -> 'type' = 'multipolygon'
   - id: 'amenity'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'amenity'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'amenity'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'amenity' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'amenity'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'amenity'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'amenity' AND tags -> 'type' = 'multipolygon'
   - id: 'craft'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'craft'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'craft'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'craft' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'craft'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'craft'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'craft' AND tags -> 'type' = 'multipolygon'
   - id: 'emergency'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'emergency'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'emergency'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'emergency' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'emergency'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'emergency'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'emergency' AND tags -> 'type' = 'multipolygon'
   - id: 'historic'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'historic'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'historic'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'historic' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'historic'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'historic'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'historic' AND tags -> 'type' = 'multipolygon'
   - id: 'leisure'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'leisure'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'leisure'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'leisure' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'leisure'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'leisure'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'leisure' AND tags -> 'type' = 'multipolygon'
   - id: 'man_made'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'man_made'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'man_made'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'man_made' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'man_made'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'man_made'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'man_made' AND tags -> 'type' = 'multipolygon'
   - id: 'military'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'military'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'military'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'military' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'military'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'military'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'military' AND tags -> 'type' = 'multipolygon'
   - id: 'natural'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'natural'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'natural'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'natural' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'natural'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'natural'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'natural' AND tags -> 'type' = 'multipolygon'
   - id: 'office'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'office'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'office'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'office' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'office'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'office'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'office' AND tags -> 'type' = 'multipolygon'
   - id: 'place'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'place'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'place'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'place' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'place'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'place'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'place' AND tags -> 'type' = 'multipolygon'
   - id: 'power'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'power'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'power'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'power' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'power'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'power'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'power' AND tags -> 'type' = 'multipolygon'
   - id: 'route'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'route'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'route'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'route' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'route'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'route'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'route' AND tags -> 'type' = 'multipolygon'
   - id: 'shop'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'shop'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'shop'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'shop' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'shop'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'shop'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'shop' AND tags -> 'type' = 'multipolygon'
   - id: 'sport'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'sport'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'sport'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'sport' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'sport'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'sport'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'sport' AND tags -> 'type' = 'multipolygon'
   - id: 'telecom'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'telecom'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'telecom'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'telecom' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'telecom'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'telecom'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'telecom' AND tags -> 'type' = 'multipolygon'
   - id: 'tourism'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'tourism'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'tourism'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'tourism' AND tags -> 'type' = 'multipolygon'
-
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'tourism'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_ways WHERE tags ? 'tourism'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_relations WHERE tags ? 'tourism' AND tags -> 'type' = 'multipolygon'

@@ -92,12 +92,10 @@ id: 'openstreetmap'
 layers:
   - id: 'aeroway'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'aeroway'
-      - SELECT id, tags, geom FROM osm_ways WHERE tags ? 'aeroway'
-      - SELECT id, tags, geom FROM osm_relations WHERE tags ? 'aeroway' AND tags -> 'type' = 'multipolygon'
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'aeroway'
 ...
 ```
 

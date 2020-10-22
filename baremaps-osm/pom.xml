@@ -7,9 +7,8 @@
   <parent>
     <artifactId>baremaps</artifactId>
     <groupId>com.baremaps</groupId>
-    <version>0.2.5-SNAPSHOT</version>
+    <version>0.2.9-SNAPSHOT</version>
   </parent>
-
 
   <build>
     <extensions>
@@ -39,17 +38,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <dependencies>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-tiles</artifactId>
-    </dependency>
-    <dependency>
-      <artifactId>lmdbjava</artifactId>
-      <groupId>org.lmdbjava</groupId>
-    </dependency>
-  </dependencies>
-
 
 </project>

@@ -1,7 +1,7 @@
 FROM postgres:11
 
 ENV POSTGIS_MAJOR 2.5
-ENV POSTGIS_VERSION 2.5.3+dfsg-3.pgdg90+1
+ENV POSTGIS_VERSION 2.5.5+dfsg-1.pgdg90+1
 
 RUN apt-get update \
       && apt-cache showpkg postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
@@ -12,3 +12,6 @@ RUN apt-get update \
 
 RUN mkdir -p /docker-entrypoint-initdb.d
 COPY ./initdb-postgis.sh /docker-entrypoint-initdb.d/postgis.sh
+
+RUN mkdir -p /etc/postgresql
+COPY ./postgres.conf /etc/postgresql/postgresql.conf

@@ -18,19 +18,17 @@ import java.util.List;
 
 public interface Cache<K, V> {
 
-  V get(K key);
+  V get(K key) throws CacheException;
 
-  List<V> getAll(List<K> keys);
+  List<V> getAll(List<K> keys) throws CacheException;
 
-  void put(K key, V values);
+  void put(K key, V value);
 
   void putAll(List<Entry<K, V>> entries);
 
   void delete(K key);
 
   void deleteAll(List<K> keys);
-
-  void importAll(List<Entry<K, V>> values);
 
   class Entry<K, V> {
 

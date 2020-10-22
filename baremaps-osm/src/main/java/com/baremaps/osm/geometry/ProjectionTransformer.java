@@ -15,6 +15,7 @@
 package com.baremaps.osm.geometry;
 
 import java.util.stream.Stream;
+import javax.inject.Inject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
@@ -27,6 +28,7 @@ public class ProjectionTransformer extends GeometryTransformer {
 
   private final CoordinateTransform coordinateTransform;
 
+  @Inject
   public ProjectionTransformer(CoordinateTransform coordinateTransform) {
     this.coordinateTransform = coordinateTransform;
   }

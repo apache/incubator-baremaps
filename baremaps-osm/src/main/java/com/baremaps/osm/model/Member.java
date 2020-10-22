@@ -17,16 +17,36 @@ package com.baremaps.osm.model;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.base.Objects;
+import java.util.StringJoiner;
 
 public final class Member {
 
-  public enum Type {node, way, relation}
+  public enum MemberType {
+    node(0),
+    way(1),
+    relation(2);
+    private final int value;
+    MemberType(int i) {
+      this.value = i;
+    }
+    public final int getNumber() {
+      return value;
+    }
+    public static MemberType forNumber(int value) {
+      switch (value) {
+        case 0: return node;
+        case 1: return way;
+        case 2: return relation;
+        default: return null;
+      }
+    }
+  }
 
   private final long ref;
-  private final Type type;
+  private final MemberType type;
   private final String role;
 
-  public Member(long ref, Type type, String role) {
+  public Member(long ref, MemberType type, String role) {
     checkNotNull(type);
     checkNotNull(role);
     this.ref = ref;
@@ -38,7 +58,7 @@ public final class Member {
     return ref;
   }
 
-  public Type getType() {
+  public MemberType getType() {
     return type;
   }
 
@@ -55,7 +75,9 @@ public final class Member {
       return false;
     }
     Member member = (Member) o;
-    return ref == member.ref && type == member.type && Objects.equal(role, member.role);
+    return ref == member.ref &&
+        Objects.equal(type, member.type) &&
+        Objects.equal(role, member.role);
   }
 
   @Override
@@ -63,5 +85,12 @@ public final class Member {
     return Objects.hashCode(ref, type, role);
   }
 
-
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Member.class.getSimpleName() + "[", "]")
+        .add("ref=" + ref)
+        .add("type='" + type.name() + "'")
+        .add("role='" + role + "'")
+        .toString();
+  }
 }

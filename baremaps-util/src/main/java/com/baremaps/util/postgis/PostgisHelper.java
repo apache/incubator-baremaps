@@ -17,13 +17,13 @@ package com.baremaps.util.postgis;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Splitter;
 import com.google.common.io.Resources;
 import java.io.IOException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.MessageFormat;
+import javax.sql.DataSource;
 import org.apache.commons.dbcp2.ConnectionFactory;
 import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp2.PoolableConnection;
@@ -38,7 +38,7 @@ public final class PostgisHelper {
 
   }
 
-  private static final String DATABASE_URL = "jdbc:postgresql://{0}:{1}/{2}?user={3}&password={4}&allowMultiQueries={5}";
+  private static final String DATABASE_URL = "jdbc:postgresql://%s:%s/%s?user=%s&password=%s&allowMultiQueries=%s";
 
   public static String url(
       String hostname,
@@ -53,8 +53,7 @@ public final class PostgisHelper {
     checkNotNull(username);
     checkNotNull(password);
     checkNotNull(allowMultiQueries);
-    return MessageFormat
-        .format(DATABASE_URL, hostname, port, database, username, password, allowMultiQueries);
+    return String.format(DATABASE_URL, hostname, port, database, username, password, allowMultiQueries);
   }
 
   public static String url(String database, String user, String password) {
@@ -74,11 +73,26 @@ public final class PostgisHelper {
     return dataSource;
   }
 
-  public static void executeScript(Connection connection, String script) throws IOException, SQLException {
-    URL url = Resources.getResource(script);
-    String sql = Resources.toString(url, Charsets.UTF_8);
+  public static void execute(Connection connection, String resource) throws IOException, SQLException {
+    String queries = Resources.toString(Resources.getResource(resource), Charsets.UTF_8);
     try (Statement statement = connection.createStatement()) {
-      statement.execute(sql);
+      statement.execute(queries);
+    }
+  }
+
+  public static void executeParallel(DataSource dataSource, String resource) throws IOException, SQLException {
+    String queries = Resources.toString(Resources.getResource(resource), Charsets.UTF_8);
+    try {
+      Splitter.on(";").splitToStream(queries).parallel().forEach(query -> {
+        try (Connection connection = dataSource.getConnection();
+            Statement statement = connection.createStatement()) {
+          statement.execute(query);
+        } catch (SQLException e) {
+          throw new RuntimeException(e);
+        }
+      });
+    } catch (RuntimeException e) {
+      throw (SQLException) e.getCause();
     }
   }
 

@@ -13,7 +13,7 @@ bounds:
 layers:
   - id: 'aster_dem'
     type: 'geometry'
-    minZoom: 12
-    maxZoom: 20
     queries:
-      - SELECT id, hstore('elevation', elevation::text) as tags, wkb_geometry as geom FROM aster_dem
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT id, hstore('elevation', elevation::text) as tags, wkb_geometry as geom FROM aster_dem
