@@ -18,7 +18,7 @@ public class XmlEntityReader implements EntityReader {
   }
 
   @Override
-  public Stream<Entity> entities() throws IOException {
+  public Stream<Entity> read() throws IOException {
     try {
       Spliterator<Entity> spliterator = new XmlEntitySpliterator(inputStream);
       return StreamSupport.stream(spliterator, false);

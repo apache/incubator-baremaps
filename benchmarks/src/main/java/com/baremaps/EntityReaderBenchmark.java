@@ -44,7 +44,7 @@ public class EntityReaderBenchmark {
   @Measurement(iterations = 1)
   public void parallel() throws IOException {
     AtomicLong entities = new AtomicLong(0);
-    OpenStreetMap.newEntityReader(path).entities().forEach(entity -> entities.incrementAndGet());
+    OpenStreetMap.newEntityReader(path).read().forEach(entity -> entities.incrementAndGet());
     System.out.println(entities.get());
   }
 

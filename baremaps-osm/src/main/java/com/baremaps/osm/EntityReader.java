@@ -6,6 +6,6 @@ import java.util.stream.Stream;
 
 public interface EntityReader {
 
-  Stream<Entity> entities() throws IOException;
+  Stream<Entity> read() throws IOException;
 
 }

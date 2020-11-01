@@ -24,7 +24,7 @@ public class PbfEntityReader implements EntityReader {
   }
 
   @Override
-  public Stream<Entity> entities() throws IOException {
+  public Stream<Entity> read() throws IOException {
     Spliterator<Blob> spliterator = new BlobSpliterator(inputStream);
     spliterator = new BatchSpliterator<>(spliterator, 1);
     try {
