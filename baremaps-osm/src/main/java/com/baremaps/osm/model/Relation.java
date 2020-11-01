@@ -14,86 +14,32 @@
 
 package com.baremaps.osm.model;
 
-import com.google.common.base.Objects;
-import java.time.LocalDateTime;
+import com.baremaps.osm.EntityHandler;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
-public final class Relation extends Entity {
+public final class Relation extends Element {
 
-  private List<Member> members;
+  private final List<Member> members;
 
-  private Geometry geometry;
-
-  public Relation() {
-
-  }
-
-  public Relation(long id, int version, LocalDateTime timestamp, long changeset, int userId,
-      Map<String, String> tags, List<Member> members) {
-    this(id, version, timestamp, changeset, userId, tags, members, null);
-  }
-
-  public Relation(long id, int version, LocalDateTime timestamp, long changeset, int userId,
-      Map<String, String> tags, List<Member> members, Geometry geometry) {
-    super(id, version, timestamp, changeset, userId, tags);
+  public Relation(long id, Info info, Map<String, String> tags, List<Member> members) {
+    super(id, info, tags);
     this.members = members;
-    this.geometry = geometry;
+  }
+
+  public Relation(long id, Info info, Map<String, String> tags, List<Member> members, Geometry geometry) {
+    super(id, info, tags, geometry);
+    this.members = members;
   }
 
   public List<Member> getMembers() {
     return members;
   }
 
-  public Optional<Geometry> getGeometry() {
-    return Optional.ofNullable(geometry);
-  }
-
-
-  public void setMembers(List<Member> members) {
-    this.members = members;
-  }
-
-  public void setGeometry(Geometry geometry) {
-    this.geometry = geometry;
-  }
-
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    Relation relation = (Relation) o;
-    return Objects.equal(members, relation.members) &&
-        Objects.equal(geometry, relation.geometry);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(super.hashCode(), members, geometry);
-  }
-
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Relation.class.getSimpleName() + "[", "]")
-        .add("id=" + id)
-        .add("version=" + version)
-        .add("timestamp=" + timestamp)
-        .add("changeset=" + changeset)
-        .add("userId=" + userId)
-        .add("tags=" + tags)
-        .add("members=" + members)
-        .add("geometry=" + geometry)
-        .toString();
+  public void visit(EntityHandler visitor) throws Exception {
+    visitor.handle(this);
   }
 
 }

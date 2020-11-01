@@ -14,7 +14,8 @@
 
 package com.baremaps.importer.database;
 
-import com.baremaps.osm.geometry.GeometryUtil;
+import com.baremaps.importer.geometry.GeometryUtil;
+import com.baremaps.osm.model.Info;
 import com.baremaps.osm.model.Node;
 import com.baremaps.util.postgis.CopyWriter;
 import java.io.IOException;
@@ -128,7 +129,8 @@ public class NodeTable implements Table<Node> {
     double lon = result.getDouble(7);
     double lat = result.getDouble(8);
     Geometry point = GeometryUtil.deserialize(result.getBytes(9));
-    return new Node(id, version, timestamp, changeset, uid, tags, lon, lat, point);
+    Info info = new Info(version, timestamp, changeset, uid);
+    return new Node(id, info, tags, lon, lat, point);
   }
 
   public void insert(Node entity) throws DatabaseException {
@@ -157,14 +159,14 @@ public class NodeTable implements Table<Node> {
 
   private void setNode(PreparedStatement statement, Node entity) throws SQLException {
     statement.setLong(1, entity.getId());
-    statement.setInt(2, entity.getVersion());
-    statement.setInt(3, entity.getUserId());
-    statement.setObject(4, entity.getTimestamp());
-    statement.setLong(5, entity.getChangeset());
+    statement.setInt(2, entity.getInfo().getVersion());
+    statement.setInt(3, entity.getInfo().getUid());
+    statement.setObject(4, entity.getInfo().getTimestamp());
+    statement.setLong(5, entity.getInfo().getChangeset());
     statement.setObject(6, entity.getTags());
     statement.setDouble(7, entity.getLon());
     statement.setDouble(8, entity.getLat());
-    statement.setBytes(9, GeometryUtil.serialize(entity.getGeometry().get()));
+    statement.setBytes(9, GeometryUtil.serialize(entity.getGeometry()));
   }
 
   public void delete(Long id) throws DatabaseException {
@@ -199,14 +201,14 @@ public class NodeTable implements Table<Node> {
         for (Node node : entities) {
           writer.startRow(9);
           writer.writeLong(node.getId());
-          writer.writeInteger(node.getVersion());
-          writer.writeInteger(node.getUserId());
-          writer.writeLocalDateTime(node.getTimestamp());
-          writer.writeLong(node.getChangeset());
+          writer.writeInteger(node.getInfo().getVersion());
+          writer.writeInteger(node.getInfo().getUid());
+          writer.writeLocalDateTime(node.getInfo().getTimestamp());
+          writer.writeLong(node.getInfo().getChangeset());
           writer.writeHstore(node.getTags());
           writer.writeDouble(node.getLon());
           writer.writeDouble(node.getLat());
-          writer.writeGeometry(node.getGeometry().get());
+          writer.writeGeometry(node.getGeometry());
         }
       }
     } catch (IOException | SQLException e) {

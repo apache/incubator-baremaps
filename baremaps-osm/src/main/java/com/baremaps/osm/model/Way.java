@@ -14,84 +14,31 @@
 
 package com.baremaps.osm.model;
 
-import com.google.common.base.Objects;
-import java.time.LocalDateTime;
+import com.baremaps.osm.EntityHandler;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
-public final class Way extends Entity {
+public final class Way extends Element {
 
-  private List<Long> nodes;
+  private final List<Long> nodes;
 
-  private Geometry geometry;
-
-  public Way() {
-
-  }
-
-  public Way(long id, int version, LocalDateTime timestamp, long changeset, int userId,
-      Map<String, String> tags, List<Long> nodes) {
-    this(id, version, timestamp, changeset, userId, tags, nodes, null);
-  }
-
-  public Way(long id, int version, LocalDateTime timestamp, long changeset, int userId,
-      Map<String, String> tags, List<Long> nodes, Geometry geometry) {
-    super(id, version, timestamp, changeset, userId, tags);
+  public Way(long id, Info info, Map<String, String> tags, List<Long> nodes) {
+    super(id, info, tags);
     this.nodes = nodes;
-    this.geometry = geometry;
+  }
+
+  public Way(long id, Info info, Map<String, String> tags, List<Long> nodes, Geometry geometry) {
+    super(id, info, tags, geometry);
+    this.nodes = nodes;
   }
 
   public List<Long> getNodes() {
     return nodes;
   }
 
-  public Optional<Geometry> getGeometry() {
-    return Optional.ofNullable(geometry);
-  }
-
-  public void setNodes(List<Long> nodes) {
-    this.nodes = nodes;
-  }
-
-  public void setGeometry(Geometry geometry) {
-    this.geometry = geometry;
-  }
-
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    Way way = (Way) o;
-    return Objects.equal(nodes, way.nodes) &&
-        Objects.equal(geometry, way.geometry);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(super.hashCode(), nodes, geometry);
-  }
-
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Way.class.getSimpleName() + "[", "]")
-        .add("id=" + id)
-        .add("version=" + version)
-        .add("timestamp=" + timestamp)
-        .add("changeset=" + changeset)
-        .add("userId=" + userId)
-        .add("tags=" + tags)
-        .add("nodes=" + nodes)
-        .add("geometry=" + geometry)
-        .toString();
+  public void visit(EntityHandler visitor) throws Exception {
+    visitor.handle(this);
   }
 }

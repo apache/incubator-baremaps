@@ -16,7 +16,6 @@ package com.baremaps.importer.cache;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.baremaps.osm.cache.Cache;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;

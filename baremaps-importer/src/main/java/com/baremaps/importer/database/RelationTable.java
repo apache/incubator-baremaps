@@ -14,7 +14,8 @@
 
 package com.baremaps.importer.database;
 
-import com.baremaps.osm.geometry.GeometryUtil;
+import com.baremaps.importer.geometry.GeometryUtil;
+import com.baremaps.osm.model.Info;
 import com.baremaps.osm.model.Member;
 import com.baremaps.osm.model.Member.MemberType;
 import com.baremaps.osm.model.Relation;
@@ -139,7 +140,8 @@ public class RelationTable implements Table<Relation> {
       members.add(new Member(refs[i], MemberType.forNumber(types[i]), roles[i]));
     }
     Geometry geometry = GeometryUtil.deserialize(result.getBytes(10));
-    return new Relation(id, version, timestamp, changeset, uid, tags, members, geometry);
+    Info info = new Info(version, timestamp, changeset, uid);
+    return new Relation(id, info, tags, members, geometry);
   }
 
   public void insert(Relation entity) throws DatabaseException {
@@ -169,10 +171,10 @@ public class RelationTable implements Table<Relation> {
 
   private void setRelation(PreparedStatement statement, Relation entity) throws SQLException {
     statement.setLong(1, entity.getId());
-    statement.setInt(2, entity.getVersion());
-    statement.setInt(3, entity.getUserId());
-    statement.setObject(4, entity.getTimestamp());
-    statement.setLong(5, entity.getChangeset());
+    statement.setInt(2, entity.getInfo().getVersion());
+    statement.setInt(3, entity.getInfo().getUid());
+    statement.setObject(4, entity.getInfo().getTimestamp());
+    statement.setLong(5, entity.getInfo().getChangeset());
     statement.setObject(6, entity.getTags());
     Object[] refs = entity.getMembers().stream().map(Member::getRef).toArray();
     statement.setObject(7, statement.getConnection().createArrayOf("bigint", refs));
@@ -180,7 +182,7 @@ public class RelationTable implements Table<Relation> {
     statement.setObject(8, statement.getConnection().createArrayOf("int", types));
     Object[] roles = entity.getMembers().stream().map(Member::getRole).toArray();
     statement.setObject(9, statement.getConnection().createArrayOf("varchar", roles));
-    statement.setBytes(10, GeometryUtil.serialize(entity.getGeometry().orElse(null)));
+    statement.setBytes(10, GeometryUtil.serialize(entity.getGeometry()));
   }
 
   public void delete(Long id) throws DatabaseException {
@@ -216,16 +218,16 @@ public class RelationTable implements Table<Relation> {
         for (Relation entity : entities) {
           writer.startRow(10);
           writer.writeLong(entity.getId());
-          writer.writeInteger(entity.getVersion());
-          writer.writeInteger(entity.getUserId());
-          writer.writeLocalDateTime(entity.getTimestamp());
-          writer.writeLong(entity.getChangeset());
+          writer.writeInteger(entity.getInfo().getVersion());
+          writer.writeInteger(entity.getInfo().getUid());
+          writer.writeLocalDateTime(entity.getInfo().getTimestamp());
+          writer.writeLong(entity.getInfo().getChangeset());
           writer.writeHstore(entity.getTags());
           writer.writeLongList(entity.getMembers().stream().map(Member::getRef).collect(Collectors.toList()));
           writer.writeIntegerList(entity.getMembers().stream().map(Member::getType).map(MemberType::getNumber)
               .collect(Collectors.toList()));
           writer.writeStringList(entity.getMembers().stream().map(Member::getRole).collect(Collectors.toList()));
-          writer.writeGeometry(entity.getGeometry().orElse(null));
+          writer.writeGeometry(entity.getGeometry());
         }
       }
     } catch (IOException | SQLException ex) {

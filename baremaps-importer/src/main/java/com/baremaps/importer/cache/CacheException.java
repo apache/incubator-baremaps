@@ -12,33 +12,16 @@
  * the License.
  */
 
-package com.baremaps.osm.model;
+package com.baremaps.importer.cache;
 
-import java.util.List;
+public class CacheException extends Exception {
 
-public final class Change {
-
-  public enum ChangeType {
-    delete,
-    create,
-    modify
+  public CacheException() {
+    super();
   }
 
-  private final ChangeType type;
-
-  private final List<Element> elements;
-
-  public Change(ChangeType type, List<Element> elements) {
-    this.type = type;
-    this.elements = elements;
-  }
-
-  public ChangeType getType() {
-    return type;
-  }
-
-  public List<Element> getElements() {
-    return elements;
+  public CacheException(Exception e) {
+    super(e);
   }
 
 }

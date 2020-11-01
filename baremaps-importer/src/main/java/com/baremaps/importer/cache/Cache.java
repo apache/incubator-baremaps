@@ -12,33 +12,41 @@
  * the License.
  */
 
-package com.baremaps.osm.model;
+package com.baremaps.importer.cache;
 
 import java.util.List;
 
-public final class Change {
+public interface Cache<K, V> {
 
-  public enum ChangeType {
-    delete,
-    create,
-    modify
-  }
+  V get(K key) throws CacheException;
 
-  private final ChangeType type;
+  List<V> getAll(List<K> keys) throws CacheException;
 
-  private final List<Element> elements;
+  void put(K key, V value);
 
-  public Change(ChangeType type, List<Element> elements) {
-    this.type = type;
-    this.elements = elements;
-  }
+  void putAll(List<Entry<K, V>> entries);
 
-  public ChangeType getType() {
-    return type;
-  }
+  void delete(K key);
 
-  public List<Element> getElements() {
-    return elements;
+  void deleteAll(List<K> keys);
+
+  class Entry<K, V> {
+
+    private final K key;
+    private final V value;
+
+    public Entry(K key, V value) {
+      this.key = key;
+      this.value = value;
+    }
+
+    public K key() {
+      return key;
+    }
+
+    public V value() {
+      return value;
+    }
   }
 
 }

@@ -16,20 +16,19 @@ package com.baremaps.cli;
 
 import com.baremaps.importer.cache.PostgisCoordinateCache;
 import com.baremaps.importer.cache.PostgisReferenceCache;
-import com.baremaps.importer.database.DeltaHandler;
+import com.baremaps.importer.database.DataUpdater;
+import com.baremaps.importer.database.DeltaProducer;
 import com.baremaps.importer.database.HeaderTable;
 import com.baremaps.importer.database.NodeTable;
 import com.baremaps.importer.database.RelationTable;
-import com.baremaps.importer.database.UpdateHandler;
 import com.baremaps.importer.database.WayTable;
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.geometry.NodeBuilder;
-import com.baremaps.osm.geometry.ProjectionTransformer;
-import com.baremaps.osm.geometry.RelationBuilder;
-import com.baremaps.osm.geometry.WayBuilder;
+import com.baremaps.importer.cache.Cache;
+import com.baremaps.importer.geometry.ChangeGeometryBuilder;
+import com.baremaps.importer.geometry.ProjectionTransformer;
+import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.model.Header;
 import com.baremaps.osm.model.State;
-import com.baremaps.osm.reader.xml.XmlChangeReader;
+import com.baremaps.osm.StateReader;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.storage.BlobStore;
 import com.baremaps.util.tile.Tile;
@@ -90,7 +89,7 @@ public class Update implements Callable<Integer> {
       names = {"--zoom"},
       paramLabel = "ZOOM",
       description = "The zoom level.")
-  private int zoom = 16;
+  private int zoom = 14;
 
   @Override
   public Integer call() throws Exception {
@@ -106,13 +105,6 @@ public class Update implements Callable<Integer> {
     CoordinateTransform coordinateTransform = coordinateTransformFactory
         .createTransform(sourceCRS, targetCRS);
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
-
-    Cache<Long, Coordinate> coordinateCache = new PostgisCoordinateCache(datasource);
-    Cache<Long, List<Long>> referenceCache = new PostgisReferenceCache(datasource);
-
-    NodeBuilder nodeBuilder = new NodeBuilder(geometryFactory, coordinateTransform);
-    WayBuilder wayBuilder = new WayBuilder(geometryFactory, coordinateCache);
-    RelationBuilder relationBuilder = new RelationBuilder(geometryFactory, coordinateCache, referenceCache);
 
     NodeTable nodeStore = new NodeTable(datasource);
     WayTable wayStore = new WayTable(datasource);
@@ -132,40 +124,36 @@ public class Update implements Callable<Integer> {
     String statePath = path(nextSequenceNumber) + ".state.txt";
     URI stateURI = new URI(String.format("%s/%s", input, statePath));
 
-    ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransform);
-    DeltaHandler deltaHandler = new DeltaHandler(
-        nodeStore, wayStore, relationStore,
-        projectionTransformer, zoom);
-
+    logger.info("Downloading diff file");
     Path path = blobStore.fetch(changeURI);
 
-    logger.info("Computing differences");
-    new XmlChangeReader().parse(path, deltaHandler);
+    logger.info("Updating database");
+    ChangeGeometryBuilder changeGeometryBuilder = new ChangeGeometryBuilder(geometryFactory);
+    ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransform);
+    DeltaProducer deltaProducer = new DeltaProducer(nodeStore, wayStore, relationStore, projectionTransformer, zoom);
+    DataUpdater dataUpdater = new DataUpdater(nodeStore, wayStore, relationStore);
+    OpenStreetMap.newChangeReader(path).read()
+        .peek(changeGeometryBuilder)
+        .peek(deltaProducer)
+        .forEach(dataUpdater);
 
     logger.info("Saving differences");
     try (PrintWriter diffPrintWriter = new PrintWriter(blobStore.write(delta))) {
-      for (Tile tile : deltaHandler.getTiles()) {
+      for (Tile tile : deltaProducer.getTiles()) {
         diffPrintWriter.println(String.format("%d/%d/%d", tile.x(), tile.y(), tile.z()));
       }
     }
 
-    logger.info("Updating database");
-    UpdateHandler updateHandler = new UpdateHandler(
-        nodeBuilder, wayBuilder, relationBuilder,
-        nodeStore, wayStore, relationStore);
-    new XmlChangeReader().parse(path, updateHandler);
-
     logger.info("Updating state information");
     try (InputStreamReader reader = new InputStreamReader(blobStore.read(stateURI), Charsets.UTF_8)) {
       String stateContent = CharStreams.toString(reader);
-      State state = State.read(stateContent);
+      State state = StateReader.read(stateContent);
       headerMapper.insert(new Header(
           state.getTimestamp(),
           state.getSequenceNumber(),
           header.getReplicationUrl(),
           header.getSource(),
-          header.getWritingProgram(),
-          header.getBbox()));
+          header.getWritingProgram()));
     }
 
     return 0;

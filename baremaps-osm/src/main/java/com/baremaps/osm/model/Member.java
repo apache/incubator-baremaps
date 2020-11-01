@@ -25,25 +25,31 @@ public final class Member {
     node(0),
     way(1),
     relation(2);
+
     private final int value;
+
     MemberType(int i) {
       this.value = i;
     }
+
     public final int getNumber() {
       return value;
     }
+
     public static MemberType forNumber(int value) {
       switch (value) {
         case 0: return node;
         case 1: return way;
         case 2: return relation;
-        default: return null;
+        default: throw new IllegalArgumentException();
       }
     }
   }
 
   private final long ref;
+
   private final MemberType type;
+
   private final String role;
 
   public Member(long ref, MemberType type, String role) {

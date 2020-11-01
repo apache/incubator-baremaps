@@ -14,8 +14,6 @@
 
 package com.baremaps.importer.cache;
 
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.CacheException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

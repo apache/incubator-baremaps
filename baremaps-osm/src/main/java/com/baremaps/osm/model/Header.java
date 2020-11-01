@@ -14,34 +14,32 @@
 
 package com.baremaps.osm.model;
 
+import com.baremaps.osm.EntityHandler;
 import java.time.LocalDateTime;
-import org.locationtech.jts.geom.Geometry;
 
-public class Header {
+public class Header implements Entity {
 
   private final LocalDateTime replicationTimestamp;
-  private final long replicationSequenceNumber;
+  private final Long replicationSequenceNumber;
   private final String replicationUrl;
   private final String source;
   private final String writingProgram;
-  private final Geometry bbox;
 
-  public Header(LocalDateTime replicationTimestamp, long replicationSequenceNumber, String replicationUrl,
+  public Header(LocalDateTime replicationTimestamp, Long replicationSequenceNumber, String replicationUrl,
       String source,
-      String writingProgram, Geometry bbox) {
+      String writingProgram) {
     this.replicationTimestamp = replicationTimestamp;
     this.replicationSequenceNumber = replicationSequenceNumber;
     this.replicationUrl = replicationUrl;
     this.source = source;
     this.writingProgram = writingProgram;
-    this.bbox = bbox;
   }
 
   public LocalDateTime getReplicationTimestamp() {
     return replicationTimestamp;
   }
 
-  public long getReplicationSequenceNumber() {
+  public Long getReplicationSequenceNumber() {
     return replicationSequenceNumber;
   }
 
@@ -57,9 +55,9 @@ public class Header {
     return writingProgram;
   }
 
-  public Geometry getBbox() {
-    return bbox;
+  @Override
+  public void visit(EntityHandler visitor) throws Exception {
+    visitor.handle(this);
   }
-
 
 }

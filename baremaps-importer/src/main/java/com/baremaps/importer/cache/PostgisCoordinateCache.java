@@ -14,9 +14,7 @@
 
 package com.baremaps.importer.cache;
 
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.CacheException;
-import com.baremaps.osm.geometry.GeometryUtil;
+import com.baremaps.importer.geometry.GeometryUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

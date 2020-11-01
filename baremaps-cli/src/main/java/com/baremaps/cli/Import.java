@@ -16,14 +16,17 @@ package com.baremaps.cli;
 
 import com.baremaps.importer.cache.LmdbCoordinateCache;
 import com.baremaps.importer.cache.LmdbReferencesCache;
+import com.baremaps.importer.database.DataImporter;
 import com.baremaps.importer.database.HeaderTable;
-import com.baremaps.importer.database.ImportHandler;
 import com.baremaps.importer.database.NodeTable;
 import com.baremaps.importer.database.RelationTable;
 import com.baremaps.importer.database.WayTable;
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.InMemoryCache;
-import com.baremaps.osm.reader.pbf.FileBlockGeometryReader;
+import com.baremaps.importer.cache.Cache;
+import com.baremaps.importer.cache.CacheImporter;
+import com.baremaps.importer.cache.InMemoryCache;
+import com.baremaps.importer.geometry.GeometryBuilder;
+import com.baremaps.importer.geometry.ProjectionTransformer;
+import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.util.postgis.PostgisHelper;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -128,7 +131,6 @@ public class Import implements Callable<Integer> {
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
-
     if (dropTables) {
       logger.info("Dropping tables");
       PostgisHelper.executeParallel(datasource, "osm_drop_tables.sql");
@@ -154,18 +156,17 @@ public class Import implements Callable<Integer> {
     CoordinateTransform coordinateTransform = coordinateTransformFactory
         .createTransform(sourceCRS, targetCRS);
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
+    ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransform);
 
     HeaderTable headerTable = new HeaderTable(datasource);
-    NodeTable nodeStore = new NodeTable(datasource);
-    WayTable wayStore = new WayTable(datasource);
-    RelationTable relationStore = new RelationTable(datasource);
-    ImportHandler importHandler = new ImportHandler(headerTable, nodeStore, wayStore, relationStore);
+    NodeTable nodeTable = new NodeTable(datasource);
+    WayTable wayTable = new WayTable(datasource);
+    RelationTable relationTable = new RelationTable(datasource);
 
     final Cache<Long, Coordinate> coordinateCache;
     final Cache<Long, List<Long>> referencesCache;
     switch (cacheType) {
       case inmemory:
-
         coordinateCache = new InMemoryCache<>();
         referencesCache = new InMemoryCache<>();
         break;
@@ -186,28 +187,37 @@ public class Import implements Callable<Integer> {
         throw new UnsupportedOperationException("Unsupported cache type");
     }
 
-    logger.info("Importing data");
-    FileBlockGeometryReader parser = new FileBlockGeometryReader(
-        geometryFactory, coordinateTransform, coordinateCache, referencesCache);
-    parser.read(path, importHandler);
+    logger.info("Creating cache");
+    try (CacheImporter cacheImporter = new CacheImporter(coordinateCache, referencesCache)) {
+      OpenStreetMap.newEntityReader(path).entities()
+          .forEach(cacheImporter);
+    }
 
+    logger.info("Importing data");
+    try (DataImporter dataImporter = new DataImporter(nodeTable, wayTable, relationTable)) {
+      GeometryBuilder geometryBuilder = new GeometryBuilder(
+          geometryFactory,
+          coordinateCache,
+          referencesCache);
+      OpenStreetMap.newEntityReader(path).entities()
+          .peek(geometryBuilder)
+          .peek(projectionTransformer)
+          .forEach(dataImporter);
+    }
+
+    logger.info("Indexing geometries");
     if (createGistIndexes) {
-      logger.info("Indexing geometries (GIST)");
       PostgisHelper.executeParallel(datasource, "osm_create_gist_indexes.sql");
     }
-
     if (createSpGistIndexes) {
-      logger.info("Indexing geometries (SPGIST)");
       PostgisHelper.executeParallel(datasource, "osm_create_spgist_indexes.sql");
     }
-
     if (createGinIndexes) {
-      logger.info("Indexing attributes (GIN)");
+      logger.info("Indexing attributes");
       PostgisHelper.executeParallel(datasource, "osm_create_gin_indexes.sql");
     }
 
     return 0;
   }
-
 
 }
