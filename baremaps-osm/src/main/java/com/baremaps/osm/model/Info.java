@@ -1,6 +1,7 @@
 package com.baremaps.osm.model;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Info {
 
@@ -33,5 +34,26 @@ public class Info {
 
   public int getUid() {
     return uid;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Info)) {
+      return false;
+    }
+    Info info = (Info) o;
+    return version == info.version &&
+        changeset == info.changeset &&
+        uid == info.uid &&
+        Objects.equals(timestamp, info.timestamp);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(version, timestamp, changeset, uid);
   }
 }

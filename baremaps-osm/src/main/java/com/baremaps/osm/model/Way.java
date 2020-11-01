@@ -17,6 +17,7 @@ package com.baremaps.osm.model;
 import com.baremaps.osm.EntityHandler;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.locationtech.jts.geom.Geometry;
 
 public final class Way extends Element {
@@ -40,5 +41,25 @@ public final class Way extends Element {
   @Override
   public void visit(EntityHandler visitor) throws Exception {
     visitor.handle(this);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Way)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    Way way = (Way) o;
+    return Objects.equals(nodes, way.nodes);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), nodes);
   }
 }

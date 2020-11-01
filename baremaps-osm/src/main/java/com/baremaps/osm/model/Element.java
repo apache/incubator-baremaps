@@ -15,6 +15,7 @@
 package com.baremaps.osm.model;
 
 import java.util.Map;
+import java.util.Objects;
 import org.locationtech.jts.geom.Geometry;
 
 /**
@@ -64,5 +65,26 @@ public abstract class Element implements Entity {
 
   public void setGeometry(Geometry geometry) {
     this.geometry = geometry;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Element)) {
+      return false;
+    }
+    Element element = (Element) o;
+    return id == element.id &&
+        Objects.equals(info, element.info) &&
+        Objects.equals(tags, element.tags) &&
+        Objects.equals(geometry, element.geometry);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, info, tags, geometry);
   }
 }

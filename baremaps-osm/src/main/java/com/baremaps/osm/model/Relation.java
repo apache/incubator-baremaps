@@ -17,6 +17,7 @@ package com.baremaps.osm.model;
 import com.baremaps.osm.EntityHandler;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.locationtech.jts.geom.Geometry;
 
 public final class Relation extends Element {
@@ -42,4 +43,23 @@ public final class Relation extends Element {
     visitor.handle(this);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Relation)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    Relation relation = (Relation) o;
+    return Objects.equals(members, relation.members);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), members);
+  }
 }

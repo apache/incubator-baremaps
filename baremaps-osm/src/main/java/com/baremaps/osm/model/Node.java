@@ -16,6 +16,7 @@ package com.baremaps.osm.model;
 
 import com.baremaps.osm.EntityHandler;
 import java.util.Map;
+import java.util.Objects;
 import org.locationtech.jts.geom.Geometry;
 
 public final class Node extends Element {
@@ -47,5 +48,26 @@ public final class Node extends Element {
   @Override
   public void visit(EntityHandler visitor) throws Exception {
     visitor.handle(this);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Node)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    Node node = (Node) o;
+    return Double.compare(node.lon, lon) == 0 &&
+        Double.compare(node.lat, lat) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), lon, lat);
   }
 }
