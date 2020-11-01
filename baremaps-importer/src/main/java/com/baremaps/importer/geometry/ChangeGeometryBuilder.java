@@ -4,7 +4,7 @@ import com.baremaps.importer.cache.Cache;
 import com.baremaps.importer.cache.CacheImporter;
 import com.baremaps.importer.cache.InMemoryCache;
 import com.baremaps.osm.ChangeHandler;
-import com.baremaps.osm.model.Change;
+import com.baremaps.osm.domain.Change;
 import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;

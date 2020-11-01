@@ -3,12 +3,9 @@ package com.baremaps.importer.geometry;
 import com.baremaps.importer.cache.Cache;
 import com.baremaps.importer.cache.CacheException;
 import com.baremaps.osm.ElementHandler;
-import com.baremaps.osm.model.Bounds;
-import com.baremaps.osm.EntityHandler;
-import com.baremaps.osm.model.Header;
-import com.baremaps.osm.model.Node;
-import com.baremaps.osm.model.Relation;
-import com.baremaps.osm.model.Way;
+import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.domain.Way;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -18,8 +15,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
-import org.locationtech.proj4j.CoordinateTransform;
-import org.locationtech.proj4j.ProjCoordinate;
 
 public class GeometryBuilder implements ElementHandler {
 

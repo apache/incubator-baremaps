@@ -1,4 +1,4 @@
-package com.baremaps.osm.model;
+package com.baremaps.osm.domain;
 
 import com.baremaps.osm.EntityHandler;
 

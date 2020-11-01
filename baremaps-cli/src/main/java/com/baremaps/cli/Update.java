@@ -14,20 +14,17 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.importer.cache.PostgisCoordinateCache;
-import com.baremaps.importer.cache.PostgisReferenceCache;
 import com.baremaps.importer.database.DataUpdater;
 import com.baremaps.importer.database.DeltaProducer;
 import com.baremaps.importer.database.HeaderTable;
 import com.baremaps.importer.database.NodeTable;
 import com.baremaps.importer.database.RelationTable;
 import com.baremaps.importer.database.WayTable;
-import com.baremaps.importer.cache.Cache;
 import com.baremaps.importer.geometry.ChangeGeometryBuilder;
 import com.baremaps.importer.geometry.ProjectionTransformer;
 import com.baremaps.osm.OpenStreetMap;
-import com.baremaps.osm.model.Header;
-import com.baremaps.osm.model.State;
+import com.baremaps.osm.domain.Header;
+import com.baremaps.osm.domain.State;
 import com.baremaps.osm.StateReader;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.storage.BlobStore;
@@ -38,14 +35,12 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.Callable;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.proj4j.CRSFactory;

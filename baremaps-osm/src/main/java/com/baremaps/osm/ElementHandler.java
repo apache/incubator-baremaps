@@ -1,13 +1,7 @@
 package com.baremaps.osm;
 
-import com.baremaps.osm.model.Bounds;
-import com.baremaps.osm.model.Entity;
-import com.baremaps.osm.model.Header;
-import com.baremaps.osm.model.Node;
-import com.baremaps.osm.model.Relation;
-import com.baremaps.osm.model.Way;
-import com.baremaps.osm.stream.StreamException;
-import java.util.function.Consumer;
+import com.baremaps.osm.domain.Bounds;
+import com.baremaps.osm.domain.Header;
 
 public interface ElementHandler extends EntityHandler {
 

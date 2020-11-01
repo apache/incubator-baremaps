@@ -1,7 +1,7 @@
 package com.baremaps.osm.pbf;
 
 import com.baremaps.osm.binary.Osmformat;
-import com.baremaps.osm.model.Entity;
+import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.EntityReader;
 import com.baremaps.osm.stream.BatchSpliterator;
 import com.baremaps.osm.stream.StreamException;
@@ -37,7 +37,7 @@ public class PbfEntityReader implements EntityReader {
     }
   }
 
-  public Stream<Entity> readBlob(Blob blob) {
+  private Stream<Entity> readBlob(Blob blob) {
     try {
       switch (blob.header().getType()) {
         case "OSMHeader":
@@ -54,12 +54,12 @@ public class PbfEntityReader implements EntityReader {
     }
   }
 
-  public Stream<Entity> readHeaderBlock(Osmformat.HeaderBlock headerBlock) {
+  private Stream<Entity> readHeaderBlock(Osmformat.HeaderBlock headerBlock) {
     HeaderBlockReader reader = new HeaderBlockReader(headerBlock);
     return Stream.of(reader.readHeader(), reader.readBounds());
   }
 
-  public Stream<Entity> readDataBlock(Osmformat.PrimitiveBlock dataBlock) {
+  private Stream<Entity> readDataBlock(Osmformat.PrimitiveBlock dataBlock) {
     DataBlockReader reader = new DataBlockReader(dataBlock);
     return Streams.concat(reader.readDenseNodes(), reader.readNodes(), reader.readWays(), reader.readRelations());
   }

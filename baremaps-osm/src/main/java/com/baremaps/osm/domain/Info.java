@@ -1,4 +1,4 @@
-package com.baremaps.osm.model;
+package com.baremaps.osm.domain;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

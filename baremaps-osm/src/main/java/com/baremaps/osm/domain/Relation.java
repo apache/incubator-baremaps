@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.model;
+package com.baremaps.osm.domain;
 
 import com.baremaps.osm.EntityHandler;
 import java.util.List;
@@ -20,22 +20,22 @@ import java.util.Map;
 import java.util.Objects;
 import org.locationtech.jts.geom.Geometry;
 
-public final class Way extends Element {
+public final class Relation extends Element {
 
-  private final List<Long> nodes;
+  private final List<Member> members;
 
-  public Way(long id, Info info, Map<String, String> tags, List<Long> nodes) {
+  public Relation(long id, Info info, Map<String, String> tags, List<Member> members) {
     super(id, info, tags);
-    this.nodes = nodes;
+    this.members = members;
   }
 
-  public Way(long id, Info info, Map<String, String> tags, List<Long> nodes, Geometry geometry) {
+  public Relation(long id, Info info, Map<String, String> tags, List<Member> members, Geometry geometry) {
     super(id, info, tags, geometry);
-    this.nodes = nodes;
+    this.members = members;
   }
 
-  public List<Long> getNodes() {
-    return nodes;
+  public List<Member> getMembers() {
+    return members;
   }
 
   @Override
@@ -48,18 +48,18 @@ public final class Way extends Element {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof Way)) {
+    if (!(o instanceof Relation)) {
       return false;
     }
     if (!super.equals(o)) {
       return false;
     }
-    Way way = (Way) o;
-    return Objects.equals(nodes, way.nodes);
+    Relation relation = (Relation) o;
+    return Objects.equals(members, relation.members);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), nodes);
+    return Objects.hash(super.hashCode(), members);
   }
 }

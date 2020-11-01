@@ -14,14 +14,10 @@
 package com.baremaps.osm.xml;
 
 import com.baremaps.osm.ChangeReader;
-import com.baremaps.osm.model.Change;
-import com.baremaps.osm.stream.StreamException;
+import com.baremaps.osm.domain.Change;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Spliterator;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.xml.stream.XMLStreamException;

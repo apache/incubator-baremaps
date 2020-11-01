@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.baremaps.osm.model.Relation;
+import com.baremaps.osm.domain.Relation;
 import com.baremaps.util.postgis.PostgisHelper;
 import java.io.IOException;
 import java.sql.Connection;

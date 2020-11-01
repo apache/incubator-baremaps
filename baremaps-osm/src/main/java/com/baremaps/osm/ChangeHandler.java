@@ -1,6 +1,6 @@
 package com.baremaps.osm;
 
-import com.baremaps.osm.model.Change;
+import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.stream.StreamException;
 import java.util.function.Consumer;
 

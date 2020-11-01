@@ -15,9 +15,9 @@
 package com.baremaps.importer.geometry;
 
 import com.baremaps.osm.ElementHandler;
-import com.baremaps.osm.model.Node;
-import com.baremaps.osm.model.Relation;
-import com.baremaps.osm.model.Way;
+import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.domain.Way;
 import java.util.stream.Stream;
 import javax.inject.Inject;
 import org.locationtech.jts.geom.Coordinate;

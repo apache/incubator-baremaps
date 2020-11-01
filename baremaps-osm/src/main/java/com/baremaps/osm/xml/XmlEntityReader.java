@@ -1,6 +1,6 @@
 package com.baremaps.osm.xml;
 
-import com.baremaps.osm.model.Entity;
+import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.EntityReader;
 import java.io.IOException;
 import java.io.InputStream;

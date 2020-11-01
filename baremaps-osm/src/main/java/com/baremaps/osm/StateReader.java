@@ -1,6 +1,6 @@
 package com.baremaps.osm;
 
-import com.baremaps.osm.model.State;
+import com.baremaps.osm.domain.State;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

@@ -15,7 +15,7 @@
 package com.baremaps.importer.database;
 
 import com.baremaps.importer.geometry.GeometryUtil;
-import com.baremaps.osm.model.Header;
+import com.baremaps.osm.domain.Header;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

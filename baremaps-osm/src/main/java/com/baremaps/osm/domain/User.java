@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.model;
+package com.baremaps.osm.domain;
 
 import com.google.common.base.Objects;
 

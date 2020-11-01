@@ -15,8 +15,8 @@
 package com.baremaps.importer.database;
 
 import com.baremaps.importer.geometry.GeometryUtil;
-import com.baremaps.osm.model.Info;
-import com.baremaps.osm.model.Way;
+import com.baremaps.osm.domain.Info;
+import com.baremaps.osm.domain.Way;
 import com.baremaps.util.postgis.CopyWriter;
 import java.io.IOException;
 import java.sql.Array;

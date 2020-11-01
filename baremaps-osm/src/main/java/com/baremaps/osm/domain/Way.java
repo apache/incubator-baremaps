@@ -12,37 +12,30 @@
  * the License.
  */
 
-package com.baremaps.osm.model;
+package com.baremaps.osm.domain;
 
 import com.baremaps.osm.EntityHandler;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.locationtech.jts.geom.Geometry;
 
-public final class Node extends Element {
+public final class Way extends Element {
 
-  private final double lon;
+  private final List<Long> nodes;
 
-  private final double lat;
-
-  public Node(long id, Info info, Map<String, String> tags, double lon, double lat) {
+  public Way(long id, Info info, Map<String, String> tags, List<Long> nodes) {
     super(id, info, tags);
-    this.lon = lon;
-    this.lat = lat;
+    this.nodes = nodes;
   }
 
-  public Node(long id, Info info, Map<String, String> tags, double lon, double lat, Geometry geometry) {
+  public Way(long id, Info info, Map<String, String> tags, List<Long> nodes, Geometry geometry) {
     super(id, info, tags, geometry);
-    this.lon = lon;
-    this.lat = lat;
+    this.nodes = nodes;
   }
 
-  public double getLon() {
-    return lon;
-  }
-
-  public double getLat() {
-    return lat;
+  public List<Long> getNodes() {
+    return nodes;
   }
 
   @Override
@@ -55,19 +48,18 @@ public final class Node extends Element {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof Node)) {
+    if (!(o instanceof Way)) {
       return false;
     }
     if (!super.equals(o)) {
       return false;
     }
-    Node node = (Node) o;
-    return Double.compare(node.lon, lon) == 0 &&
-        Double.compare(node.lat, lat) == 0;
+    Way way = (Way) o;
+    return Objects.equals(nodes, way.nodes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), lon, lat);
+    return Objects.hash(super.hashCode(), nodes);
   }
 }

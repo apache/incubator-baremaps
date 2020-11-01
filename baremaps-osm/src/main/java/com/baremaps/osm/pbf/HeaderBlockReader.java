@@ -2,8 +2,8 @@ package com.baremaps.osm.pbf;
 
 import com.baremaps.osm.binary.Osmformat;
 import com.baremaps.osm.binary.Osmformat.HeaderBBox;
-import com.baremaps.osm.model.Bounds;
-import com.baremaps.osm.model.Header;
+import com.baremaps.osm.domain.Bounds;
+import com.baremaps.osm.domain.Header;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;

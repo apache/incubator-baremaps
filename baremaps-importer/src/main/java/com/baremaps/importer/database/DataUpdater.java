@@ -2,11 +2,11 @@ package com.baremaps.importer.database;
 
 import com.baremaps.osm.ChangeHandler;
 import com.baremaps.osm.ElementHandler;
-import com.baremaps.osm.model.Change;
-import com.baremaps.osm.model.Element;
-import com.baremaps.osm.model.Node;
-import com.baremaps.osm.model.Relation;
-import com.baremaps.osm.model.Way;
+import com.baremaps.osm.domain.Change;
+import com.baremaps.osm.domain.Element;
+import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.domain.Way;
 
 public class DataUpdater implements ChangeHandler {
 

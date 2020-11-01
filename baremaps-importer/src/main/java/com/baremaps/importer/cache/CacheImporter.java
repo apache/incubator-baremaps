@@ -1,12 +1,12 @@
 package com.baremaps.importer.cache;
 
 import com.baremaps.importer.cache.Cache.Entry;
-import com.baremaps.osm.model.Bounds;
+import com.baremaps.osm.domain.Bounds;
 import com.baremaps.osm.EntityHandler;
-import com.baremaps.osm.model.Header;
-import com.baremaps.osm.model.Node;
-import com.baremaps.osm.model.Relation;
-import com.baremaps.osm.model.Way;
+import com.baremaps.osm.domain.Header;
+import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.domain.Way;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
