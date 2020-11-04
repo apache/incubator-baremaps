@@ -15,6 +15,7 @@ package com.baremaps.osm.xml;
 
 import com.baremaps.osm.ChangeReader;
 import com.baremaps.osm.domain.Change;
+import com.baremaps.osm.stream.BatchSpliterator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Spliterator;
@@ -26,14 +27,24 @@ public class XmlChangeReader implements ChangeReader {
 
   private final InputStream inputStream;
 
+  private final boolean parallel;
+
   public XmlChangeReader(InputStream inputStream) {
+    this(inputStream, false);
+  }
+
+  public XmlChangeReader(InputStream inputStream, boolean parallel) {
     this.inputStream = inputStream;
+    this.parallel = parallel;
   }
 
   public Stream<Change> read() throws IOException {
     try {
       Spliterator<Change> spliterator = new XmlChangeSpliterator(inputStream);
-      return StreamSupport.stream(spliterator, false);
+      if (parallel) {
+        spliterator = new BatchSpliterator<>(spliterator, 1);
+      }
+      return StreamSupport.stream(spliterator, parallel);
     } catch (XMLStreamException e) {
       throw new IOException(e.getCause());
     }

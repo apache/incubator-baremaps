@@ -1,6 +1,11 @@
 package com.baremaps.osm;
 
 import com.baremaps.osm.domain.State;
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,7 +16,14 @@ public class StateReader {
 
   private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-  public static State read(String state) throws ParseException {
+  private final InputStreamReader reader;
+
+  public StateReader(InputStream inputStream) {
+    this.reader = new InputStreamReader(inputStream, Charsets.UTF_8);
+  }
+
+  public State read() throws IOException {
+    String state = CharStreams.toString(reader);
     Map<String, String> map = new HashMap<>();
     for (String line : state.split("\n")) {
       String[] array = line.split("=");

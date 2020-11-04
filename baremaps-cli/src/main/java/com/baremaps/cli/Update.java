@@ -31,6 +31,7 @@ import com.baremaps.util.storage.BlobStore;
 import com.baremaps.util.tile.Tile;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -140,9 +141,8 @@ public class Update implements Callable<Integer> {
     }
 
     logger.info("Updating state information");
-    try (InputStreamReader reader = new InputStreamReader(blobStore.read(stateURI), Charsets.UTF_8)) {
-      String stateContent = CharStreams.toString(reader);
-      State state = StateReader.read(stateContent);
+    try (InputStream inputStream = blobStore.read(stateURI)) {
+      State state = new StateReader(inputStream).read();
       headerMapper.insert(new Header(
           state.getTimestamp(),
           state.getSequenceNumber(),

@@ -19,17 +19,26 @@ public class PbfEntityReader implements EntityReader {
 
   private final InputStream inputStream;
 
+  private final boolean parallel;
+
   public PbfEntityReader(InputStream inputStream) {
+    this(inputStream, false);
+  }
+
+  public PbfEntityReader(InputStream inputStream, boolean parallel) {
     this.inputStream = inputStream;
+    this.parallel = parallel;
   }
 
   @Override
   public Stream<Entity> read() throws IOException {
     Spliterator<Blob> spliterator = new BlobSpliterator(inputStream);
-    spliterator = new BatchSpliterator<>(spliterator, 1);
+    if (parallel) {
+      spliterator = new BatchSpliterator<>(spliterator, 1);
+    }
     try {
       return StreamSupport
-          .stream(spliterator, true)
+          .stream(spliterator, parallel)
           .peek(new StreamProgress<>(inputStream.available(), b -> b.size()))
           .flatMap(this::readBlob);
     } catch (StreamException e) {

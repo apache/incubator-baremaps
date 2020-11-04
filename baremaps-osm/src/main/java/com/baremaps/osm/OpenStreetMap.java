@@ -11,6 +11,10 @@ import java.util.zip.GZIPInputStream;
 
 public class OpenStreetMap {
 
+  private OpenStreetMap() {
+
+  }
+
   public static EntityReader newEntityReader(Path path) throws IOException {
     if (path.toString().endsWith(".pbf")) {
       return new PbfEntityReader(new BufferedInputStream(Files.newInputStream(path)));
