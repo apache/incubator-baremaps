@@ -16,20 +16,28 @@ public class OpenStreetMap {
   }
 
   public static EntityReader newEntityReader(Path path) throws IOException {
+    return newEntityReader(path, false);
+  }
+
+  public static EntityReader newEntityReader(Path path, boolean parallel) throws IOException {
     if (path.toString().endsWith(".pbf")) {
-      return new PbfEntityReader(new BufferedInputStream(Files.newInputStream(path)));
+      return new PbfEntityReader(new BufferedInputStream(Files.newInputStream(path)), parallel);
     } else if (path.toString().endsWith(".xml")) {
-      return new XmlEntityReader(new BufferedInputStream(Files.newInputStream(path)));
+      return new XmlEntityReader(new BufferedInputStream(Files.newInputStream(path)), parallel);
     } else if (path.toString().endsWith(".xml.gz")) {
-      return new XmlEntityReader(new GZIPInputStream(new BufferedInputStream(Files.newInputStream(path))));
+      return new XmlEntityReader(new GZIPInputStream(new BufferedInputStream(Files.newInputStream(path))), parallel);
     } else {
       throw new IOException("Unrecognized file extension: " + path.getFileName());
     }
   }
 
   public static ChangeReader newChangeReader(Path path) throws IOException {
+    return newChangeReader(path, false);
+  }
+
+  public static ChangeReader newChangeReader(Path path, boolean parallel) throws IOException {
     if (path.toString().endsWith("osc")) {
-      return new XmlChangeReader(new BufferedInputStream(Files.newInputStream(path)));
+      return new XmlChangeReader(new BufferedInputStream(Files.newInputStream(path)), parallel);
     } else {
       throw new IOException("Unrecognized file extension: " + path.getFileName());
     }
