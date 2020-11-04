@@ -189,7 +189,7 @@ public class Import implements Callable<Integer> {
 
     logger.info("Creating cache");
     try (CacheImporter cacheImporter = new CacheImporter(coordinateCache, referencesCache)) {
-      OpenStreetMap.newEntityReader(path).read()
+      OpenStreetMap.entityStream(path)
           .forEach(cacheImporter);
     }
 
@@ -199,7 +199,7 @@ public class Import implements Callable<Integer> {
           geometryFactory,
           coordinateCache,
           referencesCache);
-      OpenStreetMap.newEntityReader(path).read()
+      OpenStreetMap.entityStream(path)
           .peek(geometryBuilder)
           .peek(projectionTransformer)
           .forEach(dataImporter);

@@ -29,10 +29,7 @@ import com.baremaps.osm.StateReader;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.storage.BlobStore;
 import com.baremaps.util.tile.Tile;
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Path;
@@ -128,7 +125,7 @@ public class Update implements Callable<Integer> {
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransform);
     DeltaProducer deltaProducer = new DeltaProducer(nodeStore, wayStore, relationStore, projectionTransformer, zoom);
     DataUpdater dataUpdater = new DataUpdater(nodeStore, wayStore, relationStore);
-    OpenStreetMap.newChangeReader(path).read()
+    OpenStreetMap.changeStream(path)
         .peek(changeGeometryBuilder)
         .peek(deltaProducer)
         .forEach(dataUpdater);
