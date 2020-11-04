@@ -1,8 +1,8 @@
 package com.baremaps.osm.pbf;
 
+import com.baremaps.osm.EntityReader;
 import com.baremaps.osm.binary.Osmformat;
 import com.baremaps.osm.domain.Entity;
-import com.baremaps.osm.EntityReader;
 import com.baremaps.osm.stream.BatchSpliterator;
 import com.baremaps.osm.stream.StreamException;
 import com.baremaps.osm.stream.StreamProgress;

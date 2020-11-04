@@ -1,11 +1,10 @@
 package com.baremaps.osm.xml;
 
-import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.EntityReader;
+import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.stream.BatchSpliterator;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;

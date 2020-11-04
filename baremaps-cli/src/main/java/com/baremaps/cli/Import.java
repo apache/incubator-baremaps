@@ -14,6 +14,9 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.importer.cache.Cache;
+import com.baremaps.importer.cache.CacheImporter;
+import com.baremaps.importer.cache.InMemoryCache;
 import com.baremaps.importer.cache.LmdbCoordinateCache;
 import com.baremaps.importer.cache.LmdbReferencesCache;
 import com.baremaps.importer.database.DataImporter;
@@ -21,9 +24,6 @@ import com.baremaps.importer.database.HeaderTable;
 import com.baremaps.importer.database.NodeTable;
 import com.baremaps.importer.database.RelationTable;
 import com.baremaps.importer.database.WayTable;
-import com.baremaps.importer.cache.Cache;
-import com.baremaps.importer.cache.CacheImporter;
-import com.baremaps.importer.cache.InMemoryCache;
 import com.baremaps.importer.geometry.GeometryBuilder;
 import com.baremaps.importer.geometry.ProjectionTransformer;
 import com.baremaps.osm.OpenStreetMap;

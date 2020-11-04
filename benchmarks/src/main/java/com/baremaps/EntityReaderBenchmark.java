@@ -1,6 +1,10 @@
 package com.baremaps;
 
+import com.baremaps.osm.ElementHandler;
 import com.baremaps.osm.OpenStreetMap;
+import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.domain.Way;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -43,9 +47,33 @@ public class EntityReaderBenchmark {
   @Warmup(iterations = 1)
   @Measurement(iterations = 1)
   public void parallel() throws IOException {
-    AtomicLong entities = new AtomicLong(0);
-    OpenStreetMap.entityReader(path).read().forEach(entity -> entities.incrementAndGet());
-    System.out.println(entities.get());
+    AtomicLong nodes = new AtomicLong(0);
+    AtomicLong ways = new AtomicLong(0);
+    AtomicLong relations = new AtomicLong(0);
+
+    OpenStreetMap.entityStream(path, true).forEach(new ElementHandler() {
+      @Override
+      public void handle(Node node) {
+        nodes.incrementAndGet();
+      }
+
+      @Override
+      public void handle(Way way) {
+        ways.incrementAndGet();
+      }
+
+      @Override
+      public void handle(Relation relation) {
+        relations.incrementAndGet();
+      }
+    });
+
+    System.out.println("");
+    System.out.println("----------------------");
+    System.out.println("nodes:     " + nodes.get());
+    System.out.println("ways:      " + ways.get());
+    System.out.println("relations: " + relations.get());
+    System.out.println("----------------------");
   }
 
   public static void main(String[] args) throws IOException {
