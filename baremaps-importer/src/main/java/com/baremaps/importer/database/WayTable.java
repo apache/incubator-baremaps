@@ -14,8 +14,9 @@
 
 package com.baremaps.importer.database;
 
-import com.baremaps.osm.geometry.GeometryUtil;
-import com.baremaps.osm.model.Way;
+import com.baremaps.importer.geometry.GeometryUtil;
+import com.baremaps.osm.domain.Info;
+import com.baremaps.osm.domain.Way;
 import com.baremaps.util.postgis.CopyWriter;
 import java.io.IOException;
 import java.sql.Array;
@@ -134,7 +135,8 @@ public class WayTable implements Table<Way> {
       nodes = Arrays.asList((Long[]) array.getArray());
     }
     Geometry geometry = GeometryUtil.deserialize(result.getBytes(8));
-    return new Way(id, version, timestamp, changeset, uid, tags, nodes, geometry);
+    Info info = new Info(version, timestamp, changeset, uid);
+    return new Way(id, info, tags, nodes, geometry);
   }
 
   public void insert(Way entity) throws DatabaseException {
@@ -164,13 +166,13 @@ public class WayTable implements Table<Way> {
 
   private void setWay(PreparedStatement statement, Way entity) throws SQLException {
     statement.setLong(1, entity.getId());
-    statement.setInt(2, entity.getVersion());
-    statement.setInt(3, entity.getUserId());
-    statement.setObject(4, entity.getTimestamp());
-    statement.setLong(5, entity.getChangeset());
+    statement.setInt(2, entity.getInfo().getVersion());
+    statement.setInt(3, entity.getInfo().getUid());
+    statement.setObject(4, entity.getInfo().getTimestamp());
+    statement.setLong(5, entity.getInfo().getChangeset());
     statement.setObject(6, entity.getTags());
     statement.setObject(7, entity.getNodes().stream().mapToLong(Long::longValue).toArray());
-    statement.setBytes(8, GeometryUtil.serialize(entity.getGeometry().orElse(null)));
+    statement.setBytes(8, GeometryUtil.serialize(entity.getGeometry()));
   }
 
   public void delete(Long id) throws DatabaseException {
@@ -206,13 +208,13 @@ public class WayTable implements Table<Way> {
         for (Way entity : entities) {
           writer.startRow(8);
           writer.writeLong(entity.getId());
-          writer.writeInteger(entity.getVersion());
-          writer.writeInteger(entity.getUserId());
-          writer.writeLocalDateTime(entity.getTimestamp());
-          writer.writeLong(entity.getChangeset());
+          writer.writeInteger(entity.getInfo().getVersion());
+          writer.writeInteger(entity.getInfo().getUid());
+          writer.writeLocalDateTime(entity.getInfo().getTimestamp());
+          writer.writeLong(entity.getInfo().getChangeset());
           writer.writeHstore(entity.getTags());
           writer.writeLongList(entity.getNodes());
-          writer.writeGeometry(entity.getGeometry().orElse(null));
+          writer.writeGeometry(entity.getGeometry());
         }
       }
     } catch (IOException | SQLException e) {

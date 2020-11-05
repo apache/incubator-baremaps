@@ -14,8 +14,8 @@
 
 package com.baremaps.importer.database;
 
-import com.baremaps.osm.geometry.GeometryUtil;
-import com.baremaps.osm.model.Header;
+import com.baremaps.importer.geometry.GeometryUtil;
+import com.baremaps.osm.domain.Header;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -59,8 +59,7 @@ public class HeaderTable {
             replicationSequenceNumber,
             replicationUrl,
             source,
-            writingProgram,
-            bbox));
+            writingProgram));
       }
       return headers;
     } catch (SQLException e) {
@@ -80,7 +79,6 @@ public class HeaderTable {
       statement.setString(3, header.getReplicationUrl());
       statement.setString(4, header.getSource());
       statement.setString(5, header.getWritingProgram());
-      statement.setBytes(6, GeometryUtil.serialize(header.getBbox()));
       statement.execute();
     } catch (SQLException e) {
       throw new DatabaseException(e);
