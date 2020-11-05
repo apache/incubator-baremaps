@@ -72,11 +72,6 @@
       <scope>provided</scope>
       <version>${jmh.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.wolt.osm</groupId>
-      <artifactId>parallelpbf</artifactId>
-      <version>0.3.1</version>
-    </dependency>
   </dependencies>
 
 </project>
