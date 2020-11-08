@@ -36,9 +36,11 @@ public class OpenStreetMap {
   public static EntityReader entityReader(Path path, boolean parallel) throws IOException {
     if (path.toString().endsWith(".pbf")) {
       return new PbfEntityReader(new BufferedInputStream(Files.newInputStream(path)), parallel);
-    } else if (path.toString().endsWith(".xml")) {
+    } else if (path.toString().endsWith(".xml")
+        || path.toString().endsWith(".osm")) {
       return new XmlEntityReader(new BufferedInputStream(Files.newInputStream(path)), parallel);
-    } else if (path.toString().endsWith(".xml.gz")) {
+    } else if (path.toString().endsWith(".xml.gz")
+        || path.toString().endsWith(".osm.gz")) {
       return new XmlEntityReader(new GZIPInputStream(new BufferedInputStream(Files.newInputStream(path))), parallel);
     } else {
       throw new IOException("Unrecognized file extension: " + path.getFileName());

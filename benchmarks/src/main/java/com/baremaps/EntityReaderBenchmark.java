@@ -68,12 +68,13 @@ public class EntityReaderBenchmark {
       }
     });
 
-    System.out.println("");
+    System.out.println();
     System.out.println("----------------------");
     System.out.println("nodes:     " + nodes.get());
     System.out.println("ways:      " + ways.get());
     System.out.println("relations: " + relations.get());
     System.out.println("----------------------");
+    System.out.println();
   }
 
   public static void main(String[] args) throws IOException {

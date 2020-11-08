@@ -16,6 +16,7 @@ package com.baremaps.osm.pbf;
 
 import com.baremaps.osm.binary.Fileformat;
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Spliterator;
 import java.util.function.Consumer;
@@ -40,7 +41,7 @@ public class BlobSpliterator implements Spliterator<Blob> {
 
   @Override
   public int characteristics() {
-    return IMMUTABLE | NONNULL;
+    return NONNULL | ORDERED | CONCURRENT;
   }
 
   @Override
@@ -59,7 +60,7 @@ public class BlobSpliterator implements Spliterator<Blob> {
 
       action.accept(new Blob(header, data,8 + headerSize + dataSize));
       return true;
-    } catch (Exception e) {
+    } catch (IOException e) {
       return false;
     }
   }

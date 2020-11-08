@@ -46,7 +46,7 @@ public class XmlChangeReader implements ChangeReader {
       }
       return StreamSupport.stream(spliterator, parallel);
     } catch (XMLStreamException e) {
-      throw new IOException(e.getCause());
+      throw new IOException(e);
     }
   }
 

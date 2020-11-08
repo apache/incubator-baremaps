@@ -14,13 +14,17 @@
 
 package com.baremaps.osm.stream;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
- * A {@code BatchSpliterator} wraps another spliterator and partition its elements according to a given batch
- * size when trySplit is invoked.
+ * A {@code BatchSpliterator} wraps another spliterator and partition its elements according to a given batch size when
+ * trySplit is invoked.
  *
  * @param <T>
  */
@@ -52,16 +56,14 @@ public class BatchSpliterator<T> implements Spliterator<T> {
    */
   @Override
   public Spliterator<T> trySplit() {
-    HoldingConsumer<T> holder = new HoldingConsumer<>();
-    if (tryAdvance(holder)) {
-      Object[] a = new Object[batchSize];
-      int j = 0;
-      do {
-        a[j] = holder.value();
-      } while (++j < batchSize && tryAdvance(holder));
-      return Spliterators.spliterator(a, 0, j, characteristics());
+    final List<T> batch = new ArrayList<>(batchSize);
+    while (batch.size() < batchSize && tryAdvance(entry -> batch.add(entry))) {
     }
-    return null;
+    if (batch.size() > 0) {
+      return Spliterators.spliterator(batch, characteristics());
+    } else {
+      return null;
+    }
   }
 
   /**

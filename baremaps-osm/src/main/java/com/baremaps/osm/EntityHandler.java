@@ -14,7 +14,7 @@ public interface EntityHandler extends Consumer<Entity> {
   @Override
   default void accept(Entity entity) {
     try {
-      entity.visit(this);
+      if (entity != null) entity.visit(this);
     } catch (Exception e) {
       throw new StreamException(e);
     }

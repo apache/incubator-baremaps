@@ -67,7 +67,6 @@ public abstract class Element implements Entity {
     this.geometry = geometry;
   }
 
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
