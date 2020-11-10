@@ -483,6 +483,11 @@
       <groupId>org.apache.commons</groupId>
     </dependency>
     <dependency>
+      <artifactId>commons-compress</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <version>1.19</version>
+    </dependency>
+    <dependency>
       <artifactId>guava</artifactId>
       <groupId>com.google.guava</groupId>
     </dependency>

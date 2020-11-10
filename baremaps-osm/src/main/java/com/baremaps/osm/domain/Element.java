@@ -16,6 +16,7 @@ package com.baremaps.osm.domain;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 /**
@@ -85,5 +86,15 @@ public abstract class Element implements Entity {
   @Override
   public int hashCode() {
     return Objects.hash(id, info, tags, geometry);
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Element.class.getSimpleName() + "[", "]")
+        .add("id=" + id)
+        .add("info=" + info)
+        .add("tags=" + tags)
+        .add("geometry=" + geometry)
+        .toString();
   }
 }

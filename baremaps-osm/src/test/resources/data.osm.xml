@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <osm generator="Osmosis %VERSION%" version="0.6">
-  <bounds maxlat="90.00000" maxlon="180.00000" minlat="-90.00000" minlon="-180.00000"
+  <bound maxlat="90.00000" maxlon="180.00000" minlat="-90.00000" minlon="-180.00000"
     origin="Osmosis %VERSION%"/>
   <node changeset="11" id="1" lat="-1" lon="-2" timestamp="2008-01-02T03:04:05Z" uid="10" user="user10"
     version="10">

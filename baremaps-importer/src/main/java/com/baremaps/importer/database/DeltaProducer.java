@@ -59,7 +59,7 @@ public class DeltaProducer implements ChangeHandler {
 
   private void handleLastVersion(Change change) throws Exception {
     for (Element element: change.getElements()) {
-      element.visit(new ElementHandler() {
+      element.accept(new ElementHandler() {
         @Override
         public void handle(Node node) throws Exception {
           handleGeometry(nodeTable.select(element.getId()).getGeometry());

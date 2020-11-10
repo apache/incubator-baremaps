@@ -17,6 +17,7 @@ package com.baremaps.osm.domain;
 import com.baremaps.osm.EntityHandler;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 /**
@@ -49,8 +50,8 @@ public final class Node extends Element {
   }
 
   @Override
-  public void visit(EntityHandler visitor) throws Exception {
-    visitor.handle(this);
+  public void accept(EntityHandler handler) throws Exception {
+    handler.handle(this);
   }
 
   @Override
@@ -72,5 +73,14 @@ public final class Node extends Element {
   @Override
   public int hashCode() {
     return Objects.hash(super.hashCode(), lon, lat);
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Node.class.getSimpleName() + "[", "]")
+        .add("lon=" + lon)
+        .add("lat=" + lat)
+        .add("id=" + id)
+        .toString();
   }
 }

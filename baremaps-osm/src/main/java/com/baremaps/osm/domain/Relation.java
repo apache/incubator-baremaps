@@ -18,6 +18,7 @@ import com.baremaps.osm.EntityHandler;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 /**
@@ -42,8 +43,8 @@ public final class Relation extends Element {
   }
 
   @Override
-  public void visit(EntityHandler visitor) throws Exception {
-    visitor.handle(this);
+  public void accept(EntityHandler handler) throws Exception {
+    handler.handle(this);
   }
 
   @Override
@@ -64,5 +65,13 @@ public final class Relation extends Element {
   @Override
   public int hashCode() {
     return Objects.hash(super.hashCode(), members);
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Relation.class.getSimpleName() + "[", "]")
+        .add("members=" + members)
+        .add("id=" + id)
+        .toString();
   }
 }

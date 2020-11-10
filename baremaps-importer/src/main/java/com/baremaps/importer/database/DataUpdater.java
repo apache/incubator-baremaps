@@ -25,7 +25,7 @@ public class DataUpdater implements ChangeHandler {
   @Override
   public void handle(Change change) throws Exception {
     for (Element element : change.getElements()) {
-      element.visit(new ElementHandler() {
+      element.accept(new ElementHandler() {
         @Override
         public void handle(Node node) throws Exception {
           switch (change.getType()) {

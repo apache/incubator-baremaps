@@ -1,6 +1,6 @@
 package com.baremaps.osm;
 
-import com.baremaps.osm.domain.Bounds;
+import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Header;
 
 public interface ElementHandler extends EntityHandler {
@@ -11,7 +11,7 @@ public interface ElementHandler extends EntityHandler {
   }
 
   @Override
-  default void handle(Bounds bounds) {
+  default void handle(Bound bound) {
     // Do nothing
   }
 

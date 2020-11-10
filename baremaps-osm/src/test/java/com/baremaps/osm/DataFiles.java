@@ -15,6 +15,9 @@
 package com.baremaps.osm;
 
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class DataFiles {
 
@@ -40,6 +43,24 @@ public class DataFiles {
 
   public static InputStream dataOscXml() {
     return DataFiles.class.getClassLoader().getResourceAsStream("data.osc.xml");
+  }
+
+  public static Path monacoOsmPbf() {
+    try {
+      return Paths.get(DataFiles.class.getClassLoader().getResource("monaco.osm.pbf").toURI());
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  public static Path monacoOsmBz2() {
+    try {
+      return Paths.get(DataFiles.class.getClassLoader().getResource("monaco.osm.bz2").toURI());
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
 }

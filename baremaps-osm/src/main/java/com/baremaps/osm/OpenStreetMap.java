@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
 /**
  * Utility methods for creating readers and streams from OpenStreetMap files.
@@ -42,6 +43,9 @@ public class OpenStreetMap {
     } else if (path.toString().endsWith(".xml.gz")
         || path.toString().endsWith(".osm.gz")) {
       return new XmlEntityReader(new GZIPInputStream(new BufferedInputStream(Files.newInputStream(path))), parallel);
+    } else if (path.toString().endsWith((".xml.bz2"))
+        || path.toString().endsWith(".osm.bz2")) {
+      return new XmlEntityReader(new BZip2CompressorInputStream(new BufferedInputStream(Files.newInputStream(path))), parallel);
     } else {
       throw new IOException("Unrecognized file extension: " + path.getFileName());
     }

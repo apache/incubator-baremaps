@@ -15,7 +15,10 @@
 package com.baremaps.osm.domain;
 
 import com.baremaps.osm.EntityHandler;
+import com.google.common.base.MoreObjects;
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * A class used to store the metadata of an dataset.
@@ -59,8 +62,39 @@ public class Header implements Entity {
   }
 
   @Override
-  public void visit(EntityHandler visitor) throws Exception {
-    visitor.handle(this);
+  public void accept(EntityHandler handler) throws Exception {
+    handler.handle(this);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Header)) {
+      return false;
+    }
+    Header header = (Header) o;
+    return Objects.equals(replicationTimestamp, header.replicationTimestamp) &&
+        Objects.equals(replicationSequenceNumber, header.replicationSequenceNumber) &&
+        Objects.equals(replicationUrl, header.replicationUrl) &&
+        Objects.equals(source, header.source) &&
+        Objects.equals(writingProgram, header.writingProgram);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram);
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Header.class.getSimpleName() + "[", "]")
+        .add("replicationTimestamp=" + replicationTimestamp)
+        .add("replicationSequenceNumber=" + replicationSequenceNumber)
+        .add("replicationUrl='" + replicationUrl + "'")
+        .add("source='" + source + "'")
+        .add("writingProgram='" + writingProgram + "'")
+        .toString();
+  }
 }

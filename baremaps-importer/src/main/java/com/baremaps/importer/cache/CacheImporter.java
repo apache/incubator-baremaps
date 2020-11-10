@@ -2,7 +2,7 @@ package com.baremaps.importer.cache;
 
 import com.baremaps.importer.cache.Cache.Entry;
 import com.baremaps.osm.EntityHandler;
-import com.baremaps.osm.domain.Bounds;
+import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
@@ -34,7 +34,7 @@ public class CacheImporter implements EntityHandler, AutoCloseable {
   }
 
   @Override
-  public void handle(Bounds bounds) {
+  public void handle(Bound bound) {
     // Do nothing
   }
 

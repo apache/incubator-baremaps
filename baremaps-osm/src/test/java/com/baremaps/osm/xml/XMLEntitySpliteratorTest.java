@@ -40,6 +40,6 @@ public class XMLEntitySpliteratorTest {
     Spliterator<Entity> spliterator = new XmlEntitySpliterator(dataOsmXml());
     AccumulatingConsumer<Object> accumulator = new AccumulatingConsumer<>();
     spliterator.forEachRemaining(accumulator);
-    assertEquals(accumulator.values().size(), 12);
+    assertEquals(12, accumulator.values().size());
   }
 }

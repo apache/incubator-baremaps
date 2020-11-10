@@ -2,7 +2,7 @@ package com.baremaps.osm.pbf;
 
 import com.baremaps.osm.binary.Osmformat;
 import com.baremaps.osm.binary.Osmformat.HeaderBBox;
-import com.baremaps.osm.domain.Bounds;
+import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Header;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -29,13 +29,13 @@ public class HeaderBlockReader {
         headerBlock.getWritingprogram());
   }
 
-  public Bounds readBounds() {
+  public Bound readBounds() {
     HeaderBBox headerBBox = headerBlock.getBbox();
     double minLon = headerBBox.getLeft() * .000000001;
     double maxLon = headerBBox.getRight() * .000000001;
     double minLat = headerBBox.getBottom() * .000000001;
     double maxLat = headerBBox.getTop() * .000000001;
-    return new Bounds(maxLat, maxLon, minLat, minLon);
+    return new Bound(maxLat, maxLon, minLat, minLon);
   }
 
 }

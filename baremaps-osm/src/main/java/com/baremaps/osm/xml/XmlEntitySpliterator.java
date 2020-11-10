@@ -22,7 +22,7 @@ import static javax.xml.stream.XMLInputFactory.SUPPORT_DTD;
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
-import com.baremaps.osm.domain.Bounds;
+import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Info;
@@ -50,6 +50,7 @@ import javax.xml.stream.XMLStreamReader;
 public class XmlEntitySpliterator implements Spliterator<Entity> {
 
   private static final String ELEMENT_NAME_OSM = "osm";
+  private static final String ELEMENT_NAME_BOUND = "bound";
   private static final String ELEMENT_NAME_BOUNDS = "bounds";
   private static final String ELEMENT_NAME_NODE = "node";
   private static final String ELEMENT_NAME_WAY = "way";
@@ -119,6 +120,7 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
       case ELEMENT_NAME_OSM:
         consumer.accept(readHeader());
         return;
+      case ELEMENT_NAME_BOUND:
       case ELEMENT_NAME_BOUNDS:
         consumer.accept(readBounds());
         return;
@@ -151,12 +153,12 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
     return new Header(timestamp, null, null, "", generator);
   }
 
-  private Bounds readBounds() throws XMLStreamException {
+  private Bound readBounds() throws XMLStreamException {
     double maxLon = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_MAXLON));
     double maxLat = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_MAXLAT));
     double minLon = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_MINLON));
     double minLat = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_MINLAT));
-    return new Bounds(maxLat, maxLon, minLat, minLon);
+    return new Bound(maxLat, maxLon, minLat, minLon);
   }
 
   private Node readNode() throws XMLStreamException {

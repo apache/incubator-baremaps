@@ -2,6 +2,7 @@ package com.baremaps.osm.domain;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * A class used to store the metadata of an element in a dataset.
@@ -58,5 +59,15 @@ public class Info {
   @Override
   public int hashCode() {
     return Objects.hash(version, timestamp, changeset, uid);
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Info.class.getSimpleName() + "[", "]")
+        .add("version=" + version)
+        .add("timestamp=" + timestamp)
+        .add("changeset=" + changeset)
+        .add("uid=" + uid)
+        .toString();
   }
 }
