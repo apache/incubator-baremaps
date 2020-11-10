@@ -2,6 +2,9 @@ package com.baremaps.osm.domain;
 
 import com.baremaps.osm.EntityHandler;
 
+/**
+ * A class used to represent the boundaries of a dataset.
+ */
 public class Bounds implements Entity {
 
   private final double maxLat;

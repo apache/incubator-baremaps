@@ -16,6 +16,9 @@ package com.baremaps.osm.domain;
 
 import com.google.common.base.Objects;
 
+/**
+ * A class used to represent users and to track authorship in a dataset.
+ */
 public final class User {
 
   public static final User NO_USER = new User(-1, "");

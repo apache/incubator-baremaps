@@ -56,13 +56,12 @@ public class BatchSpliterator<T> implements Spliterator<T> {
    */
   @Override
   public Spliterator<T> trySplit() {
-    Stream.Builder<T> builder = Stream.builder();
-    int batch = 0;
-    while (batch < batchSize && tryAdvance(builder)) {
-      batch++;
+    List<T> batch = new ArrayList<>();
+    while (batch.size() < batchSize && tryAdvance(entry -> batch.add(entry))) {
+      continue;
     }
-    if (batch > 0) {
-      return builder.build().spliterator();
+    if (batch.size() > 0) {
+      return Spliterators.spliterator(batch, characteristics());
     } else {
       return null;
     }

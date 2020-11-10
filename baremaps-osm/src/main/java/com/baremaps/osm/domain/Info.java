@@ -3,6 +3,9 @@ package com.baremaps.osm.domain;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * A class used to store the metadata of an element in a dataset.
+ */
 public class Info {
 
   protected final int version;

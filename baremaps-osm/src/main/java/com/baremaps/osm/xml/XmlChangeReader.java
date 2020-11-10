@@ -42,7 +42,7 @@ public class XmlChangeReader implements ChangeReader {
     try {
       Spliterator<Change> spliterator = new XmlChangeSpliterator(inputStream);
       if (parallel) {
-        spliterator = new BatchSpliterator<>(spliterator, 1);
+        spliterator = new BatchSpliterator<>(spliterator, 100);
       }
       return StreamSupport.stream(spliterator, parallel);
     } catch (XMLStreamException e) {

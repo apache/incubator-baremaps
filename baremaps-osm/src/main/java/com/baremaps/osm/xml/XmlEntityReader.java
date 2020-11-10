@@ -30,7 +30,7 @@ public class XmlEntityReader implements EntityReader {
     try {
       Spliterator<Entity> spliterator = new XmlEntitySpliterator(inputStream);
       if (parallel) {
-        spliterator = new BatchSpliterator<>(spliterator, 100);
+        spliterator = new BatchSpliterator<>(spliterator, 1000);
       }
       return StreamSupport.stream(spliterator, parallel);
     } catch (XMLStreamException e) {

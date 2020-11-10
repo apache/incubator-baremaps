@@ -17,6 +17,9 @@ package com.baremaps.osm.domain;
 import com.baremaps.osm.EntityHandler;
 import java.time.LocalDateTime;
 
+/**
+ * A class used to store the metadata of an dataset.
+ */
 public class Header implements Entity {
 
   private final LocalDateTime replicationTimestamp;

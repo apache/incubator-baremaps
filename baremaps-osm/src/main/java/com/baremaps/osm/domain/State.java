@@ -16,6 +16,9 @@ package com.baremaps.osm.domain;
 
 import java.time.LocalDateTime;
 
+/**
+ * A class used to represent the state of a dataset, enabling its replication.
+ */
 public class State {
 
   private final long sequenceNumber;

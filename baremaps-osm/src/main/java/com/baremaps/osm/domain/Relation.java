@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.Objects;
 import org.locationtech.jts.geom.Geometry;
 
+/**
+ * A class used to represent groups of elements.
+ */
 public final class Relation extends Element {
 
   private final List<Member> members;

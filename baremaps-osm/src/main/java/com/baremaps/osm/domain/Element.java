@@ -19,7 +19,7 @@ import java.util.Objects;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * Elements are the basic components of OpenStreetMap's conceptual data model of the physical world.
+ * An abstract class used as a basis to model the physical world.
  */
 public abstract class Element implements Entity {
 

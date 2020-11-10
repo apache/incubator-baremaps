@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.Objects;
 import org.locationtech.jts.geom.Geometry;
 
+/**
+ * A class used to represent a linear feature on the ground, e.g., a line.
+ */
 public final class Way extends Element {
 
   private final List<Long> nodes;

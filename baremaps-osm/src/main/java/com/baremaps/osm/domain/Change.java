@@ -16,6 +16,9 @@ package com.baremaps.osm.domain;
 
 import java.util.List;
 
+/**
+ * A class used to represent the changes to be applied to a dataset.
+ */
 public final class Change {
 
   public enum ChangeType {
