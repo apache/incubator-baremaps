@@ -19,48 +19,42 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class DataFiles {
+public class TestFiles {
 
   public static InputStream dataOsmPbf() {
-    return DataFiles.class.getClassLoader().getResourceAsStream("data.osm.pbf");
+    return TestFiles.class.getClassLoader().getResourceAsStream("data.osm.pbf");
   }
 
   public static InputStream denseNodesOsmPbf() {
-    return DataFiles.class.getClassLoader().getResourceAsStream("dense.osm.pbf");
+    return TestFiles.class.getClassLoader().getResourceAsStream("dense.osm.pbf");
   }
 
   public static InputStream waysOsmPbf() {
-    return DataFiles.class.getClassLoader().getResourceAsStream("ways.osm.pbf");
+    return TestFiles.class.getClassLoader().getResourceAsStream("ways.osm.pbf");
   }
 
   public static InputStream relationsOsmPbf() {
-    return DataFiles.class.getClassLoader().getResourceAsStream("relations.osm.pbf");
+    return TestFiles.class.getClassLoader().getResourceAsStream("relations.osm.pbf");
   }
 
   public static InputStream dataOsmXml() {
-    return DataFiles.class.getClassLoader().getResourceAsStream("data.osm.xml");
+    return TestFiles.class.getClassLoader().getResourceAsStream("data.osm.xml");
   }
 
   public static InputStream dataOscXml() {
-    return DataFiles.class.getClassLoader().getResourceAsStream("data.osc.xml");
+    return TestFiles.class.getClassLoader().getResourceAsStream("data.osc.xml");
   }
 
-  public static Path monacoOsmPbf() {
-    try {
-      return Paths.get(DataFiles.class.getClassLoader().getResource("monaco.osm.pbf").toURI());
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-      return null;
-    }
+  public static Path monacoOsmPbf() throws URISyntaxException {
+      return Paths.get(TestFiles.class.getClassLoader().getResource("monaco.osm.pbf").toURI());
   }
 
-  public static Path monacoOsmBz2() {
-    try {
-      return Paths.get(DataFiles.class.getClassLoader().getResource("monaco.osm.bz2").toURI());
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-      return null;
-    }
+  public static Path monacoOsmBz2() throws URISyntaxException {
+      return Paths.get(TestFiles.class.getClassLoader().getResource("monaco.osm.bz2").toURI());
+  }
+
+  public static Path monocoStateTxt() throws URISyntaxException {
+      return Paths.get(TestFiles.class.getClassLoader().getResource("monaco-state.txt").toURI());
   }
 
 }

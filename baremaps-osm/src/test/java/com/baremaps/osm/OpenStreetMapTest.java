@@ -9,6 +9,7 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Test;
@@ -16,13 +17,13 @@ import org.junit.jupiter.api.Test;
 public class OpenStreetMapTest {
 
   @Test
-  void monacoOsmPbf() throws IOException {
-    parse(DataFiles.monacoOsmPbf());
+  void monacoOsmPbf() throws IOException, URISyntaxException {
+    parse(TestFiles.monacoOsmPbf());
   }
 
   @Test
-  void monacoOsmBz2() throws IOException {
-    parse(DataFiles.monacoOsmBz2());
+  void monacoOsmBz2() throws IOException, URISyntaxException {
+    parse(TestFiles.monacoOsmBz2());
   }
 
   void parse(Path path) throws IOException {

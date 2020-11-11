@@ -22,16 +22,15 @@ public class StateReader {
   }
 
   public State read() throws IOException {
-    String state = CharStreams.toString(reader);
     Map<String, String> map = new HashMap<>();
-    for (String line : state.split("\n")) {
+    for (String line : CharStreams.readLines(reader)) {
       String[] array = line.split("=");
       if (array.length == 2) {
         map.put(array[0], array[1]);
       }
     }
     long sequenceNumber = Long.parseLong(map.get("sequenceNumber"));
-    LocalDateTime timestamp = LocalDateTime.parse(map.get("timestamp"), format);
+    LocalDateTime timestamp = LocalDateTime.parse(map.get("timestamp").replace("\\", ""), format);
     return new State(sequenceNumber, timestamp);
   }
 }
