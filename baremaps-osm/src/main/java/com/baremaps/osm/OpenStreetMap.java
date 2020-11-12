@@ -2,6 +2,7 @@ package com.baremaps.osm;
 
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
+import com.baremaps.osm.domain.State;
 import com.baremaps.osm.pbf.PbfEntityReader;
 import com.baremaps.osm.xml.XmlChangeReader;
 import com.baremaps.osm.xml.XmlEntityReader;
@@ -66,9 +67,21 @@ public class OpenStreetMap {
   public static ChangeReader changeReader(Path path, boolean parallel) throws IOException {
     if (path.toString().endsWith("osc")) {
       return new XmlChangeReader(new BufferedInputStream(Files.newInputStream(path)), parallel);
+    } else if (path.toString().endsWith("osc.gz")) {
+      return new XmlChangeReader(new GZIPInputStream(new BufferedInputStream(Files.newInputStream(path))), parallel);
+    } else if (path.toString().endsWith("osc.bz2")) {
+      return new XmlChangeReader(new BZip2CompressorInputStream(new BufferedInputStream(Files.newInputStream(path))), parallel);
     } else {
       throw new IOException("Unrecognized file extension: " + path.getFileName());
     }
+  }
+
+  public static State state(Path path) throws IOException {
+    return stateReader(path).read();
+  }
+
+  public static StateReader stateReader(Path path) throws IOException {
+    return new StateReader(new BufferedInputStream(Files.newInputStream(path)));
   }
 
 }
