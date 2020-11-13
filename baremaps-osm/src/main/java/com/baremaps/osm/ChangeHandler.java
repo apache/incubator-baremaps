@@ -10,6 +10,8 @@ public interface ChangeHandler extends Consumer<Change> {
   default void accept(Change change) {
     try {
       handle(change);
+    } catch (StreamException e) {
+      throw e;
     } catch (Exception e) {
       throw new StreamException(e);
     }

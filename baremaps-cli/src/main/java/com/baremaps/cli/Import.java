@@ -194,7 +194,7 @@ public class Import implements Callable<Integer> {
     }
 
     logger.info("Importing data");
-    try (DataImporter dataImporter = new DataImporter(nodeTable, wayTable, relationTable)) {
+    try (DataImporter dataImporter = new DataImporter(headerTable, nodeTable, wayTable, relationTable)) {
       GeometryBuilder geometryBuilder = new GeometryBuilder(
           geometryFactory,
           coordinateCache,

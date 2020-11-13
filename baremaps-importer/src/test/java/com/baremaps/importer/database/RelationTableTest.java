@@ -20,7 +20,7 @@ import static com.baremaps.importer.database.DatabaseConstants.RELATION_3;
 import static com.baremaps.importer.database.DatabaseConstants.RELATION_4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.util.postgis.PostgisHelper;
@@ -75,7 +75,7 @@ class RelationTableTest {
   public void delete() throws DatabaseException {
     relationStore.insert(RELATION_2);
     relationStore.delete(RELATION_2.getId());
-    assertThrows(IllegalArgumentException.class, () -> relationStore.select(RELATION_2.getId()));
+    assertNull(relationStore.select(RELATION_2.getId()));
   }
 
   @Test

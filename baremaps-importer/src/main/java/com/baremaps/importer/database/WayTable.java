@@ -37,7 +37,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class WayTable implements Table<Way> {
+public class WayTable implements ElementTable<Way> {
 
   private final DataSource dataSource;
 
@@ -52,7 +52,16 @@ public class WayTable implements Table<Way> {
   private final String copy;
 
   public WayTable(DataSource dataSource) {
-    this(dataSource, "osm_ways", "id", "version", "uid", "timestamp", "changeset", "tags", "nodes", "geom");
+    this(dataSource,
+        "osm_ways",
+        "id",
+        "version",
+        "uid",
+        "timestamp",
+        "changeset",
+        "tags",
+        "nodes",
+        "geom");
   }
 
   @Inject
@@ -97,7 +106,7 @@ public class WayTable implements Table<Way> {
       if (result.next()) {
         return getWay(result);
       } else {
-        throw new IllegalArgumentException();
+        return null;
       }
     } catch (SQLException e) {
       throw new DatabaseException(e);
@@ -139,10 +148,10 @@ public class WayTable implements Table<Way> {
     return new Way(id, info, tags, nodes, geometry);
   }
 
-  public void insert(Way entity) throws DatabaseException {
+  public void insert(Way element) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      setWay(statement, entity);
+      setWay(statement, element);
       statement.execute();
     } catch (SQLException e) {
       throw new DatabaseException(e);
@@ -150,10 +159,10 @@ public class WayTable implements Table<Way> {
   }
 
   @Override
-  public void insert(List<Way> entities) throws DatabaseException {
+  public void insert(List<Way> elements) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      for (Way entity : entities) {
+      for (Way entity : elements) {
         statement.clearParameters();
         setWay(statement, entity);
         statement.addBatch();
@@ -200,12 +209,12 @@ public class WayTable implements Table<Way> {
     }
   }
 
-  public void copy(List<Way> entities) throws DatabaseException {
+  public void copy(List<Way> elemenets) throws DatabaseException {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copy))) {
         writer.writeHeader();
-        for (Way entity : entities) {
+        for (Way entity : elemenets) {
           writer.startRow(8);
           writer.writeLong(entity.getId());
           writer.writeInteger(entity.getInfo().getVersion());

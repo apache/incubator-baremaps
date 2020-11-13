@@ -34,7 +34,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class NodeTable implements Table<Node> {
+public class NodeTable implements ElementTable<Node> {
 
   private final DataSource dataSource;
 
@@ -49,13 +49,32 @@ public class NodeTable implements Table<Node> {
   private final String copy;
 
   public NodeTable(DataSource dataSource) {
-    this(dataSource, "osm_nodes", "id", "version", "uid", "timestamp", "changeset", "tags", "lon", "lat", "geom");
+    this(dataSource,
+        "osm_nodes",
+        "id",
+        "version",
+        "uid",
+        "timestamp",
+        "changeset",
+        "tags",
+        "lon",
+        "lat",
+        "geom");
   }
 
   @Inject
-  public NodeTable(DataSource dataSource, String nodeTable, String idColumn, String versionColumn, String uidColumn,
-      String timestampColumn, String changesetColumn, String tagsColumn, String longitudeColumn,
-      String latitudeColumn, String geometryColumn) {
+  public NodeTable(
+      DataSource dataSource,
+      String nodeTable,
+      String idColumn,
+      String versionColumn,
+      String uidColumn,
+      String timestampColumn,
+      String changesetColumn,
+      String tagsColumn,
+      String longitudeColumn,
+      String latitudeColumn,
+      String geometryColumn) {
     this.dataSource = dataSource;
     this.select = String.format(
         "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asbinary(%10$s) FROM %1$s WHERE %2$s = ?",
@@ -96,7 +115,7 @@ public class NodeTable implements Table<Node> {
       if (result.next()) {
         return getNode(result);
       } else {
-        throw new IllegalArgumentException();
+        return null;
       }
     } catch (SQLException e) {
       throw new DatabaseException(e);
@@ -133,20 +152,20 @@ public class NodeTable implements Table<Node> {
     return new Node(id, info, tags, lon, lat, point);
   }
 
-  public void insert(Node entity) throws DatabaseException {
+  public void insert(Node element) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      setNode(statement, entity);
+      setNode(statement, element);
       statement.execute();
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
   }
 
-  public void insert(List<Node> entities) throws DatabaseException {
+  public void insert(List<Node> elements) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      for (Node entity : entities) {
+      for (Node entity : elements) {
         statement.clearParameters();
         setNode(statement, entity);
         statement.addBatch();
@@ -193,12 +212,12 @@ public class NodeTable implements Table<Node> {
     }
   }
 
-  public void copy(List<Node> entities) throws DatabaseException {
+  public void copy(List<Node> elemenets) throws DatabaseException {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copy))) {
         writer.writeHeader();
-        for (Node node : entities) {
+        for (Node node : elemenets) {
           writer.startRow(9);
           writer.writeLong(node.getId());
           writer.writeInteger(node.getInfo().getVersion());

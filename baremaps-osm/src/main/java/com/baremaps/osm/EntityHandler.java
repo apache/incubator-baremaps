@@ -18,6 +18,8 @@ public interface EntityHandler extends Consumer<Entity> {
   default void accept(Entity entity) {
     try {
       if (entity != null) entity.accept(this);
+    } catch (StreamException e) {
+      throw e;
     } catch (Exception e) {
       throw new StreamException(e);
     }

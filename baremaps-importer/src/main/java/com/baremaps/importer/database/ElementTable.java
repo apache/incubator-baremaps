@@ -14,22 +14,23 @@
 
 package com.baremaps.importer.database;
 
+import com.baremaps.osm.domain.Element;
 import java.util.List;
 
-public interface Table<T> {
+public interface ElementTable<T extends Element> {
 
   T select(Long id) throws DatabaseException;
 
   List<T> select(List<Long> ids) throws DatabaseException;
 
-  void insert(T entity) throws DatabaseException;
+  void insert(T element) throws DatabaseException;
 
-  void insert(List<T> entities) throws DatabaseException;
+  void insert(List<T> elements) throws DatabaseException;
 
   void delete(Long id) throws DatabaseException;
 
   void delete(List<Long> ids) throws DatabaseException;
 
-  void copy(List<T> entities) throws DatabaseException;
+  void copy(List<T> elemenets) throws DatabaseException;
 
 }

@@ -1,7 +1,6 @@
 package com.baremaps.osm.pbf;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.osm.TestFiles;
 import com.baremaps.osm.domain.Node;

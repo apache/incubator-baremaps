@@ -14,7 +14,6 @@
 
 package com.baremaps.importer.database;
 
-import com.baremaps.importer.geometry.GeometryUtil;
 import com.baremaps.osm.domain.Header;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,15 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.sql.DataSource;
-import org.locationtech.jts.geom.Geometry;
 
 public class HeaderTable {
 
   private static final String SELECT =
-      "SELECT replication_timestamp, replication_sequence_number, replication_url, source, writing_program, st_asewkb(bbox) FROM osm_headers ORDER BY replication_timestamp DESC";
+      "SELECT replication_timestamp, replication_sequence_number, replication_url, source, writing_program FROM osm_headers ORDER BY replication_timestamp DESC";
 
   private static final String INSERT =
-      "INSERT INTO osm_headers (replication_timestamp, replication_sequence_number, replication_url, source, writing_program, bbox) VALUES (?, ?, ?, ?, ?, ?)";
+      "INSERT INTO osm_headers (replication_timestamp, replication_sequence_number, replication_url, source, writing_program) VALUES (?, ?, ?, ?, ?)";
 
   private final DataSource dataSource;
 
@@ -53,7 +51,6 @@ public class HeaderTable {
         String replicationUrl = result.getString(3);
         String source = result.getString(4);
         String writingProgram = result.getString(5);
-        Geometry bbox = GeometryUtil.deserialize(result.getBytes(6));
         headers.add(new Header(
             replicationTimestamp,
             replicationSequenceNumber,

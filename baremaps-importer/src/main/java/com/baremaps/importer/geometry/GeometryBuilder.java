@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
@@ -17,6 +19,8 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 
 public class GeometryBuilder implements ElementHandler {
+
+  private static Logger logger = LogManager.getLogger();
 
   protected final GeometryFactory geometryFactory;
   private final Cache<Long, Coordinate> coordinateCache;
@@ -40,7 +44,8 @@ public class GeometryBuilder implements ElementHandler {
   @Override
   public void handle(Way way) {
     try {
-      Coordinate[] coords = coordinateCache.getAll(way.getNodes()).stream()
+      Coordinate[] coords = coordinateCache.getAll(way.getNodes())
+          .stream()
           .toArray(Coordinate[]::new);
       if (coords.length > 3 && coords[0].equals(coords[coords.length - 1])) {
         way.setGeometry(geometryFactory.createPolygon(coords));
@@ -49,7 +54,9 @@ public class GeometryBuilder implements ElementHandler {
       } else {
         return;
       }
-    } catch (CacheException e) {
+    } catch (Exception e) {
+      logger.debug(way);
+      logger.error("Unable to build the geometry", e);
       return;
     }
   }
@@ -96,7 +103,9 @@ public class GeometryBuilder implements ElementHandler {
       Polygonizer polygonizer = new Polygonizer(true);
       polygonizer.add(members);
       relation.setGeometry(polygonizer.getGeometry());
-    } catch (Exception ex) {
+    } catch (Exception e) {
+      logger.debug(relation);
+      logger.error("Unable to build the geometry", e);
       return;
     }
   }

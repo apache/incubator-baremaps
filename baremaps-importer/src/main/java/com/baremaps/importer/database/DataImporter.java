@@ -1,6 +1,8 @@
 package com.baremaps.importer.database;
 
-import com.baremaps.osm.ElementHandler;
+import com.baremaps.osm.EntityHandler;
+import com.baremaps.osm.domain.Bound;
+import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
@@ -10,8 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DataImporter implements ElementHandler, AutoCloseable {
+public class DataImporter implements EntityHandler, AutoCloseable {
 
+  private final HeaderTable headerTable;
   private final NodeTable nodeTable;
   private final WayTable wayTable;
   private final RelationTable relationTable;
@@ -21,12 +24,24 @@ public class DataImporter implements ElementHandler, AutoCloseable {
   private final Map<Thread, List<Relation>> relationBuffers = new ConcurrentHashMap<>();
 
   public DataImporter(
+      HeaderTable headerTable,
       NodeTable nodeTable,
       WayTable wayTable,
       RelationTable relationTable) {
+    this.headerTable = headerTable;
     this.nodeTable = nodeTable;
     this.wayTable = wayTable;
     this.relationTable = relationTable;
+  }
+
+  @Override
+  public void handle(Header header) throws Exception {
+    headerTable.insert(header);
+  }
+
+  @Override
+  public void handle(Bound bound) {
+    // Do nothing
   }
 
   @Override

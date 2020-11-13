@@ -20,7 +20,7 @@ import static com.baremaps.importer.database.DatabaseConstants.WAY_2;
 import static com.baremaps.importer.database.DatabaseConstants.WAY_3;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.osm.domain.Way;
 import com.baremaps.util.postgis.PostgisHelper;
@@ -74,7 +74,7 @@ class WayTableTest {
   public void delete() throws DatabaseException {
     wayTable.insert(WAY_1);
     wayTable.delete(WAY_1.getId());
-    assertThrows(IllegalArgumentException.class, () -> wayTable.select(WAY_1.getId()));
+    assertNull(wayTable.select(WAY_1.getId()));
   }
 
   @Test

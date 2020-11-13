@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * A {@code BatchSpliterator} wraps another spliterator and partition its elements according to a given batch size when

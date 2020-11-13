@@ -15,7 +15,6 @@
 package com.baremaps.osm.domain;
 
 import com.baremaps.osm.EntityHandler;
-import com.google.common.base.MoreObjects;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;

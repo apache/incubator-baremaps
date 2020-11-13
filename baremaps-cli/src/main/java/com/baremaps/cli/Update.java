@@ -26,6 +26,7 @@ import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.StateReader;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.State;
+import com.baremaps.osm.stream.StreamException;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.storage.BlobStore;
 import com.baremaps.util.tile.Tile;
@@ -98,13 +99,14 @@ public class Update implements Callable<Integer> {
     CoordinateTransform coordinateTransform = coordinateTransformFactory
         .createTransform(sourceCRS, targetCRS);
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
+    ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransform);
 
-    NodeTable nodeStore = new NodeTable(datasource);
-    WayTable wayStore = new WayTable(datasource);
-    RelationTable relationStore = new RelationTable(datasource);
+    NodeTable nodeTable = new NodeTable(datasource);
+    WayTable wayTable = new WayTable(datasource);
+    RelationTable relationTable = new RelationTable(datasource);
 
-    HeaderTable headerMapper = new HeaderTable(datasource);
-    Header header = headerMapper.getLast();
+    HeaderTable headerTable = new HeaderTable(datasource);
+    Header header = headerTable.getLast();
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
 
     BlobStore blobStore = mixins.blobStore();
@@ -121,31 +123,34 @@ public class Update implements Callable<Integer> {
     Path path = blobStore.fetch(changeURI);
 
     logger.info("Updating database");
-    ChangeGeometryBuilder changeGeometryBuilder = new ChangeGeometryBuilder(geometryFactory);
-    ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransform);
-    DeltaProducer deltaProducer = new DeltaProducer(nodeStore, wayStore, relationStore, projectionTransformer, zoom);
-    DataUpdater dataUpdater = new DataUpdater(nodeStore, wayStore, relationStore);
-    OpenStreetMap.changeStream(path)
-        .peek(changeGeometryBuilder)
-        .peek(deltaProducer)
-        .forEach(dataUpdater);
+    try {
+      ChangeGeometryBuilder changeGeometryBuilder = new ChangeGeometryBuilder(geometryFactory);
+      DeltaProducer deltaProducer = new DeltaProducer(nodeTable, wayTable, relationTable, projectionTransformer, zoom);
+      DataUpdater dataUpdater = new DataUpdater(nodeTable, wayTable, relationTable);
+      OpenStreetMap.changeStream(path)
+          .peek(changeGeometryBuilder)
+          .peek(deltaProducer)
+          .forEach(dataUpdater);
 
-    logger.info("Saving differences");
-    try (PrintWriter diffPrintWriter = new PrintWriter(blobStore.write(delta))) {
-      for (Tile tile : deltaProducer.getTiles()) {
-        diffPrintWriter.println(String.format("%d/%d/%d", tile.x(), tile.y(), tile.z()));
+      logger.info("Saving differences");
+      try (PrintWriter diffPrintWriter = new PrintWriter(blobStore.write(delta))) {
+        for (Tile tile : deltaProducer.getTiles()) {
+          diffPrintWriter.println(String.format("%d/%d/%d", tile.x(), tile.y(), tile.z()));
+        }
       }
-    }
 
-    logger.info("Updating state information");
-    try (InputStream inputStream = blobStore.read(stateURI)) {
-      State state = new StateReader(inputStream).read();
-      headerMapper.insert(new Header(
-          state.getTimestamp(),
-          state.getSequenceNumber(),
-          header.getReplicationUrl(),
-          header.getSource(),
-          header.getWritingProgram()));
+      logger.info("Updating state information");
+      try (InputStream inputStream = blobStore.read(stateURI)) {
+        State state = new StateReader(inputStream).read();
+        headerTable.insert(new Header(
+            state.getTimestamp(),
+            state.getSequenceNumber(),
+            header.getReplicationUrl(),
+            header.getSource(),
+            header.getWritingProgram()));
+      }
+    } catch (StreamException e) {
+      logger.error(e.getCause());
     }
 
     return 0;

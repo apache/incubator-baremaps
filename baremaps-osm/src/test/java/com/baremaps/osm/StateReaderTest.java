@@ -1,6 +1,6 @@
 package com.baremaps.osm;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.osm.domain.State;
 import java.io.IOException;

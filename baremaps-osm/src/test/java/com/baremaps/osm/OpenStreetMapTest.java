@@ -18,15 +18,16 @@ public class OpenStreetMapTest {
 
   @Test
   void monacoOsmPbf() throws IOException, URISyntaxException {
-    parse(TestFiles.monacoOsmPbf());
+    parse(TestFiles.monacoOsmPbf(), 1, 1, 25002, 4018, 243);
   }
 
   @Test
   void monacoOsmBz2() throws IOException, URISyntaxException {
-    parse(TestFiles.monacoOsmBz2());
+    parse(TestFiles.monacoOsmBz2(), 1, 1, 24951, 4015, 243);
   }
 
-  void parse(Path path) throws IOException {
+  void parse(Path path, long headerCount, long boundCount, long nodeCount, long wayCount, long relationCount)
+      throws IOException {
     AtomicLong headers = new AtomicLong(0);
     AtomicLong bounds = new AtomicLong(0);
     AtomicLong nodes = new AtomicLong(0);
@@ -68,11 +69,11 @@ public class OpenStreetMapTest {
         relations.incrementAndGet();
       }
     });
-    assertEquals(1, headers.get());
-    assertEquals(1, bounds.get());
-    assertTrue(24000 < nodes.get());
-    assertTrue(4000 < ways.get());
-    assertTrue(240 < relations.get());
+    assertEquals(headerCount, headers.get());
+    assertEquals(boundCount, bounds.get());
+    assertEquals(nodeCount, nodes.get());
+    assertEquals(wayCount, ways.get());
+    assertEquals(relationCount, relations.get());
   }
 
 }

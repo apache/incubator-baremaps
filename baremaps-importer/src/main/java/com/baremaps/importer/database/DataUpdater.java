@@ -7,8 +7,12 @@ import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DataUpdater implements ChangeHandler {
+
+  private static Logger logger = LogManager.getLogger();
 
   private final NodeTable nodeTable;
 

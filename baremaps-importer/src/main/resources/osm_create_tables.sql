@@ -4,8 +4,7 @@ CREATE TABLE IF NOT EXISTS osm_headers
     replication_sequence_number bigint                      NOT NULL,
     replication_url             text                        NOT NULL,
     source                      text,
-    writing_program             text,
-    bbox                        geometry
+    writing_program             text
 );
 CREATE TABLE osm_nodes
 (

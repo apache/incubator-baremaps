@@ -58,36 +58,44 @@ public class DeltaProducer implements ChangeHandler {
   }
 
   private void handleLastVersion(Change change) throws Exception {
-    for (Element element: change.getElements()) {
+    for (Element element : change.getElements()) {
       element.accept(new ElementHandler() {
         @Override
         public void handle(Node node) throws Exception {
-          handleGeometry(nodeTable.select(element.getId()).getGeometry());
+          try {
+            handleGeometry(nodeTable.select(element.getId()).getGeometry());
+          } catch (IllegalArgumentException e) {}
         }
 
         @Override
         public void handle(Way way) throws Exception {
-          handleGeometry(wayTable.select(element.getId()).getGeometry());
+          try {
+            handleGeometry(wayTable.select(element.getId()).getGeometry());
+          } catch (IllegalArgumentException e) {}
         }
 
         @Override
         public void handle(Relation relation) throws Exception {
-          handleGeometry(relationTable.select(element.getId()).getGeometry());
+          try {
+            handleGeometry(relationTable.select(element.getId()).getGeometry());
+          } catch (IllegalArgumentException e) {}
         }
       });
     }
   }
 
   private void handleNextVersion(Change change) {
-    for (Element element: change.getElements()) {
+    for (Element element : change.getElements()) {
       handleGeometry(element.getGeometry());
     }
   }
 
   private void handleGeometry(Geometry geometry) {
-    tiles.addAll(
-        Tile.getTiles(projectionTransformer.transform(geometry).getEnvelopeInternal(), zoom)
-            .collect(Collectors.toList()));
+    if (geometry != null) {
+      tiles.addAll(
+          Tile.getTiles(projectionTransformer.transform(geometry).getEnvelopeInternal(), zoom)
+              .collect(Collectors.toList()));
+    }
   }
 
   public Set<Tile> getTiles() {

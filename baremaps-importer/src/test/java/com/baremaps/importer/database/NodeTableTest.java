@@ -20,7 +20,7 @@ import static com.baremaps.importer.database.DatabaseConstants.NODE_1;
 import static com.baremaps.importer.database.DatabaseConstants.NODE_2;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.osm.domain.Node;
 import com.baremaps.util.postgis.PostgisHelper;
@@ -73,7 +73,7 @@ public class NodeTableTest {
   public void delete() throws DatabaseException {
     nodeStore.insert(NODE_0);
     nodeStore.delete(NODE_0.getId());
-    assertThrows(IllegalArgumentException.class, () -> nodeStore.select(NODE_0.getId()));
+    assertNull(nodeStore.select(NODE_0.getId()));
   }
 
   @Test

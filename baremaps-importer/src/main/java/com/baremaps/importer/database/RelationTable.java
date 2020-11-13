@@ -37,7 +37,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class RelationTable implements Table<Relation> {
+public class RelationTable implements ElementTable<Relation> {
 
   private final String select;
 
@@ -52,14 +52,34 @@ public class RelationTable implements Table<Relation> {
   private final DataSource dataSource;
 
   public RelationTable(DataSource dataSource) {
-    this(dataSource, "osm_relations", "id", "version", "uid", "timestamp", "changeset", "tags", "member_refs",
-        "member_types", "member_roles", "geom");
+    this(dataSource,
+        "osm_relations",
+        "id",
+        "version",
+        "uid",
+        "timestamp",
+        "changeset",
+        "tags",
+        "member_refs",
+        "member_types",
+        "member_roles",
+        "geom");
   }
 
   @Inject
-  public RelationTable(DataSource dataSource, String nodeTable, String idColumn, String versionColumn, String uidColumn,
-      String timestampColumn, String changesetColumn, String tagsColumn,
-      String memberRefs, String memberTypes, String memberRoles, String geometryColumn) {
+  public RelationTable(
+      DataSource dataSource,
+      String nodeTable,
+      String idColumn,
+      String versionColumn,
+      String uidColumn,
+      String timestampColumn,
+      String changesetColumn,
+      String tagsColumn,
+      String memberRefs,
+      String memberTypes,
+      String memberRoles,
+      String geometryColumn) {
     this.dataSource = dataSource;
     this.select = String.format(
         "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, st_asbinary(%11$s) FROM %1$s WHERE %2$s = ?",
@@ -101,7 +121,7 @@ public class RelationTable implements Table<Relation> {
       if (result.next()) {
         return getRelation(result);
       } else {
-        throw new IllegalArgumentException();
+        return null;
       }
     } catch (SQLException e) {
       throw new DatabaseException(e);
@@ -144,10 +164,10 @@ public class RelationTable implements Table<Relation> {
     return new Relation(id, info, tags, members, geometry);
   }
 
-  public void insert(Relation entity) throws DatabaseException {
+  public void insert(Relation element) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      setRelation(statement, entity);
+      setRelation(statement, element);
       statement.execute();
     } catch (SQLException e) {
       throw new DatabaseException(e);
@@ -155,10 +175,10 @@ public class RelationTable implements Table<Relation> {
   }
 
   @Override
-  public void insert(List<Relation> entities) throws DatabaseException {
+  public void insert(List<Relation> elements) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      for (Relation entity : entities) {
+      for (Relation entity : elements) {
         statement.clearParameters();
         setRelation(statement, entity);
         statement.addBatch();
@@ -210,12 +230,12 @@ public class RelationTable implements Table<Relation> {
     }
   }
 
-  public void copy(List<Relation> entities) throws DatabaseException {
+  public void copy(List<Relation> elemenets) throws DatabaseException {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copy))) {
         writer.writeHeader();
-        for (Relation entity : entities) {
+        for (Relation entity : elemenets) {
           writer.startRow(10);
           writer.writeLong(entity.getId());
           writer.writeInteger(entity.getInfo().getVersion());
