@@ -10,9 +10,11 @@ import com.baremaps.osm.domain.Way;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DataUpdater implements ChangeHandler {
+public class UpdateHandler implements ChangeHandler, AutoCloseable {
 
   private static Logger logger = LogManager.getLogger();
+
+  private final HeaderTable headerTable;
 
   private final NodeTable nodeTable;
 
@@ -20,7 +22,8 @@ public class DataUpdater implements ChangeHandler {
 
   private final RelationTable relationTable;
 
-  public DataUpdater(NodeTable nodeTable, WayTable wayTable, RelationTable relationTable) {
+  public UpdateHandler(HeaderTable headerTable, NodeTable nodeTable, WayTable wayTable, RelationTable relationTable) {
+    this.headerTable = headerTable;
     this.nodeTable = nodeTable;
     this.wayTable = wayTable;
     this.relationTable = relationTable;
@@ -72,4 +75,8 @@ public class DataUpdater implements ChangeHandler {
     }
   }
 
+  @Override
+  public void close() {
+
+  }
 }

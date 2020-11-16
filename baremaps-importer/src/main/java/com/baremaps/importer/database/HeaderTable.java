@@ -72,7 +72,7 @@ public class HeaderTable {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
       statement.setObject(1, header.getReplicationTimestamp());
-      statement.setLong(2, header.getReplicationSequenceNumber());
+      statement.setObject(2, header.getReplicationSequenceNumber());
       statement.setString(3, header.getReplicationUrl());
       statement.setString(4, header.getSource());
       statement.setString(5, header.getWritingProgram());

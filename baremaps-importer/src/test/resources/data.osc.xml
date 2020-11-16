@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<osmChange generator="osmium/1.8.0" version="0.6">
+  <delete>
+    <node id="1" lat="1" lon="1" timestamp="2020-01-01T00:00:00Z" version="1"/>
+  </delete>
+  <modify>
+    <node id="2" lat="1" lon="1" timestamp="2020-01-01T00:00:00Z" version="1"/>
+  </modify>
+  <create>
+    <node id="4" lat="1" lon="4" timestamp="2020-01-01T00:00:00Z" version="1"/>
+  </create>
+  <modify>
+    <way id="1" timestamp="2020-01-01T00:00:00Z" version="1">
+      <nd ref="2"/>
+      <nd ref="3"/>
+      <nd ref="4"/>
+    </way>
+  </modify>
+</osmChange>

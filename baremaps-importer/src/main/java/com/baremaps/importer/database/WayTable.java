@@ -101,7 +101,7 @@ public class WayTable implements ElementTable<Way> {
   public Way select(Long id) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(select)) {
-      statement.setLong(1, id);
+      statement.setObject(1, id);
       ResultSet result = statement.executeQuery();
       if (result.next()) {
         return getWay(result);
@@ -174,11 +174,11 @@ public class WayTable implements ElementTable<Way> {
   }
 
   private void setWay(PreparedStatement statement, Way entity) throws SQLException {
-    statement.setLong(1, entity.getId());
-    statement.setInt(2, entity.getInfo().getVersion());
-    statement.setInt(3, entity.getInfo().getUid());
+    statement.setObject(1, entity.getId());
+    statement.setObject(2, entity.getInfo().getVersion());
+    statement.setObject(3, entity.getInfo().getUid());
     statement.setObject(4, entity.getInfo().getTimestamp());
-    statement.setLong(5, entity.getInfo().getChangeset());
+    statement.setObject(5, entity.getInfo().getChangeset());
     statement.setObject(6, entity.getTags());
     statement.setObject(7, entity.getNodes().stream().mapToLong(Long::longValue).toArray());
     statement.setBytes(8, GeometryUtil.serialize(entity.getGeometry()));
@@ -187,7 +187,7 @@ public class WayTable implements ElementTable<Way> {
   public void delete(Long id) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(delete)) {
-      statement.setLong(1, id);
+      statement.setObject(1, id);
       statement.execute();
     } catch (SQLException e) {
       throw new DatabaseException(e);
@@ -200,7 +200,7 @@ public class WayTable implements ElementTable<Way> {
         PreparedStatement statement = connection.prepareStatement(delete)) {
       for (Long id : ids) {
         statement.clearParameters();
-        statement.setLong(1, id);
+        statement.setObject(1, id);
         statement.execute();
       }
       statement.executeBatch();

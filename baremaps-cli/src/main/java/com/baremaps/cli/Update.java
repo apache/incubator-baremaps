@@ -14,13 +14,17 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.importer.database.DataUpdater;
+import com.baremaps.importer.DataImporter;
+import com.baremaps.importer.DataUpdater;
+import com.baremaps.importer.cache.PostgisCoordinateCache;
+import com.baremaps.importer.cache.PostgisReferenceCache;
+import com.baremaps.importer.database.UpdateHandler;
 import com.baremaps.importer.database.DeltaProducer;
 import com.baremaps.importer.database.HeaderTable;
 import com.baremaps.importer.database.NodeTable;
 import com.baremaps.importer.database.RelationTable;
 import com.baremaps.importer.database.WayTable;
-import com.baremaps.importer.geometry.ChangeGeometryBuilder;
+import com.baremaps.importer.geometry.GeometryBuilder;
 import com.baremaps.importer.geometry.ProjectionTransformer;
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.StateReader;
@@ -34,6 +38,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Path;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.Level;
@@ -92,14 +97,12 @@ public class Update implements Callable<Integer> {
 
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
-    CRSFactory crsFactory = new CRSFactory();
-    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
-    CoordinateReferenceSystem targetCRS = crsFactory.createFromName("EPSG:3857");
-    CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-    CoordinateTransform coordinateTransform = coordinateTransformFactory
-        .createTransform(sourceCRS, targetCRS);
-    GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
-    ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransform);
+    GeometryFactory source = new GeometryFactory(new PrecisionModel(), 4326);
+    GeometryFactory target = new GeometryFactory(new PrecisionModel(), 3857);
+    ProjectionTransformer projectionTransformer = new ProjectionTransformer(source, target);
+
+    PostgisCoordinateCache coordinateCache = new PostgisCoordinateCache(datasource);
+    PostgisReferenceCache referenceCache = new PostgisReferenceCache(datasource);
 
     NodeTable nodeTable = new NodeTable(datasource);
     WayTable wayTable = new WayTable(datasource);
@@ -122,35 +125,33 @@ public class Update implements Callable<Integer> {
     logger.info("Downloading diff file");
     Path path = blobStore.fetch(changeURI);
 
-    logger.info("Updating database");
-    try {
-      ChangeGeometryBuilder changeGeometryBuilder = new ChangeGeometryBuilder(geometryFactory);
-      DeltaProducer deltaProducer = new DeltaProducer(nodeTable, wayTable, relationTable, projectionTransformer, zoom);
-      DataUpdater dataUpdater = new DataUpdater(nodeTable, wayTable, relationTable);
-      OpenStreetMap.changeStream(path)
-          .peek(changeGeometryBuilder)
-          .peek(deltaProducer)
-          .forEach(dataUpdater);
+    DataUpdater dataUpdater = new DataUpdater(
+        projectionTransformer,
+        coordinateCache,
+        referenceCache,
+        headerTable,
+        nodeTable,
+        wayTable,
+        relationTable);
+    Set<Tile> tiles = dataUpdater.execute(path);
 
-      logger.info("Saving differences");
-      try (PrintWriter diffPrintWriter = new PrintWriter(blobStore.write(delta))) {
-        for (Tile tile : deltaProducer.getTiles()) {
-          diffPrintWriter.println(String.format("%d/%d/%d", tile.x(), tile.y(), tile.z()));
-        }
+    logger.info("Saving differences");
+    try (PrintWriter diffPrintWriter = new PrintWriter(blobStore.write(delta))) {
+      for (Tile tile : tiles) {
+        diffPrintWriter.println(String.format("%d/%d/%d", tile.x(), tile.y(), tile.z()));
       }
+    }
 
-      logger.info("Updating state information");
-      try (InputStream inputStream = blobStore.read(stateURI)) {
-        State state = new StateReader(inputStream).read();
-        headerTable.insert(new Header(
-            state.getTimestamp(),
-            state.getSequenceNumber(),
-            header.getReplicationUrl(),
-            header.getSource(),
-            header.getWritingProgram()));
-      }
-    } catch (StreamException e) {
-      logger.error(e.getCause());
+    logger.info("Updating state information");
+    try (InputStream inputStream = blobStore.read(stateURI)) {
+      State state = new StateReader(inputStream).read();
+      headerTable.insert(
+          new Header(
+          state.getTimestamp(),
+          state.getSequenceNumber(),
+          header.getReplicationUrl(),
+          header.getSource(),
+          header.getWritingProgram()));
     }
 
     return 0;

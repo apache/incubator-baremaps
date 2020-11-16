@@ -14,12 +14,13 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.importer.DataImporter;
 import com.baremaps.importer.cache.Cache;
 import com.baremaps.importer.cache.CacheImporter;
 import com.baremaps.importer.cache.InMemoryCache;
 import com.baremaps.importer.cache.LmdbCoordinateCache;
 import com.baremaps.importer.cache.LmdbReferencesCache;
-import com.baremaps.importer.database.DataImporter;
+import com.baremaps.importer.database.ImportHandler;
 import com.baremaps.importer.database.HeaderTable;
 import com.baremaps.importer.database.NodeTable;
 import com.baremaps.importer.database.RelationTable;
@@ -149,14 +150,9 @@ public class Import implements Callable<Integer> {
     logger.info("Fetching data");
     Path path = mixins.blobStore().fetch(input);
 
-    CRSFactory crsFactory = new CRSFactory();
-    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName("EPSG:4326");
-    CoordinateReferenceSystem targetCRS = crsFactory.createFromName("EPSG:3857");
-    CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
-    CoordinateTransform coordinateTransform = coordinateTransformFactory
-        .createTransform(sourceCRS, targetCRS);
-    GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 3857);
-    ProjectionTransformer projectionTransformer = new ProjectionTransformer(coordinateTransform);
+    GeometryFactory source = new GeometryFactory(new PrecisionModel(), 4326);
+    GeometryFactory target = new GeometryFactory(new PrecisionModel(), 3857);
+    ProjectionTransformer projectionTransformer = new ProjectionTransformer(source, target);
 
     HeaderTable headerTable = new HeaderTable(datasource);
     NodeTable nodeTable = new NodeTable(datasource);
@@ -164,11 +160,11 @@ public class Import implements Callable<Integer> {
     RelationTable relationTable = new RelationTable(datasource);
 
     final Cache<Long, Coordinate> coordinateCache;
-    final Cache<Long, List<Long>> referencesCache;
+    final Cache<Long, List<Long>> referenceCache;
     switch (cacheType) {
       case inmemory:
         coordinateCache = new InMemoryCache<>();
-        referencesCache = new InMemoryCache<>();
+        referenceCache = new InMemoryCache<>();
         break;
       case lmdb:
         if (cacheDirectory != null) {
@@ -181,29 +177,21 @@ public class Import implements Callable<Integer> {
             .setMaxDbs(3)
             .open(cacheDirectory.toFile());
         coordinateCache = new LmdbCoordinateCache(env);
-        referencesCache = new LmdbReferencesCache(env);
+        referenceCache = new LmdbReferencesCache(env);
         break;
       default:
         throw new UnsupportedOperationException("Unsupported cache type");
     }
 
-    logger.info("Creating cache");
-    try (CacheImporter cacheImporter = new CacheImporter(coordinateCache, referencesCache)) {
-      OpenStreetMap.entityStream(path)
-          .forEach(cacheImporter);
-    }
-
-    logger.info("Importing data");
-    try (DataImporter dataImporter = new DataImporter(headerTable, nodeTable, wayTable, relationTable)) {
-      GeometryBuilder geometryBuilder = new GeometryBuilder(
-          geometryFactory,
-          coordinateCache,
-          referencesCache);
-      OpenStreetMap.entityStream(path)
-          .peek(geometryBuilder)
-          .peek(projectionTransformer)
-          .forEach(dataImporter);
-    }
+    DataImporter dataImporter = new DataImporter(
+        projectionTransformer,
+        coordinateCache,
+        referenceCache,
+        headerTable,
+        nodeTable,
+        wayTable,
+        relationTable);
+    dataImporter.execute(path);
 
     logger.info("Indexing geometries");
     if (createGistIndexes) {

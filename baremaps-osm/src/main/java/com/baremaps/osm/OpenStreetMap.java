@@ -46,7 +46,8 @@ public class OpenStreetMap {
       return new XmlEntityReader(new GZIPInputStream(new BufferedInputStream(Files.newInputStream(path))), parallel);
     } else if (path.toString().endsWith((".xml.bz2"))
         || path.toString().endsWith(".osm.bz2")) {
-      return new XmlEntityReader(new BZip2CompressorInputStream(new BufferedInputStream(Files.newInputStream(path))), parallel);
+      return new XmlEntityReader(new BZip2CompressorInputStream(new BufferedInputStream(Files.newInputStream(path))),
+          parallel);
     } else {
       throw new IOException("Unrecognized file extension: " + path.getFileName());
     }
@@ -65,12 +66,14 @@ public class OpenStreetMap {
   }
 
   public static ChangeReader changeReader(Path path, boolean parallel) throws IOException {
-    if (path.toString().endsWith("osc")) {
+    if (path.toString().endsWith("osc")
+        || path.toString().endsWith("osc.xml")) {
       return new XmlChangeReader(new BufferedInputStream(Files.newInputStream(path)), parallel);
     } else if (path.toString().endsWith("osc.gz")) {
       return new XmlChangeReader(new GZIPInputStream(new BufferedInputStream(Files.newInputStream(path))), parallel);
     } else if (path.toString().endsWith("osc.bz2")) {
-      return new XmlChangeReader(new BZip2CompressorInputStream(new BufferedInputStream(Files.newInputStream(path))), parallel);
+      return new XmlChangeReader(new BZip2CompressorInputStream(new BufferedInputStream(Files.newInputStream(path))),
+          parallel);
     } else {
       throw new IOException("Unrecognized file extension: " + path.getFileName());
     }

@@ -153,8 +153,7 @@ public class GeometryBuilderTest {
           new Member(3l, MemberType.way, "inner"),
           new Member(4l, MemberType.way, "outer")));
 
-  public static final GeometryBuilder GEOMETRY_BUILDER = new GeometryBuilder(
-      GEOMETRY_FACTORY, COORDINATE_CACHE, REFERENCE_CACHE);
+  public static final GeometryBuilder GEOMETRY_BUILDER = new GeometryBuilder(COORDINATE_CACHE, REFERENCE_CACHE);
 
   @Test
   public void handleNode() {

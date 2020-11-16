@@ -15,26 +15,38 @@
 package com.baremaps.importer.geometry;
 
 import com.baremaps.osm.ElementHandler;
+import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import java.util.stream.Stream;
-import javax.inject.Inject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.geom.util.GeometryTransformer;
+import org.locationtech.proj4j.CRSFactory;
+import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.CoordinateTransform;
+import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
 public class ProjectionTransformer extends GeometryTransformer implements ElementHandler {
 
+  private final GeometryFactory source;
+  private final GeometryFactory target;
+
   private final CoordinateTransform coordinateTransform;
 
-  @Inject
-  public ProjectionTransformer(CoordinateTransform coordinateTransform) {
-    this.coordinateTransform = coordinateTransform;
+  public ProjectionTransformer(GeometryFactory source, GeometryFactory target) {
+    this.source = source;
+    this.target = target;
+    CRSFactory crsFactory = new CRSFactory();
+    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName(String.format("EPSG:%d", source.getSRID()));
+    CoordinateReferenceSystem targetCRS = crsFactory.createFromName(String.format("EPSG:%d", target.getSRID()));
+    CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
+    coordinateTransform = coordinateTransformFactory.createTransform(sourceCRS, targetCRS);
   }
 
   @Override
@@ -53,22 +65,33 @@ public class ProjectionTransformer extends GeometryTransformer implements Elemen
 
   @Override
   public void handle(Node node) {
-    if (node.getGeometry() != null) {
-      node.setGeometry(transform(node.getGeometry()));
-    }
+    handleElement(node);
   }
 
   @Override
   public void handle(Way way) {
-    if (way.getGeometry() != null) {
-      way.setGeometry(transform(way.getGeometry()));
-    }
+    handleElement(way);
   }
 
   @Override
   public void handle(Relation relation) {
-    if (relation.getGeometry() != null) {
-      relation.setGeometry(transform(relation.getGeometry()));
+    handleElement(relation);
+  }
+
+  private void handleElement(Element element) {
+    if (element.getGeometry() != null) {
+      Geometry geometry = transform(element.getGeometry());
+      geometry.setSRID(target.getSRID());
+      element.setGeometry(geometry);
     }
   }
+
+  public GeometryFactory getSource() {
+    return source;
+  }
+
+  public GeometryFactory getTarget() {
+    return target;
+  }
+
 }

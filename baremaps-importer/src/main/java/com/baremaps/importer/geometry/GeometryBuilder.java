@@ -16,6 +16,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 
 public class GeometryBuilder implements ElementHandler {
@@ -27,10 +28,9 @@ public class GeometryBuilder implements ElementHandler {
   private final Cache<Long, List<Long>> referenceCache;
 
   public GeometryBuilder(
-      GeometryFactory geometryFactory,
       Cache<Long, Coordinate> coordinateCache,
       Cache<Long, List<Long>> referenceCache) {
-    this.geometryFactory = geometryFactory;
+    this.geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
     this.coordinateCache = coordinateCache;
     this.referenceCache = referenceCache;
   }
