@@ -57,7 +57,7 @@ public class Export implements Callable<Integer> {
   private static Logger logger = LogManager.getLogger();
 
   @Mixin
-  private Mixins mixins;
+  private Options mixins;
 
   @Option(
       names = {"--database"},

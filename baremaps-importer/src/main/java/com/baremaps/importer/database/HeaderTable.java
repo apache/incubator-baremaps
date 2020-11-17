@@ -64,7 +64,7 @@ public class HeaderTable {
     }
   }
 
-  public Header getLast() throws DatabaseException {
+  public Header latest() throws DatabaseException {
     return select().get(0);
   }
 

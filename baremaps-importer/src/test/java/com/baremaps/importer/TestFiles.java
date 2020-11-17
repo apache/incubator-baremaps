@@ -14,24 +14,21 @@
 
 package com.baremaps.importer;
 
-import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class TestFiles {
 
-
-  public static Path dataOsmXml() throws URISyntaxException {
-      return Paths.get(TestFiles.class.getClassLoader().getResource("data.osm.xml").toURI());
+  public static URI dataOsmXml() throws URISyntaxException {
+      return TestFiles.class.getClassLoader().getResource("data.osm.xml").toURI();
   }
 
-  public static Path dataOscXml() throws URISyntaxException {
-      return Paths.get(TestFiles.class.getClassLoader().getResource("data.osc.xml").toURI());
+  public static URI dataOscXml() throws URISyntaxException {
+      return TestFiles.class.getClassLoader().getResource("data.osc.xml").toURI();
   }
 
-  public static Path dataStateTxt() throws URISyntaxException {
-      return Paths.get(TestFiles.class.getClassLoader().getResource("data-state.txt").toURI());
+  public static URI dataStateTxt() throws URISyntaxException {
+      return TestFiles.class.getClassLoader().getResource("data-state.txt").toURI();
   }
 
 }

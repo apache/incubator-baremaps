@@ -1,6 +1,6 @@
 package com.baremaps.importer.database;
 
-import com.baremaps.importer.geometry.ProjectionTransformer;
+import com.baremaps.importer.geometry.ProjectionHandler;
 import com.baremaps.osm.ChangeHandler;
 import com.baremaps.osm.ElementHandler;
 import com.baremaps.osm.domain.Change;
@@ -14,9 +14,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Geometry;
 
-public class DeltaProducer implements ChangeHandler {
+public class TileHandler implements ChangeHandler {
 
-  private final ProjectionTransformer projectionTransformer;
+  private final ProjectionHandler projectionHandler;
 
   private final NodeTable nodeTable;
 
@@ -28,13 +28,13 @@ public class DeltaProducer implements ChangeHandler {
 
   private final Set<Tile> tiles = new HashSet<>();
 
-  public DeltaProducer(
+  public TileHandler(
       NodeTable nodeTable,
       WayTable wayTable,
       RelationTable relationTable,
-      ProjectionTransformer projectionTransformer,
+      ProjectionHandler projectionHandler,
       int zoom) {
-    this.projectionTransformer = projectionTransformer;
+    this.projectionHandler = projectionHandler;
     this.nodeTable = nodeTable;
     this.wayTable = wayTable;
     this.relationTable = relationTable;
@@ -93,7 +93,7 @@ public class DeltaProducer implements ChangeHandler {
   private void handleGeometry(Geometry geometry) {
     if (geometry != null) {
       tiles.addAll(
-          Tile.getTiles(projectionTransformer.transform(geometry).getEnvelopeInternal(), zoom)
+          Tile.getTiles(projectionHandler.transform(geometry).getEnvelopeInternal(), zoom)
               .collect(Collectors.toList()));
     }
   }

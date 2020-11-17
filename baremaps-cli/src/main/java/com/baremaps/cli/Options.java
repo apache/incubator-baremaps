@@ -23,13 +23,17 @@ import java.util.ArrayList;
 import java.util.List;
 import picocli.CommandLine.Option;
 
-public class Mixins {
+public class Options {
+
+  public enum Level {
+    DEBUG, INFO, TRACE, ERROR
+  }
 
   @Option(
       names = {"--log-level"},
       paramLabel = "LOG_LEVEL",
       description = {"The log level."})
-  public LevelOption logLevel = LevelOption.INFO;
+  public Level logLevel = Level.INFO;
 
   @Option(
       names = {"--enable-aws"},
@@ -46,5 +50,6 @@ public class Mixins {
     }
     return new CompositeBlobStore(components);
   }
+
 
 }

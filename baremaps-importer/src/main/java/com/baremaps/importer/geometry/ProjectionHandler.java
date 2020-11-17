@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 import org.locationtech.proj4j.CRSFactory;
@@ -32,19 +31,17 @@ import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
-public class ProjectionTransformer extends GeometryTransformer implements ElementHandler {
+public class ProjectionHandler extends GeometryTransformer implements ElementHandler {
 
-  private final GeometryFactory source;
-  private final GeometryFactory target;
+  private final int srid;
 
   private final CoordinateTransform coordinateTransform;
 
-  public ProjectionTransformer(GeometryFactory source, GeometryFactory target) {
-    this.source = source;
-    this.target = target;
+  public ProjectionHandler(int srid) {
+    this.srid = srid;
     CRSFactory crsFactory = new CRSFactory();
-    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName(String.format("EPSG:%d", source.getSRID()));
-    CoordinateReferenceSystem targetCRS = crsFactory.createFromName(String.format("EPSG:%d", target.getSRID()));
+    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName(String.format("EPSG:4326"));
+    CoordinateReferenceSystem targetCRS = crsFactory.createFromName(String.format("EPSG:%d", srid));
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
     coordinateTransform = coordinateTransformFactory.createTransform(sourceCRS, targetCRS);
   }
@@ -81,17 +78,9 @@ public class ProjectionTransformer extends GeometryTransformer implements Elemen
   private void handleElement(Element element) {
     if (element.getGeometry() != null) {
       Geometry geometry = transform(element.getGeometry());
-      geometry.setSRID(target.getSRID());
+      geometry.setSRID(srid);
       element.setGeometry(geometry);
     }
-  }
-
-  public GeometryFactory getSource() {
-    return source;
-  }
-
-  public GeometryFactory getTarget() {
-    return target;
   }
 
 }

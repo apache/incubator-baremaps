@@ -14,20 +14,15 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.importer.DataImporter;
+import com.baremaps.importer.ImportTask;
 import com.baremaps.importer.cache.Cache;
-import com.baremaps.importer.cache.CacheImporter;
 import com.baremaps.importer.cache.InMemoryCache;
 import com.baremaps.importer.cache.LmdbCoordinateCache;
 import com.baremaps.importer.cache.LmdbReferencesCache;
-import com.baremaps.importer.database.ImportHandler;
 import com.baremaps.importer.database.HeaderTable;
 import com.baremaps.importer.database.NodeTable;
 import com.baremaps.importer.database.RelationTable;
 import com.baremaps.importer.database.WayTable;
-import com.baremaps.importer.geometry.GeometryBuilder;
-import com.baremaps.importer.geometry.ProjectionTransformer;
-import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.util.postgis.PostgisHelper;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -42,12 +37,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.proj4j.CRSFactory;
-import org.locationtech.proj4j.CoordinateReferenceSystem;
-import org.locationtech.proj4j.CoordinateTransform;
-import org.locationtech.proj4j.CoordinateTransformFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
@@ -62,7 +51,7 @@ public class Import implements Callable<Integer> {
   }
 
   @Mixin
-  private Mixins mixins;
+  private Options mixins;
 
   @Option(
       names = {"--input"},
@@ -147,13 +136,6 @@ public class Import implements Callable<Integer> {
       PostgisHelper.executeParallel(datasource, "osm_create_tables.sql");
     }
 
-    logger.info("Fetching data");
-    Path path = mixins.blobStore().fetch(input);
-
-    GeometryFactory source = new GeometryFactory(new PrecisionModel(), 4326);
-    GeometryFactory target = new GeometryFactory(new PrecisionModel(), 3857);
-    ProjectionTransformer projectionTransformer = new ProjectionTransformer(source, target);
-
     HeaderTable headerTable = new HeaderTable(datasource);
     NodeTable nodeTable = new NodeTable(datasource);
     WayTable wayTable = new WayTable(datasource);
@@ -183,15 +165,17 @@ public class Import implements Callable<Integer> {
         throw new UnsupportedOperationException("Unsupported cache type");
     }
 
-    DataImporter dataImporter = new DataImporter(
-        projectionTransformer,
+    new ImportTask(
+        input,
+        mixins.blobStore(),
         coordinateCache,
         referenceCache,
         headerTable,
         nodeTable,
         wayTable,
-        relationTable);
-    dataImporter.execute(path);
+        relationTable,
+        3857
+    ).execute();
 
     logger.info("Indexing geometries");
     if (createGistIndexes) {

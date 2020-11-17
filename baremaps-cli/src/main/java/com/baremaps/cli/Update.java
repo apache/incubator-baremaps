@@ -14,23 +14,16 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.importer.DataImporter;
-import com.baremaps.importer.DataUpdater;
+import com.baremaps.importer.UpdateTask;
 import com.baremaps.importer.cache.PostgisCoordinateCache;
 import com.baremaps.importer.cache.PostgisReferenceCache;
-import com.baremaps.importer.database.UpdateHandler;
-import com.baremaps.importer.database.DeltaProducer;
 import com.baremaps.importer.database.HeaderTable;
 import com.baremaps.importer.database.NodeTable;
 import com.baremaps.importer.database.RelationTable;
 import com.baremaps.importer.database.WayTable;
-import com.baremaps.importer.geometry.GeometryBuilder;
-import com.baremaps.importer.geometry.ProjectionTransformer;
-import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.StateReader;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.State;
-import com.baremaps.osm.stream.StreamException;
 import com.baremaps.util.postgis.PostgisHelper;
 import com.baremaps.util.storage.BlobStore;
 import com.baremaps.util.tile.Tile;
@@ -45,12 +38,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.proj4j.CRSFactory;
-import org.locationtech.proj4j.CoordinateReferenceSystem;
-import org.locationtech.proj4j.CoordinateTransform;
-import org.locationtech.proj4j.CoordinateTransformFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
@@ -61,7 +48,7 @@ public class Update implements Callable<Integer> {
   private static Logger logger = LogManager.getLogger();
 
   @Mixin
-  private Mixins mixins;
+  private Options mixins;
 
   @Option(
       names = {"--input"},
@@ -97,19 +84,14 @@ public class Update implements Callable<Integer> {
 
     PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
 
-    GeometryFactory source = new GeometryFactory(new PrecisionModel(), 4326);
-    GeometryFactory target = new GeometryFactory(new PrecisionModel(), 3857);
-    ProjectionTransformer projectionTransformer = new ProjectionTransformer(source, target);
-
     PostgisCoordinateCache coordinateCache = new PostgisCoordinateCache(datasource);
     PostgisReferenceCache referenceCache = new PostgisReferenceCache(datasource);
-
+    HeaderTable headerTable = new HeaderTable(datasource);
     NodeTable nodeTable = new NodeTable(datasource);
     WayTable wayTable = new WayTable(datasource);
     RelationTable relationTable = new RelationTable(datasource);
 
-    HeaderTable headerTable = new HeaderTable(datasource);
-    Header header = headerTable.getLast();
+    Header header = headerTable.latest();
     long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
 
     BlobStore blobStore = mixins.blobStore();
@@ -125,15 +107,17 @@ public class Update implements Callable<Integer> {
     logger.info("Downloading diff file");
     Path path = blobStore.fetch(changeURI);
 
-    DataUpdater dataUpdater = new DataUpdater(
-        projectionTransformer,
+    Set<Tile> tiles = new UpdateTask(
+        blobStore,
         coordinateCache,
         referenceCache,
         headerTable,
         nodeTable,
         wayTable,
-        relationTable);
-    Set<Tile> tiles = dataUpdater.execute(path);
+        relationTable,
+        3857,
+        zoom
+    ).execute();
 
     logger.info("Saving differences");
     try (PrintWriter diffPrintWriter = new PrintWriter(blobStore.write(delta))) {
@@ -147,11 +131,11 @@ public class Update implements Callable<Integer> {
       State state = new StateReader(inputStream).read();
       headerTable.insert(
           new Header(
-          state.getTimestamp(),
-          state.getSequenceNumber(),
-          header.getReplicationUrl(),
-          header.getSource(),
-          header.getWritingProgram()));
+              state.getTimestamp(),
+              state.getSequenceNumber(),
+              header.getReplicationUrl(),
+              header.getSource(),
+              header.getWritingProgram()));
     }
 
     return 0;

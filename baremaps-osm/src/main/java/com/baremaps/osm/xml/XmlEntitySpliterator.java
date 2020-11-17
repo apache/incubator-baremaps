@@ -61,8 +61,11 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
   private static final String ATTRIBUTE_NAME_ID = "id";
   private static final String ATTRIBUTE_NAME_VERSION = "version";
   private static final String ATTRIBUTE_NAME_GENERATOR = "generator";
+  private static final String ATTRIBUTE_NAME_SOURCE = "source";
   private static final String ATTRIBUTE_NAME_TIMESTAMP = "timestamp";
+  private static final String ATTRIBUTE_NAME_OSMOSIS_REPLICATION_URL = "osmosis_replication_url";
   private static final String ATTRIBUTE_NAME_OSMOSIS_REPLICATION_TIMESTAMP = "osmosis_replication_timestamp";
+  private static final String ATTRIBUTE_NAME_OSMOSIS_REPLICATION_SEQUENCE_NUMBER = "osmosis_replication_sequence_number";
   private static final String ATTRIBUTE_NAME_USER_ID = "uid";
   private static final String ATTRIBUTE_NAME_USER = "user";
   private static final String ATTRIBUTE_NAME_CHANGESET_ID = "changeset";
@@ -143,14 +146,15 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
   private Header readHeader() throws XMLStreamException {
     String fileVersion = reader.getAttributeValue(null, ATTRIBUTE_NAME_VERSION);
     String generator = reader.getAttributeValue(null, ATTRIBUTE_NAME_GENERATOR);
-
+    String source = reader.getAttributeValue(null, ATTRIBUTE_NAME_SOURCE);
+    String replicationUrl = reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_URL);
+    String replicationSequenceNumberValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_SEQUENCE_NUMBER);
+    Long replicationSequenceNumber = replicationSequenceNumberValue != null ? Long.parseLong(replicationSequenceNumberValue) : null;
     String timestampValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_TIMESTAMP);
     LocalDateTime timestamp = timestampValue != null ? LocalDateTime.parse(timestampValue, format) : null;
-
     String osmosisReplicationTimestampValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_TIMESTAMP);
     timestamp = osmosisReplicationTimestampValue != null ? LocalDateTime.parse(osmosisReplicationTimestampValue, format) : timestamp;
-
-    return new Header(timestamp, null, null, "", generator);
+    return new Header(timestamp, replicationSequenceNumber, replicationUrl, source, generator);
   }
 
   private Bound readBounds() throws XMLStreamException {

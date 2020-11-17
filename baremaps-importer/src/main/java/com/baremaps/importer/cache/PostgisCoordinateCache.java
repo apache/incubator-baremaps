@@ -31,10 +31,10 @@ import org.locationtech.jts.geom.Point;
 public class PostgisCoordinateCache implements Cache<Long, Coordinate> {
 
   private static final String SELECT =
-      "SELECT st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ?";
+      "SELECT lon, lat FROM osm_nodes WHERE id = ?";
 
   private static final String SELECT_IN =
-      "SELECT id, st_asbinary(ST_Transform(geom, 4326)) FROM osm_nodes WHERE id = ANY (?)";
+      "SELECT id, lon, lat FROM osm_nodes WHERE id = ANY (?)";
 
   private final DataSource dataSource;
 
@@ -49,10 +49,11 @@ public class PostgisCoordinateCache implements Cache<Long, Coordinate> {
       statement.setLong(1, id);
       ResultSet result = statement.executeQuery();
       if (result.next()) {
-        Point point = (Point) GeometryUtil.deserialize(result.getBytes(6));
-        return point.getCoordinate();
+        Double lon = result.getDouble(1);
+        Double lat = result.getDouble(2);
+        return new Coordinate(lon, lat);
       } else {
-        throw new IllegalArgumentException();
+        return null;
       }
     } catch (SQLException e) {
       throw new CacheException(e);
@@ -68,8 +69,9 @@ public class PostgisCoordinateCache implements Cache<Long, Coordinate> {
       Map<Long, Coordinate> nodes = new HashMap<>();
       while (result.next()) {
         Long id = result.getLong(1);
-        Point point = (Point) GeometryUtil.deserialize(result.getBytes(2));
-        nodes.put(id, point.getCoordinate());
+        Double lon = result.getDouble(2);
+        Double lat = result.getDouble(3);
+        nodes.put(id, new Coordinate(lon, lat));
       }
       return keys.stream().map(key -> nodes.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
