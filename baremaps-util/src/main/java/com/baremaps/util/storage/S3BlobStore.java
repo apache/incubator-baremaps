@@ -66,7 +66,7 @@ public class S3BlobStore extends BlobStore {
 
   @Override
   public InputStream read(URI uri) throws IOException {
-    logger.debug("Read {}", uri);
+    logger.info("Read {}", uri);
     try {
       GetObjectRequest request = GetObjectRequest.builder()
           .bucket(uri.getHost())
@@ -80,7 +80,7 @@ public class S3BlobStore extends BlobStore {
 
   @Override
   public byte[] readByteArray(URI uri) throws IOException {
-    logger.debug("Write {}", uri);
+    logger.info("Write {}", uri);
     try {
       GetObjectRequest request = GetObjectRequest.builder()
           .bucket(uri.getHost())
@@ -94,7 +94,7 @@ public class S3BlobStore extends BlobStore {
 
   @Override
   public OutputStream write(URI uri) throws IOException {
-    logger.debug("Write {}", uri);
+    logger.info("Write {}", uri);
     return new ByteArrayOutputStream() {
       @Override
       public void close() throws IOException {
@@ -114,7 +114,7 @@ public class S3BlobStore extends BlobStore {
 
   @Override
   public void writeByteArray(URI uri, byte[] bytes) throws IOException {
-    logger.debug("Write {}", uri);
+    logger.info("Write {}", uri);
     try {
       PutObjectRequest request = PutObjectRequest.builder()
           .bucket(uri.getHost())
@@ -128,7 +128,7 @@ public class S3BlobStore extends BlobStore {
 
   @Override
   public void delete(URI uri) throws IOException {
-    logger.debug("Delete {}", uri);
+    logger.info("Delete {}", uri);
     try {
       DeleteObjectRequest request = DeleteObjectRequest.builder()
           .bucket(uri.getHost())
@@ -138,11 +138,6 @@ public class S3BlobStore extends BlobStore {
     } catch (S3Exception ex) {
       throw new IOException(ex);
     }
-  }
-
-  public static void main(String[] args) throws URISyntaxException, IOException {
-    S3BlobStore fs = new S3BlobStore();
-    fs.writeByteArray(new URI("s3://baremaps-test/tiles/"), "test".getBytes(Charsets.UTF_8));
   }
 
 }

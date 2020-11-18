@@ -7,20 +7,18 @@ import com.baremaps.importer.database.RelationTable;
 import com.baremaps.importer.database.TileHandler;
 import com.baremaps.importer.database.UpdateHandler;
 import com.baremaps.importer.database.WayTable;
-import com.baremaps.importer.geometry.GeometryBuilder;
-import com.baremaps.importer.geometry.ProjectionHandler;
+import com.baremaps.importer.geometry.GeometryHandler;
+import com.baremaps.importer.geometry.ProjectionTransformer;
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.State;
 import com.baremaps.util.storage.BlobStore;
 import com.baremaps.util.tile.Tile;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
@@ -76,22 +74,22 @@ public class UpdateTask {
     String replicationUrl = header.getReplicationUrl();
     Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
 
-    logger.info("Downloading data");
-    Path changeFile = blobStore.fetch(resolve(replicationUrl, sequenceNumber, "osc.gz"));
-    Path stateFile = blobStore.fetch(resolve(replicationUrl, sequenceNumber, "state.txt"));
+    URI changeFileUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
+    Path changeFilePath = blobStore.fetch(changeFileUri);
 
-    logger.info("Importing changes");
-    GeometryBuilder geometryBuilder = new GeometryBuilder(coordinateCache, referenceCache);
-    ProjectionHandler projectionHandler = new ProjectionHandler(srid);
-    TileHandler tileHandler = new TileHandler(nodeTable, wayTable, relationTable, projectionHandler, zoom);
+    URI stateFileUri = resolve(replicationUrl, sequenceNumber, "state.txt");
+    Path stateFile = blobStore.fetch(stateFileUri);
+
+    logger.info("Importing changes and state in database");
+    GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
+    ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
+    TileHandler tileHandler = new TileHandler(nodeTable, wayTable, relationTable, new ProjectionTransformer(srid, 4326), zoom);
     UpdateHandler updateHandler = new UpdateHandler(headerTable, nodeTable, wayTable, relationTable);
-    OpenStreetMap.changeStream(changeFile)
-        .peek(change -> change.getElements().forEach(geometryBuilder))
-        .peek(change -> change.getElements().forEach(projectionHandler))
+    OpenStreetMap.changeStream(changeFilePath)
+        .peek(change -> change.getElements().forEach(geometryHandler))
+        .peek(change -> change.getElements().forEach(projectionTransformer))
         .peek(tileHandler)
         .forEach(updateHandler);
-
-    logger.info("Updating state");
     State state = OpenStreetMap.state(stateFile);
     headerTable.insert(new Header(
         state.getTimestamp(),

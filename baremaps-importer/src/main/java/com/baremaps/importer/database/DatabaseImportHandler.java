@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DatabaseHandler implements EntityHandler, AutoCloseable {
+public class DatabaseImportHandler implements EntityHandler, AutoCloseable {
 
   private final HeaderTable headerTable;
   private final NodeTable nodeTable;
@@ -23,7 +23,7 @@ public class DatabaseHandler implements EntityHandler, AutoCloseable {
   private final Map<Thread, List<Way>> wayBuffers = new ConcurrentHashMap<>();
   private final Map<Thread, List<Relation>> relationBuffers = new ConcurrentHashMap<>();
 
-  public DatabaseHandler(
+  public DatabaseImportHandler(
       HeaderTable headerTable,
       NodeTable nodeTable,
       WayTable wayTable,

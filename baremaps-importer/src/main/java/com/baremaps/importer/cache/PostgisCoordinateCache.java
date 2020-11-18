@@ -14,7 +14,6 @@
 
 package com.baremaps.importer.cache;
 
-import com.baremaps.importer.geometry.GeometryUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,7 +25,6 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Point;
 
 public class PostgisCoordinateCache implements Cache<Long, Coordinate> {
 

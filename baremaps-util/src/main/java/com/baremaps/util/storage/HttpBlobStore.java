@@ -24,8 +24,12 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.nio.file.Path;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class HttpBlobStore extends BlobStore {
+
+  private static Logger logger = LogManager.getLogger();
 
   private final String contentEncoding;
 
@@ -54,6 +58,7 @@ public class HttpBlobStore extends BlobStore {
 
   @Override
   public InputStream read(URI uri) throws IOException {
+    logger.info("Read {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
     conn.setDoOutput(true);
     conn.setRequestMethod("GET");
@@ -62,6 +67,7 @@ public class HttpBlobStore extends BlobStore {
 
   @Override
   public byte[] readByteArray(URI uri) throws IOException {
+    logger.info("Read {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
     conn.setDoOutput(true);
     conn.setRequestMethod("GET");
@@ -72,6 +78,7 @@ public class HttpBlobStore extends BlobStore {
 
   @Override
   public OutputStream write(URI uri) {
+    logger.info("Write {}", uri);
     return new ByteArrayOutputStream() {
       @Override
       public void close() throws IOException {
@@ -92,6 +99,7 @@ public class HttpBlobStore extends BlobStore {
 
   @Override
   public void writeByteArray(URI uri, byte[] bytes) throws IOException {
+    logger.info("Write {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
     conn.setDoOutput(true);
     conn.setRequestMethod("PUT");
@@ -106,6 +114,7 @@ public class HttpBlobStore extends BlobStore {
 
   @Override
   public void delete(URI uri) throws IOException {
+    logger.info("Delete {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
     conn.setDoOutput(true);
     conn.setRequestMethod("DELETE");

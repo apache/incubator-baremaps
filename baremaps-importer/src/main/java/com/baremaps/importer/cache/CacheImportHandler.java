@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.locationtech.jts.geom.Coordinate;
 
-public class CacheHandler implements EntityHandler, AutoCloseable {
+public class CacheImportHandler implements EntityHandler, AutoCloseable {
 
   private final Cache<Long, Coordinate> coordiateCache;
   private final Cache<Long, List<Long>> referenceCache;
@@ -21,7 +21,7 @@ public class CacheHandler implements EntityHandler, AutoCloseable {
   private final Map<Thread, List<Entry<Long, Coordinate>>> coordinateBuffers = new ConcurrentHashMap<>();
   private final Map<Thread, List<Entry<Long, List<Long>>>> referencesBuffers = new ConcurrentHashMap<>();
 
-  public CacheHandler(
+  public CacheImportHandler(
       Cache<Long, Coordinate> coordiateCache,
       Cache<Long, List<Long>> referenceCache) {
     this.coordiateCache = coordiateCache;

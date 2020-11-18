@@ -22,21 +22,28 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class BlobStore {
+
+  private static Logger logger = LogManager.getLogger();
 
   private final Map<URI, Path> cache = new HashMap<>();
 
   protected Path cache(URI uri) throws IOException {
     if (!cache.containsKey(uri)) {
+      String fileName = Paths.get(uri.getPath()).getFileName().toString();
+      File tmpFile = File.createTempFile("baremaps_", "_" + fileName);
+      logger.debug("Cache {} in {}", uri, tmpFile);
       try (InputStream input = read(uri)) {
-        File temp = File.createTempFile("baremaps_", ".tmp");
-        temp.deleteOnExit();
-        copy(input, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        cache.put(uri, temp.toPath());
+        tmpFile.deleteOnExit();
+        copy(input, tmpFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        cache.put(uri, tmpFile.toPath());
       }
     }
     return cache.get(uri);

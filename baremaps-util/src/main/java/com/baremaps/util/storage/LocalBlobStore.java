@@ -21,8 +21,12 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LocalBlobStore extends BlobStore {
+
+  private static Logger logger = LogManager.getLogger();
 
   @Override
   public boolean accept(URI uri) {
@@ -38,16 +42,19 @@ public class LocalBlobStore extends BlobStore {
 
   @Override
   public InputStream read(URI uri) throws IOException {
+    logger.debug("Read {}", uri);
     return Files.newInputStream(Paths.get(uri.getPath()).toAbsolutePath());
   }
 
   @Override
   public byte[] readByteArray(URI uri) throws IOException {
+    logger.debug("Read {}", uri);
     return Files.readAllBytes(Paths.get(uri.getPath()).toAbsolutePath());
   }
 
   @Override
   public OutputStream write(URI uri) throws IOException {
+    logger.debug("Write {}", uri);
     Path path = Paths.get(uri.getPath()).toAbsolutePath();
     if (!Files.exists(path.getParent())) {
       Files.createDirectories(path.getParent());
@@ -57,6 +64,7 @@ public class LocalBlobStore extends BlobStore {
 
   @Override
   public void writeByteArray(URI uri, byte[] bytes) throws IOException {
+    logger.debug("Write {}", uri);
     Path path = Paths.get(uri.getPath()).toAbsolutePath();
     if (!Files.exists(path.getParent())) {
       Files.createDirectories(path.getParent());
@@ -66,6 +74,7 @@ public class LocalBlobStore extends BlobStore {
 
   @Override
   public void delete(URI uri) throws IOException {
+    logger.debug("Delete {}", uri);
     Files.deleteIfExists(Paths.get(uri.getPath()).toAbsolutePath());
   }
 

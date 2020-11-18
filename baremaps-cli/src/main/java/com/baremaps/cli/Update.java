@@ -51,13 +51,6 @@ public class Update implements Callable<Integer> {
   private Options mixins;
 
   @Option(
-      names = {"--input"},
-      paramLabel = "OSC",
-      description = "The OpenStreetMap Change file.",
-      required = true)
-  private String input;
-
-  @Option(
       names = {"--database"},
       paramLabel = "JDBC",
       description = "The JDBC url of the Postgres database.",
@@ -77,6 +70,12 @@ public class Update implements Callable<Integer> {
       description = "The zoom level.")
   private int zoom = 14;
 
+  @Option(
+      names = {"--srid"},
+      paramLabel = "SRID",
+      description = "The projection.")
+  private int srid = 3857;
+
   @Override
   public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
@@ -91,22 +90,7 @@ public class Update implements Callable<Integer> {
     WayTable wayTable = new WayTable(datasource);
     RelationTable relationTable = new RelationTable(datasource);
 
-    Header header = headerTable.latest();
-    long nextSequenceNumber = header.getReplicationSequenceNumber() + 1;
-
     BlobStore blobStore = mixins.blobStore();
-
-    logger.info("Downloading changes");
-    String changePath = path(nextSequenceNumber) + ".osc.gz";
-    URI changeURI = new URI(String.format("%s/%s", input, changePath));
-
-    logger.info("Downloading state information");
-    String statePath = path(nextSequenceNumber) + ".state.txt";
-    URI stateURI = new URI(String.format("%s/%s", input, statePath));
-
-    logger.info("Downloading diff file");
-    Path path = blobStore.fetch(changeURI);
-
     Set<Tile> tiles = new UpdateTask(
         blobStore,
         coordinateCache,
@@ -115,7 +99,7 @@ public class Update implements Callable<Integer> {
         nodeTable,
         wayTable,
         relationTable,
-        3857,
+        srid,
         zoom
     ).execute();
 
@@ -124,18 +108,6 @@ public class Update implements Callable<Integer> {
       for (Tile tile : tiles) {
         diffPrintWriter.println(String.format("%d/%d/%d", tile.x(), tile.y(), tile.z()));
       }
-    }
-
-    logger.info("Updating state information");
-    try (InputStream inputStream = blobStore.read(stateURI)) {
-      State state = new StateReader(inputStream).read();
-      headerTable.insert(
-          new Header(
-              state.getTimestamp(),
-              state.getSequenceNumber(),
-              header.getReplicationUrl(),
-              header.getSource(),
-              header.getWritingProgram()));
     }
 
     return 0;

@@ -1,6 +1,6 @@
 package com.baremaps.importer.database;
 
-import com.baremaps.importer.geometry.ProjectionHandler;
+import com.baremaps.importer.geometry.ProjectionTransformer;
 import com.baremaps.osm.ChangeHandler;
 import com.baremaps.osm.ElementHandler;
 import com.baremaps.osm.domain.Change;
@@ -10,13 +10,15 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.util.tile.Tile;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
 public class TileHandler implements ChangeHandler {
 
-  private final ProjectionHandler projectionHandler;
+  private final ProjectionTransformer projectionTransformer;
 
   private final NodeTable nodeTable;
 
@@ -32,9 +34,9 @@ public class TileHandler implements ChangeHandler {
       NodeTable nodeTable,
       WayTable wayTable,
       RelationTable relationTable,
-      ProjectionHandler projectionHandler,
+      ProjectionTransformer projectionTransformer,
       int zoom) {
-    this.projectionHandler = projectionHandler;
+    this.projectionTransformer = projectionTransformer;
     this.nodeTable = nodeTable;
     this.wayTable = wayTable;
     this.relationTable = relationTable;
@@ -92,9 +94,9 @@ public class TileHandler implements ChangeHandler {
 
   private void handleGeometry(Geometry geometry) {
     if (geometry != null) {
-      tiles.addAll(
-          Tile.getTiles(projectionHandler.transform(geometry).getEnvelopeInternal(), zoom)
-              .collect(Collectors.toList()));
+      Envelope overlappingEnvelope = projectionTransformer.transform(geometry).getEnvelopeInternal();
+      List<Tile> overlappingTiles = Tile.getTiles(overlappingEnvelope, zoom).collect(Collectors.toList());
+      tiles.addAll(overlappingTiles);
     }
   }
 

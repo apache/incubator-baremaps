@@ -115,6 +115,12 @@ public class Import implements Callable<Integer> {
       description = "Index the attributes with GIN indexes.")
   private boolean createGinIndexes = true;
 
+  @Option(
+      names = {"--srid"},
+      paramLabel = "SRID",
+      description = "The projection.")
+  private int srid = 3857;
+
   @Override
   public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
@@ -174,7 +180,7 @@ public class Import implements Callable<Integer> {
         nodeTable,
         wayTable,
         relationTable,
-        3857
+        srid
     ).execute();
 
     logger.info("Indexing geometries");

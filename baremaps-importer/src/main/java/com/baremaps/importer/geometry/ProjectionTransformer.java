@@ -31,27 +31,29 @@ import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
-public class ProjectionHandler extends GeometryTransformer implements ElementHandler {
+public class ProjectionTransformer extends GeometryTransformer implements ElementHandler {
 
-  private final int srid;
+  private final int srcSRID;
+  private final int dstSRID;
 
   private final CoordinateTransform coordinateTransform;
 
-  public ProjectionHandler(int srid) {
-    this.srid = srid;
+  public ProjectionTransformer(int srcSRID, int dstSRID) {
+    this.srcSRID = srcSRID;
+    this.dstSRID = dstSRID;
     CRSFactory crsFactory = new CRSFactory();
-    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName(String.format("EPSG:4326"));
-    CoordinateReferenceSystem targetCRS = crsFactory.createFromName(String.format("EPSG:%d", srid));
+    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName(String.format("EPSG:%d", srcSRID));
+    CoordinateReferenceSystem targetCRS = crsFactory.createFromName(String.format("EPSG:%d", dstSRID));
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
     coordinateTransform = coordinateTransformFactory.createTransform(sourceCRS, targetCRS);
   }
 
   @Override
-  protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent) {
-    Coordinate[] coordinates = Stream.of(coords.toCoordinateArray())
+  protected CoordinateSequence transformCoordinates(CoordinateSequence coordinateSequence, Geometry parent) {
+    Coordinate[] coordinateArray = Stream.of(coordinateSequence.toCoordinateArray())
         .map(this::transformCoordinate)
         .toArray(Coordinate[]::new);
-    return new CoordinateArraySequence(coordinates);
+    return new CoordinateArraySequence(coordinateArray);
   }
 
   private Coordinate transformCoordinate(Coordinate coordinate) {
@@ -78,7 +80,7 @@ public class ProjectionHandler extends GeometryTransformer implements ElementHan
   private void handleElement(Element element) {
     if (element.getGeometry() != null) {
       Geometry geometry = transform(element.getGeometry());
-      geometry.setSRID(srid);
+      geometry.setSRID(dstSRID);
       element.setGeometry(geometry);
     }
   }

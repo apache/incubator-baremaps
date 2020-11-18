@@ -1,21 +1,19 @@
 package com.baremaps.importer;
 
 import com.baremaps.importer.cache.Cache;
-import com.baremaps.importer.cache.CacheHandler;
-import com.baremaps.importer.database.DatabaseHandler;
+import com.baremaps.importer.cache.CacheImportHandler;
+import com.baremaps.importer.database.DatabaseImportHandler;
 import com.baremaps.importer.database.HeaderTable;
 import com.baremaps.importer.database.NodeTable;
 import com.baremaps.importer.database.RelationTable;
 import com.baremaps.importer.database.WayTable;
-import com.baremaps.importer.geometry.GeometryBuilder;
-import com.baremaps.importer.geometry.ProjectionHandler;
+import com.baremaps.importer.geometry.GeometryHandler;
+import com.baremaps.importer.geometry.ProjectionTransformer;
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.util.storage.BlobStore;
-import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.Callable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
@@ -56,22 +54,21 @@ public class ImportTask {
   }
 
   public void execute() throws Exception {
-    logger.info("Downloading data");
     Path path = blobStore.fetch(uri);
 
     logger.info("Creating cache");
-    try (CacheHandler cacheHandler = new CacheHandler(coordinateCache, referenceCache)) {
-      OpenStreetMap.entityStream(path).forEach(cacheHandler);
+    try (CacheImportHandler cacheImportHandler = new CacheImportHandler(coordinateCache, referenceCache)) {
+      OpenStreetMap.entityStream(path).forEach(cacheImportHandler);
     }
 
     logger.info("Importing data");
-    try (DatabaseHandler databaseHandler = new DatabaseHandler(headerTable, nodeTable, wayTable, relationTable)) {
-      GeometryBuilder geometryBuilder = new GeometryBuilder(coordinateCache, referenceCache);
-      ProjectionHandler projectionHandler = new ProjectionHandler(srid);
+    try (DatabaseImportHandler databaseImportHandler = new DatabaseImportHandler(headerTable, nodeTable, wayTable, relationTable)) {
+      GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
+      ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
       OpenStreetMap.entityStream(path)
-          .peek(geometryBuilder)
-          .peek(projectionHandler)
-          .forEach(databaseHandler);
+          .peek(geometryHandler)
+          .peek(projectionTransformer)
+          .forEach(databaseImportHandler);
     }
   }
 }

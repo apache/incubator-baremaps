@@ -46,7 +46,7 @@ import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.Proj4jException;
 import org.locationtech.proj4j.ProjCoordinate;
 
-public class GeometryBuilderTest {
+public class GeometryHandlerTest {
 
   public static final CRSFactory CRS_FACTORY = new CRSFactory();
 
@@ -153,7 +153,7 @@ public class GeometryBuilderTest {
           new Member(3l, MemberType.way, "inner"),
           new Member(4l, MemberType.way, "outer")));
 
-  public static final GeometryBuilder GEOMETRY_BUILDER = new GeometryBuilder(COORDINATE_CACHE, REFERENCE_CACHE);
+  public static final GeometryHandler GEOMETRY_BUILDER = new GeometryHandler(COORDINATE_CACHE, REFERENCE_CACHE);
 
   @Test
   public void handleNode() {

@@ -19,7 +19,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 
-public class GeometryBuilder implements ElementHandler {
+public class GeometryHandler implements ElementHandler {
 
   private static Logger logger = LogManager.getLogger();
 
@@ -27,7 +27,7 @@ public class GeometryBuilder implements ElementHandler {
   private final Cache<Long, Coordinate> coordinateCache;
   private final Cache<Long, List<Long>> referenceCache;
 
-  public GeometryBuilder(
+  public GeometryHandler(
       Cache<Long, Coordinate> coordinateCache,
       Cache<Long, List<Long>> referenceCache) {
     this.geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
