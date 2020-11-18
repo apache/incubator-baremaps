@@ -17,7 +17,8 @@ package com.baremaps.cli;
 import com.baremaps.util.storage.BlobStore;
 import com.baremaps.util.storage.CompositeBlobStore;
 import com.baremaps.util.storage.HttpBlobStore;
-import com.baremaps.util.storage.LocalBlobStore;
+import com.baremaps.util.storage.FileBlobStore;
+import com.baremaps.util.storage.ResourceBlobStore;
 import com.baremaps.util.storage.S3BlobStore;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ import picocli.CommandLine.Option;
 
 public class Options {
 
-  public enum Level {
+  public enum LogLevel {
     DEBUG, INFO, TRACE, ERROR
   }
 
@@ -33,19 +34,20 @@ public class Options {
       names = {"--log-level"},
       paramLabel = "LOG_LEVEL",
       description = {"The log level."})
-  public Level logLevel = Level.INFO;
+  public LogLevel logLevel = LogLevel.INFO;
 
   @Option(
-      names = {"--enable-aws"},
-      paramLabel = "ENABLE_AWS",
-      description = "Enable Amazon Web Service integration.")
-  public boolean enableAws = false;
+      names = {"--enable-s3"},
+      paramLabel = "ENABLE_S3",
+      description = "Enable Amazon S3 integration.")
+  public boolean enableS3 = false;
 
   public BlobStore blobStore() {
     List<BlobStore> components = new ArrayList<>();
-    components.add(new LocalBlobStore());
+    components.add(new FileBlobStore());
+    components.add(new ResourceBlobStore());
     components.add(new HttpBlobStore());
-    if (enableAws) {
+    if (enableS3) {
       components.add(new S3BlobStore());
     }
     return new CompositeBlobStore(components);

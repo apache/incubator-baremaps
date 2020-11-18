@@ -14,49 +14,44 @@
 
 package com.baremaps.importer.cache;
 
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.sql.DataSource;
+import org.locationtech.jts.geom.Coordinate;
 
-public class PostgisReferenceCache implements Cache<Long, List<Long>> {
+public class PostgresCoordinateCache implements Cache<Long, Coordinate> {
 
   private static final String SELECT =
-      "SELECT nodes FROM osm_ways WHERE id = ?";
+      "SELECT lon, lat FROM osm_nodes WHERE id = ?";
 
   private static final String SELECT_IN =
-      "SELECT id, nodes FROM osm_ways WHERE id WHERE id = ANY (?)";
+      "SELECT id, lon, lat FROM osm_nodes WHERE id = ANY (?)";
 
   private final DataSource dataSource;
 
   @Inject
-  public PostgisReferenceCache(DataSource dataSource) {
+  public PostgresCoordinateCache(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
-  public List<Long> get(Long id) throws CacheException {
+  public Coordinate get(Long id) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
       ResultSet result = statement.executeQuery();
       if (result.next()) {
-        List<Long> nodes = new ArrayList<>();
-        Array array = result.getArray(1);
-        if (array != null) {
-          nodes = Arrays.asList((Long[]) array.getArray());
-        }
-        return nodes;
+        Double lon = result.getDouble(1);
+        Double lat = result.getDouble(2);
+        return new Coordinate(lon, lat);
       } else {
-        throw new IllegalArgumentException();
+        return null;
       }
     } catch (SQLException e) {
       throw new CacheException(e);
@@ -64,34 +59,31 @@ public class PostgisReferenceCache implements Cache<Long, List<Long>> {
   }
 
   @Override
-  public List<List<Long>> getAll(List<Long> keys) throws CacheException {
+  public List<Coordinate> getAll(List<Long> keys) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       ResultSet result = statement.executeQuery();
-      Map<Long, List<Long>> references = new HashMap<>();
+      Map<Long, Coordinate> nodes = new HashMap<>();
       while (result.next()) {
-        List<Long> nodes = new ArrayList<>();
-        long id = result.getLong(1);
-        Array array = result.getArray(2);
-        if (array != null) {
-          nodes = Arrays.asList((Long[]) array.getArray());
-        }
-        references.put(id, nodes);
+        Long id = result.getLong(1);
+        Double lon = result.getDouble(2);
+        Double lat = result.getDouble(3);
+        nodes.put(id, new Coordinate(lon, lat));
       }
-      return keys.stream().map(key -> references.get(key)).collect(Collectors.toList());
+      return keys.stream().map(key -> nodes.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new CacheException(e);
     }
   }
 
   @Override
-  public void put(Long key, List<Long> values) {
+  public void put(Long key, Coordinate values) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void putAll(List<Entry<Long, List<Long>>> storeEntries) {
+  public void putAll(List<Entry<Long, Coordinate>> storeEntries) {
     throw new UnsupportedOperationException();
   }
 

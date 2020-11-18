@@ -15,22 +15,17 @@
 package com.baremaps.cli;
 
 import com.baremaps.importer.UpdateTask;
-import com.baremaps.importer.cache.PostgisCoordinateCache;
-import com.baremaps.importer.cache.PostgisReferenceCache;
+import com.baremaps.importer.cache.PostgresCoordinateCache;
+import com.baremaps.importer.cache.PostgresReferenceCache;
 import com.baremaps.importer.database.HeaderTable;
 import com.baremaps.importer.database.NodeTable;
 import com.baremaps.importer.database.RelationTable;
 import com.baremaps.importer.database.WayTable;
-import com.baremaps.osm.StateReader;
-import com.baremaps.osm.domain.Header;
-import com.baremaps.osm.domain.State;
-import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.postgres.PostgresHelper;
 import com.baremaps.util.storage.BlobStore;
 import com.baremaps.util.tile.Tile;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import org.apache.commons.dbcp2.PoolingDataSource;
@@ -42,55 +37,55 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "update", description = "Update OpenStreetMap data in the Postgresql database.")
+@Command(name = "update", description = "Update OpenStreetMap data in the database.")
 public class Update implements Callable<Integer> {
 
   private static Logger logger = LogManager.getLogger();
 
   @Mixin
-  private Options mixins;
+  private Options options;
 
   @Option(
       names = {"--database"},
-      paramLabel = "JDBC",
-      description = "The JDBC url of the Postgres database.",
+      paramLabel = "DATABASE",
+      description = "The JDBC url of the database.",
       required = true)
   private String database;
 
   @Option(
-      names = {"--delta"},
-      paramLabel = "DELTA",
-      description = "The output delta file.",
+      names = {"--tiles"},
+      paramLabel = "TILES",
+      description = "The tiles affected by the update.",
       required = true)
-  private URI delta;
+  private URI tiles;
 
   @Option(
       names = {"--zoom"},
       paramLabel = "ZOOM",
-      description = "The zoom level.")
+      description = "The zoom level used to compute the tiles.")
   private int zoom = 14;
 
   @Option(
       names = {"--srid"},
       paramLabel = "SRID",
-      description = "The projection.")
+      description = "The projection used in the database.")
   private int srid = 3857;
 
   @Override
   public Integer call() throws Exception {
-    Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
+    Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
-    PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
+    PoolingDataSource datasource = PostgresHelper.poolingDataSource(database);
 
-    PostgisCoordinateCache coordinateCache = new PostgisCoordinateCache(datasource);
-    PostgisReferenceCache referenceCache = new PostgisReferenceCache(datasource);
+    PostgresCoordinateCache coordinateCache = new PostgresCoordinateCache(datasource);
+    PostgresReferenceCache referenceCache = new PostgresReferenceCache(datasource);
     HeaderTable headerTable = new HeaderTable(datasource);
     NodeTable nodeTable = new NodeTable(datasource);
     WayTable wayTable = new WayTable(datasource);
     RelationTable relationTable = new RelationTable(datasource);
 
-    BlobStore blobStore = mixins.blobStore();
+    BlobStore blobStore = options.blobStore();
     Set<Tile> tiles = new UpdateTask(
         blobStore,
         coordinateCache,
@@ -104,7 +99,7 @@ public class Update implements Callable<Integer> {
     ).execute();
 
     logger.info("Saving differences");
-    try (PrintWriter diffPrintWriter = new PrintWriter(blobStore.write(delta))) {
+    try (PrintWriter diffPrintWriter = new PrintWriter(blobStore.write(this.tiles))) {
       for (Tile tile : tiles) {
         diffPrintWriter.println(String.format("%d/%d/%d", tile.x(), tile.y(), tile.z()));
       }

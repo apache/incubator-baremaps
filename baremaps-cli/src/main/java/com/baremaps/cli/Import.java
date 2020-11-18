@@ -23,7 +23,7 @@ import com.baremaps.importer.database.HeaderTable;
 import com.baremaps.importer.database.NodeTable;
 import com.baremaps.importer.database.RelationTable;
 import com.baremaps.importer.database.WayTable;
-import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.postgres.PostgresHelper;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -41,7 +41,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "import", description = "Import OpenStreetMap data in the Postgresql database.")
+@Command(name = "import", description = "Import OpenStreetMap data in the database.")
 public class Import implements Callable<Integer> {
 
   private static Logger logger = LogManager.getLogger();
@@ -51,69 +51,33 @@ public class Import implements Callable<Integer> {
   }
 
   @Mixin
-  private Options mixins;
+  private Options options;
 
   @Option(
       names = {"--input"},
       paramLabel = "PBF",
-      description = "The OpenStreetMap PBF file.",
+      description = "The PBF file to import in the database.",
       required = true)
   private URI input;
 
   @Option(
       names = {"--database"},
-      paramLabel = "JDBC",
-      description = "The JDBC url of the Postgres database.",
+      paramLabel = "DATABASE",
+      description = "The JDBC url of the database.",
       required = true)
   private String database;
 
   @Option(
       names = {"--cache-type"},
       paramLabel = "CACHE_TYPE",
-      description = "The type of cache to be used when importing data.")
+      description = "The type of cache used when importing data.")
   private CacheType cacheType = CacheType.lmdb;
 
   @Option(
       names = {"--cache-directory"},
       paramLabel = "CACHE_DIRECTORY",
-      description = "The directory used by the cache data.")
+      description = "The directory used by the cache.")
   private Path cacheDirectory;
-
-  @Option(
-      names = {"--drop-tables"},
-      paramLabel = "DROP_TABLES",
-      description = "Drop the OpenStreetMap tables.")
-  private boolean dropTables = true;
-
-  @Option(
-      names = {"--create-tables"},
-      paramLabel = "CREATE_TABLES",
-      description = "Create the OpenStreetMap tables.")
-  private boolean createTables = true;
-
-  @Option(
-      names = {"--truncate-tables"},
-      paramLabel = "TRUNCATE_TABLES",
-      description = "Truncate the OpenStreetMap tables.")
-  private boolean truncateTables = false;
-
-  @Option(
-      names = {"--create-gist-indexes"},
-      paramLabel = "CREATE_GIST_INDEXES",
-      description = "Index the geometries with GIST indexes.")
-  private boolean createGistIndexes = true;
-
-  @Option(
-      names = {"--create-spgist-indexes"},
-      paramLabel = "CREATE_SPGIST_INDEXES",
-      description = "Index the geometries with SPGIST indexes.")
-  private boolean createSpGistIndexes = false;
-
-  @Option(
-      names = {"--create-gin-indexes"},
-      paramLabel = "CREATE_GIN_INDEXES",
-      description = "Index the attributes with GIN indexes.")
-  private boolean createGinIndexes = true;
 
   @Option(
       names = {"--srid"},
@@ -123,24 +87,9 @@ public class Import implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
+    Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
-    PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
-
-    if (dropTables) {
-      logger.info("Dropping tables");
-      PostgisHelper.executeParallel(datasource, "osm_drop_tables.sql");
-    }
-
-    if (truncateTables) {
-      logger.info("Truncating tables");
-      PostgisHelper.executeParallel(datasource, "osm_truncate_tables.sql");
-    }
-
-    if (createTables) {
-      logger.info("Creating tables");
-      PostgisHelper.executeParallel(datasource, "osm_create_tables.sql");
-    }
+    PoolingDataSource datasource = PostgresHelper.poolingDataSource(database);
 
     HeaderTable headerTable = new HeaderTable(datasource);
     NodeTable nodeTable = new NodeTable(datasource);
@@ -173,7 +122,7 @@ public class Import implements Callable<Integer> {
 
     new ImportTask(
         input,
-        mixins.blobStore(),
+        options.blobStore(),
         coordinateCache,
         referenceCache,
         headerTable,
@@ -182,18 +131,6 @@ public class Import implements Callable<Integer> {
         relationTable,
         srid
     ).execute();
-
-    logger.info("Indexing geometries");
-    if (createGistIndexes) {
-      PostgisHelper.executeParallel(datasource, "osm_create_gist_indexes.sql");
-    }
-    if (createSpGistIndexes) {
-      PostgisHelper.executeParallel(datasource, "osm_create_spgist_indexes.sql");
-    }
-    if (createGinIndexes) {
-      logger.info("Indexing attributes");
-      PostgisHelper.executeParallel(datasource, "osm_create_gin_indexes.sql");
-    }
 
     return 0;
   }

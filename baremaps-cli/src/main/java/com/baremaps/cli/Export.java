@@ -25,7 +25,7 @@ import com.baremaps.exporter.store.TileStoreException;
 import com.baremaps.exporter.stream.BatchFilter;
 import com.baremaps.exporter.stream.TileFactory;
 import com.baremaps.osm.stream.StreamProgress;
-import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.postgres.PostgresHelper;
 import com.baremaps.util.storage.BlobStore;
 import com.baremaps.util.tile.Tile;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,17 +51,17 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "export", description = "Export vector tiles from the Postgresql database.")
+@Command(name = "export", description = "Export vector tiles from the database.")
 public class Export implements Callable<Integer> {
 
   private static Logger logger = LogManager.getLogger();
 
   @Mixin
-  private Options mixins;
+  private Options options;
 
   @Option(
       names = {"--database"},
-      paramLabel = "JDBC",
+      paramLabel = "DATABASE",
       description = "The JDBC url of the Postgres database.",
       required = true)
   private String database;
@@ -106,14 +106,14 @@ public class Export implements Callable<Integer> {
 
   @Override
   public Integer call() throws TileStoreException, IOException {
-    Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
+    Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
     // Initialize the datasource
-    PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
+    PoolingDataSource datasource = PostgresHelper.poolingDataSource(database);
 
     // Initialize the blob store
-    BlobStore blobStore = mixins.blobStore();
+    BlobStore blobStore = options.blobStore();
 
     // Read the configuration file
     logger.info("Reading configuration");

@@ -19,7 +19,7 @@ import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Member;
 import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Relation;
-import com.baremaps.util.postgis.CopyWriter;
+import com.baremaps.util.postgres.CopyWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

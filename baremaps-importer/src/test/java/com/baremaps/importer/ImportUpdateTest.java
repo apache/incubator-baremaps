@@ -6,17 +6,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.importer.cache.InMemoryCache;
-import com.baremaps.importer.cache.PostgisCoordinateCache;
-import com.baremaps.importer.cache.PostgisReferenceCache;
+import com.baremaps.importer.cache.PostgresCoordinateCache;
+import com.baremaps.importer.cache.PostgresReferenceCache;
 import com.baremaps.importer.database.HeaderTable;
 import com.baremaps.importer.database.NodeTable;
 import com.baremaps.importer.database.RelationTable;
 import com.baremaps.importer.database.WayTable;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.postgres.PostgresHelper;
 import com.baremaps.util.storage.BlobStore;
-import com.baremaps.util.storage.LocalBlobStore;
+import com.baremaps.util.storage.FileBlobStore;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
@@ -39,18 +39,18 @@ class ImportUpdateTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException, URISyntaxException {
-    dataSource = PostgisHelper.poolingDataSource(DATABASE_URL);
+    dataSource = PostgresHelper.poolingDataSource(DATABASE_URL);
 
-    blobStore = new LocalBlobStore();
+    blobStore = new FileBlobStore();
     headerTable = new HeaderTable(dataSource);
     nodeTable = new NodeTable(dataSource);
     wayTable = new WayTable(dataSource);
     relationTable = new RelationTable(dataSource);
 
     try (Connection connection = dataSource.getConnection()) {
-      PostgisHelper.execute(connection, "osm_create_extensions.sql");
-      PostgisHelper.execute(connection, "osm_drop_tables.sql");
-      PostgisHelper.execute(connection, "osm_create_tables.sql");
+      PostgresHelper.executeResource(connection, "osm_create_extensions.sql");
+      PostgresHelper.executeResource(connection, "osm_drop_tables.sql");
+      PostgresHelper.executeResource(connection, "osm_create_tables.sql");
     }
   }
 
@@ -101,8 +101,8 @@ class ImportUpdateTest {
 
     new UpdateTask(
         blobStore,
-        new PostgisCoordinateCache(dataSource),
-        new PostgisReferenceCache(dataSource),
+        new PostgresCoordinateCache(dataSource),
+        new PostgresReferenceCache(dataSource),
         headerTable,
         nodeTable,
         wayTable,

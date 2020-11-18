@@ -10,7 +10,7 @@ import com.baremaps.server.ConfigService;
 import com.baremaps.server.StyleService;
 import com.baremaps.server.TemplateService;
 import com.baremaps.server.TileService;
-import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.postgres.PostgresHelper;
 import com.baremaps.util.storage.BlobStore;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
@@ -34,17 +34,17 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "serve", description = "Serve vector tiles from the the Postgresql database.")
+@Command(name = "serve", description = "Serve vector tiles from the the database.")
 public class Serve implements Callable<Integer> {
 
   private static Logger logger = LogManager.getLogger();
 
   @Mixin
-  private Options mixins;
+  private Options options;
 
   @Option(
       names = {"--database"},
-      paramLabel = "JDBC",
+      paramLabel = "DATABASE",
       description = "The JDBC url of the Postgres database.",
       required = true)
   private String database;
@@ -72,10 +72,10 @@ public class Serve implements Callable<Integer> {
 
   @Override
   public Integer call() throws IOException {
-    Configurator.setRootLevel(Level.getLevel(mixins.logLevel.name()));
+    Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
-    BlobStore blobStore = mixins.blobStore();
+    BlobStore blobStore = options.blobStore();
     Loader loader = new Loader(blobStore);
     Provider<Config> provider = () -> {
       try {
@@ -91,7 +91,7 @@ public class Serve implements Callable<Integer> {
     }
 
     logger.info("Initializing datasource");
-    PoolingDataSource datasource = PostgisHelper.poolingDataSource(database);
+    PoolingDataSource datasource = PostgresHelper.poolingDataSource(database);
 
     logger.info("Initializing tile reader");
     final TileStore tileStore = new PostgisTileStore(datasource, provider);

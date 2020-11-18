@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-class LocalBlobStoreTest extends BlobStoreTest {
+class FileBlobStoreTest extends BlobStoreTest {
 
   @Override
   protected String createTestURI() throws IOException {
@@ -47,7 +47,7 @@ class LocalBlobStoreTest extends BlobStoreTest {
 
   @Override
   protected BlobStore createFileSystem() {
-    return new LocalBlobStore();
+    return new FileBlobStore();
   }
 
 }

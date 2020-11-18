@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.osm.domain.Way;
-import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.postgres.PostgresHelper;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -43,12 +43,12 @@ class WayTableTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = PostgisHelper.poolingDataSource(DATABASE_URL);
+    dataSource = PostgresHelper.poolingDataSource(DATABASE_URL);
     wayTable = new WayTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
-      PostgisHelper.execute(connection, "osm_create_extensions.sql");
-      PostgisHelper.execute(connection, "osm_drop_tables.sql");
-      PostgisHelper.execute(connection, "osm_create_tables.sql");
+      PostgresHelper.executeResource(connection, "osm_create_extensions.sql");
+      PostgresHelper.executeResource(connection, "osm_drop_tables.sql");
+      PostgresHelper.executeResource(connection, "osm_create_tables.sql");
     }
   }
 

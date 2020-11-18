@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.cli.Baremaps;
 import com.baremaps.importer.database.NodeTable;
-import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.postgres.PostgresHelper;
 import com.google.common.io.CharStreams;
 import java.io.File;
 import java.io.IOException;
@@ -51,12 +51,14 @@ public class OpenStreetMapExampleTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = PostgisHelper.poolingDataSource(DATABASE_URL);
+    dataSource = PostgresHelper.poolingDataSource(DATABASE_URL);
     nodeStore = new NodeTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
-      PostgisHelper.execute(connection, "osm_create_extensions.sql");
-      PostgisHelper.execute(connection, "osm_drop_tables.sql");
-      PostgisHelper.execute(connection, "osm_create_tables.sql");
+      PostgresHelper.executeResource(connection, "osm_create_extensions.sql");
+      PostgresHelper.executeResource(connection, "osm_drop_tables.sql");
+      PostgresHelper.executeResource(connection, "osm_create_tables.sql");
+      PostgresHelper.executeResource(connection, "osm_create_gist_indexes.sql");
+      PostgresHelper.executeResource(connection, "osm_create_gin_indexes.sql");
     }
   }
 

@@ -1,7 +1,7 @@
 package com.baremaps.exporter.config;
 
 import com.baremaps.util.storage.BlobStore;
-import com.baremaps.util.storage.LocalBlobStore;
+import com.baremaps.util.storage.FileBlobStore;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -61,7 +61,7 @@ public class Loader {
   }
 
   public static void main(String[] args) throws URISyntaxException, IOException {
-    Loader loader = new Loader(new LocalBlobStore());
+    Loader loader = new Loader(new FileBlobStore());
     Config config = loader.load(new URI("/Users/bchapuis/Projects/baremaps/openstreetmap-vecto/config/test.yaml"));
     System.out.println(config);
   }

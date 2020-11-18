@@ -22,6 +22,7 @@ import picocli.CommandLine.Command;
     name = "baremaps",
     description = "A toolkit for producing vector tiles.",
     subcommands = {
+        Execute.class,
         Import.class,
         Update.class,
         Export.class,

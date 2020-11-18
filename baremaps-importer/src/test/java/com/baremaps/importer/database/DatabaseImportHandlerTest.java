@@ -2,7 +2,7 @@ package com.baremaps.importer.database;
 
 import static com.baremaps.importer.database.DatabaseConstants.DATABASE_URL;
 
-import com.baremaps.util.postgis.PostgisHelper;
+import com.baremaps.util.postgres.PostgresHelper;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
@@ -22,15 +22,15 @@ class DatabaseImportHandlerTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = PostgisHelper.poolingDataSource(DATABASE_URL);
+    dataSource = PostgresHelper.poolingDataSource(DATABASE_URL);
     headerTable = new HeaderTable(dataSource);
     nodeTable = new NodeTable(dataSource);
     wayTable = new WayTable(dataSource);
     relationTable = new RelationTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
-      PostgisHelper.execute(connection, "osm_create_extensions.sql");
-      PostgisHelper.execute(connection, "osm_drop_tables.sql");
-      PostgisHelper.execute(connection, "osm_create_tables.sql");
+      PostgresHelper.executeResource(connection, "osm_create_extensions.sql");
+      PostgresHelper.executeResource(connection, "osm_drop_tables.sql");
+      PostgresHelper.executeResource(connection, "osm_create_tables.sql");
     }
   }
 

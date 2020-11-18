@@ -14,7 +14,7 @@
 
 package com.baremaps.exporter.store;
 
-import com.baremaps.util.storage.LocalBlobStore;
+import com.baremaps.util.storage.FileBlobStore;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,7 +26,7 @@ class BlobStoreTileStoreTest extends TileStoreTest {
   @Override
   protected TileStore createTileStore() throws IOException, URISyntaxException {
     Path directory = Files.createTempDirectory("baremaps_");
-    return new BlobTileStore(new LocalBlobStore(), new URI(directory.toString()));
+    return new BlobTileStore(new FileBlobStore(), new URI(directory.toString()));
   }
 
 }

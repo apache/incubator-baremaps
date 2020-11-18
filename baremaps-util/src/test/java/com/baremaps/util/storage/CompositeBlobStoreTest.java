@@ -66,7 +66,7 @@ public class CompositeBlobStoreTest extends BlobStoreTest {
   @Override
   protected BlobStore createFileSystem() {
     return new CompositeBlobStore(
-        new LocalBlobStore(),
+        new FileBlobStore(),
         new S3BlobStore("utf-8", "application/octet-stream", s3Client));
   }
 

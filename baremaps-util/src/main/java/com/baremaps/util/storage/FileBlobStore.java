@@ -24,7 +24,7 @@ import java.nio.file.Paths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class LocalBlobStore extends BlobStore {
+public class FileBlobStore extends BlobStore {
 
   private static Logger logger = LogManager.getLogger();
 

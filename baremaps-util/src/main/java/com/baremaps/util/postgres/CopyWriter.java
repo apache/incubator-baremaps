@@ -1,7 +1,7 @@
 // Copyright (c) Philipp Wagner. All rights reserved.
 // Licensed under the MIT license.
 
-package com.baremaps.util.postgis;
+package com.baremaps.util.postgres;
 
 import static org.locationtech.jts.io.WKBConstants.wkbNDR;
 
