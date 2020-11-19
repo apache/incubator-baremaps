@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.concurrent.Callable;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.Level;
@@ -34,11 +35,11 @@ public class Execute implements Callable<Integer> {
   private String database;
 
   @Option(
-      names = {"--queries"},
-      paramLabel = "PBF",
-      description = "The queries to execute in the database.",
+      names = {"--file"},
+      paramLabel = "FILE",
+      description = "The SQL file to execute in the database.",
       required = true)
-  private URI queries;
+  private List<URI> files;
 
   @Override
   public Integer call() throws Exception {
@@ -47,16 +48,18 @@ public class Execute implements Callable<Integer> {
     PoolingDataSource datasource = PostgresHelper.poolingDataSource(database);
     BlobStore blobStore = options.blobStore();
 
-    logger.info("Execute queries");
-    String rawQueries = new String(blobStore.readByteArray(queries), StandardCharsets.UTF_8);
-    Splitter.on(";").splitToStream(rawQueries).parallel().forEach(query -> {
+    for (URI file : files) {
+      logger.info("{}", file);
+      String queries = new String(blobStore.readByteArray(file), StandardCharsets.UTF_8);
+      Splitter.on(";").splitToStream(queries).parallel().forEach(query -> {
         try (Connection connection = datasource.getConnection();
             Statement statement = connection.createStatement()) {
           statement.execute(query);
         } catch (SQLException e) {
           throw new RuntimeException(e);
         }
-    });
+      });
+    }
 
     return 0;
   }

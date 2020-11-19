@@ -55,8 +55,7 @@ public class GeometryHandler implements ElementHandler {
         return;
       }
     } catch (Exception e) {
-      logger.debug(way);
-      logger.error("Unable to build the geometry", e);
+      logger.warn("Unable to build the geometry for way " + way.getId(), e);
       return;
     }
   }
@@ -104,8 +103,7 @@ public class GeometryHandler implements ElementHandler {
       polygonizer.add(members);
       relation.setGeometry(polygonizer.getGeometry());
     } catch (Exception e) {
-      logger.debug(relation);
-      logger.error("Unable to build the geometry", e);
+      logger.warn("Unable to build the geometry for relation " + relation.getId(), e);
       return;
     }
   }

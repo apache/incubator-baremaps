@@ -54,11 +54,11 @@ public class Import implements Callable<Integer> {
   private Options options;
 
   @Option(
-      names = {"--input"},
-      paramLabel = "PBF",
+      names = {"--file"},
+      paramLabel = "FILE",
       description = "The PBF file to import in the database.",
       required = true)
-  private URI input;
+  private URI file;
 
   @Option(
       names = {"--database"},
@@ -121,7 +121,7 @@ public class Import implements Callable<Integer> {
     }
 
     new ImportTask(
-        input,
+        file,
         options.blobStore(),
         coordinateCache,
         referenceCache,

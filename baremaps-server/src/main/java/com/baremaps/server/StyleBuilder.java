@@ -118,8 +118,7 @@ public class StyleBuilder {
       case "geometry":
         return Arrays.asList(
             pointBlueprint(layer, String.format("%s_point", layer.getId())),
-            linestringBlueprint(layer, String.format("%s_linestring", layer.getId())),
-            polygonBlueprint(layer, String.format("%s_polygon", layer.getId())));
+            linestringBlueprint(layer, String.format("%s_linestring", layer.getId())));
       default:
         return Arrays.asList();
     }
@@ -136,8 +135,8 @@ public class StyleBuilder {
         .put("visibility", "visible")
         .build());
     style.setPaint(ImmutableSortedMap.naturalOrder()
-        .put("circle-color", "rgba(229, 235, 247, 0.8)")
-        .put("circle-radius", 2)
+        .put("circle-color", "rgba(229, 235, 247, 0.75)")
+        .put("circle-radius", 1)
         .build());
     return style;
   }
@@ -153,7 +152,7 @@ public class StyleBuilder {
         .put("visibility", "visible")
         .build());
     style.setPaint(ImmutableSortedMap.naturalOrder()
-        .put("line-color", "rgba(229, 235, 247, 0.8)")
+        .put("line-color", "rgba(229, 235, 247, 0.50)")
         .put("line-width", 1)
         .build());
     return style;
@@ -170,9 +169,8 @@ public class StyleBuilder {
         .put("visibility", "visible")
         .build());
     style.setPaint(ImmutableSortedMap.naturalOrder()
-        .put("fill-outline-color", "rgba(229, 235, 247, 0.8)")
-        .put("fill-color", "rgba(229, 235, 247, 0.1)")
-        .put("fill-opacity", 1)
+        .put("fill-outline-color", "rgba(229, 235, 247, 0.50)")
+        .put("fill-color", "rgba(229, 235, 247, 0.25)")
         .put("fill-antialias", true)
         .build());
     return style;

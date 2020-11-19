@@ -42,6 +42,9 @@ public class ConfigBuilder {
     // Put the nested properties at the end
     map.put("layers", formatLayers(config.getLayers()));
 
+    // Put the nested properties at the end
+    map.put("stylesheets", formatLayers(config.getLayers()));
+
     return map;
   }
 

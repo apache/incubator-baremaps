@@ -81,10 +81,10 @@ public class Export implements Callable<Integer> {
   private URI repository;
 
   @Option(
-      names = {"--delta"},
-      paramLabel = "DELTA",
-      description = "The input delta file.")
-  private URI delta;
+      names = {"--tiles"},
+      paramLabel = "TILES",
+      description = "The tiles to export.")
+  private URI tiles;
 
   @Option(
       names = {"--batch-array-size"},
@@ -130,7 +130,7 @@ public class Export implements Callable<Integer> {
     logger.info("Generating the tiles");
 
     final Stream<Tile> stream;
-    if (delta == null) {
+    if (tiles == null) {
       Envelope envelope = new Envelope(
           config.getBounds().getMinLon(), config.getBounds().getMaxLon(),
           config.getBounds().getMinLat(), config.getBounds().getMaxLat());
@@ -142,7 +142,7 @@ public class Export implements Callable<Integer> {
           (int) config.getBounds().getMaxZoom())
           .peek(new StreamProgress<>(count));
     } else {
-      try (BufferedReader reader = new BufferedReader(new InputStreamReader(blobStore.read(delta)))) {
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(blobStore.read(tiles)))) {
         stream = reader.lines().flatMap(line -> {
           String[] array = line.split(",");
           int x = Integer.parseInt(array[0]);

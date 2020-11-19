@@ -9,21 +9,33 @@ Also, if you are in a hurry, consider skipping the "Under the Hood" sections.
 ## Dataset
 
 OpenStreetMap (OSM) is a free and editable map of the world. 
-Similarly to Wikipedia, it is maintained by a community of passionate volunteers.
+It is maintained by a community of passionate volunteers in a way which is similar to Wikipedia.
 Every week, OpenStreetMap publishes a [full dump](https://planet.openstreetmap.org/) of its data in two flavours: a large XML file (about 90GB) and a more compact binary file (about 50GB) in the  [Protocol Buffer Format](https://developers.google.com/protocol-buffers) (PBF).
 As processing such large files can take several hours, [Geofabrik](http://www.geofabrik.de/data/download.html) regularly publishes smaller extracts of OSM for specific regions.
 The [GitHub directory](./) associated with this example contains a tiny extract of OSM for [Liechtenstein](https://en.wikipedia.org/wiki/Liechtenstein), which is suitable for experiments.
 
 ## Importing OpenStreetMap Data
 
-To begin with the tutorial, make sure you have the source files of the tutorial in your current working directory.
+To begin with the tutorial, make sure you have the source files of the tutorial in your current working directory. 
+Additionally, prepare the database by executing the following command.
+Hereafter, the command executes files sequentially, but the queries they contain are executed in parallel.
+
+```
+baremaps execute \
+  --database 'jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps' \
+  --file 'res://osm_create_extensions.sql' \
+  --file 'res://osm_drop_tables.sql' \
+  --file 'res://osm_create_tables.sql' \
+  --file 'res://osm_create_gist_indexes.sql' \
+  --file 'res://osm_create_gin_indexes.sql'
+```
 
 To import the sample OSM data (`liechtenstein-latest.osm.pbf`) in Postgis with Baremaps, execute the following command in a terminal.
 
 ```
 baremaps import \
-  --input 'liechtenstein-latest.osm.pbf' \
-  --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps'
+  --database 'jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps' \
+  --file 'https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf'
 ```
 
 Depending on the size of the PBF file, the execution of this command may take some time.
@@ -69,7 +81,7 @@ Let's preview the data with the sample configuration file (`config.yaml`) by exe
 
 ```
 baremaps serve \
-  --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
+  --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
   --config 'config.yaml' \
   --watch-changes
 ```

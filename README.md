@@ -76,8 +76,7 @@ Start with the [OpenStreetMap](examples/openstreetmap/README.md) example, which 
 Additional examples illustrate how to import other datasets in postgis to produce different kind of vector tiles.
 -   The [NaturalEarth](examples/naturalearth/README.md) example shows how to produce low resolution vector tiles.
 -   The [Contour](examples/contour/README.md) example shows how to produce contour lines from a digital elevation model (DEM).
--   The [Buildings](examples/buildings/README.md) example shows how to 3D buildings from openstreetmap data.
-
+-   The [OSMVecto](https://github.com/baremaps/openstreetmap-vecto/) repository shows how to build a more advanced map.
 ## Contributing
 
 Contributions are welcome and encouraged. Please,checkout our [code of conduct](CODE_OF_CONDUCT.md) and [contributing guidelines](CONTRIBUTING.md).

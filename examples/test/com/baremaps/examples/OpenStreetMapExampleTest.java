@@ -82,8 +82,8 @@ public class OpenStreetMapExampleTest {
 
     // Test the import command
     int importExitCode = cmd.execute("import",
-        "--input", "openstreetmap/liechtenstein-latest.osm.pbf",
-        "--database", DATABASE_URL);
+        "--database", DATABASE_URL,
+        "--file", "openstreetmap/liechtenstein-latest.osm.pbf");
     assertEquals(0, importExitCode);
 
     // Test the export command

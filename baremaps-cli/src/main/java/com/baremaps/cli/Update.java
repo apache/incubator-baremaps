@@ -55,8 +55,7 @@ public class Update implements Callable<Integer> {
   @Option(
       names = {"--tiles"},
       paramLabel = "TILES",
-      description = "The tiles affected by the update.",
-      required = true)
+      description = "The tiles affected by the update.")
   private URI tiles;
 
   @Option(
