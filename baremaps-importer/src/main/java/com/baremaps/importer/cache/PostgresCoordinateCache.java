@@ -47,8 +47,8 @@ public class PostgresCoordinateCache implements Cache<Long, Coordinate> {
       statement.setLong(1, id);
       ResultSet result = statement.executeQuery();
       if (result.next()) {
-        Double lon = result.getDouble(1);
-        Double lat = result.getDouble(2);
+        double lon = result.getDouble(1);
+        double lat = result.getDouble(2);
         return new Coordinate(lon, lat);
       } else {
         return null;
@@ -66,9 +66,9 @@ public class PostgresCoordinateCache implements Cache<Long, Coordinate> {
       ResultSet result = statement.executeQuery();
       Map<Long, Coordinate> nodes = new HashMap<>();
       while (result.next()) {
-        Long id = result.getLong(1);
-        Double lon = result.getDouble(2);
-        Double lat = result.getDouble(3);
+        long id = result.getLong(1);
+        double lon = result.getDouble(2);
+        double lat = result.getDouble(3);
         nodes.put(id, new Coordinate(lon, lat));
       }
       return keys.stream().map(key -> nodes.get(key)).collect(Collectors.toList());
