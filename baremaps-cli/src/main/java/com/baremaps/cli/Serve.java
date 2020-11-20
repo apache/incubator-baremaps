@@ -25,7 +25,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import javax.inject.Provider;
-import org.apache.commons.dbcp2.PoolingDataSource;
+import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -91,7 +91,7 @@ public class Serve implements Callable<Integer> {
     }
 
     logger.info("Initializing datasource");
-    PoolingDataSource datasource = PostgresHelper.poolingDataSource(database);
+    DataSource datasource = PostgresHelper.datasource(database);
 
     logger.info("Initializing tile reader");
     final TileStore tileStore = new PostgisTileStore(datasource, provider);

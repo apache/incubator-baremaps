@@ -51,7 +51,7 @@ public class OpenStreetMapExampleTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = PostgresHelper.poolingDataSource(DATABASE_URL);
+    dataSource = PostgresHelper.datasource(DATABASE_URL);
     nodeStore = new NodeTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgresHelper.executeResource(connection, "osm_create_extensions.sql");

@@ -43,7 +43,7 @@ class WayTableTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = PostgresHelper.poolingDataSource(DATABASE_URL);
+    dataSource = PostgresHelper.datasource(DATABASE_URL);
     wayTable = new WayTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgresHelper.executeResource(connection, "osm_create_extensions.sql");

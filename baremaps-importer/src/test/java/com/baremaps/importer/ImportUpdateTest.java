@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.apache.commons.dbcp2.PoolingDataSource;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 class ImportUpdateTest {
 
   public BlobStore blobStore;
-  public PoolingDataSource dataSource;
+  public DataSource dataSource;
   public HeaderTable headerTable;
   public NodeTable nodeTable;
   public WayTable wayTable;
@@ -39,7 +39,7 @@ class ImportUpdateTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException, URISyntaxException {
-    dataSource = PostgresHelper.poolingDataSource(DATABASE_URL);
+    dataSource = PostgresHelper.datasource(DATABASE_URL);
 
     blobStore = new FileBlobStore();
     headerTable = new HeaderTable(dataSource);

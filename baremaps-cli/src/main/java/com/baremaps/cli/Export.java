@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.commons.dbcp2.PoolingDataSource;
+import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -110,7 +110,7 @@ public class Export implements Callable<Integer> {
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
     // Initialize the datasource
-    PoolingDataSource datasource = PostgresHelper.poolingDataSource(database);
+    DataSource datasource = PostgresHelper.datasource(database);
 
     // Initialize the blob store
     BlobStore blobStore = options.blobStore();
@@ -163,7 +163,7 @@ public class Export implements Callable<Integer> {
     return 0;
   }
 
-  private TileStore sourceTileStore(Config config, PoolingDataSource datasource) {
+  private TileStore sourceTileStore(Config config, DataSource datasource) {
     return new PostgisTileStore(datasource, () -> config);
   }
 

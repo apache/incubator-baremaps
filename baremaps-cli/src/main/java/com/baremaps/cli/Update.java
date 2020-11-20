@@ -28,7 +28,7 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import org.apache.commons.dbcp2.PoolingDataSource;
+import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -75,8 +75,7 @@ public class Update implements Callable<Integer> {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
-    PoolingDataSource datasource = PostgresHelper.poolingDataSource(database);
-
+    DataSource datasource = PostgresHelper.datasource(database);
     PostgresCoordinateCache coordinateCache = new PostgresCoordinateCache(datasource);
     PostgresReferenceCache referenceCache = new PostgresReferenceCache(datasource);
     HeaderTable headerTable = new HeaderTable(datasource);

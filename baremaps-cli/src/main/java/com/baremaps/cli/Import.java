@@ -30,7 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Callable;
-import org.apache.commons.dbcp2.PoolingDataSource;
+import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -89,8 +89,8 @@ public class Import implements Callable<Integer> {
   public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
-    PoolingDataSource datasource = PostgresHelper.poolingDataSource(database);
 
+    DataSource datasource = PostgresHelper.datasource(database);
     HeaderTable headerTable = new HeaderTable(datasource);
     NodeTable nodeTable = new NodeTable(datasource);
     WayTable wayTable = new WayTable(datasource);

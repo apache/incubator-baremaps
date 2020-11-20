@@ -22,7 +22,7 @@ class DatabaseImportHandlerTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = PostgresHelper.poolingDataSource(DATABASE_URL);
+    dataSource = PostgresHelper.datasource(DATABASE_URL);
     headerTable = new HeaderTable(dataSource);
     nodeTable = new NodeTable(dataSource);
     wayTable = new WayTable(dataSource);

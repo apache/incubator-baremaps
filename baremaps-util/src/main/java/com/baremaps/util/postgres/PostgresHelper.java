@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.sql.DataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbcp2.ConnectionFactory;
 import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
 import org.apache.commons.dbcp2.PoolableConnection;
@@ -58,17 +60,10 @@ public final class PostgresHelper {
     return url("localhost", 5432, database, user, password, true);
   }
 
-  public static PoolingDataSource poolingDataSource(String url) {
-    ConnectionFactory connectionFactory =
-        new DriverManagerConnectionFactory(url, null);
-    PoolableConnectionFactory poolableConnectionFactory =
-        new PoolableConnectionFactory(connectionFactory, null);
-    ObjectPool<PoolableConnection> connectionPool =
-        new GenericObjectPool<>(poolableConnectionFactory);
-    poolableConnectionFactory.setPool(connectionPool);
-    PoolingDataSource<PoolableConnection> dataSource =
-        new PoolingDataSource<>(connectionPool);
-    return dataSource;
+  public static DataSource datasource(String url) {
+    BasicDataSource datasource = new BasicDataSource();
+    datasource.setUrl(url);
+    return datasource;
   }
 
   public static void executeResource(Connection connection, String resource) throws IOException, SQLException {

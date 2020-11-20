@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 import javax.inject.Provider;
+import javax.sql.DataSource;
 import org.apache.commons.dbcp2.PoolingDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -79,11 +80,11 @@ public class PostgisTileStore implements TileStore {
   private final CoordinateTransform coordinateTransform = coordinateTransformFactory
       .createTransform(epsg4326, epsg3857);
 
-  private final PoolingDataSource datasource;
+  private final DataSource datasource;
 
   private final Provider<Config> provider;
 
-  public PostgisTileStore(PoolingDataSource datasource, Provider<Config> provider) {
+  public PostgisTileStore(DataSource datasource, Provider<Config> provider) {
     this.datasource = datasource;
     this.provider = provider;
 
