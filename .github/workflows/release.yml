@@ -38,7 +38,3 @@ jobs:
           asset_path: ./baremaps-cli/target/baremaps.zip
           asset_name: baremaps.zip
           asset_content_type: application/zip
-      - name: Publish package
-        run: mvn -B deploy
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
