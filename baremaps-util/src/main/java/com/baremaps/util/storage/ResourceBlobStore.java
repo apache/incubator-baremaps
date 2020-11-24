@@ -19,17 +19,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ResourceBlobStore extends BlobStore {
 
   private static final String SCHEMA = "res://";
 
-  private static Logger logger = LogManager.getLogger();
+  private static Logger logger = LoggerFactory.getLogger(ResourceBlobStore.class);
 
   @Override
   public boolean accept(URI uri) {

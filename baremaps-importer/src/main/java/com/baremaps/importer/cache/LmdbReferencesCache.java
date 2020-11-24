@@ -17,13 +17,11 @@ package com.baremaps.importer.cache;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import javax.inject.Inject;
 import org.lmdbjava.DbiFlags;
 import org.lmdbjava.Env;
 
 public class LmdbReferencesCache extends LmdbCache<Long, List<Long>> {
 
-  @Inject
   public LmdbReferencesCache(Env<ByteBuffer> env) {
     super(env, env.openDbi("references", DbiFlags.MDB_CREATE));
   }

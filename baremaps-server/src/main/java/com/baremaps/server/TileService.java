@@ -27,12 +27,12 @@ import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.common.ResponseHeaders;
 import com.linecorp.armeria.server.AbstractHttpService;
 import com.linecorp.armeria.server.ServiceRequestContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TileService extends AbstractHttpService {
 
-  private static Logger logger = LogManager.getLogger();
+  private static Logger logger = LoggerFactory.getLogger(TileService.class);
 
   private static final ResponseHeaders headers = ResponseHeaders.builder(200)
       .add(CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
@@ -61,7 +61,7 @@ public class TileService extends AbstractHttpService {
         return HttpResponse.of(204);
       }
     } catch (TileStoreException ex) {
-      logger.error(ex);
+      logger.error(ex.getMessage());
       return HttpResponse.of(404);
     }
   }

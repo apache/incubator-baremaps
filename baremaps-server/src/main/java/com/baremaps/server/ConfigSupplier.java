@@ -1,9 +1,9 @@
 package com.baremaps.server;
 
 import com.baremaps.exporter.config.Config;
-import javax.inject.Provider;
+import java.util.function.Supplier;
 
-public class ConfigProvider implements Provider<Config> {
+public class ConfigSupplier implements Supplier<Config> {
 
   @Override
   public Config get() {

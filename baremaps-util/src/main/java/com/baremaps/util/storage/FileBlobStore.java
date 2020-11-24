@@ -21,12 +21,12 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FileBlobStore extends BlobStore {
 
-  private static Logger logger = LogManager.getLogger();
+  private static Logger logger = LoggerFactory.getLogger(FileBlobStore.class);
 
   @Override
   public boolean accept(URI uri) {

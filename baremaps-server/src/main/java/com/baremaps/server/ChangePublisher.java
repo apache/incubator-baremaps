@@ -15,14 +15,14 @@ import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ChangePublisher implements Publisher<ServerSentEvent> {
 
-  private static Logger logger = LogManager.getLogger();
+  private static Logger logger = LoggerFactory.getLogger(ChangePublisher.class);
 
   private final List<Subscriber<? super ServerSentEvent>> subscribers = new CopyOnWriteArrayList<>();
 
@@ -50,9 +50,9 @@ public class ChangePublisher implements Publisher<ServerSentEvent> {
           key.reset();
         }
       } catch (InterruptedException e) {
-        logger.error(e);
+        logger.error(e.getMessage());
       } catch (IOException e) {
-        logger.error(e);
+        logger.error(e.getMessage());
       }
     }).start();
   }

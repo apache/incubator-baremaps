@@ -24,12 +24,12 @@ import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import javax.inject.Provider;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
@@ -37,7 +37,7 @@ import picocli.CommandLine.Option;
 @Command(name = "serve", description = "Serve vector tiles from the the database.")
 public class Serve implements Callable<Integer> {
 
-  private static Logger logger = LogManager.getLogger();
+  private static Logger logger = LoggerFactory.getLogger(Serve.class);
 
   @Mixin
   private Options options;
@@ -77,7 +77,7 @@ public class Serve implements Callable<Integer> {
 
     BlobStore blobStore = options.blobStore();
     Loader loader = new Loader(blobStore);
-    Provider<Config> provider = () -> {
+    Supplier<Config> provider = () -> {
       try {
         return loader.load(this.config);
       } catch (IOException e) {

@@ -4,7 +4,10 @@
 
   <groupId>com.baremaps</groupId>
   <artifactId>baremaps</artifactId>
-  <version>0.3.1</version>
+  <name>baremaps</name>
+  <description>Baremaps</description>
+  <url>https://github.com/baremaps/baremaps</url>
+  <version>0.3.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
 
@@ -181,16 +184,6 @@
               <artifactId>picocli-codegen</artifactId>
               <version>${version.lib.picocli}</version>
             </path>
-            <path>
-              <groupId>com.google.dagger</groupId>
-              <artifactId>dagger-compiler</artifactId>
-              <version>2.16</version>
-            </path>
-            <path>
-              <groupId>com.google.auto.factory</groupId>
-              <artifactId>auto-factory</artifactId>
-              <version>1.0-beta8</version>
-            </path>
           </annotationProcessorPaths>
           <compilerArgs>
             <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
@@ -331,6 +324,11 @@
         <version>${version.lib.dbcp2}</version>
       </dependency>
       <dependency>
+        <artifactId>commons-compress</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <version>${version.lib.commons-compress}</version>
+      </dependency>
+      <dependency>
         <artifactId>jts-core</artifactId>
         <groupId>org.locationtech.jts</groupId>
         <version>${version.lib.jts}</version>
@@ -364,11 +362,6 @@
         <artifactId>protobuf-java</artifactId>
         <groupId>com.google.protobuf</groupId>
         <version>${version.lib.protobuf}</version>
-      </dependency>
-      <dependency>
-        <artifactId>commons-compress</artifactId>
-        <groupId>org.apache.commons</groupId>
-        <version>${version.lib.commons-compress}</version>
       </dependency>
       <dependency>
         <groupId>software.amazon.awssdk</groupId>
@@ -495,36 +488,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-    </dependency>
-    <dependency>
-      <artifactId>commons-dbcp2</artifactId>
-      <groupId>org.apache.commons</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>commons-compress</artifactId>
-      <groupId>org.apache.commons</groupId>
-      <version>1.19</version>
+      <artifactId>protobuf-java</artifactId>
+      <groupId>com.google.protobuf</groupId>
     </dependency>
     <dependency>
       <artifactId>guava</artifactId>
       <groupId>com.google.guava</groupId>
-    </dependency>
-    <dependency>
-      <groupId>com.google.dagger</groupId>
-      <artifactId>dagger</artifactId>
-      <version>2.29.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.auto.factory</groupId>
-      <artifactId>auto-factory</artifactId>
-      <version>1.0-beta8</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <artifactId>picocli</artifactId>
-      <groupId>info.picocli</groupId>
     </dependency>
     <dependency>
       <artifactId>jts-core</artifactId>
@@ -535,8 +504,8 @@
       <groupId>org.locationtech.proj4j</groupId>
     </dependency>
     <dependency>
-      <artifactId>protobuf-java</artifactId>
-      <groupId>com.google.protobuf</groupId>
+      <artifactId>commons-compress</artifactId>
+      <groupId>org.apache.commons</groupId>
     </dependency>
 
     <!-- Logging libraries -->

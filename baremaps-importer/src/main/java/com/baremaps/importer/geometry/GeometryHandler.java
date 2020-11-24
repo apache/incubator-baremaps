@@ -10,18 +10,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GeometryHandler implements ElementHandler {
 
-  private static Logger logger = LogManager.getLogger();
+  private static Logger logger = LoggerFactory.getLogger(GeometryHandler.class);
 
   protected final GeometryFactory geometryFactory;
   private final Cache<Long, Coordinate> coordinateCache;

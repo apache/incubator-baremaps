@@ -42,10 +42,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.locationtech.jts.geom.Envelope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
@@ -54,7 +54,7 @@ import picocli.CommandLine.Option;
 @Command(name = "export", description = "Export vector tiles from the database.")
 public class Export implements Callable<Integer> {
 
-  private static Logger logger = LogManager.getLogger();
+  private static Logger logger = LoggerFactory.getLogger(Export.class);
 
   @Mixin
   private Options options;

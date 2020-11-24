@@ -23,17 +23,17 @@ import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.server.AbstractHttpService;
 import com.linecorp.armeria.server.ServiceRequestContext;
 import java.util.Map;
-import javax.inject.Provider;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.function.Supplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConfigService extends AbstractHttpService {
 
-  private static Logger logger = LogManager.getLogger();
+  private static Logger logger = LoggerFactory.getLogger(ConfigService.class);
 
-  private final Provider<Config> config;
+  private final Supplier<Config> config;
 
-  public ConfigService(Provider<Config> config) {
+  public ConfigService(Supplier<Config> config) {
     this.config = config;
   }
 

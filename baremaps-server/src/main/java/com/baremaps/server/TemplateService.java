@@ -32,13 +32,13 @@ import freemarker.template.TemplateExceptionHandler;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Locale;
-import javax.inject.Provider;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.function.Supplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TemplateService extends AbstractHttpService {
 
-  private static Logger logger = LogManager.getLogger();
+  private static Logger logger = LoggerFactory.getLogger(TemplateService.class);
 
   private static final ResponseHeaders headers = ResponseHeaders.builder(200)
       .add(CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
@@ -46,9 +46,9 @@ public class TemplateService extends AbstractHttpService {
       .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
       .build();
 
-  public final Provider<Config> config;
+  public final Supplier<Config> config;
 
-  public TemplateService(Provider<Config> config) {
+  public TemplateService(Supplier<Config> config) {
     this.config = config;
   }
 

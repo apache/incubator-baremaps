@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
@@ -64,7 +63,6 @@ public class WayTable implements ElementTable<Way> {
         "geom");
   }
 
-  @Inject
   public WayTable(DataSource dataSource, String wayTable, String idColumn, String versionColumn, String uidColumn,
       String timestampColumn, String changesetColumn, String tagsColumn, String nodesColumn, String geometryColumn) {
     this.dataSource = dataSource;

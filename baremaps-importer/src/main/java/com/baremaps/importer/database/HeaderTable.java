@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.inject.Inject;
 import javax.sql.DataSource;
 
 public class HeaderTable {
@@ -35,7 +34,6 @@ public class HeaderTable {
 
   private final DataSource dataSource;
 
-  @Inject
   public HeaderTable(DataSource dataSource) {
     this.dataSource = dataSource;
   }

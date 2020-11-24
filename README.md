@@ -54,7 +54,7 @@ The following docker image will allow you to jump start this installation:
 
 ```
 docker run \
-  --name baremaps-postgis \
+  --name baremaps \
   --publish 5432:5432 \
   -e POSTGRES_DB=baremaps \
   -e POSTGRES_USER=baremaps \
@@ -65,8 +65,8 @@ docker run \
 You can then stop and start the container with the following commands:
 
 ```
-docker stop baremaps-postgis
-docker start baremaps-postgis
+docker stop baremaps
+docker start baremaps
 ```
 
 ## Quickstart

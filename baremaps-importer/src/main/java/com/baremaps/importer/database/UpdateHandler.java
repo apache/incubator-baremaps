@@ -7,12 +7,12 @@ import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UpdateHandler implements ChangeHandler, AutoCloseable {
 
-  private static Logger logger = LogManager.getLogger();
+  private static Logger logger = LoggerFactory.getLogger(UpdateHandler.class);
 
   private final HeaderTable headerTable;
 

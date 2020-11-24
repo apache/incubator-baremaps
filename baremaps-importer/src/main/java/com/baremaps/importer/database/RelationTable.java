@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
@@ -66,7 +65,6 @@ public class RelationTable implements ElementTable<Relation> {
         "geom");
   }
 
-  @Inject
   public RelationTable(
       DataSource dataSource,
       String nodeTable,

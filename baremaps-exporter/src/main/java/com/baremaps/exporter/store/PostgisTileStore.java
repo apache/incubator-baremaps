@@ -27,13 +27,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
-import javax.inject.Provider;
 import javax.sql.DataSource;
-import org.apache.commons.dbcp2.PoolingDataSource;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.io.ParseException;
@@ -43,12 +40,14 @@ import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.ProjCoordinate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PostgisTileStore implements TileStore {
 
   public static final String BBOX = "SELECT st_asewkb(st_transform(st_setsrid(st_extent(geom), 3857), 4326)) as table_extent FROM osm_nodes";
 
-  private static final Logger logger = LogManager.getLogger();
+  private static final Logger logger = LoggerFactory.getLogger(PostgisTileStore.class);
 
   private static final String WITH = "WITH %1$s %2$s";
 
@@ -82,9 +81,9 @@ public class PostgisTileStore implements TileStore {
 
   private final DataSource datasource;
 
-  private final Provider<Config> provider;
+  private final Supplier<Config> provider;
 
-  public PostgisTileStore(DataSource datasource, Provider<Config> provider) {
+  public PostgisTileStore(DataSource datasource, Supplier<Config> provider) {
     this.datasource = datasource;
     this.provider = provider;
 

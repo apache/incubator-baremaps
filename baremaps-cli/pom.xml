@@ -2,12 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <artifactId>baremaps-cli</artifactId>
+  <name>baremaps-cli</name>
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <artifactId>baremaps</artifactId>
     <groupId>com.baremaps</groupId>
-    <version>0.3.1</version>
+    <version>0.3.2-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -56,6 +57,10 @@
     <dependency>
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-server</artifactId>
+    </dependency>
+    <dependency>
+      <artifactId>picocli</artifactId>
+      <groupId>info.picocli</groupId>
     </dependency>
     <dependency>
       <groupId>com.linecorp.armeria</groupId>

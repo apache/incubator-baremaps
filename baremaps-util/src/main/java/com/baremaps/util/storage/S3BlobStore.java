@@ -14,16 +14,14 @@
 
 package com.baremaps.util.storage;
 
-import com.google.common.base.Charsets;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -34,7 +32,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 
 public class S3BlobStore extends BlobStore {
 
-  private static Logger logger = LogManager.getLogger();
+  private static Logger logger = LoggerFactory.getLogger(S3BlobStore.class);
 
   private final String contentEncoding;
 
