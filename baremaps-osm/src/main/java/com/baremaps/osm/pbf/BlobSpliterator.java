@@ -18,15 +18,16 @@ import com.baremaps.osm.binary.Fileformat;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
 public class BlobSpliterator implements Spliterator<Blob> {
 
-  protected final DataInputStream input;
+  private final BlobIterator input;
 
   public BlobSpliterator(InputStream input) {
-    this.input = new DataInputStream(input);
+    this.input = new BlobIterator(input);
   }
 
   @Override
@@ -41,26 +42,16 @@ public class BlobSpliterator implements Spliterator<Blob> {
 
   @Override
   public int characteristics() {
-    return NONNULL | ORDERED | CONCURRENT;
+    return NONNULL | CONCURRENT | ORDERED;
   }
 
   @Override
   public boolean tryAdvance(Consumer<? super Blob> action) {
     try {
-      // Read blob header
-      int headerSize = input.readInt();
-      byte[] headerBytes = new byte[headerSize];
-      input.readFully(headerBytes);
-      Fileformat.BlobHeader header = Fileformat.BlobHeader.parseFrom(headerBytes);
-
-      // Read blob data
-      int dataSize = header.getDatasize();
-      byte[] data = new byte[dataSize];
-      input.readFully(data);
-
-      action.accept(new Blob(header, data,8 + headerSize + dataSize));
+      Blob blob = input.next();
+      action.accept(blob);
       return true;
-    } catch (IOException e) {
+    } catch (NoSuchElementException e) {
       return false;
     }
   }

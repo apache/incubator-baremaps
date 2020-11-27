@@ -24,6 +24,10 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -40,6 +44,41 @@ public class EntityReaderBenchmark {
         Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
       }
     }
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.SingleShotTime)
+  @Warmup(iterations = 1)
+  @Measurement(iterations = 1)
+  public void sequential() throws IOException {
+    AtomicLong nodes = new AtomicLong(0);
+    AtomicLong ways = new AtomicLong(0);
+    AtomicLong relations = new AtomicLong(0);
+
+    OpenStreetMap.entityStream(path, false).forEach(new ElementHandler() {
+      @Override
+      public void handle(Node node) {
+        nodes.incrementAndGet();
+      }
+
+      @Override
+      public void handle(Way way) {
+        ways.incrementAndGet();
+      }
+
+      @Override
+      public void handle(Relation relation) {
+        relations.incrementAndGet();
+      }
+    });
+
+    System.out.println();
+    System.out.println("----------------------");
+    System.out.println("nodes:     " + nodes.get());
+    System.out.println("ways:      " + ways.get());
+    System.out.println("relations: " + relations.get());
+    System.out.println("----------------------");
+    System.out.println();
   }
 
   @Benchmark
@@ -77,10 +116,49 @@ public class EntityReaderBenchmark {
     System.out.println();
   }
 
-  public static void main(String[] args) throws IOException {
-    EntityReaderBenchmark bench = new EntityReaderBenchmark();
-    bench.setup();
-    bench.parallel();
+  @Benchmark
+  @BenchmarkMode(Mode.SingleShotTime)
+  @Warmup(iterations = 1)
+  @Measurement(iterations = 1)
+  public void parallelOrdered() throws IOException {
+    AtomicLong nodes = new AtomicLong(0);
+    AtomicLong ways = new AtomicLong(0);
+    AtomicLong relations = new AtomicLong(0);
+
+    OpenStreetMap.entityStream(path, true).forEachOrdered(new ElementHandler() {
+      @Override
+      public void handle(Node node) {
+        nodes.incrementAndGet();
+      }
+
+      @Override
+      public void handle(Way way) {
+        ways.incrementAndGet();
+      }
+
+      @Override
+      public void handle(Relation relation) {
+        relations.incrementAndGet();
+      }
+    });
+
+    System.out.println();
+    System.out.println("----------------------");
+    System.out.println("nodes:     " + nodes.get());
+    System.out.println("ways:      " + ways.get());
+    System.out.println("relations: " + relations.get());
+    System.out.println("----------------------");
+    System.out.println();
+  }
+
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(EntityReaderBenchmark.class.getSimpleName())
+        .forks(1)
+        .jvmArgs("-ea")
+        .build();
+
+    new Runner(opt).run();
   }
 
 }

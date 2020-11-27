@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class DataBlockReader {
@@ -40,8 +41,7 @@ public class DataBlockReader {
     }
   }
 
-  public Stream<Node> readDenseNodes() {
-    Stream.Builder<Node> builder = Stream.builder();
+  public void readDenseNodes(Consumer<Node> consumer) {
     for (PrimitiveGroup group : primitiveBlock.getPrimitivegroupList()) {
       DenseNodes denseNodes = group.getDense();
 
@@ -79,14 +79,12 @@ public class DataBlockReader {
         }
 
         Info info = new Info(version, getTimestamp(timestamp), changeset, uid);
-        builder.accept(new Node(id, info, tags, getLon(lon), getLat(lat)));
+        consumer.accept(new Node(id, info, tags, getLon(lon), getLat(lat)));
       }
     }
-    return builder.build();
   }
 
-  public Stream<Node> readNodes() {
-    Stream.Builder<Node> builder = Stream.builder();
+  public void readNodes(Consumer<Node> consumer) {
     for (PrimitiveGroup group : primitiveBlock.getPrimitivegroupList()) {
       for (Osmformat.Node node : group.getNodesList()) {
         long id = node.getId();
@@ -102,14 +100,12 @@ public class DataBlockReader {
         double lat = getLat(node.getLat());
 
         Info info = new Info(version, timestamp, changeset, uid);
-        builder.accept(new Node(id, info, tags, lon, lat));
+        consumer.accept(new Node(id, info, tags, lon, lat));
       }
     }
-    return builder.build();
   }
 
-  public Stream<Way> readWays() {
-    Stream.Builder<Way> builder = Stream.builder();
+  public void readWays(Consumer<Way> consumer) {
     for (PrimitiveGroup group : primitiveBlock.getPrimitivegroupList()) {
       for (Osmformat.Way way : group.getWaysList()) {
         long id = way.getId();
@@ -126,14 +122,12 @@ public class DataBlockReader {
         }
 
         Info info = new Info(version, timestamp, changeset, uid);
-        builder.accept(new Way(id, info, tags, nodes));
+        consumer.accept(new Way(id, info, tags, nodes));
       }
     }
-    return builder.build();
   }
 
-  public Stream<Relation> readRelations() {
-    Stream.Builder<Relation> builder = Stream.builder();
+  public void readRelations(Consumer<Relation> consumer) {
     for (PrimitiveGroup group : primitiveBlock.getPrimitivegroupList()) {
       for (Osmformat.Relation relation : group.getRelationsList()) {
         long id = relation.getId();
@@ -153,10 +147,9 @@ public class DataBlockReader {
         }
 
         Info info = new Info(version, timestamp, changeset, uid);
-        builder.accept(new Relation(id, info, tags, members));
+        consumer.accept(new Relation(id, info, tags, members));
       }
     }
-    return builder.build();
   }
 
   protected MemberType type(Osmformat.Relation.MemberType type) {

@@ -15,21 +15,21 @@ class XmlEntityReaderTest {
   void entities() throws IOException {
     assertEquals(12,
         new XmlEntityReader(TestFiles.dataOsmXml())
-            .read()
+            .stream()
             .count());
     assertEquals(6,
         new XmlEntityReader(TestFiles.dataOsmXml())
-            .read()
+            .stream()
             .filter(e -> e instanceof Node)
             .count());
     assertEquals(3,
         new XmlEntityReader(TestFiles.dataOsmXml())
-            .read()
+            .stream()
             .filter(e -> e instanceof Way)
             .count());
     assertEquals(1,
         new XmlEntityReader(TestFiles.dataOsmXml())
-            .read()
+            .stream()
             .filter(e -> e instanceof Relation)
             .count());
   }

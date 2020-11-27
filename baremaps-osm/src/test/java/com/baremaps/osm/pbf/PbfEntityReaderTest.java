@@ -14,14 +14,14 @@ class PbfEntityReaderTest {
   @Test
   void entities() throws IOException {
     assertEquals(72002, new PbfEntityReader(TestFiles.dataOsmPbf())
-        .read()
+        .stream()
         .count());
   }
 
   @Test
   void nodes() throws IOException {
     assertEquals(8000, new PbfEntityReader(TestFiles.denseNodesOsmPbf())
-        .read()
+        .stream()
         .filter(e -> e instanceof Node)
         .count());
   }
@@ -29,7 +29,7 @@ class PbfEntityReaderTest {
   @Test
   void ways() throws IOException {
     assertEquals(8000, new PbfEntityReader(TestFiles.waysOsmPbf())
-        .read()
+        .stream()
         .filter(e -> e instanceof Way)
         .count());
   }
@@ -37,7 +37,7 @@ class PbfEntityReaderTest {
   @Test
   void relations() throws IOException {
     assertEquals(8000, new PbfEntityReader(TestFiles.relationsOsmPbf())
-        .read()
+        .stream()
         .filter(e -> e instanceof Relation)
         .count());
   }

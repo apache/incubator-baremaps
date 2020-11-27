@@ -3,6 +3,9 @@ package com.baremaps.osm;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.State;
+import com.baremaps.osm.pbf.Blob;
+import com.baremaps.osm.pbf.BlobReader;
+import com.baremaps.osm.pbf.BlobSpliterator;
 import com.baremaps.osm.pbf.PbfEntityReader;
 import com.baremaps.osm.xml.XmlChangeReader;
 import com.baremaps.osm.xml.XmlEntityReader;
@@ -10,7 +13,10 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.ForkJoinPool;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
@@ -24,11 +30,11 @@ public class OpenStreetMap {
   }
 
   public static Stream<Entity> entityStream(Path path) throws IOException {
-    return entityReader(path).read();
+    return entityReader(path).stream();
   }
 
   public static Stream<Entity> entityStream(Path path, boolean parallel) throws IOException {
-    return entityReader(path, parallel).read();
+    return entityReader(path, parallel).stream();
   }
 
   public static EntityReader entityReader(Path path) throws IOException {

@@ -32,7 +32,7 @@ public class BatchSpliterator<T> implements Spliterator<T> {
   private final int batchSize;
 
   /**
-   * Creates a spliterator that partitions the underlying spliterator according to the given batch size.
+   * Creates a spliterator that partitions the underlying spliterator according to a given batch size.
    *
    * @param spliterator the underlying spliterator.
    * @param batchSize   the batch size.
@@ -82,7 +82,7 @@ public class BatchSpliterator<T> implements Spliterator<T> {
    */
   @Override
   public int characteristics() {
-    return spliterator.characteristics() | SUBSIZED;
+    return spliterator.characteristics() | SIZED | SUBSIZED;
   }
 
 }
