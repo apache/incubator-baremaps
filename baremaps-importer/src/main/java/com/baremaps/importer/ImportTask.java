@@ -58,14 +58,14 @@ public class ImportTask {
 
     logger.info("Creating cache");
     try (CacheImportHandler cacheImportHandler = new CacheImportHandler(coordinateCache, referenceCache)) {
-      OpenStreetMap.entityStream(path).forEach(cacheImportHandler);
+      OpenStreetMap.entityStream(path, true).forEach(cacheImportHandler);
     }
 
     logger.info("Importing data");
     try (DatabaseImportHandler databaseImportHandler = new DatabaseImportHandler(headerTable, nodeTable, wayTable, relationTable)) {
       GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
       ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
-      OpenStreetMap.entityStream(path)
+      OpenStreetMap.entityStream(path, true)
           .peek(geometryHandler)
           .peek(projectionTransformer)
           .forEach(databaseImportHandler);

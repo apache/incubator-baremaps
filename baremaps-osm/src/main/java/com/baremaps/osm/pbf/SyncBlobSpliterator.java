@@ -22,11 +22,11 @@ import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-public class BlobSpliterator implements Spliterator<Blob> {
+public class SyncBlobSpliterator implements Spliterator<Blob> {
 
   private final BlobIterator input;
 
-  public BlobSpliterator(InputStream input) {
+  public SyncBlobSpliterator(InputStream input) {
     this.input = new BlobIterator(input);
   }
 
