@@ -11,5 +11,5 @@ docker build -t java8-build-image .
 It can then be used to build the project from the root directory:
 
 ```bash
-docker run -it -v ${PWD}:/maven java8-build-image
+docker run -it --net host -v ${PWD}:/maven java8-build-image
 ```

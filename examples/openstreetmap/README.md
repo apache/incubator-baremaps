@@ -42,15 +42,10 @@ Depending on the size of the PBF file, the execution of this command may take so
 Eventually, the output produced by the command should look as follows.
 
 ```
-[INFO ] 2020-05-14 21:01:13.958 [main] Import - 8 processors available.
-[INFO ] 2020-05-14 21:01:13.972 [main] Import - Dropping tables.
-[INFO ] 2020-05-14 21:01:14.170 [main] Import - Creating tables.
-[INFO ] 2020-05-14 21:01:14.197 [main] Import - Creating primary keys.
-[INFO ] 2020-05-14 21:01:14.443 [main] Import - Fetching input.
-[INFO ] 2020-05-14 21:01:14.444 [main] Import - Populating cache.
-[INFO ] 2020-05-14 21:01:15.731 [main] Import - Populating database.
-[INFO ] 2020-05-14 21:01:17.400 [main] Import - Indexing geometries.
-[INFO ] 2020-05-14 21:01:22.293 [main] Import - Indexing attributes.
+[INFO ] 2020-11-28 14:14:29.798 [main] Import - 8 processors available
+[INFO ] 2020-11-28 14:14:31.019 [main] HttpBlobStore - Read https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf
+[INFO ] 2020-11-28 14:14:32.001 [main] ImportTask - Creating cache
+[INFO ] 2020-11-28 14:14:33.272 [main] ImportTask - Importing data
 ```
 
 ### Under the Hood (Optional)
