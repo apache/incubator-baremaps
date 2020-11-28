@@ -15,6 +15,7 @@
 package com.baremaps.osm.pbf;
 
 import com.baremaps.osm.domain.Entity;
+import com.baremaps.osm.stream.StreamException;
 import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.Spliterator;
@@ -49,7 +50,7 @@ public class ParallelBlobSpliterator implements Spliterator<Stream<Entity>> {
         try {
           queue.put(executor.submit(() -> reader.read()));
         } catch (InterruptedException e) {
-          e.printStackTrace();
+          throw new StreamException(e);
         }
       }
     });
@@ -82,10 +83,8 @@ public class ParallelBlobSpliterator implements Spliterator<Stream<Entity>> {
       Future<Stream<Entity>> future = batch.poll();
       try {
         consumer.accept(future.get());
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      } catch (ExecutionException e) {
-        e.printStackTrace();
+      } catch (InterruptedException | ExecutionException e) {
+        throw new StreamException(e);
       }
     }
     return true;
