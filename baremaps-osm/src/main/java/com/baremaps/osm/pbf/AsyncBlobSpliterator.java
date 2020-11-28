@@ -29,7 +29,9 @@ import java.util.stream.Stream;
 
 public class AsyncBlobSpliterator implements Spliterator<Stream<Entity>> {
 
-  private static final int SIZE = Math.max(4, Runtime.getRuntime().availableProcessors());
+  private static final int POOL_SIZE = Math.max(4, Runtime.getRuntime().availableProcessors());
+
+  private static final int QUEUE_SIZE = POOL_SIZE * 2;
 
   private final ExecutorService executor;
 
@@ -40,9 +42,9 @@ public class AsyncBlobSpliterator implements Spliterator<Stream<Entity>> {
   private final Future reader;
 
   public AsyncBlobSpliterator(InputStream input) {
-    executor = Executors.newFixedThreadPool(SIZE);
+    executor = Executors.newFixedThreadPool(POOL_SIZE);
     iterator = new BlobIterator(input);
-    queue = new ArrayBlockingQueue<>(SIZE);
+    queue = new ArrayBlockingQueue<>(QUEUE_SIZE);
     reader = executor.submit(() -> {
       while (iterator.hasNext()) {
         Blob blob = iterator.next();

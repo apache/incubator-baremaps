@@ -7,7 +7,7 @@
   <name>baremaps</name>
   <description>Baremaps</description>
   <url>https://github.com/baremaps/baremaps</url>
-  <version>0.3.3-SNAPSHOT</version>
+  <version>0.3.3</version>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
 
