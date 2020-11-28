@@ -20,43 +20,34 @@ import java.util.ArrayDeque;
 import java.util.Spliterator;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.concurrent.ForkJoinWorkerThread;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.RecursiveTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
-public class ForkJoinBlobSpliterator implements Spliterator<Stream<Entity>> {
+public class ParallelBlobSpliterator implements Spliterator<Stream<Entity>> {
 
-  private static final int QUEUE_SIZE = Math.max(8, Runtime.getRuntime().availableProcessors());
+  private static final int SIZE = Math.max(4, Runtime.getRuntime().availableProcessors());
 
-  private final ForkJoinPool pool;
+  private final ExecutorService executor;
 
   private final BlobIterator iterator;
 
-  private final ArrayBlockingQueue<ForkJoinTask<Stream<Entity>>> queue;
+  private final ArrayBlockingQueue<Future<Stream<Entity>>> queue;
 
   private final Future reader;
 
-  public ForkJoinBlobSpliterator(InputStream input) {
-    if (Thread.currentThread() instanceof ForkJoinWorkerThread) {
-      pool = ((ForkJoinWorkerThread) Thread.currentThread()).getPool();
-    } else {
-      pool = ForkJoinPool.commonPool();
-    }
+  public ParallelBlobSpliterator(InputStream input) {
+    executor = Executors.newFixedThreadPool(SIZE); //new ForkJoinPool(SIZE);
     iterator = new BlobIterator(input);
-    queue = new ArrayBlockingQueue<>(QUEUE_SIZE);
-    reader = pool.submit(() -> {
+    queue = new ArrayBlockingQueue<>(SIZE);
+    reader = executor.submit(() -> {
       while (iterator.hasNext()) {
         Blob blob = iterator.next();
         BlobReader reader = new BlobReader(blob);
         try {
-          queue.put(pool.submit(() -> reader.read()));
+          queue.put(executor.submit(() -> reader.read()));
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
@@ -82,13 +73,20 @@ public class ForkJoinBlobSpliterator implements Spliterator<Stream<Entity>> {
   @Override
   public boolean tryAdvance(Consumer<? super Stream<Entity>> consumer) {
     if (reader.isDone() && queue.isEmpty()) {
+      executor.shutdown();
       return false;
     }
-    ArrayDeque<ForkJoinTask<Stream<Entity>>> batch = new ArrayDeque<>();
+    ArrayDeque<Future<Stream<Entity>>> batch = new ArrayDeque<>();
     queue.drainTo(batch);
     while (!batch.isEmpty()) {
-      ForkJoinTask<Stream<Entity>> stream = batch.poll();
-      consumer.accept(stream.join());
+      Future<Stream<Entity>> future = batch.poll();
+      try {
+        consumer.accept(future.get());
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      } catch (ExecutionException e) {
+        e.printStackTrace();
+      }
     }
     return true;
   }
