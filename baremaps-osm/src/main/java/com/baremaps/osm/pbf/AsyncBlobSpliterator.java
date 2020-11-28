@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class ParallelBlobSpliterator implements Spliterator<Stream<Entity>> {
+public class AsyncBlobSpliterator implements Spliterator<Stream<Entity>> {
 
   private static final int SIZE = Math.max(4, Runtime.getRuntime().availableProcessors());
 
@@ -39,8 +39,8 @@ public class ParallelBlobSpliterator implements Spliterator<Stream<Entity>> {
 
   private final Future reader;
 
-  public ParallelBlobSpliterator(InputStream input) {
-    executor = Executors.newFixedThreadPool(SIZE); //new ForkJoinPool(SIZE);
+  public AsyncBlobSpliterator(InputStream input) {
+    executor = Executors.newFixedThreadPool(SIZE);
     iterator = new BlobIterator(input);
     queue = new ArrayBlockingQueue<>(SIZE);
     reader = executor.submit(() -> {
