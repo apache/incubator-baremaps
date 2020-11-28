@@ -33,6 +33,8 @@ import java.util.stream.StreamSupport;
 
 public class ForkJoinBlobSpliterator implements Spliterator<Stream<Entity>> {
 
+  private static final int QUEUE_SIZE = Math.max(8, Runtime.getRuntime().availableProcessors());
+
   private final ForkJoinPool pool;
 
   private final BlobIterator iterator;
@@ -48,7 +50,7 @@ public class ForkJoinBlobSpliterator implements Spliterator<Stream<Entity>> {
       pool = ForkJoinPool.commonPool();
     }
     iterator = new BlobIterator(input);
-    queue = new ArrayBlockingQueue<>(Runtime.getRuntime().availableProcessors());
+    queue = new ArrayBlockingQueue<>(QUEUE_SIZE);
     reader = pool.submit(() -> {
       while (iterator.hasNext()) {
         Blob blob = iterator.next();

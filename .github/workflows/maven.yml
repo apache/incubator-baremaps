@@ -22,8 +22,6 @@ jobs:
           java-version: 1.8
       - name: Build with Maven
         run: mvn -P integration -B package --file pom.xml
-        env:
-          MAVEN_OPTS: -Djava.util.concurrent.ForkJoinPool.common.parallelism=8
       - name: Upload code coverage
         run: bash <(curl -s https://codecov.io/bash)
   build-macos:
@@ -38,8 +36,6 @@ jobs:
           java-version: 1.8
       - name: Build with Maven
         run: mvn -B package --file pom.xml
-        env:
-          MAVEN_OPTS: -Djava.util.concurrent.ForkJoinPool.common.parallelism=8
   build-windows:
     name: Build Project (Windows)
     runs-on: windows-latest
@@ -52,6 +48,4 @@ jobs:
           java-version: 1.8
       - name: Build with Maven
         run: mvn -B package --file pom.xml
-        env:
-          MAVEN_OPTS: -Djava.util.concurrent.ForkJoinPool.common.parallelism=8
 
