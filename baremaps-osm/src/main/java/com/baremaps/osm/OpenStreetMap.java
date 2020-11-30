@@ -23,6 +23,18 @@ public class OpenStreetMap {
 
   }
 
+  public static Stream<Stream<Entity>> blobStream(Path path) throws IOException {
+    return blobStream(path, false, false);
+  }
+
+  public static Stream<Stream<Entity>> blobStream(Path path, boolean parallel) throws IOException {
+    return blobStream(path, parallel, false);
+  }
+
+  public static Stream<Stream<Entity>> blobStream(Path path, boolean parallel, boolean async) throws IOException {
+    return new PbfEntityReader(new BufferedInputStream(Files.newInputStream(path)), parallel, async).blobStream();
+  }
+
   public static Stream<Entity> entityStream(Path path) throws IOException {
     return entityReader(path).stream();
   }
@@ -43,7 +55,7 @@ public class OpenStreetMap {
     return entityReader(path, parallel, false);
   }
 
-  public static EntityReader entityReader(Path path, boolean parallel, boolean async) throws IOException {
+  private static EntityReader entityReader(Path path, boolean parallel, boolean async) throws IOException {
     if (path.toString().endsWith(".pbf")) {
       return new PbfEntityReader(new BufferedInputStream(Files.newInputStream(path)), parallel, async);
     } else if (path.toString().endsWith(".xml")

@@ -104,7 +104,8 @@ public class Serve implements Callable<Integer> {
     ServerBuilder builder = Server.builder()
         .defaultHostname(host)
         .http(port)
-        .service("/", new TemplateService(provider))
+        .service("/", new TemplateService(provider, "index.ftl"))
+        .service("/openstreetmap/", new TemplateService(provider, "openstreetmap.ftl"))
         .service("/favicon.ico",
             FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico"))
         .service("/config.yaml", new ConfigService(provider))

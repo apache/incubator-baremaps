@@ -28,28 +28,29 @@ public class PbfEntityReader implements EntityReader {
 
   @Override
   public Stream<Entity> stream() {
+    return blobStream().flatMap(s -> s);
+  }
+
+  public Stream<Stream<Entity>> blobStream() {
     return async ? asyncStream() : syncStream();
   }
 
-  private Stream<Entity> syncStream() {
+  private Stream<Stream<Entity>> syncStream() {
     Spliterator<Blob> spliterator = new SyncBlobSpliterator(inputStream);
     if (parallel) {
       spliterator = new BatchSpliterator<>(spliterator, 1);
     }
-    return StreamSupport
-        .stream(spliterator, parallel)
+    return StreamSupport.stream(spliterator, parallel)
         .map(BlobReader::new)
-        .flatMap(BlobReader::read);
+        .map(BlobReader::read);
   }
 
-  private Stream<Entity> asyncStream() {
+  private Stream<Stream<Entity>> asyncStream() {
     Spliterator<Stream<Entity>> spliterator = new AsyncBlobSpliterator(inputStream);
     if (parallel) {
       spliterator = new BatchSpliterator<>(spliterator, 1);
     }
-    return StreamSupport
-        .stream(spliterator, parallel)
-        .flatMap(s -> s);
+    return StreamSupport.stream(spliterator, parallel);
   }
 
 }

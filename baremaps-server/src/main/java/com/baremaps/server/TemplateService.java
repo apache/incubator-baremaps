@@ -48,8 +48,11 @@ public class TemplateService extends AbstractHttpService {
 
   public final Supplier<Config> config;
 
-  public TemplateService(Supplier<Config> config) {
+  public final String template;
+
+  public TemplateService(Supplier<Config> config, String template) {
     this.config = config;
+    this.template = template;
   }
 
   @Override
@@ -64,7 +67,7 @@ public class TemplateService extends AbstractHttpService {
     config.setLogTemplateExceptions(false);
     config.setWrapUncheckedExceptions(true);
     config.setFallbackOnNullLoopVariable(false);
-    Template blueprintTemplate = config.getTemplate("index.ftl");
+    Template blueprintTemplate = config.getTemplate(template);
     blueprintTemplate.process(this.config.get(), output);
     return HttpResponse.of(HttpStatus.OK, MediaType.HTML_UTF_8, output.toString());
   }

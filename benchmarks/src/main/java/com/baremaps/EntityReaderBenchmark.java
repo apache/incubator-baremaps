@@ -88,13 +88,39 @@ public class EntityReaderBenchmark {
     System.out.println();
   }
 
-  public static void main(String[] args) throws RunnerException {
-    Options opt = new OptionsBuilder()
-        .include(EntityReaderBenchmark.class.getSimpleName())
-        .forks(1)
-        .jvmArgs("-ea")
-        .build();
-    new Runner(opt).run();
+  @Benchmark
+  @BenchmarkMode(Mode.SingleShotTime)
+  @Warmup(iterations = 1)
+  @Measurement(iterations = 1)
+  public void blobStream() throws IOException {
+    AtomicLong nodes = new AtomicLong(0);
+    AtomicLong ways = new AtomicLong(0);
+    AtomicLong relations = new AtomicLong(0);
+
+    OpenStreetMap.blobStream(path, parallel, async).forEach(stream -> stream.forEach(new ElementHandler() {
+      @Override
+      public void handle(Node node) {
+        nodes.incrementAndGet();
+      }
+
+      @Override
+      public void handle(Way way) {
+        ways.incrementAndGet();
+      }
+
+      @Override
+      public void handle(Relation relation) {
+        relations.incrementAndGet();
+      }
+    }));
+
+    System.out.println();
+    System.out.println("----------------------");
+    System.out.println("nodes:     " + nodes.get());
+    System.out.println("ways:      " + ways.get());
+    System.out.println("relations: " + relations.get());
+    System.out.println("----------------------");
+    System.out.println();
   }
 
 }
