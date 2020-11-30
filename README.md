@@ -9,7 +9,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbaremaps%2Fbaremaps.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbaremaps%2Fbaremaps?ref=badge_shield)
 
-Baremaps is a toolkit for creating Mapbox vector tiles from [OpenStreetMap](https://www.openstreetmap.org) and other data sources. The project is licensed under [Apache License 2.0](LICENSE) and supported by [Camptocamp](https://www.camptocamp.com/geospatial_solutions).
+Baremaps is a toolkit for creating Mapbox vector tiles from [OpenStreetMap](https://www.openstreetmap.org) and other data sources. The project is licensed under [Apache License 2.0](LICENSE).
 
 It is inspired by [Osmosis](https://github.com/openstreetmap/osmosis), but it comes with additional features, such as the ability to:
 -   Process data in parallel with the [Stream API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html) introduced in Java 8
