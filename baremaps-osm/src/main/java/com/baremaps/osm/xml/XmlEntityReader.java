@@ -2,7 +2,7 @@ package com.baremaps.osm.xml;
 
 import com.baremaps.osm.EntityReader;
 import com.baremaps.osm.domain.Entity;
-import com.baremaps.osm.stream.BatchSpliterator;
+import com.baremaps.osm.stream.ParallelSpliterator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Spliterator;
@@ -30,7 +30,7 @@ public class XmlEntityReader implements EntityReader {
     try {
       Spliterator<Entity> spliterator = new XmlEntitySpliterator(inputStream);
       if (parallel) {
-        spliterator = new BatchSpliterator<>(spliterator, 1000);
+        spliterator = new ParallelSpliterator<>(spliterator, 1000);
       }
       return StreamSupport.stream(spliterator, parallel);
     } catch (XMLStreamException e) {

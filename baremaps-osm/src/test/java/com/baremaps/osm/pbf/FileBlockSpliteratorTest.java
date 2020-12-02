@@ -29,14 +29,14 @@ public class FileBlockSpliteratorTest {
 
   @Test
   public void tryAdvance() {
-    Spliterator<Blob> spliterator = new SyncBlobSpliterator(new DataInputStream(dataOsmPbf()));
+    Spliterator<Blob> spliterator = new BlobSpliterator(new DataInputStream(dataOsmPbf()));
     spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
     assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
   }
 
   @Test
   public void forEachRemaining() {
-    Spliterator<Blob> spliterator = new SyncBlobSpliterator(new DataInputStream(dataOsmPbf()));
+    Spliterator<Blob> spliterator = new BlobSpliterator(new DataInputStream(dataOsmPbf()));
     AccumulatingConsumer<Blob> accumulator = new AccumulatingConsumer<>();
     spliterator.forEachRemaining(accumulator);
     assertTrue(accumulator.values().size() == 10);

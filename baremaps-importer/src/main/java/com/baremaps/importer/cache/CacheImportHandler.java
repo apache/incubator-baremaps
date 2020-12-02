@@ -1,25 +1,18 @@
 package com.baremaps.importer.cache;
 
-import com.baremaps.importer.cache.Cache.Entry;
-import com.baremaps.osm.EntityHandler;
-import com.baremaps.osm.domain.Bound;
-import com.baremaps.osm.domain.Header;
+import com.baremaps.osm.DefaultEntityHandler;
+import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.locationtech.jts.geom.Coordinate;
 
-public class CacheImportHandler implements EntityHandler, AutoCloseable {
+public class CacheImportHandler implements Consumer<Stream<Entity>> {
 
   private final Cache<Long, Coordinate> coordiateCache;
   private final Cache<Long, List<Long>> referenceCache;
-
-  private final Map<Thread, List<Entry<Long, Coordinate>>> coordinateBuffers = new ConcurrentHashMap<>();
-  private final Map<Thread, List<Entry<Long, List<Long>>>> referencesBuffers = new ConcurrentHashMap<>();
 
   public CacheImportHandler(
       Cache<Long, Coordinate> coordiateCache,
@@ -29,50 +22,17 @@ public class CacheImportHandler implements EntityHandler, AutoCloseable {
   }
 
   @Override
-  public void handle(Header header) {
-    // Do nothing
-  }
+  public void accept(Stream<Entity> entities) {
+    entities.forEach(new DefaultEntityHandler() {
+      @Override
+      public void handle(Node node) {
+        coordiateCache.put(node.getId(), new Coordinate(node.getLon(), node.getLat()));
+      }
 
-  @Override
-  public void handle(Bound bound) {
-    // Do nothing
+      @Override
+      public void handle(Way way) {
+        referenceCache.put(way.getId(), way.getNodes());
+      }
+    });
   }
-
-  @Override
-  public void handle(Node node) {
-    List<Entry<Long, Coordinate>> buffer = coordinateBuffers.computeIfAbsent(Thread.currentThread(), thread -> new ArrayList<>());
-    buffer.add(new Entry<>(node.getId(), new Coordinate(node.getLon(), node.getLat())));
-    if (buffer.size() == 1000) {
-      coordiateCache.putAll(buffer);
-      buffer.clear();
-    }
-  }
-
-  @Override
-  public void handle(Way way) {
-    List<Entry<Long, List<Long>>> buffer = referencesBuffers.computeIfAbsent(Thread.currentThread(), thread -> new ArrayList<>());
-    buffer.add(new Entry<>(way.getId(), way.getNodes()));
-    if (buffer.size() == 1000) {
-      referenceCache.putAll(buffer);
-      buffer.clear();
-    }
-  }
-
-  @Override
-  public void handle(Relation relation) {
-    // Do nothing
-  }
-
-  @Override
-  public void close() {
-    for (List<Entry<Long, Coordinate>> buffer : coordinateBuffers.values()) {
-      coordiateCache.putAll(buffer);
-      buffer.clear();
-    }
-    for (List<Entry<Long, List<Long>>> buffer : referencesBuffers.values()) {
-      referenceCache.putAll(buffer);
-      buffer.clear();
-    }
-  }
-
 }

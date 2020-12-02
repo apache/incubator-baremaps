@@ -2,9 +2,11 @@ package com.baremaps.osm.pbf;
 
 import com.baremaps.osm.EntityReader;
 import com.baremaps.osm.domain.Entity;
-import com.baremaps.osm.stream.BatchSpliterator;
+import com.baremaps.osm.stream.AsyncSpliterator;
+import com.baremaps.osm.stream.ParallelSpliterator;
 import java.io.InputStream;
 import java.util.Spliterator;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -36,19 +38,20 @@ public class PbfEntityReader implements EntityReader {
   }
 
   private Stream<Stream<Entity>> syncStream() {
-    Spliterator<Blob> spliterator = new SyncBlobSpliterator(inputStream);
+    Spliterator<Blob> spliterator = new BlobSpliterator(inputStream);
     if (parallel) {
-      spliterator = new BatchSpliterator<>(spliterator, 1);
+      spliterator = new ParallelSpliterator<>(spliterator, 1);
     }
     return StreamSupport.stream(spliterator, parallel)
-        .map(BlobReader::new)
-        .map(BlobReader::read);
+        .map(Blob::readFileBlock)
+        .map(FileBlock::streamEntities);
   }
 
   private Stream<Stream<Entity>> asyncStream() {
-    Spliterator<Stream<Entity>> spliterator = new AsyncBlobSpliterator(inputStream);
+    Function<Blob, Stream<Entity>> operation = blob -> blob.readFileBlock().streamEntities();
+    Spliterator<Stream<Entity>> spliterator = new AsyncSpliterator<>(new BlobSpliterator(inputStream), operation);
     if (parallel) {
-      spliterator = new BatchSpliterator<>(spliterator, 1);
+      spliterator = new ParallelSpliterator<>(spliterator, 1);
     }
     return StreamSupport.stream(spliterator, parallel);
   }

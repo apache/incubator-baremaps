@@ -3,18 +3,20 @@ package com.baremaps.osm.pbf;
 import com.baremaps.osm.binary.Osmformat;
 import com.baremaps.osm.binary.Osmformat.HeaderBBox;
 import com.baremaps.osm.domain.Bound;
+import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Header;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.function.Consumer;
 
-public class HeaderBlockReader {
+public class HeaderBlock implements FileBlock {
 
   public static final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   private final Osmformat.HeaderBlock headerBlock;
 
-  public HeaderBlockReader(Osmformat.HeaderBlock headerBlock) {
+  public HeaderBlock(Osmformat.HeaderBlock headerBlock) {
     this.headerBlock = headerBlock;
   }
 
@@ -36,6 +38,12 @@ public class HeaderBlockReader {
     double minLat = headerBBox.getBottom() * .000000001;
     double maxLat = headerBBox.getTop() * .000000001;
     return new Bound(maxLat, maxLon, minLat, minLon);
+  }
+
+  @Override
+  public void readEntities(Consumer<Entity> consumer) {
+    consumer.accept(readHeader());
+    consumer.accept(readBounds());
   }
 
 }

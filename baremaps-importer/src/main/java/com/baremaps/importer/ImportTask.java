@@ -57,18 +57,19 @@ public class ImportTask {
     Path path = blobStore.fetch(uri);
 
     logger.info("Creating cache");
-    try (CacheImportHandler cacheImportHandler = new CacheImportHandler(coordinateCache, referenceCache)) {
-      OpenStreetMap.entityStream(path, true).forEach(cacheImportHandler);
-    }
+    CacheImportHandler cacheImportHandler =
+        new CacheImportHandler(coordinateCache, referenceCache);
+    OpenStreetMap.blobStream(path, false, true)
+        .forEach(cacheImportHandler);
 
     logger.info("Importing data");
-    try (DatabaseImportHandler databaseImportHandler = new DatabaseImportHandler(headerTable, nodeTable, wayTable, relationTable)) {
-      GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
-      ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
-      OpenStreetMap.entityStream(path, true)
-          .peek(geometryHandler)
-          .peek(projectionTransformer)
-          .forEach(databaseImportHandler);
-    }
+    DatabaseImportHandler databaseImportHandler =
+        new DatabaseImportHandler(headerTable, nodeTable, wayTable, relationTable);
+    GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
+    ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
+    OpenStreetMap.blobStream(path, true)
+        .map(blob -> blob.peek(geometryHandler).peek(projectionTransformer))
+        .forEach(databaseImportHandler);
   }
+
 }

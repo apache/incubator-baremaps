@@ -12,11 +12,8 @@
  * the License.
  */
 
-package com.baremaps.osm.pbf;
+package com.baremaps.osm.stream;
 
-import com.baremaps.osm.domain.Entity;
-import com.baremaps.osm.stream.StreamException;
-import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.Spliterator;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -25,32 +22,35 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
+import java.util.function.Function;
 
-public class AsyncBlobSpliterator implements Spliterator<Stream<Entity>> {
+public class AsyncSpliterator<T, R> implements Spliterator<R> {
 
   private static final int POOL_SIZE = Math.max(4, Runtime.getRuntime().availableProcessors());
 
   private static final int QUEUE_SIZE = POOL_SIZE * 2;
 
+  private final Spliterator<T> spliterator;
+
+  private final Function<T, R> operation;
+
   private final ExecutorService executor;
 
-  private final BlobIterator iterator;
-
-  private final ArrayBlockingQueue<Future<Stream<Entity>>> queue;
+  private final ArrayBlockingQueue<Future<R>> queue;
 
   private final Future reader;
 
-  public AsyncBlobSpliterator(InputStream input) {
-    executor = Executors.newFixedThreadPool(POOL_SIZE);
-    iterator = new BlobIterator(input);
-    queue = new ArrayBlockingQueue<>(QUEUE_SIZE);
-    reader = executor.submit(() -> {
-      while (iterator.hasNext()) {
-        Blob blob = iterator.next();
-        BlobReader reader = new BlobReader(blob);
+  private T value;
+
+  public AsyncSpliterator(Spliterator<T> spliterator, Function<T, R> operation) {
+    this.spliterator = spliterator;
+    this.operation = operation;
+    this.executor = Executors.newFixedThreadPool(POOL_SIZE);
+    this.queue = new ArrayBlockingQueue<>(QUEUE_SIZE);
+    this.reader = executor.submit(() -> {
+      while (spliterator.tryAdvance(v -> value = v)) {
         try {
-          queue.put(executor.submit(() -> reader.read()));
+          queue.put(executor.submit(() -> this.operation.apply(value)));
         } catch (InterruptedException e) {
           throw new StreamException(e);
         }
@@ -59,30 +59,30 @@ public class AsyncBlobSpliterator implements Spliterator<Stream<Entity>> {
   }
 
   @Override
-  public Spliterator<Stream<Entity>> trySplit() {
+  public Spliterator<R> trySplit() {
     return null;
   }
 
   @Override
   public long estimateSize() {
-    return Long.MAX_VALUE;
+    return spliterator.estimateSize();
   }
 
   @Override
   public int characteristics() {
-    return NONNULL | CONCURRENT | ORDERED;
+    return spliterator.characteristics();
   }
 
   @Override
-  public boolean tryAdvance(Consumer<? super Stream<Entity>> consumer) {
+  public boolean tryAdvance(Consumer<? super R> consumer) {
     if (reader.isDone() && queue.isEmpty()) {
       executor.shutdown();
       return false;
     }
-    ArrayDeque<Future<Stream<Entity>>> batch = new ArrayDeque<>();
+    ArrayDeque<Future<R>> batch = new ArrayDeque<>();
     queue.drainTo(batch);
     while (!batch.isEmpty()) {
-      Future<Stream<Entity>> future = batch.poll();
+      Future<R> future = batch.poll();
       try {
         consumer.accept(future.get());
       } catch (InterruptedException | ExecutionException e) {

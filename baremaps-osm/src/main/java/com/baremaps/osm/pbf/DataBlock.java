@@ -4,6 +4,7 @@ import com.baremaps.osm.binary.Osmformat;
 import com.baremaps.osm.binary.Osmformat.DenseNodes;
 import com.baremaps.osm.binary.Osmformat.PrimitiveBlock;
 import com.baremaps.osm.binary.Osmformat.PrimitiveGroup;
+import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Member;
 import com.baremaps.osm.domain.Member.MemberType;
@@ -18,9 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
-public class DataBlockReader {
+public class DataBlock implements FileBlock {
 
   private final Osmformat.PrimitiveBlock primitiveBlock;
   private final int granularity;
@@ -29,7 +29,7 @@ public class DataBlockReader {
   private final long lonOffset;
   private final String[] stringTable;
 
-  public DataBlockReader(PrimitiveBlock primitiveBlock) {
+  public DataBlock(PrimitiveBlock primitiveBlock) {
     this.primitiveBlock = primitiveBlock;
     this.granularity = primitiveBlock.getGranularity();
     this.latOffset = primitiveBlock.getLatOffset();
@@ -39,6 +39,13 @@ public class DataBlockReader {
     for (int i = 0; i < stringTable.length; i++) {
       stringTable[i] = primitiveBlock.getStringtable().getS(i).toStringUtf8();
     }
+  }
+
+  public void readEntities(Consumer<Entity> consumer) {
+    readDenseNodes(e -> consumer.accept(e));
+    readNodes(e -> consumer.accept(e));
+    readWays(e -> consumer.accept(e));
+    readRelations(e -> consumer.accept(e));
   }
 
   public void readDenseNodes(Consumer<Node> consumer) {

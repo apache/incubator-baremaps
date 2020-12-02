@@ -29,7 +29,7 @@ public class BlobIterator implements Iterator<Blob> {
     byte[] data = new byte[dataSize];
     dis.readFully(data);
 
-    return new Blob(header, data, 8 + headerSize + dataSize);
+    return new Blob(header, data);
   }
 
   @Override

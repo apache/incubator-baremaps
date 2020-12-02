@@ -26,18 +26,18 @@ import java.util.function.Consumer;
  *
  * @param <T>
  */
-public class BatchSpliterator<T> implements Spliterator<T> {
+public class ParallelSpliterator<T> implements Spliterator<T> {
 
   private final Spliterator<T> spliterator;
   private final int batchSize;
 
   /**
-   * Creates a spliterator that partitions the underlying spliterator according to a given batch size.
+   * Creates a parallel spliterator that partitions the underlying spliterator according to a given batch size.
    *
    * @param spliterator the underlying spliterator.
    * @param batchSize   the batch size.
    */
-  public BatchSpliterator(Spliterator<T> spliterator, int batchSize) {
+  public ParallelSpliterator(Spliterator<T> spliterator, int batchSize) {
     this.spliterator = spliterator;
     this.batchSize = batchSize;
   }

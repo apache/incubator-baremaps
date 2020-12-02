@@ -16,8 +16,13 @@ package com.baremaps.osm.pbf;
 
 import com.baremaps.osm.binary.Fileformat;
 import com.baremaps.osm.binary.Fileformat.BlobHeader;
+import com.baremaps.osm.binary.Osmformat;
+import com.baremaps.osm.domain.Bound;
+import com.baremaps.osm.domain.Entity;
+import com.baremaps.osm.stream.StreamException;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import java.util.stream.Stream;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -25,19 +30,14 @@ public class Blob {
 
   private final BlobHeader header;
   private final byte[] data;
-  private final int size;
 
-  public Blob(BlobHeader header, byte[] data, int size) {
+  public Blob(BlobHeader header, byte[] data) {
     this.header = header;
     this.data = data;
-    this.size = size;
   }
 
-  public BlobHeader header() {
-    return header;
-  }
 
-  public ByteString data() throws DataFormatException, InvalidProtocolBufferException {
+  public ByteString inflateData() throws DataFormatException, InvalidProtocolBufferException {
     Fileformat.Blob blob = Fileformat.Blob.parseFrom(data);
     if (blob.hasRaw()) {
       return blob.getRaw();
@@ -53,8 +53,26 @@ public class Blob {
     }
   }
 
+  public FileBlock readFileBlock() {
+    try {
+      ByteString data = inflateData();
+      switch (this.header.getType()) {
+        case "OSMHeader":
+          Osmformat.HeaderBlock headerBlock = Osmformat.HeaderBlock.parseFrom(data);
+          return new HeaderBlock(headerBlock);
+        case "OSMData":
+          Osmformat.PrimitiveBlock dataBlock = Osmformat.PrimitiveBlock.parseFrom(data);
+          return new DataBlock(dataBlock);
+        default:
+          throw new UnsupportedOperationException("Unknown file block: " + this.header.getType());
+      }
+    } catch (InvalidProtocolBufferException | DataFormatException e) {
+      throw new StreamException(e);
+    }
+  }
+
   public long size() {
-    return size;
+    return 8 + header.getDatasize() + data.length;
   }
 
 }
