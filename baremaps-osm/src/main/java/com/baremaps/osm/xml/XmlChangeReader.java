@@ -38,7 +38,7 @@ public class XmlChangeReader implements ChangeReader {
     this.parallel = parallel;
   }
 
-  public Stream<Change> read() throws IOException {
+  public Stream<Change> changes() throws IOException {
     try {
       Spliterator<Change> spliterator = new XmlChangeSpliterator(inputStream);
       if (parallel) {

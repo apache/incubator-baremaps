@@ -14,25 +14,19 @@ import java.util.function.Consumer;
  */
 public interface DefaultEntityHandler extends EntityHandler {
 
-  @Override
-  default void accept(Entity entity) {
-    try {
-      if (entity != null) entity.accept(this);
-    } catch (StreamException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new StreamException(e);
-    }
+  default void handle(Header header) throws Exception {
   }
 
-  default void handle(Header header) throws Exception {};
+  default void handle(Bound bound) throws Exception {
+  }
 
-  default void handle(Bound bound) throws Exception {};
+  default void handle(Node node) throws Exception {
+  }
 
-  default void handle(Node node) throws Exception {};
+  default void handle(Way way) throws Exception {
+  }
 
-  default void handle(Way way) throws Exception {};
-
-  default void handle(Relation relation) throws Exception {};
+  default void handle(Relation relation) throws Exception {
+  }
 
 }

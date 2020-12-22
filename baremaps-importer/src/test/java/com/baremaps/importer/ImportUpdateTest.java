@@ -12,6 +12,7 @@ import com.baremaps.importer.database.HeaderTable;
 import com.baremaps.importer.database.NodeTable;
 import com.baremaps.importer.database.RelationTable;
 import com.baremaps.importer.database.WayTable;
+import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.util.postgres.PostgresHelper;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -60,9 +62,11 @@ class ImportUpdateTest {
     Node node;
     Way way;
 
+    headerTable.insert(new Header(LocalDateTime.of(2020, 1, 1, 0,0,0,0), 0l, "target/test-classes", "", ""));
+
     // Import data
     new ImportTask(
-        TestFiles.dataOsmXml(),
+        TestFiles.dataOsmPbf(),
         blobStore,
         new InMemoryCache<>(),
         new InMemoryCache<>(),

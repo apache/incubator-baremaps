@@ -1,12 +1,12 @@
 package com.baremaps.osm;
 
 import com.baremaps.osm.domain.Entity;
+import com.baremaps.osm.pbf.Block;
 import java.io.IOException;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public interface EntityReader {
+public interface BlockReader {
 
-  Stream<Entity> entities() throws IOException;
+  Stream<Block> blocks() throws IOException;
 
 }

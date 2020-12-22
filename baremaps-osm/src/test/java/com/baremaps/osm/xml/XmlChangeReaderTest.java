@@ -11,7 +11,7 @@ class XmlChangeReaderTest {
   @Test
   void read() throws IOException {
     assertEquals(7, new XmlChangeReader(TestFiles.dataOscXml())
-        .read()
+        .changes()
         .count());
   }
 }

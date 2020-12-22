@@ -4,12 +4,14 @@ import com.baremaps.osm.binary.Osmformat;
 import com.baremaps.osm.binary.Osmformat.DenseNodes;
 import com.baremaps.osm.binary.Osmformat.PrimitiveBlock;
 import com.baremaps.osm.binary.Osmformat.PrimitiveGroup;
+import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Member;
 import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.google.protobuf.InvalidProtocolBufferException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,8 +21,11 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import java.util.zip.DataFormatException;
 
 public class DataBlockReader {
+
+  private final Blob blob;
 
   private final Osmformat.PrimitiveBlock primitiveBlock;
   private final int granularity;
@@ -29,8 +34,9 @@ public class DataBlockReader {
   private final long lonOffset;
   private final String[] stringTable;
 
-  public DataBlockReader(PrimitiveBlock primitiveBlock) {
-    this.primitiveBlock = primitiveBlock;
+  protected DataBlockReader(Blob blob) throws DataFormatException, InvalidProtocolBufferException {
+    this.blob = blob;
+    this.primitiveBlock = Osmformat.PrimitiveBlock.parseFrom(blob.data());
     this.granularity = primitiveBlock.getGranularity();
     this.latOffset = primitiveBlock.getLatOffset();
     this.lonOffset = primitiveBlock.getLonOffset();
@@ -39,6 +45,25 @@ public class DataBlockReader {
     for (int i = 0; i < stringTable.length; i++) {
       stringTable[i] = primitiveBlock.getStringtable().getS(i).toStringUtf8();
     }
+  }
+
+  public DataBlock readDataBlock() {
+    List<Node> denseNodes = new ArrayList<>();
+    readDenseNodes(denseNodes::add);
+    List<Node> nodes = new ArrayList<>();
+    readNodes(nodes::add);
+    List<Way> ways = new ArrayList<>();
+    readWays(ways::add);
+    List<Relation> relations = new ArrayList<>();
+    readRelations(relations::add);
+    return new DataBlock(blob, denseNodes, nodes, ways, relations);
+  }
+
+  public void readEntities(Consumer<Entity> consumer) {
+    readDenseNodes(e -> consumer.accept(e));
+    readNodes(e -> consumer.accept(e));
+    readWays(e -> consumer.accept(e));
+    readRelations(e -> consumer.accept(e));
   }
 
   public void readDenseNodes(Consumer<Node> consumer) {

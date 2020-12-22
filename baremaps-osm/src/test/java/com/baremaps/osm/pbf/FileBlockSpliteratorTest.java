@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 
 public class FileBlockSpliteratorTest {
 
+  /*
   @Test
   public void tryAdvance() {
     Spliterator<Blob> spliterator = new SyncBlobSpliterator(new DataInputStream(dataOsmPbf()));
@@ -41,4 +42,6 @@ public class FileBlockSpliteratorTest {
     spliterator.forEachRemaining(accumulator);
     assertTrue(accumulator.values().size() == 10);
   }
+  */
+
 }

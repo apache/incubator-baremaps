@@ -24,12 +24,12 @@ import java.util.zip.Inflater;
 public class Blob {
 
   private final BlobHeader header;
-  private final byte[] data;
+  private final byte[] rawData;
   private final int size;
 
-  public Blob(BlobHeader header, byte[] data, int size) {
+  public Blob(BlobHeader header, byte[] rawData, int size) {
     this.header = header;
-    this.data = data;
+    this.rawData = rawData;
     this.size = size;
   }
 
@@ -38,7 +38,7 @@ public class Blob {
   }
 
   public ByteString data() throws DataFormatException, InvalidProtocolBufferException {
-    Fileformat.Blob blob = Fileformat.Blob.parseFrom(data);
+    Fileformat.Blob blob = Fileformat.Blob.parseFrom(rawData);
     if (blob.hasRaw()) {
       return blob.getRaw();
     } else if (blob.hasZlibData()) {

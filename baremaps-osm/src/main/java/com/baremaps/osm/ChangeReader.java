@@ -6,6 +6,6 @@ import java.util.stream.Stream;
 
 public interface ChangeReader {
 
-  Stream<Change> read() throws IOException;
+  Stream<Change> changes() throws IOException;
 
 }
