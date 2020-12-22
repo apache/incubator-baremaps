@@ -9,6 +9,7 @@ import com.baremaps.importer.database.RelationTable;
 import com.baremaps.importer.database.WayTable;
 import com.baremaps.importer.geometry.GeometryHandler;
 import com.baremaps.importer.geometry.ProjectionTransformer;
+import com.baremaps.osm.BlockEntityHandler;
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.util.storage.BlobStore;
 import java.net.URI;
@@ -57,18 +58,16 @@ public class ImportTask {
     Path path = blobStore.fetch(uri);
 
     logger.info("Creating cache");
-    try (CacheImportHandler cacheImportHandler = new CacheImportHandler(coordinateCache, referenceCache)) {
-      OpenStreetMap.entityStream(path, true).forEach(cacheImportHandler);
-    }
+    CacheImportHandler cacheImportHandler = new CacheImportHandler(coordinateCache, referenceCache);
+    OpenStreetMap.streamPbfBlocks(path, true).forEach(cacheImportHandler);
 
     logger.info("Importing data");
-    try (DatabaseImportHandler databaseImportHandler = new DatabaseImportHandler(headerTable, nodeTable, wayTable, relationTable)) {
-      GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
-      ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
-      OpenStreetMap.entityStream(path, true)
-          .peek(geometryHandler)
-          .peek(projectionTransformer)
-          .forEach(databaseImportHandler);
-    }
+    DatabaseImportHandler databaseImportHandler = new DatabaseImportHandler(headerTable, nodeTable, wayTable, relationTable);
+    GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
+    ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
+    OpenStreetMap.streamPbfBlocks(path, true)
+        .peek(new BlockEntityHandler(geometryHandler.andThen(projectionTransformer)))
+        .forEach(databaseImportHandler);
+
   }
 }

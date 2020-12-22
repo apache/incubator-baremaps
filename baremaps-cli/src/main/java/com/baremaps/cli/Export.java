@@ -24,8 +24,8 @@ import com.baremaps.exporter.store.TileStore;
 import com.baremaps.exporter.store.TileStoreException;
 import com.baremaps.exporter.stream.BatchFilter;
 import com.baremaps.exporter.stream.TileFactory;
-import com.baremaps.osm.stream.StreamProgress;
 import com.baremaps.util.postgres.PostgresHelper;
+import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.util.storage.BlobStore;
 import com.baremaps.util.tile.Tile;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -140,7 +140,7 @@ public class Export implements Callable<Integer> {
       stream = Tile.getTiles(envelope,
           (int) config.getBounds().getMinZoom(),
           (int) config.getBounds().getMaxZoom())
-          .peek(new StreamProgress<>(count));
+          .peek(new StreamProgress<>(count, 5000));
     } else {
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(blobStore.read(tiles)))) {
         stream = reader.lines().flatMap(line -> {

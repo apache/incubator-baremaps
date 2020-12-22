@@ -25,10 +25,6 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
-import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -39,9 +35,6 @@ public class EntityReaderBenchmark {
 
   @Param({"false", "true"})
   public boolean parallel;
-
-  @Param({"false", "true"})
-  public boolean async;
 
   @Setup
   public void setup() throws IOException {
@@ -62,7 +55,7 @@ public class EntityReaderBenchmark {
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
 
-    OpenStreetMap.entityStream(path, parallel, async).forEach(new ElementHandler() {
+    OpenStreetMap.streamEntities(path, parallel).forEach(new ElementHandler() {
       @Override
       public void handle(Node node) {
         nodes.incrementAndGet();
@@ -86,15 +79,6 @@ public class EntityReaderBenchmark {
     System.out.println("relations: " + relations.get());
     System.out.println("----------------------");
     System.out.println();
-  }
-
-  public static void main(String[] args) throws RunnerException {
-    Options opt = new OptionsBuilder()
-        .include(EntityReaderBenchmark.class.getSimpleName())
-        .forks(1)
-        .jvmArgs("-ea")
-        .build();
-    new Runner(opt).run();
   }
 
 }

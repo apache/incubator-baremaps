@@ -18,18 +18,19 @@ import com.baremaps.osm.binary.Fileformat;
 import com.baremaps.osm.binary.Fileformat.BlobHeader;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import java.util.StringJoiner;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
 public class Blob {
 
   private final BlobHeader header;
-  private final byte[] data;
+  private final byte[] rawData;
   private final int size;
 
-  public Blob(BlobHeader header, byte[] data, int size) {
+  public Blob(BlobHeader header, byte[] rawData, int size) {
     this.header = header;
-    this.data = data;
+    this.rawData = rawData;
     this.size = size;
   }
 
@@ -38,7 +39,7 @@ public class Blob {
   }
 
   public ByteString data() throws DataFormatException, InvalidProtocolBufferException {
-    Fileformat.Blob blob = Fileformat.Blob.parseFrom(data);
+    Fileformat.Blob blob = Fileformat.Blob.parseFrom(rawData);
     if (blob.hasRaw()) {
       return blob.getRaw();
     } else if (blob.hasZlibData()) {
@@ -57,4 +58,11 @@ public class Blob {
     return size;
   }
 
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Blob.class.getSimpleName() + "[", "]")
+        .add("header=" + header)
+        .add("size=" + size)
+        .toString();
+  }
 }

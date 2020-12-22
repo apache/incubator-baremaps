@@ -28,12 +28,12 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class BatchSpliteratorTest {
+public class ParallelSpliteratorTest {
 
   private int spliteratorSize = 105;
   private int batchSize = 10;
 
-  private BatchSpliterator<Integer> spliterator;
+  private BatchedSpliterator<Integer> spliterator;
 
   @BeforeEach
   public void setUp() {
@@ -41,7 +41,7 @@ public class BatchSpliteratorTest {
     for (int i = 0; i < spliteratorSize; i++) {
       ints.add(i);
     }
-    spliterator = new BatchSpliterator<Integer>(IntStream.range(0, spliteratorSize).spliterator(),
+    spliterator = new BatchedSpliterator<Integer>(IntStream.range(0, spliteratorSize).spliterator(),
         batchSize) {
       int i = 0;
 
@@ -88,7 +88,7 @@ public class BatchSpliteratorTest {
 
   @Test
   public void estimateSize() {
-    assertEquals(spliterator.estimateSize(), Long.MAX_VALUE);
+    assertEquals(spliterator.estimateSize(), spliteratorSize);
   }
 
 

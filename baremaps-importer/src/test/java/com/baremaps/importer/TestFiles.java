@@ -19,6 +19,10 @@ import java.net.URISyntaxException;
 
 public class TestFiles {
 
+  public static URI dataOsmPbf() throws URISyntaxException {
+    return TestFiles.class.getClassLoader().getResource("data.osm.pbf").toURI();
+  }
+
   public static URI dataOsmXml() throws URISyntaxException {
       return TestFiles.class.getClassLoader().getResource("data.osm.xml").toURI();
   }

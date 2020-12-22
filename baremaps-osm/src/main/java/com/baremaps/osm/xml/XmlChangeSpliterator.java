@@ -31,6 +31,7 @@ import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.stream.StreamException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -82,14 +83,18 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
 
   private final XMLStreamReader reader;
 
-  public XmlChangeSpliterator(InputStream input) throws XMLStreamException {
+  public XmlChangeSpliterator(InputStream input) {
     XMLInputFactory factory = XMLInputFactory.newInstance();
     factory.setProperty(SUPPORT_DTD, false);
     factory.setProperty(IS_SUPPORTING_EXTERNAL_ENTITIES, false);
     factory.setProperty(IS_NAMESPACE_AWARE, false);
     factory.setProperty(IS_VALIDATING, false);
     factory.setProperty(IS_COALESCING, false);
-    this.reader = factory.createXMLStreamReader(input);
+    try {
+      this.reader = factory.createXMLStreamReader(input);
+    } catch (XMLStreamException e) {
+      throw new StreamException(e);
+    }
   }
 
   @Override
@@ -114,8 +119,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
         return false;
       }
     } catch (XMLStreamException e) {
-      e.printStackTrace();
-      return false;
+      throw new StreamException(e);
     }
   }
 

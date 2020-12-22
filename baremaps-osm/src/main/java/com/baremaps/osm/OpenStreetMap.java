@@ -3,15 +3,31 @@ package com.baremaps.osm;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.State;
-import com.baremaps.osm.pbf.PbfEntityReader;
-import com.baremaps.osm.xml.XmlChangeReader;
-import com.baremaps.osm.xml.XmlEntityReader;
+import com.baremaps.osm.pbf.BlobIterator;
+import com.baremaps.osm.pbf.Block;
+import com.baremaps.osm.pbf.BlockReader;
+import com.baremaps.osm.xml.XmlChangeSpliterator;
+import com.baremaps.osm.xml.XmlEntitySpliterator;
+import com.baremaps.osm.progress.InputStreamProgress;
+import com.baremaps.osm.progress.ProgressLogger;
+import com.baremaps.osm.stream.StreamException;
+import com.baremaps.osm.stream.StreamUtils;
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
+import javax.xml.stream.XMLStreamException;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
 /**
@@ -23,76 +39,118 @@ public class OpenStreetMap {
 
   }
 
-  public static Stream<Entity> entityStream(Path path) throws IOException {
-    return entityReader(path).stream();
+  private static InputStream newInputStream(Path path) throws IOException {
+    ProgressLogger progressLogger = new ProgressLogger(Files.size(path), 5000);
+    return new InputStreamProgress(new BufferedInputStream(Files.newInputStream(path)), progressLogger);
   }
 
-  public static Stream<Entity> entityStream(Path path, boolean parallel) throws IOException {
-    return entityReader(path, parallel).stream();
+  private static Stream<Entity> streamPbfBlockEntities(Block block) {
+    try {
+      Stream.Builder<Entity> entities = Stream.builder();
+      block.handle(new BlockEntityHandler(entities::add));
+      return entities.build();
+    } catch (Exception e) {
+      throw new StreamException(e);
+    }
   }
 
-  public static Stream<Entity> entityStream(Path path, boolean parallel, boolean async) throws IOException {
-    return entityReader(path, parallel, async).stream();
+  public static Stream<Block> streamPbfBlocks(Path path, boolean parallel) throws IOException {
+    return streamPbfBlocks(newInputStream(path), parallel);
   }
 
-  public static EntityReader entityReader(Path path) throws IOException {
-    return entityReader(path, false, false);
+  public static Stream<Block> streamPbfBlocks(InputStream input, boolean parallel) {
+    if (parallel) {
+      return StreamUtils.batch(
+          StreamUtils.bufferInCompletionOrder(
+              StreamUtils.stream(new BlobIterator(input)),
+              blob -> new BlockReader(blob).readBlock(),
+              Runtime.getRuntime().availableProcessors()), 1);
+    } else {
+      return StreamUtils.bufferInSourceOrder(
+          StreamUtils.stream(new BlobIterator(input)),
+          blob -> new BlockReader(blob).readBlock(),
+          Runtime.getRuntime().availableProcessors());
+    }
   }
 
-  public static EntityReader entityReader(Path path, boolean parallel) throws IOException {
-    return entityReader(path, parallel, false);
+  public static Stream<Entity> streamPbfEntities(Path path, boolean parallel) throws IOException {
+    return streamPbfBlocks(newInputStream(path), parallel)
+        .flatMap(OpenStreetMap::streamPbfBlockEntities);
   }
 
-  public static EntityReader entityReader(Path path, boolean parallel, boolean async) throws IOException {
+  public static Stream<Entity> streamPbfEntities(InputStream input, boolean parallel) {
+    return streamPbfBlocks(input, parallel).flatMap(OpenStreetMap::streamPbfBlockEntities);
+  }
+
+  public static Stream<Entity> streamXmlEntities(Path path, boolean parallel) throws IOException {
+    return streamXmlEntities(newInputStream(path), parallel);
+  }
+
+  public static Stream<Entity> streamXmlEntities(InputStream input, boolean parallel) throws IOException {
+    Stream<Entity> stream = StreamSupport.stream(new XmlEntitySpliterator(input), parallel);
+    if (parallel) {
+      stream = StreamUtils.batch(stream, 1000);
+    }
+    return stream;
+  }
+
+  public static Stream<Entity> streamEntities(Path path, boolean parallel) throws IOException {
+    InputStream input = newInputStream(path);
     if (path.toString().endsWith(".pbf")) {
-      return new PbfEntityReader(new BufferedInputStream(Files.newInputStream(path)), parallel, async);
+      return streamPbfEntities(input, parallel);
     } else if (path.toString().endsWith(".xml")
         || path.toString().endsWith(".osm")) {
-      return new XmlEntityReader(new BufferedInputStream(Files.newInputStream(path)), parallel);
+      return streamXmlEntities(input, parallel);
     } else if (path.toString().endsWith(".xml.gz")
         || path.toString().endsWith(".osm.gz")) {
-      return new XmlEntityReader(new GZIPInputStream(new BufferedInputStream(Files.newInputStream(path))), parallel);
+      return streamXmlEntities(new GZIPInputStream(input), parallel);
     } else if (path.toString().endsWith((".xml.bz2"))
         || path.toString().endsWith(".osm.bz2")) {
-      return new XmlEntityReader(new BZip2CompressorInputStream(new BufferedInputStream(Files.newInputStream(path))),
-          parallel);
+      return streamXmlEntities(new BZip2CompressorInputStream(input), parallel);
     } else {
       throw new IOException("Unrecognized file extension: " + path.getFileName());
     }
   }
 
-  public static Stream<Change> changeStream(Path path) throws IOException {
-    return changeReader(path).read();
-  }
-
-  public static Stream<Change> changeStream(Path path, boolean parallel) throws IOException {
-    return changeReader(path, parallel).read();
-  }
-
-  public static ChangeReader changeReader(Path path) throws IOException {
-    return changeReader(path, false);
-  }
-
-  public static ChangeReader changeReader(Path path, boolean parallel) throws IOException {
+  public static Stream<Change> streamXmlChanges(Path path, boolean parallel) throws XMLStreamException, IOException {
     if (path.toString().endsWith("osc")
         || path.toString().endsWith("osc.xml")) {
-      return new XmlChangeReader(new BufferedInputStream(Files.newInputStream(path)), parallel);
+      return streamXmlChanges(newInputStream(path), parallel);
     } else if (path.toString().endsWith("osc.gz")) {
-      return new XmlChangeReader(new GZIPInputStream(new BufferedInputStream(Files.newInputStream(path))), parallel);
+      return streamXmlChanges(new GZIPInputStream(newInputStream(path)), parallel);
     } else if (path.toString().endsWith("osc.bz2")) {
-      return new XmlChangeReader(new BZip2CompressorInputStream(new BufferedInputStream(Files.newInputStream(path))),
+      return streamXmlChanges(new BZip2CompressorInputStream(newInputStream(path)),
           parallel);
     } else {
       throw new IOException("Unrecognized file extension: " + path.getFileName());
     }
   }
 
-  public static State state(Path path) throws IOException {
-    return stateReader(path).read();
+  public static Stream<Change> streamXmlChanges(InputStream input, boolean parallel) {
+    Stream<Change> stream = StreamSupport.stream(new XmlChangeSpliterator(input), parallel);
+    if (parallel) {
+      stream = StreamUtils.batch(stream, 1000);
+    }
+    return stream;
   }
 
-  public static StateReader stateReader(Path path) throws IOException {
-    return new StateReader(new BufferedInputStream(Files.newInputStream(path)));
+  public static State readState(Path path) throws IOException {
+    return readState(newInputStream(path));
+  }
+
+  public static State readState(InputStream input) throws IOException {
+    InputStreamReader reader = new InputStreamReader(input, Charsets.UTF_8);
+    Map<String, String> map = new HashMap<>();
+    for (String line : CharStreams.readLines(reader)) {
+      String[] array = line.split("=");
+      if (array.length == 2) {
+        map.put(array[0], array[1]);
+      }
+    }
+    long sequenceNumber = Long.parseLong(map.get("sequenceNumber"));
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    LocalDateTime timestamp = LocalDateTime.parse(map.get("timestamp").replace("\\", ""), format);
+    return new State(sequenceNumber, timestamp);
   }
 
 }

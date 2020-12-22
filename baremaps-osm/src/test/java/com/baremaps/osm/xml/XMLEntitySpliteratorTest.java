@@ -14,7 +14,7 @@
 
 package com.baremaps.osm.xml;
 
-import static com.baremaps.osm.TestFiles.dataOsmXml;
+import static com.baremaps.osm.OpenStreetMapTest.DATA_OSM_XML;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -22,24 +22,29 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.stream.AccumulatingConsumer;
 import com.baremaps.osm.stream.HoldingConsumer;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Spliterator;
-import javax.xml.stream.XMLStreamException;
 import org.junit.jupiter.api.Test;
 
 public class XMLEntitySpliteratorTest {
 
   @Test
-  public void tryAdvance() throws XMLStreamException {
-    Spliterator<Entity> spliterator = new XmlEntitySpliterator(dataOsmXml());
-    spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
-    assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
+  public void tryAdvance() throws IOException {
+    try (InputStream input = DATA_OSM_XML.openStream()) {
+      Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
+      spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
+      assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
+    }
   }
 
   @Test
-  public void forEachRemaining() throws XMLStreamException {
-    Spliterator<Entity> spliterator = new XmlEntitySpliterator(dataOsmXml());
-    AccumulatingConsumer<Object> accumulator = new AccumulatingConsumer<>();
-    spliterator.forEachRemaining(accumulator);
-    assertEquals(12, accumulator.values().size());
+  public void forEachRemaining() throws IOException {
+    try (InputStream input = DATA_OSM_XML.openStream()) {
+      Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
+      AccumulatingConsumer<Object> accumulator = new AccumulatingConsumer<>();
+      spliterator.forEachRemaining(accumulator);
+      assertEquals(12, accumulator.values().size());
+    }
   }
 }

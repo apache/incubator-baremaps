@@ -21,40 +21,4 @@ import java.nio.file.Paths;
 
 public class TestFiles {
 
-  public static InputStream dataOsmPbf() {
-    return TestFiles.class.getClassLoader().getResourceAsStream("data.osm.pbf");
-  }
-
-  public static InputStream denseNodesOsmPbf() {
-    return TestFiles.class.getClassLoader().getResourceAsStream("dense.osm.pbf");
-  }
-
-  public static InputStream waysOsmPbf() {
-    return TestFiles.class.getClassLoader().getResourceAsStream("ways.osm.pbf");
-  }
-
-  public static InputStream relationsOsmPbf() {
-    return TestFiles.class.getClassLoader().getResourceAsStream("relations.osm.pbf");
-  }
-
-  public static InputStream dataOsmXml() {
-    return TestFiles.class.getClassLoader().getResourceAsStream("data.osm.xml");
-  }
-
-  public static InputStream dataOscXml() {
-    return TestFiles.class.getClassLoader().getResourceAsStream("data.osc.xml");
-  }
-
-  public static Path monacoOsmPbf() throws URISyntaxException {
-      return Paths.get(TestFiles.class.getClassLoader().getResource("monaco.osm.pbf").toURI());
-  }
-
-  public static Path monacoOsmBz2() throws URISyntaxException {
-      return Paths.get(TestFiles.class.getClassLoader().getResource("monaco.osm.bz2").toURI());
-  }
-
-  public static Path monocoStateTxt() throws URISyntaxException {
-      return Paths.get(TestFiles.class.getClassLoader().getResource("monaco-state.txt").toURI());
-  }
-
 }

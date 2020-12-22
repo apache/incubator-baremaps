@@ -7,23 +7,157 @@ import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.domain.State;
 import com.baremaps.osm.domain.Way;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Test;
 
 public class OpenStreetMapTest {
 
+  public static final URL DATA_OSC_XML =
+      OpenStreetMapTest.class.getClassLoader().getResource("data.osc.xml");
+
+  public static final URL DATA_OSM_PBF =
+      OpenStreetMapTest.class.getClassLoader().getResource("data.osm.pbf");
+
+  public static final URL DATA_OSM_XML =
+      OpenStreetMapTest.class.getClassLoader().getResource("data.osm.xml");
+
+  public static final URL DENSE_NODES_OSM_PBF =
+      OpenStreetMapTest.class.getClassLoader().getResource("dense-nodes.osm.pbf");
+
+  public static final URL WAYS_OSM_PBF =
+      OpenStreetMapTest.class.getClassLoader().getResource("ways.osm.pbf");
+
+  public static final URL RELATIONS_OSM_PBF =
+      OpenStreetMapTest.class.getClassLoader().getResource("relations.osm.pbf");
+
+  public static final URL MONACO_OSC_GZ =
+      OpenStreetMapTest.class.getClassLoader().getResource("monaco.osc.gz");
+
+  public static final URL MONACO_OSM_BZ2 =
+      OpenStreetMapTest.class.getClassLoader().getResource("monaco.osm.bz2");
+
+  public static final URL MONACO_OSM_PBF =
+      OpenStreetMapTest.class.getClassLoader().getResource("monaco.osm.pbf");
+
+  public static final URL MONACO_STATE_TXT =
+      OpenStreetMapTest.class.getClassLoader().getResource("monaco-state.txt");
+
+  @Test
+  void dataOsmXml() throws IOException {
+    try (InputStream input = DATA_OSM_XML.openStream()) {
+      assertEquals(12,
+          OpenStreetMap.streamXmlEntities(input, true)
+              .count());
+    }
+  }
+
+  @Test
+  void dataOsmXmlNodes() throws IOException {
+    try (InputStream input = DATA_OSM_XML.openStream()) {
+      assertEquals(6,
+          OpenStreetMap.streamXmlEntities(input, true)
+              .filter(e -> e instanceof Node)
+              .count());
+    }
+  }
+
+  @Test
+  void dataOsmXmlWays() throws IOException {
+    try (InputStream input = DATA_OSM_XML.openStream()) {
+      assertEquals(3,
+          OpenStreetMap.streamXmlEntities(input, true)
+              .filter(e -> e instanceof Way)
+              .count());
+    }
+  }
+
+  @Test
+  void dataOsmXmlRelations() throws IOException {
+    try (InputStream input = DATA_OSM_XML.openStream()) {
+      assertEquals(1,
+          OpenStreetMap.streamXmlEntities(input, true)
+              .filter(e -> e instanceof Relation)
+              .count());
+    }
+  }
+
+  @Test
+  void dataOscXml() throws IOException {
+    try (InputStream input = DATA_OSC_XML.openStream()) {
+      assertEquals(7, OpenStreetMap.streamXmlChanges(input, true).count());
+    }
+  }
+
+  @Test
+  void dataOsmPbf() throws IOException {
+    try (InputStream input = DATA_OSM_PBF.openStream()) {
+      assertEquals(72002,
+          OpenStreetMap.streamPbfEntities(input, true)
+              .count());
+    }
+
+  }
+
+  @Test
+  void denseNodesOsmPbf() throws IOException {
+    try (InputStream input = DENSE_NODES_OSM_PBF.openStream()) {
+      assertEquals(8000,
+          OpenStreetMap.streamPbfEntities(input, true)
+              .filter(e -> e instanceof Node)
+              .count());
+    }
+
+  }
+
+  @Test
+  void waysOsmPbf() throws IOException {
+    try (InputStream input = WAYS_OSM_PBF.openStream()) {
+      assertEquals(8000,
+          OpenStreetMap.streamPbfEntities(input, true)
+              .filter(e -> e instanceof Way)
+              .count());
+    }
+  }
+
+  @Test
+  void relationsOsmPbf() throws IOException {
+    try (InputStream input = RELATIONS_OSM_PBF.openStream()) {
+      assertEquals(8000,
+          OpenStreetMap.streamPbfEntities(input, true)
+              .filter(e -> e instanceof Relation)
+              .count());
+    }
+  }
+
+  @Test
+  void monacoStateTxt() throws URISyntaxException, IOException {
+    try (InputStream inputStream = MONACO_STATE_TXT.openStream()) {
+      State state = new StateReader(inputStream).read();
+      assertEquals(2788, state.getSequenceNumber());
+      assertEquals(LocalDateTime.parse("2020-11-10T21:42:03"), state.getTimestamp());
+    }
+  }
+
   @Test
   void monacoOsmPbf() throws IOException, URISyntaxException {
-    parse(TestFiles.monacoOsmPbf(), 1, 1, 25002, 4018, 243);
+    Path input = Paths.get(MONACO_OSM_PBF.toURI());
+    parse(input, 1, 1, 25002, 4018, 243);
   }
 
   @Test
   void monacoOsmBz2() throws IOException, URISyntaxException {
-    parse(TestFiles.monacoOsmBz2(), 1, 1, 24951, 4015, 243);
+    Path input = Paths.get(MONACO_OSM_BZ2.toURI());
+    parse(input, 1, 1, 24951, 4015, 243);
   }
 
   void parse(Path path, long headerCount, long boundCount, long nodeCount, long wayCount, long relationCount)
@@ -33,7 +167,7 @@ public class OpenStreetMapTest {
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
-    OpenStreetMap.entityStream(path).forEach(new EntityHandler() {
+    OpenStreetMap.streamEntities(path, true).forEach(new EntityHandler() {
       @Override
       public void handle(Header header) {
         assertTrue(header != null);

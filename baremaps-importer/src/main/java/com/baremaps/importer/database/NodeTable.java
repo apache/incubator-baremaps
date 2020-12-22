@@ -210,12 +210,12 @@ public class NodeTable implements ElementTable<Node> {
     }
   }
 
-  public void copy(List<Node> elemenets) throws DatabaseException {
+  public void copy(List<Node> elements) throws DatabaseException {
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copy))) {
         writer.writeHeader();
-        for (Node node : elemenets) {
+        for (Node node : elements) {
           writer.startRow(9);
           writer.writeLong(node.getId());
           writer.writeInteger(node.getInfo().getVersion());

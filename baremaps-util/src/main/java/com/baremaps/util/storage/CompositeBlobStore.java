@@ -105,5 +105,4 @@ public class CompositeBlobStore extends BlobStore {
     }
   }
 
-
 }

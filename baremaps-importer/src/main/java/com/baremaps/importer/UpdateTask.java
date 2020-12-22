@@ -85,12 +85,12 @@ public class UpdateTask {
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
     TileHandler tileHandler = new TileHandler(nodeTable, wayTable, relationTable, new ProjectionTransformer(srid, 4326), zoom);
     UpdateHandler updateHandler = new UpdateHandler(headerTable, nodeTable, wayTable, relationTable);
-    OpenStreetMap.changeStream(changeFilePath)
+    OpenStreetMap.streamXmlChanges(changeFilePath, false)
         .peek(change -> change.getElements().forEach(geometryHandler))
         .peek(change -> change.getElements().forEach(projectionTransformer))
         .peek(tileHandler)
         .forEach(updateHandler);
-    State state = OpenStreetMap.state(stateFile);
+    State state = OpenStreetMap.readState(stateFile);
     headerTable.insert(new Header(
         state.getTimestamp(),
         state.getSequenceNumber(),

@@ -31,6 +31,7 @@ import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.stream.StreamException;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import java.io.InputStream;
@@ -86,14 +87,18 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
 
   private final XMLStreamReader reader;
 
-  public XmlEntitySpliterator(InputStream input) throws XMLStreamException {
+  public XmlEntitySpliterator(InputStream input) {
     XMLInputFactory factory = XMLInputFactory.newInstance();
     factory.setProperty(SUPPORT_DTD, false);
     factory.setProperty(IS_SUPPORTING_EXTERNAL_ENTITIES, false);
     factory.setProperty(IS_NAMESPACE_AWARE, false);
     factory.setProperty(IS_VALIDATING, false);
     factory.setProperty(IS_COALESCING, false);
-    this.reader = factory.createXMLStreamReader(input);
+    try {
+      reader = factory.createXMLStreamReader(input);
+    } catch (XMLStreamException e) {
+      throw new StreamException(e);
+    }
   }
 
   @Override
@@ -114,7 +119,7 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
         return false;
       }
     } catch (XMLStreamException e) {
-      return false;
+      throw new StreamException(e);
     }
   }
 
@@ -148,12 +153,16 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
     String generator = reader.getAttributeValue(null, ATTRIBUTE_NAME_GENERATOR);
     String source = reader.getAttributeValue(null, ATTRIBUTE_NAME_SOURCE);
     String replicationUrl = reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_URL);
-    String replicationSequenceNumberValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_SEQUENCE_NUMBER);
-    Long replicationSequenceNumber = replicationSequenceNumberValue != null ? Long.parseLong(replicationSequenceNumberValue) : null;
+    String replicationSequenceNumberValue = reader
+        .getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_SEQUENCE_NUMBER);
+    Long replicationSequenceNumber =
+        replicationSequenceNumberValue != null ? Long.parseLong(replicationSequenceNumberValue) : null;
     String timestampValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_TIMESTAMP);
     LocalDateTime timestamp = timestampValue != null ? LocalDateTime.parse(timestampValue, format) : null;
-    String osmosisReplicationTimestampValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_TIMESTAMP);
-    timestamp = osmosisReplicationTimestampValue != null ? LocalDateTime.parse(osmosisReplicationTimestampValue, format) : timestamp;
+    String osmosisReplicationTimestampValue = reader
+        .getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_TIMESTAMP);
+    timestamp = osmosisReplicationTimestampValue != null ? LocalDateTime.parse(osmosisReplicationTimestampValue, format)
+        : timestamp;
     return new Header(timestamp, replicationSequenceNumber, replicationUrl, source, generator);
   }
 
@@ -262,7 +271,7 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
     String changesetValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_CHANGESET_ID);
     long changeset = changesetValue != null ? Longs.tryParse(changesetValue) : -1;
     String uidValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_USER_ID);
-    int uid = uidValue != null && Ints.tryParse(uidValue) != null  ? Ints.tryParse(uidValue) : -1;
+    int uid = uidValue != null && Ints.tryParse(uidValue) != null ? Ints.tryParse(uidValue) : -1;
     return new Info(version, timestamp, changeset, uid);
   }
 
