@@ -1,3 +1,12 @@
-url: "https://www.baremaps.com" # the base hostname & protocol for your site, e.g. http://example.com
-baseurl: "" # the subpath of your site, e.g. /blog
-title: "Baremaps" # the name of your site, e.g. ACME Corp.
+title: Baremaps
+repository: baremaps/baremaps
+exclude:
+  - examples/target
+  - examples/test
+  - examples/examples.iml
+  - examples/pom.xml
+plugins:
+  - jekyll-sitemap
+  - jekyll-gist
+  - jekyll-github-metadata
+  - jekyll-optional-front-matter

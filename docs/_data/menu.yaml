@@ -1,0 +1,18 @@
+items:
+  - page: <i class="fas fa-bullseye"></i> About
+    url: /about/
+  - page: <i class="fas fa-download"></i> Installation
+    url: /installation/
+  - page: <i class="fas fa-vial"></i> Examples
+    url: /examples/
+    subitems:
+      - page: OpenStreetMap
+        url: /examples/openstreetmap/
+      - page: NaturalEarth
+        url: /examples/naturalearth/
+      - page: Contour
+        url: /examples/contour/
+  - page: <i class="fas fa-paint-roller"></i> Stylesheet
+    url: /stylesheet/
+  - page: <i class="fas fa-map"></i> Demo
+    url: /assets/demo.html

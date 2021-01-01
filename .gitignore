@@ -16,3 +16,9 @@ examples/output/
 
 # JMH
 jmh-result.json
+
+# Docs
+.jekyll-cache/
+_site/
+.sass-cache/
+Gemfile.lock

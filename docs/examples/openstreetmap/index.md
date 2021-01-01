@@ -1,3 +1,8 @@
+---
+layout: default
+title: NaturalEarth Example
+---
+
 # OpenStreetMap Example
 
 Baremaps is aimed at being the most productive toolkit for creating custom vector tiles from OpenStreetMap data. 

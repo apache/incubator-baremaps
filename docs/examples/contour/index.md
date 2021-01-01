@@ -1,3 +1,8 @@
+---
+layout: default
+title: Contour Example
+---
+
 # Contour Example
 
 This example shows how to produce contours from a digital elevation model (DEM).
@@ -46,15 +51,4 @@ To preview the data, run the tile server with the following command:
 baremaps serve \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
   --config 'config.yaml'
-```
-
-## Alternative
-
-An other approach consists in importing the [raster data](https://postgis.net/docs/RT_reference.html) directly into postgis.
-However, this is out of the scope of this example, as contours are not supported out of the box.
-
-```
-raster2pgsql -s 3857 -I -C -M -Y liecthenstein-aster-dem-v2.tif -t 256x256 public aster_dem > liecthenstein-aster-dem-v2.sql
-psql -h localhost -U baremaps baremaps < liecthenstein-aster-dem-v2.sql
-rm liecthenstein-aster-dem-v2.sql
 ```

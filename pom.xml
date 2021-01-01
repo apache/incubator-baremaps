@@ -86,7 +86,7 @@
     <module>baremaps-osm</module>
     <module>baremaps-util</module>
     <module>benchmarks</module>
-    <module>examples</module>
+    <module>docs/examples</module>
   </modules>
 
   <profiles>
