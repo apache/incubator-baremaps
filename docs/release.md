@@ -1,6 +1,6 @@
 # Release
 
-``
+```bash
 mvn versions:set -DnewVersion=[release_version] -DgenerateBackupPoms=false
 git commit -a -m "Set release version"
 git tag [release_tag]
