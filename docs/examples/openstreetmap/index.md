@@ -8,7 +8,7 @@ title: NaturalEarth Example
 Baremaps is aimed at being the most productive toolkit for creating custom vector tiles from OpenStreetMap data. 
 
 In this tutorial, we'll learn how to use Baremaps to import OpenStreetMap data in a Postgis database and how to create vector tiles from this data.
-Notice that the following steps assume that Baremaps and Postgis are [installed](../../README.md#installation).
+Notice that the following steps assume that Baremaps and Postgis are [installed](https://www.baremaps.com/installation/).
 Also, if you are in a hurry, consider skipping the "Under the Hood" sections.
 
 ## Dataset
@@ -17,7 +17,7 @@ OpenStreetMap (OSM) is a free and editable map of the world.
 It is maintained by a community of passionate volunteers in a way which is similar to Wikipedia.
 Every week, OpenStreetMap publishes a [full dump](https://planet.openstreetmap.org/) of its data in two flavours: a large XML file (about 90GB) and a more compact binary file (about 50GB) in the  [Protocol Buffer Format](https://developers.google.com/protocol-buffers) (PBF).
 As processing such large files can take several hours, [Geofabrik](http://www.geofabrik.de/data/download.html) regularly publishes smaller extracts of OSM for specific regions.
-The [GitHub directory](./) associated with this example contains a tiny extract of OSM for [Liechtenstein](https://en.wikipedia.org/wiki/Liechtenstein), which is suitable for experiments.
+The [GitHub directory](https://github.com/baremaps/baremaps/tree/master/docs/examples/openstreetmap) associated with this example contains a tiny extract of OSM for [Liechtenstein](https://en.wikipedia.org/wiki/Liechtenstein), which is suitable for experiments.
 
 ## Importing OpenStreetMap Data
 
@@ -138,7 +138,4 @@ Then, add the `--enable-aws` flag to the previous command and replace the `tiles
 
 In this tutorial, we learnt how to import OpenStreetMap data in Postgis and how to create vector tiles with Baremaps.
 Prior to the release of Baremaps, we believe that creating a pipeline for publishing vector tiles from OpenStreetMap data was a rather time consuming task.
-
 As shown in this demonstration, Baremaps literally brings back the fun to creating a web mapping pipeline!
-Nuts and bolts still need to be tightened, but give it a try and share your impressions, it is [open-source](../../LICENSE) software.
-
