@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.stream;
+package com.baremaps.util.stream;
 
 import java.util.ArrayList;
 import java.util.List;

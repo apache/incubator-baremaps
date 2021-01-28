@@ -16,9 +16,11 @@ package com.baremaps.util.tile;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
 import com.google.common.math.IntMath;
 import com.google.common.math.LongMath;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -26,6 +28,8 @@ import java.util.stream.Stream;
 import org.locationtech.jts.geom.Envelope;
 
 public final class Tile {
+
+  private static final double EPSILON = 0.0000001;
 
   private static final int[] sides = IntStream.range(0, 30)
       .map(i -> IntMath.pow(2, i))
@@ -41,10 +45,50 @@ public final class Tile {
 
   private final int x, y, z;
 
+  public Tile(int value) {
+    int zoom = 0;
+    long offset = 0;
+    long count = 1;
+    while (value >= offset + count) {
+      zoom += 1;
+      offset += count;
+      count = squares[zoom];
+    }
+    long position = value - offset;
+    x = (int) position % sides[zoom];
+    y = (int) position / sides[zoom];
+    z = zoom;
+  }
+
   public Tile(int x, int y, int z) {
     this.x = x;
     this.y = y;
     this.z = z;
+  }
+
+  public static Iterator<Tile> iterator(Envelope envelope, int zoomMin, int zoomMax) {
+    return new TileIterator(envelope, zoomMin, zoomMax);
+  }
+
+  public static List<Tile> list(Envelope envelope, int zoomMin, int zoomMax) {
+    return ImmutableList.copyOf(iterator(envelope, zoomMin, zoomMax));
+  }
+
+  public static long count(Envelope envelope, int zoomMin, int zoomMax) {
+    int count = 0;
+    for (int zoom = zoomMin; zoom <= zoomMax; zoom++) {
+      Tile min = min(envelope, zoom);
+      Tile max = max(envelope, zoom);
+      count += (max.x() - min.x() + 1) * (max.y() - min.y() + 1);
+    }
+    return count;
+  }
+
+  public static Tile fromLonLat(double lon, double lat, int z) {
+    int x = (int) ((lon + 180.0) / 360.0 * (1 << z));
+    int y = (int) ((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat)))
+        / Math.PI) / 2.0 * (1 << z));
+    return new Tile(x, y, z);
   }
 
   public long index() {
@@ -69,14 +113,6 @@ public final class Tile {
 
   public Tile parent() {
     return new Tile(x / 2, y / 2, z - 1);
-  }
-
-  public List<Tile> children() {
-    return Arrays.asList(
-        new Tile(2 * x, 2 * y, z + 1),
-        new Tile(2 * x + 1, 2 * y, z + 1),
-        new Tile(2 * x, 2 * y + 1, z + 1),
-        new Tile(2 * x + 1, 2 * y + 1, z + 1));
   }
 
   public Envelope envelope() {
@@ -110,15 +146,6 @@ public final class Tile {
     return Objects.hashCode(x, y, z);
   }
 
-  public static double tile2lon(int x, int z) {
-    return x / Math.pow(2.0, z) * 360.0 - 180;
-  }
-
-  public static double tile2lat(int y, int z) {
-    double n = Math.PI - (2.0 * Math.PI * y) / Math.pow(2.0, z);
-    return Math.toDegrees(Math.atan(Math.sinh(n)));
-  }
-
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
@@ -128,57 +155,21 @@ public final class Tile {
         .toString();
   }
 
-  public static long countTiles(Envelope envelope, int minZ, int maxZ) {
-    return IntStream.rangeClosed(minZ, maxZ).mapToLong(z -> countTiles(envelope, z)).sum();
+  protected static double tile2lon(int x, int z) {
+    return x / Math.pow(2.0, z) * 360.0 - 180;
   }
 
-  public static long countTiles(Envelope envelope, int z) {
-    Tile min = fromLonLat(envelope.getMinX(), envelope.getMaxY(), z);
-    long minX = min.x();
-    long minY = min.y();
-    Tile max = fromLonLat(envelope.getMaxX(), envelope.getMinY(), z);
-    long maxX = max.x();
-    long maxY = max.y();
-    return (maxX - minX + 1) * (maxY - minY + 1);
+  protected static double tile2lat(int y, int z) {
+    double n = Math.PI - (2.0 * Math.PI * y) / Math.pow(2.0, z);
+    return Math.toDegrees(Math.atan(Math.sinh(n)));
   }
 
-  public static Stream<Tile> getTiles(Envelope envelope, int minZ, int maxZ) {
-    return IntStream.rangeClosed(minZ, maxZ).boxed().flatMap(z -> getTiles(envelope, z));
+  protected static Tile min(Envelope envelope, int zoom) {
+    return Tile.fromLonLat(envelope.getMinX(), envelope.getMaxY(), zoom);
   }
 
-  public static Stream<Tile> getTiles(Envelope envelope, int z) {
-    if (envelope == null) {
-      return Stream.empty();
-    }
-    Tile min = fromLonLat(envelope.getMinX(), envelope.getMaxY(), z);
-    Tile max = fromLonLat(envelope.getMaxX(), envelope.getMinY(), z);
-    return IntStream.rangeClosed(min.x(), max.x()).boxed()
-        .flatMap(x -> IntStream
-            .rangeClosed(min.y(), max.y())
-            .boxed()
-            .map(y -> new Tile(x, y, z)));
-  }
-
-  public static Tile fromLonLat(double lon, double lat, int z) {
-    int x = (int) ((lon + 180.0) / 360.0 * (1 << z));
-    int y = (int) ((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat)))
-        / Math.PI) / 2.0 * (1 << z));
-    return new Tile(x, y, z);
-  }
-
-  public static Tile fromIndex(Long value) {
-    int zoom = 0;
-    long offset = 0;
-    long count = 1;
-    while (value >= offset + count) {
-      zoom += 1;
-      offset += count;
-      count = squares[zoom];
-    }
-    long position = value - offset;
-    int x = (int) position % sides[zoom];
-    int y = (int) position / sides[zoom];
-    return new Tile(x, y, zoom);
+  protected static Tile max(Envelope envelope, int zoom) {
+    return Tile.fromLonLat(envelope.getMaxX() - EPSILON, envelope.getMinY() + EPSILON, zoom);
   }
 
 }

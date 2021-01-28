@@ -6,7 +6,7 @@ import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.stream.StreamException;
+import com.baremaps.util.stream.StreamException;
 import java.util.function.Consumer;
 
 /**

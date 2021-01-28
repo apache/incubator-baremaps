@@ -12,35 +12,33 @@
  * the License.
  */
 
-package com.baremaps.osm.stream;
+package com.baremaps.util.stream;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * A {@code Consumer} that accumulates the values it accepts.
+ * A {@code Consumer} that holds the latest value it accepted.
  *
  * @param <T>
  */
-public class AccumulatingConsumer<T> implements Consumer<T> {
+public class HoldingConsumer<T> implements Consumer<T> {
 
-  private List<T> values = new ArrayList<>();
+  private T value;
 
   /**
    * {@inheritDoc}
    */
   @Override
   public void accept(T value) {
-    values.add(value);
+    this.value = value;
   }
 
   /**
-   * Returns the accumulated values.
+   * Returns the holded value.
    *
-   * @return the accumulated values.
+   * @return the holded value.
    */
-  public List<T> values() {
-    return values;
+  public T value() {
+    return value;
   }
 }

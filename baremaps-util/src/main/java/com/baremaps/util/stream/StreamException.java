@@ -1,4 +1,4 @@
-package com.baremaps.osm.stream;
+package com.baremaps.util.stream;
 
 /**
  * When a checked exception occurs in a stream, it is a good practice to wrap that exception

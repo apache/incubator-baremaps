@@ -11,6 +11,13 @@
     <version>0.3.5-SNAPSHOT</version>
   </parent>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-util</artifactId>
+    </dependency>
+  </dependencies>
+
   <build>
     <extensions>
       <extension>

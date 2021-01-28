@@ -1,8 +1,8 @@
-package com.baremaps.osm.stream;
+package com.baremaps.util.stream;
 
-import com.baremaps.osm.stream.BufferedSpliterator.CompletionStrategy;
-import com.baremaps.osm.stream.BufferedSpliterator.InCompletionOrder;
-import com.baremaps.osm.stream.BufferedSpliterator.InSourceOrder;
+import com.baremaps.util.stream.BufferedSpliterator.CompletionStrategy;
+import com.baremaps.util.stream.BufferedSpliterator.InCompletionOrder;
+import com.baremaps.util.stream.BufferedSpliterator.InSourceOrder;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;

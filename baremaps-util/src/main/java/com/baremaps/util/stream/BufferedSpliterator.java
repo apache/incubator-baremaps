@@ -13,7 +13,7 @@
  * the License.
  */
 
-package com.baremaps.osm.stream;
+package com.baremaps.util.stream;
 
 import java.util.Spliterator;
 import java.util.concurrent.ArrayBlockingQueue;

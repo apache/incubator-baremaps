@@ -9,10 +9,10 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.util.tile.Tile;
+import com.google.common.collect.ImmutableList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
@@ -95,7 +95,7 @@ public class TileHandler implements ChangeHandler {
   private void handleGeometry(Geometry geometry) {
     if (geometry != null) {
       Envelope overlappingEnvelope = projectionTransformer.transform(geometry).getEnvelopeInternal();
-      List<Tile> overlappingTiles = Tile.getTiles(overlappingEnvelope, zoom).collect(Collectors.toList());
+      List<Tile> overlappingTiles = ImmutableList.copyOf(Tile.iterator(overlappingEnvelope, zoom, zoom));
       tiles.addAll(overlappingTiles);
     }
   }

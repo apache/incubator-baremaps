@@ -24,6 +24,7 @@ import com.baremaps.exporter.store.TileStore;
 import com.baremaps.exporter.store.TileStoreException;
 import com.baremaps.exporter.stream.BatchFilter;
 import com.baremaps.exporter.stream.TileFactory;
+import com.baremaps.util.stream.StreamUtils;
 import com.baremaps.util.postgres.PostgresHelper;
 import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.util.storage.BlobStore;
@@ -129,17 +130,17 @@ public class Export implements Callable<Integer> {
     // Export the tiles
     logger.info("Generating the tiles");
 
-    final Stream<Tile> stream;
+     Stream<Tile> stream;
     if (tiles == null) {
       Envelope envelope = new Envelope(
           config.getBounds().getMinLon(), config.getBounds().getMaxLon(),
           config.getBounds().getMinLat(), config.getBounds().getMaxLat());
-      long count = Tile.countTiles(envelope,
+      long count = Tile.count(envelope,
           (int) config.getBounds().getMinZoom(),
           (int) config.getBounds().getMaxZoom());
-      stream = Tile.getTiles(envelope,
+      stream = StreamUtils.stream(Tile.iterator(envelope,
           (int) config.getBounds().getMinZoom(),
-          (int) config.getBounds().getMaxZoom())
+          (int) config.getBounds().getMaxZoom()))
           .peek(new StreamProgress<>(count, 5000));
     } else {
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(blobStore.read(tiles)))) {
@@ -149,14 +150,14 @@ public class Export implements Callable<Integer> {
           int y = Integer.parseInt(array[1]);
           int z = Integer.parseInt(array[2]);
           Tile tile = new Tile(x, y, z);
-          return Tile.getTiles(tile.envelope(),
+          return StreamUtils.stream(Tile.iterator(tile.envelope(),
               (int) config.getBounds().getMinZoom(),
-              (int) config.getBounds().getMaxZoom());
+              (int) config.getBounds().getMaxZoom()));
         });
       }
     }
 
-    stream.parallel()
+    StreamUtils.batch(stream, 10)
         .filter(new BatchFilter(batchArraySize, batchArrayIndex))
         .forEach(new TileFactory(tileSource, tileTarget));
 
