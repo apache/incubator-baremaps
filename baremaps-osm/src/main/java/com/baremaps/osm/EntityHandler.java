@@ -10,7 +10,7 @@ import com.baremaps.util.stream.StreamException;
 import java.util.function.Consumer;
 
 /**
- * A class that uses the visitor pattern to dispatch operations on entities.
+ * A handler that uses the visitor pattern to dispatch operations on entities.
  */
 public interface EntityHandler extends Consumer<Entity> {
 
