@@ -7,6 +7,9 @@ import com.baremaps.osm.EntityHandler;
  */
 public interface Entity {
 
+  /**
+   * A method that uses the visitor pattern to dispatch operations on entities.
+   */
   void accept(EntityHandler handler) throws Exception;
 
 }

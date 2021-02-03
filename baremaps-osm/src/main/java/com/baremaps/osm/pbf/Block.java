@@ -16,5 +16,4 @@ public abstract class Block {
 
   public abstract void handle(BlockHandler handler) throws Exception;
 
-
 }

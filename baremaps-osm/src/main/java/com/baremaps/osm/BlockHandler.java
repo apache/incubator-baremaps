@@ -3,7 +3,7 @@ package com.baremaps.osm;
 import com.baremaps.osm.pbf.Block;
 import com.baremaps.osm.pbf.DataBlock;
 import com.baremaps.osm.pbf.HeaderBlock;
-import com.baremaps.util.stream.StreamException;
+import com.baremaps.core.stream.StreamException;
 import java.util.function.Consumer;
 
 public interface BlockHandler extends Consumer<Block> {

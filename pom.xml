@@ -79,12 +79,12 @@
   </properties>
 
   <modules>
-    <module>baremaps-cli</module>
-    <module>baremaps-exporter</module>
-    <module>baremaps-importer</module>
-    <module>baremaps-server</module>
+    <module>baremaps-core</module>
     <module>baremaps-osm</module>
-    <module>baremaps-util</module>
+    <module>baremaps-postgres</module>
+    <module>baremaps-aws</module>
+    <module>baremaps-server</module>
+    <module>baremaps-cli</module>
     <module>benchmarks</module>
     <module>docs/examples</module>
   </modules>
@@ -257,7 +257,7 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-util</artifactId>
+        <artifactId>baremaps-core</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -267,12 +267,7 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-exporter</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-importer</artifactId>
+        <artifactId>baremaps-postgres</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>

@@ -49,7 +49,7 @@ the `docker/` directory contains docker images for deploying Baremaps on the clo
 and the `èxamples/` directory showcase how to use Baremaps with different datasets.
 
 The source code of Baremaps is organized in modules:
-- `baremaps-util` contains general purpose classes used by other modules;
+- `baremaps-core` contains general purpose classes used by other modules;
 - `baremaps-osm` contains code for parsing, handling and importing OSM data in Postgres;
 - `baremaps-export` contains code for producing vector tiles from Postgres;
 - `baremaps-cli` contains the command line utilities.

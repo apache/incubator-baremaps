@@ -14,12 +14,12 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.util.storage.BlobStore;
-import com.baremaps.util.storage.CompositeBlobStore;
-import com.baremaps.util.storage.FileBlobStore;
-import com.baremaps.util.storage.HttpBlobStore;
-import com.baremaps.util.storage.ResourceBlobStore;
-import com.baremaps.util.storage.S3BlobStore;
+import com.baremaps.core.storage.BlobStore;
+import com.baremaps.core.storage.CompositeBlobStore;
+import com.baremaps.core.storage.FileBlobStore;
+import com.baremaps.core.storage.HttpBlobStore;
+import com.baremaps.core.storage.ResourceBlobStore;
+import com.baremaps.core.storage.S3BlobStore;
 import java.util.ArrayList;
 import java.util.List;
 import picocli.CommandLine.Option;

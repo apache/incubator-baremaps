@@ -14,7 +14,15 @@
   <dependencies>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-util</artifactId>
+      <artifactId>baremaps-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
+    <dependency>
+      <artifactId>lmdbjava</artifactId>
+      <groupId>org.lmdbjava</groupId>
     </dependency>
   </dependencies>
 

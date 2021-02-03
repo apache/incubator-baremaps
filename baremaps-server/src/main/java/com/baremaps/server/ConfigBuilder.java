@@ -13,8 +13,8 @@
  */
 package com.baremaps.server;
 
-import com.baremaps.exporter.config.Config;
-import com.baremaps.exporter.config.Layer;
+import com.baremaps.postgres.config.Config;
+import com.baremaps.postgres.config.Layer;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;

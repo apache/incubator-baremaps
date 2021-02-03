@@ -1,7 +1,7 @@
 package com.baremaps.osm;
 
 import com.baremaps.osm.domain.Change;
-import com.baremaps.util.stream.StreamException;
+import com.baremaps.core.stream.StreamException;
 import java.util.function.Consumer;
 
 public interface ChangeHandler extends Consumer<Change> {

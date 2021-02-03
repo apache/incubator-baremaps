@@ -1,0 +1,37 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+package com.baremaps.osm.database;
+
+import com.baremaps.osm.domain.Element;
+import com.baremaps.osm.domain.Entity;
+import java.util.List;
+
+public interface EntityTable<T extends Entity> {
+
+  T select(Long id) throws DatabaseException;
+
+  List<T> select(List<Long> ids) throws DatabaseException;
+
+  void insert(T element) throws DatabaseException;
+
+  void insert(List<T> elements) throws DatabaseException;
+
+  void delete(Long id) throws DatabaseException;
+
+  void delete(List<Long> ids) throws DatabaseException;
+
+  void copy(List<T> elemenets) throws DatabaseException;
+
+}

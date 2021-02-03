@@ -42,7 +42,7 @@
   <dependencies>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-util</artifactId>
+      <artifactId>baremaps-core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
@@ -50,11 +50,7 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-importer</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-exporter</artifactId>
+      <artifactId>baremaps-postgres</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.annotation</groupId>

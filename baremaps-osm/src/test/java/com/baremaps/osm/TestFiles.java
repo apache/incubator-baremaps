@@ -14,11 +14,28 @@
 
 package com.baremaps.osm;
 
-import java.io.InputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class TestFiles {
 
+  public static URI dataOsmPbf() throws URISyntaxException {
+    return TestFiles.class.getClassLoader().getResource("data.osm.pbf").toURI();
+  }
+
+  public static URI dataOsmXml() throws URISyntaxException {
+    return TestFiles.class.getClassLoader().getResource("data.osm.xml").toURI();
+  }
+
+  public static URI updateOsmPbf() throws URISyntaxException {
+    return TestFiles.class.getClassLoader().getResource("update.osm.pbf").toURI();
+  }
+
+  public static URI dataOscXml() throws URISyntaxException {
+    return TestFiles.class.getClassLoader().getResource("data.osc.xml").toURI();
+  }
+
+  public static URI dataStateTxt() throws URISyntaxException {
+    return TestFiles.class.getClassLoader().getResource("data-state.txt").toURI();
+  }
 }

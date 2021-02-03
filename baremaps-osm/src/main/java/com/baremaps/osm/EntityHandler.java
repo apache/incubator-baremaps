@@ -6,11 +6,11 @@ import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.util.stream.StreamException;
+import com.baremaps.core.stream.StreamException;
 import java.util.function.Consumer;
 
 /**
- * A handler that uses the visitor pattern to dispatch operations on entities.
+ * A consumer that uses the visitor pattern to handle entities according to their type.
  */
 public interface EntityHandler extends Consumer<Entity> {
 

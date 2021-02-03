@@ -20,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.baremaps.osm.domain.Entity;
-import com.baremaps.util.stream.AccumulatingConsumer;
-import com.baremaps.util.stream.HoldingConsumer;
+import com.baremaps.core.stream.AccumulatingConsumer;
+import com.baremaps.core.stream.HoldingConsumer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Spliterator;

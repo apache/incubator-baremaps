@@ -1,17 +1,17 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.exporter.config.Config;
-import com.baremaps.exporter.config.Loader;
-import com.baremaps.exporter.store.PostgisTileStore;
-import com.baremaps.exporter.store.TileStore;
+import com.baremaps.postgres.config.Config;
+import com.baremaps.postgres.config.ConfigLoader;
+import com.baremaps.postgres.store.PostgisTileStore;
+import com.baremaps.core.tile.TileStore;
 import com.baremaps.server.ChangePublisher;
 import com.baremaps.server.ConfigService;
 import com.baremaps.server.StyleService;
 import com.baremaps.server.TemplateService;
 import com.baremaps.server.TileService;
-import com.baremaps.util.postgres.PostgresHelper;
-import com.baremaps.util.storage.BlobStore;
+import com.baremaps.postgres.util.PostgresHelper;
+import com.baremaps.core.storage.BlobStore;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
 import com.linecorp.armeria.server.file.FileService;
@@ -76,10 +76,10 @@ public class Serve implements Callable<Integer> {
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
     BlobStore blobStore = options.blobStore();
-    Loader loader = new Loader(blobStore);
+    ConfigLoader configLoader = new ConfigLoader(blobStore);
     Supplier<Config> provider = () -> {
       try {
-        return loader.load(this.config);
+        return configLoader.load(this.config);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

@@ -18,8 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.cli.Baremaps;
-import com.baremaps.importer.database.NodeTable;
-import com.baremaps.util.postgres.PostgresHelper;
+import com.baremaps.osm.database.NodeTable;
+import com.baremaps.postgres.util.PostgresHelper;
 import com.google.common.io.CharStreams;
 import java.io.File;
 import java.io.IOException;

@@ -14,21 +14,21 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.exporter.config.Config;
-import com.baremaps.exporter.config.Loader;
-import com.baremaps.exporter.config.Query;
-import com.baremaps.exporter.store.BlobTileStore;
-import com.baremaps.exporter.store.MBTilesTileStore;
-import com.baremaps.exporter.store.PostgisTileStore;
-import com.baremaps.exporter.store.TileStore;
-import com.baremaps.exporter.store.TileStoreException;
-import com.baremaps.exporter.stream.BatchFilter;
-import com.baremaps.exporter.stream.TileFactory;
-import com.baremaps.util.stream.StreamUtils;
-import com.baremaps.util.postgres.PostgresHelper;
+import com.baremaps.postgres.config.Config;
+import com.baremaps.postgres.config.ConfigLoader;
+import com.baremaps.postgres.config.Query;
+import com.baremaps.core.tile.TileBlobStore;
+import com.baremaps.postgres.store.MBTiles;
+import com.baremaps.postgres.store.PostgisTileStore;
+import com.baremaps.core.tile.TileStore;
+import com.baremaps.core.tile.TileStoreException;
+import com.baremaps.core.tile.TileBatcher;
+import com.baremaps.core.tile.Tiler;
+import com.baremaps.core.stream.StreamUtils;
+import com.baremaps.postgres.util.PostgresHelper;
 import com.baremaps.osm.progress.StreamProgress;
-import com.baremaps.util.storage.BlobStore;
-import com.baremaps.util.tile.Tile;
+import com.baremaps.core.storage.BlobStore;
+import com.baremaps.core.tile.Tile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
@@ -118,8 +118,8 @@ public class Export implements Callable<Integer> {
 
     // Read the configuration file
     logger.info("Reading configuration");
-    Loader loader = new Loader(blobStore);
-    Config config = loader.load(this.config);
+    ConfigLoader configLoader = new ConfigLoader(blobStore);
+    Config config = configLoader.load(this.config);
 
     logger.info("Initializing the source tile store");
     final TileStore tileSource = sourceTileStore(config, datasource);
@@ -158,8 +158,8 @@ public class Export implements Callable<Integer> {
     }
 
     StreamUtils.batch(stream, 10)
-        .filter(new BatchFilter(batchArraySize, batchArrayIndex))
-        .forEach(new TileFactory(tileSource, tileTarget));
+        .filter(new TileBatcher(batchArraySize, batchArrayIndex))
+        .forEach(new Tiler(tileSource, tileTarget));
 
     return 0;
   }
@@ -173,12 +173,12 @@ public class Export implements Callable<Integer> {
     if (mbtiles) {
       SQLiteDataSource dataSource = new SQLiteDataSource();
       dataSource.setUrl("jdbc:sqlite:" + repository.getPath());
-      MBTilesTileStore tilesStore = new MBTilesTileStore(dataSource);
+      MBTiles tilesStore = new MBTiles(dataSource);
       tilesStore.initializeDatabase();
       tilesStore.writeMetadata(metadata(config));
       return tilesStore;
     } else {
-      return new BlobTileStore(blobStore, repository);
+      return new TileBlobStore(blobStore, repository);
     }
   }
 

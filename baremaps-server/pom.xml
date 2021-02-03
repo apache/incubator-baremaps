@@ -14,7 +14,7 @@
   <dependencies>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-exporter</artifactId>
+      <artifactId>baremaps-postgres</artifactId>
     </dependency>
     <dependency>
       <groupId>com.linecorp.armeria</groupId>

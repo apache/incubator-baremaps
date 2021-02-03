@@ -1,7 +1,7 @@
 package com.baremaps.cli;
 
-import com.baremaps.util.postgres.PostgresHelper;
-import com.baremaps.util.storage.BlobStore;
+import com.baremaps.postgres.util.PostgresHelper;
+import com.baremaps.core.storage.BlobStore;
 import com.google.common.base.Splitter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;

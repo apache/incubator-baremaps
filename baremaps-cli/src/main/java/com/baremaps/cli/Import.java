@@ -14,16 +14,16 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.importer.ImportTask;
-import com.baremaps.importer.cache.Cache;
-import com.baremaps.importer.cache.InMemoryCache;
-import com.baremaps.importer.cache.LmdbCoordinateCache;
-import com.baremaps.importer.cache.LmdbReferencesCache;
-import com.baremaps.importer.database.HeaderTable;
-import com.baremaps.importer.database.NodeTable;
-import com.baremaps.importer.database.RelationTable;
-import com.baremaps.importer.database.WayTable;
-import com.baremaps.util.postgres.PostgresHelper;
+import com.baremaps.osm.ImportTask;
+import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.cache.InMemoryCache;
+import com.baremaps.osm.cache.LmdbCoordinateCache;
+import com.baremaps.osm.cache.LmdbReferencesCache;
+import com.baremaps.osm.database.HeaderTable;
+import com.baremaps.osm.database.NodeTable;
+import com.baremaps.osm.database.RelationTable;
+import com.baremaps.osm.database.WayTable;
+import com.baremaps.postgres.util.PostgresHelper;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
