@@ -15,7 +15,7 @@ sudo apt-get install gdal-bin
 ```
 
 The geotiff present in this directory comes from the [ASTER](https://asterweb.jpl.nasa.gov/gdem.asp) dataset.
-If needed, you can now reproject the geotiff in the desired projection before importing it in the com.baremaps.osm.database.
+If needed, you can now reproject the geotiff in the desired projection before importing it in the database.
 
 ```
 gdalwarp -rc \
@@ -49,6 +49,6 @@ To preview the data, run the tile server with the following command:
 
 ```bash
 baremaps serve \
-  --com.baremaps.osm.database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
+  --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
   --config 'config.yaml'
 ```

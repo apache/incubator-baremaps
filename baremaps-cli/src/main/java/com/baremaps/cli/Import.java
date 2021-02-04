@@ -45,7 +45,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "import", description = "Import OpenStreetMap data in the com.baremaps.osm.database.")
+@Command(name = "import", description = "Import OpenStreetMap data in the database.")
 public class Import implements Callable<Integer> {
 
   private static Logger logger = LoggerFactory.getLogger(Import.class);
@@ -60,14 +60,14 @@ public class Import implements Callable<Integer> {
   @Option(
       names = {"--file"},
       paramLabel = "FILE",
-      description = "The PBF file to import in the com.baremaps.osm.database.",
+      description = "The PBF file to import in the database.",
       required = true)
   private URI file;
 
   @Option(
-      names = {"--com.baremaps.osm.database"},
+      names = {"--database"},
       paramLabel = "DATABASE",
-      description = "The JDBC url of the com.baremaps.osm.database.",
+      description = "The JDBC url of the database.",
       required = true)
   private String database;
 

@@ -52,7 +52,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "export", description = "Export vector tiles from the com.baremaps.osm.database.")
+@Command(name = "export", description = "Export vector tiles from the database.")
 public class Export implements Callable<Integer> {
 
   private static Logger logger = LoggerFactory.getLogger(Export.class);
@@ -61,9 +61,9 @@ public class Export implements Callable<Integer> {
   private Options options;
 
   @Option(
-      names = {"--com.baremaps.osm.database"},
+      names = {"--database"},
       paramLabel = "DATABASE",
-      description = "The JDBC url of the Postgres com.baremaps.osm.database.",
+      description = "The JDBC url of the Postgres database.",
       required = true)
   private String database;
 

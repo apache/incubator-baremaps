@@ -29,10 +29,10 @@ import javax.sql.DataSource;
 public class PostgresHeaderTable implements HeaderTable {
 
   private static final String SELECT =
-      "SELECT replication_timestamp, replication_sequence_number, replication_url, source, writing_program FROM osm_headers ORDER BY replication_timestamp DESC";
+      "SELECT replication_sequence_number, replication_timestamp, replication_url, source, writing_program FROM osm_headers ORDER BY replication_timestamp DESC";
 
   private static final String INSERT =
-      "INSERT INTO osm_headers (replication_timestamp, replication_sequence_number, replication_url, source, writing_program) VALUES (?, ?, ?, ?, ?)";
+      "INSERT INTO osm_headers (replication_sequence_number, replication_timestamp, replication_url, source, writing_program) VALUES (?, ?, ?, ?, ?)";
 
   private final DataSource dataSource;
 
@@ -40,14 +40,15 @@ public class PostgresHeaderTable implements HeaderTable {
     this.dataSource = dataSource;
   }
 
-  public List<Header> select() throws DatabaseException {
+  @Override
+  public List<Header> selectAll() throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       ResultSet result = statement.executeQuery();
       List<Header> headers = new ArrayList<>();
       while (result.next()) {
-        LocalDateTime replicationTimestamp = result.getObject(1, LocalDateTime.class);
-        long replicationSequenceNumber = result.getLong(2);
+        long replicationSequenceNumber = result.getLong(1);
+        LocalDateTime replicationTimestamp = result.getObject(2, LocalDateTime.class);
         String replicationUrl = result.getString(3);
         String source = result.getString(4);
         String writingProgram = result.getString(5);
@@ -64,10 +65,6 @@ public class PostgresHeaderTable implements HeaderTable {
     }
   }
 
-  public Header latest() throws DatabaseException {
-    return select().get(0);
-  }
-
   @Override
   public Header select(Long id) throws DatabaseException {
     return null;
@@ -78,11 +75,12 @@ public class PostgresHeaderTable implements HeaderTable {
     return null;
   }
 
+  @Override
   public void insert(Header header) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      statement.setObject(1, header.getReplicationTimestamp());
-      statement.setObject(2, header.getReplicationSequenceNumber());
+      statement.setObject(1, header.getReplicationSequenceNumber());
+      statement.setObject(2, header.getReplicationTimestamp());
       statement.setString(3, header.getReplicationUrl());
       statement.setString(4, header.getSource());
       statement.setString(5, header.getWritingProgram());
@@ -110,6 +108,10 @@ public class PostgresHeaderTable implements HeaderTable {
   @Override
   public void copy(List<Header> elemenets) throws DatabaseException {
     // TODO: implement this method
+  }
+
+  public Header latest() throws DatabaseException {
+    return selectAll().get(0);
   }
 
 }

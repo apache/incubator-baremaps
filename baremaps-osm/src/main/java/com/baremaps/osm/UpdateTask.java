@@ -79,7 +79,7 @@ public class UpdateTask {
     URI stateFileUri = resolve(replicationUrl, sequenceNumber, "state.txt");
     Path stateFile = blobStore.fetch(stateFileUri);
 
-    logger.info("Importing changes and state in com.baremaps.osm.database");
+    logger.info("Importing changes and state in database");
     GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
     ChangeTiler changeTiler = new ChangeTiler(nodeTable, wayTable, relationTable, new ProjectionTransformer(srid, 4326), zoom);

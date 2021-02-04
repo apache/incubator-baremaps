@@ -19,7 +19,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "execute", description = "Execute queries in the com.baremaps.osm.database.")
+@Command(name = "execute", description = "Execute queries in the database.")
 public class Execute implements Callable<Integer> {
 
   private static Logger logger = LoggerFactory.getLogger(Execute.class);
@@ -28,16 +28,16 @@ public class Execute implements Callable<Integer> {
   private Options options;
 
   @Option(
-      names = {"--com.baremaps.osm.database"},
+      names = {"--database"},
       paramLabel = "DATABASE",
-      description = "The JDBC url of the com.baremaps.osm.database.",
+      description = "The JDBC url of the database.",
       required = true)
   private String database;
 
   @Option(
       names = {"--file"},
       paramLabel = "FILE",
-      description = "The SQL file to execute in the com.baremaps.osm.database.",
+      description = "The SQL file to execute in the database.",
       required = true)
   private List<URI> files;
 

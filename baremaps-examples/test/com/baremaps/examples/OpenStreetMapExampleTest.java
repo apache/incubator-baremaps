@@ -82,13 +82,13 @@ public class OpenStreetMapExampleTest {
 
     // Test the import command
     int importExitCode = cmd.execute("import",
-        "--com.baremaps.osm.database", DATABASE_URL,
+        "--database", DATABASE_URL,
         "--file", "openstreetmap/liechtenstein-latest.osm.pbf");
     assertEquals(0, importExitCode);
 
     // Test the export command
     int exportExitCode = cmd.execute("export",
-        "--com.baremaps.osm.database", DATABASE_URL,
+        "--database", DATABASE_URL,
         "--config", "openstreetmap/config.yaml",
         "--repository", "repository/");
     assertEquals(0, exportExitCode);
@@ -97,7 +97,7 @@ public class OpenStreetMapExampleTest {
     // Test the serve command in a separate thread
     new Thread(() -> {
       cmd.execute("serve",
-          "--com.baremaps.osm.database", DATABASE_URL,
+          "--database", DATABASE_URL,
           "--config", "openstreetmap/config.yaml");
     }).run();
 
