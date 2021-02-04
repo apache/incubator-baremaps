@@ -14,7 +14,7 @@
 
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.EntityHandler;
+import com.baremaps.osm.handler.EntityHandler;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;

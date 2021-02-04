@@ -13,7 +13,7 @@
  */
 package com.baremaps.server;
 
-import com.baremaps.postgres.config.Config;
+import com.baremaps.config.Config;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

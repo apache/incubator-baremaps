@@ -1,8 +1,8 @@
 package com.baremaps.osm.database;
 
-import com.baremaps.osm.BlockHandler;
-import com.baremaps.osm.pbf.DataBlock;
-import com.baremaps.osm.pbf.HeaderBlock;
+import com.baremaps.osm.handler.BlockHandler;
+import com.baremaps.osm.domain.DataBlock;
+import com.baremaps.osm.domain.HeaderBlock;
 
 public class DatabaseImporter implements BlockHandler {
 

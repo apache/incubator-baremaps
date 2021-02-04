@@ -7,7 +7,7 @@ title: NaturalEarth Example
 
 Baremaps is aimed at being the most productive toolkit for creating custom vector tiles from OpenStreetMap data. 
 
-In this tutorial, we'll learn how to use Baremaps to import OpenStreetMap data in a Postgis database and how to create vector tiles from this data.
+In this tutorial, we'll learn how to use Baremaps to import OpenStreetMap data in a Postgis com.baremaps.osm.database and how to create vector tiles from this data.
 Notice that the following steps assume that Baremaps and Postgis are [installed](https://www.baremaps.com/installation/).
 Also, if you are in a hurry, consider skipping the "Under the Hood" sections.
 
@@ -22,12 +22,12 @@ The [GitHub directory](https://github.com/baremaps/baremaps/tree/master/docs/exa
 ## Importing OpenStreetMap Data
 
 To begin with the tutorial, make sure you have the source files of the tutorial in your current working directory. 
-Additionally, prepare the database by executing the following command.
+Additionally, prepare the com.baremaps.osm.database by executing the following command.
 Hereafter, the command executes files sequentially, but the queries they contain are executed in parallel.
 
 ```
 baremaps execute \
-  --database 'jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps' \
+  --com.baremaps.osm.database 'jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps' \
   --file 'res://osm_create_extensions.sql' \
   --file 'res://osm_drop_tables.sql' \
   --file 'res://osm_create_tables.sql' \
@@ -39,7 +39,7 @@ To import the sample OSM data (`liechtenstein-latest.osm.pbf`) in Postgis with B
 
 ```
 baremaps import \
-  --database 'jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps' \
+  --com.baremaps.osm.database 'jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps' \
   --file 'https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf'
 ```
 
@@ -57,7 +57,7 @@ Eventually, the output produced by the command should look as follows.
 
 What can we learn from this output?
 First, we notice that Baremaps identifies the number of processors available to parallelize the import procedure.
-Then it creates the database tables, the primary keys and fetches the input file.
+Then it creates the com.baremaps.osm.database tables, the primary keys and fetches the input file.
 In our case, the input is a local file, however it could also be an HTTP or an S3 url.
 
 OSM's [conceptual model](https://wiki.openstreetmap.org/wiki/Elements) builds upon the notions of nodes, ways and relations.
@@ -65,12 +65,12 @@ In this normalized data model, a line (or way) is formed by a sequence of points
 In order to save denormalized geometries in Postgis (e.g. linestring, polygon, multi-polygon, etc.), Baremaps creates a cache for nodes, ways and relations.
 [LMDB](https://symas.com/lmdb/) is used under the hood to achieve great performance.
 
-After the creation of the cache, Baremaps can populate the database with geometries.
+After the creation of the cache, Baremaps can populate the com.baremaps.osm.database with geometries.
 The geometries are stored in three tables named after the OSM conceptual model: `osm_nodes`, `osm_ways`, and `osm_relations`.
 In order to improve performances at query time, Baremaps also creates indexes for the tags and the geometries.
-The following Figure displays the schema of the Postgis database created by Baremaps.
+The following Figure displays the schema of the Postgis com.baremaps.osm.database created by Baremaps.
 
-![Postgis database](database.png)
+![Postgis com.baremaps.osm.database](database.png)
 
 ## Creating Vector Tiles
 
@@ -81,7 +81,7 @@ Let's preview the data with the sample configuration file (`config.yaml`) by exe
 
 ```
 baremaps serve \
-  --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
+  --com.baremaps.osm.database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
   --config 'config.yaml' \
   --watch-changes
 ```
@@ -116,7 +116,7 @@ Baremaps wants you to focus on the content of the tiles, and relieves you from t
 In fact, at runtime, Baremaps merges all the queries of the configuration file into a single optimized query that produces vector tiles.
 
 In production, vector tiles are rarely served dynamically. Why is that so?
-First, a large blob store is much cheaper than a relational database to [operate](https://wiki.c2.com/?StorageIsCheap).
+First, a large blob store is much cheaper than a relational com.baremaps.osm.database to [operate](https://wiki.c2.com/?StorageIsCheap).
 Second, content delivery networks (CDNs) greatly improve web performances by caching static content close to the end user.
 Baremaps has been conceived with these lasting trends in mind.
 The following command produces a local directory containing precomputed static tiles.
@@ -124,7 +124,7 @@ These tiles can be served with Apache, Nginx, or Caddy, but also copied in a blo
 
 ```
 baremaps export \
-  --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
+  --com.baremaps.osm.database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
   --config 'config.yaml' \
   --repository 'tiles/'
 ```

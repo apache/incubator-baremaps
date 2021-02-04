@@ -14,7 +14,7 @@
 
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.EntityHandler;
+import com.baremaps.osm.handler.EntityHandler;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -22,7 +22,7 @@ import java.util.StringJoiner;
 /**
  * A class used to store the metadata of an dataset.
  */
-public class Header implements Entity {
+public class Header extends Entity {
 
   private final LocalDateTime replicationTimestamp;
   private final Long replicationSequenceNumber;

@@ -21,3 +21,45 @@ Baremaps is inspired by [Osmosis](https://github.com/openstreetmap/osmosis), but
 
 On the longer run, the aim of the project is to work with a variety of data sources in order to create highly specialized and customized maps.
 
+
+There is a need to improve the module structure in baremaps.
+
+config: configuration for vector tiles and stylesheets
+
+blob: storage abstractions for blobs
+- file
+- http
+- resource (jar)  
+- s3
+- (ipfs)
+- (cassandra)
+
+cache: cache used to denormalize osm data
+- memory
+- lmdb (comes with a native dependency)
+- (off-heap)
+- (rocksdb)
+- (leveldb)
+- (mvstore)
+
+osm (stream, cache): readers, writers and denormalizers for osm data
+- reader
+- (writer)
+- geom
+
+osmdb: create and update a com.baremaps.osm.database filled with osm data
+- postgres
+- (calcite)
+- (sqlite)
+
+tile (blob, stream): 
+- posgres (config)
+- (calcite)
+- mbtiles/sqlite
+
+stream
+
+server
+
+cli
+

@@ -1,7 +1,7 @@
 package com.baremaps.cli;
 
-import com.baremaps.postgres.util.PostgresHelper;
-import com.baremaps.core.storage.BlobStore;
+import com.baremaps.blob.BlobStore;
+import com.baremaps.osm.postgres.PostgresHelper;
 import com.google.common.base.Splitter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +19,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "execute", description = "Execute queries in the database.")
+@Command(name = "execute", description = "Execute queries in the com.baremaps.osm.database.")
 public class Execute implements Callable<Integer> {
 
   private static Logger logger = LoggerFactory.getLogger(Execute.class);
@@ -28,16 +28,16 @@ public class Execute implements Callable<Integer> {
   private Options options;
 
   @Option(
-      names = {"--database"},
+      names = {"--com.baremaps.osm.database"},
       paramLabel = "DATABASE",
-      description = "The JDBC url of the database.",
+      description = "The JDBC url of the com.baremaps.osm.database.",
       required = true)
   private String database;
 
   @Option(
       names = {"--file"},
       paramLabel = "FILE",
-      description = "The SQL file to execute in the database.",
+      description = "The SQL file to execute in the com.baremaps.osm.database.",
       required = true)
   private List<URI> files;
 

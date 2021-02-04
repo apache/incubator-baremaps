@@ -14,7 +14,6 @@
 
 package com.baremaps.osm.database;
 
-import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Entity;
 import java.util.List;
 

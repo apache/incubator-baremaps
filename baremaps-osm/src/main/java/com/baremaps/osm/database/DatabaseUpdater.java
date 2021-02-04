@@ -1,7 +1,7 @@
 package com.baremaps.osm.database;
 
-import com.baremaps.osm.ChangeHandler;
-import com.baremaps.osm.ElementHandler;
+import com.baremaps.osm.handler.ChangeHandler;
+import com.baremaps.osm.handler.ElementHandler;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Node;

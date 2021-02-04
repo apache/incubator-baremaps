@@ -24,13 +24,13 @@ Calling the `baremaps` command should now result in an output similar to the fol
 Usage: baremaps [COMMAND]
 A toolkit for producing vector tiles.
 Commands:
-  import  Import OpenStreetMap data in the Postgresql database.
-  update  Update OpenStreetMap data in the Postgresql database.
-  export  Export vector tiles from the Postgresql database.
-  serve   Serve vector tiles from the the Postgresql database.
+  import  Import OpenStreetMap data in the Postgresql com.baremaps.osm.database.
+  update  Update OpenStreetMap data in the Postgresql com.baremaps.osm.database.
+  export  Export vector tiles from the Postgresql com.baremaps.osm.database.
+  serve   Serve vector tiles from the the Postgresql com.baremaps.osm.database.
 ```
 
-In order to run Baremaps, you need to setup a [postgis](https://postgis.net/) database.
+In order to run Baremaps, you need to setup a [postgis](https://postgis.net/) com.baremaps.osm.database.
 The following docker image will allow you to jump start this installation:
 
 ```

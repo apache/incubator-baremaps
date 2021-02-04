@@ -1,17 +1,18 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.postgres.config.Config;
-import com.baremaps.postgres.config.ConfigLoader;
-import com.baremaps.postgres.store.PostgisTileStore;
-import com.baremaps.core.tile.TileStore;
+
+import com.baremaps.blob.BlobStore;
+import com.baremaps.config.Config;
+import com.baremaps.config.ConfigLoader;
+import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.server.ChangePublisher;
 import com.baremaps.server.ConfigService;
 import com.baremaps.server.StyleService;
 import com.baremaps.server.TemplateService;
 import com.baremaps.server.TileService;
-import com.baremaps.postgres.util.PostgresHelper;
-import com.baremaps.core.storage.BlobStore;
+import com.baremaps.tile.TileStore;
+import com.baremaps.tile.postgres.PostgisTileStore;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
 import com.linecorp.armeria.server.file.FileService;
@@ -34,7 +35,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "serve", description = "Serve vector tiles from the the database.")
+@Command(name = "serve", description = "Serve vector tiles from the the com.baremaps.osm.database.")
 public class Serve implements Callable<Integer> {
 
   private static Logger logger = LoggerFactory.getLogger(Serve.class);
@@ -43,9 +44,9 @@ public class Serve implements Callable<Integer> {
   private Options options;
 
   @Option(
-      names = {"--database"},
+      names = {"--com.baremaps.osm.database"},
       paramLabel = "DATABASE",
-      description = "The JDBC url of the Postgres database.",
+      description = "The JDBC url of the Postgres com.baremaps.osm.database.",
       required = true)
   private String database;
 

@@ -3,16 +3,16 @@ package com.baremaps.osm;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
-import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.ChangeTiler;
 import com.baremaps.osm.database.DatabaseUpdater;
+import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.geometry.GeometryHandler;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.State;
-import com.baremaps.core.storage.BlobStore;
-import com.baremaps.core.tile.Tile;
+import com.baremaps.blob.BlobStore;
+import com.baremaps.tile.Tile;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -79,7 +79,7 @@ public class UpdateTask {
     URI stateFileUri = resolve(replicationUrl, sequenceNumber, "state.txt");
     Path stateFile = blobStore.fetch(stateFileUri);
 
-    logger.info("Importing changes and state in database");
+    logger.info("Importing changes and state in com.baremaps.osm.database");
     GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
     ChangeTiler changeTiler = new ChangeTiler(nodeTable, wayTable, relationTable, new ProjectionTransformer(srid, 4326), zoom);

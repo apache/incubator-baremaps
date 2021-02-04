@@ -14,21 +14,21 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.postgres.config.Config;
-import com.baremaps.postgres.config.ConfigLoader;
-import com.baremaps.postgres.config.Query;
-import com.baremaps.core.tile.TileBlobStore;
-import com.baremaps.postgres.store.MBTiles;
-import com.baremaps.postgres.store.PostgisTileStore;
-import com.baremaps.core.tile.TileStore;
-import com.baremaps.core.tile.TileStoreException;
-import com.baremaps.core.tile.TileBatcher;
-import com.baremaps.core.tile.Tiler;
-import com.baremaps.core.stream.StreamUtils;
-import com.baremaps.postgres.util.PostgresHelper;
+import com.baremaps.blob.BlobStore;
+import com.baremaps.config.Config;
+import com.baremaps.config.ConfigLoader;
+import com.baremaps.config.Query;
+import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.osm.progress.StreamProgress;
-import com.baremaps.core.storage.BlobStore;
-import com.baremaps.core.tile.Tile;
+import com.baremaps.stream.StreamUtils;
+import com.baremaps.tile.Tile;
+import com.baremaps.tile.TileBatcher;
+import com.baremaps.tile.TileBlobStore;
+import com.baremaps.tile.TileStore;
+import com.baremaps.tile.TileStoreException;
+import com.baremaps.tile.Tiler;
+import com.baremaps.tile.mbtiles.MBTiles;
+import com.baremaps.tile.postgres.PostgisTileStore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
@@ -52,7 +52,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "export", description = "Export vector tiles from the database.")
+@Command(name = "export", description = "Export vector tiles from the com.baremaps.osm.database.")
 public class Export implements Callable<Integer> {
 
   private static Logger logger = LoggerFactory.getLogger(Export.class);
@@ -61,9 +61,9 @@ public class Export implements Callable<Integer> {
   private Options options;
 
   @Option(
-      names = {"--database"},
+      names = {"--com.baremaps.osm.database"},
       paramLabel = "DATABASE",
-      description = "The JDBC url of the Postgres database.",
+      description = "The JDBC url of the Postgres com.baremaps.osm.database.",
       required = true)
   private String database;
 

@@ -14,16 +14,22 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.UpdateTask;
-import com.baremaps.osm.cache.PostgresCoordinateCache;
-import com.baremaps.osm.cache.PostgresReferenceCache;
+import com.baremaps.osm.cache.CoordinateCache;
+import com.baremaps.osm.cache.ReferenceCache;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
-import com.baremaps.postgres.util.PostgresHelper;
-import com.baremaps.core.storage.BlobStore;
-import com.baremaps.core.tile.Tile;
+import com.baremaps.osm.postgres.PostgresCoordinateCache;
+import com.baremaps.osm.postgres.PostgresHeaderTable;
+import com.baremaps.osm.postgres.PostgresHelper;
+import com.baremaps.osm.postgres.PostgresNodeTable;
+import com.baremaps.osm.postgres.PostgresReferenceCache;
+import com.baremaps.osm.postgres.PostgresRelationTable;
+import com.baremaps.osm.postgres.PostgresWayTable;
+import com.baremaps.tile.Tile;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.Set;
@@ -37,7 +43,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "update", description = "Update OpenStreetMap data in the database.")
+@Command(name = "update", description = "Update OpenStreetMap data in the com.baremaps.osm.database.")
 public class Update implements Callable<Integer> {
 
   private static Logger logger = LoggerFactory.getLogger(Update.class);
@@ -46,9 +52,9 @@ public class Update implements Callable<Integer> {
   private Options options;
 
   @Option(
-      names = {"--database"},
+      names = {"--com.baremaps.osm.database"},
       paramLabel = "DATABASE",
-      description = "The JDBC url of the database.",
+      description = "The JDBC url of the com.baremaps.osm.database.",
       required = true)
   private String database;
 
@@ -67,7 +73,7 @@ public class Update implements Callable<Integer> {
   @Option(
       names = {"--srid"},
       paramLabel = "SRID",
-      description = "The projection used in the database.")
+      description = "The projection used in the com.baremaps.osm.database.")
   private int srid = 3857;
 
   @Override
@@ -76,12 +82,12 @@ public class Update implements Callable<Integer> {
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     DataSource datasource = PostgresHelper.datasource(database);
-    PostgresCoordinateCache coordinateCache = new PostgresCoordinateCache(datasource);
-    PostgresReferenceCache referenceCache = new PostgresReferenceCache(datasource);
-    HeaderTable headerTable = new HeaderTable(datasource);
-    NodeTable nodeTable = new NodeTable(datasource);
-    WayTable wayTable = new WayTable(datasource);
-    RelationTable relationTable = new RelationTable(datasource);
+    CoordinateCache coordinateCache = new PostgresCoordinateCache(datasource);
+    ReferenceCache referenceCache = new PostgresReferenceCache(datasource);
+    HeaderTable headerTable = new PostgresHeaderTable(datasource);
+    NodeTable nodeTable = new PostgresNodeTable(datasource);
+    WayTable wayTable = new PostgresWayTable(datasource);
+    RelationTable relationTable = new PostgresRelationTable(datasource);
 
     BlobStore blobStore = options.blobStore();
     Set<Tile> tiles = new UpdateTask(

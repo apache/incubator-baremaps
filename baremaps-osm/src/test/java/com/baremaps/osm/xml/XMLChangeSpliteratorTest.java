@@ -14,14 +14,14 @@
 
 package com.baremaps.osm.xml;
 
-import static com.baremaps.osm.OpenStreetMapTest.DATA_OSC_XML;
+import static com.baremaps.testing.TestFiles.DATA_OSC_XML;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.baremaps.osm.domain.Change;
-import com.baremaps.core.stream.AccumulatingConsumer;
-import com.baremaps.core.stream.HoldingConsumer;
+import com.baremaps.stream.AccumulatingConsumer;
+import com.baremaps.stream.HoldingConsumer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Spliterator;

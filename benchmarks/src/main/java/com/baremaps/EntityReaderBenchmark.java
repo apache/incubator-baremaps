@@ -1,6 +1,6 @@
 package com.baremaps;
 
-import com.baremaps.osm.ElementHandler;
+import com.baremaps.osm.handler.ElementHandler;
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;

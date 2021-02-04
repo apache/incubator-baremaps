@@ -18,8 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.cli.Baremaps;
-import com.baremaps.osm.database.NodeTable;
-import com.baremaps.postgres.util.PostgresHelper;
+import com.baremaps.osm.postgres.PostgresHelper;
+import com.baremaps.osm.postgres.PostgresNodeTable;
 import com.google.common.io.CharStreams;
 import java.io.File;
 import java.io.IOException;
@@ -47,12 +47,12 @@ public class OpenStreetMapExampleTest {
 
   public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps";
   public DataSource dataSource;
-  public NodeTable nodeStore;
+  public PostgresNodeTable nodeStore;
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
     dataSource = PostgresHelper.datasource(DATABASE_URL);
-    nodeStore = new NodeTable(dataSource);
+    nodeStore = new PostgresNodeTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgresHelper.executeResource(connection, "osm_create_extensions.sql");
       PostgresHelper.executeResource(connection, "osm_drop_tables.sql");
@@ -82,13 +82,13 @@ public class OpenStreetMapExampleTest {
 
     // Test the import command
     int importExitCode = cmd.execute("import",
-        "--database", DATABASE_URL,
+        "--com.baremaps.osm.database", DATABASE_URL,
         "--file", "openstreetmap/liechtenstein-latest.osm.pbf");
     assertEquals(0, importExitCode);
 
     // Test the export command
     int exportExitCode = cmd.execute("export",
-        "--database", DATABASE_URL,
+        "--com.baremaps.osm.database", DATABASE_URL,
         "--config", "openstreetmap/config.yaml",
         "--repository", "repository/");
     assertEquals(0, exportExitCode);
@@ -97,7 +97,7 @@ public class OpenStreetMapExampleTest {
     // Test the serve command in a separate thread
     new Thread(() -> {
       cmd.execute("serve",
-          "--database", DATABASE_URL,
+          "--com.baremaps.osm.database", DATABASE_URL,
           "--config", "openstreetmap/config.yaml");
     }).run();
 

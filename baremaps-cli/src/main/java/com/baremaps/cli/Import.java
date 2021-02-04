@@ -17,13 +17,17 @@ package com.baremaps.cli;
 import com.baremaps.osm.ImportTask;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.InMemoryCache;
-import com.baremaps.osm.cache.LmdbCoordinateCache;
-import com.baremaps.osm.cache.LmdbReferencesCache;
+import com.baremaps.osm.lmdb.LmdbCoordinateCache;
+import com.baremaps.osm.lmdb.LmdbReferencesCache;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
-import com.baremaps.postgres.util.PostgresHelper;
+import com.baremaps.osm.postgres.PostgresHeaderTable;
+import com.baremaps.osm.postgres.PostgresHelper;
+import com.baremaps.osm.postgres.PostgresNodeTable;
+import com.baremaps.osm.postgres.PostgresRelationTable;
+import com.baremaps.osm.postgres.PostgresWayTable;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -41,7 +45,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "import", description = "Import OpenStreetMap data in the database.")
+@Command(name = "import", description = "Import OpenStreetMap data in the com.baremaps.osm.database.")
 public class Import implements Callable<Integer> {
 
   private static Logger logger = LoggerFactory.getLogger(Import.class);
@@ -56,14 +60,14 @@ public class Import implements Callable<Integer> {
   @Option(
       names = {"--file"},
       paramLabel = "FILE",
-      description = "The PBF file to import in the database.",
+      description = "The PBF file to import in the com.baremaps.osm.database.",
       required = true)
   private URI file;
 
   @Option(
-      names = {"--database"},
+      names = {"--com.baremaps.osm.database"},
       paramLabel = "DATABASE",
-      description = "The JDBC url of the database.",
+      description = "The JDBC url of the com.baremaps.osm.database.",
       required = true)
   private String database;
 
@@ -91,10 +95,10 @@ public class Import implements Callable<Integer> {
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
     DataSource datasource = PostgresHelper.datasource(database);
-    HeaderTable headerTable = new HeaderTable(datasource);
-    NodeTable nodeTable = new NodeTable(datasource);
-    WayTable wayTable = new WayTable(datasource);
-    RelationTable relationTable = new RelationTable(datasource);
+    HeaderTable headerTable = new PostgresHeaderTable(datasource);
+    NodeTable nodeTable = new PostgresNodeTable(datasource);
+    WayTable wayTable = new PostgresWayTable(datasource);
+    RelationTable relationTable = new PostgresRelationTable(datasource);
 
     final Cache<Long, Coordinate> coordinateCache;
     final Cache<Long, List<Long>> referenceCache;

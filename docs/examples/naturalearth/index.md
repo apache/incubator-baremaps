@@ -22,7 +22,7 @@ sudo apt-get install gdal-bin
 ```
 
 You can then import the data using the following command. Here, notice the re-projection in web mercator (EPSG:3857).
-The Natural Earth tables should become visible in your postgresql database. 
+The Natural Earth tables should become visible in your postgresql com.baremaps.osm.database. 
 
 ```bash
 PGCLIENTENCODING=UTF8 ogr2ogr \
@@ -60,6 +60,6 @@ To preview the data, run the tile server with the following command:
 
 ```
 baremaps serve \
-  --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
+  --com.baremaps.osm.database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
   --config 'config.yaml'
 ```
