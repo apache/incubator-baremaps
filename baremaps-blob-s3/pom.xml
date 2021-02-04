@@ -16,10 +16,22 @@
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-blob</artifactId>
     </dependency>
+
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>s3</artifactId>
     </dependency>
+
+    <!-- Testing -->
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-blob</artifactId>
+      <version>${project.parent.version}</version>
+      <classifier>tests</classifier>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
 </project>

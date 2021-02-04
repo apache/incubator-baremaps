@@ -14,69 +14,18 @@
 
 package com.baremaps.blob.s3;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.adobe.testing.s3mock.junit5.S3MockExtension;
 import com.baremaps.blob.BlobStore;
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
+import com.baremaps.blob.BlobStoreTest;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
-class S3BlobStoreTest {
-
-  // TODO: rewrite these tests
-
-  @Test
-  @Tag("integration")
-  void accept() throws URISyntaxException {
-    BlobStore blobStore = createFileSystem();
-    for (String uri : createValidURIList()) {
-      assertTrue(blobStore.accept(new URI(uri)));
-    }
-    for (String uri : createWrongURIList()) {
-      assertFalse(blobStore.accept(new URI(uri)));
-    }
-  }
-
-  @Test
-  @Tag("integration")
-  void readWriteDelete() throws IOException, URISyntaxException {
-    BlobStore blobStore = createFileSystem();
-    URI uri = new URI(createTestURI());
-    String content = "content";
-
-    // Write data
-    try (OutputStream outputStream = blobStore.write(uri)) {
-      outputStream.write(content.getBytes(Charsets.UTF_8));
-    }
-
-    // Read the data
-    try (InputStream inputStream = blobStore.read(uri)) {
-      assertEquals(content, CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8)));
-    }
-
-    // Delete the data
-    blobStore.delete(uri);
-    assertThrows(IOException.class, () -> {
-      blobStore.read(uri).close();
-    });
-  }
+class S3BlobStoreTest extends BlobStoreTest {
 
   @RegisterExtension
   static final S3MockExtension S3_MOCK = S3MockExtension.builder()
@@ -91,18 +40,22 @@ class S3BlobStoreTest {
     s3Client.createBucket(CreateBucketRequest.builder().bucket("test").build());
   }
 
+  @Override
   protected String createTestURI() throws IOException {
     return "s3://test/test/test.txt";
   }
 
+  @Override
   protected List<String> createWrongURIList() {
     return Arrays.asList("test.txt", "/test.txt", "test/test.txt", "/test/test.txt");
   }
 
+  @Override
   protected List<String> createValidURIList() {
     return Arrays.asList("s3://test/test/test.txt");
   }
 
+  @Override
   protected BlobStore createFileSystem() {
     return new S3BlobStore("utf-8", "application/octet-stream", s3Client);
   }
