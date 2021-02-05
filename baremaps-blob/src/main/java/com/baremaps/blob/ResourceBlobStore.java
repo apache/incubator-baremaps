@@ -39,6 +39,7 @@ public class ResourceBlobStore extends BlobStore {
   @Override
   public Path fetch(URI uri) {
     String path = path(uri);
+    System.out.println(path);
     logger.debug("Read {}", path);
     return Paths.get(path);
   }

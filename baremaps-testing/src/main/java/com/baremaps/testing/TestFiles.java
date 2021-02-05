@@ -1,4 +1,4 @@
-package com.baremaps.testing;/*
+/*
  * Copyright (C) 2020 The Baremaps Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -11,6 +11,7 @@ package com.baremaps.testing;/*
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+package com.baremaps.testing;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -48,7 +49,8 @@ public class TestFiles {
   public static final URL MONACO_STATE_TXT =
       TestFiles.class.getClassLoader().getResource("monaco-state.txt");
 
-
+  public static final URL UPDATE_OSM_PBF =
+      TestFiles.class.getClassLoader().getResource("update.osm.pbf");
 
   public static URI dataOsmPbf() throws URISyntaxException {
     return TestFiles.class.getClassLoader().getResource("data.osm.pbf").toURI();
