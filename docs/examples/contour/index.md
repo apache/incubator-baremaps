@@ -1,11 +1,11 @@
 ---
 layout: default
-title: Contour Example
+title: Contour Lines in Vector Tiles
 ---
 
-# Contour Example
+# Contour Lines in Vector Tiles
 
-This example shows how to produce contours from a digital elevation model (DEM).
+This example shows how to produce contours from a digital elevation model (DEM) and how to display them with vector tiles.
 
 The approach consists in using the [`gdal_contour`](https://gdal.org/programs/gdal_contour.html) command.
 Therefore, start by installing `gdal`:
