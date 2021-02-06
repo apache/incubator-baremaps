@@ -48,5 +48,5 @@ public class TestFiles {
 
   public static final URL MONACO_STATE_TXT =
       TestFiles.class.getClassLoader().getResource("monaco-state.txt");
-  
+
 }

@@ -68,6 +68,10 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-stream</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
       <artifactId>baremaps-tile</artifactId>
     </dependency>
     <dependency>
