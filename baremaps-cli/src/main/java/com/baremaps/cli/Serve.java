@@ -1,17 +1,18 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.exporter.config.Config;
-import com.baremaps.exporter.config.Loader;
-import com.baremaps.exporter.store.PostgisTileStore;
-import com.baremaps.exporter.store.TileStore;
+
+import com.baremaps.blob.BlobStore;
+import com.baremaps.config.Config;
+import com.baremaps.config.ConfigLoader;
+import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.server.ChangePublisher;
 import com.baremaps.server.ConfigService;
 import com.baremaps.server.StyleService;
 import com.baremaps.server.TemplateService;
 import com.baremaps.server.TileService;
-import com.baremaps.util.postgres.PostgresHelper;
-import com.baremaps.util.storage.BlobStore;
+import com.baremaps.tile.TileStore;
+import com.baremaps.tile.postgres.PostgisTileStore;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
 import com.linecorp.armeria.server.file.FileService;
@@ -34,7 +35,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "serve", description = "Serve vector tiles from the the database.")
+@Command(name = "serve", description = "Serve vector tiles from the database.")
 public class Serve implements Callable<Integer> {
 
   private static Logger logger = LoggerFactory.getLogger(Serve.class);
@@ -76,10 +77,10 @@ public class Serve implements Callable<Integer> {
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
     BlobStore blobStore = options.blobStore();
-    Loader loader = new Loader(blobStore);
+    ConfigLoader configLoader = new ConfigLoader(blobStore);
     Supplier<Config> provider = () -> {
       try {
-        return loader.load(this.config);
+        return configLoader.load(this.config);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

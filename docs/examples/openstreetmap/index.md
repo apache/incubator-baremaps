@@ -5,7 +5,7 @@ title: NaturalEarth Example
 
 # OpenStreetMap Example
 
-Baremaps is aimed at being the most productive toolkit for creating custom vector tiles from OpenStreetMap data. 
+Baremaps is aimed at being the most productive toolkit for creating custom vector tiles from OpenStreetMap data.
 
 In this tutorial, we'll learn how to use Baremaps to import OpenStreetMap data in a Postgis database and how to create vector tiles from this data.
 Notice that the following steps assume that Baremaps and Postgis are [installed](https://www.baremaps.com/installation/).
@@ -13,15 +13,15 @@ Also, if you are in a hurry, consider skipping the "Under the Hood" sections.
 
 ## Dataset
 
-OpenStreetMap (OSM) is a free and editable map of the world. 
+OpenStreetMap (OSM) is a free and editable map of the world.
 It is maintained by a community of passionate volunteers in a way which is similar to Wikipedia.
 Every week, OpenStreetMap publishes a [full dump](https://planet.openstreetmap.org/) of its data in two flavours: a large XML file (about 90GB) and a more compact binary file (about 50GB) in the  [Protocol Buffer Format](https://developers.google.com/protocol-buffers) (PBF).
 As processing such large files can take several hours, [Geofabrik](http://www.geofabrik.de/data/download.html) regularly publishes smaller extracts of OSM for specific regions.
-The [GitHub directory](https://github.com/baremaps/baremaps/tree/master/docs/examples/openstreetmap) associated with this example contains a tiny extract of OSM for [Liechtenstein](https://en.wikipedia.org/wiki/Liechtenstein), which is suitable for experiments.
+The [GitHub directory](https://github.com/baremaps/baremaps/tree/master/baremaps-examples/openstreetmap) associated with this example contains a tiny extract of OSM for [Liechtenstein](https://en.wikipedia.org/wiki/Liechtenstein), which is suitable for experiments.
 
 ## Importing OpenStreetMap Data
 
-To begin with the tutorial, make sure you have the source files of the tutorial in your current working directory. 
+To begin with the tutorial, make sure you have the source files of the tutorial in your current working directory.
 Additionally, prepare the database by executing the following command.
 Hereafter, the command executes files sequentially, but the queries they contain are executed in parallel.
 
@@ -87,8 +87,8 @@ baremaps serve \
 ```
 
 Well done, a local tile server should have started and you can open a map of Liechtenstein in your browser ([http://localhost:9000/](http://localhost:9000/))!
-Baremaps dynamically generates a blueprint [Mapbox Style](https://docs.mapbox.com/mapbox-gl-js/style-spec/) from the YAML configuration file. 
-It is aimed at quickly previsualizing the data and provides a foundation for creating more complex styles. 
+Baremaps dynamically generates a blueprint [Mapbox Style](https://docs.mapbox.com/mapbox-gl-js/style-spec/) from the YAML configuration file.
+It is aimed at quickly previsualizing the data and provides a foundation for creating more complex styles.
 Here, notice the flag `--watch-changes`, it enables the browser to reload automatically whenever the configuration file changes, which greatly accelerates the process of composing vector tiles.
 
 ![Mapbox Preview](screenshot.png)

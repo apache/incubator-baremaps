@@ -1,17 +1,18 @@
 package com.baremaps.osm;
 
+import com.baremaps.osm.handler.BlockEntityHandler;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.State;
 import com.baremaps.osm.pbf.BlobIterator;
-import com.baremaps.osm.pbf.Block;
+import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.pbf.BlockReader;
 import com.baremaps.osm.xml.XmlChangeSpliterator;
 import com.baremaps.osm.xml.XmlEntitySpliterator;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
-import com.baremaps.util.stream.StreamException;
-import com.baremaps.util.stream.StreamUtils;
+import com.baremaps.stream.StreamException;
+import com.baremaps.stream.StreamUtils;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import java.io.BufferedInputStream;

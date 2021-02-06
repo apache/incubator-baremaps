@@ -1,6 +1,8 @@
 package com.baremaps.osm.pbf;
 
-import com.baremaps.util.stream.StreamException;
+import com.baremaps.osm.domain.Blob;
+import com.baremaps.osm.domain.Block;
+import com.baremaps.stream.StreamException;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.zip.DataFormatException;
 

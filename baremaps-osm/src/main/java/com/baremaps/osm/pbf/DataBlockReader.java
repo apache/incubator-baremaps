@@ -3,6 +3,8 @@ package com.baremaps.osm.pbf;
 import com.baremaps.osm.binary.Osmformat;
 import com.baremaps.osm.binary.Osmformat.DenseNodes;
 import com.baremaps.osm.binary.Osmformat.PrimitiveGroup;
+import com.baremaps.osm.domain.Blob;
+import com.baremaps.osm.domain.DataBlock;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Member;

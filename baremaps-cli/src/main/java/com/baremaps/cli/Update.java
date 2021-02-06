@@ -14,16 +14,22 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.importer.UpdateTask;
-import com.baremaps.importer.cache.PostgresCoordinateCache;
-import com.baremaps.importer.cache.PostgresReferenceCache;
-import com.baremaps.importer.database.HeaderTable;
-import com.baremaps.importer.database.NodeTable;
-import com.baremaps.importer.database.RelationTable;
-import com.baremaps.importer.database.WayTable;
-import com.baremaps.util.postgres.PostgresHelper;
-import com.baremaps.util.storage.BlobStore;
-import com.baremaps.util.tile.Tile;
+import com.baremaps.blob.BlobStore;
+import com.baremaps.osm.UpdateTask;
+import com.baremaps.osm.cache.CoordinateCache;
+import com.baremaps.osm.cache.ReferenceCache;
+import com.baremaps.osm.database.HeaderTable;
+import com.baremaps.osm.database.NodeTable;
+import com.baremaps.osm.database.RelationTable;
+import com.baremaps.osm.database.WayTable;
+import com.baremaps.osm.postgres.PostgresCoordinateCache;
+import com.baremaps.osm.postgres.PostgresHeaderTable;
+import com.baremaps.osm.postgres.PostgresHelper;
+import com.baremaps.osm.postgres.PostgresNodeTable;
+import com.baremaps.osm.postgres.PostgresReferenceCache;
+import com.baremaps.osm.postgres.PostgresRelationTable;
+import com.baremaps.osm.postgres.PostgresWayTable;
+import com.baremaps.tile.Tile;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.util.Set;
@@ -76,12 +82,12 @@ public class Update implements Callable<Integer> {
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     DataSource datasource = PostgresHelper.datasource(database);
-    PostgresCoordinateCache coordinateCache = new PostgresCoordinateCache(datasource);
-    PostgresReferenceCache referenceCache = new PostgresReferenceCache(datasource);
-    HeaderTable headerTable = new HeaderTable(datasource);
-    NodeTable nodeTable = new NodeTable(datasource);
-    WayTable wayTable = new WayTable(datasource);
-    RelationTable relationTable = new RelationTable(datasource);
+    CoordinateCache coordinateCache = new PostgresCoordinateCache(datasource);
+    ReferenceCache referenceCache = new PostgresReferenceCache(datasource);
+    HeaderTable headerTable = new PostgresHeaderTable(datasource);
+    NodeTable nodeTable = new PostgresNodeTable(datasource);
+    WayTable wayTable = new PostgresWayTable(datasource);
+    RelationTable relationTable = new PostgresRelationTable(datasource);
 
     BlobStore blobStore = options.blobStore();
     Set<Tile> tiles = new UpdateTask(

@@ -44,15 +44,28 @@ corrected!
 Baremaps is developed and tested with Java 8, Maven 3.6, Postgres 10 and Postgis 2.4.
 However, it should also work with more recent versions.
 
-The repository contains several sets of directories with code: 
-the `docker/` directory contains docker images for deploying Baremaps on the cloud,
-and the `èxamples/` directory showcase how to use Baremaps with different datasets.
-
+The repository contains several sets of directories with code:
 The source code of Baremaps is organized in modules:
-- `baremaps-util` contains general purpose classes used by other modules;
-- `baremaps-osm` contains code for parsing, handling and importing OSM data in Postgres;
-- `baremaps-export` contains code for producing vector tiles from Postgres;
-- `baremaps-cli` contains the command line utilities.
+
+- `baremaps-benchmarks` contains JMH benchmarks.
+- `baremaps-blob` contains a storage abstraction for blobs and some of its implementations (file, http, etc.).
+- `baremaps-blob-s3` contains an implementation of the storage abstraction for amazon s3.
+- `baremaps-cli` contains the command line interface of baremaps.
+- `baremaps-config` contains the classes required to used to serialize and deserialize configuration files.
+- `baremaps-examples` contains the files required to execute the exemples of the `/docs` director and some integration tests.
+- `baremaps-osm` contains parsers for various osm formats (xml, pbf) and a cache and a database abstraction to import these data.
+- `baremaps-osm-lmdb` contains an implementation of the cache abstraction for [LMDB](https://github.com/lmdbjava/lmdbjava).
+- `baremaps-osm-postgres` contains an implementation of the database abstraction for [Postgresql](https://www.postgresql.org).
+- `baremaps-server` contains a tile server and various services based on [Armeria](https://armeria.dev).
+- `baremaps-stream` contains utilities for the Stream API introduced in Java 8.
+- `baremaps-testing` contains common utilities (data, etc.) used for testing in different module.
+- `baremaps-tile` contains simple abstractions for tiles and tile storage, transfer and computation.
+- `baremaps-tile-mbtiles` contains an implementation of the tile storage abstraction for sqlite according to the [MBTiles](https://github.com/mapbox/mbtiles-spec) specification.
+- `baremaps-tile-postgres` contains an implementation of the tile storage abstraction for producing [Mapbox Vector Tiles](https://github.com/mapbox/vector-tile-spec) with Postgresql.
+
+The naming convention used for the modules is 'baremaps-{component}-{implementation}'.
+Here, component corresponds to the api and the main implementation of a component.
+If the component has multiple implementation or requires some specific dependencies, an additional module is created.
 
 Knowing that, you should be able to checkout and build Baremaps from source, and start hacking:
 
@@ -89,3 +102,6 @@ Before making a pull request, check that your source code is formatted according
 This file can typically used to [configure](https://www.jetbrains.com/help/idea/settings-code-style.html) your favourite IDE.
 Finally, verify that your contribution passes all the tests (integration included).
 Once your everything looks good, we'll merge it.
+
+
+

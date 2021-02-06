@@ -40,7 +40,15 @@
   <dependencies>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-util</artifactId>
+      <artifactId>baremaps-blob</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-blob-s3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-config</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
@@ -48,15 +56,31 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-importer</artifactId>
+      <artifactId>baremaps-osm-lmdb</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-exporter</artifactId>
+      <artifactId>baremaps-osm-postgres</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-server</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-stream</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-tile</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-tile-mbtiles</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-tile-postgres</artifactId>
     </dependency>
     <dependency>
       <artifactId>picocli</artifactId>

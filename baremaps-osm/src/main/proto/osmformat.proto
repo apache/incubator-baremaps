@@ -163,7 +163,6 @@ message DenseInfo {
 
 
 // THIS IS STUB DESIGN FOR CHANGESETS. NOT USED RIGHT NOW.
-// TODO:    REMOVE THIS?
 message ChangeSet {
   required int64 id = 1;
   //

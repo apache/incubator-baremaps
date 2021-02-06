@@ -1,13 +1,13 @@
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.EntityHandler;
+import com.baremaps.osm.handler.EntityHandler;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
  * A class used to represent the boundaries of a dataset.
  */
-public class Bound implements Entity {
+public class Bound extends Entity {
 
   private final double maxLat;
 

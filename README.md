@@ -20,4 +20,3 @@ Baremaps is inspired by [Osmosis](https://github.com/openstreetmap/osmosis), but
 -   Create and serve customized [Mapbox Vector Tiles](https://docs.mapbox.com/vector-tiles/specification/)
 
 On the longer run, the aim of the project is to work with a variety of data sources in order to create highly specialized and customized maps.
-

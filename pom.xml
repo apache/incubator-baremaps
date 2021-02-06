@@ -79,14 +79,21 @@
   </properties>
 
   <modules>
+    <module>baremaps-benchmarks</module>
+    <module>baremaps-config</module>
     <module>baremaps-cli</module>
-    <module>baremaps-exporter</module>
-    <module>baremaps-importer</module>
-    <module>baremaps-server</module>
+    <module>baremaps-blob</module>
+    <module>baremaps-blob-s3</module>
+    <module>baremaps-examples</module>
     <module>baremaps-osm</module>
-    <module>baremaps-util</module>
-    <module>benchmarks</module>
-    <module>docs/examples</module>
+    <module>baremaps-osm-lmdb</module>
+    <module>baremaps-osm-postgres</module>
+    <module>baremaps-server</module>
+    <module>baremaps-stream</module>
+    <module>baremaps-testing</module>
+    <module>baremaps-tile</module>
+    <module>baremaps-tile-mbtiles</module>
+    <module>baremaps-tile-postgres</module>
   </modules>
 
   <profiles>
@@ -191,6 +198,18 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>jacoco-maven-plugin</artifactId>
         <groupId>org.jacoco</groupId>
         <version>${version.plugin.jacoco}</version>
@@ -252,12 +271,22 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
+        <artifactId>baremaps-blob</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-blob-s3</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
         <artifactId>baremaps-cli</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-util</artifactId>
+        <artifactId>baremaps-config</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -267,12 +296,32 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-exporter</artifactId>
+        <artifactId>baremaps-osm-lmdb</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-importer</artifactId>
+        <artifactId>baremaps-osm-postgres</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-osm-postgres</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-tile</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-tile-mbtiles</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-tile-postgres</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -281,6 +330,33 @@
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
+      <dependency>
+        <artifactId>baremaps-stream</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-testing</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-tile</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-blob</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-blob-s3</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+
 
       <!-- External dependencies -->
       <dependency>

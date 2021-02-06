@@ -1,6 +1,7 @@
 package com.baremaps.osm.pbf;
 
 import com.baremaps.osm.binary.Fileformat;
+import com.baremaps.osm.domain.Blob;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
