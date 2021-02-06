@@ -48,27 +48,5 @@ public class TestFiles {
 
   public static final URL MONACO_STATE_TXT =
       TestFiles.class.getClassLoader().getResource("monaco-state.txt");
-
-  public static final URL UPDATE_OSM_PBF =
-      TestFiles.class.getClassLoader().getResource("update.osm.pbf");
-
-  public static URI dataOsmPbf() throws URISyntaxException {
-    return TestFiles.class.getClassLoader().getResource("data.osm.pbf").toURI();
-  }
-
-  public static URI dataOsmXml() throws URISyntaxException {
-    return TestFiles.class.getClassLoader().getResource("data.osm.xml").toURI();
-  }
-
-  public static URI updateOsmPbf() throws URISyntaxException {
-    return TestFiles.class.getClassLoader().getResource("update.osm.pbf").toURI();
-  }
-
-  public static URI dataOscXml() throws URISyntaxException {
-    return TestFiles.class.getClassLoader().getResource("data.osc.xml").toURI();
-  }
-
-  public static URI dataStateTxt() throws URISyntaxException {
-    return TestFiles.class.getClassLoader().getResource("data-state.txt").toURI();
-  }
+  
 }
