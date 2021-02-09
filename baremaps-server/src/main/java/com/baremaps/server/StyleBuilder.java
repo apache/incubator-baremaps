@@ -14,9 +14,9 @@
 
 package com.baremaps.server;
 
-import com.baremaps.config.Config;
-import com.baremaps.config.Layer;
-import com.baremaps.config.Style;
+import com.baremaps.config.legacy.Config;
+import com.baremaps.config.legacy.Layer;
+import com.baremaps.config.legacy.Style;
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;

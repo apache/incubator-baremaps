@@ -3,8 +3,8 @@ package com.baremaps.cli;
 
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.config.Config;
-import com.baremaps.config.ConfigLoader;
+import com.baremaps.config.legacy.Config;
+import com.baremaps.config.legacy.ConfigLoader;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.server.ChangePublisher;
 import com.baremaps.server.ConfigService;

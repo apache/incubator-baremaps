@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.baremaps.config;
+package com.baremaps.config.source;
 
 public class Query {
 
@@ -20,10 +20,6 @@ public class Query {
   private int maxZoom;
 
   private String sql;
-
-  public Query() {
-
-  }
 
   public Query(int minZoom, int maxZoom, String sql) {
     this.minZoom = minZoom;

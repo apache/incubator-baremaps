@@ -4,6 +4,7 @@ import com.baremaps.osm.domain.DataBlock;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.HeaderBlock;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class BlockEntityHandler implements BlockHandler {
 

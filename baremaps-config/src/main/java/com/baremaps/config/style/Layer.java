@@ -1,8 +1,9 @@
-package com.baremaps.config;
+package com.baremaps.config.style;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-public class Style {
+public class Layer {
 
   private String id;
 
@@ -16,7 +17,8 @@ public class Style {
 
   private String source;
 
-  private String layer;
+  @JsonProperty("source-layer")
+  private String sourceLayer;
 
   private List<Object> filter;
 
@@ -64,12 +66,12 @@ public class Style {
     this.maxZoom = maxZoom;
   }
 
-  public String getLayer() {
-    return layer;
+  public String getSourceLayer() {
+    return sourceLayer;
   }
 
-  public void setLayer(String layer) {
-    this.layer = layer;
+  public void setSourceLayer(String sourceLayer) {
+    this.sourceLayer = sourceLayer;
   }
 
   public List<Object> getFilter() {
