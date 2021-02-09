@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.config;
+package com.baremaps.config.source;
 
 import com.google.common.collect.Lists;
 import java.util.List;
@@ -20,11 +20,11 @@ import java.util.List;
 
 public class Layer {
 
-  private String id;
+  private String id = "";
 
-  private String type;
+  private String type = "";
 
-  private String description;
+  private String description = "";
 
   private List<Query> queries = Lists.newArrayList();
 

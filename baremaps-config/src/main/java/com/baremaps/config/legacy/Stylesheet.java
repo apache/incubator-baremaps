@@ -1,4 +1,4 @@
-package com.baremaps.config;
+package com.baremaps.config.legacy;
 
 import com.google.common.collect.Lists;
 import java.util.List;

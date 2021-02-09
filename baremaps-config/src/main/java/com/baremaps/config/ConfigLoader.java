@@ -11,51 +11,42 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.IOException;
 import java.net.URI;
 
-public class ConfigLoader {
+public class ConfigLoader<T> {
 
   private final BlobStore blobStore;
 
-  public ConfigLoader(BlobStore blobStore) {
+  private final Class<T> mainType;
+
+  private final Class<?>[] externalTypes;
+
+  public ConfigLoader(BlobStore blobStore, Class<T> mainType, Class<?>... externalTypes) {
     this.blobStore = blobStore;
+    this.mainType = mainType;
+    this.externalTypes = externalTypes;
   }
 
-  private ObjectMapper mapper() {
-    return new ObjectMapper(new YAMLFactory());
-  }
-
-  private ObjectMapper loadingMapper(URI uri) {
+  public T load(URI uri) throws IOException {
+    YAMLFactory yamlFactory = new YAMLFactory();
     SimpleModule module = new SimpleModule();
-    module.addDeserializer(Layer.class, new URIDeserializer<>(Layer.class, uri));
-    module.addDeserializer(Stylesheet.class, new URIDeserializer<>(Stylesheet.class, uri));
-    return mapper().registerModules(module);
-  }
-
-  public Config load(URI uri) throws IOException {
-    return loadingMapper(uri).readValue(blobStore.readByteArray(uri), Config.class);
-  }
-
-  private class URIDeserializer<T> extends StdDeserializer<T> {
-
-    private Class<T> type;
-
-    private final URI uri;
-
-    public URIDeserializer(Class<T> type, URI uri) {
-      super(type);
-      this.type = type;
-      this.uri = uri;
+    for (Class<?> externalType : externalTypes) {
+      module.addDeserializer(externalType, new StdDeserializer(externalType) {
+        @Override
+        public Object deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+          ObjectMapper mapper = new ObjectMapper(yamlFactory);
+          JsonNode node = parser.getCodec().readTree(parser);
+          if (node.isTextual()) {
+            URI ref = uri.resolve(node.asText());
+            return mapper.readValue(blobStore.readByteArray(ref), externalType);
+          } else {
+            JsonParser p = node.traverse();
+            return mapper.readValue(p, externalType);
+          }
+        }
+      });
     }
-
-    @Override
-    public T deserialize(JsonParser parser, DeserializationContext context) throws IOException {
-      JsonNode node = parser.getCodec().readTree(parser);
-      if (node.isTextual()) {
-        URI ref = uri.resolve(node.asText());
-        return mapper().readValue(blobStore.readByteArray(ref), type);
-      } else {
-        return mapper().readValue(node.traverse(), type);
-      }
-    }
+    return new ObjectMapper(yamlFactory)
+        .registerModules(module)
+        .readValue(blobStore.readByteArray(uri), mainType);
   }
 
 }
