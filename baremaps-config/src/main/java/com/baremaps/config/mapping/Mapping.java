@@ -6,34 +6,34 @@ import java.util.List;
 
 public class Mapping {
 
-  @JsonProperty("allowed-entities")
-  private List<String> allowedEntities;
+  @JsonProperty("allow-entities")
+  private List<String> allowEntities;
 
-  @JsonProperty("blocked-entities")
-  private List<String> blockedEntities;
+  @JsonProperty("block-entities")
+  private List<String> blockEntities;
 
-  @JsonProperty("allowed-tags")
-  private List<String> allowedTags;
+  @JsonProperty("allow-tags")
+  private List<String> allowTags;
 
-  @JsonProperty("blocked-tags")
-  private List<String> blockedTags;
+  @JsonProperty("block-tags")
+  private List<String> blockTags;
 
   private Bounds bounds;
 
-  public List<String> getAllowedTags() {
-    return allowedTags;
+  public List<String> getAllowTags() {
+    return allowTags;
   }
 
-  public void setAllowedTags(List<String> allowedTags) {
-    this.allowedTags = allowedTags;
+  public void setAllowTags(List<String> allowTags) {
+    this.allowTags = allowTags;
   }
 
-  public List<String> getBlockedTags() {
-    return blockedTags;
+  public List<String> getBlockTags() {
+    return blockTags;
   }
 
-  public void setBlockedTags(List<String> blockedTags) {
-    this.blockedTags = blockedTags;
+  public void setBlockTags(List<String> blockTags) {
+    this.blockTags = blockTags;
   }
 
 }
