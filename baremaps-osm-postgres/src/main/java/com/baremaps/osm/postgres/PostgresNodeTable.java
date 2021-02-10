@@ -16,9 +16,9 @@ package com.baremaps.osm.postgres;
 
 import com.baremaps.osm.database.DatabaseException;
 import com.baremaps.osm.database.NodeTable;
-import com.baremaps.osm.geometry.GeometryUtil;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.geometry.GeometryUtil;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

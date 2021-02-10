@@ -13,10 +13,13 @@ package com.baremaps.osm.postgres;/*
  */
 
 
+import static com.baremaps.osm.postgres.DatabaseConstants.DATABASE_URL;
+import static com.baremaps.osm.postgres.DatabaseConstants.NODE_0;
+import static com.baremaps.osm.postgres.DatabaseConstants.NODE_1;
+import static com.baremaps.osm.postgres.DatabaseConstants.NODE_2;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static com.baremaps.osm.postgres.DatabaseConstants.*;
 
 import com.baremaps.osm.database.DatabaseException;
 import com.baremaps.osm.domain.Node;

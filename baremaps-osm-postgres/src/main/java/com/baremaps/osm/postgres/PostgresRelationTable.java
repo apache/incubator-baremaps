@@ -16,11 +16,11 @@ package com.baremaps.osm.postgres;
 
 import com.baremaps.osm.database.DatabaseException;
 import com.baremaps.osm.database.RelationTable;
-import com.baremaps.osm.geometry.GeometryUtil;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Member;
 import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.geometry.GeometryUtil;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

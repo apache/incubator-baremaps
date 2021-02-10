@@ -1,10 +1,10 @@
 package com.baremaps;
 
-import com.baremaps.osm.handler.ElementHandler;
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.handler.ElementHandler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;

@@ -1,8 +1,8 @@
 package com.baremaps.osm.cache;
 
 import com.baremaps.osm.cache.Cache.Entry;
-import com.baremaps.osm.handler.DefaultBlockHandler;
 import com.baremaps.osm.domain.DataBlock;
+import com.baremaps.osm.handler.DefaultBlockHandler;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;

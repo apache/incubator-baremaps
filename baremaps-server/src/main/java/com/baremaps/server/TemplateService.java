@@ -17,7 +17,7 @@ import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
-import com.baremaps.config.legacy.Config;
+import com.baremaps.config.source.Source;
 import com.linecorp.armeria.common.HttpRequest;
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.common.HttpStatus;
@@ -46,10 +46,10 @@ public class TemplateService extends AbstractHttpService {
       .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
       .build();
 
-  public final Supplier<Config> config;
+  public final Supplier<Source> source;
 
-  public TemplateService(Supplier<Config> config) {
-    this.config = config;
+  public TemplateService(Supplier<Source> source) {
+    this.source = source;
   }
 
   @Override
@@ -65,7 +65,7 @@ public class TemplateService extends AbstractHttpService {
     config.setWrapUncheckedExceptions(true);
     config.setFallbackOnNullLoopVariable(false);
     Template blueprintTemplate = config.getTemplate("index.ftl");
-    blueprintTemplate.process(this.config.get(), output);
+    blueprintTemplate.process(this.source.get(), output);
     return HttpResponse.of(HttpStatus.OK, MediaType.HTML_UTF_8, output.toString());
   }
 

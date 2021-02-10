@@ -75,14 +75,14 @@ The following Figure displays the schema of the Postgis database created by Bare
 ## Creating Vector Tiles
 
 In order to create vector tiles, Baremaps uses a YAML configuration file.
-This file defines general properties, a list of layers containing SQL queries to be executed against Postgis, and, optionally, styling rules. This example contains a sample configuration file (`config.yaml`) which you can download to your current working directory.
+This file defines general properties, a list of layers containing SQL queries to be executed against Postgis, and, optionally, styling rules. This example contains a sample configuration file (`source.yaml`) which you can download to your current working directory.
 
-Let's preview the data with the sample configuration file (`config.yaml`) by executing the following command in a terminal.
+Let's preview the data with the sample configuration file (`source.yaml`) by executing the following command in a terminal.
 
 ```
 baremaps serve \
   --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
-  --config 'config.yaml' \
+  --source 'source.yaml' \
   --watch-changes
 ```
 
@@ -125,7 +125,7 @@ These tiles can be served with Apache, Nginx, or Caddy, but also copied in a blo
 ```
 baremaps export \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
-  --config 'config.yaml' \
+  --config 'source.yaml' \
   --repository 'tiles/'
 ```
 

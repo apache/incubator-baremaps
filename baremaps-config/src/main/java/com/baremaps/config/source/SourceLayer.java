@@ -18,7 +18,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 
-public class Layer {
+public class SourceLayer {
 
   private String id = "";
 
@@ -26,7 +26,7 @@ public class Layer {
 
   private String description = "";
 
-  private List<Query> queries = Lists.newArrayList();
+  private List<SourceQuery> queries = Lists.newArrayList();
 
   public String getId() {
     return id;
@@ -36,7 +36,7 @@ public class Layer {
     return description;
   }
 
-  public List<Query> getQueries() {
+  public List<SourceQuery> getQueries() {
     return queries;
   }
 
@@ -48,7 +48,7 @@ public class Layer {
     this.description = description;
   }
 
-  public void setQueries(List<Query> queries) {
+  public void setQueries(List<SourceQuery> queries) {
     this.queries = queries;
   }
 

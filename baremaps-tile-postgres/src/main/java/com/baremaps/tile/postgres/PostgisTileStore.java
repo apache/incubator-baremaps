@@ -14,12 +14,12 @@
 
 package com.baremaps.tile.postgres;
 
-import com.baremaps.config.legacy.Config;
-import com.baremaps.config.legacy.Layer;
-import com.baremaps.tile.postgres.PostgisQueryParser.Parse;
+import com.baremaps.config.source.Source;
+import com.baremaps.config.source.SourceLayer;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
+import com.baremaps.tile.postgres.PostgisQueryParser.Parse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -83,9 +83,9 @@ public class PostgisTileStore implements TileStore {
 
   private final DataSource datasource;
 
-  private final Supplier<Config> provider;
+  private final Supplier<Source> provider;
 
-  public PostgisTileStore(DataSource datasource, Supplier<Config> provider) {
+  public PostgisTileStore(DataSource datasource, Supplier<Source> provider) {
     this.datasource = datasource;
     this.provider = provider;
 
@@ -134,7 +134,7 @@ public class PostgisTileStore implements TileStore {
   }
 
   private String query(Tile tile) {
-    Map<Layer, List<Parse>> parses = provider.get().getLayers().stream()
+    Map<SourceLayer, List<Parse>> parses = provider.get().getLayers().stream()
         .flatMap(layer -> layer.getQueries().stream().map(query -> PostgisQueryParser.parse(layer, query)))
         .collect(Collectors.groupingBy(q -> q.getLayer()));
     String sources = parses.entrySet().stream()

@@ -14,8 +14,9 @@
 
 package com.baremaps.config.source;
 
-import com.baremaps.config.legacy.Bounds;
-import com.baremaps.config.legacy.Center;
+import com.baremaps.config.common.Bounds;
+import com.baremaps.config.common.Center;
+import com.baremaps.config.common.Server;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 import java.util.List;
@@ -36,8 +37,7 @@ public class Source {
 
   private Bounds bounds = new Bounds();
 
-  @JsonProperty("query-groups")
-  private List<Layer> queryGroups = Lists.newArrayList();
+  private List<SourceLayer> layers = Lists.newArrayList();
 
   public String getId() {
     return id;
@@ -95,12 +95,12 @@ public class Source {
     this.bounds = bounds;
   }
 
-  public List<Layer> getQueryGroups() {
-    return queryGroups;
+  public List<SourceLayer> getLayers() {
+    return layers;
   }
 
-  public void setQueryGroups(List<Layer> queryGroups) {
-    this.queryGroups = queryGroups;
+  public void setLayers(List<SourceLayer> layers) {
+    this.layers = layers;
   }
 
 }

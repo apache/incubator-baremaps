@@ -14,8 +14,8 @@
 
 package com.baremaps.tile.postgres;
 
-import com.baremaps.config.legacy.Layer;
-import com.baremaps.config.legacy.Query;
+import com.baremaps.config.source.SourceLayer;
+import com.baremaps.config.source.SourceQuery;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +35,7 @@ public class PostgisQueryParser {
 
   }
 
-  public static Parse parse(Layer layer, Query query) {
+  public static Parse parse(SourceLayer layer, SourceQuery query) {
     String sql = query.getSql().replaceAll("\\s+"," ").trim();
     Matcher matcher = QUERY_PATTERN.matcher(sql);
 
@@ -94,8 +94,8 @@ public class PostgisQueryParser {
 
   public static class Parse {
 
-    private final Layer layer;
-    private final Query query;
+    private final SourceLayer layer;
+    private final SourceQuery query;
     private final String source;
     private final String id;
     private final String tags;
@@ -104,8 +104,8 @@ public class PostgisQueryParser {
     private final Optional<String> where;
 
     private Parse(
-        Layer layer,
-        Query query,
+        SourceLayer layer,
+        SourceQuery query,
         String source,
         String id,
         String tags,
@@ -122,11 +122,11 @@ public class PostgisQueryParser {
       this.where = where;
     }
 
-    public Layer getLayer() {
+    public SourceLayer getLayer() {
       return layer;
     }
 
-    public Query getQuery() {
+    public SourceQuery getQuery() {
       return query;
     }
 

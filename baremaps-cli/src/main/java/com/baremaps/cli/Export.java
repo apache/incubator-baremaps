@@ -15,9 +15,9 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.config.legacy.Config;
-import com.baremaps.config.legacy.ConfigLoader;
-import com.baremaps.config.legacy.Query;
+import com.baremaps.config.source.Source;
+import com.baremaps.config.source.SourceLoader;
+import com.baremaps.config.source.SourceQuery;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.stream.StreamUtils;
@@ -68,11 +68,11 @@ public class Export implements Callable<Integer> {
   private String database;
 
   @Option(
-      names = {"--config"},
+      names = {"--source"},
       paramLabel = "YAML",
-      description = "The YAML configuration file.",
+      description = "The YAML source configuration file.",
       required = true)
-  private URI config;
+  private URI source;
 
   @Option(
       names = {"--repository"},
@@ -118,29 +118,29 @@ public class Export implements Callable<Integer> {
 
     // Read the configuration file
     logger.info("Reading configuration");
-    ConfigLoader configLoader = new ConfigLoader(blobStore);
-    Config config = configLoader.load(this.config);
+    SourceLoader sourceLoader = new SourceLoader(blobStore);
+    Source source = sourceLoader.load(this.source);
 
     logger.info("Initializing the source tile store");
-    final TileStore tileSource = sourceTileStore(config, datasource);
+    final TileStore tileSource = sourceTileStore(source, datasource);
 
     logger.info("Initializing the target tile store");
-    final TileStore tileTarget = targetTileStore(config, blobStore);
+    final TileStore tileTarget = targetTileStore(source, blobStore);
 
     // Export the tiles
     logger.info("Generating the tiles");
 
-     Stream<Tile> stream;
+    Stream<Tile> stream;
     if (tiles == null) {
       Envelope envelope = new Envelope(
-          config.getBounds().getMinLon(), config.getBounds().getMaxLon(),
-          config.getBounds().getMinLat(), config.getBounds().getMaxLat());
+          source.getBounds().getMinLon(), source.getBounds().getMaxLon(),
+          source.getBounds().getMinLat(), source.getBounds().getMaxLat());
       long count = Tile.count(envelope,
-          (int) config.getBounds().getMinZoom(),
-          (int) config.getBounds().getMaxZoom());
+          (int) source.getBounds().getMinZoom(),
+          (int) source.getBounds().getMaxZoom());
       stream = StreamUtils.stream(Tile.iterator(envelope,
-          (int) config.getBounds().getMinZoom(),
-          (int) config.getBounds().getMaxZoom()))
+          (int) source.getBounds().getMinZoom(),
+          (int) source.getBounds().getMaxZoom()))
           .peek(new StreamProgress<>(count, 5000));
     } else {
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(blobStore.read(tiles)))) {
@@ -151,8 +151,8 @@ public class Export implements Callable<Integer> {
           int z = Integer.parseInt(array[2]);
           Tile tile = new Tile(x, y, z);
           return StreamUtils.stream(Tile.iterator(tile.envelope(),
-              (int) config.getBounds().getMinZoom(),
-              (int) config.getBounds().getMaxZoom()));
+              (int) source.getBounds().getMinZoom(),
+              (int) source.getBounds().getMaxZoom()));
         });
       }
     }
@@ -164,44 +164,44 @@ public class Export implements Callable<Integer> {
     return 0;
   }
 
-  private TileStore sourceTileStore(Config config, DataSource datasource) {
-    return new PostgisTileStore(datasource, () -> config);
+  private TileStore sourceTileStore(Source source, DataSource datasource) {
+    return new PostgisTileStore(datasource, () -> source);
   }
 
-  private TileStore targetTileStore(Config config, BlobStore blobStore)
+  private TileStore targetTileStore(Source source, BlobStore blobStore)
       throws TileStoreException, IOException {
     if (mbtiles) {
       SQLiteDataSource dataSource = new SQLiteDataSource();
       dataSource.setUrl("jdbc:sqlite:" + repository.getPath());
       MBTiles tilesStore = new MBTiles(dataSource);
       tilesStore.initializeDatabase();
-      tilesStore.writeMetadata(metadata(config));
+      tilesStore.writeMetadata(metadata(source));
       return tilesStore;
     } else {
       return new TileBlobStore(blobStore, repository);
     }
   }
 
-  private Map<String, String> metadata(Config config) throws JsonProcessingException {
+  private Map<String, String> metadata(Source source) throws JsonProcessingException {
     Map<String, String> metadata = new HashMap<>();
-    metadata.put("name", config.getId());
-    metadata.put("version", config.getVersion());
-    metadata.put("description", config.getDescription());
-    metadata.put("attribution", config.getAttribution());
+    metadata.put("name", source.getId());
+    metadata.put("version", source.getVersion());
+    metadata.put("description", source.getDescription());
+    metadata.put("attribution", source.getAttribution());
     metadata.put("type", "baselayer");
     metadata.put("format", "pbf");
-    metadata.put("center", String.format("%f, %f", config.getCenter().getLon(), config.getCenter().getLat()));
+    metadata.put("center", String.format("%f, %f", source.getCenter().getLon(), source.getCenter().getLat()));
     metadata.put("bounds", String.format("%f, %f, %f, %f",
-        config.getBounds().getMinLon(), config.getBounds().getMinLat(),
-        config.getBounds().getMaxLon(), config.getBounds().getMaxLat()));
-    metadata.put("minzoom", Double.toString(config.getBounds().getMinZoom()));
-    metadata.put("maxzoom", Double.toString(config.getBounds().getMaxZoom()));
-    List<Map<String, Object>> layers = config.getLayers().stream().map(layer -> {
+        source.getBounds().getMinLon(), source.getBounds().getMinLat(),
+        source.getBounds().getMaxLon(), source.getBounds().getMaxLat()));
+    metadata.put("minzoom", Double.toString(source.getBounds().getMinZoom()));
+    metadata.put("maxzoom", Double.toString(source.getBounds().getMaxZoom()));
+    List<Map<String, Object>> layers = source.getLayers().stream().map(layer -> {
       Map<String, Object> map = new HashMap<>();
       map.put("id", layer.getId());
       map.put("description", layer.getDescription());
-      map.put("minzoom", layer.getQueries().stream().mapToInt(Query::getMinZoom).min().getAsInt());
-      map.put("maxzoom", layer.getQueries().stream().mapToInt(Query::getMaxZoom).max().getAsInt());
+      map.put("minzoom", layer.getQueries().stream().mapToInt(SourceQuery::getMinZoom).min().getAsInt());
+      map.put("maxzoom", layer.getQueries().stream().mapToInt(SourceQuery::getMaxZoom).max().getAsInt());
       return map;
     }).collect(Collectors.toList());
     metadata.put("json", new ObjectMapper().writeValueAsString(layers));

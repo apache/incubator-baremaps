@@ -1,5 +1,6 @@
 package com.baremaps.osm;
 
+import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheImporter;
 import com.baremaps.osm.database.DatabaseImporter;
@@ -7,10 +8,9 @@ import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
-import com.baremaps.osm.handler.BlockEntityHandler;
 import com.baremaps.osm.geometry.GeometryHandler;
 import com.baremaps.osm.geometry.ProjectionTransformer;
-import com.baremaps.blob.BlobStore;
+import com.baremaps.osm.handler.BlockEntityHandler;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;

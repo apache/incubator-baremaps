@@ -3,7 +3,7 @@ package com.baremaps.config.style;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-public class Layer {
+public class StyleLayer {
 
   private String id;
 

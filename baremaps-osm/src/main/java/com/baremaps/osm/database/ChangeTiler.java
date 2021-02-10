@@ -1,13 +1,13 @@
 package com.baremaps.osm.database;
 
-import com.baremaps.osm.geometry.ProjectionTransformer;
-import com.baremaps.osm.handler.ChangeHandler;
-import com.baremaps.osm.handler.ElementHandler;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.geometry.ProjectionTransformer;
+import com.baremaps.osm.handler.ChangeHandler;
+import com.baremaps.osm.handler.ElementHandler;
 import com.baremaps.tile.Tile;
 import com.google.common.collect.ImmutableList;
 import java.util.HashSet;

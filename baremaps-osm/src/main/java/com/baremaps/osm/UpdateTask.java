@@ -1,17 +1,17 @@
 package com.baremaps.osm;
 
+import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.database.HeaderTable;
-import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.ChangeTiler;
 import com.baremaps.osm.database.DatabaseUpdater;
+import com.baremaps.osm.database.HeaderTable;
+import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
-import com.baremaps.osm.geometry.GeometryHandler;
-import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.State;
-import com.baremaps.blob.BlobStore;
+import com.baremaps.osm.geometry.GeometryHandler;
+import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.tile.Tile;
 import java.net.URI;
 import java.net.URISyntaxException;
