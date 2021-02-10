@@ -14,7 +14,6 @@
 
 package com.baremaps.osm.postgres;
 
-import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheException;
 import com.baremaps.osm.cache.CoordinateCache;
 import java.sql.Connection;

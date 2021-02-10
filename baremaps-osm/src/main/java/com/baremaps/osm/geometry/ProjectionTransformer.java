@@ -14,11 +14,11 @@
 
 package com.baremaps.osm.geometry;
 
-import com.baremaps.osm.handler.ElementHandler;
 import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.handler.ElementHandler;
 import java.util.stream.Stream;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;

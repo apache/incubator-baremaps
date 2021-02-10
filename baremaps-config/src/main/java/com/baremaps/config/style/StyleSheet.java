@@ -3,11 +3,11 @@ package com.baremaps.config.style;
 import com.google.common.collect.Lists;
 import java.util.List;
 
-public class Sheet {
+public class StyleSheet {
 
   private String id = "";
 
-  private List<Layer> layers = Lists.newArrayList();
+  private List<StyleLayer> layers = Lists.newArrayList();
 
   public String getId() {
     return id;
@@ -17,11 +17,11 @@ public class Sheet {
     this.id = id;
   }
 
-  public List<Layer> getLayers() {
+  public List<StyleLayer> getLayers() {
     return layers;
   }
 
-  public void setLayers(List<Layer> styles) {
+  public void setLayers(List<StyleLayer> styles) {
     this.layers = styles;
   }
 

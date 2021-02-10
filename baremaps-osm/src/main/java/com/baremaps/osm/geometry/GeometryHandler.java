@@ -2,10 +2,10 @@ package com.baremaps.osm.geometry;
 
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheException;
-import com.baremaps.osm.handler.ElementHandler;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.handler.ElementHandler;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;

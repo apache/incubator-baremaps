@@ -13,10 +13,10 @@
  */
 package com.baremaps.server;
 
-import com.baremaps.config.legacy.Config;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature;
 import com.linecorp.armeria.common.HttpRequest;
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.server.AbstractHttpService;
@@ -26,24 +26,22 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StyleService extends AbstractHttpService {
+public class YamlService extends AbstractHttpService {
 
-  private static Logger logger = LoggerFactory.getLogger(StyleService.class);
+  private static Logger logger = LoggerFactory.getLogger(YamlService.class);
 
-  private final Supplier<Config> config;
+  private final Supplier<Map<String, Object>> supplier;
 
-  public StyleService(Supplier<Config> config) {
-    this.config = config;
+  public YamlService(Supplier<Map<String, Object>> supplier) {
+    this.supplier = supplier;
   }
 
   @Override
   protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) throws JsonProcessingException {
-    StyleBuilder builder = new StyleBuilder(config.get());
-    Map<String, Object> style = builder.build();
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.setSerializationInclusion(Include.NON_NULL);
-    String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(style);
-    return HttpResponse.of(output);
+    ObjectMapper mapper = new ObjectMapper(new YAMLFactory()
+        .disable(Feature.WRITE_DOC_START_MARKER)
+        .disable(Feature.SPLIT_LINES));
+    return HttpResponse.of(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(supplier.get()));
   }
 
 }

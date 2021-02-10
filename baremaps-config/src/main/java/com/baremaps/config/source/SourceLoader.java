@@ -6,7 +6,7 @@ import com.baremaps.config.ConfigLoader;
 public class SourceLoader extends ConfigLoader<Source> {
 
   public SourceLoader(BlobStore blobStore) {
-    super(blobStore, Source.class, Layer.class);
+    super(blobStore, Source.class, SourceLayer.class);
   }
 
 }

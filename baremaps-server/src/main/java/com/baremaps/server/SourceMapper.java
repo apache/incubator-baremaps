@@ -13,49 +13,42 @@
  */
 package com.baremaps.server;
 
-import com.baremaps.config.legacy.Config;
-import com.baremaps.config.legacy.Layer;
+import com.baremaps.config.source.Source;
+import com.baremaps.config.source.SourceLayer;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ConfigBuilder {
+public class SourceMapper implements Function<Source, Map<String, Object>> {
 
-  private final Config config;
-
-  public ConfigBuilder(Config config) {
-    this.config = config;
-  }
-
-  public Map<String, Object> format() {
+  @Override
+  public Map<String, Object> apply(Source source) {
     // Order the config properties
     Map<String, Object> map = new LinkedHashMap<>();
-    map.put("id", config.getId());
+    map.put("id", source.getId());
 
     // Group the properties used by the blueprint
-    map.put("center", config.getCenter());
-    map.put("bounds", config.getBounds());
-    map.put("server", config.getServer());
+    map.put("center", source.getCenter());
+    map.put("bounds", source.getBounds());
+    map.put("server", source.getServer());
 
     // Put the nested properties at the end
-    map.put("layers", formatLayers(config.getLayers()));
-
-    // Put the nested properties at the end
-    map.put("stylesheets", formatLayers(config.getLayers()));
+    map.put("layers", formatLayers(source.getLayers()));
 
     return map;
   }
 
-  private List<Map<String, Object>> formatLayers(List<Layer> layers) {
+  private List<Map<String, Object>> formatLayers(List<SourceLayer> layers) {
     return layers.stream()
-        .sorted(Comparator.comparing(Layer::getId))
+        .sorted(Comparator.comparing(SourceLayer::getId))
         .map(this::formatLayer)
         .collect(Collectors.toList());
   }
 
-  private Map<String, Object> formatLayer(Layer layer) {
+  private Map<String, Object> formatLayer(SourceLayer layer) {
     // Order the layer properties
     Map<String, Object> map = new LinkedHashMap<>();
     map.put("name", layer.getId());

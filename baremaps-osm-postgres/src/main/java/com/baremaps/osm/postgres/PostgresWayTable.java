@@ -16,10 +16,9 @@ package com.baremaps.osm.postgres;
 
 import com.baremaps.osm.database.DatabaseException;
 import com.baremaps.osm.database.WayTable;
-import com.baremaps.osm.geometry.GeometryUtil;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.postgres.CopyWriter;
+import com.baremaps.osm.geometry.GeometryUtil;
 import java.io.IOException;
 import java.sql.Array;
 import java.sql.Connection;

@@ -13,8 +13,6 @@
  */
 package com.baremaps.testing;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 public class TestFiles {

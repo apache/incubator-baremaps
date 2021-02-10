@@ -1,12 +1,12 @@
 package com.baremaps.osm.database;
 
-import com.baremaps.osm.handler.ChangeHandler;
-import com.baremaps.osm.handler.ElementHandler;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.handler.ChangeHandler;
+import com.baremaps.osm.handler.ElementHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

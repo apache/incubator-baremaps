@@ -13,7 +13,7 @@
  */
 package com.baremaps.config.source;
 
-public class Query {
+public class SourceQuery {
 
   private int minZoom;
 
@@ -21,7 +21,11 @@ public class Query {
 
   private String sql;
 
-  public Query(int minZoom, int maxZoom, String sql) {
+  public SourceQuery() {
+
+  }
+
+  public SourceQuery(int minZoom, int maxZoom, String sql) {
     this.minZoom = minZoom;
     this.maxZoom = maxZoom;
     this.sql = sql;

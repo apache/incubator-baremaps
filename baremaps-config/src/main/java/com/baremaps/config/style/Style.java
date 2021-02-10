@@ -16,6 +16,7 @@ package com.baremaps.config.style;
 
 import com.baremaps.config.common.Bounds;
 import com.baremaps.config.common.Center;
+import com.baremaps.config.common.Server;
 import com.google.common.collect.Lists;
 import java.util.List;
 
@@ -29,11 +30,13 @@ public class Style {
 
   private String attribution = "";
 
+  private Server server = new Server();
+
   private Center center = new Center();
 
   private Bounds bounds = new Bounds();
 
-  private List<Sheet> sheets = Lists.newArrayList();
+  private List<StyleSheet> sheets = Lists.newArrayList();
 
   public String getId() {
     return id;
@@ -83,12 +86,19 @@ public class Style {
     this.bounds = bounds;
   }
 
-  public List<Sheet> getSheets() {
+  public List<StyleSheet> getSheets() {
     return sheets;
   }
 
-  public void setSheets(List<Sheet> sheets) {
+  public void setSheets(List<StyleSheet> sheets) {
     this.sheets = sheets;
   }
 
+  public Server getServer() {
+    return server;
+  }
+
+  public void setServer(Server server) {
+    this.server = server;
+  }
 }

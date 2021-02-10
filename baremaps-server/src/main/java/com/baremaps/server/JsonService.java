@@ -13,11 +13,10 @@
  */
 package com.baremaps.server;
 
-import com.baremaps.config.legacy.Config;
+import com.baremaps.config.source.Source;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature;
 import com.linecorp.armeria.common.HttpRequest;
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.server.AbstractHttpService;
@@ -27,24 +26,22 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ConfigService extends AbstractHttpService {
+public class JsonService extends AbstractHttpService {
 
-  private static Logger logger = LoggerFactory.getLogger(ConfigService.class);
+  private static Logger logger = LoggerFactory.getLogger(JsonService.class);
 
-  private final Supplier<Config> config;
+  private final Supplier<Map<String, Object>> source;
 
-  public ConfigService(Supplier<Config> config) {
-    this.config = config;
+  public JsonService(Supplier<Map<String, Object>> source) {
+    this.source = source;
   }
 
   @Override
   protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) throws JsonProcessingException {
-    ConfigBuilder configFormatter = new ConfigBuilder(this.config.get());
-    Map<String, Object> config = configFormatter.format();
-    ObjectMapper mapper = new ObjectMapper(new YAMLFactory()
-        .disable(Feature.WRITE_DOC_START_MARKER)
-        .disable(Feature.SPLIT_LINES));
-    return HttpResponse.of(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(config));
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(Include.NON_NULL);
+    String output = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(source.get());
+    return HttpResponse.of(output);
   }
 
 }
