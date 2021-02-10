@@ -51,7 +51,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <version.lib.armeria>1.1.0</version.lib.armeria>
+    <version.lib.armeria>1.4.0</version.lib.armeria>
     <version.lib.freemarker>2.3.30</version.lib.freemarker>
     <version.lib.caffeine>2.8.6</version.lib.caffeine>
     <version.lib.commons-compress>1.19</version.lib.commons-compress>

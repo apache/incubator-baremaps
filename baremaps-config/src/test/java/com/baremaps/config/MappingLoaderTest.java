@@ -15,9 +15,9 @@ class MappingLoaderTest {
   @Test
   public void load() throws URISyntaxException, IOException {
     Mapping mapping = new MappingLoader(new ResourceBlobStore()).load(new URI("res://./mapping.yaml"));
-    assertEquals(mapping.getAllowedTags().size(), 2);
-    assertEquals(mapping.getAllowedTags().get(0), "tag1");
-    assertEquals(mapping.getAllowedTags().get(1), "tag2");
+    assertEquals(mapping.getAllowTags().size(), 2);
+    assertEquals(mapping.getAllowTags().get(0), "tag1");
+    assertEquals(mapping.getAllowTags().get(1), "tag2");
   }
 
 }
