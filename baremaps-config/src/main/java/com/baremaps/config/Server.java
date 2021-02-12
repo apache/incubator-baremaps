@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.config.common;
+package com.baremaps.config;
 
 public class Server {
 

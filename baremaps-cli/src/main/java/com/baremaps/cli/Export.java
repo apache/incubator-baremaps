@@ -15,9 +15,9 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.config.source.Source;
-import com.baremaps.config.source.SourceLoader;
-import com.baremaps.config.source.SourceQuery;
+import com.baremaps.config.Config;
+import com.baremaps.config.ConfigLoader;
+import com.baremaps.config.Query;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.stream.StreamUtils;
@@ -118,8 +118,7 @@ public class Export implements Callable<Integer> {
 
     // Read the configuration file
     logger.info("Reading configuration");
-    SourceLoader sourceLoader = new SourceLoader(blobStore);
-    Source source = sourceLoader.load(this.source);
+    Config source = new ConfigLoader(blobStore).load(this.source);
 
     logger.info("Initializing the source tile store");
     final TileStore tileSource = sourceTileStore(source, datasource);
@@ -164,11 +163,11 @@ public class Export implements Callable<Integer> {
     return 0;
   }
 
-  private TileStore sourceTileStore(Source source, DataSource datasource) {
-    return new PostgisTileStore(datasource, () -> source);
+  private TileStore sourceTileStore(Config config, DataSource datasource) {
+    return new PostgisTileStore(datasource, () -> config);
   }
 
-  private TileStore targetTileStore(Source source, BlobStore blobStore)
+  private TileStore targetTileStore(Config source, BlobStore blobStore)
       throws TileStoreException, IOException {
     if (mbtiles) {
       SQLiteDataSource dataSource = new SQLiteDataSource();
@@ -182,26 +181,26 @@ public class Export implements Callable<Integer> {
     }
   }
 
-  private Map<String, String> metadata(Source source) throws JsonProcessingException {
+  private Map<String, String> metadata(Config config) throws JsonProcessingException {
     Map<String, String> metadata = new HashMap<>();
-    metadata.put("name", source.getId());
-    metadata.put("version", source.getVersion());
-    metadata.put("description", source.getDescription());
-    metadata.put("attribution", source.getAttribution());
+    metadata.put("name", config.getId());
+    metadata.put("version", config.getVersion());
+    metadata.put("description", config.getDescription());
+    metadata.put("attribution", config.getAttribution());
     metadata.put("type", "baselayer");
     metadata.put("format", "pbf");
-    metadata.put("center", String.format("%f, %f", source.getCenter().getLon(), source.getCenter().getLat()));
+    metadata.put("center", String.format("%f, %f", config.getCenter().getLon(), config.getCenter().getLat()));
     metadata.put("bounds", String.format("%f, %f, %f, %f",
-        source.getBounds().getMinLon(), source.getBounds().getMinLat(),
-        source.getBounds().getMaxLon(), source.getBounds().getMaxLat()));
-    metadata.put("minzoom", Double.toString(source.getBounds().getMinZoom()));
-    metadata.put("maxzoom", Double.toString(source.getBounds().getMaxZoom()));
-    List<Map<String, Object>> layers = source.getLayers().stream().map(layer -> {
+        config.getBounds().getMinLon(), config.getBounds().getMinLat(),
+        config.getBounds().getMaxLon(), config.getBounds().getMaxLat()));
+    metadata.put("minzoom", Double.toString(config.getBounds().getMinZoom()));
+    metadata.put("maxzoom", Double.toString(config.getBounds().getMaxZoom()));
+    List<Map<String, Object>> layers = config.getLayers().stream().map(layer -> {
       Map<String, Object> map = new HashMap<>();
       map.put("id", layer.getId());
       map.put("description", layer.getDescription());
-      map.put("minzoom", layer.getQueries().stream().mapToInt(SourceQuery::getMinZoom).min().getAsInt());
-      map.put("maxzoom", layer.getQueries().stream().mapToInt(SourceQuery::getMaxZoom).max().getAsInt());
+      map.put("minzoom", layer.getQueries().stream().mapToInt(Query::getMinZoom).min().getAsInt());
+      map.put("maxzoom", layer.getQueries().stream().mapToInt(Query::getMaxZoom).max().getAsInt());
       return map;
     }).collect(Collectors.toList());
     metadata.put("json", new ObjectMapper().writeValueAsString(layers));

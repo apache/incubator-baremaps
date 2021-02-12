@@ -12,24 +12,26 @@
  * the License.
  */
 
-package com.baremaps.config.source;
+package com.baremaps.config;
 
-import com.baremaps.config.common.Bounds;
-import com.baremaps.config.common.Center;
-import com.baremaps.config.common.Server;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 import java.util.List;
 
-public class Source {
+public class Config {
 
-  private String id = "";
+  private String id;
 
-  private String version = "";
+  private String name;
 
-  private String description = "";
+  private String version;
 
-  private String attribution = "";
+  private String description;
+
+  private String attribution;
+
+  private String glyphs;
+
+  private String sprite;
 
   private Server server = new Server();
 
@@ -37,7 +39,9 @@ public class Source {
 
   private Bounds bounds = new Bounds();
 
-  private List<SourceLayer> layers = Lists.newArrayList();
+  private List<Layer> layers = Lists.newArrayList();
+
+  private List<Stylesheet> stylesheets = Lists.newArrayList();
 
   public String getId() {
     return id;
@@ -45,6 +49,14 @@ public class Source {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   public String getVersion() {
@@ -95,12 +107,36 @@ public class Source {
     this.bounds = bounds;
   }
 
-  public List<SourceLayer> getLayers() {
+  public List<Layer> getLayers() {
     return layers;
   }
 
-  public void setLayers(List<SourceLayer> layers) {
+  public void setLayers(List<Layer> layers) {
     this.layers = layers;
+  }
+
+  public String getGlyphs() {
+    return glyphs;
+  }
+
+  public void setGlyphs(String glyphs) {
+    this.glyphs = glyphs;
+  }
+
+  public String getSprite() {
+    return sprite;
+  }
+
+  public void setSprite(String sprite) {
+    this.sprite = sprite;
+  }
+
+  public List<Stylesheet> getStylesheets() {
+    return stylesheets;
+  }
+
+  public void setStylesheets(List<Stylesheet> stylesheets) {
+    this.stylesheets = stylesheets;
   }
 
 }

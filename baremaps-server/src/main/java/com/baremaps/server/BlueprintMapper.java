@@ -1,91 +1,68 @@
-/*
- * Copyright (C) 2020 The Baremaps Authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- */
-
 package com.baremaps.server;
 
-import com.baremaps.config.source.Source;
-import com.baremaps.config.source.SourceLayer;
-import com.baremaps.config.style.StyleLayer;
+import com.baremaps.config.Config;
+import com.baremaps.config.Layer;
+import com.baremaps.config.Style;
 import com.google.common.collect.ImmutableSortedMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class BlueprintMapper implements Function<Source, Map<String, Object>> {
+public class BlueprintMapper implements Function<Config, Object> {
 
   @Override
-  public Map<String, Object> apply(Source source) {
-    Map<String, Object> map = new LinkedHashMap<>();
-    map.put("id", "baremaps");
-    map.put("version", 8);
-    map.put("sprite", "");
-    map.put("glyphs", "https://daglvzoa8byzd.cloudfront.net/{fontstack}/{range}.pbf");
-
-    map.put("sources", ImmutableSortedMap.naturalOrder()
-        .put("baremaps", ImmutableSortedMap.naturalOrder()
-            .put("type", "vector")
-            .put("minZoom", source.getBounds().getMinZoom())
-            .put("maxZoom", source.getBounds().getMaxZoom())
-            .put("bounds", new double[]{
-                source.getBounds().getMinLon(), source.getBounds().getMinLat(),
-                source.getBounds().getMaxLon(), source.getBounds().getMaxLat()})
-            .put("tiles", Arrays.asList(String.format("http://%s:%s/tiles/{z}/{x}/{y}.pbf",
-                source.getServer().getHost(),
-                source.getServer().getPort())))
+  public Object apply(Config source) {
+    return ImmutableSortedMap.naturalOrder()
+        .put("id", "baremaps")
+        .put("version", 8)
+        .put("sprite", "")
+        .put("glyphs", "https://daglvzoa8byzd.cloudfront.net/{fontstack}/{range}.pbf")
+        .put("sources", ImmutableSortedMap.naturalOrder()
+            .put("baremaps", ImmutableSortedMap.naturalOrder()
+                .put("type", "vector")
+                .put("minZoom", source.getBounds().getMinZoom())
+                .put("maxZoom", source.getBounds().getMaxZoom())
+                .put("bounds", new double[]{
+                    source.getBounds().getMinLon(), source.getBounds().getMinLat(),
+                    source.getBounds().getMaxLon(), source.getBounds().getMaxLat()})
+                .put("tiles", Arrays.asList(String.format("http://%s:%s/tiles/{z}/{x}/{y}.pbf",
+                    source.getServer().getHost(),
+                    source.getServer().getPort())))
+                .build())
             .build())
-        .build());
-
-    List styles = styles(source).map(style -> {
-          Map<String, Object> layer = new TreeMap<>();
-          layer.put("id", style.getId());
-          layer.put("source", Optional.ofNullable(style.getSource()).orElse("baremaps"));
-          layer.put("source-layer", style.getSourceLayer());
-          layer.put("type", style.getType());
-          layer.put("minzoom", style.getMinZoom());
-          layer.put("maxzoom", style.getMaxZoom());
-          layer.put("layout", style.getLayout());
-          layer.put("metadata", style.getMetadata());
-          layer.put("filter", style.getFilter());
-          layer.put("paint", style.getPaint());
-          return layer;
-        }
-    ).collect(Collectors.toList());
-
-    map.put("layers", styles);
-
-    return map;
+        .put("layers", styles(source).stream().map(style -> {
+          Map<String, Object> map = new TreeMap<>();
+          map.put("id", style.getId());
+          map.put("source", Optional.ofNullable(style.getSource()).orElse("baremaps"));
+          map.put("source-layer", style.getSourceLayer());
+          map.put("type", style.getType());
+          map.put("minzoom", style.getMinZoom());
+          map.put("maxzoom", style.getMaxZoom());
+          map.put("layout", style.getLayout());
+          map.put("metadata", style.getMetadata());
+          map.put("filter", style.getFilter());
+          map.put("paint", style.getPaint());
+          return map;
+        }).collect(Collectors.toList()))
+        .build();
   }
 
-  private Stream<StyleLayer> styles(Source source) {
-      List<StyleLayer> styles = new ArrayList<>();
-      styles.add(background());
-      for (SourceLayer layer : source.getLayers()) {
-        styles.addAll(layerBlueprint(layer));
-      }
-      return styles.stream();
-
+  private List<Style> styles(Config source) {
+    List<Style> styles = new ArrayList<>();
+    styles.add(background());
+    for (Layer layer : source.getLayers()) {
+      styles.addAll(style(layer));
+    }
+    return styles;
   }
 
-  private StyleLayer background() {
-    StyleLayer style = new StyleLayer();
+  private Style background() {
+    Style style = new Style();
     style.setId("background");
     style.setType("background");
     style.setLayout(ImmutableSortedMap.naturalOrder()
@@ -97,74 +74,75 @@ public class BlueprintMapper implements Function<Source, Map<String, Object>> {
     return style;
   }
 
-  private List<StyleLayer> layerBlueprint(SourceLayer layer) {
+  private List<Style> style(Layer layer) {
     switch (layer.getType()) {
       case "point":
-        return Arrays.asList(pointBlueprint(layer, String.format("%s_point", layer.getId())));
+        return Arrays.asList(point(layer, String.format("%s_point", layer.getId())));
       case "line":
-        return Arrays.asList(linestringBlueprint(layer, String.format("%s_linestring", layer.getId())));
+        return Arrays.asList(linestring(layer, String.format("%s_linestring", layer.getId())));
       case "polygon":
-        return Arrays.asList(polygonBlueprint(layer, String.format("%s_polygon", layer.getId())));
+        return Arrays.asList(polygon(layer, String.format("%s_polygon", layer.getId())));
       case "geometry":
         return Arrays.asList(
-            pointBlueprint(layer, String.format("%s_point", layer.getId())),
-            linestringBlueprint(layer, String.format("%s_linestring", layer.getId())));
+            point(layer, String.format("%s_point", layer.getId())),
+            linestring(layer, String.format("%s_linestring", layer.getId())));
       default:
         return Arrays.asList();
     }
   }
 
-  private StyleLayer pointBlueprint(SourceLayer sourceLayer, String id) {
-    StyleLayer styleLayer = new StyleLayer();
-    styleLayer.setId(id);
-    styleLayer.setSourceLayer(sourceLayer.getId());
-    styleLayer.setMinZoom(sourceLayer.getQueries().stream().mapToInt(q -> q.getMinZoom()).min().getAsInt());
-    styleLayer.setMaxZoom(sourceLayer.getQueries().stream().mapToInt(q -> q.getMaxZoom()).max().getAsInt());
-    styleLayer.setType("circle");
-    styleLayer.setLayout(ImmutableSortedMap.naturalOrder()
+  private Style point(Layer layer, String id) {
+    Style style = new Style();
+    style.setId(id);
+    style.setSourceLayer(layer.getId());
+    style.setMinZoom(layer.getQueries().stream().mapToInt(q -> q.getMinZoom()).min().getAsInt());
+    style.setMaxZoom(layer.getQueries().stream().mapToInt(q -> q.getMaxZoom()).max().getAsInt());
+    style.setType("circle");
+    style.setLayout(ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")
         .build());
-    styleLayer.setPaint(ImmutableSortedMap.naturalOrder()
+    style.setPaint(ImmutableSortedMap.naturalOrder()
         .put("circle-color", "rgba(229, 235, 247, 0.75)")
         .put("circle-radius", 1)
         .build());
-    return styleLayer;
+    return style;
   }
 
-  private StyleLayer linestringBlueprint(SourceLayer sourceLayer, String id) {
-    StyleLayer styleLayer = new StyleLayer();
-    styleLayer.setId(id);
-    styleLayer.setSourceLayer(sourceLayer.getId());
-    styleLayer.setMinZoom(sourceLayer.getQueries().stream().mapToInt(q -> q.getMinZoom()).min().getAsInt());
-    styleLayer.setMaxZoom(sourceLayer.getQueries().stream().mapToInt(q -> q.getMaxZoom()).max().getAsInt());
-    styleLayer.setType("line");
-    styleLayer.setLayout(ImmutableSortedMap.naturalOrder()
+  private Style linestring(Layer layer, String id) {
+    Style style = new Style();
+    style.setId(id);
+    style.setSourceLayer(layer.getId());
+    style.setMinZoom(layer.getQueries().stream().mapToInt(q -> q.getMinZoom()).min().getAsInt());
+    style.setMaxZoom(layer.getQueries().stream().mapToInt(q -> q.getMaxZoom()).max().getAsInt());
+    style.setType("line");
+    style.setLayout(ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")
         .build());
-    styleLayer.setPaint(ImmutableSortedMap.naturalOrder()
+    style.setPaint(ImmutableSortedMap.naturalOrder()
         .put("line-color", "rgba(229, 235, 247, 0.50)")
         .put("line-width", 1)
         .build());
-    return styleLayer;
+    return style;
   }
 
-  private StyleLayer polygonBlueprint(SourceLayer sourceLayer, String id) {
-    StyleLayer styleLayer = new StyleLayer();
-    styleLayer.setId(id);
-    styleLayer.setSourceLayer(sourceLayer.getId());
-    styleLayer.setMinZoom(sourceLayer.getQueries().stream().mapToInt(q -> q.getMinZoom()).min().getAsInt());
-    styleLayer.setMaxZoom(sourceLayer.getQueries().stream().mapToInt(q -> q.getMaxZoom()).max().getAsInt());
-    styleLayer.setType("fill");
-    styleLayer.setLayout(ImmutableSortedMap.naturalOrder()
+  private Style polygon(Layer layer, String id) {
+    Style style = new Style();
+    style.setId(id);
+    style.setSourceLayer(layer.getId());
+    style.setMinZoom(layer.getQueries().stream().mapToInt(q -> q.getMinZoom()).min().getAsInt());
+    style.setMaxZoom(layer.getQueries().stream().mapToInt(q -> q.getMaxZoom()).max().getAsInt());
+    style.setType("fill");
+    style.setLayout(ImmutableSortedMap.naturalOrder()
         .put("visibility", "visible")
         .build());
-    styleLayer.setPaint(ImmutableSortedMap.naturalOrder()
+    style.setPaint(ImmutableSortedMap.naturalOrder()
         .put("fill-outline-color", "rgba(229, 235, 247, 0.50)")
         .put("fill-color", "rgba(229, 235, 247, 0.25)")
         .put("fill-antialias", true)
         .build());
-    return styleLayer;
+    return style;
   }
+
 
 
 }
