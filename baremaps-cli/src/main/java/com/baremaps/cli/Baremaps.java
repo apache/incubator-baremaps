@@ -26,7 +26,7 @@ import picocli.CommandLine.Command;
         Import.class,
         Update.class,
         Export.class,
-        Serve.class,
+        Preview.class,
     })
 public class Baremaps implements Callable<Integer> {
 

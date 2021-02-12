@@ -1,0 +1,19 @@
+id: config
+server:
+  host: localhost
+  port: 9000
+center:
+  lon: 1
+  lat: 2
+  zoom: 3
+bounds:
+  minLon: 1
+  minLat: 2
+  maxLon: 3
+  maxLat: 4
+  minZoom: 5
+  maxZoom: 6
+layers:
+  - layer.yaml
+stylesheets:
+  - stylesheet.yaml

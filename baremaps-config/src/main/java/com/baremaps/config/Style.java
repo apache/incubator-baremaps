@@ -1,9 +1,9 @@
-package com.baremaps.config.style;
+package com.baremaps.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-public class StyleLayer {
+public class Style {
 
   private String id;
 

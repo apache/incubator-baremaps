@@ -38,7 +38,7 @@
     center: [${center.lon?string["0.######"]}, ${center.lat?string["0.######"]}],
     zoom: ${center.zoom?string["0.####"]},
     minZoom: ${bounds.minZoom},
-    maxZoom: ${bounds.maxZoom}
+    maxZoom: ${bounds.maxZoom + 4}
   });
 
   // Recenter the map according to the location saved in the url

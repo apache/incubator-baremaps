@@ -13,16 +13,10 @@
  */
 package com.baremaps.server;
 
-import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
-import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
-import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
-
-import com.baremaps.config.source.Source;
 import com.linecorp.armeria.common.HttpRequest;
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.common.HttpStatus;
 import com.linecorp.armeria.common.MediaType;
-import com.linecorp.armeria.common.ResponseHeaders;
 import com.linecorp.armeria.server.AbstractHttpService;
 import com.linecorp.armeria.server.ServiceRequestContext;
 import freemarker.template.Configuration;
@@ -38,24 +32,11 @@ import org.slf4j.LoggerFactory;
 
 public class TemplateService extends AbstractHttpService {
 
-  private static Logger logger = LoggerFactory.getLogger(TemplateService.class);
+  private final Template template;
 
-  private static final ResponseHeaders headers = ResponseHeaders.builder(200)
-      .add(CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
-      .add(CONTENT_ENCODING, "gzip")
-      .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-      .build();
+  public final Supplier<?> dataModelSupplier;
 
-  public final Supplier<Source> source;
-
-  public TemplateService(Supplier<Source> source) {
-    this.source = source;
-  }
-
-  @Override
-  protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req)
-      throws IOException, TemplateException {
-    StringWriter output = new StringWriter();
+  public TemplateService(String template, Supplier<?> dataModelSupplier) throws IOException {
     Configuration config = new Configuration(Configuration.VERSION_2_3_29);
     config.setLocale(Locale.US);
     config.setClassForTemplateLoading(this.getClass(), "/");
@@ -64,8 +45,14 @@ public class TemplateService extends AbstractHttpService {
     config.setLogTemplateExceptions(false);
     config.setWrapUncheckedExceptions(true);
     config.setFallbackOnNullLoopVariable(false);
-    Template blueprintTemplate = config.getTemplate("index.ftl");
-    blueprintTemplate.process(this.source.get(), output);
+    this.template = config.getTemplate(template);
+    this.dataModelSupplier = dataModelSupplier;
+  }
+
+  @Override
+  protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) throws IOException, TemplateException {
+    StringWriter output = new StringWriter();
+    template.process(this.dataModelSupplier.get(), output);
     return HttpResponse.of(HttpStatus.OK, MediaType.HTML_UTF_8, output.toString());
   }
 

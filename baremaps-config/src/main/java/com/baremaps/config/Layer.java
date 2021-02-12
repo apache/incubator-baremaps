@@ -12,21 +12,21 @@
  * the License.
  */
 
-package com.baremaps.config.source;
+package com.baremaps.config;
 
 import com.google.common.collect.Lists;
 import java.util.List;
 
 
-public class SourceLayer {
+public class Layer {
 
-  private String id = "";
+  private String id;
 
-  private String type = "";
+  private String type = "geometry";
 
-  private String description = "";
+  private String description;
 
-  private List<SourceQuery> queries = Lists.newArrayList();
+  private List<Query> queries = Lists.newArrayList();
 
   public String getId() {
     return id;
@@ -36,7 +36,7 @@ public class SourceLayer {
     return description;
   }
 
-  public List<SourceQuery> getQueries() {
+  public List<Query> getQueries() {
     return queries;
   }
 
@@ -48,7 +48,7 @@ public class SourceLayer {
     this.description = description;
   }
 
-  public void setQueries(List<SourceQuery> queries) {
+  public void setQueries(List<Query> queries) {
     this.queries = queries;
   }
 
