@@ -21,6 +21,7 @@ import com.linecorp.armeria.server.file.FileService;
 import com.linecorp.armeria.server.streaming.ServerSentEvents;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -67,10 +68,16 @@ public class Preview implements Callable<Integer> {
     BlobStore blobStore = new FileBlobStore();
     Supplier<Config> configSupplier = () -> {
       try {
-        return new ConfigLoader(blobStore).load(new URI(config.toString()));
+        URI uri = new URI(config.toAbsolutePath().toString());
+        return new ConfigLoader(blobStore).load(uri);
+      } catch (URISyntaxException e) {
+        logger.error("Unable to create an URI from the configuration file.", e);
+      } catch (IOException e) {
+        logger.error("Unable to read the configuration file.", e);
       } catch (Exception e) {
-        return null;
+        logger.error("An error occured with the configuration file. ", e);
       }
+      return null;
     };
 
     DataSource datasource = PostgresHelper.datasource(database);
@@ -87,7 +94,7 @@ public class Preview implements Callable<Integer> {
     HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");
     HttpService indexService = new TemplateService("index.ftl", configSupplier);
     HttpService tileService = new TileService(tileStore);
-    HttpService styleService = new JsonService(config.getLayers().isEmpty()
+    HttpService styleService = new JsonService(config.getStylesheets().isEmpty()
         ? () -> new BlueprintMapper().apply(configSupplier.get())
         : () -> new StyleMapper().apply(configSupplier.get()));
 

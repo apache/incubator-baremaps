@@ -6,7 +6,9 @@ import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -15,8 +17,8 @@ public class StyleMapper implements Function<Config, Object> {
   @Override
   public Object apply(Config source) {
     return ImmutableSortedMap.naturalOrder()
-        .put("id", source.getName())
-        .put("version", source.getVersion())
+        .put("id", source.getId())
+        .put("version", 8)
         .put("sprite", source.getSprite())
         .put("glyphs", source.getGlyphs())
         .put("sources", ImmutableSortedMap.naturalOrder()
@@ -34,18 +36,20 @@ public class StyleMapper implements Function<Config, Object> {
         .put("layers", Lists.reverse(
             source.getStylesheets().stream()
                 .flatMap(stylesheet -> stylesheet.getStyles().stream())
-                .map(layer -> ImmutableSortedMap.naturalOrder()
-                    .put("id", layer.getId())
-                    .put("source", Optional.ofNullable(layer.getSource()).orElse("baremaps"))
-                    .put("source-layer", layer.getSourceLayer())
-                    .put("type", layer.getType())
-                    .put("minzoom", layer.getMinZoom())
-                    .put("maxzoom", layer.getMaxZoom())
-                    .put("layout", layer.getLayout())
-                    .put("metadata", layer.getMetadata())
-                    .put("filter", layer.getFilter())
-                    .put("paint", layer.getPaint())
-                ).collect(Collectors.toList())))
+                .map(layer -> {
+                  Map<String, Object> map = new TreeMap<>();
+                  map.put("id", layer.getId());
+                  map.put("source", Optional.ofNullable(layer.getSource()).orElse("baremaps"));
+                  map.put("source-layer", layer.getLayer());
+                  map.put("type", layer.getType());
+                  map.put("minzoom", layer.getMinZoom());
+                  map.put("maxzoom", layer.getMaxZoom());
+                  map.put("layout", layer.getLayout());
+                  map.put("metadata", layer.getMetadata());
+                  map.put("filter", layer.getFilter());
+                  map.put("paint", layer.getPaint());
+                  return map;
+                }).collect(Collectors.toList())))
         .build();
   }
 

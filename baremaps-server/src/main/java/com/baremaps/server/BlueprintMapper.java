@@ -20,8 +20,8 @@ public class BlueprintMapper implements Function<Config, Object> {
     return ImmutableSortedMap.naturalOrder()
         .put("id", "baremaps")
         .put("version", 8)
-        .put("sprite", "")
-        .put("glyphs", "https://daglvzoa8byzd.cloudfront.net/{fontstack}/{range}.pbf")
+        .put("sprite", source.getSprite())
+        .put("glyphs", source.getGlyphs())
         .put("sources", ImmutableSortedMap.naturalOrder()
             .put("baremaps", ImmutableSortedMap.naturalOrder()
                 .put("type", "vector")
@@ -39,7 +39,7 @@ public class BlueprintMapper implements Function<Config, Object> {
           Map<String, Object> map = new TreeMap<>();
           map.put("id", style.getId());
           map.put("source", Optional.ofNullable(style.getSource()).orElse("baremaps"));
-          map.put("source-layer", style.getSourceLayer());
+          map.put("source-layer", style.getLayer());
           map.put("type", style.getType());
           map.put("minzoom", style.getMinZoom());
           map.put("maxzoom", style.getMaxZoom());
@@ -94,7 +94,7 @@ public class BlueprintMapper implements Function<Config, Object> {
   private Style point(Layer layer, String id) {
     Style style = new Style();
     style.setId(id);
-    style.setSourceLayer(layer.getId());
+    style.setLayer(layer.getId());
     style.setMinZoom(layer.getQueries().stream().mapToInt(q -> q.getMinZoom()).min().getAsInt());
     style.setMaxZoom(layer.getQueries().stream().mapToInt(q -> q.getMaxZoom()).max().getAsInt());
     style.setType("circle");
@@ -111,7 +111,7 @@ public class BlueprintMapper implements Function<Config, Object> {
   private Style linestring(Layer layer, String id) {
     Style style = new Style();
     style.setId(id);
-    style.setSourceLayer(layer.getId());
+    style.setLayer(layer.getId());
     style.setMinZoom(layer.getQueries().stream().mapToInt(q -> q.getMinZoom()).min().getAsInt());
     style.setMaxZoom(layer.getQueries().stream().mapToInt(q -> q.getMaxZoom()).max().getAsInt());
     style.setType("line");
@@ -128,7 +128,7 @@ public class BlueprintMapper implements Function<Config, Object> {
   private Style polygon(Layer layer, String id) {
     Style style = new Style();
     style.setId(id);
-    style.setSourceLayer(layer.getId());
+    style.setLayer(layer.getId());
     style.setMinZoom(layer.getQueries().stream().mapToInt(q -> q.getMinZoom()).min().getAsInt());
     style.setMaxZoom(layer.getQueries().stream().mapToInt(q -> q.getMaxZoom()).max().getAsInt());
     style.setType("fill");
