@@ -184,7 +184,7 @@ public class Export implements Callable<Integer> {
   private Map<String, String> metadata(Config config) throws JsonProcessingException {
     Map<String, String> metadata = new HashMap<>();
     metadata.put("name", config.getId());
-    metadata.put("version", config.getVersion());
+    metadata.put("version", config.getVersion().toString());
     metadata.put("description", config.getDescription());
     metadata.put("attribution", config.getAttribution());
     metadata.put("type", "baselayer");

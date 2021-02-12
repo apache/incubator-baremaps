@@ -29,10 +29,6 @@ public class Config {
 
   private String attribution;
 
-  private String glyphs;
-
-  private String sprite;
-
   private Server server = new Server();
 
   private Center center = new Center();
@@ -40,6 +36,10 @@ public class Config {
   private Bounds bounds = new Bounds();
 
   private List<Layer> layers = Lists.newArrayList();
+
+  private String glyphs = "https://tiles.baremaps.com/fonts/{fontstack}/{range}.pbf";
+
+  private String sprite = "";
 
   private List<Stylesheet> stylesheets = Lists.newArrayList();
 
