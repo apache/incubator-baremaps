@@ -43,7 +43,7 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS geoadmin_traffic_noise_day_gix ON geoadm
 To preview the data, run the tile server with the following command:
 
 ```bash
-baremaps serve \
+baremaps preview \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
-  --source 'traffic-noise.yaml'
+  --config 'traffic-noise.yaml'
 ```

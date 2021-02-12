@@ -48,7 +48,7 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS aster_dem_gix ON aster_dem USING SPGIST(
 To preview the data, run the tile server with the following command:
 
 ```bash
-baremaps serve \
+baremaps preview \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
   --source 'source.yaml'
 ```

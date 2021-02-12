@@ -68,7 +68,7 @@ public class Export implements Callable<Integer> {
   private String database;
 
   @Option(
-      names = {"--source"},
+      names = {"--config"},
       paramLabel = "YAML",
       description = "The YAML source configuration file.",
       required = true)
