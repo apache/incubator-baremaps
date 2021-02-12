@@ -89,7 +89,7 @@ public class OpenStreetMapExampleTest {
     // Test the export command
     int exportExitCode = cmd.execute("export",
         "--database", DATABASE_URL,
-        "--source", "openstreetmap/source.yaml",
+        "--config", "openstreetmap/config.yaml",
         "--repository", "repository/");
     assertEquals(0, exportExitCode);
     assertTrue(Files.exists(Paths.get("repository/14/8626/5750.pbf")));
@@ -98,7 +98,7 @@ public class OpenStreetMapExampleTest {
     new Thread(() -> {
       cmd.execute("serve",
           "--database", DATABASE_URL,
-          "--source", "openstreetmap/source.yaml");
+          "--source", "openstreetmap/config.yaml");
     }).run();
 
     // Wait for the server to start

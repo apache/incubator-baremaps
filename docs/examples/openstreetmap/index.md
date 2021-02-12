@@ -80,16 +80,15 @@ This file defines general properties, a list of layers containing SQL queries to
 Let's preview the data with the sample configuration file (`source.yaml`) by executing the following command in a terminal.
 
 ```
-baremaps serve \
+baremaps preview \
   --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
-  --source 'source.yaml' \
-  --watch-changes
+  --config 'source.yaml' \
 ```
 
 Well done, a local tile server should have started and you can open a map of Liechtenstein in your browser ([http://localhost:9000/](http://localhost:9000/))!
 Baremaps dynamically generates a blueprint [Mapbox Style](https://docs.mapbox.com/mapbox-gl-js/style-spec/) from the YAML configuration file.
 It is aimed at quickly previsualizing the data and provides a foundation for creating more complex styles.
-Here, notice the flag `--watch-changes`, it enables the browser to reload automatically whenever the configuration file changes, which greatly accelerates the process of composing vector tiles.
+Notice that the changes in the configuration files are automatically reloaded by the browser.
 
 ![Mapbox Preview](screenshot.png)
 
