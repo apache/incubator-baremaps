@@ -2,7 +2,7 @@
   "id" : "baremaps",
   "version" : 8,
   "sprite" : "",
-  "glyphs" : "https://daglvzoa8byzd.cloudfront.net/{fontstack}/{range}.pbf",
+  "glyphs" : "https://tiles.baremaps.com/fonts/{fontstack}/{range}.pbf",
   "sources" : {
     "baremaps" : {
       "bounds" : [ 5.8358, 45.6591, 10.9794, 47.87 ],
