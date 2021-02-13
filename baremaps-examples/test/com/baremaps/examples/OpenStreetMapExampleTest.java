@@ -96,9 +96,9 @@ public class OpenStreetMapExampleTest {
 
     // Test the serve command in a separate thread
     new Thread(() -> {
-      cmd.execute("serve",
+      cmd.execute("preview",
           "--database", DATABASE_URL,
-          "--source", "openstreetmap/config.yaml");
+          "--config", "openstreetmap/config.yaml");
     }).run();
 
     // Wait for the server to start
