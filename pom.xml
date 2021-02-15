@@ -60,7 +60,7 @@
     <version.lib.jts>1.17.1</version.lib.jts>
     <version.lib.junit>5.7.0</version.lib.junit>
     <version.lib.lmdb>0.8.1</version.lib.lmdb>
-    <version.lib.log4j>2.13.3</version.lib.log4j>
+    <version.lib.log4j>2.14.0</version.lib.log4j>
     <version.lib.osmosis>0.47</version.lib.osmosis>
     <version.lib.picocli>4.5.2</version.lib.picocli>
     <version.lib.postgresql>42.2.14</version.lib.postgresql>
