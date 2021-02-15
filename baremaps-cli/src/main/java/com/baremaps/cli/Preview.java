@@ -93,6 +93,7 @@ public class Preview implements Callable<Integer> {
     logger.info("Initializing services");
     HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");
     HttpService indexService = new TemplateService("index.ftl", configSupplier);
+    HttpService compareService = new TemplateService("compare.ftl", configSupplier);
     HttpService tileService = new TileService(tileStore);
     HttpService styleService = new JsonService(config.getStylesheets().isEmpty()
         ? () -> new BlueprintMapper().apply(configSupplier.get())
@@ -103,6 +104,7 @@ public class Preview implements Callable<Integer> {
         .defaultHostname(host)
         .http(port)
         .service("/", indexService)
+        .service("/compare/", compareService)
         .service("/favicon.ico", faviconService)
         .service("/style.json", styleService)
         .service("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).pbf$", tileService)
