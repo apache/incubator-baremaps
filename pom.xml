@@ -68,7 +68,7 @@
     <version.lib.protobuf>3.13.0</version.lib.protobuf>
     <version.lib.selenium>3.141.59</version.lib.selenium>
     <version.lib.slf4j>1.7.30</version.lib.slf4j>
-    <version.lib.sqlite>3.32.3.2</version.lib.sqlite>
+    <version.lib.sqlite>3.34.0</version.lib.sqlite>
     <version.lib.testng>7.3.0</version.lib.testng>
     <version.lib.s3mock>2.1.28</version.lib.s3mock>
     <version.lib.jackson>2.12.1</version.lib.jackson>
