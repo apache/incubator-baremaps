@@ -65,7 +65,7 @@
     <version.lib.picocli>4.5.2</version.lib.picocli>
     <version.lib.postgresql>42.2.14</version.lib.postgresql>
     <version.lib.proj4j>1.1.1</version.lib.proj4j>
-    <version.lib.protobuf>3.13.0</version.lib.protobuf>
+    <version.lib.protobuf>3.14.0</version.lib.protobuf>
     <version.lib.selenium>3.141.59</version.lib.selenium>
     <version.lib.slf4j>1.7.30</version.lib.slf4j>
     <version.lib.sqlite>3.32.3.2</version.lib.sqlite>
