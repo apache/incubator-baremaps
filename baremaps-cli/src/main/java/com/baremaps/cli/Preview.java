@@ -22,7 +22,9 @@ import com.linecorp.armeria.server.streaming.ServerSentEvents;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -56,7 +58,7 @@ public class Preview implements Callable<Integer> {
       paramLabel = "CONFIG",
       description = "The configuration file.",
       required = true)
-  private Path config;
+  private URI config;
 
   private Server server;
 
@@ -68,10 +70,7 @@ public class Preview implements Callable<Integer> {
     BlobStore blobStore = new FileBlobStore();
     Supplier<Config> configSupplier = () -> {
       try {
-        URI uri = new URI(config.toAbsolutePath().toString());
-        return new ConfigLoader(blobStore).load(uri);
-      } catch (URISyntaxException e) {
-        logger.error("Unable to create an URI from the configuration file.", e);
+        return new ConfigLoader(blobStore).load(config);
       } catch (IOException e) {
         logger.error("Unable to read the configuration file.", e);
       } catch (Exception e) {
@@ -113,12 +112,15 @@ public class Preview implements Callable<Integer> {
     // Keep a connection open with the browser.
     // When the server restarts, for instance when a change occurs in the configuration,
     // The browser reloads the webpage and displays the changes.
-    logger.info("Listen for changes");
-    ChangePublisher publisher = new ChangePublisher(this.config.toAbsolutePath().getParent());
-    builder.service("/changes/", (ctx, req) -> {
-      ctx.clearRequestTimeout();
-      return ServerSentEvents.fromPublisher(publisher);
-    });
+    logger.info("Watch the configuration file for changes");
+    Path watch = Paths.get(this.config.getPath()).toAbsolutePath().getParent();
+    if (Files.exists(watch)) {
+      ChangePublisher publisher = new ChangePublisher(watch);
+      builder.service("/changes/", (ctx, req) -> {
+        ctx.clearRequestTimeout();
+        return ServerSentEvents.fromPublisher(publisher);
+      });
+    }
 
     logger.info("Start server");
     server = builder.build();
