@@ -63,3 +63,24 @@ baremaps preview \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
   --config 'source.yaml'
 ```
+
+## Working with shapefiles
+
+The NaturalEarth dataset is also distributed in the [shapefile format](https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/cultural/ne_10m_admin_0_countries.zip).
+As demonstrated in the following command, shapefiles can easily be imported in postgis with `ogr2ogr`.
+Here, notice that the data is reprojected in WebMercator (EPSG:3857) to improve performance at query time.
+
+```
+ogr2ogr \
+  -f "PostgreSQL" "PG:host=localhost user=baremaps dbname=baremaps password=baremaps" \
+  "ne_10m_admin_0_countries.shp" \
+  -lco GEOMETRY_NAME=geom \
+  -lco FID=gid \
+  -lco PRECISION=no \
+  -nlt PROMOTE_TO_MULTI \
+  -nln ne_10m_admin_0_countries \
+  -s_srs EPSG:4326 \
+  -t_srs EPSG:3857 \
+  --config OGR_ENABLE_PARTIAL_REPROJECTION TRUE \
+  -overwrite
+```
