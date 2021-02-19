@@ -1,4 +1,4 @@
-package com.baremaps;
+package com.baremaps.jmh;
 
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.domain.Node;

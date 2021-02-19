@@ -1,4 +1,4 @@
-package com.baremaps;
+package com.baremaps.jmh;
 
 import java.io.IOException;
 
