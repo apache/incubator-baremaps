@@ -6,6 +6,7 @@
 
     body {
       font-family: Helvetica, sans-serif;
+      margin: 0;
     }
 
     #map1 {
@@ -41,7 +42,7 @@
   </style>
   <title>Baremaps</title>
 </head>
-<body style="margin: 0">
+<body>
 <div id="map1"></div>
 <div id="map2"></div>
 <a id="link" href="" target="_blank">OpenStreetMap</a>

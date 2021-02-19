@@ -12,12 +12,16 @@ import com.baremaps.server.JsonService;
 import com.baremaps.server.StyleMapper;
 import com.baremaps.server.TemplateService;
 import com.baremaps.server.TileService;
+import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
+import com.github.benmanes.caffeine.cache.CaffeineSpec;
+import com.linecorp.armeria.common.ServerCacheControl;
 import com.linecorp.armeria.server.HttpService;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
 import com.linecorp.armeria.server.file.FileService;
+import com.linecorp.armeria.server.file.FileServiceBuilder;
 import com.linecorp.armeria.server.streaming.ServerSentEvents;
 import java.io.IOException;
 import java.net.URI;
@@ -37,10 +41,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "preview", description = "Preview the vector tiles.")
-public class Preview implements Callable<Integer> {
+@Command(name = "serve", description = "Serve the vector tiles.")
+public class Serve implements Callable<Integer> {
 
-  private static Logger logger = LoggerFactory.getLogger(Preview.class);
+  private static Logger logger = LoggerFactory.getLogger(Serve.class);
 
   @Mixin
   private Options options;
@@ -59,6 +63,13 @@ public class Preview implements Callable<Integer> {
       required = true)
   private URI config;
 
+  @Option(
+      names = {"--assets"},
+      paramLabel = "ASSETS",
+      description = "A directory of static assets.",
+      required = false)
+  private Path assets;
+
   @Override
   public Integer call() throws IOException {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
@@ -66,18 +77,8 @@ public class Preview implements Callable<Integer> {
 
     logger.info("Initializing server");
     BlobStore blobStore = new FileBlobStore();
-    Supplier<Config> configSupplier = () -> {
-      try {
-        return new ConfigLoader(blobStore).load(config);
-      } catch (IOException e) {
-        logger.error("Unable to read the configuration file.", e);
-      } catch (Exception e) {
-        logger.error("An error occured with the configuration file. ", e);
-      }
-      return null;
-    };
-
-    Config config = configSupplier.get();
+    Config config = new ConfigLoader(blobStore).load(this.config);
+    Object style = new StyleMapper().apply(config);
     int threads = Runtime.getRuntime().availableProcessors();
     ScheduledExecutorService executor = Executors.newScheduledThreadPool(threads);
     ServerBuilder builder = Server.builder()
@@ -87,37 +88,26 @@ public class Preview implements Callable<Integer> {
 
     logger.info("Initializing services");
 
-    HttpService previewService = new TemplateService("preview.ftl", configSupplier);
-    builder.service("/", previewService);
+    if (assets != null && Files.exists(assets)) {
+      HttpService fileService = FileService.builder(assets).build();
+      builder.service("/", fileService);
+    } else {
+      HttpService indexService = new TemplateService("index.ftl", () -> config);
+      builder.service("/", indexService);
 
-    HttpService compareService = new TemplateService("compare.ftl", configSupplier);
-    builder.service("/compare/", compareService);
+      HttpService styleService = new JsonService(() -> style);
+      builder.service("/style.json", styleService);
 
-    HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");
-    builder.service("/favicon.ico", faviconService);
-
-    HttpService styleService = new JsonService(config.getStylesheets().isEmpty()
-        ? () -> new BlueprintMapper().apply(configSupplier.get())
-        : () -> new StyleMapper().apply(configSupplier.get()));
-    builder.service("/style.json", styleService);
-
-    DataSource datasource = PostgresHelper.datasource(database);
-    TileStore tileStore = new PostgisTileStore(datasource, configSupplier);
-    HttpService tileService = new TileService(tileStore);
-    builder.service("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).pbf$", tileService);
-
-    // Keep a connection open with the browser.
-    // When the server restarts, for instance when a change occurs in the configuration,
-    // The browser reloads the webpage and displays the changes.
-    logger.info("Watch the configuration file for changes");
-    Path watch = Paths.get(this.config.getPath()).toAbsolutePath().getParent();
-    if (Files.exists(watch)) {
-      ChangePublisher publisher = new ChangePublisher(watch);
-      builder.service("/changes/", (ctx, req) -> {
-        ctx.clearRequestTimeout();
-        return ServerSentEvents.fromPublisher(publisher);
-      });
+      HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");
+      builder.service("/favicon.ico", faviconService);
     }
+
+    CaffeineSpec caffeineSpec = CaffeineSpec.parse(config.getServer().getCache());
+    DataSource datasource = PostgresHelper.datasource(database);
+    TileStore tileStore = new PostgisTileStore(datasource, () -> config);
+    TileStore tileCache = new TileCache(tileStore, caffeineSpec);
+    HttpService tileService = new TileService(tileCache);
+    builder.service("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).pbf$", tileService);
 
     logger.info("Start server");
     Server server = builder.build();
