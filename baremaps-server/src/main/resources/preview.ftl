@@ -71,6 +71,13 @@
 
   map.addControl(new mapboxgl.NavigationControl());
 
+  // Reload the webpage when this connection gets closed by the server
+  var source = new EventSource("/changes/");
+  source.onmessage = function(event) {
+    console.log(event);
+    map.setStyle('/style.json');
+  };
+
 </script>
 </body>
 </html>
