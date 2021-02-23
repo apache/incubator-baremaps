@@ -36,7 +36,7 @@ public class PostgisQueryParser {
   }
 
   public static Parse parse(Layer layer, Query query) {
-    String sql = query.getSql().replaceAll("\\s+"," ").trim();
+    String sql = query.getSql().replaceAll("\\s+", " ").trim();
     Matcher matcher = QUERY_PATTERN.matcher(sql);
 
     if (!matcher.matches()) {
@@ -49,7 +49,10 @@ public class PostgisQueryParser {
 
     List<String> columns = split(select);
     if (columns.size() != 3) {
-      throw new IllegalArgumentException("The SQL query malformed");
+      String message = String.format("The layer '%s' contains a malformed query.\n"
+          + "\tExpected format:\n\t\tSELECT c1::bigint, c2::hstore, c3::geometry FROM t WHERE c\n"
+          + "\tActual query:\n\t\t%s", layer.getId(), sql);
+      throw new IllegalArgumentException(message);
     }
 
     String id = column(columns.get(0));
