@@ -1,0 +1,2 @@
+application=Baremaps
+version=${project.version}
