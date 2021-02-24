@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-alpine
+FROM adoptopenjdk/openjdk11:alpine
 
 # Install baremaps
 RUN wget https://github.com/baremaps/baremaps/releases/latest/download/baremaps.zip
