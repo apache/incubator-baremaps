@@ -1,5 +1,7 @@
 package com.baremaps.cli;
 
+import static com.baremaps.config.Variables.interpolate;
+
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.google.common.base.Splitter;
@@ -59,6 +61,7 @@ public class Execute implements Callable<Integer> {
     for (URI file : files) {
       logger.info("{}", file);
       String blob = new String(blobStore.readByteArray(file), StandardCharsets.UTF_8);
+      blob = interpolate(System.getenv(), blob);
       Stream<String> queries = Splitter.on(";").splitToStream(blob);
       if (parallel) {
         queries = queries.parallel();

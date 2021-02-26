@@ -1,5 +1,7 @@
 package com.baremaps.config;
 
+import static com.baremaps.config.Variables.interpolate;
+
 import com.baremaps.blob.BlobStore;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.ObjectCodec;
@@ -110,7 +112,7 @@ class Loader<T> {
     public String getText() throws IOException {
       final String value = super.getText();
       if (value != null) {
-        return interpolateVariables(value);
+        return interpolate(variables, value);
       }
       return value;
     }
@@ -124,16 +126,11 @@ class Loader<T> {
     public String getValueAsString(final String defaultValue) throws IOException {
       final String value = super.getValueAsString(defaultValue);
       if (value != null) {
-        return interpolateVariables(value);
+        return interpolate(variables, value);
       }
       return null;
     }
 
-    private String interpolateVariables(String value) {
-      for (Entry<String, String> entry : variables.entrySet()) {
-        value = value.replace(String.format("${%s}", entry.getKey()), entry.getValue());
-      }
-      return value;
-    }
+
   }
 }
