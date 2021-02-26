@@ -45,6 +45,7 @@ public class Execute implements Callable<Integer> {
   @Option(
       names = {"--parallel"},
       paramLabel = "PARALLEL",
+      negatable = true,
       description = "Enable parallel execution of queries.")
   public boolean parallel = true;
 
