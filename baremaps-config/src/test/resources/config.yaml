@@ -1,7 +1,7 @@
 id: config
 server:
-  host: localhost
-  port: 9000
+  host: ${host}
+  port: ${port}
 center:
   lon: 1
   lat: 2
