@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -41,6 +42,12 @@ public class Execute implements Callable<Integer> {
       required = true)
   private List<URI> files;
 
+  @Option(
+      names = {"--parallel"},
+      paramLabel = "PARALLEL",
+      description = "Enable parallel execution of queries.")
+  public boolean parallel = true;
+
   @Override
   public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
@@ -50,8 +57,12 @@ public class Execute implements Callable<Integer> {
 
     for (URI file : files) {
       logger.info("{}", file);
-      String queries = new String(blobStore.readByteArray(file), StandardCharsets.UTF_8);
-      Splitter.on(";").splitToStream(queries).parallel().forEach(query -> {
+      String blob = new String(blobStore.readByteArray(file), StandardCharsets.UTF_8);
+      Stream<String> queries = Splitter.on(";").splitToStream(blob);
+      if (parallel) {
+        queries = queries.parallel();
+      }
+      queries.parallel().forEach(query -> {
         try (Connection connection = datasource.getConnection();
             Statement statement = connection.createStatement()) {
           statement.execute(query);
