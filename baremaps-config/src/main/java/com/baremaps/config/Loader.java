@@ -20,6 +20,11 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Map.Entry;
 
+/**
+ * A Base class for loading YAML files.
+ *
+ * @param <T>
+ */
 class Loader<T> {
 
   private final BlobStore blobStore;
