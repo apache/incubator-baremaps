@@ -14,12 +14,15 @@
 
 package com.baremaps.tile.postgres;
 
+import static com.baremaps.config.Variables.interpolate;
+
 import com.baremaps.config.Config;
 import com.baremaps.config.Layer;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
 import com.baremaps.tile.postgres.PostgisQueryParser.Parse;
+import com.google.common.collect.ImmutableMap;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -167,9 +170,9 @@ public class PostgisTileStore implements TileStore {
                     .toString())
                 .collect(Collectors.joining(UNION_ALL))))
         .collect(Collectors.joining(UNION_ALL));
-    String query = String.format(WITH, sources, targets)
-        .replace("${zoom}", String.valueOf(tile.z()));
-    return query;
+    String query = String.format(WITH, sources, targets);
+    Map<String, String> variables = ImmutableMap.of("zoom", String.valueOf(tile.z()));
+    return interpolate(variables, query);
   }
 
   private boolean zoomFilter(Tile tile, Parse parse) {
