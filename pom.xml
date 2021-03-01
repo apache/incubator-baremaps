@@ -53,7 +53,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <version.lib.armeria>1.4.0</version.lib.armeria>
     <version.lib.freemarker>2.3.30</version.lib.freemarker>
-    <version.lib.caffeine>2.8.8</version.lib.caffeine>
+    <version.lib.caffeine>3.0.0</version.lib.caffeine>
     <version.lib.commons-compress>1.19</version.lib.commons-compress>
     <version.lib.dbcp2>2.8.0</version.lib.dbcp2>
     <version.lib.guava>29.0-jre</version.lib.guava>
