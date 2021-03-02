@@ -36,7 +36,7 @@
 <script>
 
   // Initialize the map
-  var map = new mapboxgl.Map({
+  let map = new mapboxgl.Map({
     container: 'map',
     style: '/style.json',
     center: [${center.lon?string["0.######"]}, ${center.lat?string["0.######"]}],
@@ -44,6 +44,11 @@
     minZoom: ${bounds.minZoom},
     maxZoom: ${bounds.maxZoom + 4}
   });
+
+  // Assume that the tiles are hosted at the origin
+  map.on('sourcedata', () => {
+    map.getSource("baremaps").tiles[0] = window.location.origin + "/tiles/{z}/{x}/{y}.pbf";
+  })
 
   // Recenter the map according to the location saved in the url
   if (location.hash) {

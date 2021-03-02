@@ -28,7 +28,7 @@ public class AccumulatingConsumer<T> implements Consumer<T> {
   private List<T> values = new ArrayList<>();
 
   /**
-   * {@inheritDoc}
+   * Stores the accepted value.
    */
   @Override
   public void accept(T value) {
