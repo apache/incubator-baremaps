@@ -20,6 +20,8 @@ public class Server {
 
   private int port = 9000;
 
+  private String cache = "";
+
   public String getHost() {
     return host;
   }
@@ -36,4 +38,12 @@ public class Server {
     this.port = port;
   }
 
+
+  public String getCache() {
+    return cache;
+  }
+
+  public void setCache(String cache) {
+    this.cache = cache;
+  }
 }
