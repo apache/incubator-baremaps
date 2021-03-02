@@ -58,18 +58,18 @@
     <version.lib.dbcp2>2.8.0</version.lib.dbcp2>
     <version.lib.guava>29.0-jre</version.lib.guava>
     <version.lib.jts>1.18.1</version.lib.jts>
-    <version.lib.junit>5.7.0</version.lib.junit>
+    <version.lib.junit>5.7.1</version.lib.junit>
     <version.lib.lmdb>0.8.1</version.lib.lmdb>
     <version.lib.log4j>2.14.0</version.lib.log4j>
     <version.lib.osmosis>0.47</version.lib.osmosis>
     <version.lib.picocli>4.5.2</version.lib.picocli>
-    <version.lib.postgresql>42.2.18</version.lib.postgresql>
+    <version.lib.postgresql>42.2.19</version.lib.postgresql>
     <version.lib.proj4j>1.1.1</version.lib.proj4j>
-    <version.lib.protobuf>3.14.0</version.lib.protobuf>
+    <version.lib.protobuf>3.15.3</version.lib.protobuf>
     <version.lib.selenium>3.141.59</version.lib.selenium>
     <version.lib.slf4j>1.7.30</version.lib.slf4j>
     <version.lib.sqlite>3.34.0</version.lib.sqlite>
-    <version.lib.testng>7.3.0</version.lib.testng>
+    <version.lib.testng>7.4.0</version.lib.testng>
     <version.lib.s3mock>2.1.28</version.lib.s3mock>
     <version.lib.jackson>2.12.1</version.lib.jackson>
     <version.plugin.compiler>3.8.1</version.plugin.compiler>
@@ -200,7 +200,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.2.0</version>
         <executions>
           <execution>
             <goals>
@@ -244,7 +244,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.1.2</version>
         <configuration>
           <configLocation>google_checks.xml</configLocation>
         </configuration>
