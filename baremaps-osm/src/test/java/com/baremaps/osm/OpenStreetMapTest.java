@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 public class OpenStreetMapTest {
@@ -32,7 +33,7 @@ public class OpenStreetMapTest {
     try (InputStream input = DATA_OSM_XML.openStream()) {
       assertEquals(12,
           OpenStreetMap.streamXmlEntities(input, true)
-              .count());
+              .collect(Collectors.toList()).size());
     }
   }
 
@@ -69,7 +70,10 @@ public class OpenStreetMapTest {
   @Test
   void dataOscXml() throws IOException {
     try (InputStream input = DATA_OSC_XML.openStream()) {
-      assertEquals(7, OpenStreetMap.streamXmlChanges(input, true).count());
+      assertEquals(7,
+          OpenStreetMap.streamXmlChanges(input, true)
+              .collect(Collectors.toList())
+              .size());
     }
   }
 
