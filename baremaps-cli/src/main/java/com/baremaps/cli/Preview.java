@@ -96,10 +96,14 @@ public class Preview implements Callable<Integer> {
     HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");
     builder.service("/favicon.ico", faviconService);
 
+    HttpService configService = new JsonService(() -> configSupplier.get());
+    builder.service("/config.json", configService);
+
     HttpService styleService = new JsonService(config.getStylesheets().isEmpty()
         ? () -> new BlueprintMapper().apply(configSupplier.get())
         : () -> new StyleMapper().apply(configSupplier.get()));
     builder.service("/style.json", styleService);
+
 
     DataSource datasource = PostgresHelper.datasource(database);
     TileStore tileStore = new PostgisTileStore(datasource, configSupplier);
