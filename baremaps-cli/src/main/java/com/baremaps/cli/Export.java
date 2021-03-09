@@ -16,7 +16,7 @@ package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.config.Config;
-import com.baremaps.config.ConfigLoader;
+import com.baremaps.config.yaml.YamlConfigReader;
 import com.baremaps.config.Query;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.osm.progress.StreamProgress;
@@ -118,7 +118,7 @@ public class Export implements Callable<Integer> {
 
     // Read the configuration file
     logger.info("Reading configuration");
-    Config source = new ConfigLoader(blobStore).load(this.source);
+    Config source = new YamlConfigReader(blobStore).load(this.source);
 
     logger.info("Initializing the source tile store");
     final TileStore tileSource = sourceTileStore(source, datasource);

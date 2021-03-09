@@ -1,4 +1,4 @@
-package com.baremaps.config;
+package com.baremaps.config.yaml;
 
 import static com.baremaps.config.Variables.interpolate;
 
@@ -20,14 +20,13 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.net.URI;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * A Base class for loading YAML files.
  *
  * @param <T>
  */
-class Loader<T> {
+class YamlReader<T> {
 
   private final BlobStore blobStore;
 
@@ -37,11 +36,11 @@ class Loader<T> {
 
   private final Class<?>[] externalTypes;
 
-  public Loader(BlobStore blobStore, Class<T> mainType, Class<?>... externalTypes) {
+  public YamlReader(BlobStore blobStore, Class<T> mainType, Class<?>... externalTypes) {
     this(blobStore, System.getenv(), mainType, externalTypes);
   }
 
-  public Loader(BlobStore blobStore, Map<String, String> variables, Class<T> mainType, Class<?>... externalTypes) {
+  public YamlReader(BlobStore blobStore, Map<String, String> variables, Class<T> mainType, Class<?>... externalTypes) {
     this.blobStore = blobStore;
     this.variables = variables;
     this.mainType = mainType;
@@ -81,14 +80,13 @@ class Loader<T> {
     }
 
     @Override
-    protected YAMLParser _createParser(Reader r, IOContext ctxt) throws IOException {
+    protected YAMLParser _createParser(Reader r, IOContext ctxt) {
       return new YAMLConfigParser(ctxt, _getBufferRecycler(), _parserFeatures, _yamlParserFeatures,
           _objectCodec, r);
     }
 
     @Override
-    protected YAMLParser _createParser(char[] data, int offset, int len, IOContext ctxt,
-        boolean recyclable) throws IOException {
+    protected YAMLParser _createParser(char[] data, int offset, int len, IOContext ctxt, boolean recyclable) {
       return new YAMLConfigParser(ctxt, _getBufferRecycler(), _parserFeatures, _yamlParserFeatures,
           _objectCodec, new CharArrayReader(data, offset, len));
     }
