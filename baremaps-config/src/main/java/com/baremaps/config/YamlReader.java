@@ -1,4 +1,4 @@
-package com.baremaps.config.yaml;
+package com.baremaps.config;
 
 import static com.baremaps.config.Variables.interpolate;
 
@@ -23,49 +23,25 @@ import java.util.Map;
 
 /**
  * A Base class for loading YAML files.
- *
- * @param <T>
  */
-class YamlReader<T> {
+public class YamlReader {
 
   private final BlobStore blobStore;
 
   private final Map<String, String> variables;
 
-  private final Class<T> mainType;
-
-  private final Class<?>[] externalTypes;
-
-  public YamlReader(BlobStore blobStore, Class<T> mainType, Class<?>... externalTypes) {
-    this(blobStore, System.getenv(), mainType, externalTypes);
+  public YamlReader(BlobStore blobStore) {
+    this(blobStore, System.getenv());
   }
 
-  public YamlReader(BlobStore blobStore, Map<String, String> variables, Class<T> mainType, Class<?>... externalTypes) {
+  public YamlReader(BlobStore blobStore, Map<String, String> variables) {
     this.blobStore = blobStore;
     this.variables = variables;
-    this.mainType = mainType;
-    this.externalTypes = externalTypes;
   }
 
-  public T load(URI uri) throws IOException {
+  public <T> T load(URI uri, Class<T> mainType) throws IOException {
     YAMLConfigFactory yamlFactory = new YAMLConfigFactory();
     SimpleModule module = new SimpleModule();
-    for (Class<?> externalType : externalTypes) {
-      module.addDeserializer(externalType, new StdDeserializer(externalType) {
-        @Override
-        public Object deserialize(JsonParser parser, DeserializationContext context) throws IOException {
-          ObjectMapper mapper = new ObjectMapper(yamlFactory);
-          JsonNode node = parser.getCodec().readTree(parser);
-          if (node.isTextual()) {
-            URI ref = uri.resolve(node.asText());
-            return mapper.readValue(blobStore.readByteArray(ref), externalType);
-          } else {
-            JsonParser p = node.traverse();
-            return mapper.readValue(p, externalType);
-          }
-        }
-      });
-    }
     return new ObjectMapper(yamlFactory)
         .registerModules(module)
         .readValue(blobStore.readByteArray(uri), mainType);
@@ -128,7 +104,5 @@ class YamlReader<T> {
       }
       return null;
     }
-
-
   }
 }

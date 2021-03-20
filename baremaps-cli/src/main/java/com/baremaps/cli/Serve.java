@@ -4,7 +4,7 @@ package com.baremaps.cli;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.FileBlobStore;
 import com.baremaps.config.Config;
-import com.baremaps.config.yaml.YamlConfigReader;
+import com.baremaps.config.YamlReader;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.server.JsonService;
 import com.baremaps.server.TemplateService;
@@ -56,6 +56,13 @@ public class Serve implements Callable<Integer> {
   private URI config;
 
   @Option(
+      names = {"--style"},
+      paramLabel = "STYLE",
+      description = "The style file.",
+      required = false)
+  private URI style;
+
+  @Option(
       names = {"--assets"},
       paramLabel = "ASSETS",
       description = "A directory of static assets.",
@@ -69,7 +76,7 @@ public class Serve implements Callable<Integer> {
 
     logger.info("Initializing server");
     BlobStore blobStore = new FileBlobStore();
-    Config config = new YamlConfigReader(blobStore).load(this.config);
+    Config config = new YamlReader(blobStore).load(this.config, Config.class);
 
     // TODO: Load mapbox style
     Object style = new Object();

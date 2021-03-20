@@ -14,4 +14,8 @@ bounds:
   minZoom: 5
   maxZoom: 6
 layers:
-  - layer.yaml
+  - id: layer
+    queries:
+      - minZoom: 1
+        maxZoom: 2
+        sql: query

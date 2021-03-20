@@ -4,7 +4,7 @@ package com.baremaps.cli;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.FileBlobStore;
 import com.baremaps.config.Config;
-import com.baremaps.config.yaml.YamlConfigReader;
+import com.baremaps.config.YamlReader;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.server.BlueprintMapper;
 import com.baremaps.server.ChangePublisher;
@@ -62,7 +62,7 @@ public class Preview implements Callable<Integer> {
       names = {"--style"},
       paramLabel = "STYLE",
       description = "The style file.",
-      required = true)
+      required = false)
   private URI style;
 
   @Override
@@ -74,7 +74,7 @@ public class Preview implements Callable<Integer> {
     BlobStore blobStore = new FileBlobStore();
     Supplier<Config> configSupplier = () -> {
       try {
-        return new YamlConfigReader(blobStore).load(config);
+        return new YamlReader(blobStore).load(config, Config.class);
       } catch (IOException e) {
         logger.error("Unable to read the configuration file.", e);
       } catch (Exception e) {
