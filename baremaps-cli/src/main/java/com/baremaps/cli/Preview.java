@@ -9,7 +9,6 @@ import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.server.BlueprintMapper;
 import com.baremaps.server.ChangePublisher;
 import com.baremaps.server.JsonService;
-import com.baremaps.server.StyleMapper;
 import com.baremaps.server.TemplateService;
 import com.baremaps.server.TileService;
 import com.baremaps.tile.TileStore;
@@ -59,6 +58,13 @@ public class Preview implements Callable<Integer> {
       required = true)
   private URI config;
 
+  @Option(
+      names = {"--style"},
+      paramLabel = "STYLE",
+      description = "The style file.",
+      required = true)
+  private URI style;
+
   @Override
   public Integer call() throws IOException {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
@@ -99,11 +105,8 @@ public class Preview implements Callable<Integer> {
     HttpService configService = new JsonService(() -> configSupplier.get());
     builder.service("/config.json", configService);
 
-    HttpService styleService = new JsonService(config.getStylesheets().isEmpty()
-        ? () -> new BlueprintMapper().apply(configSupplier.get())
-        : () -> new StyleMapper().apply(configSupplier.get()));
+    HttpService styleService = new JsonService(() -> new BlueprintMapper().apply(configSupplier.get()));
     builder.service("/style.json", styleService);
-
 
     DataSource datasource = PostgresHelper.datasource(database);
     TileStore tileStore = new PostgisTileStore(datasource, configSupplier);

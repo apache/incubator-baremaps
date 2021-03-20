@@ -37,12 +37,6 @@ public class Config {
 
   private List<Layer> layers = Lists.newArrayList();
 
-  private String glyphs = "https://tiles.baremaps.com/fonts/{fontstack}/{range}.pbf";
-
-  private String sprite = "";
-
-  private List<Stylesheet> stylesheets = Lists.newArrayList();
-
   public String getId() {
     return id;
   }
@@ -113,30 +107,6 @@ public class Config {
 
   public void setLayers(List<Layer> layers) {
     this.layers = layers;
-  }
-
-  public String getGlyphs() {
-    return glyphs;
-  }
-
-  public void setGlyphs(String glyphs) {
-    this.glyphs = glyphs;
-  }
-
-  public String getSprite() {
-    return sprite;
-  }
-
-  public void setSprite(String sprite) {
-    this.sprite = sprite;
-  }
-
-  public List<Stylesheet> getStylesheets() {
-    return stylesheets;
-  }
-
-  public void setStylesheets(List<Stylesheet> stylesheets) {
-    this.stylesheets = stylesheets;
   }
 
 }

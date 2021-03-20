@@ -22,8 +22,6 @@ class ConfigYAMLLoaderTest {
     assertEquals(config.getServer().getPort(), 9000);
     assertEquals(config.getLayers().size(), 1);
     assertEquals(config.getLayers().get(0).getId(), "layer");
-    assertEquals(config.getStylesheets().size(), 1);
-    assertEquals(config.getStylesheets().get(0).getId(), "stylesheet");
   }
 
 }

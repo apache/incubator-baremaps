@@ -7,7 +7,6 @@ import com.baremaps.config.Config;
 import com.baremaps.config.yaml.YamlConfigReader;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.server.JsonService;
-import com.baremaps.server.StyleMapper;
 import com.baremaps.server.TemplateService;
 import com.baremaps.server.TileService;
 import com.baremaps.tile.TileCache;
@@ -71,7 +70,10 @@ public class Serve implements Callable<Integer> {
     logger.info("Initializing server");
     BlobStore blobStore = new FileBlobStore();
     Config config = new YamlConfigReader(blobStore).load(this.config);
-    Object style = new StyleMapper().apply(config);
+
+    // TODO: Load mapbox style
+    Object style = new Object();
+
     int threads = Runtime.getRuntime().availableProcessors();
     ScheduledExecutorService executor = Executors.newScheduledThreadPool(threads);
     ServerBuilder builder = Server.builder()

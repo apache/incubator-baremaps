@@ -2,7 +2,6 @@ package com.baremaps.server;
 
 import com.baremaps.config.Config;
 import com.baremaps.config.Layer;
-import com.baremaps.config.Style;
 import com.google.common.collect.ImmutableSortedMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,8 +19,8 @@ public class BlueprintMapper implements Function<Config, Object> {
     return ImmutableSortedMap.naturalOrder()
         .put("id", "baremaps")
         .put("version", 8)
-        .put("sprite", source.getSprite())
-        .put("glyphs", source.getGlyphs())
+        .put("sprite", "")
+        .put("glyphs", "https://tiles.baremaps.com/fonts/{fontstack}/{range}.pbf")
         .put("sources", ImmutableSortedMap.naturalOrder()
             .put("baremaps", ImmutableSortedMap.naturalOrder()
                 .put("type", "vector")
@@ -144,5 +143,106 @@ public class BlueprintMapper implements Function<Config, Object> {
   }
 
 
+  public static class Style {
 
+    private String id;
+
+    private String type;
+
+    private String metadata;
+
+    private Integer minZoom;
+
+    private Integer maxZoom;
+
+    private String source;
+
+    private String layer;
+
+    private List<Object> filter;
+
+    private Object layout;
+
+    private Object paint;
+
+    public String getId() {
+      return id;
+    }
+
+    public void setId(String id) {
+      this.id = id;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public void setType(String type) {
+      this.type = type;
+    }
+
+    public String getMetadata() {
+      return metadata;
+    }
+
+    public void setMetadata(String metadata) {
+      this.metadata = metadata;
+    }
+
+    public Integer getMinZoom() {
+      return minZoom;
+    }
+
+    public void setMinZoom(int minZoom) {
+      this.minZoom = minZoom;
+    }
+
+    public Integer getMaxZoom() {
+      return maxZoom;
+    }
+
+    public void setMaxZoom(int maxZoom) {
+      this.maxZoom = maxZoom;
+    }
+
+    public String getLayer() {
+      return layer;
+    }
+
+    public void setLayer(String layer) {
+      this.layer = layer;
+    }
+
+    public List<Object> getFilter() {
+      return filter;
+    }
+
+    public void setFilter(List<Object> filter) {
+      this.filter = filter;
+    }
+
+    public Object getLayout() {
+      return layout;
+    }
+
+    public void setLayout(Object layout) {
+      this.layout = layout;
+    }
+
+    public Object getPaint() {
+      return paint;
+    }
+
+    public void setPaint(Object paint) {
+      this.paint = paint;
+    }
+
+    public String getSource() {
+      return source;
+    }
+
+    public void setSource(String source) {
+      this.source = source;
+    }
+  }
 }

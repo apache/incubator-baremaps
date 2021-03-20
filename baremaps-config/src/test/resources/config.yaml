@@ -15,5 +15,3 @@ bounds:
   maxZoom: 6
 layers:
   - layer.yaml
-stylesheets:
-  - stylesheet.yaml
