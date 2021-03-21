@@ -4,7 +4,7 @@ package com.baremaps.cli;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.FileBlobStore;
 import com.baremaps.config.Config;
-import com.baremaps.config.YamlReader;
+import com.baremaps.config.YamlStore;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.server.BlueprintMapper;
 import com.baremaps.server.ChangePublisher;
@@ -74,7 +74,7 @@ public class Preview implements Callable<Integer> {
     BlobStore blobStore = new FileBlobStore();
     Supplier<Config> configSupplier = () -> {
       try {
-        return new YamlReader(blobStore).load(config, Config.class);
+        return new YamlStore(blobStore).read(config, Config.class);
       } catch (IOException e) {
         logger.error("Unable to read the configuration file.", e);
       } catch (Exception e) {

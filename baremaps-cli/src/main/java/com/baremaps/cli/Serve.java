@@ -4,7 +4,7 @@ package com.baremaps.cli;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.FileBlobStore;
 import com.baremaps.config.Config;
-import com.baremaps.config.YamlReader;
+import com.baremaps.config.YamlStore;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.server.JsonService;
 import com.baremaps.server.TemplateService;
@@ -76,7 +76,7 @@ public class Serve implements Callable<Integer> {
 
     logger.info("Initializing server");
     BlobStore blobStore = new FileBlobStore();
-    Config config = new YamlReader(blobStore).load(this.config, Config.class);
+    Config config = new YamlStore(blobStore).read(this.config, Config.class);
 
     // TODO: Load mapbox style
     Object style = new Object();
