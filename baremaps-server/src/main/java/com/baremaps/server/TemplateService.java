@@ -13,19 +13,24 @@
  */
 package com.baremaps.server;
 
-
+import com.linecorp.armeria.common.HttpRequest;
+import com.linecorp.armeria.common.HttpResponse;
+import com.linecorp.armeria.common.HttpStatus;
+import com.linecorp.armeria.common.MediaType;
+import com.linecorp.armeria.server.AbstractHttpService;
+import com.linecorp.armeria.server.ServiceRequestContext;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
-import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Get;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Locale;
 import java.util.function.Supplier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class TemplateService {
+public class TemplateService extends AbstractHttpService {
 
   private final Template template;
 
@@ -44,11 +49,11 @@ public class TemplateService {
     this.dataModelSupplier = dataModelSupplier;
   }
 
-  @Get(produces = MediaType.TEXT_PLAIN)
-  public String render() throws IOException, TemplateException {
+  @Override
+  protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) throws IOException, TemplateException {
     StringWriter output = new StringWriter();
     template.process(this.dataModelSupplier.get(), output);
-    return output.toString();
+    return HttpResponse.of(HttpStatus.OK, MediaType.HTML_UTF_8, output.toString());
   }
 
 }

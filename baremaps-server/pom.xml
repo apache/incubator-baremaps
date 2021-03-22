@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
   <artifactId>baremaps-server</artifactId>
   <name>baremaps-server</name>
-  <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <artifactId>baremaps</artifactId>
@@ -11,24 +12,7 @@
     <version>0.4.3-SNAPSHOT</version>
   </parent>
 
-  <properties>
-    <micronaut.version>2.4.1</micronaut.version>
-    <exec.mainClass>com.baremaps.server.Server</exec.mainClass>
-    <micronaut.runtime>netty</micronaut.runtime>
-  </properties>
-
-  <repositories>
-    <repository>
-      <id>central</id>
-      <url>https://repo.maven.apache.org/maven2</url>
-    </repository>
-  </repositories>
-
   <dependencies>
-    <dependency>
-      <groupId>org.freemarker</groupId>
-      <artifactId>freemarker</artifactId>
-    </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-config</artifactId>
@@ -38,79 +22,17 @@
       <artifactId>baremaps-tile</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.micronaut</groupId>
-      <artifactId>micronaut-inject</artifactId>
-      <scope>compile</scope>
+      <groupId>com.linecorp.armeria</groupId>
+      <artifactId>armeria</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.micronaut</groupId>
-      <artifactId>micronaut-validation</artifactId>
-      <scope>compile</scope>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.micronaut</groupId>
-      <artifactId>micronaut-http-server-netty</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.micronaut.test</groupId>
-      <artifactId>micronaut-test-junit5</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.micronaut</groupId>
-      <artifactId>micronaut-http-client</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.micronaut</groupId>
-      <artifactId>micronaut-runtime</artifactId>
-      <scope>compile</scope>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>io.micronaut.build</groupId>
-        <artifactId>micronaut-maven-plugin</artifactId>
-        <version>1.1.7</version>
-        <extensions>true</extensions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
-        <configuration>
-          <annotationProcessorPaths combine.children="append">
-            <path>
-              <groupId>io.micronaut</groupId>
-              <artifactId>micronaut-inject-java</artifactId>
-              <version>${micronaut.version}</version>
-            </path>
-            <path>
-              <groupId>io.micronaut</groupId>
-              <artifactId>micronaut-validation</artifactId>
-              <version>${micronaut.version}</version>
-            </path>
-          </annotationProcessorPaths>
-          <compilerArgs>
-            <arg>-Amicronaut.processing.group=com.baremaps.server</arg>
-            <arg>-Amicronaut.processing.module=baremaps-server</arg>
-          </compilerArgs>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

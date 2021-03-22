@@ -6,12 +6,20 @@ import com.baremaps.blob.FileBlobStore;
 import com.baremaps.config.Config;
 import com.baremaps.config.YamlStore;
 import com.baremaps.osm.postgres.PostgresHelper;
+import com.baremaps.server.JsonService;
+import com.baremaps.server.TemplateService;
+import com.baremaps.server.TileService;
 import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
+import com.linecorp.armeria.server.HttpService;
+import com.linecorp.armeria.server.Server;
+import com.linecorp.armeria.server.ServerBuilder;
+import com.linecorp.armeria.server.file.FileService;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -75,17 +83,37 @@ public class Serve implements Callable<Integer> {
 
     int threads = Runtime.getRuntime().availableProcessors();
     ScheduledExecutorService executor = Executors.newScheduledThreadPool(threads);
-
+    ServerBuilder builder = Server.builder()
+        .defaultHostname(config.getServer().getHost())
+        .http(config.getServer().getPort())
+        .blockingTaskExecutor(executor, true);
 
     logger.info("Initializing services");
+
+    if (assets != null && Files.exists(assets)) {
+      HttpService fileService = FileService.builder(assets).build();
+      builder.service("/", fileService);
+    } else {
+      HttpService indexService = new TemplateService("index.ftl", () -> config);
+      builder.service("/", indexService);
+
+      HttpService styleService = new JsonService(() -> style);
+      builder.service("/style.json", styleService);
+
+      HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");
+      builder.service("/favicon.ico", faviconService);
+    }
 
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(config.getServer().getCache());
     DataSource datasource = PostgresHelper.datasource(database);
     TileStore tileStore = new PostgisTileStore(datasource, () -> config);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
+    HttpService tileService = new TileService(tileCache);
+    builder.service("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).pbf$", tileService);
 
     logger.info("Start server");
-
+    Server server = builder.build();
+    server.start();
 
     return 0;
   }
