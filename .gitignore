@@ -10,6 +10,7 @@
 log/
 target/
 examples/output/
+dependency-reduced-pom.xml
 
 # Release
 /baremaps/

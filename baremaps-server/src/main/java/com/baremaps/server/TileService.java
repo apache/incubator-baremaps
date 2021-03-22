@@ -21,25 +21,20 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
-import com.linecorp.armeria.common.HttpData;
-import com.linecorp.armeria.common.HttpRequest;
-import com.linecorp.armeria.common.HttpResponse;
-import com.linecorp.armeria.common.ResponseHeaders;
-import com.linecorp.armeria.server.AbstractHttpService;
-import com.linecorp.armeria.server.ServiceRequestContext;
-import java.util.concurrent.CompletableFuture;
+import freemarker.template.TemplateException;
+import io.micronaut.core.annotation.Blocking;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TileService extends AbstractHttpService {
+@Controller("/tiles")
+public class TileService {
 
   private static Logger logger = LoggerFactory.getLogger(TileService.class);
-
-  private static final ResponseHeaders headers = ResponseHeaders.builder(200)
-      .add(CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
-      .add(CONTENT_ENCODING, "gzip")
-      .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-      .build();
 
   private final TileStore tileStore;
 
@@ -47,26 +42,25 @@ public class TileService extends AbstractHttpService {
     this.tileStore = tileStore;
   }
 
-  @Override
-  protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) {
-    return HttpResponse.from(CompletableFuture.supplyAsync(() -> {
-      int z = Integer.parseInt(ctx.pathParam("z"));
-      int x = Integer.parseInt(ctx.pathParam("x"));
-      int y = Integer.parseInt(ctx.pathParam("y"));
-      Tile tile = new Tile(x, y, z);
-      try {
-        byte[] bytes = tileStore.read(tile);
-        if (bytes != null) {
-          HttpData data = HttpData.wrap(bytes);
-          return HttpResponse.of(headers, data);
-        } else {
-          return HttpResponse.of(204);
-        }
-      } catch (TileStoreException ex) {
-        logger.error(ex.getMessage());
-        return HttpResponse.of(404);
+  @Blocking
+  @Get("/{z}/{x}/{y}.pbf")
+  public HttpResponse render(int z, int x, int y) throws IOException, TemplateException {
+    Tile tile = new Tile(x, y, z);
+    try {
+      byte[] bytes = tileStore.read(tile);
+      if (bytes != null) {
+        return HttpResponse.status(HttpStatus.OK)
+            .header(CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
+            .header(CONTENT_ENCODING, "gzip")
+            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+            .body(bytes);
+      } else {
+        return HttpResponse.status(HttpStatus.NO_CONTENT);
       }
-    }, ctx.blockingTaskExecutor()));
+    } catch (TileStoreException ex) {
+      logger.error(ex.getMessage());
+      return HttpResponse.status(HttpStatus.NOT_FOUND);
+    }
   }
 
 }
