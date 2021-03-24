@@ -7,25 +7,25 @@ import com.baremaps.config.Config;
 import com.baremaps.config.YamlStore;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.server.BlueprintMapper;
-import com.baremaps.server.ChangePublisher;
 import com.baremaps.server.JsonService;
+import com.baremaps.server.StyleService;
 import com.baremaps.server.TemplateService;
 import com.baremaps.server.TileService;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
+import com.linecorp.armeria.common.HttpMethod;
 import com.linecorp.armeria.server.HttpService;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
+import com.linecorp.armeria.server.cors.CorsService;
 import com.linecorp.armeria.server.file.FileService;
-import com.linecorp.armeria.server.streaming.ServerSentEvents;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
@@ -63,7 +63,7 @@ public class Preview implements Callable<Integer> {
       paramLabel = "STYLE",
       description = "The style file.",
       required = false)
-  private URI style;
+  private Path style;
 
   @Override
   public Integer call() throws IOException {
@@ -102,32 +102,23 @@ public class Preview implements Callable<Integer> {
     HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");
     builder.service("/favicon.ico", faviconService);
 
-    HttpService configService = new JsonService(() -> configSupplier.get());
-    builder.service("/config.json", configService);
+    HttpService blueprintService = new JsonService(() -> new BlueprintMapper().apply(configSupplier.get()));
+    builder.service("/blueprint.json", blueprintService);
 
-    HttpService styleService = new JsonService(() -> new BlueprintMapper().apply(configSupplier.get()));
-    builder.service("/style.json", styleService);
+    builder.annotatedService(new StyleService(style));
 
     DataSource datasource = PostgresHelper.datasource(database);
     TileStore tileStore = new PostgisTileStore(datasource, configSupplier);
     HttpService tileService = new TileService(tileStore);
     builder.service("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).pbf$", tileService);
 
-    // Keep a connection open with the browser.
-    // When the server restarts, for instance when a change occurs in the configuration,
-    // The browser reloads the webpage and displays the changes.
-    logger.info("Watch the configuration file for changes");
-    Path watch = Paths.get(this.config.getPath()).toAbsolutePath().getParent();
-    if (Files.exists(watch)) {
-      ChangePublisher publisher = new ChangePublisher(watch);
-      builder.service("/changes/", (ctx, req) -> {
-        ctx.clearRequestTimeout();
-        return ServerSentEvents.fromPublisher(publisher);
-      });
-    }
-
     logger.info("Start server");
-    Server server = builder.build();
+    Function<? super HttpService, CorsService> corsService =
+        CorsService.builderForAnyOrigin()
+            .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)
+            .allowRequestHeaders("Origin", "Content-Type", "Accept")
+            .newDecorator();
+    Server server = builder.decorator(corsService).build();
     server.start();
 
     return 0;
