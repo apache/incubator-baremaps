@@ -36,10 +36,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "preview", description = "Preview the vector tiles.")
-public class Preview implements Callable<Integer> {
+@Command(name = "studio", description = "Preview and edit the vector tiles.")
+public class Studio implements Callable<Integer> {
 
-  private static Logger logger = LoggerFactory.getLogger(Preview.class);
+  private static Logger logger = LoggerFactory.getLogger(Studio.class);
 
   @Mixin
   private Options options;
