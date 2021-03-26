@@ -1,4 +1,4 @@
-package com.baremaps.server;
+package com.baremaps.server.transfer;
 
 import com.baremaps.config.Config;
 import com.baremaps.config.Layer;
@@ -12,10 +12,9 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class BlueprintMapper implements Function<Config, Object> {
+public class Blueprint {
 
-  @Override
-  public Object apply(Config source) {
+  public static Object toBlueprint(Config config) {
     return ImmutableSortedMap.naturalOrder()
         .put("id", "baremaps")
         .put("version", 8)
@@ -24,17 +23,12 @@ public class BlueprintMapper implements Function<Config, Object> {
         .put("sources", ImmutableSortedMap.naturalOrder()
             .put("baremaps", ImmutableSortedMap.naturalOrder()
                 .put("type", "vector")
-                .put("minZoom", source.getBounds().getMinZoom())
-                .put("maxZoom", source.getBounds().getMaxZoom())
-                .put("bounds", new double[]{
-                    source.getBounds().getMinLon(), source.getBounds().getMinLat(),
-                    source.getBounds().getMaxLon(), source.getBounds().getMaxLat()})
-                .put("tiles", Arrays.asList(String.format("http://%s:%s/tiles/{z}/{x}/{y}.pbf",
-                    source.getServer().getHost(),
-                    source.getServer().getPort())))
+                .put("url",String.format("http://%s:%s/tiles.json",
+                    config.getServer().getHost(),
+                    config.getServer().getPort()))
                 .build())
             .build())
-        .put("layers", styles(source).stream().map(style -> {
+        .put("layers", styles(config).stream().map(style -> {
           Map<String, Object> map = new TreeMap<>();
           map.put("id", style.getId());
           map.put("source", Optional.ofNullable(style.getSource()).orElse("baremaps"));
@@ -51,7 +45,7 @@ public class BlueprintMapper implements Function<Config, Object> {
         .build();
   }
 
-  private List<Style> styles(Config source) {
+  private static List<Style> styles(Config source) {
     List<Style> styles = new ArrayList<>();
     styles.add(background());
     for (Layer layer : source.getLayers()) {
@@ -60,7 +54,7 @@ public class BlueprintMapper implements Function<Config, Object> {
     return styles;
   }
 
-  private Style background() {
+  private static Style background() {
     Style style = new Style();
     style.setId("background");
     style.setType("background");
@@ -73,7 +67,7 @@ public class BlueprintMapper implements Function<Config, Object> {
     return style;
   }
 
-  private List<Style> style(Layer layer) {
+  private static List<Style> style(Layer layer) {
     switch (layer.getType()) {
       case "point":
         return Arrays.asList(point(layer, String.format("%s_point", layer.getId())));
@@ -90,7 +84,7 @@ public class BlueprintMapper implements Function<Config, Object> {
     }
   }
 
-  private Style point(Layer layer, String id) {
+  private static Style point(Layer layer, String id) {
     Style style = new Style();
     style.setId(id);
     style.setLayer(layer.getId());
@@ -107,7 +101,7 @@ public class BlueprintMapper implements Function<Config, Object> {
     return style;
   }
 
-  private Style linestring(Layer layer, String id) {
+  private static Style linestring(Layer layer, String id) {
     Style style = new Style();
     style.setId(id);
     style.setLayer(layer.getId());
@@ -124,7 +118,7 @@ public class BlueprintMapper implements Function<Config, Object> {
     return style;
   }
 
-  private Style polygon(Layer layer, String id) {
+  private static Style polygon(Layer layer, String id) {
     Style style = new Style();
     style.setId(id);
     style.setLayer(layer.getId());

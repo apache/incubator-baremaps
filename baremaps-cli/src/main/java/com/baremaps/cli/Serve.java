@@ -9,6 +9,7 @@ import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.server.JsonService;
 import com.baremaps.server.TemplateService;
 import com.baremaps.server.TileService;
+import com.baremaps.server.transfer.Tileset;
 import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
@@ -24,6 +25,7 @@ import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -108,8 +110,10 @@ public class Serve implements Callable<Integer> {
     DataSource datasource = PostgresHelper.datasource(database);
     TileStore tileStore = new PostgisTileStore(datasource, () -> config);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
-    HttpService tileService = new TileService(tileCache);
-    builder.service("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).pbf$", tileService);
+
+    Object tileset = new Tileset().toTileset(config);
+    Supplier<Object> tilesetSupplier = () -> tileset;
+    builder.annotatedService("/tiles/", new TileService(tileCache));
 
     logger.info("Start server");
     Server server = builder.build();

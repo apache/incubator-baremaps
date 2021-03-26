@@ -13,6 +13,8 @@
  */
 package com.baremaps.config;
 
+import java.util.List;
+
 public class Bounds {
 
   private double minLon = -180;
@@ -73,6 +75,10 @@ public class Bounds {
 
   public void setMaxZoom(double maxZoom) {
     this.maxZoom = maxZoom;
+  }
+
+  public List<Double> asList() {
+    return List.of(minLon, minLat, maxLon, maxLat);
   }
 
 }

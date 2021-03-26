@@ -4,15 +4,15 @@ package com.baremaps.cli;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.FileBlobStore;
 import com.baremaps.config.Config;
-import com.baremaps.config.YamlStore;
 import com.baremaps.osm.postgres.PostgresHelper;
-import com.baremaps.server.BlueprintMapper;
-import com.baremaps.server.JsonService;
+import com.baremaps.server.ConfigService;
 import com.baremaps.server.StyleService;
 import com.baremaps.server.TemplateService;
 import com.baremaps.server.TileService;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.linecorp.armeria.common.HttpMethod;
 import com.linecorp.armeria.server.HttpService;
 import com.linecorp.armeria.server.Server;
@@ -20,7 +20,6 @@ import com.linecorp.armeria.server.ServerBuilder;
 import com.linecorp.armeria.server.cors.CorsService;
 import com.linecorp.armeria.server.file.FileService;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -55,8 +54,8 @@ public class Studio implements Callable<Integer> {
       names = {"--config"},
       paramLabel = "CONFIG",
       description = "The configuration file.",
-      required = true)
-  private URI config;
+      required = false)
+  private Path config;
 
   @Option(
       names = {"--style"},
@@ -72,45 +71,40 @@ public class Studio implements Callable<Integer> {
 
     logger.info("Initializing server");
     BlobStore blobStore = new FileBlobStore();
+
     Supplier<Config> configSupplier = () -> {
       try {
-        return new YamlStore(blobStore).read(config, Config.class);
+        return new ObjectMapper(new YAMLFactory()).readValue(this.config.toFile(), Config.class);
       } catch (IOException e) {
-        logger.error("Unable to read the configuration file.", e);
-      } catch (Exception e) {
-        logger.error("An error occured with the configuration file. ", e);
+        throw new RuntimeException(e);
       }
-      return null;
     };
 
-    Config config = configSupplier.get();
     int threads = Runtime.getRuntime().availableProcessors();
     ScheduledExecutorService executor = Executors.newScheduledThreadPool(threads);
     ServerBuilder builder = Server.builder()
-        .defaultHostname(config.getServer().getHost())
-        .http(config.getServer().getPort())
+        .defaultHostname(configSupplier.get().getServer().getHost())
+        .http(configSupplier.get().getServer().getPort())
         .blockingTaskExecutor(executor, true);
 
     logger.info("Initializing services");
 
-    HttpService previewService = new TemplateService("preview.ftl", configSupplier);
+    HttpService previewService = new TemplateService("preview.ftl", () -> config);
     builder.service("/", previewService);
 
-    HttpService compareService = new TemplateService("compare.ftl", configSupplier);
+    HttpService compareService = new TemplateService("compare.ftl", () -> config);
     builder.service("/compare/", compareService);
 
     HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");
     builder.service("/favicon.ico", faviconService);
 
-    HttpService blueprintService = new JsonService(() -> new BlueprintMapper().apply(configSupplier.get()));
-    builder.service("/blueprint.json", blueprintService);
-
+    builder.annotatedService(new ConfigService(this.config));
     builder.annotatedService(new StyleService(style));
 
     DataSource datasource = PostgresHelper.datasource(database);
     TileStore tileStore = new PostgisTileStore(datasource, configSupplier);
-    HttpService tileService = new TileService(tileStore);
-    builder.service("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).pbf$", tileService);
+
+    builder.annotatedService(new TileService(tileStore));
 
     logger.info("Start server");
     Function<? super HttpService, CorsService> corsService =

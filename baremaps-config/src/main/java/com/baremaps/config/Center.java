@@ -13,6 +13,8 @@
  */
 package com.baremaps.config;
 
+import java.util.List;
+
 public class Center {
 
   private double lon = 0;
@@ -65,4 +67,7 @@ public class Center {
     this.pitch = pitch;
   }
 
+  public List<Double> asList() {
+    return List.of(lon, lat, zoom);
+  }
 }
