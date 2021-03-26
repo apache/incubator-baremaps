@@ -32,9 +32,9 @@ public class TemplateService extends AbstractHttpService {
 
   private final Template template;
 
-  public final Supplier<?> dataModelSupplier;
+  public final Object data;
 
-  public TemplateService(String template, Supplier<?> dataModelSupplier) throws IOException {
+  public TemplateService(String template, Object dataModel) throws IOException {
     Configuration config = new Configuration(Configuration.VERSION_2_3_29);
     config.setLocale(Locale.US);
     config.setClassForTemplateLoading(this.getClass(), "/");
@@ -44,13 +44,13 @@ public class TemplateService extends AbstractHttpService {
     config.setWrapUncheckedExceptions(true);
     config.setFallbackOnNullLoopVariable(false);
     this.template = config.getTemplate(template);
-    this.dataModelSupplier = dataModelSupplier;
+    this.data = dataModel;
   }
 
   @Override
   protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) throws IOException, TemplateException {
     StringWriter output = new StringWriter();
-    template.process(this.dataModelSupplier.get(), output);
+    template.process(this.data, output);
     return HttpResponse.of(HttpStatus.OK, MediaType.HTML_UTF_8, output.toString());
   }
 
