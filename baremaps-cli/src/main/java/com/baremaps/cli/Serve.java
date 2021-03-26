@@ -98,9 +98,6 @@ public class Serve implements Callable<Integer> {
       HttpService indexService = new TemplateService("index.ftl", config);
       builder.service("/", indexService);
 
-      HttpService styleService = new JsonService(() -> style);
-      builder.service("/style.json", styleService);
-
       HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");
       builder.service("/favicon.ico", faviconService);
     }

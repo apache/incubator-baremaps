@@ -164,7 +164,7 @@ public class Export implements Callable<Integer> {
   }
 
   private TileStore sourceTileStore(Config config, DataSource datasource) {
-    return new PostgisTileStore(datasource, () -> config);
+    return new PostgisTileStore(datasource, config);
   }
 
   private TileStore targetTileStore(Config source, BlobStore blobStore)
