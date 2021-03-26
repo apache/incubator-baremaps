@@ -86,11 +86,11 @@ public class PostgisTileStore implements TileStore {
 
   private final DataSource datasource;
 
-  private final Supplier<Config> provider;
+  private final Config config;
 
-  public PostgisTileStore(DataSource datasource, Supplier<Config> provider) {
+  public PostgisTileStore(DataSource datasource, Config config) {
     this.datasource = datasource;
-    this.provider = provider;
+    this.config = config;
   }
 
   public Envelope envelope() throws SQLException, ParseException {
@@ -136,7 +136,7 @@ public class PostgisTileStore implements TileStore {
   }
 
   private String query(Tile tile) {
-    Map<Layer, List<Parse>> parses = provider.get().getLayers().stream()
+    Map<Layer, List<Parse>> parses = config.getLayers().stream()
         .flatMap(layer -> layer.getQueries().stream().map(query -> PostgisQueryParser.parse(layer, query)))
         .collect(Collectors.groupingBy(q -> q.getLayer()));
     String sources = parses.entrySet().stream()
