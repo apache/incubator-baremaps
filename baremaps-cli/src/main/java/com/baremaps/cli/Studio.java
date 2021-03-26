@@ -5,7 +5,6 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.FileBlobStore;
 import com.baremaps.config.Config;
 import com.baremaps.osm.postgres.PostgresHelper;
-import com.baremaps.server.ConfigService;
 import com.baremaps.server.StyleService;
 import com.baremaps.server.TemplateService;
 import com.baremaps.server.TileService;
@@ -72,37 +71,30 @@ public class Studio implements Callable<Integer> {
     logger.info("Initializing server");
     BlobStore blobStore = new FileBlobStore();
 
-    Supplier<Config> configSupplier = () -> {
-      try {
-        return new ObjectMapper(new YAMLFactory()).readValue(this.config.toFile(), Config.class);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    };
+    Config config = new ObjectMapper(new YAMLFactory()).readValue(this.config.toFile(), Config.class);
 
     int threads = Runtime.getRuntime().availableProcessors();
     ScheduledExecutorService executor = Executors.newScheduledThreadPool(threads);
     ServerBuilder builder = Server.builder()
-        .defaultHostname(configSupplier.get().getServer().getHost())
-        .http(configSupplier.get().getServer().getPort())
+        .defaultHostname(config.getServer().getHost())
+        .http(config.getServer().getPort())
         .blockingTaskExecutor(executor, true);
 
     logger.info("Initializing services");
 
-    HttpService previewService = new TemplateService("preview.ftl", () -> config);
+    HttpService previewService = new TemplateService("preview.ftl", config);
     builder.service("/", previewService);
 
-    HttpService compareService = new TemplateService("compare.ftl", () -> config);
+    HttpService compareService = new TemplateService("compare.ftl", config);
     builder.service("/compare/", compareService);
 
     HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");
     builder.service("/favicon.ico", faviconService);
 
-    builder.annotatedService(new ConfigService(this.config));
     builder.annotatedService(new StyleService(style));
 
     DataSource datasource = PostgresHelper.datasource(database);
-    TileStore tileStore = new PostgisTileStore(datasource, configSupplier);
+    TileStore tileStore = new PostgisTileStore(datasource, config);
 
     builder.annotatedService(new TileService(tileStore));
 

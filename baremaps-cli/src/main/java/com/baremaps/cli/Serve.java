@@ -6,7 +6,6 @@ import com.baremaps.blob.FileBlobStore;
 import com.baremaps.config.Config;
 import com.baremaps.config.YamlStore;
 import com.baremaps.osm.postgres.PostgresHelper;
-import com.baremaps.server.JsonService;
 import com.baremaps.server.TemplateService;
 import com.baremaps.server.TileService;
 import com.baremaps.server.transfer.Tileset;
@@ -96,7 +95,7 @@ public class Serve implements Callable<Integer> {
       HttpService fileService = FileService.builder(assets).build();
       builder.service("/", fileService);
     } else {
-      HttpService indexService = new TemplateService("index.ftl", () -> config);
+      HttpService indexService = new TemplateService("index.ftl", config);
       builder.service("/", indexService);
 
       HttpService styleService = new JsonService(() -> style);
@@ -108,7 +107,7 @@ public class Serve implements Callable<Integer> {
 
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(config.getServer().getCache());
     DataSource datasource = PostgresHelper.datasource(database);
-    TileStore tileStore = new PostgisTileStore(datasource, () -> config);
+    TileStore tileStore = new PostgisTileStore(datasource, config);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
     Object tileset = new Tileset().toTileset(config);
