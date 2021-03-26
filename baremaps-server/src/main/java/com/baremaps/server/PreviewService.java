@@ -16,15 +16,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Sinks;
 
-public class StyleService {
+public class PreviewService {
 
-  private static Logger logger = LoggerFactory.getLogger(StyleService.class);
+  private static Logger logger = LoggerFactory.getLogger(PreviewService.class);
 
   private final Sinks.Many sink = Sinks.many().multicast().onBackpressureBuffer();
 
+  private final String database;
+
+  private final Path config;
+
   private final Path style;
 
-  public StyleService(Path style) {
+  public PreviewService(String database, Path config, Path style) {
+    this.database = database;
+    this.config = config;
     this.style = style;
   }
 

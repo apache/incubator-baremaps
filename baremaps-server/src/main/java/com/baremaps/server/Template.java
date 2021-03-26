@@ -13,28 +13,18 @@
  */
 package com.baremaps.server;
 
-import com.linecorp.armeria.common.HttpRequest;
-import com.linecorp.armeria.common.HttpResponse;
-import com.linecorp.armeria.common.HttpStatus;
-import com.linecorp.armeria.common.MediaType;
-import com.linecorp.armeria.server.AbstractHttpService;
-import com.linecorp.armeria.server.ServiceRequestContext;
 import freemarker.template.Configuration;
-import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Locale;
-import java.util.function.Supplier;
 
-public class TemplateService extends AbstractHttpService {
+public class Template {
 
-  private final Template template;
+  private final freemarker.template.Template template;
 
-  public final Object data;
-
-  public TemplateService(String template, Object dataModel) throws IOException {
+  public Template(String template) throws IOException {
     Configuration config = new Configuration(Configuration.VERSION_2_3_29);
     config.setLocale(Locale.US);
     config.setClassForTemplateLoading(this.getClass(), "/");
@@ -44,14 +34,12 @@ public class TemplateService extends AbstractHttpService {
     config.setWrapUncheckedExceptions(true);
     config.setFallbackOnNullLoopVariable(false);
     this.template = config.getTemplate(template);
-    this.data = dataModel;
   }
 
-  @Override
-  protected HttpResponse doGet(ServiceRequestContext ctx, HttpRequest req) throws IOException, TemplateException {
+  protected String render(Object dataModel) throws IOException, TemplateException {
     StringWriter output = new StringWriter();
-    template.process(this.data, output);
-    return HttpResponse.of(HttpStatus.OK, MediaType.HTML_UTF_8, output.toString());
+    template.process(dataModel, output);
+    return output.toString();
   }
 
 }

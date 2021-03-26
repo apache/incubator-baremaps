@@ -6,7 +6,7 @@ import com.baremaps.blob.FileBlobStore;
 import com.baremaps.config.Config;
 import com.baremaps.config.YamlStore;
 import com.baremaps.osm.postgres.PostgresHelper;
-import com.baremaps.server.TemplateService;
+import com.baremaps.server.Template;
 import com.baremaps.server.TileService;
 import com.baremaps.server.transfer.Tileset;
 import com.baremaps.tile.TileCache;
@@ -95,7 +95,7 @@ public class Serve implements Callable<Integer> {
       HttpService fileService = FileService.builder(assets).build();
       builder.service("/", fileService);
     } else {
-      HttpService indexService = new TemplateService("index.ftl", config);
+      HttpService indexService = new Template("index.ftl", config);
       builder.service("/", indexService);
 
       HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");

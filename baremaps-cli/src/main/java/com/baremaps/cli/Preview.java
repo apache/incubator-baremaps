@@ -1,12 +1,10 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.FileBlobStore;
 import com.baremaps.config.Config;
 import com.baremaps.osm.postgres.PostgresHelper;
-import com.baremaps.server.StyleService;
-import com.baremaps.server.TemplateService;
+import com.baremaps.server.PreviewService;
+import com.baremaps.server.Template;
 import com.baremaps.server.TileService;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
@@ -24,7 +22,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -34,10 +31,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "studio", description = "Preview and edit the vector tiles.")
-public class Studio implements Callable<Integer> {
+@Command(name = "preview", description = "Preview and edit the vector tiles.")
+public class Preview implements Callable<Integer> {
 
-  private static Logger logger = LoggerFactory.getLogger(Studio.class);
+  private static Logger logger = LoggerFactory.getLogger(Preview.class);
 
   @Mixin
   private Options options;
@@ -53,23 +50,21 @@ public class Studio implements Callable<Integer> {
       names = {"--config"},
       paramLabel = "CONFIG",
       description = "The configuration file.",
-      required = false)
+      required = true)
   private Path config;
 
   @Option(
       names = {"--style"},
       paramLabel = "STYLE",
       description = "The style file.",
-      required = false)
+      required = true)
   private Path style;
 
   @Override
   public Integer call() throws IOException {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
-
     logger.info("Initializing server");
-    BlobStore blobStore = new FileBlobStore();
 
     Config config = new ObjectMapper(new YAMLFactory()).readValue(this.config.toFile(), Config.class);
 
@@ -82,16 +77,16 @@ public class Studio implements Callable<Integer> {
 
     logger.info("Initializing services");
 
-    HttpService previewService = new TemplateService("preview.ftl", config);
+    HttpService previewService = new Template("preview.ftl", config);
     builder.service("/", previewService);
 
-    HttpService compareService = new TemplateService("compare.ftl", config);
+    HttpService compareService = new Template("compare.ftl", config);
     builder.service("/compare/", compareService);
 
     HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");
     builder.service("/favicon.ico", faviconService);
 
-    builder.annotatedService(new StyleService(style));
+    builder.annotatedService(new PreviewService(this.database, this.config, this.style));
 
     DataSource datasource = PostgresHelper.datasource(database);
     TileStore tileStore = new PostgisTileStore(datasource, config);
