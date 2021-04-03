@@ -25,9 +25,7 @@ public class Bounds {
 
   private double maxLat = 85.05113;
 
-  private double minZoom = 0;
 
-  private double maxZoom = 20;
 
   public double getMinLon() {
     return minLon;
@@ -59,22 +57,6 @@ public class Bounds {
 
   public void setMaxLat(double maxLat) {
     this.maxLat = maxLat;
-  }
-
-  public double getMinZoom() {
-    return minZoom;
-  }
-
-  public void setMinZoom(double minZoom) {
-    this.minZoom = minZoom;
-  }
-
-  public double getMaxZoom() {
-    return maxZoom;
-  }
-
-  public void setMaxZoom(double maxZoom) {
-    this.maxZoom = maxZoom;
   }
 
   public List<Double> asList() {

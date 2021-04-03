@@ -17,7 +17,7 @@ package com.baremaps.cli;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.config.Config;
 import com.baremaps.config.Query;
-import com.baremaps.config.YamlStore;
+import com.baremaps.config.BlobMapper;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.stream.StreamUtils;
@@ -118,7 +118,7 @@ public class Export implements Callable<Integer> {
 
     // Read the configuration file
     logger.info("Reading configuration");
-    Config source = new YamlStore(blobStore).read(this.source, Config.class);
+    Config source = new BlobMapper(blobStore).read(this.source, Config.class);
 
     logger.info("Initializing the source tile store");
     final TileStore tileSource = sourceTileStore(source, datasource);
@@ -135,11 +135,11 @@ public class Export implements Callable<Integer> {
           source.getBounds().getMinLon(), source.getBounds().getMaxLon(),
           source.getBounds().getMinLat(), source.getBounds().getMaxLat());
       long count = Tile.count(envelope,
-          (int) source.getBounds().getMinZoom(),
-          (int) source.getBounds().getMaxZoom());
+          (int) source.getMinZoom(),
+          (int) source.getMaxZoom());
       stream = StreamUtils.stream(Tile.iterator(envelope,
-          (int) source.getBounds().getMinZoom(),
-          (int) source.getBounds().getMaxZoom()))
+          (int) source.getMinZoom(),
+          (int) source.getMaxZoom()))
           .peek(new StreamProgress<>(count, 5000));
     } else {
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(blobStore.read(tiles)))) {
@@ -150,8 +150,8 @@ public class Export implements Callable<Integer> {
           int z = Integer.parseInt(array[2]);
           Tile tile = new Tile(x, y, z);
           return StreamUtils.stream(Tile.iterator(tile.envelope(),
-              (int) source.getBounds().getMinZoom(),
-              (int) source.getBounds().getMaxZoom()));
+              (int) source.getMinZoom(),
+              (int) source.getMaxZoom()));
         });
       }
     }
@@ -193,8 +193,8 @@ public class Export implements Callable<Integer> {
     metadata.put("bounds", String.format("%f, %f, %f, %f",
         config.getBounds().getMinLon(), config.getBounds().getMinLat(),
         config.getBounds().getMaxLon(), config.getBounds().getMaxLat()));
-    metadata.put("minzoom", Double.toString(config.getBounds().getMinZoom()));
-    metadata.put("maxzoom", Double.toString(config.getBounds().getMaxZoom()));
+    metadata.put("minzoom", Double.toString(config.getMinZoom()));
+    metadata.put("maxzoom", Double.toString(config.getMaxZoom()));
     List<Map<String, Object>> layers = config.getLayers().stream().map(layer -> {
       Map<String, Object> map = new HashMap<>();
       map.put("id", layer.getId());

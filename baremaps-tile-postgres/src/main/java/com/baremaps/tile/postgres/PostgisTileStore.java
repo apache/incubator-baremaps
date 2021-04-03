@@ -32,7 +32,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 import javax.sql.DataSource;

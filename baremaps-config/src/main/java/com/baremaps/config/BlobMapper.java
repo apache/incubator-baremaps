@@ -3,12 +3,17 @@ package com.baremaps.config;
 import static com.baremaps.config.Variables.interpolate;
 
 import com.baremaps.blob.BlobStore;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.io.IOContext;
 import com.fasterxml.jackson.core.util.BufferRecycler;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLParser;
 import java.io.CharArrayReader;
 import java.io.IOException;
@@ -18,40 +23,54 @@ import java.net.URI;
 import java.util.Map;
 
 /**
- * A Base class for loading YAML files.
+ * A base class for reading and writing configuration files in a BlobStore.
  */
-public class YamlStore {
+public class BlobMapper {
 
   private final BlobStore blobStore;
 
   private final Map<String, String> variables;
 
-  public YamlStore(BlobStore blobStore) {
+  public BlobMapper(BlobStore blobStore) {
     this(blobStore, System.getenv());
   }
 
-  public YamlStore(BlobStore blobStore, Map<String, String> variables) {
+  public BlobMapper(BlobStore blobStore, Map<String, String> variables) {
     this.blobStore = blobStore;
     this.variables = variables;
   }
 
+  public boolean exists(URI uri) {
+    try {
+      blobStore.read(uri);
+      return true;
+    } catch (IOException e) {
+      return false;
+    }
+  }
+
   public <T> T read(URI uri, Class<T> mainType) throws IOException {
-    YAMLConfigFactory yamlFactory = new YAMLConfigFactory();
+    JsonFactory jsonFactory = uri.getPath().endsWith(".json") ? new JsonFactory() : new YamlConfigFactory();
+    ObjectMapper mapper = new ObjectMapper(jsonFactory);
     SimpleModule module = new SimpleModule();
-    ObjectMapper mapper = new ObjectMapper(yamlFactory);
     mapper.registerModules(module);
     return mapper.readValue(blobStore.readByteArray(uri), mainType);
   }
 
   public void write(URI uri, Object object) throws IOException {
-    YAMLConfigFactory yamlFactory = new YAMLConfigFactory();
+    JsonFactory jsonFactory = uri.getPath().endsWith(".json") ? new JsonFactory() : new YamlConfigFactory();
+    ObjectMapper mapper = new ObjectMapper(jsonFactory);
     SimpleModule module = new SimpleModule();
-    ObjectMapper mapper = new ObjectMapper(yamlFactory);
     mapper.registerModules(module);
-    blobStore.writeByteArray(uri, mapper.writeValueAsBytes(object));
+    blobStore.writeByteArray(uri, mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(object));
   }
 
-  private class YAMLConfigFactory extends YAMLFactory {
+  private class YamlConfigFactory extends YAMLFactory {
+
+    public YamlConfigFactory() {
+      super();
+      disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER);
+    }
 
     @Override
     protected YAMLParser _createParser(InputStream in, IOContext ctxt) throws IOException {

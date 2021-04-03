@@ -23,10 +23,6 @@ public class Center {
 
   private double zoom = 0;
 
-  private double bearing = 0;
-
-  private double pitch = 0;
-
   public double getLon() {
     return lon;
   }
@@ -49,22 +45,6 @@ public class Center {
 
   public void setZoom(double zoom) {
     this.zoom = zoom;
-  }
-
-  public double getBearing() {
-    return bearing;
-  }
-
-  public void setBearing(double bearing) {
-    this.bearing = bearing;
-  }
-
-  public double getPitch() {
-    return pitch;
-  }
-
-  public void setPitch(double pitch) {
-    this.pitch = pitch;
   }
 
   public List<Double> asList() {

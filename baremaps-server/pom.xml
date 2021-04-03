@@ -22,6 +22,10 @@
       <artifactId>baremaps-tile</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-tile-postgres</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.linecorp.armeria</groupId>
       <artifactId>armeria</artifactId>
     </dependency>

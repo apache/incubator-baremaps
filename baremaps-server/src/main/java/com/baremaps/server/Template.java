@@ -36,7 +36,7 @@ public class Template {
     this.template = config.getTemplate(template);
   }
 
-  protected String render(Object dataModel) throws IOException, TemplateException {
+  public String render(Object dataModel) throws IOException, TemplateException {
     StringWriter output = new StringWriter();
     template.process(dataModel, output);
     return output.toString();

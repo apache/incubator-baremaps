@@ -1,4 +1,4 @@
-package com.baremaps.server.transfer;
+package com.baremaps.server;
 
 import com.baremaps.config.Config;
 import com.baremaps.config.Layer;
@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Blueprint {

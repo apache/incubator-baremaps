@@ -15,7 +15,7 @@ class ConfigYAMLLoaderTest {
   @Test
   public void load() throws URISyntaxException, IOException {
     Map<String, String> variables = ImmutableMap.of("host", "localhost", "port", "9000");
-    Config config = new YamlStore(new ResourceBlobStore(), variables).read(new URI("res://./config.yaml"), Config.class);
+    Config config = new BlobMapper(new ResourceBlobStore(), variables).read(new URI("res://./config.yaml"), Config.class);
     assertEquals(config.getId(), "config");
     assertEquals(config.getServer().getHost(), "localhost");
     assertEquals(config.getServer().getPort(), 9000);

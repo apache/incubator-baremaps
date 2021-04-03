@@ -1,27 +1,21 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.blob.FileBlobStore;
+import com.baremaps.config.BlobMapper;
 import com.baremaps.config.Config;
 import com.baremaps.osm.postgres.PostgresHelper;
-import com.baremaps.server.PreviewService;
-import com.baremaps.server.Template;
-import com.baremaps.server.TileService;
+import com.baremaps.server.EditorService;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.linecorp.armeria.common.HttpMethod;
-import com.linecorp.armeria.server.HttpService;
 import com.linecorp.armeria.server.Server;
-import com.linecorp.armeria.server.ServerBuilder;
 import com.linecorp.armeria.server.cors.CorsService;
-import com.linecorp.armeria.server.file.FileService;
+import com.linecorp.armeria.server.logging.LoggingService;
 import java.io.IOException;
-import java.nio.file.Path;
+import java.net.URI;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Function;
+import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -49,58 +43,46 @@ public class Preview implements Callable<Integer> {
   @Option(
       names = {"--config"},
       paramLabel = "CONFIG",
-      description = "The configuration file.",
+      description = "The tileset file.",
       required = true)
-  private Path config;
+  private URI config;
 
   @Option(
       names = {"--style"},
       paramLabel = "STYLE",
       description = "The style file.",
       required = true)
-  private Path style;
+  private URI style;
 
   @Override
   public Integer call() throws IOException {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
-    logger.info("Initializing server");
 
-    Config config = new ObjectMapper(new YAMLFactory()).readValue(this.config.toFile(), Config.class);
+    BlobMapper mapper = new BlobMapper(new FileBlobStore());
+    Config config = mapper.read(this.config, Config.class);
+    DataSource dataSource = PostgresHelper.datasource(database);
+    Supplier<TileStore> tileStoreSupplier = () -> {
+      try {
+        return new PostgisTileStore(dataSource, mapper.read(this.config, Config.class));
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    };
 
-    int threads = Runtime.getRuntime().availableProcessors();
-    ScheduledExecutorService executor = Executors.newScheduledThreadPool(threads);
-    ServerBuilder builder = Server.builder()
+    Server.builder()
         .defaultHostname(config.getServer().getHost())
         .http(config.getServer().getPort())
-        .blockingTaskExecutor(executor, true);
-
-    logger.info("Initializing services");
-
-    HttpService previewService = new Template("preview.ftl", config);
-    builder.service("/", previewService);
-
-    HttpService compareService = new Template("compare.ftl", config);
-    builder.service("/compare/", compareService);
-
-    HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");
-    builder.service("/favicon.ico", faviconService);
-
-    builder.annotatedService(new PreviewService(this.database, this.config, this.style));
-
-    DataSource datasource = PostgresHelper.datasource(database);
-    TileStore tileStore = new PostgisTileStore(datasource, config);
-
-    builder.annotatedService(new TileService(tileStore));
-
-    logger.info("Start server");
-    Function<? super HttpService, CorsService> corsService =
-        CorsService.builderForAnyOrigin()
+        .annotatedService(new EditorService(mapper, this.config, this.style, tileStoreSupplier))
+        .decorator(CorsService.builderForAnyOrigin()
             .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)
             .allowRequestHeaders("Origin", "Content-Type", "Accept")
-            .newDecorator();
-    Server server = builder.decorator(corsService).build();
-    server.start();
+            .newDecorator())
+        .decorator(LoggingService.newDecorator())
+        .disableServerHeader()
+        .disableDateHeader()
+        .build()
+        .start();
 
     return 0;
   }

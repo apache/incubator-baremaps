@@ -12,7 +12,7 @@ class MappingYAMLLoaderTest {
 
   @Test
   public void load() throws URISyntaxException, IOException {
-    Mapping mapping = new YamlStore(new ResourceBlobStore()).read(new URI("res://./mapping.yaml"), Mapping.class);
+    Mapping mapping = new BlobMapper(new ResourceBlobStore()).read(new URI("res://./mapping.yaml"), Mapping.class);
     assertEquals(mapping.getAllowTags().size(), 2);
     assertEquals(mapping.getAllowTags().get(0), "tag1");
     assertEquals(mapping.getAllowTags().get(1), "tag2");

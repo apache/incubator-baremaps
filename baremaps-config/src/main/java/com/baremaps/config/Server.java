@@ -38,7 +38,6 @@ public class Server {
     this.port = port;
   }
 
-
   public String getCache() {
     return cache;
   }
@@ -46,4 +45,5 @@ public class Server {
   public void setCache(String cache) {
     this.cache = cache;
   }
+
 }

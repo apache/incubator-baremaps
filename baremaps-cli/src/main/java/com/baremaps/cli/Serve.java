@@ -4,11 +4,9 @@ package com.baremaps.cli;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.FileBlobStore;
 import com.baremaps.config.Config;
-import com.baremaps.config.YamlStore;
+import com.baremaps.config.BlobMapper;
 import com.baremaps.osm.postgres.PostgresHelper;
-import com.baremaps.server.Template;
 import com.baremaps.server.TileService;
-import com.baremaps.server.transfer.Tileset;
 import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
@@ -24,7 +22,6 @@ import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -77,10 +74,7 @@ public class Serve implements Callable<Integer> {
 
     logger.info("Initializing server");
     BlobStore blobStore = new FileBlobStore();
-    Config config = new YamlStore(blobStore).read(this.config, Config.class);
-
-    // TODO: Load mapbox style
-    Object style = new Object();
+    Config config = new BlobMapper(blobStore).read(this.config, Config.class);
 
     int threads = Runtime.getRuntime().availableProcessors();
     ScheduledExecutorService executor = Executors.newScheduledThreadPool(threads);
@@ -95,9 +89,6 @@ public class Serve implements Callable<Integer> {
       HttpService fileService = FileService.builder(assets).build();
       builder.service("/", fileService);
     } else {
-      HttpService indexService = new Template("index.ftl", config);
-      builder.service("/", indexService);
-
       HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");
       builder.service("/favicon.ico", faviconService);
     }
@@ -107,8 +98,6 @@ public class Serve implements Callable<Integer> {
     TileStore tileStore = new PostgisTileStore(datasource, config);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
-    Object tileset = new Tileset().toTileset(config);
-    Supplier<Object> tilesetSupplier = () -> tileset;
     builder.annotatedService("/tiles/", new TileService(tileCache));
 
     logger.info("Start server");

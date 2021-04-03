@@ -35,6 +35,10 @@ public class Config {
 
   private Bounds bounds = new Bounds();
 
+  private double minZoom = 0;
+
+  private double maxZoom = 20;
+
   private List<Layer> layers = Lists.newArrayList();
 
   public String getId() {
@@ -99,6 +103,22 @@ public class Config {
 
   public void setBounds(Bounds bounds) {
     this.bounds = bounds;
+  }
+
+  public double getMinZoom() {
+    return minZoom;
+  }
+
+  public void setMinZoom(double minZoom) {
+    this.minZoom = minZoom;
+  }
+
+  public double getMaxZoom() {
+    return maxZoom;
+  }
+
+  public void setMaxZoom(double maxZoom) {
+    this.maxZoom = maxZoom;
   }
 
   public List<Layer> getLayers() {
