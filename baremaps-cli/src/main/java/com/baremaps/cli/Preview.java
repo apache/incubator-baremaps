@@ -14,6 +14,7 @@ import com.linecorp.armeria.server.cors.CorsService;
 import com.linecorp.armeria.server.logging.LoggingService;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import javax.sql.DataSource;
@@ -43,7 +44,7 @@ public class Preview implements Callable<Integer> {
       names = {"--port"},
       paramLabel = "PORT",
       description = "The port of the server.")
-  private int port = 9001;
+  private int port = 9000;
 
   @Option(
       names = {"--database"},
@@ -55,16 +56,18 @@ public class Preview implements Callable<Integer> {
   @Option(
       names = {"--config"},
       paramLabel = "CONFIG",
-      description = "The tileset file.",
-      required = true)
-  private URI config;
+      description = "The tileset file.")
+  private URI config = new URI("file://config.json");;
 
   @Option(
       names = {"--style"},
       paramLabel = "STYLE",
-      description = "The style file.",
-      required = true)
-  private URI style;
+      description = "The style file.")
+  private URI style = new URI("file://style.json");
+
+  public Preview() throws URISyntaxException {
+
+  }
 
   @Override
   public Integer call() throws IOException {

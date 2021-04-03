@@ -4,15 +4,14 @@ center:
   lat: 47.1660
   zoom: 14
 bounds:
-  minLon: 9.471078
-  maxLon: 9.636217
-  minLat: 47.04774
-  maxLat: 47.27128
-  minZoom: 12
-  maxZoom: 20
+  - 9.471078
+  - 47.04774
+  - 9.636217
+  - 47.27128
+minZoom: 12
+maxZoom: 20
 layers:
   - id: 'aster_dem'
-    type: 'geometry'
     queries:
       - minZoom: 12
         maxZoom: 20

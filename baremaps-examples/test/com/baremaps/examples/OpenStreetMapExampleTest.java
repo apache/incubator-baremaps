@@ -104,18 +104,8 @@ public class OpenStreetMapExampleTest {
     // Wait for the server to start
     Thread.sleep(1000);
 
-    // Download a static file
-    HttpURLConnection indexConnection = (HttpURLConnection) new URL("http://localhost:9000/")
-        .openConnection();
-    InputStream indexInputStream = indexConnection.getInputStream();
-    try (final Reader reader = new InputStreamReader(indexInputStream)) {
-      String text = CharStreams.toString(reader);
-      assertTrue(text.contains("Baremaps"));
-    }
-    assertEquals(indexConnection.getResponseCode(), 200);
-
     // Download a tile file
-    HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:9000/tiles/14/8626/5750.pbf")
+    HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:9000/tiles/14/8626/5750.mvt")
         .openConnection();
     connection.connect();
     assertEquals(connection.getResponseCode(), 200);
