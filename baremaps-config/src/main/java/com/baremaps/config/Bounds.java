@@ -13,19 +13,19 @@
  */
 package com.baremaps.config;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.List;
 
+@JsonFormat(shape= JsonFormat.Shape.ARRAY)
 public class Bounds {
 
   private double minLon = -180;
 
-  private double maxLon = 180;
-
   private double minLat = -85.05113;
 
+  private double maxLon = 180;
+
   private double maxLat = 85.05113;
-
-
 
   public double getMinLon() {
     return minLon;
@@ -35,20 +35,20 @@ public class Bounds {
     this.minLon = minLon;
   }
 
-  public double getMaxLon() {
-    return maxLon;
-  }
-
-  public void setMaxLon(double maxLon) {
-    this.maxLon = maxLon;
-  }
-
   public double getMinLat() {
     return minLat;
   }
 
   public void setMinLat(double minLat) {
     this.minLat = minLat;
+  }
+
+  public double getMaxLon() {
+    return maxLon;
+  }
+
+  public void setMaxLon(double maxLon) {
+    this.maxLon = maxLon;
   }
 
   public double getMaxLat() {

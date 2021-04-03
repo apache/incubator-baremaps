@@ -14,9 +14,16 @@
 
 package com.baremaps.config;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.google.common.collect.Lists;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonPropertyOrder({
+    "id", "name", "version", "description",
+    "attribution", "center", "bounds", "minzoom",
+    "maxzoom", "layers"})
 public class Config {
 
   private String id;
@@ -29,11 +36,11 @@ public class Config {
 
   private String attribution;
 
-  private Server server = new Server();
-
   private Center center = new Center();
 
   private Bounds bounds = new Bounds();
+
+  private Server server = new Server();
 
   private double minZoom = 0;
 

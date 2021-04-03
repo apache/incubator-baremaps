@@ -13,8 +13,10 @@
  */
 package com.baremaps.config;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.List;
 
+@JsonFormat(shape= JsonFormat.Shape.ARRAY)
 public class Center {
 
   private double lon = 0;
