@@ -79,8 +79,8 @@ public class Serve implements Callable<Integer> {
     int threads = Runtime.getRuntime().availableProcessors();
     ScheduledExecutorService executor = Executors.newScheduledThreadPool(threads);
     ServerBuilder builder = Server.builder()
-        .defaultHostname(tileset.getServer().getHost())
-        .http(tileset.getServer().getPort())
+        .defaultHostname("localhost")
+        .http(9000)
         .blockingTaskExecutor(executor, true);
 
     logger.info("Initializing services");
@@ -93,7 +93,7 @@ public class Serve implements Callable<Integer> {
       builder.service("/favicon.ico", faviconService);
     }
 
-    CaffeineSpec caffeineSpec = CaffeineSpec.parse(tileset.getServer().getCache());
+    CaffeineSpec caffeineSpec = CaffeineSpec.parse("");
     DataSource datasource = PostgresHelper.datasource(database);
     TileStore tileStore = new PostgisTileStore(datasource, tileset);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);

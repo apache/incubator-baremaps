@@ -34,6 +34,18 @@ public class Preview implements Callable<Integer> {
   private Options options;
 
   @Option(
+      names = {"--host"},
+      paramLabel = "HOST",
+      description = "The host of the server.")
+  private String host = "localhost";
+
+  @Option(
+      names = {"--port"},
+      paramLabel = "PORT",
+      description = "The port of the server.")
+  private int port = 9001;
+
+  @Option(
       names = {"--database"},
       paramLabel = "DATABASE",
       description = "The JDBC url of the Postgres database.",
@@ -71,8 +83,8 @@ public class Preview implements Callable<Integer> {
     };
 
     Server.builder()
-        .defaultHostname(tileset.getServer().getHost())
-        .http(tileset.getServer().getPort())
+        .defaultHostname(host)
+        .http(port)
         .annotatedService(new EditorService(mapper, this.config, this.style, tileStoreSupplier))
         .decorator(CorsService.builderForAnyOrigin()
             .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)

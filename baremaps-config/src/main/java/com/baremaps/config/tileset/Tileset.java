@@ -15,34 +15,34 @@
 package com.baremaps.config.tileset;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.google.common.collect.Lists;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({
-    "id", "name", "version", "description", "format",
-    "attribution", "center", "bounds", "minzoom",
-    "maxzoom", "layers"})
+@JsonInclude(Include.NON_NULL)
 public class Tileset {
 
-  private String id;
+  private String tilejson = "2.1.0";
 
-  private String name;
+  private String id = "baremaps";
 
-  private String version;
+  private String name = "baremaps";
 
-  private String format;
+  private String version = "0.0.1";
 
-  private String description;
+  private String format = "mvt";
 
-  private String attribution;
+  private String description = "baremaps";
+
+  private String attribution = "baremaps";
 
   private Center center = new Center();
 
   private Bounds bounds = new Bounds();
 
-  private Server server = new Server();
+  private List<String> tiles = Lists.newArrayList("http://localhost:9001/tiles/{z}/{x}/{y}.mvt");
 
   private double minZoom = 0;
 
@@ -88,14 +88,6 @@ public class Tileset {
 
   public void setAttribution(String attribution) {
     this.attribution = attribution;
-  }
-
-  public Server getServer() {
-    return server;
-  }
-
-  public void setServer(Server server) {
-    this.server = server;
   }
 
   public Center getCenter() {
@@ -144,5 +136,21 @@ public class Tileset {
 
   public void setFormat(String format) {
     this.format = format;
+  }
+
+  public String getTilejson() {
+    return tilejson;
+  }
+
+  public void setTilejson(String tilejson) {
+    this.tilejson = tilejson;
+  }
+
+  public List<String> getTiles() {
+    return tiles;
+  }
+
+  public void setTiles(List<String> tiles) {
+    this.tiles = tiles;
   }
 }

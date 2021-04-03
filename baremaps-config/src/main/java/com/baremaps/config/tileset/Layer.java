@@ -14,10 +14,11 @@
 
 package com.baremaps.config.tileset;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Lists;
 import java.util.List;
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Layer {
 
   private String id;

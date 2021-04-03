@@ -18,8 +18,6 @@ class ConfigYAMLLoaderTest {
     Map<String, String> variables = ImmutableMap.of("host", "localhost", "port", "9000");
     Tileset tileset = new BlobMapper(new ResourceBlobStore(), variables).read(new URI("res://./config.yaml"), Tileset.class);
     assertEquals(tileset.getId(), "config");
-    assertEquals(tileset.getServer().getHost(), "localhost");
-    assertEquals(tileset.getServer().getPort(), 9000);
     assertEquals(tileset.getLayers().size(), 1);
     assertEquals(tileset.getLayers().get(0).getId(), "layer");
   }

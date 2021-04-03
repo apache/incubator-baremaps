@@ -6,14 +6,13 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import com.baremaps.config.BlobMapper;
+import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
-import com.baremaps.config.tileset.Query;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.ImmutableSortedMap;
 import com.linecorp.armeria.common.HttpData;
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.common.ResponseHeaders;
@@ -33,12 +32,7 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,66 +100,26 @@ public class EditorService {
     return changes.asFlux();
   }
 
-  @Get("/config.json")
-  @ProducesJson
-  public JsonNode getConfig() throws IOException {
-    return configStore.read(style, JsonNode.class);
-  }
-
-  @Put("/config.json")
-  public void putConfig(JsonNode json) throws IOException {
-    configStore.write(style, json);
-  }
-
   @Get("/style.json")
   @ProducesJson
-  public JsonNode getStyle() throws IOException {
-    return configStore.read(style, JsonNode.class);
+  public Style getStyle() throws IOException {
+    return configStore.read(style, Style.class);
   }
 
   @Put("/style.json")
-  public void putStyle(JsonNode json) throws IOException {
+  public void putStyle(Style json) throws IOException {
     configStore.write(style, json);
   }
 
   @Get("/tiles.json")
   @ProducesJson
-  public Object tileset() throws IOException {
-    Tileset tileset = configStore.read(this.config, Tileset.class);
-    List<Query> queries = tileset.getLayers().stream()
-        .flatMap(layer -> layer.getQueries().stream())
-        .collect(Collectors.toList());
-    double minZoom = queries.stream().mapToDouble(query -> query.getMinZoom()).min().orElse(0);
-    double maxZoom = queries.stream().mapToDouble(query -> query.getMaxZoom()).max().orElse(24);
-    return ImmutableSortedMap.naturalOrder()
-        .put("tilejson", "2.1.0")
-        .put("id", "baremaps")
-        .put("name", "baremaps")
-        .put("version", "0.0.1")
-        .put("bounds", tileset.getBounds().asList())
-        .put("center", tileset.getCenter().asList())
-        .put("format", "mvt")
-        .put("tiles", List.of(String.format("http://%s:%s/tiles/{z}/{x}/{y}.mvt",
-            tileset.getServer().getHost(),
-            tileset.getServer().getPort())))
-        .put("minzoom", minZoom)
-        .put("maxzoom", maxZoom)
-        .put("vector_layers", tileset.getLayers().stream()
-            .map(layer -> {
-              List<Query> layerQueries = layer.getQueries();
-              double layerMinZoom = layerQueries.stream().mapToDouble(query -> query.getMinZoom()).min().orElse(0);
-              double layerMaxZoom = layerQueries.stream().mapToDouble(query -> query.getMaxZoom()).max().orElse(24);
-              Map<String, Object> map = new TreeMap<>();
-              map.put("id", layer.getId());
-              if (layer.getDescription() != null) {
-                map.put("description", layer.getDescription());
-              }
-              map.put("minzoom", layerMinZoom);
-              map.put("maxzoom", layerMaxZoom);
-              map.put("fields", new HashMap<>());
-              return map;
-            }).collect(Collectors.toList()))
-        .build();
+  public Tileset getTiles() throws IOException {
+    return configStore.read(config, Tileset.class);
+  }
+
+  @Put("/tiles.json")
+  public void putTiles(JsonNode json) throws IOException {
+    configStore.write(style, json);
   }
 
   @Get("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).mvt$")
