@@ -1,6 +1,6 @@
-package com.baremaps.config;
+package com.baremaps.config.mapping;
 
-import com.baremaps.config.Bounds;
+import com.baremaps.config.tileset.Bounds;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 

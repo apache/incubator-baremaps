@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.config;
+package com.baremaps.config.tileset;
 
 import com.google.common.collect.Lists;
 import java.util.List;
@@ -21,8 +21,6 @@ import java.util.List;
 public class Layer {
 
   private String id;
-
-  private String type = "geometry";
 
   private String description;
 
@@ -50,14 +48,6 @@ public class Layer {
 
   public void setQueries(List<Query> queries) {
     this.queries = queries;
-  }
-
-  public String getType() {
-    return type;
-  }
-
-  public void setType(String type) {
-    this.type = type;
   }
 
 }

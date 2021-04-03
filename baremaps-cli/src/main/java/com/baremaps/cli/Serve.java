@@ -3,7 +3,7 @@ package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.FileBlobStore;
-import com.baremaps.config.Config;
+import com.baremaps.config.tileset.Tileset;
 import com.baremaps.config.BlobMapper;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.server.TileService;
@@ -74,13 +74,13 @@ public class Serve implements Callable<Integer> {
 
     logger.info("Initializing server");
     BlobStore blobStore = new FileBlobStore();
-    Config config = new BlobMapper(blobStore).read(this.config, Config.class);
+    Tileset tileset = new BlobMapper(blobStore).read(this.config, Tileset.class);
 
     int threads = Runtime.getRuntime().availableProcessors();
     ScheduledExecutorService executor = Executors.newScheduledThreadPool(threads);
     ServerBuilder builder = Server.builder()
-        .defaultHostname(config.getServer().getHost())
-        .http(config.getServer().getPort())
+        .defaultHostname(tileset.getServer().getHost())
+        .http(tileset.getServer().getPort())
         .blockingTaskExecutor(executor, true);
 
     logger.info("Initializing services");
@@ -93,9 +93,9 @@ public class Serve implements Callable<Integer> {
       builder.service("/favicon.ico", faviconService);
     }
 
-    CaffeineSpec caffeineSpec = CaffeineSpec.parse(config.getServer().getCache());
+    CaffeineSpec caffeineSpec = CaffeineSpec.parse(tileset.getServer().getCache());
     DataSource datasource = PostgresHelper.datasource(database);
-    TileStore tileStore = new PostgisTileStore(datasource, config);
+    TileStore tileStore = new PostgisTileStore(datasource, tileset);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
     builder.annotatedService("/tiles/", new TileService(tileCache));

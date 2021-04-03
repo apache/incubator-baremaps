@@ -3,7 +3,7 @@ package com.baremaps.cli;
 
 import com.baremaps.blob.FileBlobStore;
 import com.baremaps.config.BlobMapper;
-import com.baremaps.config.Config;
+import com.baremaps.config.tileset.Tileset;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.server.EditorService;
 import com.baremaps.tile.TileStore;
@@ -60,19 +60,19 @@ public class Preview implements Callable<Integer> {
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
     BlobMapper mapper = new BlobMapper(new FileBlobStore());
-    Config config = mapper.read(this.config, Config.class);
+    Tileset tileset = mapper.read(this.config, Tileset.class);
     DataSource dataSource = PostgresHelper.datasource(database);
     Supplier<TileStore> tileStoreSupplier = () -> {
       try {
-        return new PostgisTileStore(dataSource, mapper.read(this.config, Config.class));
+        return new PostgisTileStore(dataSource, mapper.read(this.config, Tileset.class));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
     };
 
     Server.builder()
-        .defaultHostname(config.getServer().getHost())
-        .http(config.getServer().getPort())
+        .defaultHostname(tileset.getServer().getHost())
+        .http(tileset.getServer().getPort())
         .annotatedService(new EditorService(mapper, this.config, this.style, tileStoreSupplier))
         .decorator(CorsService.builderForAnyOrigin()
             .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)

@@ -11,39 +11,45 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+package com.baremaps.config.tileset;
 
-package com.baremaps.config;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.List;
 
-public class Server {
+@JsonFormat(shape= JsonFormat.Shape.ARRAY)
+public class Center {
 
-  private String host = "localhost";
+  private double lon = 0;
 
-  private int port = 9000;
+  private double lat = 0;
 
-  private String cache = "";
+  private double zoom = 0;
 
-  public String getHost() {
-    return host;
+  public double getLon() {
+    return lon;
   }
 
-  public void setHost(String host) {
-    this.host = host;
+  public void setLon(double lon) {
+    this.lon = lon;
   }
 
-  public int getPort() {
-    return port;
+  public double getLat() {
+    return lat;
   }
 
-  public void setPort(int port) {
-    this.port = port;
+  public void setLat(double lat) {
+    this.lat = lat;
   }
 
-  public String getCache() {
-    return cache;
+  public double getZoom() {
+    return zoom;
   }
 
-  public void setCache(String cache) {
-    this.cache = cache;
+  public void setZoom(double zoom) {
+    this.zoom = zoom;
   }
 
+  public List<Double> asList() {
+    return List.of(lon, lat, zoom);
+  }
 }

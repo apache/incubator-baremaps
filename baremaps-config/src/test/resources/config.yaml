@@ -2,17 +2,10 @@ id: config
 server:
   host: ${host}
   port: ${port}
-center:
-  lon: 1
-  lat: 2
-  zoom: 3
-bounds:
-  minLon: 1
-  minLat: 2
-  maxLon: 3
-  maxLat: 4
-  minZoom: 5
-  maxZoom: 6
+center: [1, 2, 3]
+bounds: [1, 2, 3, 4]
+minZoom: 5
+maxZoom: 6
 layers:
   - id: layer
     queries:

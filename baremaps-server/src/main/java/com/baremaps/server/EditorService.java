@@ -6,8 +6,8 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import com.baremaps.config.BlobMapper;
-import com.baremaps.config.Config;
-import com.baremaps.config.Query;
+import com.baremaps.config.tileset.Tileset;
+import com.baremaps.config.tileset.Query;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
@@ -131,8 +131,8 @@ public class EditorService {
   @Get("/tiles.json")
   @ProducesJson
   public Object tileset() throws IOException {
-    Config config = configStore.read(this.config, Config.class);
-    List<Query> queries = config.getLayers().stream()
+    Tileset tileset = configStore.read(this.config, Tileset.class);
+    List<Query> queries = tileset.getLayers().stream()
         .flatMap(layer -> layer.getQueries().stream())
         .collect(Collectors.toList());
     double minZoom = queries.stream().mapToDouble(query -> query.getMinZoom()).min().orElse(0);
@@ -142,15 +142,15 @@ public class EditorService {
         .put("id", "baremaps")
         .put("name", "baremaps")
         .put("version", "0.0.1")
-        .put("bounds", config.getBounds().asList())
-        .put("center", config.getCenter().asList())
+        .put("bounds", tileset.getBounds().asList())
+        .put("center", tileset.getCenter().asList())
         .put("format", "mvt")
         .put("tiles", List.of(String.format("http://%s:%s/tiles/{z}/{x}/{y}.mvt",
-            config.getServer().getHost(),
-            config.getServer().getPort())))
+            tileset.getServer().getHost(),
+            tileset.getServer().getPort())))
         .put("minzoom", minZoom)
         .put("maxzoom", maxZoom)
-        .put("vector_layers", config.getLayers().stream()
+        .put("vector_layers", tileset.getLayers().stream()
             .map(layer -> {
               List<Query> layerQueries = layer.getQueries();
               double layerMinZoom = layerQueries.stream().mapToDouble(query -> query.getMinZoom()).min().orElse(0);

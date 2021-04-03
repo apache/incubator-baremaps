@@ -3,6 +3,7 @@ package com.baremaps.config;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.blob.ResourceBlobStore;
+import com.baremaps.config.mapping.Mapping;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;

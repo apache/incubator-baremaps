@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.config;
+package com.baremaps.config.tileset;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -21,16 +21,18 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({
-    "id", "name", "version", "description",
+    "id", "name", "version", "description", "format",
     "attribution", "center", "bounds", "minzoom",
     "maxzoom", "layers"})
-public class Config {
+public class Tileset {
 
   private String id;
 
   private String name;
 
   private String version;
+
+  private String format;
 
   private String description;
 
@@ -136,4 +138,11 @@ public class Config {
     this.layers = layers;
   }
 
+  public String getFormat() {
+    return format;
+  }
+
+  public void setFormat(String format) {
+    this.format = format;
+  }
 }

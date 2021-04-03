@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.baremaps.config;
+package com.baremaps.config.tileset;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.List;
@@ -21,11 +21,11 @@ public class Bounds {
 
   private double minLon = -180;
 
-  private double minLat = -85.05113;
+  private double minLat = -85.05112877980659;
 
   private double maxLon = 180;
 
-  private double maxLat = 85.05113;
+  private double maxLat = 85.0511287798066;
 
   public double getMinLon() {
     return minLon;

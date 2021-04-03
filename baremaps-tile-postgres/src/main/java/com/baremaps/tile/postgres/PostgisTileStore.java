@@ -16,8 +16,8 @@ package com.baremaps.tile.postgres;
 
 import static com.baremaps.config.Variables.interpolate;
 
-import com.baremaps.config.Config;
-import com.baremaps.config.Layer;
+import com.baremaps.config.tileset.Tileset;
+import com.baremaps.config.tileset.Layer;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
@@ -85,11 +85,11 @@ public class PostgisTileStore implements TileStore {
 
   private final DataSource datasource;
 
-  private final Config config;
+  private final Tileset tileset;
 
-  public PostgisTileStore(DataSource datasource, Config config) {
+  public PostgisTileStore(DataSource datasource, Tileset tileset) {
     this.datasource = datasource;
-    this.config = config;
+    this.tileset = tileset;
   }
 
   public Envelope envelope() throws SQLException, ParseException {
@@ -135,7 +135,7 @@ public class PostgisTileStore implements TileStore {
   }
 
   private String query(Tile tile) {
-    Map<Layer, List<Parse>> parses = config.getLayers().stream()
+    Map<Layer, List<Parse>> parses = tileset.getLayers().stream()
         .flatMap(layer -> layer.getQueries().stream().map(query -> PostgisQueryParser.parse(layer, query)))
         .collect(Collectors.groupingBy(q -> q.getLayer()));
     String sources = parses.entrySet().stream()
