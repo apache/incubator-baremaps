@@ -17,7 +17,6 @@ class ConfigYAMLLoaderTest {
   public void load() throws URISyntaxException, IOException {
     Map<String, String> variables = ImmutableMap.of("host", "localhost", "port", "9000");
     Tileset tileset = new BlobMapper(new ResourceBlobStore(), variables).read(new URI("res://./tileset.yaml"), Tileset.class);
-    assertEquals(tileset.getId(), "config");
     assertEquals(tileset.getLayers().size(), 1);
     assertEquals(tileset.getLayers().get(0).getId(), "layer");
   }

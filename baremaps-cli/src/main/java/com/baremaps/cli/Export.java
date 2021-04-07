@@ -183,7 +183,7 @@ public class Export implements Callable<Integer> {
 
   private Map<String, String> metadata(Tileset tileset) throws JsonProcessingException {
     Map<String, String> metadata = new HashMap<>();
-    metadata.put("name", tileset.getId());
+    metadata.put("name", tileset.getName());
     metadata.put("version", tileset.getVersion().toString());
     metadata.put("description", tileset.getDescription());
     metadata.put("attribution", tileset.getAttribution());

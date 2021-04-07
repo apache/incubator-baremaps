@@ -5,13 +5,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
 public class Style {
 
-  private Integer version;
+  private final Integer version = 8;
 
   private String name;
 
@@ -35,18 +40,14 @@ public class Style {
 
   private Double zoom;
 
-  private ObjectNode sources;
+  private Map<String, Object> sources = new HashMap<>();
 
-  private List<ObjectNode> layers;
+  private List<ObjectNode> layers = new ArrayList<>();
 
   private boolean reload = false;
 
   public Integer getVersion() {
     return version;
-  }
-
-  public void setVersion(Integer version) {
-    this.version = version;
   }
 
   public String getName() {
@@ -137,11 +138,11 @@ public class Style {
     this.zoom = zoom;
   }
 
-  public ObjectNode getSources() {
+  public Map<String, Object> getSources() {
     return sources;
   }
 
-  public void setSources(ObjectNode sources) {
+  public void setSources(Map<String, Object> sources) {
     this.sources = sources;
   }
 

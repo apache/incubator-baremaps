@@ -13,6 +13,7 @@ import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
 import com.linecorp.armeria.common.HttpData;
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.common.ResponseHeaders;
@@ -25,6 +26,7 @@ import com.linecorp.armeria.server.annotation.ProducesEventStream;
 import com.linecorp.armeria.server.annotation.ProducesJson;
 import com.linecorp.armeria.server.annotation.Put;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -32,6 +34,8 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.function.Supplier;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
@@ -52,15 +56,15 @@ public class EditorService {
 
   private final BlobMapper configStore;
 
-  private final URI config;
+  private final URI tileset;
 
   private final URI style;
 
   private final Supplier<TileStore> tileStoreSupplier;
 
-  public EditorService(BlobMapper configStore, URI config, URI style, Supplier<TileStore> tileStoreSupplier) {
+  public EditorService(BlobMapper configStore, URI tileset, URI style, Supplier<TileStore> tileStoreSupplier) {
     this.configStore = configStore;
-    this.config = config;
+    this.tileset = tileset;
     this.style = style;
     this.tileStoreSupplier = tileStoreSupplier;
     monitorChanges();
@@ -69,7 +73,7 @@ public class EditorService {
   public void monitorChanges() {
     new Thread(() -> {
       try {
-        Path configFile = Paths.get(config.getPath()).toAbsolutePath();
+        Path configFile = Paths.get(tileset.getPath()).toAbsolutePath();
         Path styleFile = Paths.get(style.getPath()).toAbsolutePath();
         WatchService watchService = FileSystems.getDefault().newWatchService();
         configFile.getParent().register(watchService, ENTRY_MODIFY);
@@ -102,8 +106,15 @@ public class EditorService {
 
   @Get("/style.json")
   @ProducesJson
-  public Style getStyle() throws IOException {
-    return configStore.read(style, Style.class);
+  public Style getStyle(ServiceRequestContext ctx) throws IOException {
+    InetSocketAddress address = ctx.localAddress();
+    Style style = configStore.read(this.style, Style.class);
+    style.setSources(Map.of("baremaps", Map.of(
+        "type", "vector",
+        "url", String.format("http://%s:%s/tiles.json",
+            address.getHostName(),
+            address.getPort()))));
+    return style;
   }
 
   @Put("/style.json")
@@ -113,8 +124,13 @@ public class EditorService {
 
   @Get("/tiles.json")
   @ProducesJson
-  public Tileset getTiles() throws IOException {
-    return configStore.read(config, Tileset.class);
+  public Tileset getTiles(ServiceRequestContext ctx) throws IOException {
+    Tileset tileset = configStore.read(this.tileset, Tileset.class);
+    InetSocketAddress address = ctx.localAddress();
+    tileset.setTiles(Arrays.asList(String.format("http://%s:%s/tiles/{z}/{x}/{y}.mvt",
+        address.getHostName(),
+        address.getPort())));
+    return tileset;
   }
 
   @Put("/tiles.json")

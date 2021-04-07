@@ -19,46 +19,35 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
 public class Tileset {
 
-  private String tilejson = "2.1.0";
+  private String tilejson = "2.2.0";
 
-  private String id = "baremaps";
+  private String name;
 
-  private String name = "baremaps";
+  private String version;
 
-  private String version = "0.0.1";
+  private String description;
 
-  private String format = "mvt";
+  private String attribution;
 
-  private String description = "baremaps";
+  private Center center;
 
-  private String attribution = "baremaps";
+  private Bounds bounds;
 
-  private Center center = new Center();
+  private double minZoom;
 
-  private Bounds bounds = new Bounds();
+  private double maxZoom;
 
-  private List<String> tiles = Lists.newArrayList("http://localhost:9001/tiles/{z}/{x}/{y}.mvt");
-
-  private double minZoom = 0;
-
-  private double maxZoom = 20;
+  private List<String> tiles = new ArrayList<>();
 
   @JsonProperty("vector_layers")
-  private List<Layer> layers = Lists.newArrayList();
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
+  private List<Layer> layers = new ArrayList<>();
 
   public String getName() {
     return name;
@@ -130,14 +119,6 @@ public class Tileset {
 
   public void setLayers(List<Layer> layers) {
     this.layers = layers;
-  }
-
-  public String getFormat() {
-    return format;
-  }
-
-  public void setFormat(String format) {
-    this.format = format;
   }
 
   public String getTilejson() {

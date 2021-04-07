@@ -8,8 +8,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.io.IOContext;
 import com.fasterxml.jackson.core.util.BufferRecycler;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
@@ -54,6 +57,7 @@ public class BlobMapper {
     ObjectMapper mapper = new ObjectMapper(jsonFactory);
     SimpleModule module = new SimpleModule();
     mapper.registerModules(module);
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
     return mapper.readValue(blobStore.readByteArray(uri), mainType);
   }
 
@@ -62,7 +66,9 @@ public class BlobMapper {
     ObjectMapper mapper = new ObjectMapper(jsonFactory);
     SimpleModule module = new SimpleModule();
     mapper.registerModules(module);
-    blobStore.writeByteArray(uri, mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(object));
+    DefaultPrettyPrinter pp = new DefaultPrettyPrinter();
+    pp.indentArraysWith( DefaultIndenter.SYSTEM_LINEFEED_INSTANCE );
+    blobStore.writeByteArray(uri, mapper.writer(pp).writeValueAsBytes(object));
   }
 
   private class YamlConfigFactory extends YAMLFactory {
