@@ -3,25 +3,27 @@ package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.FileBlobStore;
+import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.config.BlobMapper;
 import com.baremaps.osm.postgres.PostgresHelper;
-import com.baremaps.server.TileService;
+import com.baremaps.server.ServerService;
 import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
+import com.linecorp.armeria.common.HttpMethod;
 import com.linecorp.armeria.server.HttpService;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
+import com.linecorp.armeria.server.cors.CorsService;
 import com.linecorp.armeria.server.file.FileService;
+import com.linecorp.armeria.server.logging.LoggingService;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -47,9 +49,15 @@ public class Serve implements Callable<Integer> {
   private String database;
 
   @Option(
-      names = {"--config"},
-      paramLabel = "CONFIG",
-      description = "The configuration file.",
+      names = {"--cache"},
+      paramLabel = "CACHE",
+      description = "The caffeine cache directive.")
+  private String cache = "";
+
+  @Option(
+      names = {"--tileset"},
+      paramLabel = "TILESET",
+      description = "The tileset file.",
       required = true)
   private URI config;
 
@@ -57,50 +65,56 @@ public class Serve implements Callable<Integer> {
       names = {"--style"},
       paramLabel = "STYLE",
       description = "The style file.",
-      required = false)
+      required = true)
   private URI style;
 
   @Option(
       names = {"--assets"},
       paramLabel = "ASSETS",
-      description = "A directory of static assets.",
-      required = false)
+      description = "A directory of static assets.")
   private Path assets;
+
+  @Option(
+      names = {"--host"},
+      paramLabel = "HOST",
+      description = "The host of the server.")
+  private String host = "localhost";
+
+  @Option(
+      names = {"--port"},
+      paramLabel = "PORT",
+      description = "The port of the server.")
+  private int port = 9000;
 
   @Override
   public Integer call() throws IOException {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
-    logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
-    logger.info("Initializing server");
     BlobStore blobStore = new FileBlobStore();
     Tileset tileset = new BlobMapper(blobStore).read(this.config, Tileset.class);
+    Style style = new BlobMapper(blobStore).read(this.style, Style.class);
 
-    int threads = Runtime.getRuntime().availableProcessors();
-    ScheduledExecutorService executor = Executors.newScheduledThreadPool(threads);
-    ServerBuilder builder = Server.builder()
-        .defaultHostname("localhost")
-        .http(9000)
-        .blockingTaskExecutor(executor, true);
-
-    logger.info("Initializing services");
-
-    if (assets != null && Files.exists(assets)) {
-      HttpService fileService = FileService.builder(assets).build();
-      builder.service("/", fileService);
-    } else {
-      HttpService faviconService = FileService.of(ClassLoader.getSystemClassLoader(), "/favicon.ico");
-      builder.service("/favicon.ico", faviconService);
-    }
-
-    CaffeineSpec caffeineSpec = CaffeineSpec.parse("");
+    CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
     DataSource datasource = PostgresHelper.datasource(database);
     TileStore tileStore = new PostgisTileStore(datasource, tileset);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
-    builder.annotatedService("/tiles/", new TileService(tileCache));
+    ServerBuilder builder = Server.builder()
+        .defaultHostname(host)
+        .http(port)
+        .decorator(CorsService.builderForAnyOrigin()
+            .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)
+            .allowRequestHeaders("Origin", "Content-Type", "Accept")
+            .newDecorator())
+        .decorator(LoggingService.newDecorator());
 
-    logger.info("Start server");
+    if (assets != null && Files.exists(assets)) {
+      HttpService fileService = FileService.builder(assets).build();
+      builder.service("/", fileService);
+    }
+
+    builder.annotatedService(new ServerService(tileset, style, tileCache));
+
     Server server = builder.build();
     server.start();
 

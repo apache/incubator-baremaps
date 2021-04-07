@@ -40,13 +40,13 @@ import reactor.core.publisher.Sinks;
 
 public class EditorService {
 
-  private static Logger logger = LoggerFactory.getLogger(EditorService.class);
-
   private static final ResponseHeaders headers = ResponseHeaders.builder(200)
       .add(CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
       .add(CONTENT_ENCODING, "gzip")
       .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
       .build();
+
+  private static Logger logger = LoggerFactory.getLogger(EditorService.class);
 
   private final Sinks.Many<ServerSentEvent> changes = Sinks.many().multicast().directBestEffort();
 

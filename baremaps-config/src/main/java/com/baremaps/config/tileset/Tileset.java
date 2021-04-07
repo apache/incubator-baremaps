@@ -17,6 +17,7 @@ package com.baremaps.config.tileset;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 import java.util.List;
 
@@ -48,6 +49,7 @@ public class Tileset {
 
   private double maxZoom = 20;
 
+  @JsonProperty("vector_layers")
   private List<Layer> layers = Lists.newArrayList();
 
   public String getId() {

@@ -11,10 +11,10 @@ import com.baremaps.tile.postgres.PostgisTileStore;
 import com.linecorp.armeria.common.HttpMethod;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.cors.CorsService;
+import com.linecorp.armeria.server.file.FileService;
 import com.linecorp.armeria.server.logging.LoggingService;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 import javax.sql.DataSource;
@@ -26,13 +26,34 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "preview", description = "Preview and edit the vector tiles.")
-public class Preview implements Callable<Integer> {
+@Command(name = "edit", description = "Edit the vector tiles.")
+public class Edit implements Callable<Integer> {
 
-  private static Logger logger = LoggerFactory.getLogger(Preview.class);
+  private static Logger logger = LoggerFactory.getLogger(Edit.class);
 
   @Mixin
   private Options options;
+
+  @Option(
+      names = {"--database"},
+      paramLabel = "DATABASE",
+      description = "The JDBC url of the Postgres database.",
+      required = true)
+  private String database;
+
+  @Option(
+      names = {"--tileset"},
+      paramLabel = "TILESET",
+      description = "The tileset file.",
+      required = true)
+  private URI config;
+
+  @Option(
+      names = {"--style"},
+      paramLabel = "STYLE",
+      description = "The style file.",
+      required = true)
+  private URI style;
 
   @Option(
       names = {"--host"},
@@ -46,36 +67,12 @@ public class Preview implements Callable<Integer> {
       description = "The port of the server.")
   private int port = 9000;
 
-  @Option(
-      names = {"--database"},
-      paramLabel = "DATABASE",
-      description = "The JDBC url of the Postgres database.",
-      required = true)
-  private String database;
-
-  @Option(
-      names = {"--config"},
-      paramLabel = "CONFIG",
-      description = "The tileset file.")
-  private URI config = new URI("file://config.json");;
-
-  @Option(
-      names = {"--style"},
-      paramLabel = "STYLE",
-      description = "The style file.")
-  private URI style = new URI("file://style.json");
-
-  public Preview() throws URISyntaxException {
-
-  }
-
   @Override
-  public Integer call() throws IOException {
+  public Integer call() {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
     BlobMapper mapper = new BlobMapper(new FileBlobStore());
-    Tileset tileset = mapper.read(this.config, Tileset.class);
     DataSource dataSource = PostgresHelper.datasource(database);
     Supplier<TileStore> tileStoreSupplier = () -> {
       try {
@@ -89,6 +86,7 @@ public class Preview implements Callable<Integer> {
         .defaultHostname(host)
         .http(port)
         .annotatedService(new EditorService(mapper, this.config, this.style, tileStoreSupplier))
+        .serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/editor/"))
         .decorator(CorsService.builderForAnyOrigin()
             .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)
             .allowRequestHeaders("Origin", "Content-Type", "Accept")
