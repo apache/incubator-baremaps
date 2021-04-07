@@ -6,7 +6,7 @@ center: [1, 2, 3]
 bounds: [1, 2, 3, 4]
 minZoom: 5
 maxZoom: 6
-layers:
+vector_layers:
   - id: layer
     queries:
       - minZoom: 1
