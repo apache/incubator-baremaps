@@ -89,16 +89,17 @@ public class OpenStreetMapExampleTest {
     // Test the export command
     int exportExitCode = cmd.execute("export",
         "--database", DATABASE_URL,
-        "--config", "openstreetmap/config.yaml",
+        "--tileset", "openstreetmap/tileset.yaml",
         "--repository", "repository/");
     assertEquals(0, exportExitCode);
     assertTrue(Files.exists(Paths.get("repository/14/8626/5750.pbf")));
 
     // Test the serve command in a separate thread
     new Thread(() -> {
-      cmd.execute("preview",
+      cmd.execute("edit",
           "--database", DATABASE_URL,
-          "--config", "openstreetmap/config.yaml");
+          "--tileset", "openstreetmap/tileset.yaml",
+          "--style", "openstreetmap/style.yaml");
     }).run();
 
     // Wait for the server to start

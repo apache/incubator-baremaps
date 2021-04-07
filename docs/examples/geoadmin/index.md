@@ -45,5 +45,6 @@ To preview and edit the map in the browser, run the tile server with the followi
 ```bash
 baremaps edit \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
-  --config 'traffic-noise.yaml'
+  --config 'tileset.yaml' \
+  --style 'style.yaml'
 ```

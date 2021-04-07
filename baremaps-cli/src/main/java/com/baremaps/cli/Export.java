@@ -68,9 +68,9 @@ public class Export implements Callable<Integer> {
   private String database;
 
   @Option(
-      names = {"--config"},
-      paramLabel = "YAML",
-      description = "The YAML source configuration file.",
+      names = {"--tileset"},
+      paramLabel = "TILESET",
+      description = "The tileset file.",
       required = true)
   private URI source;
 

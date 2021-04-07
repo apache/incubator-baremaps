@@ -82,7 +82,8 @@ Let's preview and edit the map with the sample configuration file (`source.yaml`
 ```
 baremaps edit \
   --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
-  --config 'source.yaml' \
+  --tileset 'tileset.yaml' \
+  --style 'style.yaml'
 ```
 
 Well done, a local tile server should have started and you can open a map of Liechtenstein in your browser ([http://localhost:9000/](http://localhost:9000/))!
@@ -124,7 +125,7 @@ These tiles can be served with Apache, Nginx, or Caddy, but also copied in a blo
 ```
 baremaps export \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
-  --config 'source.yaml' \
+  --tileset 'tileset.yaml' \
   --repository 'tiles/'
 ```
 
