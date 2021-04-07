@@ -1,5 +1,5 @@
 id: 'naturalearth'
-layers:
+vector_layers:
   - id: 'ne_110m_admin_0_boundary_lines_land'
     queries:
       - minZoom: 0

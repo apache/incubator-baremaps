@@ -10,7 +10,7 @@ bounds:
   - 47.27128
 minZoom: 12
 maxZoom: 14
-layers:
+vector_layers:
   - id: 'aeroway'
     queries:
       - minZoom: 12

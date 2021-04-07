@@ -10,7 +10,7 @@ bounds:
   - 47.27128
 minZoom: 12
 maxZoom: 20
-layers:
+vector_layers:
   - id: 'aster_dem'
     queries:
       - minZoom: 12
