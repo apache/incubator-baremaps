@@ -40,10 +40,10 @@ DROP INDEX IF EXISTS geoadmin_traffic_noise_day_gix;
 CREATE INDEX CONCURRENTLY IF NOT EXISTS geoadmin_traffic_noise_day_gix ON geoadmin_traffic_noise_day USING SPGIST(wkb_geometry);
 ```
 
-To preview the data, run the tile server with the following command:
+To preview and edit the map in the browser, run the tile server with the following command:
 
 ```bash
-baremaps preview \
+baremaps edit \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
   --config 'traffic-noise.yaml'
 ```

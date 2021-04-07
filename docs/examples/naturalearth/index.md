@@ -56,10 +56,10 @@ These queries have been saved in the `indexes.sql` file. You can execute it with
 psql -h localhost -U baremaps baremaps < indexes.sql
 ```
 
-To preview the data, run the tile server with the following command:
+To preview and edit the map in the browser, run the tile server with the following command:
 
 ```
-baremaps preview \
+baremaps edit \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
   --config 'source.yaml'
 ```
