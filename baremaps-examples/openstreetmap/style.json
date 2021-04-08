@@ -7,5 +7,6 @@
       "type" : "vector"
     }
   },
-  "layers" : [ ]
+  "layers" : [ ],
+  "reload" : false
 }
