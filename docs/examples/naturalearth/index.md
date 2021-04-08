@@ -40,7 +40,7 @@ PGCLIENTENCODING=UTF8 ogr2ogr \
     "data/packages/natural_earth_vector.sqlite"
 ```
 
-To improve performance, an spatial index should be created for each geometry columns. 
+To improve performance, a spatial index should be created for each geometry columns. 
 Such queries can be generated from the schema itself with the following query:
 
 ```postgresql
@@ -61,7 +61,8 @@ To preview and edit the map in the browser, run the tile server with the followi
 ```
 baremaps edit \
   --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
-  --tileset 'tileset.yaml'
+  --tileset 'tileset.json' \
+  --style 'style.json'
 ```
 
 ## Working with shapefiles

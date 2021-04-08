@@ -42,7 +42,7 @@ public class Style {
 
   private Map<String, Object> sources = new HashMap<>();
 
-  private List<ObjectNode> layers = new ArrayList<>();
+  private List<Object> layers = new ArrayList<>();
 
   private boolean reload = false;
 
@@ -146,11 +146,11 @@ public class Style {
     this.sources = sources;
   }
 
-  public List<ObjectNode> getLayers() {
+  public List<Object> getLayers() {
     return layers;
   }
 
-  public void setLayers(List<ObjectNode> layers) {
+  public void setLayers(List<Object> layers) {
     this.layers = layers;
   }
 
