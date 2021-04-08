@@ -11,7 +11,7 @@ import java.net.URISyntaxException;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-class ConfigYAMLLoaderTest {
+class ConfigLoaderTest {
 
   @Test
   public void load() throws URISyntaxException, IOException {

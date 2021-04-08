@@ -61,10 +61,6 @@
       <artifactId>jackson-datatype-jdk8</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-yaml</artifactId>
-    </dependency>
-    <dependency>
       <artifactId>caffeine</artifactId>
       <groupId>com.github.ben-manes.caffeine</groupId>
     </dependency>

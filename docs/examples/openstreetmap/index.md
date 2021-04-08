@@ -74,7 +74,7 @@ The following Figure displays the schema of the Postgis database created by Bare
 
 ## Creating Vector Tiles
 
-In order to create vector tiles, Baremaps uses a YAML configuration file.
+In order to create vector tiles, Baremaps uses a json configuration file.
 This file defines general properties, a list of layers containing SQL queries to be executed against Postgis, and, optionally, styling rules. This example contains a sample configuration files which you can download to your current working directory.
 
 Let's preview and edit the map with the sample configuration files by executing the following command in a terminal.
@@ -87,7 +87,7 @@ baremaps edit \
 ```
 
 Well done, a local tile server should have started and you can open a map of Liechtenstein in your browser ([http://localhost:9000/](http://localhost:9000/))!
-Baremaps dynamically generates a blueprint [Mapbox Style](https://docs.mapbox.com/mapbox-gl-js/style-spec/) from the YAML configuration file.
+Baremaps dynamically generates a blueprint [Mapbox Style](https://docs.mapbox.com/mapbox-gl-js/style-spec/) from the json configuration file.
 It is aimed at quickly previsualizing the data and provides a foundation for creating more complex styles.
 Notice that the changes in the configuration files are automatically reloaded by the browser.
 
@@ -96,19 +96,24 @@ Notice that the changes in the configuration files are automatically reloaded by
 ### Under the Hood (Optional)
 
 Baremaps extensively rely on the fantastic [ST_AsMVT](https://postgis.net/docs/ST_AsMVT.html) functions released by the Postgis team to produce [Mapbox Vector Tiles](https://docs.mapbox.com/vector-tiles/specification/).
-However, in the following excerpt of the YAML configuration file, none of these concepts appear in the SQL queries.
+However, in the following excerpt of the json configuration file, none of these concepts appear in the SQL queries.
 
-```yaml
-id: 'openstreetmap'
-...
-layers:
-  - id: 'aeroway'
-    type: 'geometry'
-    queries:
-      - minZoom: 12
-        maxZoom: 20
-        sql: SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'aeroway'
-...
+```json
+{
+  "id": "openstreetmap",
+  "layers": [
+    {
+      "id": "aeroway",
+      "queries": [
+        {
+          "minZoom": 12,
+          "maxZoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'aeroway'"
+        }
+      ]
+    }
+  ]
+}
 ```
 
 Why don't we see these function calls in the configuration?

@@ -9,7 +9,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.jupiter.api.Test;
 
-class MappingYAMLLoaderTest {
+class MappingLoaderTest {
 
   @Test
   public void load() throws URISyntaxException, IOException {

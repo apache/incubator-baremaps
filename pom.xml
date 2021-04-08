@@ -432,11 +432,6 @@
         <artifactId>jackson-datatype-jdk8</artifactId>
         <version>${version.lib.jackson}</version>
       </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.dataformat</groupId>
-        <artifactId>jackson-dataformat-yaml</artifactId>
-        <version>${version.lib.jackson}</version>
-      </dependency>
 
       <!-- Logging libraries -->
       <dependency>
