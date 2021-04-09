@@ -1,10 +1,15 @@
 {
   "version" : 8,
+  "center" : [
+    9.5554,
+    47.166
+  ],
   "metadata" : { },
+  "zoom" : 14.0,
   "sources" : {
     "baremaps" : {
-      "url" : "http://localhost:9000/tiles.json",
-      "type" : "vector"
+      "type" : "vector",
+      "url" : "http://localhost:9000/tiles.json"
     }
   },
   "layers" : [
@@ -29,6 +34,5 @@
         "line-color" : "rgba(181, 169, 152, 1)"
       }
     }
-  ],
-  "reload" : false
+  ]
 }

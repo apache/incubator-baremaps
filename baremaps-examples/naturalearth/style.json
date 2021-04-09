@@ -3,8 +3,8 @@
   "metadata" : { },
   "sources" : {
     "baremaps" : {
-      "type" : "vector",
-      "url" : "http://localhost:9000/tiles.json"
+      "url" : "http://localhost:9000/tiles.json",
+      "type" : "vector"
     }
   },
   "layers" : [ ]

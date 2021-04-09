@@ -23,7 +23,8 @@
   // Initialize the map
   let map = new mapboxgl.Map({
     container: 'map',
-    style: '/style.json'
+    style: '/style.json',
+    hash: true
   });
 
   map.addControl(new mapboxgl.NavigationControl());

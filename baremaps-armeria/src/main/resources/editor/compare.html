@@ -56,7 +56,6 @@
         + center.lng.toFixed(6);
     let link = document.getElementById("link");
     link.href = "https://www.openstreetmap.org/#map=" + hash;
-    window.location.hash = hash;
     map2.setZoom(map1.getZoom());
     map2.setCenter(map1.getCenter());
     map2.setBearing(map1.getBearing());
@@ -66,10 +65,7 @@
   let map1 = new mapboxgl.Map({
     container: 'map1',
     style: '/style.json',
-    center: [${center.lon?string["0.######"]}, ${center.lat?string["0.######"]}],
-    zoom: ${center.zoom?string["0.####"]},
-    minZoom: ${bounds.minZoom},
-    maxZoom: ${bounds.maxZoom + 4}
+    hash: true
   });
 
   let map2 = new mapboxgl.Map({
@@ -97,14 +93,6 @@
       ]
     },
   });
-
-  if (location.hash) {
-    let arr = location.hash.substr(1).split("/");
-    zoom = parseFloat(arr[0]);
-    center = [parseFloat(arr[2]), parseFloat(arr[1])];
-    map1.setZoom(zoom);
-    map1.setCenter(center);
-  }
 
   sync(map1, map2);
 

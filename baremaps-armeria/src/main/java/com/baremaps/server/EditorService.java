@@ -111,8 +111,10 @@ public class EditorService {
     Style style = configStore.read(this.style, Style.class);
 
     // override style properties with tileset properties
-    style.setCenter(List.of(tileset.getCenter().getLon(), tileset.getCenter().getLat()));
-    style.setZoom(tileset.getCenter().getZoom());
+    if (tileset.getCenter() != null) {
+      style.setCenter(List.of(tileset.getCenter().getLon(), tileset.getCenter().getLat()));
+      style.setZoom(tileset.getCenter().getZoom());
+    }
 
     // override style properties with server properties
     InetSocketAddress address = ctx.localAddress();
