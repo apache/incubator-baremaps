@@ -34,6 +34,7 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import org.reactivestreams.Publisher;
@@ -106,13 +107,21 @@ public class EditorService {
   @Get("/style.json")
   @ProducesJson
   public Style getStyle(ServiceRequestContext ctx) throws IOException {
-    InetSocketAddress address = ctx.localAddress();
+    Tileset tileset = configStore.read(this.tileset, Tileset.class);
     Style style = configStore.read(this.style, Style.class);
+
+    // override style properties with tileset properties
+    style.setCenter(List.of(tileset.getCenter().getLon(), tileset.getCenter().getLat()));
+    style.setZoom(tileset.getCenter().getZoom());
+
+    // override style properties with server properties
+    InetSocketAddress address = ctx.localAddress();
     style.setSources(Map.of("baremaps", Map.of(
         "type", "vector",
         "url", String.format("http://%s:%s/tiles.json",
             address.getHostName(),
             address.getPort()))));
+
     return style;
   }
 
@@ -125,10 +134,13 @@ public class EditorService {
   @ProducesJson
   public Tileset getTiles(ServiceRequestContext ctx) throws IOException {
     Tileset tileset = configStore.read(this.tileset, Tileset.class);
+
+    // override style properties with server properties
     InetSocketAddress address = ctx.localAddress();
     tileset.setTiles(Arrays.asList(String.format("http://%s:%s/tiles/{z}/{x}/{y}.mvt",
         address.getHostName(),
         address.getPort())));
+
     return tileset;
   }
 

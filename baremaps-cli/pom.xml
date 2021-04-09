@@ -87,7 +87,7 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-server</artifactId>
+      <artifactId>baremaps-armeria</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>

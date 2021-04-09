@@ -81,6 +81,7 @@
   </properties>
 
   <modules>
+    <module>baremaps-armeria</module>
     <module>baremaps-benchmarks</module>
     <module>baremaps-config</module>
     <module>baremaps-cli</module>
@@ -90,7 +91,6 @@
     <module>baremaps-osm</module>
     <module>baremaps-osm-lmdb</module>
     <module>baremaps-osm-postgres</module>
-    <module>baremaps-server</module>
     <module>baremaps-stream</module>
     <module>baremaps-testing</module>
     <module>baremaps-tile</module>
@@ -309,7 +309,7 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-server</artifactId>
+        <artifactId>baremaps-armeria</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>

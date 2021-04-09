@@ -3,8 +3,8 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>baremaps-server</artifactId>
-  <name>baremaps-server</name>
+  <artifactId>baremaps-armeria</artifactId>
+  <name>baremaps-armeria</name>
 
   <parent>
     <artifactId>baremaps</artifactId>
