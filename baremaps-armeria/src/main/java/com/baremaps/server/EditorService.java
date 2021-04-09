@@ -54,6 +54,10 @@ public class EditorService {
 
   private final Sinks.Many<ServerSentEvent> changes = Sinks.many().multicast().directBestEffort();
 
+  private final String host;
+
+  private final int port;
+
   private final BlobMapper configStore;
 
   private final URI tileset;
@@ -62,7 +66,9 @@ public class EditorService {
 
   private final Supplier<TileStore> tileStoreSupplier;
 
-  public EditorService(BlobMapper configStore, URI tileset, URI style, Supplier<TileStore> tileStoreSupplier) {
+  public EditorService(String host, int port, BlobMapper configStore, URI tileset, URI style, Supplier<TileStore> tileStoreSupplier) {
+    this.host = host;
+    this.port = port;
     this.configStore = configStore;
     this.tileset = tileset;
     this.style = style;
@@ -117,12 +123,9 @@ public class EditorService {
     }
 
     // override style properties with server properties
-    InetSocketAddress address = ctx.localAddress();
     style.setSources(Map.of("baremaps", Map.of(
         "type", "vector",
-        "url", String.format("http://%s:%s/tiles.json",
-            address.getHostName(),
-            address.getPort()))));
+        "url", String.format("http://%s:%s/tiles.json", host, port))));
 
     return style;
   }
@@ -138,10 +141,7 @@ public class EditorService {
     Tileset tileset = configStore.read(this.tileset, Tileset.class);
 
     // override style properties with server properties
-    InetSocketAddress address = ctx.localAddress();
-    tileset.setTiles(Arrays.asList(String.format("http://%s:%s/tiles/{z}/{x}/{y}.mvt",
-        address.getHostName(),
-        address.getPort())));
+    tileset.setTiles(Arrays.asList(String.format("http://%s:%s/tiles/{z}/{x}/{y}.mvt", host, port)));
 
     return tileset;
   }

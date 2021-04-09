@@ -85,7 +85,7 @@ public class Edit implements Callable<Integer> {
     Server.builder()
         .defaultHostname(host)
         .http(port)
-        .annotatedService(new EditorService(mapper, this.config, this.style, tileStoreSupplier))
+        .annotatedService(new EditorService(host, port, mapper, this.config, this.style, tileStoreSupplier))
         .serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/editor/"))
         .decorator(CorsService.builderForAnyOrigin()
             .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)

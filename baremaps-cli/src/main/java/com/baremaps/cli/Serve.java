@@ -106,7 +106,7 @@ public class Serve implements Callable<Integer> {
             .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)
             .allowRequestHeaders("Origin", "Content-Type", "Accept")
             .newDecorator())
-        .annotatedService(new ServerService(tileset, style, tileCache))
+        .annotatedService(new ServerService(host, port, tileset, style, tileCache))
         .serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/viewer/"));
 
     if (assets != null && Files.exists(assets)) {

@@ -35,13 +35,19 @@ public class ServerService {
       .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
       .build();
 
+  private final String host;
+
+  private final int port;
+
   private final Tileset tileset;
 
   private final Style style;
 
   private final TileStore tileStore;
 
-  public ServerService(Tileset tileset, Style style, TileStore tileStore) {
+  public ServerService(String host, int port, Tileset tileset, Style style, TileStore tileStore) {
+    this.host = host;
+    this.port = port;
     this.tileset = tileset;
     this.style = style;
     this.tileStore = tileStore;
@@ -60,9 +66,7 @@ public class ServerService {
     InetSocketAddress address = ctx.localAddress();
     style.setSources(Map.of("baremaps", Map.of(
         "type", "vector",
-        "url", String.format("http://%s:%s/tiles.json",
-            address.getHostName(),
-            address.getPort()))));
+        "url", String.format("http://%s:%s/tiles.json", host, port))));
 
     return style;
   }
@@ -71,10 +75,7 @@ public class ServerService {
   @ProducesJson
   public Tileset getTileset(ServiceRequestContext ctx) throws IOException {
     // override style properties with server properties
-    InetSocketAddress address = ctx.localAddress();
-    tileset.setTiles(Arrays.asList(String.format("http://%s:%s/tiles/{z}/{x}/{y}.mvt",
-        address.getHostName(),
-        address.getPort())));
+    tileset.setTiles(Arrays.asList(String.format("http://%s:%s/tiles/{z}/{x}/{y}.mvt", host, port)));
 
     return tileset;
   }
