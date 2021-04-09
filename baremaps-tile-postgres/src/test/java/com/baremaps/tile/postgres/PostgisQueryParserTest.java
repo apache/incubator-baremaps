@@ -16,8 +16,8 @@ package com.baremaps.tile.postgres;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.baremaps.config.Layer;
-import com.baremaps.config.Query;
+import com.baremaps.config.tileset.Layer;
+import com.baremaps.config.tileset.Query;
 import com.baremaps.tile.postgres.PostgisQueryParser.Parse;
 import com.google.common.collect.ImmutableList;
 import java.util.List;

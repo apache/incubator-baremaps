@@ -1,0 +1,12 @@
+{
+  "version" : 8,
+  "metadata" : { },
+  "sources" : {
+    "baremaps" : {
+      "url" : "http://localhost:9000/tiles.json",
+      "type" : "vector"
+    }
+  },
+  "layers" : [ ],
+  "reload" : false
+}

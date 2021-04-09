@@ -89,33 +89,24 @@ public class OpenStreetMapExampleTest {
     // Test the export command
     int exportExitCode = cmd.execute("export",
         "--database", DATABASE_URL,
-        "--config", "openstreetmap/config.yaml",
+        "--tileset", "openstreetmap/tileset.json",
         "--repository", "repository/");
     assertEquals(0, exportExitCode);
     assertTrue(Files.exists(Paths.get("repository/14/8626/5750.pbf")));
 
     // Test the serve command in a separate thread
     new Thread(() -> {
-      cmd.execute("preview",
+      cmd.execute("edit",
           "--database", DATABASE_URL,
-          "--config", "openstreetmap/config.yaml");
+          "--tileset", "openstreetmap/tileset.json",
+          "--style", "openstreetmap/style.json");
     }).run();
 
     // Wait for the server to start
     Thread.sleep(1000);
 
-    // Download a static file
-    HttpURLConnection indexConnection = (HttpURLConnection) new URL("http://localhost:9000/")
-        .openConnection();
-    InputStream indexInputStream = indexConnection.getInputStream();
-    try (final Reader reader = new InputStreamReader(indexInputStream)) {
-      String text = CharStreams.toString(reader);
-      assertTrue(text.contains("Baremaps"));
-    }
-    assertEquals(indexConnection.getResponseCode(), 200);
-
     // Download a tile file
-    HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:9000/tiles/14/8626/5750.pbf")
+    HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:9000/tiles/14/8626/5750.mvt")
         .openConnection();
     connection.connect();
     assertEquals(connection.getResponseCode(), 200);

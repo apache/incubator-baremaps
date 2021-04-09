@@ -16,8 +16,8 @@ package com.baremaps.tile.postgres;
 
 import static com.baremaps.config.Variables.interpolate;
 
-import com.baremaps.config.Config;
-import com.baremaps.config.Layer;
+import com.baremaps.config.tileset.Tileset;
+import com.baremaps.config.tileset.Layer;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
@@ -32,7 +32,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
 import javax.sql.DataSource;
@@ -86,11 +85,11 @@ public class PostgisTileStore implements TileStore {
 
   private final DataSource datasource;
 
-  private final Supplier<Config> provider;
+  private final Tileset tileset;
 
-  public PostgisTileStore(DataSource datasource, Supplier<Config> provider) {
+  public PostgisTileStore(DataSource datasource, Tileset tileset) {
     this.datasource = datasource;
-    this.provider = provider;
+    this.tileset = tileset;
   }
 
   public Envelope envelope() throws SQLException, ParseException {
@@ -136,7 +135,7 @@ public class PostgisTileStore implements TileStore {
   }
 
   private String query(Tile tile) {
-    Map<Layer, List<Parse>> parses = provider.get().getLayers().stream()
+    Map<Layer, List<Parse>> parses = tileset.getLayers().stream()
         .flatMap(layer -> layer.getQueries().stream().map(query -> PostgisQueryParser.parse(layer, query)))
         .collect(Collectors.groupingBy(q -> q.getLayer()));
     String sources = parses.entrySet().stream()

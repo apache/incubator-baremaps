@@ -15,9 +15,9 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.config.Config;
-import com.baremaps.config.ConfigLoader;
-import com.baremaps.config.Query;
+import com.baremaps.config.tileset.Tileset;
+import com.baremaps.config.tileset.Query;
+import com.baremaps.config.BlobMapper;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.stream.StreamUtils;
@@ -68,9 +68,9 @@ public class Export implements Callable<Integer> {
   private String database;
 
   @Option(
-      names = {"--config"},
-      paramLabel = "YAML",
-      description = "The YAML source configuration file.",
+      names = {"--tileset"},
+      paramLabel = "TILESET",
+      description = "The tileset file.",
       required = true)
   private URI source;
 
@@ -118,7 +118,7 @@ public class Export implements Callable<Integer> {
 
     // Read the configuration file
     logger.info("Reading configuration");
-    Config source = new ConfigLoader(blobStore).load(this.source);
+    Tileset source = new BlobMapper(blobStore).read(this.source, Tileset.class);
 
     logger.info("Initializing the source tile store");
     final TileStore tileSource = sourceTileStore(source, datasource);
@@ -135,11 +135,11 @@ public class Export implements Callable<Integer> {
           source.getBounds().getMinLon(), source.getBounds().getMaxLon(),
           source.getBounds().getMinLat(), source.getBounds().getMaxLat());
       long count = Tile.count(envelope,
-          (int) source.getBounds().getMinZoom(),
-          (int) source.getBounds().getMaxZoom());
+          (int) source.getMinZoom(),
+          (int) source.getMaxZoom());
       stream = StreamUtils.stream(Tile.iterator(envelope,
-          (int) source.getBounds().getMinZoom(),
-          (int) source.getBounds().getMaxZoom()))
+          (int) source.getMinZoom(),
+          (int) source.getMaxZoom()))
           .peek(new StreamProgress<>(count, 5000));
     } else {
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(blobStore.read(tiles)))) {
@@ -150,8 +150,8 @@ public class Export implements Callable<Integer> {
           int z = Integer.parseInt(array[2]);
           Tile tile = new Tile(x, y, z);
           return StreamUtils.stream(Tile.iterator(tile.envelope(),
-              (int) source.getBounds().getMinZoom(),
-              (int) source.getBounds().getMaxZoom()));
+              (int) source.getMinZoom(),
+              (int) source.getMaxZoom()));
         });
       }
     }
@@ -163,11 +163,11 @@ public class Export implements Callable<Integer> {
     return 0;
   }
 
-  private TileStore sourceTileStore(Config config, DataSource datasource) {
-    return new PostgisTileStore(datasource, () -> config);
+  private TileStore sourceTileStore(Tileset tileset, DataSource datasource) {
+    return new PostgisTileStore(datasource, tileset);
   }
 
-  private TileStore targetTileStore(Config source, BlobStore blobStore)
+  private TileStore targetTileStore(Tileset source, BlobStore blobStore)
       throws TileStoreException, IOException {
     if (mbtiles) {
       SQLiteDataSource dataSource = new SQLiteDataSource();
@@ -181,21 +181,21 @@ public class Export implements Callable<Integer> {
     }
   }
 
-  private Map<String, String> metadata(Config config) throws JsonProcessingException {
+  private Map<String, String> metadata(Tileset tileset) throws JsonProcessingException {
     Map<String, String> metadata = new HashMap<>();
-    metadata.put("name", config.getId());
-    metadata.put("version", config.getVersion().toString());
-    metadata.put("description", config.getDescription());
-    metadata.put("attribution", config.getAttribution());
+    metadata.put("name", tileset.getName());
+    metadata.put("version", tileset.getVersion().toString());
+    metadata.put("description", tileset.getDescription());
+    metadata.put("attribution", tileset.getAttribution());
     metadata.put("type", "baselayer");
     metadata.put("format", "pbf");
-    metadata.put("center", String.format("%f, %f", config.getCenter().getLon(), config.getCenter().getLat()));
+    metadata.put("center", String.format("%f, %f", tileset.getCenter().getLon(), tileset.getCenter().getLat()));
     metadata.put("bounds", String.format("%f, %f, %f, %f",
-        config.getBounds().getMinLon(), config.getBounds().getMinLat(),
-        config.getBounds().getMaxLon(), config.getBounds().getMaxLat()));
-    metadata.put("minzoom", Double.toString(config.getBounds().getMinZoom()));
-    metadata.put("maxzoom", Double.toString(config.getBounds().getMaxZoom()));
-    List<Map<String, Object>> layers = config.getLayers().stream().map(layer -> {
+        tileset.getBounds().getMinLon(), tileset.getBounds().getMinLat(),
+        tileset.getBounds().getMaxLon(), tileset.getBounds().getMaxLat()));
+    metadata.put("minzoom", Double.toString(tileset.getMinZoom()));
+    metadata.put("maxzoom", Double.toString(tileset.getMaxZoom()));
+    List<Map<String, Object>> layers = tileset.getLayers().stream().map(layer -> {
       Map<String, Object> map = new HashMap<>();
       map.put("id", layer.getId());
       map.put("description", layer.getDescription());

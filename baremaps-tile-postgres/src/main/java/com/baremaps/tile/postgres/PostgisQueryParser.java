@@ -14,8 +14,8 @@
 
 package com.baremaps.tile.postgres;
 
-import com.baremaps.config.Layer;
-import com.baremaps.config.Query;
+import com.baremaps.config.tileset.Layer;
+import com.baremaps.config.tileset.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

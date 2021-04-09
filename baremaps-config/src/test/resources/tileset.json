@@ -1,0 +1,29 @@
+{
+  "id": "config",
+  "center": [
+    1,
+    2,
+    3
+  ],
+  "bounds": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "minZoom": 5,
+  "maxZoom": 6,
+  "vector_layers": [
+    {
+      "id": "layer",
+      "queries": [
+        {
+          "minZoom": 1,
+          "maxZoom": 2,
+          "sql": "query"
+        }
+      ]
+    }
+  ]
+}
+

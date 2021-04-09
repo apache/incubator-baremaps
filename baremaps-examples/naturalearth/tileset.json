@@ -1,0 +1,1360 @@
+{
+  "tilejson": "2.2.0",
+  "minZoom": 0.0,
+  "maxZoom": 0.0,
+  "tiles": [
+    "http://localhost:9000/tiles/{z}/{x}/{y}.mvt"
+  ],
+  "vector_layers": [
+    {
+      "id": "ne_110m_admin_0_boundary_lines_land",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_boundary_lines_land AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_0_countries",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_countries AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_0_countries_lakes",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_countries_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_0_map_units",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_map_units AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_0_pacific_groupings",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_pacific_groupings AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_0_scale_rank",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_0_sovereignty",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_sovereignty AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_0_tiny_countries",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_0_tiny_countries AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_1_states_provinces",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_1_states_provinces AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_1_states_provinces_lakes",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_1_states_provinces_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_1_states_provinces_lines",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_1_states_provinces_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_1_states_provinces_scale_rank",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_admin_1_states_provinces_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_coastline",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_coastline AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_geographic_lines",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geographic_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_geography_marine_polys",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geography_marine_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_geography_regions_elevation_points",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geography_regions_elevation_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_geography_regions_points",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geography_regions_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_geography_regions_polys",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_geography_regions_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_glaciated_areas",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_glaciated_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_lakes",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_land",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_land AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_ocean",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_ocean AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_populated_places",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_populated_places AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_populated_places_simple",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_populated_places_simple AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_rivers_lake_centerlines",
+      "queries": [
+        {
+          "minZoom": 0,
+          "maxZoom": 5,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_110m_rivers_lake_centerlines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_boundary_lines_disputed_areas",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_boundary_lines_disputed_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_boundary_lines_land",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_boundary_lines_land AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_boundary_lines_maritime_indicator",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_boundary_lines_maritime_indicator AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_boundary_map_units",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_boundary_map_units AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_breakaway_disputed_areas",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_breakaway_disputed_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_breakaway_disputed_areas_scale_rank",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_breakaway_disputed_areas_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_countries",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_countries AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_countries_lakes",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_countries_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_map_subunits",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_map_subunits AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_map_units",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_map_units AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_pacific_groupings",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_pacific_groupings AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_scale_rank",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_sovereignty",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_sovereignty AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_tiny_countries",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_tiny_countries AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_tiny_countries_scale_rank",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_0_tiny_countries_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_1_states_provinces",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_1_states_provinces AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_1_states_provinces_lakes",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_1_states_provinces_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_1_states_provinces_lines",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_1_states_provinces_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_1_states_provinces_scale_rank",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_admin_1_states_provinces_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_airports",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_airports AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_antarctic_ice_shelves_lines",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_antarctic_ice_shelves_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_antarctic_ice_shelves_polys",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_antarctic_ice_shelves_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_coastline",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_coastline AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_geographic_lines",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geographic_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_geography_marine_polys",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geography_marine_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_geography_regions_elevation_points",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geography_regions_elevation_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_geography_regions_points",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geography_regions_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_geography_regions_polys",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_geography_regions_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_glaciated_areas",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_glaciated_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_lakes",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_lakes_historic",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_lakes_historic AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_land",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_land AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_ocean",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_ocean AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_playas",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_playas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_populated_places",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_populated_places AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_populated_places_simple",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_populated_places_simple AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_ports",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_ports AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_rivers_lake_centerlines",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_rivers_lake_centerlines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_rivers_lake_centerlines_scale_rank",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_rivers_lake_centerlines_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_urban_areas",
+      "queries": [
+        {
+          "minZoom": 5,
+          "maxZoom": 10,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_50m_urban_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_antarctic_claim_limit_lines",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_antarctic_claim_limit_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_antarctic_claims",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_antarctic_claims AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_boundary_lines_disputed_areas",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_boundary_lines_disputed_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_boundary_lines_land",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_boundary_lines_land AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_boundary_lines_map_units",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_boundary_lines_map_units AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_boundary_lines_maritime_indicator",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_boundary_lines_maritime_indicator AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_countries",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_countries AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_countries_lakes",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_countries_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_disputed_areas",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_disputed_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_disputed_areas_scale_rank_minor_islands",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_disputed_areas_scale_rank_minor_islands AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_label_points",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_label_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_map_subunits",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_map_subunits AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_map_units",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_map_units AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_pacific_groupings",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_pacific_groupings AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_scale_rank",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_scale_rank_minor_islands",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_scale_rank_minor_islands AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_seams",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_seams AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_sovereignty",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_0_sovereignty AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_label_points",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_label_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_label_points_details",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_label_points_details AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_seams",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_seams AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_states_provinces",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_states_provinces_lakes",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_states_provinces_lines",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_states_provinces_scale_rank",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_states_provinces_scale_rank_minor_islands",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_admin_1_states_provinces_scale_rank_minor_islands AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_airports",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_airports AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_antarctic_ice_shelves_lines",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_antarctic_ice_shelves_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_antarctic_ice_shelves_polys",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_antarctic_ice_shelves_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_coastline",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_coastline AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_geographic_lines",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geographic_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_geography_marine_polys",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geography_marine_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_geography_regions_elevation_points",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geography_regions_elevation_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_geography_regions_points",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geography_regions_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_geography_regions_polys",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_geography_regions_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_glaciated_areas",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_glaciated_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_lakes",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_lakes_europe",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes_europe AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_lakes_historic",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes_historic AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_lakes_north_america",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes_north_america AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_lakes_pluvial",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_lakes_pluvial AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_land",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_land AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_land_ocean_label_points",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_land_ocean_label_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_land_ocean_seams",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_land_ocean_seams AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_land_scale_rank",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_land_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_minor_islands",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_minor_islands AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_minor_islands_coastline",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_minor_islands_coastline AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_minor_islands_label_points",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_minor_islands_label_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_ocean",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_ocean AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_ocean_scale_rank",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_ocean_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_parks_and_protected_lands_area",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_parks_and_protected_lands_area AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_parks_and_protected_lands_line",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_parks_and_protected_lands_line AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_parks_and_protected_lands_point",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_parks_and_protected_lands_point AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_parks_and_protected_lands_scale_rank",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_parks_and_protected_lands_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_playas",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_playas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_populated_places",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_populated_places AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_populated_places_simple",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_populated_places_simple AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_ports",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_ports AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_railroads",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_railroads AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_railroads_north_america",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_railroads_north_america AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_reefs",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_reefs AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_rivers_europe",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_rivers_europe AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_rivers_lake_centerlines",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_rivers_lake_centerlines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_rivers_lake_centerlines_scale_rank",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_rivers_lake_centerlines_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_rivers_north_america",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_rivers_north_america AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_roads",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_roads AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_roads_north_america",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_roads_north_america AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_time_zones",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_time_zones AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_urban_areas",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_urban_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_urban_areas_landscan",
+      "queries": [
+        {
+          "minZoom": 10,
+          "maxZoom": 12,
+          "sql": "SELECT ogc_fid as id, hstore(t.*) as tags, geometry FROM ne_10m_urban_areas_landscan AS t"
+        }
+      ]
+    }
+  ]
+}

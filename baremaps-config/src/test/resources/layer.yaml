@@ -1,5 +1,0 @@
-id: layer
-queries:
-  - minZoom: 1
-    maxZoom: 2
-    sql: query

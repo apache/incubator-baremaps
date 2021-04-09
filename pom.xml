@@ -51,10 +51,9 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+    <maven.compiler.target>11</maven.compiler.target>
     <version.lib.armeria>1.4.0</version.lib.armeria>
-    <version.lib.freemarker>2.3.30</version.lib.freemarker>
     <version.lib.caffeine>3.0.0</version.lib.caffeine>
     <version.lib.commons-compress>1.19</version.lib.commons-compress>
     <version.lib.dbcp2>2.8.0</version.lib.dbcp2>
@@ -81,6 +80,7 @@
   </properties>
 
   <modules>
+    <module>baremaps-armeria</module>
     <module>baremaps-benchmarks</module>
     <module>baremaps-config</module>
     <module>baremaps-cli</module>
@@ -90,7 +90,6 @@
     <module>baremaps-osm</module>
     <module>baremaps-osm-lmdb</module>
     <module>baremaps-osm-postgres</module>
-    <module>baremaps-server</module>
     <module>baremaps-stream</module>
     <module>baremaps-testing</module>
     <module>baremaps-tile</module>
@@ -309,7 +308,7 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-server</artifactId>
+        <artifactId>baremaps-armeria</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -346,6 +345,11 @@
         <artifactId>guava</artifactId>
         <groupId>com.google.guava</groupId>
         <version>${version.lib.guava}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.projectreactor</groupId>
+        <artifactId>reactor-core</artifactId>
+        <version>3.4.4</version>
       </dependency>
       <dependency>
         <artifactId>picocli</artifactId>
@@ -396,11 +400,6 @@
         <groupId>com.linecorp.armeria</groupId>
         <artifactId>armeria</artifactId>
         <version>${version.lib.armeria}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.freemarker</groupId>
-        <artifactId>freemarker</artifactId>
-        <version>${version.lib.freemarker}</version>
       </dependency>
       <dependency>
         <artifactId>lmdbjava</artifactId>
@@ -547,6 +546,10 @@
     <dependency>
       <artifactId>jts-core</artifactId>
       <groupId>org.locationtech.jts</groupId>
+    </dependency>
+    <dependency>
+      <groupId>io.projectreactor</groupId>
+      <artifactId>reactor-core</artifactId>
     </dependency>
     <dependency>
       <artifactId>proj4j</artifactId>
