@@ -1,6 +1,3 @@
 {
-  "id": "stylesheet",
-  "styles": {
-    "id": "style"
-  }
+  "name": "style"
 }

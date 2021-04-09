@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Map;
@@ -17,15 +18,8 @@ public class BlobMapper {
 
   private final BlobStore blobStore;
 
-  private final Map<String, String> variables;
-
   public BlobMapper(BlobStore blobStore) {
-    this(blobStore, System.getenv());
-  }
-
-  public BlobMapper(BlobStore blobStore, Map<String, String> variables) {
     this.blobStore = blobStore;
-    this.variables = variables;
   }
 
   public boolean exists(URI uri) {
@@ -38,16 +32,22 @@ public class BlobMapper {
   }
 
   public <T> T read(URI uri, Class<T> mainType) throws IOException {
-    ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-    mapper.enable(SerializationFeature.INDENT_OUTPUT);
-    return mapper.readValue(blobStore.readByteArray(uri), mainType);
+    byte[] bytes = blobStore.readByteArray(uri);
+    return objectMapper(uri).readValue(bytes, mainType);
   }
 
   public void write(URI uri, Object object) throws IOException {
-    ObjectMapper mapper = new ObjectMapper(new JsonFactory());
     DefaultPrettyPrinter pp = new DefaultPrettyPrinter();
-    pp.indentArraysWith( DefaultIndenter.SYSTEM_LINEFEED_INSTANCE );
-    blobStore.writeByteArray(uri, mapper.writer(pp).writeValueAsBytes(object));
+    pp.indentArraysWith(DefaultIndenter.SYSTEM_LINEFEED_INSTANCE);
+    byte[] bytes = objectMapper(uri).writer(pp).writeValueAsBytes(object);
+    blobStore.writeByteArray(uri, bytes);
+  }
+
+  private ObjectMapper objectMapper(URI uri) {
+    JsonFactory factory = uri.toString().endsWith(".json") ? new JsonFactory() : new YAMLFactory();
+    ObjectMapper mapper = new ObjectMapper(factory);
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    return mapper;
   }
 
 }

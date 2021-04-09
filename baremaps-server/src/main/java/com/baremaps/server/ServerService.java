@@ -12,11 +12,15 @@ import com.baremaps.tile.TileStoreException;
 import com.linecorp.armeria.common.HttpData;
 import com.linecorp.armeria.common.HttpResponse;
 import com.linecorp.armeria.common.ResponseHeaders;
+import com.linecorp.armeria.server.ServiceRequestContext;
 import com.linecorp.armeria.server.annotation.Blocking;
 import com.linecorp.armeria.server.annotation.Get;
 import com.linecorp.armeria.server.annotation.Param;
 import com.linecorp.armeria.server.annotation.ProducesJson;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.Arrays;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,13 +48,23 @@ public class ServerService {
 
   @Get("/style.json")
   @ProducesJson
-  public Style getStyle() throws IOException {
+  public Style getStyle(ServiceRequestContext ctx) throws IOException {
+    InetSocketAddress address = ctx.localAddress();
+    style.setSources(Map.of("baremaps", Map.of(
+        "type", "vector",
+        "url", String.format("http://%s:%s/tiles.json",
+            address.getHostName(),
+            address.getPort()))));
     return style;
   }
 
   @Get("/tiles.json")
   @ProducesJson
-  public Tileset getTiles() throws IOException {
+  public Tileset getTiles(ServiceRequestContext ctx) throws IOException {
+    InetSocketAddress address = ctx.localAddress();
+    tileset.setTiles(Arrays.asList(String.format("http://%s:%s/tiles/{z}/{x}/{y}.mvt",
+        address.getHostName(),
+        address.getPort())));
     return tileset;
   }
 
