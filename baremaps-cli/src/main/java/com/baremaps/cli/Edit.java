@@ -91,7 +91,6 @@ public class Edit implements Callable<Integer> {
             .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)
             .allowRequestHeaders("Origin", "Content-Type", "Accept")
             .newDecorator())
-        .decorator(LoggingService.newDecorator())
         .disableServerHeader()
         .disableDateHeader()
         .build()

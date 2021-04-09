@@ -106,7 +106,6 @@ public class Serve implements Callable<Integer> {
             .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)
             .allowRequestHeaders("Origin", "Content-Type", "Accept")
             .newDecorator())
-        .decorator(LoggingService.newDecorator())
         .annotatedService(new ServerService(tileset, style, tileCache))
         .serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/viewer/"));
 
