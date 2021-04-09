@@ -6,7 +6,7 @@
   <parent>
     <artifactId>baremaps</artifactId>
     <groupId>com.baremaps</groupId>
-    <version>0.5.1-SNAPSHOT</version>
+    <version>0.5.1</version>
   </parent>
   <build>
     <testSourceDirectory>test</testSourceDirectory>
