@@ -84,6 +84,7 @@
     <module>baremaps-benchmarks</module>
     <module>baremaps-config</module>
     <module>baremaps-cli</module>
+    <module>baremaps-editor</module>
     <module>baremaps-blob</module>
     <module>baremaps-blob-s3</module>
     <module>baremaps-examples</module>
