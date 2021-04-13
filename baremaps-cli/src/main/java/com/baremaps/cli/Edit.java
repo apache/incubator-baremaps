@@ -10,9 +10,11 @@ import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
 import com.linecorp.armeria.common.HttpMethod;
 import com.linecorp.armeria.server.Server;
+import com.linecorp.armeria.server.ServerListener;
+import com.linecorp.armeria.server.ServerListenerAdapter;
 import com.linecorp.armeria.server.cors.CorsService;
 import com.linecorp.armeria.server.file.FileService;
-import com.linecorp.armeria.server.logging.LoggingService;
+import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.Callable;
@@ -67,6 +69,12 @@ public class Edit implements Callable<Integer> {
       description = "The port of the server.")
   private int port = 9000;
 
+  @Option(
+      names = {"--open"},
+      paramLabel = "OPEN",
+      description = "Open the browser.")
+  private boolean open = false;
+
   @Override
   public Integer call() {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
@@ -82,7 +90,7 @@ public class Edit implements Callable<Integer> {
       }
     };
 
-    Server.builder()
+    Server server = Server.builder()
         .defaultHostname(host)
         .http(port)
         .annotatedService(new EditorService(host, port, mapper, this.config, this.style, tileStoreSupplier))
@@ -93,8 +101,20 @@ public class Edit implements Callable<Integer> {
             .newDecorator())
         .disableServerHeader()
         .disableDateHeader()
-        .build()
-        .start();
+        .build();
+
+    if (open) {
+      server.addListener(new ServerListenerAdapter() {
+        @Override
+        public void serverStarted(Server server) throws Exception {
+          if (Desktop.isDesktopSupported()) {
+            Desktop.getDesktop().browse(new URI(String.format("http://%s:%s/", host, port)));
+          }
+        }
+      });
+    }
+
+    server.start();
 
     return 0;
   }
