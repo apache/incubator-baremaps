@@ -86,7 +86,7 @@ public class Edit implements Callable<Integer> {
         .defaultHostname(host)
         .http(port)
         .annotatedService(new EditorService(host, port, mapper, this.config, this.style, tileStoreSupplier))
-        .serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/editor/"))
+        .serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/maputnik/"))
         .decorator(CorsService.builderForAnyOrigin()
             .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)
             .allowRequestHeaders("Origin", "Content-Type", "Accept")

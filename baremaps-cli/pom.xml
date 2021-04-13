@@ -63,6 +63,10 @@
   <dependencies>
     <dependency>
       <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-armeria</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
       <artifactId>baremaps-blob</artifactId>
     </dependency>
     <dependency>
@@ -87,7 +91,7 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-armeria</artifactId>
+      <artifactId>baremaps-maputnik</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
