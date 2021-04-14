@@ -10,7 +10,7 @@
 log/
 target/
 examples/output/
-baremaps-maputnik/node/
+baremaps-editor/node/
 
 # Release
 /baremaps/

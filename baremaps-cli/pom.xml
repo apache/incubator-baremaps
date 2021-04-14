@@ -95,10 +95,6 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-maputnik</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
       <artifactId>baremaps-stream</artifactId>
     </dependency>
     <dependency>

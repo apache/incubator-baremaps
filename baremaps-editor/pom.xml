@@ -3,8 +3,8 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>baremaps-maputnik</artifactId>
-  <name>baremaps-maputnik</name>
+  <artifactId>baremaps-editor</artifactId>
+  <name>baremaps-editor</name>
 
   <parent>
     <artifactId>baremaps</artifactId>
@@ -79,5 +79,28 @@
       </plugin>
     </plugins>
   </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-config</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-tile</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-tile-postgres</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.linecorp.armeria</groupId>
+      <artifactId>armeria</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
+  </dependencies>
 
 </project>
