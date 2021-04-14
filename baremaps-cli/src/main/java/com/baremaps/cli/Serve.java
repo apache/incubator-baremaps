@@ -7,7 +7,7 @@ import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.config.BlobMapper;
 import com.baremaps.osm.postgres.PostgresHelper;
-import com.baremaps.server.ServerService;
+import com.baremaps.editor.ServerService;
 import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
@@ -18,7 +18,6 @@ import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerBuilder;
 import com.linecorp.armeria.server.cors.CorsService;
 import com.linecorp.armeria.server.file.FileService;
-import com.linecorp.armeria.server.logging.LoggingService;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -107,7 +106,7 @@ public class Serve implements Callable<Integer> {
             .allowRequestHeaders("Origin", "Content-Type", "Accept")
             .newDecorator())
         .annotatedService(new ServerService(host, port, tileset, style, tileCache))
-        .serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/viewer/"));
+        .serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/server/"));
 
     if (assets != null && Files.exists(assets)) {
       HttpService fileService = FileService.builder(assets).build();

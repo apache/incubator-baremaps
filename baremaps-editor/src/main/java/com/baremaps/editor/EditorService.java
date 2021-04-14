@@ -1,4 +1,4 @@
-package com.baremaps.server;
+package com.baremaps.editor;
 
 import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
@@ -25,7 +25,6 @@ import com.linecorp.armeria.server.annotation.ProducesEventStream;
 import com.linecorp.armeria.server.annotation.ProducesJson;
 import com.linecorp.armeria.server.annotation.Put;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;

@@ -1,4 +1,4 @@
-package com.baremaps.server;
+package com.baremaps.editor;
 
 import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;

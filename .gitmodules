@@ -1,0 +1,3 @@
+[submodule "baremaps-editor"]
+	path = baremaps-editor/editor
+	url = git@github.com:baremaps/editor.git
