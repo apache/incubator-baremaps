@@ -83,6 +83,7 @@
     <module>baremaps-benchmarks</module>
     <module>baremaps-config</module>
     <module>baremaps-cli</module>
+    <module>baremaps-editor</module>
     <module>baremaps-maputnik</module>
     <module>baremaps-blob</module>
     <module>baremaps-blob-s3</module>
@@ -270,6 +271,11 @@
       </dependency>
       <dependency>
         <artifactId>baremaps-config</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-editor</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>

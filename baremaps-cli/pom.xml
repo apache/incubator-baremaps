@@ -79,6 +79,10 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-editor</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
       <artifactId>baremaps-osm</artifactId>
     </dependency>
     <dependency>
