@@ -107,7 +107,7 @@ public class Serve implements Callable<Integer> {
             .allowRequestHeaders("Origin", "Content-Type", "Accept")
             .newDecorator())
         .annotatedService(new ServerService(host, port, tileset, style, tileCache))
-        .serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/viewer/"));
+        .serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/server/"));
 
     if (assets != null && Files.exists(assets)) {
       HttpService fileService = FileService.builder(assets).build();
