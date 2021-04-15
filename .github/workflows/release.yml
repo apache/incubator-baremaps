@@ -14,15 +14,26 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF#refs/tags/}
+      - name: Get the tag
+        id: get_tag
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/tags/}
       - name: Set up Java 11
         uses: actions/setup-java@v1
         with:
           java-version: 11
+          server-id: maven
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_CENTRAL_TOKEN
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Build with maven
-        run: mvn -B package --file pom.xml
+        run: mvn -B package --file pom.xml -P release
+      - name: Deploy artifacts
+        run: mvn deploy -P release
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -33,7 +44,7 @@ jobs:
           release_name: Baremaps ${{ github.ref }}
           draft: false
           prerelease: false
-      - name: Upload release asset
+      - name: Upload release
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
@@ -43,3 +54,4 @@ jobs:
           asset_path: ./baremaps-cli/target/baremaps.zip
           asset_name: baremaps.zip
           asset_content_type: application/zip
+
