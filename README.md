@@ -9,7 +9,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbaremaps%2Fbaremaps.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbaremaps%2Fbaremaps?ref=badge_shield)
 
-[Baremaps](https://www.baremaps.com/) is a toolkit for creating Mapbox vector tiles from [OpenStreetMap](https://www.openstreetmap.org) and other data sources. The project is licensed under [Apache License 2.0](LICENSE).
+[Baremaps](https://www.baremaps.com/) is a toolkit for creating custom vector tiles from [OpenStreetMap](https://www.openstreetmap.org) and other data sources with Postgis and Java. The project is licensed under [Apache License 2.0](LICENSE).
 
 [![State of the map](/docs/assets/screenshot.jpg)](https://www.baremaps.com/assets/demo.html)
 
