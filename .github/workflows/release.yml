@@ -1,4 +1,4 @@
-name: Create Release
+name: Release
 
 on:
   push:
@@ -6,34 +6,15 @@ on:
       - 'v*'
 
 jobs:
-  build:
-    name: Create Release
+
+  release-github:
+    name: Release on GitHub
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Get the tag
-        id: get_tag
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/tags/}
-      - name: Set up Java 11
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-          server-id: maven
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_CENTRAL_TOKEN
-          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
-      - name: Build with maven
-        run: mvn -B package --file pom.xml -P release
-      - name: Deploy artifacts
-        run: mvn deploy -P release
-        env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -54,6 +35,15 @@ jobs:
           asset_path: ./baremaps-cli/target/baremaps.zip
           asset_name: baremaps.zip
           asset_content_type: application/zip
+
+  release-docker:
+    name: Release on DockerHub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: Set up Java 11
         uses: actions/setup-java@v1
         with:
@@ -63,4 +53,34 @@ jobs:
           server-password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Publish docker image
         run: mvn compile jib:build -pl baremaps-cli
+
+  release-maven:
+    name: Release on Maven Central
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Set up Java 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+          server-id: maven
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_CENTRAL_TOKEN
+          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: Build with maven
+        run: mvn -B package --file pom.xml -P release
+      - name: Deploy artifacts
+        run: mvn deploy -P release
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
+
+
+
 
