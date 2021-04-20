@@ -8,7 +8,7 @@
   <parent>
     <artifactId>baremaps</artifactId>
     <groupId>com.baremaps</groupId>
-    <version>0.5.4-SNAPSHOT</version>
+    <version>0.5.5-SNAPSHOT</version>
   </parent>
 
   <build>
@@ -56,6 +56,20 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <from>
+            <image>adoptopenjdk/openjdk11:alpine</image>
+          </from>
+          <to>
+            <image>registry.hub.docker.com/baremaps/baremaps</image>
+            <tags>v${project.version}</tags>
+          </to>
+        </configuration>
       </plugin>
     </plugins>
   </build>

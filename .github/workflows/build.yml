@@ -1,10 +1,11 @@
-name: Build Project
+name: Build
 
 on: [push]
 
 jobs:
+
   build-ubuntu:
-    name: Build Project (Ubuntu)
+    name: Build on Ubuntu
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -24,10 +25,9 @@ jobs:
           java-version: 11
       - name: Build with Maven
         run: mvn -P integration -B package --file pom.xml
-      - name: Upload code coverage
-        run: bash <(curl -s https://codecov.io/bash)
+
   build-macos:
-    name: Build Project (MacOS)
+    name: Build on MacOS
     runs-on: macos-latest
     steps:
       - name: Checkout code
@@ -40,8 +40,9 @@ jobs:
           java-version: 11
       - name: Build with Maven
         run: mvn -B package --file pom.xml
+
   build-windows:
-    name: Build Project (Windows)
+    name: Build on Windows
     runs-on: windows-latest
     steps:
       - name: Checkout code
