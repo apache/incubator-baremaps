@@ -44,8 +44,6 @@ public class Style {
 
   private List<Object> layers = new ArrayList<>();
 
-  private boolean reload = false;
-
   public Integer getVersion() {
     return version;
   }
@@ -154,11 +152,4 @@ public class Style {
     this.layers = layers;
   }
 
-  public boolean isReload() {
-    return reload;
-  }
-
-  public void setReload(boolean reload) {
-    this.reload = reload;
-  }
 }

@@ -25,6 +25,16 @@ public class Center {
 
   private double zoom = 0;
 
+  public Center() {
+
+  }
+
+  public Center(double lon, double lat, double zoom) {
+    this.lon = lon;
+    this.lat = lat;
+    this.zoom = zoom;
+  }
+
   public double getLon() {
     return lon;
   }

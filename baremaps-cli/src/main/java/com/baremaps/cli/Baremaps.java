@@ -28,6 +28,7 @@ import picocli.CommandLine.Option;
     description = "A toolkit for producing vector tiles.",
     versionProvider = VersionProvider.class,
     subcommands = {
+        Init.class,
         Execute.class,
         Import.class,
         Update.class,

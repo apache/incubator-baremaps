@@ -1,7 +1,6 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.blob.FileBlobStore;
 import com.baremaps.config.BlobMapper;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.osm.postgres.PostgresHelper;
@@ -47,7 +46,7 @@ public class Edit implements Callable<Integer> {
       paramLabel = "TILESET",
       description = "The tileset file.",
       required = true)
-  private URI config;
+  private URI tileset;
 
   @Option(
       names = {"--style"},
@@ -79,11 +78,11 @@ public class Edit implements Callable<Integer> {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
-    BlobMapper mapper = new BlobMapper(new FileBlobStore());
+    BlobMapper mapper = new BlobMapper(options.blobStore());
     DataSource dataSource = PostgresHelper.datasource(database);
     Supplier<TileStore> tileStoreSupplier = () -> {
       try {
-        return new PostgisTileStore(dataSource, mapper.read(this.config, Tileset.class));
+        return new PostgisTileStore(dataSource, mapper.read(this.tileset, Tileset.class));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -92,7 +91,7 @@ public class Edit implements Callable<Integer> {
     Server server = Server.builder()
         .defaultHostname(host)
         .http(port)
-        .annotatedService(new EditorService(host, port, mapper, this.config, this.style, tileStoreSupplier))
+        .annotatedService(new EditorService(host, port, mapper, this.tileset, this.style, tileStoreSupplier))
         .serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/maputnik/"))
         .decorator(CorsService.builderForAnyOrigin()
             .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)

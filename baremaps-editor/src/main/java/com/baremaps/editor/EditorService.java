@@ -78,10 +78,10 @@ public class EditorService {
   public void monitorChanges() {
     new Thread(() -> {
       try {
-        Path configFile = Paths.get(tileset.getPath()).toAbsolutePath();
+        Path tilesetFile = Paths.get(tileset.getPath()).toAbsolutePath();
         Path styleFile = Paths.get(style.getPath()).toAbsolutePath();
         WatchService watchService = FileSystems.getDefault().newWatchService();
-        configFile.getParent().register(watchService, ENTRY_MODIFY);
+        tilesetFile.getParent().register(watchService, ENTRY_MODIFY);
         styleFile.getParent().register(watchService, ENTRY_MODIFY);
         WatchKey key;
         while ((key = watchService.take()) != null) {
@@ -89,7 +89,7 @@ public class EditorService {
           for (WatchEvent<?> event : key.pollEvents()) {
             Path path = dir.resolve((Path) event.context());
             ObjectNode jsonNode = configStore.read(style, ObjectNode.class);
-            jsonNode.put("reload", path.endsWith(configFile.getFileName()));
+            jsonNode.put("reload", path.endsWith(tilesetFile.getFileName()));
             changes.tryEmitNext(ServerSentEvent.ofData(jsonNode.toString()));
           }
           key.reset();
