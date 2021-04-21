@@ -2,7 +2,6 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.FileBlobStore;
 import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.config.BlobMapper;
@@ -58,7 +57,7 @@ public class Serve implements Callable<Integer> {
       paramLabel = "TILESET",
       description = "The tileset file.",
       required = true)
-  private URI config;
+  private URI tileset;
 
   @Option(
       names = {"--style"},
@@ -89,8 +88,8 @@ public class Serve implements Callable<Integer> {
   public Integer call() throws IOException {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
 
-    BlobStore blobStore = new FileBlobStore();
-    Tileset tileset = new BlobMapper(blobStore).read(this.config, Tileset.class);
+    BlobStore blobStore = options.blobStore();
+    Tileset tileset = new BlobMapper(blobStore).read(this.tileset, Tileset.class);
     Style style = new BlobMapper(blobStore).read(this.style, Style.class);
 
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);

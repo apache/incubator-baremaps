@@ -72,7 +72,7 @@ public class Export implements Callable<Integer> {
       paramLabel = "TILESET",
       description = "The tileset file.",
       required = true)
-  private URI source;
+  private URI tileset;
 
   @Option(
       names = {"--repository"},
@@ -118,7 +118,7 @@ public class Export implements Callable<Integer> {
 
     // Read the configuration file
     logger.info("Reading configuration");
-    Tileset source = new BlobMapper(blobStore).read(this.source, Tileset.class);
+    Tileset source = new BlobMapper(blobStore).read(this.tileset, Tileset.class);
 
     logger.info("Initializing the source tile store");
     final TileStore tileSource = sourceTileStore(source, datasource);
