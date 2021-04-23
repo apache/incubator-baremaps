@@ -57,7 +57,7 @@
         <executions>
           <execution>
             <id>copy-resources</id>
-            <phase>validate</phase>
+            <phase>prepare-package</phase>
             <goals>
               <goal>copy-resources</goal>
             </goals>
@@ -65,7 +65,7 @@
               <outputDirectory>${basedir}/target/classes/maputnik</outputDirectory>
               <resources>
                 <resource>
-                  <directory>editor/build/build</directory>
+                  <directory>${basedir}/editor/build/build</directory>
                   <excludes>
                     <exclude>bundle-stats.html</exclude>
                     <exclude>bundle-stats.json</exclude>
