@@ -4,6 +4,7 @@ import static com.baremaps.config.Variables.interpolate;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.postgres.PostgresHelper;
+import com.baremaps.stream.StreamUtils;
 import com.google.common.base.Splitter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -13,6 +14,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -62,18 +64,15 @@ public class Execute implements Callable<Integer> {
       logger.info("{}", file);
       String blob = new String(blobStore.readByteArray(file), StandardCharsets.UTF_8);
       blob = interpolate(System.getenv(), blob);
-      Stream<String> queries = Splitter.on(";").splitToStream(blob);
-      if (parallel) {
-        queries = queries.parallel();
-      }
-      queries.parallel().forEach(query -> {
-        try (Connection connection = datasource.getConnection();
-            Statement statement = connection.createStatement()) {
-          statement.execute(query);
-        } catch (SQLException e) {
-          throw new RuntimeException(e);
-        }
-      });
+      StreamUtils.batch(Splitter.on(";").splitToStream(blob), 1)
+          .forEach(query -> {
+            try (Connection connection = datasource.getConnection();
+                Statement statement = connection.createStatement()) {
+              statement.execute(query);
+            } catch (SQLException e) {
+              throw new RuntimeException(e);
+            }
+          });
     }
 
     return 0;
