@@ -11,9 +11,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.slf4j.Logger;
@@ -68,9 +72,9 @@ public class GeometryHandler implements ElementHandler {
       return;
     }
 
-    // Collect the members of the relation
-    List<LineString> members = relation.getMembers()
-        .stream()
+    // Collect the polygons of the relation
+    Polygon[] members = relation.getMembers().stream()
+        .filter(member -> "outer".equals(member.getRole()) || "inner".equals(member.getRole()))
         .map(member -> {
           try {
             return referenceCache.get(member.getRef());
@@ -79,32 +83,28 @@ public class GeometryHandler implements ElementHandler {
           }
         })
         .filter(Objects::nonNull)
-        .map(reference -> {
+        .map(references -> {
           try {
-            return coordinateCache.get(reference).stream()
+            Coordinate[] coordinateArray = coordinateCache.get(references).stream()
                 .filter(Objects::nonNull)
                 .toArray(Coordinate[]::new);
+            CoordinateList coordinateList = new CoordinateList(coordinateArray);
+            coordinateList.closeRing();
+            return geometryFactory.createPolygon(coordinateList.toCoordinateArray());
           } catch (CacheException e) {
             return null;
           }
         })
-        .filter(t -> t != null)
-        .map(t -> geometryFactory.createLineString(t))
-        .collect(Collectors.toList());
+        .filter(Objects::nonNull)
+        .toArray(Polygon[]::new);
 
-    // Check whether the relation contains members
-    if (members.isEmpty()) {
-      return;
+    if (members.length == 1) {
+      relation.setGeometry(members[0]);
     }
 
-    // Try to create the polygon from the members
-    try {
-      Polygonizer polygonizer = new Polygonizer(true);
-      polygonizer.add(members);
-      relation.setGeometry(polygonizer.getGeometry());
-    } catch (Exception e) {
-      logger.warn("Unable to build the geometry for relation " + relation.getId(), e);
-      return;
+    if (members.length > 1) {
+      MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(members);
+      relation.setGeometry(multiPolygon);
     }
   }
 }
