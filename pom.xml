@@ -396,7 +396,7 @@
       <dependency>
         <groupId>io.projectreactor</groupId>
         <artifactId>reactor-core</artifactId>
-        <version>3.4.4</version>
+        <version>3.4.5</version>
       </dependency>
       <dependency>
         <artifactId>picocli</artifactId>
