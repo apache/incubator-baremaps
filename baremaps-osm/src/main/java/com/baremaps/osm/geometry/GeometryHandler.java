@@ -9,21 +9,30 @@ import com.baremaps.osm.handler.ElementHandler;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateList;
-import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GeometryHandler implements ElementHandler {
+
+  private static final ScheduledExecutorService executor =
+      Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
 
   private static Logger logger = LoggerFactory.getLogger(GeometryHandler.class);
 
@@ -72,8 +81,9 @@ public class GeometryHandler implements ElementHandler {
       return;
     }
 
-    // Collect the polygons of the relation
-    Polygon[] members = relation.getMembers().stream()
+    // Collect the members of the relation
+    List<LineString> members = relation.getMembers()
+        .stream()
         .filter(member -> "outer".equals(member.getRole()) || "inner".equals(member.getRole()))
         .map(member -> {
           try {
@@ -83,28 +93,36 @@ public class GeometryHandler implements ElementHandler {
           }
         })
         .filter(Objects::nonNull)
-        .map(references -> {
+        .map(reference -> {
           try {
-            Coordinate[] coordinateArray = coordinateCache.get(references).stream()
+            return coordinateCache.get(reference).stream()
                 .filter(Objects::nonNull)
                 .toArray(Coordinate[]::new);
-            CoordinateList coordinateList = new CoordinateList(coordinateArray);
-            coordinateList.closeRing();
-            return geometryFactory.createPolygon(coordinateList.toCoordinateArray());
           } catch (CacheException e) {
             return null;
           }
         })
-        .filter(Objects::nonNull)
-        .toArray(Polygon[]::new);
+        .filter(t -> t != null)
+        .map(t -> geometryFactory.createLineString(t))
+        .collect(Collectors.toList());
 
-    if (members.length == 1) {
-      relation.setGeometry(members[0]);
+    // Check whether the relation contains members
+    if (members.isEmpty()) {
+      return;
     }
 
-    if (members.length > 1) {
-      MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(members);
-      relation.setGeometry(multiPolygon);
+    // Try to create the polygon from the members
+    Future task = ForkJoinPool.commonPool().submit(() -> {
+      Polygonizer polygonizer = new Polygonizer(true);
+      polygonizer.add(members);
+      relation.setGeometry(polygonizer.getGeometry());
+    });
+
+    try {
+      task.get(1, TimeUnit.SECONDS);
+    } catch (Exception e) {
+      logger.warn("Unable to build the geometry for relation " + relation.getId(), e);
+      task.cancel(true);
     }
   }
 }
