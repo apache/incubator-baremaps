@@ -9,6 +9,16 @@ import com.baremaps.osm.handler.ElementHandler;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -20,6 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GeometryHandler implements ElementHandler {
+
+  private static final ScheduledExecutorService executor =
+      Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
 
   private static Logger logger = LoggerFactory.getLogger(GeometryHandler.class);
 
@@ -71,6 +84,7 @@ public class GeometryHandler implements ElementHandler {
     // Collect the members of the relation
     List<LineString> members = relation.getMembers()
         .stream()
+        .filter(member -> "outer".equals(member.getRole()) || "inner".equals(member.getRole()))
         .map(member -> {
           try {
             return referenceCache.get(member.getRef());
@@ -98,13 +112,17 @@ public class GeometryHandler implements ElementHandler {
     }
 
     // Try to create the polygon from the members
-    try {
+    Future task = ForkJoinPool.commonPool().submit(() -> {
       Polygonizer polygonizer = new Polygonizer(true);
       polygonizer.add(members);
       relation.setGeometry(polygonizer.getGeometry());
+    });
+
+    try {
+      task.get(1, TimeUnit.SECONDS);
     } catch (Exception e) {
       logger.warn("Unable to build the geometry for relation " + relation.getId(), e);
-      return;
+      task.cancel(true);
     }
   }
 }
