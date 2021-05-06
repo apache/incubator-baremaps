@@ -58,7 +58,7 @@ public class ImportTask {
 
     logger.info("Creating cache");
     CacheImporter cacheImporter = new CacheImporter(coordinateCache, referenceCache);
-    OpenStreetMap.streamPbfBlocks(path, true).forEach(cacheImporter);
+    OpenStreetMap.streamPbfBlocks(path, false).forEach(cacheImporter);
 
     logger.info("Importing data");
     DatabaseImporter databaseDatabaseImporter = new DatabaseImporter(headerTable, nodeTable, wayTable, relationTable);
