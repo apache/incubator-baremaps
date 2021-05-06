@@ -52,7 +52,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-    <version.lib.armeria>1.4.0</version.lib.armeria>
+    <version.lib.armeria>1.7.2</version.lib.armeria>
     <version.lib.caffeine>3.0.2</version.lib.caffeine>
     <version.lib.commons-compress>1.19</version.lib.commons-compress>
     <version.lib.dbcp2>2.8.0</version.lib.dbcp2>
