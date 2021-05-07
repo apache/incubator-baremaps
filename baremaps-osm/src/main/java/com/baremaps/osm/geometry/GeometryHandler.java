@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
@@ -31,9 +32,8 @@ import org.slf4j.LoggerFactory;
 
 public class GeometryHandler implements ElementHandler {
 
-  private static final ScheduledExecutorService executor =
-      Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
-
+  private static final ExecutorService executor = Executors.newWorkStealingPool();
+  
   private static Logger logger = LoggerFactory.getLogger(GeometryHandler.class);
 
   protected final GeometryFactory geometryFactory;
@@ -112,14 +112,15 @@ public class GeometryHandler implements ElementHandler {
     }
 
     // Try to create the polygon from the members
-    Future task = ForkJoinPool.commonPool().submit(() -> {
+    Future<Geometry> task = executor.submit(() -> {
       Polygonizer polygonizer = new Polygonizer(true);
       polygonizer.add(members);
-      relation.setGeometry(polygonizer.getGeometry());
+      return polygonizer.getGeometry();
     });
 
     try {
-      task.get(1, TimeUnit.SECONDS);
+      Geometry geometry = task.get(1, TimeUnit.SECONDS);
+      relation.setGeometry(geometry);
     } catch (Exception e) {
       logger.warn("Unable to build the geometry for relation " + relation.getId(), e);
       task.cancel(true);
