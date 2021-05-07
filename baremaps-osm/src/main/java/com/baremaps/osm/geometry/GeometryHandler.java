@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class GeometryHandler implements ElementHandler {
 
   private static final ExecutorService executor = Executors.newWorkStealingPool();
-
+  
   private static Logger logger = LoggerFactory.getLogger(GeometryHandler.class);
 
   protected final GeometryFactory geometryFactory;
