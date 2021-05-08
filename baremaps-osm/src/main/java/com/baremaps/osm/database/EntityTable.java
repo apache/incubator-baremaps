@@ -23,14 +23,14 @@ public interface EntityTable<T extends Entity> {
 
   List<T> select(List<Long> ids) throws DatabaseException;
 
-  void insert(T element) throws DatabaseException;
+  void insert(T entity) throws DatabaseException;
 
-  void insert(List<T> elements) throws DatabaseException;
+  void insert(List<T> entities) throws DatabaseException;
 
   void delete(Long id) throws DatabaseException;
 
   void delete(List<Long> ids) throws DatabaseException;
 
-  void copy(List<T> elemenets) throws DatabaseException;
+  void copy(List<T> entities) throws DatabaseException;
 
 }

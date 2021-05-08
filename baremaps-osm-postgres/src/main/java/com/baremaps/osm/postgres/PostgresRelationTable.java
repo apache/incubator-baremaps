@@ -129,6 +129,7 @@ public class PostgresRelationTable implements RelationTable {
 
   @Override
   public List<Relation> select(List<Long> ids) throws DatabaseException {
+    if (ids.isEmpty()) return List.of();
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(selectIn)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
@@ -163,10 +164,10 @@ public class PostgresRelationTable implements RelationTable {
     return new Relation(id, info, tags, members, geometry);
   }
 
-  public void insert(Relation element) throws DatabaseException {
+  public void insert(Relation entity) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      setRelation(statement, element);
+      setRelation(statement, entity);
       statement.execute();
     } catch (SQLException e) {
       throw new DatabaseException(e);
@@ -174,10 +175,11 @@ public class PostgresRelationTable implements RelationTable {
   }
 
   @Override
-  public void insert(List<Relation> elements) throws DatabaseException {
+  public void insert(List<Relation> entities) throws DatabaseException {
+    if (entities.isEmpty()) return;
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      for (Relation entity : elements) {
+      for (Relation entity : entities) {
         statement.clearParameters();
         setRelation(statement, entity);
         statement.addBatch();
@@ -216,6 +218,7 @@ public class PostgresRelationTable implements RelationTable {
 
   @Override
   public void delete(List<Long> ids) throws DatabaseException {
+    if (ids.isEmpty()) return;
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(delete)) {
       for (Long id : ids) {
@@ -229,12 +232,13 @@ public class PostgresRelationTable implements RelationTable {
     }
   }
 
-  public void copy(List<Relation> elemenets) throws DatabaseException {
+  public void copy(List<Relation> entities) throws DatabaseException {
+    if (entities.isEmpty()) return;
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copy))) {
         writer.writeHeader();
-        for (Relation entity : elemenets) {
+        for (Relation entity : entities) {
           writer.startRow(10);
           writer.writeLong(entity.getId());
           writer.writeInteger(entity.getInfo().getVersion());

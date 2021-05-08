@@ -115,6 +115,7 @@ public class PostgresWayTable implements WayTable {
 
   @Override
   public List<Way> select(List<Long> ids) throws DatabaseException {
+    if (ids.isEmpty()) return List.of();
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(selectIn)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
@@ -147,10 +148,10 @@ public class PostgresWayTable implements WayTable {
     return new Way(id, info, tags, nodes, geometry);
   }
 
-  public void insert(Way element) throws DatabaseException {
+  public void insert(Way entity) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      setWay(statement, element);
+      setWay(statement, entity);
       statement.execute();
     } catch (SQLException e) {
       throw new DatabaseException(e);
@@ -158,10 +159,11 @@ public class PostgresWayTable implements WayTable {
   }
 
   @Override
-  public void insert(List<Way> elements) throws DatabaseException {
+  public void insert(List<Way> entities) throws DatabaseException {
+    if (entities.isEmpty()) return;
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      for (Way entity : elements) {
+      for (Way entity : entities) {
         statement.clearParameters();
         setWay(statement, entity);
         statement.addBatch();
@@ -195,6 +197,7 @@ public class PostgresWayTable implements WayTable {
 
   @Override
   public void delete(List<Long> ids) throws DatabaseException {
+    if (ids.isEmpty()) return;
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(delete)) {
       for (Long id : ids) {
@@ -208,12 +211,13 @@ public class PostgresWayTable implements WayTable {
     }
   }
 
-  public void copy(List<Way> elemenets) throws DatabaseException {
+  public void copy(List<Way> entities) throws DatabaseException {
+    if (entities.isEmpty()) return;
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copy))) {
         writer.writeHeader();
-        for (Way entity : elemenets) {
+        for (Way entity : entities) {
           writer.startRow(8);
           writer.writeLong(entity.getId());
           writer.writeInteger(entity.getInfo().getVersion());

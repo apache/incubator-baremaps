@@ -76,14 +76,14 @@ public class PostgresHeaderTable implements HeaderTable {
   }
 
   @Override
-  public void insert(Header header) throws DatabaseException {
+  public void insert(Header entity) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT)) {
-      statement.setObject(1, header.getReplicationSequenceNumber());
-      statement.setObject(2, header.getReplicationTimestamp());
-      statement.setString(3, header.getReplicationUrl());
-      statement.setString(4, header.getSource());
-      statement.setString(5, header.getWritingProgram());
+      statement.setObject(1, entity.getReplicationSequenceNumber());
+      statement.setObject(2, entity.getReplicationTimestamp());
+      statement.setString(3, entity.getReplicationUrl());
+      statement.setString(4, entity.getSource());
+      statement.setString(5, entity.getWritingProgram());
       statement.execute();
     } catch (SQLException e) {
       throw new DatabaseException(e);
@@ -91,7 +91,7 @@ public class PostgresHeaderTable implements HeaderTable {
   }
 
   @Override
-  public void insert(List<Header> elements) throws DatabaseException {
+  public void insert(List<Header> entities) throws DatabaseException {
     // TODO: implement this method
   }
 
@@ -106,7 +106,7 @@ public class PostgresHeaderTable implements HeaderTable {
   }
 
   @Override
-  public void copy(List<Header> elemenets) throws DatabaseException {
+  public void copy(List<Header> entities) throws DatabaseException {
     // TODO: implement this method
   }
 

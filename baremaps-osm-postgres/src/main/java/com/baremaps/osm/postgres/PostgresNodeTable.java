@@ -122,6 +122,7 @@ public class PostgresNodeTable implements NodeTable {
   }
 
   public List<Node> select(List<Long> ids) throws DatabaseException {
+    if (ids.isEmpty()) return List.of();
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(selectIn)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
@@ -151,20 +152,21 @@ public class PostgresNodeTable implements NodeTable {
     return new Node(id, info, tags, lon, lat, point);
   }
 
-  public void insert(Node element) throws DatabaseException {
+  public void insert(Node entity) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      setNode(statement, element);
+      setNode(statement, entity);
       statement.execute();
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
   }
 
-  public void insert(List<Node> elements) throws DatabaseException {
+  public void insert(List<Node> entities) throws DatabaseException {
+    if (entities.isEmpty()) return;
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      for (Node entity : elements) {
+      for (Node entity : entities) {
         statement.clearParameters();
         setNode(statement, entity);
         statement.addBatch();
@@ -198,6 +200,7 @@ public class PostgresNodeTable implements NodeTable {
   }
 
   public void delete(List<Long> ids) throws DatabaseException {
+    if (ids.isEmpty()) return;
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(delete)) {
       for (Long id : ids) {
@@ -211,12 +214,13 @@ public class PostgresNodeTable implements NodeTable {
     }
   }
 
-  public void copy(List<Node> elements) throws DatabaseException {
+  public void copy(List<Node> entities) throws DatabaseException {
+    if (entities.isEmpty()) return;
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copy))) {
         writer.writeHeader();
-        for (Node node : elements) {
+        for (Node node : entities) {
           writer.startRow(9);
           writer.writeLong(node.getId());
           writer.writeInteger(node.getInfo().getVersion());

@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class GeometryHandler implements ElementHandler {
 
   private static final ExecutorService executor = Executors.newWorkStealingPool();
-  
+
   private static Logger logger = LoggerFactory.getLogger(GeometryHandler.class);
 
   protected final GeometryFactory geometryFactory;
@@ -120,7 +120,11 @@ public class GeometryHandler implements ElementHandler {
 
     try {
       Geometry geometry = task.get(1, TimeUnit.SECONDS);
-      relation.setGeometry(geometry);
+      // TODO: use the GeometryFixer once it is released.
+      // https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/geom/util/GeometryFixer.java
+      if (geometry.isValid()) {
+        relation.setGeometry(geometry);
+      }
     } catch (Exception e) {
       logger.warn("Unable to build the geometry for relation " + relation.getId(), e);
       task.cancel(true);
