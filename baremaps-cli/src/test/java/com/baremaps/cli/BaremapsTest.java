@@ -12,12 +12,11 @@
  * the License.
  */
 
-package examples;
+package com.baremaps.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.baremaps.cli.Baremaps;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.osm.postgres.PostgresNodeTable;
 import java.io.File;
@@ -39,7 +38,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
-public class OpenStreetMapExampleTest {
+public class BaremapsTest {
 
   public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps";
   public DataSource dataSource;
