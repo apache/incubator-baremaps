@@ -17,7 +17,7 @@ OpenStreetMap (OSM) is a free and editable map of the world.
 It is maintained by a community of passionate volunteers in a way which is similar to Wikipedia.
 Every week, OpenStreetMap publishes a [full dump](https://planet.openstreetmap.org/) of its data in two flavours: a large XML file (about 90GB) and a more compact binary file (about 50GB) in the  [Protocol Buffer Format](https://developers.google.com/protocol-buffers) (PBF).
 As processing such large files can take several hours, [Geofabrik](http://www.geofabrik.de/data/download.html) regularly publishes smaller extracts of OSM for specific regions.
-The [GitHub directory](https://github.com/baremaps/baremaps/tree/master/baremaps-examples/openstreetmap) associated with this example contains a tiny extract of OSM for [Liechtenstein](https://en.wikipedia.org/wiki/Liechtenstein), which is suitable for experiments.
+The [GitHub directory](https://github.com/baremaps/baremaps/tree/master/docs/examples/openstreetmap) associated with this example contains a tiny extract of OSM for [Liechtenstein](https://en.wikipedia.org/wiki/Liechtenstein), which is suitable for experiments.
 
 ## Importing OpenStreetMap Data
 

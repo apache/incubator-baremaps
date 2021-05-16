@@ -85,7 +85,6 @@
     <module>baremaps-editor</module>
     <module>baremaps-blob</module>
     <module>baremaps-blob-s3</module>
-    <module>baremaps-examples</module>
     <module>baremaps-osm</module>
     <module>baremaps-osm-lmdb</module>
     <module>baremaps-osm-postgres</module>
