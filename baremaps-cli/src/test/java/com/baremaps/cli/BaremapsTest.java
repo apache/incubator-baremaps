@@ -12,21 +12,16 @@
  * the License.
  */
 
-package com.baremaps.examples;
+package com.baremaps.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.baremaps.cli.Baremaps;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.osm.postgres.PostgresNodeTable;
-import com.google.common.io.CharStreams;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -43,7 +38,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
-public class OpenStreetMapExampleTest {
+public class BaremapsTest {
 
   public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps";
   public DataSource dataSource;
@@ -83,13 +78,13 @@ public class OpenStreetMapExampleTest {
     // Test the import command
     int importExitCode = cmd.execute("import",
         "--database", DATABASE_URL,
-        "--file", "openstreetmap/liechtenstein-latest.osm.pbf");
+        "--file", "src/test/resources/liechtenstein-latest.osm.pbf");
     assertEquals(0, importExitCode);
 
     // Test the export command
     int exportExitCode = cmd.execute("export",
         "--database", DATABASE_URL,
-        "--tileset", "openstreetmap/tileset.json",
+        "--tileset", "src/test/resources/tileset.json",
         "--repository", "repository/");
     assertEquals(0, exportExitCode);
     assertTrue(Files.exists(Paths.get("repository/14/8626/5750.pbf")));
@@ -98,8 +93,8 @@ public class OpenStreetMapExampleTest {
     new Thread(() -> {
       cmd.execute("edit",
           "--database", DATABASE_URL,
-          "--tileset", "openstreetmap/tileset.json",
-          "--style", "openstreetmap/style.json");
+          "--tileset", "src/test/resources/tileset.json",
+          "--style", "src/test/resources/style.json");
     }).run();
 
     // Wait for the server to start

@@ -53,7 +53,6 @@ The source code of Baremaps is organized in modules:
 - `baremaps-cli` contains the command line interface of baremaps.
 - `baremaps-config` contains the classes required to used to serialize and deserialize configuration files.
 - `baremaps-editor` integrates the [maputnik](https://maputnik.github.io/) editor.
-- `baremaps-examples` contains the files required to execute the exemples of the `/docs` director and some integration tests.
 - `baremaps-osm` contains parsers for various osm formats (xml, pbf) and a cache and a database abstraction to import these data.
 - `baremaps-osm-lmdb` contains an implementation of the cache abstraction for [LMDB](https://github.com/lmdbjava/lmdbjava).
 - `baremaps-osm-postgres` contains an implementation of the database abstraction for [Postgresql](https://www.postgresql.org).
