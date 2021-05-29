@@ -1,31 +1,24 @@
 package com.baremaps.osm.geometry;
 
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.CacheException;
+import com.baremaps.osm.domain.Member;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.handler.ElementHandler;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,77 +50,81 @@ public class GeometryHandler implements ElementHandler {
   @Override
   public void handle(Way way) {
     try {
-      Coordinate[] coords = coordinateCache.get(way.getNodes())
-          .stream()
-          .toArray(Coordinate[]::new);
-      if (coords.length > 3 && coords[0].equals(coords[coords.length - 1])) {
-        way.setGeometry(geometryFactory.createPolygon(coords));
-      } else if (coords.length > 1) {
-        way.setGeometry(geometryFactory.createLineString(coords));
-      } else {
-        return;
+      if (way.getNodes().size() > 0) {
+        List<Coordinate> coordinates = coordinateCache.get(way.getNodes());
+        Coordinate[] array = coordinates.toArray(new Coordinate[coordinates.size()]);
+        LineString line = geometryFactory.createLineString(array);
+        if (!line.isClosed()) {
+          way.setGeometry(line);
+        } else {
+          Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
+          way.setGeometry(polygon);
+        }
       }
     } catch (Exception e) {
-      logger.warn("Unable to build the geometry for way " + way.getId(), e);
-      return;
+      logger.warn("Unable to build the geometry for way #" + way.getId(), e);
     }
   }
 
   @Override
   public void handle(Relation relation) {
-    // Check whether the relation is a multipolygon
     Map<String, String> tags = relation.getTags();
+
+    // Filter multipolygon geometries
     if (!"multipolygon".equals(tags.get("type"))) {
       return;
     }
 
-    // Collect the members of the relation
-    List<LineString> members = relation.getMembers()
-        .stream()
-        .filter(member -> "outer".equals(member.getRole()) || "inner".equals(member.getRole()))
-        .map(member -> {
-          try {
-            return referenceCache.get(member.getRef());
-          } catch (CacheException e) {
-            return null;
-          }
-        })
-        .filter(Objects::nonNull)
-        .map(reference -> {
-          try {
-            return coordinateCache.get(reference).stream()
-                .filter(Objects::nonNull)
-                .toArray(Coordinate[]::new);
-          } catch (CacheException e) {
-            return null;
-          }
-        })
-        .filter(t -> t != null)
-        .map(t -> geometryFactory.createLineString(t))
-        .collect(Collectors.toList());
-
-    // Check whether the relation contains members
-    if (members.isEmpty()) {
+    // Filter coastline geometries
+    if ("coastline".equals(tags.get("natural"))) {
       return;
     }
 
-    // Try to create the polygon from the members
-    Future<Geometry> task = executor.submit(() -> {
-      Polygonizer polygonizer = new Polygonizer(true);
-      polygonizer.add(members);
-      return polygonizer.getGeometry();
-    });
+    LineMerger lineMerger = new LineMerger();
+    Polygonizer polygonizer = new Polygonizer(true);
+    ArrayList<LineString> lines = new ArrayList<>();
 
-    try {
-      Geometry geometry = task.get(1, TimeUnit.SECONDS);
-      // TODO: use the GeometryFixer once it is released.
-      // https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/geom/util/GeometryFixer.java
-      if (geometry.isValid()) {
-        relation.setGeometry(geometry);
+    // Load the lines in memory
+    for (Member member : relation.getMembers()) {
+      try {
+        List<Long> references = referenceCache.get(member.getRef());
+        List<Coordinate> coordinates = coordinateCache.get(references);
+        Coordinate[] array = coordinates.toArray(new Coordinate[coordinates.size()]);
+        LineString linestring = geometryFactory.createLineString(array);
+        lines.add(linestring);
+      } catch (Exception e) {
+        logger.warn("Unable to build the geometry for member #" + member.getRef() + " of relation #" + relation.getId(),
+            e);
       }
-    } catch (Exception e) {
-      logger.warn("Unable to build the geometry for relation " + relation.getId(), e);
-      task.cancel(true);
+    }
+
+    // Merge the open lines
+    for (LineString line : lines) {
+      if (!line.isClosed()) {
+        lineMerger.add(line);
+      }
+    }
+
+    // Polygonize the merged open lines
+    for (Object geometry : lineMerger.getMergedLineStrings()) {
+      LineString lineString = (LineString) geometry;
+      if (lineString.isClosed()) {
+        polygonizer.add(lineString);
+      }
+    }
+
+    // Polygonize the closed linestring
+    for (LineString line : lines) {
+      if (line.isClosed()) {
+        Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
+        polygonizer.add(polygon);
+      }
+    }
+
+    // Set the geometry
+    Geometry geometry = polygonizer.getGeometry();
+    if (!geometry.isEmpty()) {
+      relation.setGeometry(geometry);
     }
   }
 }
