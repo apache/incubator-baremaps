@@ -1,51 +1,27 @@
 openapi: 3.0.3
 info:
   title: Baremaps API
-  description: Baremaps API
+  description: Draft for a Baremaps API.
   version: 1.0.0
 servers:
   - url: 'http://localhost:8080'
 tags:
-  - name: Capabilities
-    description: |-
-      Information about this API
+  - name: Use collections
+    description: Discover and fetch collections
+  - name: Manage collections
+    description: Create, update and delete collections
   - name: Use styles
-    description: |-
-      Discover and fetch styles
+    description: Discover and fetch styles
   - name: Manage styles
-    description: |-
-      Create, update and delete styles; only for style authors
-  - name: Fetch resources
-    description: |-
-      Fetch symbols/sprites
-  - name: Manage resources
-    description: |-
-      Create, update and delete symbols/sprites; only for style authors
+    description: Create, update and delete styles
 paths:
   /collections:
     get:
       tags:
-      - OGC API Common
+      - Use collections
       summary: the collections in the dataset
       description: A list of all collections available in this dataset.
       operationId: getCollections
-      parameters:
-      - name: f
-        in: query
-        description: |-
-          The format of the response. If no value is provided, the standard http
-          rules apply, i.e., the accept header is used to determine the format.
-          Pre-defined values are "json" and "html". The response to other
-          values is determined by the server.
-        required: false
-        style: form
-        explode: false
-        schema:
-          type: string
-          enum:
-          - application/json
-          - text/html
-        example: application/json
       responses:
         "200":
           description: |-
@@ -77,6 +53,113 @@ paths:
             text/html:
               schema:
                 type: string
+    post:
+      tags:
+        - Manage collections
+      summary: |-
+        adds a new collection
+      operationId: addCollection
+      description: |-
+        Adds a collection to the collection repository.
+
+        In case, a new collection is created, the following rules
+        apply.
+
+        If the collection submitted in the request body includes an
+        identifier, that identifier will be used. If a collection with that identifier
+        already exists, an error is returned.
+
+        If no identifier can be determined from the submitted
+        collection, the server will assign a new identifier to the
+        collection.
+
+        The URI of the new collection is returned in the header
+        `Location`.
+      responses:
+        '201':
+          description: |-
+            collection created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: |-
+                URI of the new collection
+        '409':
+          description: |-
+            a collection with that id already exists
+      requestBody:
+        description: |-
+          Stylesheet to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/collection'
+  '/collections/{collectionId}':
+    get:
+      tags:
+        - Use collections
+      summary: |-
+        fetch a collection by id
+      description: |-
+        Fetches the collection with identifier `collectionId`. The set of
+        available collections can be retrieved at `/collections`.
+      operationId: getCollection
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          description: |-
+            The style
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collection'
+        '404':
+          description: |-
+            collection not found
+    put:
+      tags:
+        - Manage collections
+      summary: |-
+        replace a collection or add a new collection
+      description: |-
+        Replace an existing collection with the id `collectionId`. If no
+        such collection exists, a new collection with that id is added.
+      operationId: updateCollection
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      requestBody:
+        description: |-
+          A single collection.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/collection'
+      responses:
+        '204':
+          description: |-
+            collection updated or created successfully
+    delete:
+      tags:
+        - Manage collections
+      summary: |-
+        delete a collection
+      description: |-
+        Delete an existing collection with the id `collectionId`. If no
+        such style exists, an error is returned.
+
+        Deletes any data/itmes associated to this collection.
+      operationId: deleteCollection
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '204':
+          description: |-
+            collection deleted
+        '404':
+          description: |-
+            collection not found
   '/styles':
     summary: ddd
     description: xxx
@@ -92,8 +175,7 @@ paths:
         the style in each supported encoding, and the link to the
         metadata is provided.
 
-        Testbed-15 only requires support for a small number of the
-        styles. Therefore, the currently simple approach is sufficient,
+        For a small number of the styles the currently simple approach is sufficient,
         but in general the operation should support paging (using a
         parameter `limit` and links to the `next` page in responses).
       responses:
@@ -103,9 +185,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/style-set'
-        '400':
-          description: |-
-            invalid or unknown query parameters
         '406':
           description: |-
             The media types accepted by the client are not
@@ -117,14 +196,7 @@ paths:
         adds a new style
       operationId: addStyle
       description: |-
-        Adds a style to the style repository or just validates
-        a style.
-
-        If the parameter `validate` is set to `yes`, the
-        style will be validated before adding the style to
-        the server. If the parameter `validate` is set to
-        `only`, the server will not be changed and only the
-        validation result will be returned.
+        Adds a style to the style repository.
 
         In case, a new style is created, the following rules
         apply.
@@ -138,16 +210,8 @@ paths:
         style, the server will assign a new identifier to the
         style.
 
-        A minimal style metadata resource is created at
-        `/styles/{styleId}/metadata`. Please update the metadata
-        using a PUT request to keep the style metadata consistent
-        with the style definition.
-
         The URI of the new style is returned in the header
         `Location`.
-
-        This operation is only available to registered style
-        authors.
       responses:
         '201':
           description: |-
@@ -158,15 +222,6 @@ paths:
                 type: string
               description: |-
                 URI of the new style
-        '204':
-          description: |-
-            style validated successfully, no style has been created
-        '400':
-          description: |-
-            invalid input, the style is invalid
-        '401':
-          description: |-
-            unauthorized access
         '409':
           description: |-
             a style with that id already exists
@@ -202,10 +257,6 @@ paths:
         '404':
           description: |-
             style not found
-        '406':
-          description: |-
-            The requested style encoding is not supported
-            for this style
     put:
       tags:
         - Manage styles
@@ -214,22 +265,6 @@ paths:
       description: |-
         Replace an existing style with the id `styleId`. If no
         such style exists, a new style with that id is added.
-
-        If the parameter `validate` is set to `yes`, the
-        style will be validated before adding/updating the
-        style. If the parameter `validate` is set to
-        `only`, the server will not be changed and only the
-        validation result will be returned.
-
-        For updated styles, the style metadata resource at
-        `/styles/{styleId}/metadata` is not updated.
-        For new styles a minimal style metadata resource is
-        created, too. Please update the metadata using a PUT
-        request to keep the style metadata consistent with
-        the style definition.
-
-        This operation is only available to registered style
-        authors.
       operationId: updateStyle
       parameters:
         - $ref: '#/components/parameters/styleId'
@@ -243,13 +278,7 @@ paths:
       responses:
         '204':
           description: |-
-            style updated, created or validated successfully
-        '400':
-          description: |-
-            invalid input, the style is invalid
-        '401':
-          description: |-
-            unauthorized access
+            style updated or created successfully
     delete:
       tags:
         - Manage styles
@@ -258,12 +287,6 @@ paths:
       description: |-
         Delete an existing style with the id `styleId`. If no
         such style exists, an error is returned.
-
-        Deleting a style also deletes the subordinate resources,
-        i.e., the style metadata.
-
-        This operation is only available to registered style
-        authors.
       operationId: deleteStyle
       parameters:
         - $ref: '#/components/parameters/styleId'
@@ -271,9 +294,6 @@ paths:
         '204':
           description: |-
             style deleted
-        '401':
-          description: |-
-            unauthorized access
         '404':
           description: |-
             style not found
