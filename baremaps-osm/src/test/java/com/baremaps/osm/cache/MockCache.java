@@ -16,18 +16,20 @@ package com.baremaps.osm.cache;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class MockCache<T> implements Cache<Long, T> {
 
-  private final List<T> nodes;
+  private final Map<Long, T> values;
 
-  public MockCache(List<T> nodes) {
-    this.nodes = nodes;
+  public MockCache(Map<Long, T> values) {
+    this.values = values;
   }
 
   @Override
   public T get(Long key) {
-    return nodes.get(key.intValue());
+    return values.get(key);
   }
 
   @Override
