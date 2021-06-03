@@ -8,25 +8,35 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.handler.ElementHandler;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.prep.PreparedGeometry;
+import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
+import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.operation.union.CascadedPolygonUnion;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.operation.union.UnionStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GeometryHandler implements ElementHandler {
-
-  private static final ExecutorService executor = Executors.newWorkStealingPool();
 
   private static Logger logger = LoggerFactory.getLogger(GeometryHandler.class);
 
@@ -82,53 +92,102 @@ public class GeometryHandler implements ElementHandler {
         return;
       }
 
-      Geometry polygon = geometryFactory.createPolygon();
-      LineMerger lineMerger = new LineMerger();
-      ArrayList<LineString> lines = new ArrayList<>();
-
-      List<Member> members = relation.getMembers().stream()
+      // Create and prepare outer polygons
+      Stream<Member> outerMembers = relation.getMembers().stream()
           .filter(m -> MemberType.way.equals(m.getType()))
-          .collect(Collectors.toList());
+          .filter(m -> "outer".equals(m.getRole()));
+      Set<Polygon> outerPolygons = polygons(outerMembers)
+          .collect(Collectors.toSet());
 
-      // Load the lines in memory
-      for (Member member : members) {
-        List<Long> references = referenceCache.get(member.getRef());
-        List<Coordinate> coordinates = coordinateCache.get(references);
-        Coordinate[] array = coordinates.toArray(new Coordinate[coordinates.size()]);
-        LineString linestring = geometryFactory.createLineString(array);
-        lines.add(linestring);
-      }
+      // Create inner polygons
+      Stream<Member> innerMembers = relation.getMembers().stream()
+          .filter(m -> MemberType.way.equals(m.getType()))
+          .filter(m -> "inner".equals(m.getRole()));
+      Set<Polygon> innerPolygons = polygons(innerMembers)
+          .collect(Collectors.toSet());
 
-      // Merge the open lines
-      for (LineString line : lines) {
-        if (!line.isClosed()) {
-          lineMerger.add(line);
+      // Merge touching or overlapping inner polygons
+      Set<Polygon> usedPolygons = new HashSet<>();
+      Set<Polygon> mergedPolygons = new HashSet<>();
+      for (Polygon p1 : innerPolygons) {
+        if (!usedPolygons.contains(p1)) {
+          Set<Polygon> unionPolygons = new HashSet<>();
+          unionPolygons.add(p1);
+          for (Polygon p2 : innerPolygons) {
+            if (!p1.equals(p2) && (p1.touches(p2) || p1.overlaps(p2))) {
+              unionPolygons.add(p2);
+              usedPolygons.add(p2);
+            }
+          }
+          Geometry union = CascadedPolygonUnion.union(unionPolygons);
+          for (Object polygon : PolygonExtracter.getPolygons(union)) {
+            mergedPolygons.add((Polygon) polygon);
+          }
         }
       }
 
-      // Polygonize the merged open lines
-      for (Object geometry : lineMerger.getMergedLineStrings()) {
-        LineString line = (LineString) geometry;
-        if (line.isClosed()) {
-          Polygon p = geometryFactory.createPolygon(line.getCoordinates());
-          polygon = polygon.symDifference(p);
+      // Do the line work
+      List<Polygon> polygons = new ArrayList<>();
+      for (Polygon outerPolygon : outerPolygons) {
+        LinearRing shell = outerPolygon.getExteriorRing();
+        List<LinearRing> holes = new ArrayList<>();
+        PreparedGeometry prepared = PreparedGeometryFactory.prepare(outerPolygon);
+        Iterator<Polygon> it = mergedPolygons.iterator();
+        while (it.hasNext()) {
+          Polygon innerPolygon = it.next();
+          if (prepared.containsProperly(innerPolygon)) {
+            holes.add(innerPolygon.getExteriorRing());
+            it.remove();
+          }
         }
+        Polygon polygon = geometryFactory.createPolygon(shell, holes.toArray(new LinearRing[0]));
+        polygons.add(polygon);
       }
 
-      // Polygonize the closed linestring
-      for (LineString line : lines) {
-        if (line.isClosed()) {
-          Polygon p = geometryFactory.createPolygon(line.getCoordinates());
-          polygon = polygon.symDifference(p);
-        }
-      }
-
-      // Set the geometry
-      if (!polygon.isEmpty()) {
+      // Set the geometry of the relation
+      if (polygons.size() == 1) {
+        Polygon polygon = polygons.get(0);
         relation.setGeometry(polygon);
+      } else if (polygons.size() > 1) {
+        MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[0]));
+        relation.setGeometry(multiPolygon);
       }
     } catch (Exception e) {
+      e.printStackTrace();
       logger.warn("Unable to build the geometry for relation #" + relation.getId(), e);
+    }
+  }
+
+  private Stream<Polygon> polygons(Stream<Member> members) {
+    LineMerger lineMerger = new LineMerger();
+    Stream.Builder<Polygon> polygons = Stream.builder();
+    members.forEach(member -> {
+      LineString line = line(member);
+      if (line.isClosed()) {
+        Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
+        polygons.add(polygon);
+      } else {
+        lineMerger.add(line);
+      }
+    });
+    lineMerger.getMergedLineStrings().stream().forEach(geometry -> {
+      LineString line = (LineString) geometry;
+      if (line.isClosed()) {
+        Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
+        polygons.add(polygon);
+      }
+    });
+    return polygons.build();
+  }
+
+  private LineString line(Member member) {
+    try {
+      List<Long> references = referenceCache.get(member.getRef());
+      List<Coordinate> coordinates = coordinateCache.get(references);
+      Coordinate[] array = coordinates.toArray(new Coordinate[coordinates.size()]);
+      return geometryFactory.createLineString(array);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
 }
