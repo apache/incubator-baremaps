@@ -6,19 +6,17 @@ info:
 servers:
   - url: 'http://localhost:8080'
 tags:
-  - name: Use collections
-    description: Discover and fetch collections
-  - name: Manage collections
-    description: Create, update and delete collections
-  - name: Use styles
-    description: Discover and fetch styles
-  - name: Manage styles
-    description: Create, update and delete styles
+  - name: Collections
+    description: Discover, create, update and delete collections
+  - name: Styles
+    description: Discover, create, fetch, update and delete styles
+  - name: Tiles
+    description: Access vector tiles resources
 paths:
   /collections:
     get:
       tags:
-      - Use collections
+        - Collections
       summary: the collections in the dataset
       description: A list of all collections available in this dataset.
       operationId: getCollections
@@ -55,7 +53,7 @@ paths:
                 type: string
     post:
       tags:
-        - Manage collections
+        - Collections
       summary: |-
         adds a new collection
       operationId: addCollection
@@ -98,7 +96,7 @@ paths:
   '/collections/{collectionId}':
     get:
       tags:
-        - Use collections
+        - Collections
       summary: |-
         fetch a collection by id
       description: |-
@@ -120,7 +118,7 @@ paths:
             collection not found
     put:
       tags:
-        - Manage collections
+        - Collections
       summary: |-
         replace a collection or add a new collection
       description: |-
@@ -142,7 +140,7 @@ paths:
             collection updated or created successfully
     delete:
       tags:
-        - Manage collections
+        - Collections
       summary: |-
         delete a collection
       description: |-
@@ -165,7 +163,7 @@ paths:
     description: xxx
     get:
       tags:
-        - Use styles
+        - Styles
       summary: |-
         information about the available styles
       operationId: getStyleSet
@@ -191,7 +189,7 @@ paths:
             supported for this resource
     post:
       tags:
-        - Manage styles
+        - Styles
       summary: |-
         adds a new style
       operationId: addStyle
@@ -235,7 +233,7 @@ paths:
   '/styles/{styleId}':
     get:
       tags:
-        - Use styles
+        - Styles
       summary: |-
         fetch a style by id
       description: |-
@@ -259,7 +257,7 @@ paths:
             style not found
     put:
       tags:
-        - Manage styles
+        - Styles
       summary: |-
         replace a style or add a new style
       description: |-
@@ -281,7 +279,7 @@ paths:
             style updated or created successfully
     delete:
       tags:
-        - Manage styles
+        - Styles
       summary: |-
         delete a style
       description: |-
@@ -297,6 +295,92 @@ paths:
         '404':
           description: |-
             style not found
+  /tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}:
+    get:
+      tags:
+        - Tiles
+      summary: fetch a tile from one or more geospatial data resources
+      description: Retrieves a tile in the requested tileMatrixSet, on the requested
+        tileMatrix in the TileMatrixSet, with the requested tile indices (tileRow,
+        tileCol). The tile has multiple collections (formerly refered as layers) with
+        all selected features in the bounding box of the tile.
+      operationId: getTileSQL
+      parameters:
+        - name: geodata
+          in: query
+          description: The collections that should be included in the response. The
+            parameter value is a comma-separated list of collection identifiers. If
+            the parameters is missing, some or all collections will be included.
+          required: false
+          style: form
+          explode: false
+          schema:
+            type: array
+            items:
+              type: string
+            example: [streets,rivers]
+        - name: sql
+          in: query
+          description: Arbitrary SQL query executed against the available geospatial data resources.
+            In combination with collections only a/the where part is considered.
+          required: false
+          schema:
+            type: string
+            example: select * from boundaries where level = 1
+        - name: tileMatrixSetId
+          in: path
+          description: Identifier of a specific tiling scheme. It can be one of those
+            specified in Annex D.1 of the OGC 17-083r2 standard or one defined in this
+            service.
+          required: true
+          schema:
+            type: string
+          example: WebMercatorQuad
+        - name: tileMatrix
+          in: path
+          description: |-
+            Identifier selecting one of the scales (z) defined in the TileMatrixSet and
+            representing the scaleDenominator the tile.
+          required: true
+          schema:
+            type: string
+          example: "11"
+        - name: tileRow
+          in: path
+          description: Row index (y) of the tile on the selected TileMatrix. It cannot exceed
+            the MatrixWidth-1 for the selected TileMatrix.
+          required: true
+          schema:
+            minimum: 0
+            type: integer
+          example: "827"
+        - name: tileCol
+          in: path
+          description: Column index (x) of the tile on the selected TileMatrix. It cannot
+            exceed the MatrixHeight-1 for the selected TileMatrix.
+          required: true
+          schema:
+            minimum: 0
+            type: integer
+          example: 1231
+      responses:
+        "200":
+          description: A Mapbox Vector Tile of the collection.
+          content:
+            application/vnd.mapbox-vector-tile:
+              schema:
+                type: string
+        "404":
+          description: The requested URI was not found
+        "500":
+          description: A server error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+            text/html:
+              schema:
+                type: string
 components:
   parameters:
     collectionId:
