@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -53,4 +54,41 @@ public class RelationGeometryTest {
     assertNotNull(handleRelation("/1436294.osm.gz"));
   }
 
+  // The following relations generate exceptions in Planet OSM.
+
+  @Test
+  @Disabled
+  public void handleRelation1374114() throws IOException {
+    assertNotNull(handleRelation("/1374114.osm.gz"));
+  }
+
+  @Test
+  @Disabled
+  public void handleRelation3224199() throws IOException {
+    assertNotNull(handleRelation("/3224199.osm.gz"));
+  }
+
+  @Test
+  @Disabled
+  public void handleRelation3492638() throws IOException {
+    assertNotNull(handleRelation("/3492638.osm.gz"));
+  }
+
+  @Test
+  @Disabled
+  public void handleRelation550505() throws IOException {
+    assertNotNull(handleRelation("/550505.osm.gz"));
+  }
+
+  @Test
+  @Disabled
+  public void handleRelatio8142542() throws IOException {
+    assertNotNull(handleRelation("/8142542.osm.gz"));
+  }
+
+  @Test
+  @Disabled
+  public void handleRelation8165292() throws IOException {
+    assertNotNull(handleRelation("/8165292.osm.gz"));
+  }
 }
