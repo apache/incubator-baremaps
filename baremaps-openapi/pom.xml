@@ -46,24 +46,55 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-core</artifactId>
-            <version>2.0.22</version>
+            <groupId>io.servicetalk</groupId>
+            <artifactId>servicetalk-data-jackson</artifactId>
+            <version>0.40.1</version>
         </dependency>
         <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-jackson</artifactId>
-            <version>2.0.22</version>
+            <groupId>io.servicetalk</groupId>
+            <artifactId>servicetalk-data-jackson-jersey</artifactId>
+            <version>0.40.1</version>
         </dependency>
         <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-jersey</artifactId>
-            <version>2.0.22</version>
+            <groupId>io.servicetalk</groupId>
+            <artifactId>servicetalk-http-netty</artifactId>
+            <version>0.40.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.servicetalk</groupId>
+            <artifactId>servicetalk-http-router-jersey</artifactId>
+            <version>0.40.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-multipart</artifactId>
+            <version>2.32</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>2.32</version>
         </dependency>
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
             <version>1.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.1.0.Final</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.30</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.14.0</version>
         </dependency>
     </dependencies>
 

@@ -1,31 +1,28 @@
 package com.baremaps.openapi;
 
+import static java.util.Arrays.asList;
+
+import com.baremaps.openapi.services.CollectionsService;
 import com.baremaps.openapi.services.RootService;
+import com.baremaps.openapi.services.StylesService;
 import com.baremaps.openapi.services.TilesService;
-import io.dropwizard.Application;
-import io.dropwizard.setup.Bootstrap;
-import io.dropwizard.setup.Environment;
+import java.util.HashSet;
+import java.util.Set;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Feature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
-public class BaremapsApplication extends Application<BaremapsConfiguration> {
-
-  @Override
-  public String getName() {
-    return "hello-world";
-  }
+public class BaremapsApplication extends Application {
 
   @Override
-  public void initialize(Bootstrap<BaremapsConfiguration> bootstrap) {
-    // nothing to do yet
+  public Set<Class<?>> getClasses() {
+    return new HashSet<>(asList(
+        Feature.class,
+        MultiPartFeature.class,
+        RootService.class,
+        StylesService.class,
+        CollectionsService.class,
+        TilesService.class
+    ));
   }
-
-  @Override
-  public void run(BaremapsConfiguration configuration, Environment environment) {
-    environment.jersey().register(new RootService());
-    environment.jersey().register(new TilesService());
-  }
-
-  public static void main(String[] args) throws Exception {
-    new BaremapsApplication().run(args);
-  }
-
 }
