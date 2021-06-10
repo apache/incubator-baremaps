@@ -13,17 +13,6 @@ import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.linecorp.armeria.common.HttpData;
-import com.linecorp.armeria.common.HttpResponse;
-import com.linecorp.armeria.common.ResponseHeaders;
-import com.linecorp.armeria.common.sse.ServerSentEvent;
-import com.linecorp.armeria.server.ServiceRequestContext;
-import com.linecorp.armeria.server.annotation.Blocking;
-import com.linecorp.armeria.server.annotation.Get;
-import com.linecorp.armeria.server.annotation.Param;
-import com.linecorp.armeria.server.annotation.ProducesEventStream;
-import com.linecorp.armeria.server.annotation.ProducesJson;
-import com.linecorp.armeria.server.annotation.Put;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.FileSystems;
@@ -32,51 +21,59 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
-import org.reactivestreams.Publisher;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.sse.OutboundSseEvent;
+import javax.ws.rs.sse.Sse;
+import javax.ws.rs.sse.SseBroadcaster;
+import javax.ws.rs.sse.SseEventSink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Sinks;
 
+@javax.ws.rs.Path("/")
 public class EditorService {
-
-  private static final ResponseHeaders headers = ResponseHeaders.builder(200)
-      .add(CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
-      .add(CONTENT_ENCODING, "gzip")
-      .add(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-      .build();
 
   private static Logger logger = LoggerFactory.getLogger(EditorService.class);
 
-  private final Sinks.Many<ServerSentEvent> changes = Sinks.many().multicast().directBestEffort();
+  @Inject
+  @Named("tileset")
+  private URI tileset;
 
-  private final String host;
+  @Inject
+  @Named("style")
+  private URI style;
 
-  private final int port;
+  @Inject
+  private BlobMapper configStore;
 
-  private final BlobMapper configStore;
+  @Inject
+  private Supplier<TileStore> tileStoreSupplier;
 
-  private final URI tileset;
+  private Sse sse;
+  private OutboundSseEvent.Builder sseEventBuilder;
+  private SseBroadcaster sseBroadcaster;
 
-  private final URI style;
+  private Thread fileWatcher;
 
-  private final Supplier<TileStore> tileStoreSupplier;
-
-  public EditorService(String host, int port, BlobMapper configStore, URI tileset, URI style, Supplier<TileStore> tileStoreSupplier) {
-    this.host = host;
-    this.port = port;
-    this.configStore = configStore;
-    this.tileset = tileset;
-    this.style = style;
-    this.tileStoreSupplier = tileStoreSupplier;
-    monitorChanges();
-  }
-
-  public void monitorChanges() {
-    new Thread(() -> {
+  @Context
+  public void setSse(Sse sse) {
+    this.sse = sse;
+    this.sseEventBuilder = sse.newEventBuilder();
+    this.sseBroadcaster = sse.newBroadcaster();
+    if (fileWatcher != null) {
+      fileWatcher.interrupt();
+    }
+    fileWatcher = new Thread(() -> {
       try {
         Path tilesetFile = Paths.get(tileset.getPath()).toAbsolutePath();
         Path styleFile = Paths.get(style.getPath()).toAbsolutePath();
@@ -90,7 +87,7 @@ public class EditorService {
             Path path = dir.resolve((Path) event.context());
             ObjectNode jsonNode = configStore.read(style, ObjectNode.class);
             jsonNode.put("reload", path.endsWith(tilesetFile.getFileName()));
-            changes.tryEmitNext(ServerSentEvent.ofData(jsonNode.toString()));
+            sseBroadcaster.broadcast(sseEventBuilder.data(jsonNode.toString()).build());
           }
           key.reset();
         }
@@ -99,19 +96,21 @@ public class EditorService {
       } catch (IOException e) {
         logger.error(e.getMessage());
       }
-    }).start();
+    });
+    fileWatcher.start();
   }
 
-  @Get("/changes")
-  @ProducesEventStream
-  public Publisher<ServerSentEvent> changes(ServiceRequestContext ctx) throws IOException {
-    ctx.clearRequestTimeout();
-    return changes.asFlux();
+  @GET
+  @javax.ws.rs.Path("/changes")
+  @Produces("text/event-stream")
+  public void changes(@Context SseEventSink sseEventSink) {
+    sseBroadcaster.register(sseEventSink);
   }
 
-  @Get("/style.json")
-  @ProducesJson
-  public Style getStyle(ServiceRequestContext ctx) throws IOException {
+  @GET
+  @javax.ws.rs.Path("style.json")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Style getStyle() throws IOException {
     Tileset tileset = configStore.read(this.tileset, Tileset.class);
     Style style = configStore.read(this.style, Style.class);
 
@@ -121,51 +120,50 @@ public class EditorService {
       style.setZoom(tileset.getCenter().getZoom());
     }
 
-    // override style properties with server properties
-    style.setSources(Map.of("baremaps", Map.of(
-        "type", "vector",
-        "url", String.format("http://%s:%s/tiles.json", host, port))));
-
     return style;
   }
 
-  @Put("/style.json")
+  @PUT
+  @Consumes(MediaType.APPLICATION_JSON)
+  @javax.ws.rs.Path("style.json")
   public void putStyle(Style json) throws IOException {
     configStore.write(style, json);
   }
 
-  @Get("/tiles.json")
-  @ProducesJson
-  public Tileset getTiles(ServiceRequestContext ctx) throws IOException {
+  @GET
+  @javax.ws.rs.Path("tiles.json")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Tileset getTiles() throws IOException {
     Tileset tileset = configStore.read(this.tileset, Tileset.class);
-
-    // override style properties with server properties
-    tileset.setTiles(Arrays.asList(String.format("http://%s:%s/tiles/{z}/{x}/{y}.mvt", host, port)));
-
     return tileset;
   }
 
-  @Put("/tiles.json")
+  @PUT
+  @javax.ws.rs.Path("tiles.json")
   public void putTiles(JsonNode json) throws IOException {
     configStore.write(style, json);
   }
 
-  @Get("regex:^/tiles/(?<z>[0-9]+)/(?<x>[0-9]+)/(?<y>[0-9]+).mvt$")
-  @Blocking
-  public HttpResponse tile(@Param("z") int z, @Param("x") int x, @Param("y") int y) {
+  @GET
+  @javax.ws.rs.Path("tiles/{z}/{x}/{y}.mvt")
+  public Response tile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
     TileStore tileStore = tileStoreSupplier.get();
     Tile tile = new Tile(x, y, z);
     try {
       byte[] bytes = tileStore.read(tile);
       if (bytes != null) {
-        HttpData data = HttpData.wrap(bytes);
-        return HttpResponse.of(headers, data);
+        return Response.status(200)
+            .header(CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
+            .header(CONTENT_ENCODING, "gzip")
+            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+            .entity(bytes)
+            .build();
       } else {
-        return HttpResponse.of(204);
+        return Response.status(204).build();
       }
     } catch (TileStoreException ex) {
       logger.error(ex.getMessage());
-      return HttpResponse.of(404);
+      return Response.status(404).build();
     }
   }
 

@@ -3,13 +3,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
+    <modelVersion>4.0.0</modelVersion>
     <artifactId>baremaps-openapi</artifactId>
     <name>baremaps-openapi</name>
-    <groupId>com.baremaps</groupId>
-    <version>0.5.14-SNAPSHOT</version>
 
-    <modelVersion>4.0.0</modelVersion>
-    <packaging>jar</packaging>
+    <parent>
+        <artifactId>baremaps</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>0.5.14-SNAPSHOT</version>
+    </parent>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -78,12 +80,10 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>1.6.2</version>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-            <version>1.1.0.Final</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

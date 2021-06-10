@@ -2,24 +2,23 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
+import com.baremaps.config.BlobMapper;
 import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
-import com.baremaps.config.BlobMapper;
+import com.baremaps.editor.EditorApplication;
+import com.baremaps.editor.EditorModule;
+import com.baremaps.editor.ServerApplication;
+import com.baremaps.editor.ServerModule;
 import com.baremaps.osm.postgres.PostgresHelper;
-import com.baremaps.editor.ServerService;
 import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
-import com.linecorp.armeria.common.HttpMethod;
-import com.linecorp.armeria.server.HttpService;
-import com.linecorp.armeria.server.Server;
-import com.linecorp.armeria.server.ServerBuilder;
-import com.linecorp.armeria.server.cors.CorsService;
-import com.linecorp.armeria.server.file.FileService;
-import java.io.IOException;
+import io.servicetalk.http.api.BlockingStreamingHttpService;
+import io.servicetalk.http.netty.HttpServers;
+import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
+import io.servicetalk.transport.api.ServerContext;
 import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
@@ -85,7 +84,7 @@ public class Serve implements Callable<Integer> {
   private int port = 9000;
 
   @Override
-  public Integer call() throws IOException {
+  public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
 
     BlobStore blobStore = options.blobStore();
@@ -97,23 +96,17 @@ public class Serve implements Callable<Integer> {
     TileStore tileStore = new PostgisTileStore(datasource, tileset);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
-    ServerBuilder builder = Server.builder()
-        .defaultHostname(host)
-        .http(port)
-        .decorator(CorsService.builderForAnyOrigin()
-            .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)
-            .allowRequestHeaders("Origin", "Content-Type", "Accept")
-            .newDecorator())
-        .annotatedService(new ServerService(host, port, tileset, style, tileCache))
-        .serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/server/"));
+    BlockingStreamingHttpService httpService = new HttpJerseyRouterBuilder()
+        .buildBlockingStreaming(new ServerApplication(new ServerModule(tileset, style, tileCache)));
+    ServerContext serverContext = HttpServers.forPort(port)
+        .listenBlockingStreamingAndAwait(httpService);
 
-    if (assets != null && Files.exists(assets)) {
-      HttpService fileService = FileService.builder(assets).build();
-      builder.serviceUnder("/", fileService);
-    }
+    logger.info("Listening on {}", serverContext.listenAddress());
 
-    Server server = builder.build();
-    server.start();
+    // Blocks and awaits shutdown of the server this ServerContext represents.
+    serverContext.awaitShutdown();
+
+    // todo: serve static assets
 
     return 0;
   }
