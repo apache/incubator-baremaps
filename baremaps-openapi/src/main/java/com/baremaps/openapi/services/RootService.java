@@ -1,17 +1,34 @@
 package com.baremaps.openapi.services;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import com.baremaps.api.DefaultApi;
+import com.baremaps.model.LandingPage;
+import com.baremaps.model.Link;
 
-@Path("/")
-@Produces(MediaType.TEXT_PLAIN)
-public class RootService {
+public class RootService implements DefaultApi {
 
-  @GET
-  public String root() {
-    return "Baremaps OpenAPI";
+  @Override
+  public LandingPage getLandingPage() {
+
+    LandingPage landingPage = new LandingPage();
+
+    landingPage.setTitle("Baremaps");
+    landingPage.setDescription("Baremaps OGC API Landing Page");
+
+    String address = "localhost:8080"; // TODO: Get this from server context
+
+    Link linkRoot = new Link();
+    linkRoot.title("This document (landing page)");
+    linkRoot.setHref(String.format("http://%s/", address));
+    linkRoot.setRel("application/json");
+    landingPage.getLinks().add(linkRoot);
+
+    Link linkConformance = new Link();
+    linkConformance.title("Conformance declaration");
+    linkConformance.setHref(String.format("http://%s/conformance", address));
+    linkConformance.setRel("application/json");
+    landingPage.getLinks().add(linkConformance);
+
+    return landingPage;
+
   }
-
 }

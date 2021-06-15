@@ -3,6 +3,7 @@ package com.baremaps.openapi;
 import static java.util.Arrays.asList;
 
 import com.baremaps.openapi.services.CollectionsService;
+import com.baremaps.openapi.services.ConformanceService;
 import com.baremaps.openapi.services.RootService;
 import com.baremaps.openapi.services.StylesService;
 import com.baremaps.openapi.services.TilesService;
@@ -20,8 +21,9 @@ public class BaremapsApplication extends Application {
         Feature.class,
         MultiPartFeature.class,
         RootService.class,
-        StylesService.class,
+        ConformanceService.class,
         CollectionsService.class,
+        StylesService.class,
         TilesService.class
     ));
   }
