@@ -35,18 +35,6 @@ public abstract class BlobStoreTest {
 
   @Test
   @Tag("integration")
-  void accept() throws URISyntaxException {
-    BlobStore blobStore = createFileSystem();
-    for (String uri : createValidURIList()) {
-      assertTrue(blobStore.accept(new URI(uri)));
-    }
-    for (String uri : createWrongURIList()) {
-      assertFalse(blobStore.accept(new URI(uri)));
-    }
-  }
-
-  @Test
-  @Tag("integration")
   void readWriteDelete() throws IOException, URISyntaxException {
     BlobStore blobStore = createFileSystem();
     URI uri = new URI(createTestURI());
@@ -70,10 +58,6 @@ public abstract class BlobStoreTest {
   }
 
   protected abstract String createTestURI() throws IOException;
-
-  protected abstract List<String> createWrongURIList();
-
-  protected abstract List<String> createValidURIList();
 
   protected abstract BlobStore createFileSystem();
 

@@ -24,25 +24,11 @@ import java.nio.file.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ResourceBlobStore extends BlobStore {
+public class ResourceBlobStore implements BlobStore {
 
   private static final String SCHEMA = "res://";
 
   private static Logger logger = LoggerFactory.getLogger(ResourceBlobStore.class);
-
-  @Override
-  public boolean accept(URI uri) {
-    return uri.toString().startsWith(SCHEMA)
-        && uri.getPath() != null;
-  }
-
-  @Override
-  public Path fetch(URI uri) {
-    String path = path(uri);
-    System.out.println(path);
-    logger.debug("Read {}", path);
-    return Paths.get(path);
-  }
 
   @Override
   public InputStream read(URI uri) throws IOException {

@@ -18,57 +18,38 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
-public class CompositeBlobStore extends BlobStore {
+public class CompositeBlobStore implements BlobStore {
 
-  private final List<BlobStore> components;
+  private final Map<String, BlobStore> schemes = new HashMap<>();
 
-  public CompositeBlobStore(BlobStore... components) {
-    this(Arrays.asList(components));
+  {
+    schemes.put(null, new FileBlobStore());
+    schemes.put("file", new FileBlobStore());
+    schemes.put("http", new HttpBlobStore());
+    schemes.put("https", new HttpBlobStore());
+    schemes.put("res", new ResourceBlobStore());
   }
 
-  public CompositeBlobStore(List<BlobStore> components) {
-    this.components = components;
-  }
-
-  private Optional<BlobStore> findFileSystem(URI uri) {
-    return components.stream().filter(fileStore -> fileStore.accept(uri)).findFirst();
-  }
-
-  @Override
-  public boolean accept(URI uri) {
-    return findFileSystem(uri).isPresent();
-  }
-
-  @Override
-  public Path fetch(URI uri) throws IOException {
-    Optional<BlobStore> fileStore = findFileSystem(uri);
-    if (fileStore.isPresent()) {
-      return fileStore.get().fetch(uri);
-    } else {
-      throw new IOException("Unsupported URI: " + uri);
-    }
+  public void addScheme(String scheme, BlobStore blobStore) {
+    schemes.put(scheme, blobStore);
   }
 
   @Override
   public InputStream read(URI uri) throws IOException {
-    Optional<BlobStore> fileStore = findFileSystem(uri);
-    if (fileStore.isPresent()) {
-      return fileStore.get().read(uri);
+    if (schemes.containsKey(uri.getScheme())) {
+      return schemes.get(uri.getScheme()).read(uri);
     } else {
-      throw new IOException("Unsupported URI: " + uri);
+      throw new IOException("Unsupported scheme: " + uri.getScheme());
     }
   }
 
   @Override
   public byte[] readByteArray(URI uri) throws IOException {
-    Optional<BlobStore> fileStore = findFileSystem(uri);
-    if (fileStore.isPresent()) {
-      return fileStore.get().readByteArray(uri);
+    if (schemes.containsKey(uri.getScheme())) {
+      return schemes.get(uri.getScheme()).readByteArray(uri);
     } else {
       throw new IOException("Unsupported URI: " + uri);
     }
@@ -76,9 +57,8 @@ public class CompositeBlobStore extends BlobStore {
 
   @Override
   public OutputStream write(URI uri) throws IOException {
-    Optional<BlobStore> fileSystem = findFileSystem(uri);
-    if (fileSystem.isPresent()) {
-      return fileSystem.get().write(uri);
+    if (schemes.containsKey(uri.getScheme())) {
+      return schemes.get(uri.getScheme()).write(uri);
     } else {
       throw new IOException("Unsupported URI: " + uri);
     }
@@ -86,9 +66,8 @@ public class CompositeBlobStore extends BlobStore {
 
   @Override
   public void writeByteArray(URI uri, byte[] bytes) throws IOException {
-    Optional<BlobStore> fileSystem = findFileSystem(uri);
-    if (fileSystem.isPresent()) {
-      fileSystem.get().writeByteArray(uri, bytes);
+    if (schemes.containsKey(uri.getScheme())) {
+      schemes.get(uri.getScheme()).writeByteArray(uri, bytes);
     } else {
       throw new IOException("Unsupported URI: " + uri);
     }
@@ -96,9 +75,8 @@ public class CompositeBlobStore extends BlobStore {
 
   @Override
   public void delete(URI uri) throws IOException {
-    Optional<BlobStore> fileStore = findFileSystem(uri);
-    if (fileStore.isPresent()) {
-      fileStore.get().delete(uri);
+    if (schemes.containsKey(uri.getScheme())) {
+      schemes.get(uri.getScheme()).delete(uri);
     } else {
       throw new IOException("Unsupported URI: " + uri);
     }

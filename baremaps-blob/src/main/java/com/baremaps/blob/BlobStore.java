@@ -14,53 +14,24 @@
 
 package com.baremaps.blob;
 
-import static java.nio.file.Files.copy;
-
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public abstract class BlobStore {
+/**
+ * An abstraction to read and write blobs identified by URIs.
+ */
+public interface BlobStore {
 
-  private static Logger logger = LoggerFactory.getLogger(BlobStore.class);
+  InputStream read(URI uri) throws IOException;
 
-  private final Map<URI, Path> cache = new HashMap<>();
+  byte[] readByteArray(URI uri) throws IOException;
 
-  protected Path cache(URI uri) throws IOException {
-    if (!cache.containsKey(uri)) {
-      String fileName = Paths.get(uri.getPath()).getFileName().toString();
-      File tmpFile = File.createTempFile("baremaps_", "_" + fileName);
-      logger.debug("Cache {} in {}", uri, tmpFile);
-      try (InputStream input = read(uri)) {
-        tmpFile.deleteOnExit();
-        copy(input, tmpFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        cache.put(uri, tmpFile.toPath());
-      }
-    }
-    return cache.get(uri);
-  }
+  OutputStream write(URI uri) throws IOException;
 
-  public abstract boolean accept(URI uri);
+  void writeByteArray(URI uri, byte[] bytes) throws IOException;
 
-  public abstract Path fetch(URI uri) throws IOException;
-
-  public abstract InputStream read(URI uri) throws IOException;
-
-  public abstract byte[] readByteArray(URI uri) throws IOException;
-
-  public abstract OutputStream write(URI uri) throws IOException;
-
-  public abstract void writeByteArray(URI uri, byte[] bytes) throws IOException;
-
-  public abstract void delete(URI uri) throws IOException;
+  void delete(URI uri) throws IOException;
 
 }

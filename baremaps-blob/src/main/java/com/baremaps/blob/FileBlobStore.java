@@ -24,21 +24,9 @@ import java.nio.file.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FileBlobStore extends BlobStore {
+public class FileBlobStore implements BlobStore {
 
   private static Logger logger = LoggerFactory.getLogger(FileBlobStore.class);
-
-  @Override
-  public boolean accept(URI uri) {
-    return uri.getScheme() == null
-        && uri.getHost() == null
-        && uri.getPath() != null;
-  }
-
-  @Override
-  public Path fetch(URI uri) {
-    return Paths.get(uri.getPath()).toAbsolutePath();
-  }
 
   @Override
   public InputStream read(URI uri) throws IOException {

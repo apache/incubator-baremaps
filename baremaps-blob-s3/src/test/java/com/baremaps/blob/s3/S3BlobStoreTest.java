@@ -46,16 +46,6 @@ class S3BlobStoreTest extends BlobStoreTest {
   }
 
   @Override
-  protected List<String> createWrongURIList() {
-    return Arrays.asList("test.txt", "/test.txt", "test/test.txt", "/test/test.txt");
-  }
-
-  @Override
-  protected List<String> createValidURIList() {
-    return Arrays.asList("s3://test/test/test.txt");
-  }
-
-  @Override
   protected BlobStore createFileSystem() {
     return new S3BlobStore("utf-8", "application/octet-stream", s3Client);
   }
