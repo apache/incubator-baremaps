@@ -86,7 +86,6 @@
     <module>baremaps-benchmarks</module>
     <module>baremaps-config</module>
     <module>baremaps-cli</module>
-    <module>baremaps-editor</module>
     <module>baremaps-blob</module>
     <module>baremaps-blob-s3</module>
     <module>baremaps-openapi</module>
@@ -102,6 +101,12 @@
   </modules>
 
   <profiles>
+    <profile>
+      <id>editor</id>
+      <modules>
+        <module>baremaps-editor</module>
+      </modules>
+    </profile>
     <profile>
       <id>integration</id>
       <build>
@@ -479,6 +484,11 @@
       </dependency>
       <dependency>
         <groupId>io.servicetalk</groupId>
+        <artifactId>servicetalk-transport-netty</artifactId>
+        <version>${version.lib.servicetalk}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.servicetalk</groupId>
         <artifactId>servicetalk-http-router-jersey</artifactId>
         <version>${version.lib.servicetalk}</version>
       </dependency>
@@ -507,7 +517,6 @@
         <artifactId>validation-api</artifactId>
         <version>${version.lib.validation}</version>
       </dependency>
-
 
       <!-- Logging libraries -->
       <dependency>

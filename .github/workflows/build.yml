@@ -24,7 +24,7 @@ jobs:
         with:
           java-version: 11
       - name: Build with Maven
-        run: mvn -P integration -B package --file pom.xml
+        run: mvn -P editor,integration -B package --file pom.xml
 
   build-macos:
     name: Build on MacOS
@@ -39,7 +39,7 @@ jobs:
         with:
           java-version: 11
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: mvn package -P editor -B
 
   build-windows:
     name: Build on Windows
@@ -54,5 +54,5 @@ jobs:
         with:
           java-version: 11
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: mvn package -P editor -B
 

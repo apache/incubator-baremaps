@@ -16,7 +16,7 @@ jobs:
         with:
           submodules: true
       - name: Build with maven
-        run: mvn install
+        run: mvn install -P editor -B
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -56,9 +56,9 @@ jobs:
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Build with maven
-        run: mvn -B package --file pom.xml -P release
+        run: mvn package --file pom.xml -P editor,release -B
       - name: Deploy artifacts
-        run: mvn deploy -P release
+        run: mvn deploy -P editor,release -B
         env:
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
@@ -82,6 +82,6 @@ jobs:
         with:
           java-version: 11
       - name: Build with maven
-        run: mvn install
+        run: mvn install -P editor -B
       - name: Publish docker image with maven
-        run: mvn jib:build -pl baremaps-cli
+        run: mvn jib:build -P editor -pl baremaps-cli -B
