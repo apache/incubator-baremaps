@@ -16,12 +16,7 @@ package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.CompositeBlobStore;
-import com.baremaps.blob.FileBlobStore;
-import com.baremaps.blob.HttpBlobStore;
-import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.blob.s3.S3BlobStore;
-import java.util.ArrayList;
-import java.util.List;
 import picocli.CommandLine.Option;
 
 public class Options {
@@ -43,15 +38,11 @@ public class Options {
   public boolean enableS3 = false;
 
   public BlobStore blobStore() {
-    List<BlobStore> components = new ArrayList<>();
-    components.add(new FileBlobStore());
-    components.add(new ResourceBlobStore());
-    components.add(new HttpBlobStore());
+    CompositeBlobStore blobStore = new CompositeBlobStore();
     if (enableS3) {
-      components.add(new S3BlobStore());
+      blobStore.addScheme("s3", new S3BlobStore());
     }
-    return new CompositeBlobStore(components);
+    return blobStore;
   }
-
 
 }

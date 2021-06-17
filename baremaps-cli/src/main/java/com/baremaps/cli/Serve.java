@@ -5,25 +5,22 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.config.BlobMapper;
 import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
-import com.baremaps.editor.EditorApplication;
-import com.baremaps.editor.EditorModule;
-import com.baremaps.editor.ServerApplication;
-import com.baremaps.editor.ServerModule;
 import com.baremaps.osm.postgres.PostgresHelper;
-import com.baremaps.tile.TileCache;
+import com.baremaps.server.BlobResources;
+import com.baremaps.server.ServerResources;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
-import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
 import java.net.URI;
-import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -69,7 +66,7 @@ public class Serve implements Callable<Integer> {
       names = {"--assets"},
       paramLabel = "ASSETS",
       description = "A directory of static assets.")
-  private Path assets;
+  private URI assets = URI.create("res://server/");
 
   @Option(
       names = {"--host"},
@@ -88,25 +85,34 @@ public class Serve implements Callable<Integer> {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
 
     BlobStore blobStore = options.blobStore();
-    Tileset tileset = new BlobMapper(blobStore).read(this.tileset, Tileset.class);
-    Style style = new BlobMapper(blobStore).read(this.style, Style.class);
-
-    CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
+    BlobMapper blobMapper = new BlobMapper(blobStore);
+    Style style = blobMapper.read(this.style, Style.class);
+    Tileset tileset = blobMapper.read(this.tileset, Tileset.class);
     DataSource datasource = PostgresHelper.datasource(database);
     TileStore tileStore = new PostgisTileStore(datasource, tileset);
-    TileStore tileCache = new TileCache(tileStore, caffeineSpec);
+
+    ResourceConfig config = new ResourceConfig()
+        .register(ServerResources.class)
+        .register(BlobResources.class)
+        .register(new AbstractBinder() {
+          @Override
+          protected void configure() {
+            bind(tileset).to(Tileset.class);
+            bind(style).to(Style.class);
+            bind(tileStore).to(TileStore.class);
+            bind(blobStore).to(BlobStore.class);
+            bind(assets).named("assets").to(URI.class);
+          }
+        });
 
     BlockingStreamingHttpService httpService = new HttpJerseyRouterBuilder()
-        .buildBlockingStreaming(new ServerApplication(new ServerModule(tileset, style, tileCache)));
+        .buildBlockingStreaming(config);
     ServerContext serverContext = HttpServers.forPort(port)
         .listenBlockingStreamingAndAwait(httpService);
 
     logger.info("Listening on {}", serverContext.listenAddress());
 
-    // Blocks and awaits shutdown of the server this ServerContext represents.
     serverContext.awaitShutdown();
-
-    // todo: serve static assets
 
     return 0;
   }

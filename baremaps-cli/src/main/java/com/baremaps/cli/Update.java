@@ -81,6 +81,7 @@ public class Update implements Callable<Integer> {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
+    BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresHelper.datasource(database);
     CoordinateCache coordinateCache = new PostgresCoordinateCache(datasource);
     ReferenceCache referenceCache = new PostgresReferenceCache(datasource);
@@ -89,7 +90,6 @@ public class Update implements Callable<Integer> {
     WayTable wayTable = new PostgresWayTable(datasource);
     RelationTable relationTable = new PostgresRelationTable(datasource);
 
-    BlobStore blobStore = options.blobStore();
     Set<Tile> tiles = new UpdateTask(
         blobStore,
         coordinateCache,

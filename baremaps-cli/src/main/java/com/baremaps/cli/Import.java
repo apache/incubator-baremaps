@@ -14,6 +14,7 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.ImportTask;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.InMemoryCache;
@@ -28,10 +29,14 @@ import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.osm.postgres.PostgresNodeTable;
 import com.baremaps.osm.postgres.PostgresRelationTable;
 import com.baremaps.osm.postgres.PostgresWayTable;
+import java.io.File;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
@@ -94,6 +99,8 @@ public class Import implements Callable<Integer> {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
+    BlobStore blobStore = options.blobStore();
+
     DataSource datasource = PostgresHelper.datasource(database);
     HeaderTable headerTable = new PostgresHeaderTable(datasource);
     NodeTable nodeTable = new PostgresNodeTable(datasource);
@@ -126,7 +133,7 @@ public class Import implements Callable<Integer> {
 
     new ImportTask(
         file,
-        options.blobStore(),
+        blobStore,
         coordinateCache,
         referenceCache,
         headerTable,

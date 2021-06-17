@@ -1,12 +1,15 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.blob.BlobStore;
 import com.baremaps.config.BlobMapper;
+import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
-import com.baremaps.editor.EditorApplication;
-import com.baremaps.editor.EditorModule;
-import com.baremaps.editor.ServerModule;
 import com.baremaps.osm.postgres.PostgresHelper;
+import com.baremaps.server.BlobResources;
+import com.baremaps.server.EditorResources;
+import com.baremaps.server.MaputnikResources;
+import com.baremaps.server.ServerResources;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
@@ -20,8 +23,8 @@ import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -80,31 +83,29 @@ public class Edit implements Callable<Integer> {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.debug("{} processors available", Runtime.getRuntime().availableProcessors());
 
-    BlobMapper mapper = new BlobMapper(options.blobStore());
-    DataSource dataSource = PostgresHelper.datasource(database);
-    Supplier<TileStore> tileStoreSupplier = () -> {
-      try {
-        return new PostgisTileStore(dataSource, mapper.read(this.tileset, Tileset.class));
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    };
+    BlobStore blobStore = options.blobStore();
+    DataSource datasource = PostgresHelper.datasource(database);
 
-    ServiceLocatorUtilities.bind(new AbstractBinder() {
-      @Override
-      protected void configure() {
-        bind(tileset).to(URI.class).named("tileset");
-      }
-    });
+    ResourceConfig config = new ResourceConfig()
+        .register(EditorResources.class)
+        .register(MaputnikResources.class)
+        .register(new AbstractBinder() {
+          @Override
+          protected void configure() {
+            bind(style).named("style").to(URI.class);
+            bind(tileset).named("tileset").to(URI.class);
+            bind(blobStore).to(BlobStore.class);
+            bind(datasource).to(DataSource.class);
+          }
+        });
 
     BlockingStreamingHttpService httpService = new HttpJerseyRouterBuilder()
-        .buildBlockingStreaming(new EditorApplication(new EditorModule(tileset, style, mapper, tileStoreSupplier)));
+        .buildBlockingStreaming(config);
     ServerContext serverContext = HttpServers.forPort(port)
         .listenBlockingStreamingAndAwait(httpService);
 
     logger.info("Listening on {}", serverContext.listenAddress());
 
-    // Blocks and awaits shutdown of the server this ServerContext represents.
     serverContext.awaitShutdown();
 
     return 0;
