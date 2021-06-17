@@ -1,4 +1,4 @@
-package com.baremaps.editor;
+package com.baremaps.server;
 
 import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
@@ -10,7 +10,6 @@ import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
 import java.io.IOException;
-import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -18,45 +17,40 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-@javax.ws.rs.Path("/")
-public class ServerService {
+@Path("/")
+public class ServerResources {
 
-  private static Logger logger = LoggerFactory.getLogger(ServerService.class);
+  private final Style style;
 
-  @Inject
-  private Tileset tileset;
+  private final Tileset tileset;
 
-  @Inject
-  private Style style;
+  private final TileStore tileStore;
 
   @Inject
-  private TileStore tileStore;
+  public ServerResources(Style style, Tileset tileset, TileStore tileStore) {
+    this.style = style;
+    this.tileset = tileset;
+    this.tileStore = tileStore;
+  }
 
   @GET
   @Path("style.json")
   @Produces(MediaType.APPLICATION_JSON)
   public Style getStyle() throws IOException {
-    // override style properties with tileset properties
-    if (tileset.getCenter() != null) {
-      style.setCenter(List.of(tileset.getCenter().getLon(), tileset.getCenter().getLat()));
-      style.setZoom(tileset.getCenter().getZoom());
-    }
     return style;
   }
 
   @GET
   @Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Tileset getTileset() {
+  public Tileset getTileset() throws IOException {
     return tileset;
   }
 
   @GET
-  @Path("tiles/{z}/{x}/{y}.mvt")
-  public Response tile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
+  @Path("/tiles/{z}/{x}/{y}.mvt")
+  public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
     Tile tile = new Tile(x, y, z);
     try {
       byte[] bytes = tileStore.read(tile);
@@ -71,7 +65,6 @@ public class ServerService {
         return Response.status(204).build();
       }
     } catch (TileStoreException ex) {
-      logger.error(ex.getMessage());
       return Response.status(404).build();
     }
   }

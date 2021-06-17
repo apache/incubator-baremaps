@@ -1,4 +1,4 @@
-package com.baremaps.editor;
+package com.baremaps.server;
 
 import java.io.IOException;
 import javax.ws.rs.GET;
@@ -7,7 +7,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 @Path("/")
-public class StaticResources {
+public class MaputnikResources {
 
   @GET
   @Path("{path:.*}")

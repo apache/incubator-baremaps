@@ -1,16 +1,17 @@
-package com.baremaps.editor;
+package com.baremaps.server;
 
 import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
+import com.baremaps.blob.BlobStore;
 import com.baremaps.config.BlobMapper;
 import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
-import com.baremaps.tile.TileStoreException;
+import com.baremaps.tile.postgres.PostgisTileStore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
@@ -21,10 +22,9 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.util.List;
-import java.util.function.Supplier;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.sql.DataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -41,29 +41,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @javax.ws.rs.Path("/")
-public class EditorService {
+public class EditorResources {
 
-  private static Logger logger = LoggerFactory.getLogger(EditorService.class);
+  private static Logger logger = LoggerFactory.getLogger(EditorResources.class);
 
-  @Inject
-  @Named("tileset")
-  private URI tileset;
+  private final URI style;
 
-  @Inject
-  @Named("style")
-  private URI style;
+  private final URI tileset;
 
-  @Inject
-  private BlobMapper configStore;
+  private final BlobStore blobStore;
 
-  @Inject
-  private Supplier<TileStore> tileStoreSupplier;
+  private final DataSource dataSource;
 
   private Sse sse;
   private OutboundSseEvent.Builder sseEventBuilder;
   private SseBroadcaster sseBroadcaster;
-
   private Thread fileWatcher;
+
+  @Inject
+  public EditorResources(@Named("style") URI style, @Named("tileset") URI tileset, BlobStore blobStore, DataSource dataSource) {
+    this.tileset = tileset;
+    this.style = style;
+    this.blobStore = blobStore;
+    this.dataSource = dataSource;
+  }
 
   @Context
   public void setSse(Sse sse) {
@@ -85,7 +86,7 @@ public class EditorService {
           Path dir = (Path) key.watchable();
           for (WatchEvent<?> event : key.pollEvents()) {
             Path path = dir.resolve((Path) event.context());
-            ObjectNode jsonNode = configStore.read(style, ObjectNode.class);
+            ObjectNode jsonNode = new BlobMapper(blobStore).read(style, ObjectNode.class);
             jsonNode.put("reload", path.endsWith(tilesetFile.getFileName()));
             sseBroadcaster.broadcast(sseEventBuilder.data(jsonNode.toString()).build());
           }
@@ -107,49 +108,39 @@ public class EditorService {
     sseBroadcaster.register(sseEventSink);
   }
 
-  @GET
-  @javax.ws.rs.Path("style.json")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Style getStyle() throws IOException {
-    Tileset tileset = configStore.read(this.tileset, Tileset.class);
-    Style style = configStore.read(this.style, Style.class);
-
-    // override style properties with tileset properties
-    if (tileset.getCenter() != null) {
-      style.setCenter(List.of(tileset.getCenter().getLon(), tileset.getCenter().getLat()));
-      style.setZoom(tileset.getCenter().getZoom());
-    }
-
-    return style;
-  }
-
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @javax.ws.rs.Path("style.json")
   public void putStyle(Style json) throws IOException {
-    configStore.write(style, json);
-  }
-
-  @GET
-  @javax.ws.rs.Path("tiles.json")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Tileset getTiles() throws IOException {
-    Tileset tileset = configStore.read(this.tileset, Tileset.class);
-    return tileset;
+    new BlobMapper(blobStore).write(style, json);
   }
 
   @PUT
   @javax.ws.rs.Path("tiles.json")
   public void putTiles(JsonNode json) throws IOException {
-    configStore.write(style, json);
+    new BlobMapper(blobStore).write(style, json);
   }
 
   @GET
-  @javax.ws.rs.Path("tiles/{z}/{x}/{y}.mvt")
-  public Response tile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
-    TileStore tileStore = tileStoreSupplier.get();
-    Tile tile = new Tile(x, y, z);
+  @javax.ws.rs.Path("style.json")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Style getStyle() throws IOException {
+    return new BlobMapper(blobStore).read(style, Style.class);
+  }
+
+  @GET
+  @javax.ws.rs.Path("tiles.json")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Tileset getTileset() throws IOException {
+    return new BlobMapper(blobStore).read(tileset, Tileset.class);
+  }
+
+  @GET
+  @javax.ws.rs.Path("/tiles/{z}/{x}/{y}.mvt")
+  public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
     try {
+      TileStore tileStore = new PostgisTileStore(dataSource, getTileset());
+      Tile tile = new Tile(x, y, z);
       byte[] bytes = tileStore.read(tile);
       if (bytes != null) {
         return Response.status(200)
@@ -161,8 +152,8 @@ public class EditorService {
       } else {
         return Response.status(204).build();
       }
-    } catch (TileStoreException ex) {
-      logger.error(ex.getMessage());
+    } catch (Exception ex) {
+      logger.error("Tile error", ex);
       return Response.status(404).build();
     }
   }
