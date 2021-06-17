@@ -60,9 +60,6 @@ paths:
                     rel: data
                     type: application/json
                     title: the set of styles shared via this API
-            text/html:
-              schema:
-                type: string
         '400':
           description: |-
             invalid or unknown query parameters
@@ -134,18 +131,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/collections'
-            text/html:
-              schema:
-                type: string
         "500":
           description: A server error occurred
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
     post:
       tags:
         - Collections
@@ -390,6 +381,41 @@ paths:
         '404':
           description: |-
             style not found
+  /tiles:
+    get:
+      tags:
+        - Tiles
+      summary: fetch a tiles description
+      description: Retrieves the tiles description for this collection including the
+        `links` to get a `tile`
+      operationId: describeTilesCollections
+      responses:
+        "200":
+          description: Description of the tiles.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tileSetsDescription'
+              example:
+                - href: http://data.example.com/tiles
+                  rel: self
+                  type: application/json
+                - href: http://data.example.com/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}.png
+                  templated: true
+                  rel: item
+                  type: image/png
+                - href: http://data.example.com/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}/info
+                  templated: true
+                  rel: info
+                  type: text/html
+        "404":
+          description: The requested URI was not found
+        "500":
+          description: A server error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
   /tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}:
     get:
       tags:
@@ -473,9 +499,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
 components:
   parameters:
     collectionId:
@@ -898,3 +921,12 @@ components:
           nullable: true
         link:
           $ref: '#/components/schemas/link'
+    tileSetsDescription:
+      type: object
+      required:
+        - links
+      properties:
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
