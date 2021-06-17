@@ -88,12 +88,12 @@
     <module>baremaps-cli</module>
     <module>baremaps-blob</module>
     <module>baremaps-blob-s3</module>
-    <module>baremaps-editor</module>
     <module>baremaps-openapi</module>
     <module>baremaps-osm</module>
     <module>baremaps-osm-lmdb</module>
     <module>baremaps-osm-postgres</module>
     <module>baremaps-stream</module>
+    <module>baremaps-server</module>
     <module>baremaps-testing</module>
     <module>baremaps-tile</module>
     <module>baremaps-tile-mbtiles</module>
@@ -319,7 +319,7 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-editor</artifactId>
+        <artifactId>baremaps-server</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>

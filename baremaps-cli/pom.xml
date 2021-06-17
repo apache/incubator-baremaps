@@ -89,7 +89,7 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-editor</artifactId>
+      <artifactId>baremaps-server</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
