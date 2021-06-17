@@ -1,14 +1,17 @@
 package com.baremaps.openapi;
 
-import com.baremaps.openapi.services.*;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import static java.util.Arrays.asList;
 
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Feature;
+import com.baremaps.openapi.services.CollectionsService;
+import com.baremaps.openapi.services.ConformanceService;
+import com.baremaps.openapi.services.RootService;
+import com.baremaps.openapi.services.StylesService;
+import com.baremaps.openapi.services.TilesService;
 import java.util.HashSet;
 import java.util.Set;
-
-import static java.util.Arrays.asList;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Feature;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 public class BaremapsApplication extends Application {
 

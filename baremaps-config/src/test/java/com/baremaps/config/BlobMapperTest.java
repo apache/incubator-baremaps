@@ -5,11 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
-import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 class BlobMapperTest {

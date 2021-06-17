@@ -16,8 +16,6 @@ package com.baremaps.blob;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 class FileBlobStoreTest extends BlobStoreTest {
 

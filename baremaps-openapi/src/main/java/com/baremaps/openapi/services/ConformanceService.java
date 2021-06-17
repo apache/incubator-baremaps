@@ -2,7 +2,6 @@ package com.baremaps.openapi.services;
 
 import com.baremaps.api.ConformanceApi;
 import com.baremaps.model.ConfClasses;
-
 import java.util.Arrays;
 
 public class ConformanceService implements ConformanceApi {

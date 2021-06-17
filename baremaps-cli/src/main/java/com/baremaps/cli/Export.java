@@ -15,9 +15,9 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.config.tileset.Tileset;
-import com.baremaps.config.tileset.Query;
 import com.baremaps.config.BlobMapper;
+import com.baremaps.config.tileset.Query;
+import com.baremaps.config.tileset.Tileset;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.stream.StreamUtils;

@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Map;
 
 /**
  * A base class for reading and writing configuration files in a BlobStore.

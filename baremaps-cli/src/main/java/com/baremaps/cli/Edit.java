@@ -2,24 +2,15 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.config.BlobMapper;
-import com.baremaps.config.style.Style;
-import com.baremaps.config.tileset.Tileset;
 import com.baremaps.osm.postgres.PostgresHelper;
-import com.baremaps.server.BlobResources;
 import com.baremaps.server.EditorResources;
 import com.baremaps.server.MaputnikResources;
-import com.baremaps.server.ServerResources;
-import com.baremaps.tile.TileStore;
-import com.baremaps.tile.postgres.PostgisTileStore;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
-import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.Callable;
-import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
