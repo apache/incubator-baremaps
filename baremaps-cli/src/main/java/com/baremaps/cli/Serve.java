@@ -7,7 +7,7 @@ import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.server.BlobResources;
-import com.baremaps.server.ServerResources;
+import com.baremaps.server.ViewerResources;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgisTileStore;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
@@ -92,7 +92,7 @@ public class Serve implements Callable<Integer> {
     TileStore tileStore = new PostgisTileStore(datasource, tileset);
 
     ResourceConfig config = new ResourceConfig()
-        .register(ServerResources.class)
+        .register(ViewerResources.class)
         .register(BlobResources.class)
         .register(new AbstractBinder() {
           @Override

@@ -82,21 +82,23 @@ public class UpdateTask {
     ChangeTiler changeTiler = new ChangeTiler(nodeTable, wayTable, relationTable, new ProjectionTransformer(srid, 4326), zoom);
     DatabaseUpdater databaseUpdater = new DatabaseUpdater(headerTable, nodeTable, wayTable, relationTable);
 
-    InputStream changesInputStream = new GZIPInputStream(blobStore.read(changeFileUri));
-    OpenStreetMap.streamXmlChanges(changesInputStream, false)
-        .peek(change -> change.getElements().forEach(geometryHandler))
-        .peek(change -> change.getElements().forEach(projectionTransformer))
-        .peek(changeTiler)
-        .forEach(databaseUpdater);
+    try(InputStream changesInputStream = new GZIPInputStream(blobStore.read(changeFileUri))) {
+      OpenStreetMap.streamXmlChanges(changesInputStream, false)
+          .peek(change -> change.getElements().forEach(geometryHandler))
+          .peek(change -> change.getElements().forEach(projectionTransformer))
+          .peek(changeTiler)
+          .forEach(databaseUpdater);
+    }
 
-    InputStream stateInputStream = blobStore.read(stateFileUri);
-    State state = OpenStreetMap.readState(stateInputStream);
-    headerTable.insert(new Header(
-        state.getTimestamp(),
-        state.getSequenceNumber(),
-        header.getReplicationUrl(),
-        header.getSource(),
-        header.getWritingProgram()));
+    try(InputStream stateInputStream = blobStore.read(stateFileUri)) {
+      State state = OpenStreetMap.readState(stateInputStream);
+      headerTable.insert(new Header(
+          state.getTimestamp(),
+          state.getSequenceNumber(),
+          header.getReplicationUrl(),
+          header.getSource(),
+          header.getWritingProgram()));
+    }
 
     return changeTiler.getTiles();
   }

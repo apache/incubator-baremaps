@@ -19,7 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/")
-public class ServerResources {
+public class ViewerResources {
 
   private final Style style;
 
@@ -28,7 +28,7 @@ public class ServerResources {
   private final TileStore tileStore;
 
   @Inject
-  public ServerResources(Style style, Tileset tileset, TileStore tileStore) {
+  public ViewerResources(Style style, Tileset tileset, TileStore tileStore) {
     this.style = style;
     this.tileset = tileset;
     this.tileStore = tileStore;
