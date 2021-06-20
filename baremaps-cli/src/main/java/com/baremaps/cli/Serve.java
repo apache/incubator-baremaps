@@ -5,11 +5,11 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.config.BlobMapper;
-import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.editor.ServerService;
+import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
-import com.baremaps.tile.postgres.PostgisTileStore;
+import com.baremaps.tile.postgres.PostgresTileStore;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import com.linecorp.armeria.common.HttpMethod;
 import com.linecorp.armeria.server.HttpService;
@@ -93,8 +93,8 @@ public class Serve implements Callable<Integer> {
     Style style = new BlobMapper(blobStore).read(this.style, Style.class);
 
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
-    DataSource datasource = PostgresHelper.datasource(database);
-    TileStore tileStore = new PostgisTileStore(datasource, tileset);
+    DataSource datasource = PostgresUtils.datasource(database);
+    TileStore tileStore = new PostgresTileStore(datasource, tileset);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
     ServerBuilder builder = Server.builder()

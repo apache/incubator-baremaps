@@ -3,10 +3,10 @@ package com.baremaps.cli;
 
 import com.baremaps.config.BlobMapper;
 import com.baremaps.config.tileset.Tileset;
-import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.editor.EditorService;
+import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.tile.TileStore;
-import com.baremaps.tile.postgres.PostgisTileStore;
+import com.baremaps.tile.postgres.PostgresTileStore;
 import com.linecorp.armeria.common.HttpMethod;
 import com.linecorp.armeria.server.Server;
 import com.linecorp.armeria.server.ServerListenerAdapter;
@@ -79,10 +79,10 @@ public class Edit implements Callable<Integer> {
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
     BlobMapper mapper = new BlobMapper(options.blobStore());
-    DataSource dataSource = PostgresHelper.datasource(database);
+    DataSource dataSource = PostgresUtils.datasource(database);
     Supplier<TileStore> tileStoreSupplier = () -> {
       try {
-        return new PostgisTileStore(dataSource, mapper.read(this.tileset, Tileset.class));
+        return new PostgresTileStore(dataSource, mapper.read(this.tileset, Tileset.class));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

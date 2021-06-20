@@ -17,8 +17,8 @@ package com.baremaps.cli;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.osm.postgres.PostgresNodeTable;
+import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -46,14 +46,14 @@ public class BaremapsTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = PostgresHelper.datasource(DATABASE_URL);
+    dataSource = PostgresUtils.datasource(DATABASE_URL);
     nodeStore = new PostgresNodeTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
-      PostgresHelper.executeResource(connection, "osm_create_extensions.sql");
-      PostgresHelper.executeResource(connection, "osm_drop_tables.sql");
-      PostgresHelper.executeResource(connection, "osm_create_tables.sql");
-      PostgresHelper.executeResource(connection, "osm_create_gist_indexes.sql");
-      PostgresHelper.executeResource(connection, "osm_create_gin_indexes.sql");
+      PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
+      PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
+      PostgresUtils.executeResource(connection, "osm_create_tables.sql");
+      PostgresUtils.executeResource(connection, "osm_create_gist_indexes.sql");
+      PostgresUtils.executeResource(connection, "osm_create_gin_indexes.sql");
     }
   }
 

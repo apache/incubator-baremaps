@@ -18,7 +18,8 @@ import com.baremaps.osm.database.DatabaseException;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.geometry.GeometryUtil;
+import com.baremaps.osm.geometry.GeometryUtils;
+import com.baremaps.postgres.jdbc.CopyWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -147,7 +148,7 @@ public class PostgresNodeTable implements NodeTable {
     Map<String, String> tags = (Map<String, String>) result.getObject(6);
     double lon = result.getDouble(7);
     double lat = result.getDouble(8);
-    Geometry point = GeometryUtil.deserialize(result.getBytes(9));
+    Geometry point = GeometryUtils.deserialize(result.getBytes(9));
     Info info = new Info(version, timestamp, changeset, uid);
     return new Node(id, info, tags, lon, lat, point);
   }
@@ -186,7 +187,7 @@ public class PostgresNodeTable implements NodeTable {
     statement.setObject(6, entity.getTags());
     statement.setObject(7, entity.getLon());
     statement.setObject(8, entity.getLat());
-    statement.setBytes(9, GeometryUtil.serialize(entity.getGeometry()));
+    statement.setBytes(9, GeometryUtils.serialize(entity.getGeometry()));
   }
 
   public void delete(Long id) throws DatabaseException {
