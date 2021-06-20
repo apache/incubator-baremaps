@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <groupId>com.baremaps</groupId>
   <artifactId>baremaps</artifactId>
@@ -94,6 +95,7 @@
     <module>baremaps-tile</module>
     <module>baremaps-tile-mbtiles</module>
     <module>baremaps-tile-postgres</module>
+    <module>baremaps-jdbi</module>
   </modules>
 
   <profiles>
@@ -476,6 +478,13 @@
         <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-yaml</artifactId>
         <version>${version.lib.jackson}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jdbi</groupId>
+        <artifactId>jdbi3-bom</artifactId>
+        <type>pom</type>
+        <version>3.20.1</version>
+        <scope>import</scope>
       </dependency>
 
       <!-- Logging libraries -->

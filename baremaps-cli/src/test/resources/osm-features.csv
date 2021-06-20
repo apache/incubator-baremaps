@@ -374,7 +374,7 @@ highway,stop,node,A stop sign
 highway,traffic_signals,node,Lights that control the traffic
 highway,turning_circle,node,"A turning circle is a rounded, widened area usually, but not necessarily, at the end of a road to facilitate easier turning of a vehicle. Also known as a cul de sac."
 highway,toll_gantry,node,"A toll gantry is a gantry suspended over a way, usually a motorway, as part of a system of electronic toll collection. For a toll booth with any kind of barrier or booth see: barrier=toll_booth"
-highway,User Defined,node way,All commonly used values according to Taginfo
+highway,com.baremaps.jdbi.User Defined,node way,All commonly used values according to Taginfo
 historic,aircraft,node area,A decommissioned aircraft which generally remains in one place.
 historic,aqueduct,way area,A historic structure to convey water
 historic,archaeological_site,node way area,A place in which evidence of past activity is preserved.
@@ -673,7 +673,7 @@ power,switchgear,area,The switchgear comprises one or more busbar assemblies and
 power,terminal,node,Point of connection between overhead power lines to buildings or walls
 power,tower,node,For towers or pylons carrying high voltage electricity cables. Normally constructed from steel latticework but tubular or solid pylons are also commonly used. Should not be used for medium or low voltage electricity conductors carried on single wooden poles which might be tagged power=pole. See power=tower for detailed tagging of tower types.
 power,transformer,node,A static device for transferring electric energy by inductive coupling between its windings. Large power transformers are typically located inside substations.
-power,User Defined,node way area,All commonly used values according to Taginfo
+power,com.baremaps.jdbi.User Defined,node way area,All commonly used values according to Taginfo
 public_transport,stop_position,node,The position on the street or rails where a public transport vehicle stops.
 public_transport,platform,node way area,The place where passengers are waiting for the public transport vehicles.
 public_transport,station,node area,A station is an area designed to access public transport.
@@ -745,10 +745,10 @@ route,power,relation,Where power lines use the same towers (the same way).
 route,railway,relation,"A sequence of railway ways, often named (e.g., Channel Tunnel). See Railways."
 route,road,relation,Can be used to map various road routes/long roads.
 route,running,relation,For running (jogging) routes.
-route,ski,relation,"For ski tracks (e.g., XC-Ski Trails User:Langläufer/Loipemap)."
+route,ski,relation,"For ski tracks (e.g., XC-Ski Trails com.baremaps.jdbi.User:Langläufer/Loipemap)."
 route,train,relation,"Train services (e.g., London-Paris Eurostar) See Railways."
 route,tram,relation,See Trams for more information on tagging tram services.
-route,User defined,node area,All commonly used values according to Taginfo.
+route,com.baremaps.jdbi.User defined,node area,All commonly used values according to Taginfo.
 shop,alcohol,node area,Shop selling alcohol to take away
 shop,bakery,node area,Shop focused on selling bread
 shop,beverages,node area,Shop focused on selling alcoholic and non-alcoholic beverages. See also shop=alcohol.
