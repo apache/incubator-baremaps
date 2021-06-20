@@ -3,7 +3,11 @@
 
 package com.baremaps.postgres.jdbc;
 
-public class ObjectIdentifier {
+class ObjectIdentifier {
+
+  private ObjectIdentifier() {
+
+  }
 
   // region OID 1 - 99
 

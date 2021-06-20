@@ -16,14 +16,14 @@ class TimestampUtils {
 
   }
 
-  private static final LocalDateTime JavaEpoch = LocalDateTime.of(1970, 1, 1, 0, 0, 0);
+  public static final LocalDateTime JavaEpoch = LocalDateTime.of(1970, 1, 1, 0, 0, 0);
 
-  private static final LocalDateTime PostgresEpoch = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+   static final LocalDateTime PostgresEpoch = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
 
-  private static final long DaysBetweenJavaAndPostgresEpochs = ChronoUnit.DAYS
+   static final long DaysBetweenJavaAndPostgresEpochs = ChronoUnit.DAYS
       .between(JavaEpoch, PostgresEpoch);
 
-  protected static long convertToPostgresTimeStamp(LocalDateTime localDateTime) {
+   static long convertToPostgresTimeStamp(LocalDateTime localDateTime) {
 
     if (localDateTime == null) {
       throw new IllegalArgumentException("localDateTime");
@@ -48,7 +48,7 @@ class TimestampUtils {
     }
   }
 
-  protected static int toPgDays(LocalDate date) {
+  public static int toPgDays(LocalDate date) {
     // Adjust TimeZone Offset:
     LocalDateTime dateTime = date.atStartOfDay();
     // pg time 0 is 2000-01-01 00:00:00:
@@ -57,7 +57,7 @@ class TimestampUtils {
     return (int) TimeUnit.SECONDS.toDays(secs);
   }
 
-  protected static Long toPgSecs(LocalDateTime dateTime) {
+  public static Long toPgSecs(LocalDateTime dateTime) {
     // pg time 0 is 2000-01-01 00:00:00:
     long secs = toPgSecs(getSecondsSinceJavaEpoch(dateTime));
     // Needs Microseconds:
