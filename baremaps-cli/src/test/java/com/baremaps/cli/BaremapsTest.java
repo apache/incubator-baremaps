@@ -40,7 +40,7 @@ import picocli.CommandLine;
 
 public class BaremapsTest {
 
-  public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps";
+  public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps";
   public DataSource dataSource;
   public PostgresNodeTable nodeStore;
 
