@@ -22,7 +22,11 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
 
-public class GeometryUtil {
+public class GeometryUtils {
+
+  private GeometryUtils() {
+
+  }
 
   public static byte[] serialize(Geometry geometry) {
     if (geometry == null) {

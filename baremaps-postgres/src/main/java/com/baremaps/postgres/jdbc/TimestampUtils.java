@@ -1,7 +1,7 @@
 // Copyright (c) Philipp Wagner. All rights reserved.
 // Licensed under the MIT license.
 
-package com.baremaps.osm.postgres;
+package com.baremaps.postgres.jdbc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,21 +10,20 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
-public class TimestampUtils {
+class TimestampUtils {
 
   private TimestampUtils() {
 
   }
 
-  private static final LocalDateTime JavaEpoch = LocalDateTime.of(1970, 1, 1, 0, 0, 0);
+  public static final LocalDateTime JavaEpoch = LocalDateTime.of(1970, 1, 1, 0, 0, 0);
 
-  private static final LocalDateTime PostgresEpoch = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+   static final LocalDateTime PostgresEpoch = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
 
-  private static final long DaysBetweenJavaAndPostgresEpochs = ChronoUnit.DAYS
+   static final long DaysBetweenJavaAndPostgresEpochs = ChronoUnit.DAYS
       .between(JavaEpoch, PostgresEpoch);
 
-
-  public static long convertToPostgresTimeStamp(LocalDateTime localDateTime) {
+   static long convertToPostgresTimeStamp(LocalDateTime localDateTime) {
 
     if (localDateTime == null) {
       throw new IllegalArgumentException("localDateTime");

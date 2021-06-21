@@ -20,7 +20,8 @@ import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Member;
 import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.geometry.GeometryUtil;
+import com.baremaps.osm.geometry.GeometryUtils;
+import com.baremaps.postgres.jdbc.CopyWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -159,7 +160,7 @@ public class PostgresRelationTable implements RelationTable {
     for (int i = 0; i < refs.length; i++) {
       members.add(new Member(refs[i], MemberType.forNumber(types[i]), roles[i]));
     }
-    Geometry geometry = GeometryUtil.deserialize(result.getBytes(10));
+    Geometry geometry = GeometryUtils.deserialize(result.getBytes(10));
     Info info = new Info(version, timestamp, changeset, uid);
     return new Relation(id, info, tags, members, geometry);
   }
@@ -203,7 +204,7 @@ public class PostgresRelationTable implements RelationTable {
     statement.setObject(8, statement.getConnection().createArrayOf("int", types));
     Object[] roles = entity.getMembers().stream().map(Member::getRole).toArray();
     statement.setObject(9, statement.getConnection().createArrayOf("varchar", roles));
-    statement.setBytes(10, GeometryUtil.serialize(entity.getGeometry()));
+    statement.setBytes(10, GeometryUtils.serialize(entity.getGeometry()));
   }
 
   public void delete(Long id) throws DatabaseException {

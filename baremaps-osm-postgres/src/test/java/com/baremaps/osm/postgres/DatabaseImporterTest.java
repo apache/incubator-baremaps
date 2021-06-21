@@ -3,6 +3,7 @@ package com.baremaps.osm.postgres;
 import static com.baremaps.osm.postgres.DatabaseConstants.DATABASE_URL;
 
 import com.baremaps.osm.database.DatabaseException;
+import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
@@ -22,15 +23,15 @@ class DatabaseImporterTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = PostgresHelper.datasource(DATABASE_URL);
+    dataSource = PostgresUtils.datasource(DATABASE_URL);
     headerTable = new PostgresHeaderTable(dataSource);
     nodeTable = new PostgresNodeTable(dataSource);
     wayTable = new PostgresWayTable(dataSource);
     relationTable = new PostgresRelationTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
-      PostgresHelper.executeResource(connection, "osm_create_extensions.sql");
-      PostgresHelper.executeResource(connection, "osm_drop_tables.sql");
-      PostgresHelper.executeResource(connection, "osm_create_tables.sql");
+      PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
+      PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
+      PostgresUtils.executeResource(connection, "osm_create_tables.sql");
     }
   }
 

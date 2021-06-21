@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.postgres;
+package com.baremaps.postgres.jdbc;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -23,9 +23,9 @@ import java.sql.Statement;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 
-public final class PostgresHelper {
+public final class PostgresUtils {
 
-  private PostgresHelper() {
+  private PostgresUtils() {
 
   }
 

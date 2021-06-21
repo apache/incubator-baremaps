@@ -24,10 +24,10 @@ import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.lmdb.LmdbCoordinateCache;
 import com.baremaps.osm.lmdb.LmdbReferencesCache;
 import com.baremaps.osm.postgres.PostgresHeaderTable;
-import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.osm.postgres.PostgresNodeTable;
 import com.baremaps.osm.postgres.PostgresRelationTable;
 import com.baremaps.osm.postgres.PostgresWayTable;
+import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -94,7 +94,7 @@ public class Import implements Callable<Integer> {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
-    DataSource datasource = PostgresHelper.datasource(database);
+    DataSource datasource = PostgresUtils.datasource(database);
     HeaderTable headerTable = new PostgresHeaderTable(datasource);
     NodeTable nodeTable = new PostgresNodeTable(datasource);
     WayTable wayTable = new PostgresWayTable(datasource);

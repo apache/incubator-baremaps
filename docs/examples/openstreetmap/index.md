@@ -129,7 +129,7 @@ These tiles can be served with Apache, Nginx, or Caddy, but also copied in a blo
 
 ```
 baremaps export \
-  --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
+  --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
   --tileset 'tileset.json' \
   --repository 'tiles/'
 ```

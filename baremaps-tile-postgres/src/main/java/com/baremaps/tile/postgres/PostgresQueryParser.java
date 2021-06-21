@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PostgisQueryParser {
+public class PostgresQueryParser {
 
   private static final Pattern QUERY_PATTERN = Pattern
       .compile("SELECT\\s(.*?)\\sFROM\\s(.*?)(?:\\sWHERE\\s(.*))?", Pattern.CASE_INSENSITIVE);
@@ -31,7 +31,7 @@ public class PostgisQueryParser {
   private static final Pattern COLUMN_PATTERN = Pattern
       .compile("(.*?)(?:\\sAS\\s(.*))?", Pattern.CASE_INSENSITIVE);
 
-  private PostgisQueryParser() {
+  private PostgresQueryParser() {
 
   }
 

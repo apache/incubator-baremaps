@@ -15,6 +15,7 @@ package com.baremaps.osm.postgres;/*
 import static com.baremaps.osm.postgres.DatabaseConstants.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -30,10 +31,10 @@ public class SchemaTest {
   @Tag("integration")
   public void resetDatabase() throws SQLException, IOException {
     try (Connection connection = DriverManager.getConnection(DATABASE_URL)) {
-      PostgresHelper.executeResource(connection, "osm_create_extensions.sql");
-      PostgresHelper.executeResource(connection, "osm_drop_tables.sql");
-      PostgresHelper.executeResource(connection, "osm_drop_tables.sql");
-      PostgresHelper.executeResource(connection, "osm_create_tables.sql");
+      PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
+      PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
+      PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
+      PostgresUtils.executeResource(connection, "osm_create_tables.sql");
       assertTrue(tableExists("osm_headers"));
       assertTrue(tableExists("osm_nodes"));
       assertTrue(tableExists("osm_ways"));

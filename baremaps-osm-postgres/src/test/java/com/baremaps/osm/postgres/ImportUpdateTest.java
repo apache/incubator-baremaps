@@ -11,6 +11,7 @@ import com.baremaps.osm.cache.InMemoryCache;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
@@ -33,7 +34,7 @@ class ImportUpdateTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException, URISyntaxException {
-    dataSource = PostgresHelper.datasource(DatabaseConstants.DATABASE_URL);
+    dataSource = PostgresUtils.datasource(DatabaseConstants.DATABASE_URL);
 
     blobStore = new FileBlobStore();
     headerTable = new PostgresHeaderTable(dataSource);
@@ -42,9 +43,9 @@ class ImportUpdateTest {
     relationTable = new PostgresRelationTable(dataSource);
 
     try (Connection connection = dataSource.getConnection()) {
-      PostgresHelper.executeResource(connection, "osm_create_extensions.sql");
-      PostgresHelper.executeResource(connection, "osm_drop_tables.sql");
-      PostgresHelper.executeResource(connection, "osm_create_tables.sql");
+      PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
+      PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
+      PostgresUtils.executeResource(connection, "osm_create_tables.sql");
     }
   }
 
