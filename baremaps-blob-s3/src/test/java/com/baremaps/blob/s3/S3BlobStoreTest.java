@@ -18,8 +18,6 @@ import com.adobe.testing.s3mock.junit5.S3MockExtension;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreTest;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -43,16 +41,6 @@ class S3BlobStoreTest extends BlobStoreTest {
   @Override
   protected String createTestURI() throws IOException {
     return "s3://test/test/test.txt";
-  }
-
-  @Override
-  protected List<String> createWrongURIList() {
-    return Arrays.asList("test.txt", "/test.txt", "test/test.txt", "/test/test.txt");
-  }
-
-  @Override
-  protected List<String> createValidURIList() {
-    return Arrays.asList("s3://test/test/test.txt");
   }
 
   @Override

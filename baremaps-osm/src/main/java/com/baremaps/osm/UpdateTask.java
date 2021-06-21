@@ -13,11 +13,12 @@ import com.baremaps.osm.domain.State;
 import com.baremaps.osm.geometry.GeometryHandler;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.tile.Tile;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,6 @@ public class UpdateTask {
     this.zoom = zoom;
   }
 
-
   public URI resolve(String replicationUrl, Long sequenceNumber, String extension) throws URISyntaxException {
     String s = String.format("%09d", sequenceNumber);
     return new URI(String.format("%s/%s/%s/%s.%s",
@@ -74,28 +74,31 @@ public class UpdateTask {
     Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
 
     URI changeFileUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
-    Path changeFilePath = blobStore.fetch(changeFileUri);
-
     URI stateFileUri = resolve(replicationUrl, sequenceNumber, "state.txt");
-    Path stateFile = blobStore.fetch(stateFileUri);
 
     logger.info("Importing changes and state in database");
     GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
     ChangeTiler changeTiler = new ChangeTiler(nodeTable, wayTable, relationTable, new ProjectionTransformer(srid, 4326), zoom);
     DatabaseUpdater databaseUpdater = new DatabaseUpdater(headerTable, nodeTable, wayTable, relationTable);
-    OpenStreetMap.streamXmlChanges(changeFilePath, false)
-        .peek(change -> change.getElements().forEach(geometryHandler))
-        .peek(change -> change.getElements().forEach(projectionTransformer))
-        .peek(changeTiler)
-        .forEach(databaseUpdater);
-    State state = OpenStreetMap.readState(stateFile);
-    headerTable.insert(new Header(
-        state.getTimestamp(),
-        state.getSequenceNumber(),
-        header.getReplicationUrl(),
-        header.getSource(),
-        header.getWritingProgram()));
+
+    try(InputStream changesInputStream = new GZIPInputStream(blobStore.read(changeFileUri))) {
+      OpenStreetMap.streamXmlChanges(changesInputStream, false)
+          .peek(change -> change.getElements().forEach(geometryHandler))
+          .peek(change -> change.getElements().forEach(projectionTransformer))
+          .peek(changeTiler)
+          .forEach(databaseUpdater);
+    }
+
+    try(InputStream stateInputStream = blobStore.read(stateFileUri)) {
+      State state = OpenStreetMap.readState(stateInputStream);
+      headerTable.insert(new Header(
+          state.getTimestamp(),
+          state.getSequenceNumber(),
+          header.getReplicationUrl(),
+          header.getSource(),
+          header.getWritingProgram()));
+    }
 
     return changeTiler.getTiles();
   }

@@ -15,9 +15,7 @@
 package com.baremaps.blob;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
@@ -27,23 +25,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 public abstract class BlobStoreTest {
-
-  @Test
-  @Tag("integration")
-  void accept() throws URISyntaxException {
-    BlobStore blobStore = createFileSystem();
-    for (String uri : createValidURIList()) {
-      assertTrue(blobStore.accept(new URI(uri)));
-    }
-    for (String uri : createWrongURIList()) {
-      assertFalse(blobStore.accept(new URI(uri)));
-    }
-  }
 
   @Test
   @Tag("integration")
@@ -70,10 +55,6 @@ public abstract class BlobStoreTest {
   }
 
   protected abstract String createTestURI() throws IOException;
-
-  protected abstract List<String> createWrongURIList();
-
-  protected abstract List<String> createValidURIList();
 
   protected abstract BlobStore createFileSystem();
 

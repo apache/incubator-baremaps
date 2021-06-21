@@ -13,8 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.locationtech.jts.geom.Coordinate;
@@ -31,8 +29,6 @@ import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.operation.union.CascadedPolygonUnion;
-import org.locationtech.jts.operation.union.UnaryUnionOp;
-import org.locationtech.jts.operation.union.UnionStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -16,8 +16,6 @@ package com.baremaps.blob;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 class FileBlobStoreTest extends BlobStoreTest {
 
@@ -26,23 +24,6 @@ class FileBlobStoreTest extends BlobStoreTest {
     File file = File.createTempFile("baremaps_", ".test");
     file.delete();
     return file.getPath();
-  }
-
-  @Override
-  protected List<String> createWrongURIList() {
-    return Arrays.asList(
-        "http://www.test.com/test.txt",
-        "https://www.test.com/test.txt",
-        "s3://test/test/test.txt");
-  }
-
-  @Override
-  protected List<String> createValidURIList() {
-    return Arrays.asList(
-        "test.txt",
-        "/test.txt",
-        "test/test.txt",
-        "/test/test.txt");
   }
 
   @Override

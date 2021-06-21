@@ -23,11 +23,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HttpBlobStore extends BlobStore {
+public class HttpBlobStore implements BlobStore {
 
   private static Logger logger = LoggerFactory.getLogger(HttpBlobStore.class);
 
@@ -42,18 +41,6 @@ public class HttpBlobStore extends BlobStore {
   public HttpBlobStore(String contentEncoding, String contentType) {
     this.contentEncoding = contentEncoding;
     this.contentType = contentType;
-  }
-
-  @Override
-  public boolean accept(URI uri) {
-    return ("http".equals(uri.getScheme()) || "https".equals(uri.getScheme()))
-        && uri.getHost() != null
-        && uri.getPath() != null;
-  }
-
-  @Override
-  public Path fetch(URI uri) throws IOException {
-    return cache(uri);
   }
 
   @Override

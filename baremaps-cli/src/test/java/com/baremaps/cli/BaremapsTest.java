@@ -90,18 +90,20 @@ public class BaremapsTest {
     assertTrue(Files.exists(Paths.get("repository/14/8626/5750.pbf")));
 
     // Test the serve command in a separate thread
-    new Thread(() -> {
+    Thread thread = new Thread(() -> {
       cmd.execute("edit",
           "--database", DATABASE_URL,
           "--tileset", "src/test/resources/tileset.json",
-          "--style", "src/test/resources/style.json");
-    }).run();
+          "--style", "src/test/resources/style.json",
+          "--port", "9000");
+    });
+    thread.start();
 
-    // Wait for the server to start
-    Thread.sleep(1000);
+    // Wait for ServiceTalk and JAX-RS  to start
+    Thread.sleep(2000);
 
     // Download a tile file
-    HttpURLConnection connection = (HttpURLConnection) new URL("http://localhost:9000/tiles/14/8626/5750.mvt")
+    HttpURLConnection connection = (HttpURLConnection) new URL("http://127.0.0.1:9000/tiles/14/8626/5750.mvt")
         .openConnection();
     connection.connect();
     assertEquals(connection.getResponseCode(), 200);

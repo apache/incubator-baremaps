@@ -53,11 +53,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
-    <version.lib.armeria>1.7.2</version.lib.armeria>
     <version.lib.caffeine>3.0.2</version.lib.caffeine>
     <version.lib.commons-compress>1.19</version.lib.commons-compress>
     <version.lib.dbcp2>2.8.0</version.lib.dbcp2>
     <version.lib.guava>30.1.1-jre</version.lib.guava>
+    <version.lib.jersey>2.32</version.lib.jersey>
     <version.lib.jts>1.18.1</version.lib.jts>
     <version.lib.junit>5.7.1</version.lib.junit>
     <version.lib.lmdb>0.8.1</version.lib.lmdb>
@@ -67,11 +67,14 @@
     <version.lib.postgresql>42.2.19</version.lib.postgresql>
     <version.lib.proj4j>1.1.2</version.lib.proj4j>
     <version.lib.protobuf>3.16.0</version.lib.protobuf>
+    <version.lib.s3mock>2.1.28</version.lib.s3mock>
     <version.lib.selenium>3.141.59</version.lib.selenium>
+    <version.lib.servicetalk>0.40.1</version.lib.servicetalk>
     <version.lib.slf4j>1.7.30</version.lib.slf4j>
     <version.lib.sqlite>3.34.0</version.lib.sqlite>
+    <version.lib.swagger>1.6.2</version.lib.swagger>
     <version.lib.testng>7.4.0</version.lib.testng>
-    <version.lib.s3mock>2.1.28</version.lib.s3mock>
+    <version.lib.validation>2.0.1.Final</version.lib.validation>
     <version.lib.jackson>2.12.1</version.lib.jackson>
     <version.plugin.compiler>3.8.1</version.plugin.compiler>
     <version.plugin.jacoco>0.8.7</version.plugin.jacoco>
@@ -83,14 +86,14 @@
     <module>baremaps-benchmarks</module>
     <module>baremaps-config</module>
     <module>baremaps-cli</module>
-    <module>baremaps-editor</module>
     <module>baremaps-blob</module>
     <module>baremaps-blob-s3</module>
+    <module>baremaps-openapi</module>
     <module>baremaps-osm</module>
     <module>baremaps-osm-lmdb</module>
     <module>baremaps-osm-postgres</module>
-    <module>baremaps-server</module>
     <module>baremaps-stream</module>
+    <module>baremaps-server</module>
     <module>baremaps-testing</module>
     <module>baremaps-tile</module>
     <module>baremaps-tile-mbtiles</module>
@@ -202,6 +205,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
+        <version>3.0.0</version>
         <inherited>false</inherited> <!-- only execute these in the parent -->
         <executions>
           <execution>
@@ -316,7 +320,12 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-editor</artifactId>
+        <artifactId>baremaps-server</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-openapi</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -327,11 +336,6 @@
       </dependency>
       <dependency>
         <artifactId>baremaps-osm-lmdb</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-osm-postgres</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -356,11 +360,6 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-server</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
         <artifactId>baremaps-stream</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
@@ -368,22 +367,7 @@
       <dependency>
         <artifactId>baremaps-testing</artifactId>
         <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-tile</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-blob</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-blob-s3</artifactId>
-        <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
@@ -391,7 +375,6 @@
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
-
 
       <!-- External dependencies -->
       <dependency>
@@ -450,11 +433,6 @@
         <version>${version.lib.proj4j}</version>
       </dependency>
       <dependency>
-        <groupId>com.linecorp.armeria</groupId>
-        <artifactId>armeria</artifactId>
-        <version>${version.lib.armeria}</version>
-      </dependency>
-      <dependency>
         <artifactId>lmdbjava</artifactId>
         <groupId>org.lmdbjava</groupId>
         <version>${version.lib.lmdb}</version>
@@ -485,6 +463,61 @@
         <version>${version.lib.jackson}</version>
       </dependency>
       <dependency>
+        <groupId>io.servicetalk</groupId>
+        <artifactId>servicetalk-data-jackson</artifactId>
+        <version>${version.lib.servicetalk}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.servicetalk</groupId>
+        <artifactId>servicetalk-data-jackson-jersey</artifactId>
+        <version>${version.lib.servicetalk}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.servicetalk</groupId>
+        <artifactId>servicetalk-http-netty</artifactId>
+        <version>${version.lib.servicetalk}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.servicetalk</groupId>
+        <artifactId>servicetalk-transport-netty</artifactId>
+        <version>${version.lib.servicetalk}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.servicetalk</groupId>
+        <artifactId>servicetalk-http-router-predicate</artifactId>
+        <version>${version.lib.servicetalk}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.servicetalk</groupId>
+        <artifactId>servicetalk-http-router-jersey</artifactId>
+        <version>${version.lib.servicetalk}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jersey.media</groupId>
+        <artifactId>jersey-media-multipart</artifactId>
+        <version>${version.lib.jersey}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jersey.inject</groupId>
+        <artifactId>jersey-hk2</artifactId>
+        <version>${version.lib.jersey}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jersey.media</groupId>
+        <artifactId>jersey-media-sse</artifactId>
+        <version>${version.lib.jersey}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-annotations</artifactId>
+        <version>${version.lib.swagger}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.validation</groupId>
+        <artifactId>validation-api</artifactId>
+        <version>${version.lib.validation}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jdbi</groupId>
         <artifactId>jdbi3-bom</artifactId>
         <type>pom</type>
@@ -494,6 +527,16 @@
 
       <!-- Logging libraries -->
       <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${version.lib.slf4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${version.lib.log4j}</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-api</artifactId>
         <version>${version.lib.log4j}</version>
@@ -502,16 +545,6 @@
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-core</artifactId>
         <version>${version.lib.log4j}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-slf4j-impl</artifactId>
-        <version>${version.lib.log4j}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>${version.lib.slf4j}</version>
       </dependency>
 
       <!-- Testing libraries -->

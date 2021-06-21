@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <artifactId>baremaps-cli</artifactId>
   <name>baremaps-cli</name>
@@ -77,10 +78,6 @@
   <dependencies>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-server</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
       <artifactId>baremaps-blob</artifactId>
     </dependency>
     <dependency>
@@ -93,7 +90,7 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-editor</artifactId>
+      <artifactId>baremaps-server</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
@@ -132,8 +129,25 @@
       <groupId>info.picocli</groupId>
     </dependency>
     <dependency>
-      <groupId>com.linecorp.armeria</groupId>
-      <artifactId>armeria</artifactId>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-data-jackson</artifactId>
+      <version>0.40.1</version>
+    </dependency>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-data-jackson-jersey</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-http-netty</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-transport-netty</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-http-router-jersey</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>

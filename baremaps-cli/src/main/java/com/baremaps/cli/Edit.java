@@ -1,25 +1,21 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.config.BlobMapper;
-import com.baremaps.config.tileset.Tileset;
-import com.baremaps.editor.EditorService;
+import com.baremaps.blob.BlobStore;
 import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.tile.TileStore;
-import com.baremaps.tile.postgres.PostgresTileStore;
-import com.linecorp.armeria.common.HttpMethod;
-import com.linecorp.armeria.server.Server;
-import com.linecorp.armeria.server.ServerListenerAdapter;
-import com.linecorp.armeria.server.cors.CorsService;
-import com.linecorp.armeria.server.file.FileService;
-import java.awt.Desktop;
-import java.io.IOException;
+import com.baremaps.server.EditorResources;
+import com.baremaps.server.MaputnikResources;
+import io.servicetalk.http.api.BlockingStreamingHttpService;
+import io.servicetalk.http.netty.HttpServers;
+import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
+import io.servicetalk.transport.api.ServerContext;
 import java.net.URI;
 import java.util.concurrent.Callable;
-import java.util.function.Supplier;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -74,45 +70,34 @@ public class Edit implements Callable<Integer> {
   private boolean open = false;
 
   @Override
-  public Integer call() {
+  public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
-    logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
+    logger.debug("{} processors available", Runtime.getRuntime().availableProcessors());
 
-    BlobMapper mapper = new BlobMapper(options.blobStore());
-    DataSource dataSource = PostgresUtils.datasource(database);
-    Supplier<TileStore> tileStoreSupplier = () -> {
-      try {
-        return new PostgresTileStore(dataSource, mapper.read(this.tileset, Tileset.class));
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    };
+    BlobStore blobStore = options.blobStore();
+    DataSource datasource = PostgresUtils.datasource(database);
 
-    Server server = Server.builder()
-        .defaultHostname(host)
-        .http(port)
-        .annotatedService(new EditorService(host, port, mapper, this.tileset, this.style, tileStoreSupplier))
-        .serviceUnder("/", FileService.of(ClassLoader.getSystemClassLoader(), "/maputnik/"))
-        .decorator(CorsService.builderForAnyOrigin()
-            .allowRequestMethods(HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT)
-            .allowRequestHeaders("Origin", "Content-Type", "Accept")
-            .newDecorator())
-        .disableServerHeader()
-        .disableDateHeader()
-        .build();
-
-    if (open) {
-      server.addListener(new ServerListenerAdapter() {
-        @Override
-        public void serverStarted(Server server) throws Exception {
-          if (Desktop.isDesktopSupported()) {
-            Desktop.getDesktop().browse(new URI(String.format("http://%s:%s/", host, port)));
+    ResourceConfig config = new ResourceConfig()
+        .register(EditorResources.class)
+        .register(MaputnikResources.class)
+        .register(new AbstractBinder() {
+          @Override
+          protected void configure() {
+            bind(style).named("style").to(URI.class);
+            bind(tileset).named("tileset").to(URI.class);
+            bind(blobStore).to(BlobStore.class);
+            bind(datasource).to(DataSource.class);
           }
-        }
-      });
-    }
+        });
 
-    server.start();
+    BlockingStreamingHttpService httpService = new HttpJerseyRouterBuilder()
+        .buildBlockingStreaming(config);
+    ServerContext serverContext = HttpServers.forPort(port)
+        .listenBlockingStreamingAndAwait(httpService);
+
+    logger.info("Listening on {}", serverContext.listenAddress());
+
+    serverContext.awaitShutdown();
 
     return 0;
   }

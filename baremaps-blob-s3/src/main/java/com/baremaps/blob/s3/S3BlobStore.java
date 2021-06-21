@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -31,7 +30,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
-public class S3BlobStore extends BlobStore {
+public class S3BlobStore implements BlobStore {
 
   private static Logger logger = LoggerFactory.getLogger(S3BlobStore.class);
 
@@ -49,18 +48,6 @@ public class S3BlobStore extends BlobStore {
     this.contentEncoding = contentEncoding;
     this.contentType = contentType;
     this.client = client;
-  }
-
-  @Override
-  public boolean accept(URI uri) {
-    return "s3".equals(uri.getScheme())
-        && uri.getHost() != null
-        && uri.getPath() != null;
-  }
-
-  @Override
-  public Path fetch(URI uri) throws IOException {
-    return cache(uri);
   }
 
   @Override

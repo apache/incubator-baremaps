@@ -17,8 +17,6 @@ package com.baremaps.blob;
 import com.adobe.testing.s3mock.junit5.S3MockExtension;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -47,25 +45,8 @@ public class CompositeBlobStoreTest extends BlobStoreTest {
   }
 
   @Override
-  protected List<String> createWrongURIList() {
-    return Arrays.asList(
-        "http://www.test.com/test.txt",
-        "https://www.test.com/test.txt");
-  }
-
-  @Override
-  protected List<String> createValidURIList() {
-    return Arrays.asList(
-        "test.txt",
-        "/test.txt",
-        "test/test.txt",
-        "/test/test.txt");
-  }
-
-  @Override
   protected BlobStore createFileSystem() {
-    return new CompositeBlobStore(
-        new FileBlobStore());
+    return new CompositeBlobStore();
   }
 
 }

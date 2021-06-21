@@ -1,12 +1,10 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.blob.BlobStore;
 import com.baremaps.config.BlobMapper;
 import com.baremaps.config.style.Style;
-import com.baremaps.config.tileset.Bounds;
-import com.baremaps.config.tileset.Center;
 import com.baremaps.config.tileset.Tileset;
-import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
@@ -43,9 +41,8 @@ public class Init implements Callable<Integer> {
   @Override
   public Integer call() throws IOException {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
-
-
-    BlobMapper mapper = new BlobMapper(options.blobStore());
+    BlobStore blobStore = options.blobStore();
+    BlobMapper mapper = new BlobMapper(blobStore);
 
     if (style != null && !mapper.exists(style)) {
       Style styleObject = new Style();

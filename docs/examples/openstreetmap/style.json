@@ -12,6 +12,5 @@
       "type" : "vector"
     }
   },
-  "layers" : [ ],
-  "reload" : false
+  "layers" : [ ]
 }
