@@ -7,6 +7,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 public class DownloadManager {
 
@@ -23,7 +24,7 @@ public class DownloadManager {
       File tempFile = File.createTempFile("baremaps_", ".tmp");
       tempFile.deleteOnExit();
       try (InputStream input = blobStore.read(uri)) {
-        Files.copy(input, tempFile.toPath());
+        Files.copy(input, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
       }
       return tempFile.toPath();
     }

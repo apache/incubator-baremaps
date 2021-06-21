@@ -12,5 +12,15 @@
       "type" : "vector"
     }
   },
-  "layers" : [ ]
+  "layers" : [
+    {
+      "id" : "building",
+      "type" : "fill",
+      "source" : "baremaps",
+      "source-layer" : "building",
+      "paint" : {
+        "fill-color" : "rgba(255, 0, 0, 1)"
+      }
+    }
+  ]
 }
