@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.osm.database.DatabaseException;
 import com.baremaps.osm.domain.Node;
+import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -42,12 +43,12 @@ public class PostgresNodeTableTest {
 
   @BeforeEach
   public void createTable() throws SQLException, IOException {
-    dataSource = PostgresHelper.datasource(DATABASE_URL);
+    dataSource = PostgresUtils.datasource(DATABASE_URL);
     nodeStore = new PostgresNodeTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
-      PostgresHelper.executeResource(connection, "osm_create_extensions.sql");
-      PostgresHelper.executeResource(connection, "osm_drop_tables.sql");
-      PostgresHelper.executeResource(connection, "osm_create_tables.sql");
+      PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
+      PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
+      PostgresUtils.executeResource(connection, "osm_create_tables.sql");
     }
   }
 

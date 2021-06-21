@@ -11,7 +11,7 @@ import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
-import com.baremaps.tile.postgres.PostgisTileStore;
+import com.baremaps.tile.postgres.PostgresTileStore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
@@ -139,7 +139,7 @@ public class EditorResources {
   @javax.ws.rs.Path("/tiles/{z}/{x}/{y}.mvt")
   public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
     try {
-      TileStore tileStore = new PostgisTileStore(dataSource, getTileset());
+      TileStore tileStore = new PostgresTileStore(dataSource, getTileset());
       Tile tile = new Tile(x, y, z);
       byte[] bytes = tileStore.read(tile);
       if (bytes != null) {

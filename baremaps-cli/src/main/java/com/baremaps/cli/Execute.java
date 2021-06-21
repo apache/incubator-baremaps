@@ -3,7 +3,7 @@ package com.baremaps.cli;
 import static com.baremaps.config.Variables.interpolate;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.postgres.PostgresHelper;
+import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.stream.StreamUtils;
 import com.google.common.base.Splitter;
 import java.net.URI;
@@ -55,7 +55,7 @@ public class Execute implements Callable<Integer> {
   public Integer call() throws Exception {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
-    DataSource datasource = PostgresHelper.datasource(database);
+    DataSource datasource = PostgresUtils.datasource(database);
     BlobStore blobStore = options.blobStore();
 
     for (URI file : files) {

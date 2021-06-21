@@ -121,6 +121,10 @@
       <artifactId>baremaps-tile-postgres</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-postgres</artifactId>
+    </dependency>
+    <dependency>
       <artifactId>picocli</artifactId>
       <groupId>info.picocli</groupId>
     </dependency>

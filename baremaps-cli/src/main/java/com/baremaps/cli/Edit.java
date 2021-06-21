@@ -2,7 +2,7 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.postgres.PostgresHelper;
+import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.EditorResources;
 import com.baremaps.server.MaputnikResources;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
@@ -75,7 +75,7 @@ public class Edit implements Callable<Integer> {
     logger.debug("{} processors available", Runtime.getRuntime().availableProcessors());
 
     BlobStore blobStore = options.blobStore();
-    DataSource datasource = PostgresHelper.datasource(database);
+    DataSource datasource = PostgresUtils.datasource(database);
 
     ResourceConfig config = new ResourceConfig()
         .register(EditorResources.class)

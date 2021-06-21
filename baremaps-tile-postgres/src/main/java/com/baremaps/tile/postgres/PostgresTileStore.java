@@ -21,7 +21,7 @@ import com.baremaps.config.tileset.Tileset;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
-import com.baremaps.tile.postgres.PostgisQueryParser.Parse;
+import com.baremaps.tile.postgres.PostgresQueryParser.Parse;
 import com.google.common.collect.ImmutableMap;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -47,11 +47,11 @@ import org.locationtech.proj4j.ProjCoordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PostgisTileStore implements TileStore {
+public class PostgresTileStore implements TileStore {
 
   public static final String BBOX = "SELECT st_asewkb(st_transform(st_setsrid(st_extent(geom), 3857), 4326)) as table_extent FROM osm_nodes";
 
-  private static final Logger logger = LoggerFactory.getLogger(PostgisTileStore.class);
+  private static final Logger logger = LoggerFactory.getLogger(PostgresTileStore.class);
 
   private static final String WITH = "WITH %1$s %2$s";
 
@@ -87,7 +87,7 @@ public class PostgisTileStore implements TileStore {
 
   private final Tileset tileset;
 
-  public PostgisTileStore(DataSource datasource, Tileset tileset) {
+  public PostgresTileStore(DataSource datasource, Tileset tileset) {
     this.datasource = datasource;
     this.tileset = tileset;
   }
@@ -136,7 +136,7 @@ public class PostgisTileStore implements TileStore {
 
   private String query(Tile tile) {
     Map<Layer, List<Parse>> parses = tileset.getLayers().stream()
-        .flatMap(layer -> layer.getQueries().stream().map(query -> PostgisQueryParser.parse(layer, query)))
+        .flatMap(layer -> layer.getQueries().stream().map(query -> PostgresQueryParser.parse(layer, query)))
         .collect(Collectors.groupingBy(q -> q.getLayer()));
     String sources = parses.entrySet().stream()
         .flatMap(entry -> entry.getValue().stream()

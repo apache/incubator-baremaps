@@ -18,7 +18,8 @@ import com.baremaps.osm.database.DatabaseException;
 import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.geometry.GeometryUtil;
+import com.baremaps.osm.geometry.GeometryUtils;
+import com.baremaps.postgres.jdbc.CopyWriter;
 import java.io.IOException;
 import java.sql.Array;
 import java.sql.Connection;
@@ -143,7 +144,7 @@ public class PostgresWayTable implements WayTable {
     if (array != null) {
       nodes = Arrays.asList((Long[]) array.getArray());
     }
-    Geometry geometry = GeometryUtil.deserialize(result.getBytes(8));
+    Geometry geometry = GeometryUtils.deserialize(result.getBytes(8));
     Info info = new Info(version, timestamp, changeset, uid);
     return new Way(id, info, tags, nodes, geometry);
   }
@@ -182,7 +183,7 @@ public class PostgresWayTable implements WayTable {
     statement.setObject(5, entity.getInfo().getChangeset());
     statement.setObject(6, entity.getTags());
     statement.setObject(7, entity.getNodes().stream().mapToLong(Long::longValue).toArray());
-    statement.setBytes(8, GeometryUtil.serialize(entity.getGeometry()));
+    statement.setBytes(8, GeometryUtils.serialize(entity.getGeometry()));
   }
 
   public void delete(Long id) throws DatabaseException {

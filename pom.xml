@@ -98,6 +98,7 @@
     <module>baremaps-tile</module>
     <module>baremaps-tile-mbtiles</module>
     <module>baremaps-tile-postgres</module>
+    <module>baremaps-postgres</module>
   </modules>
 
   <profiles>
@@ -369,6 +370,11 @@
         <scope>test</scope>
         <version>${project.parent.version}</version>
       </dependency>
+      <dependency>
+        <artifactId>baremaps-postgres</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
 
       <!-- External dependencies -->
       <dependency>
@@ -510,6 +516,13 @@
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
         <version>${version.lib.validation}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jdbi</groupId>
+        <artifactId>jdbi3-bom</artifactId>
+        <type>pom</type>
+        <version>3.20.1</version>
+        <scope>import</scope>
       </dependency>
 
       <!-- Logging libraries -->

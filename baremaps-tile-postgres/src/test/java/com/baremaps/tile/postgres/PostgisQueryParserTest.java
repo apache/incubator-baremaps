@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.config.tileset.Layer;
 import com.baremaps.config.tileset.Query;
-import com.baremaps.tile.postgres.PostgisQueryParser.Parse;
+import com.baremaps.tile.postgres.PostgresQueryParser.Parse;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;
@@ -88,7 +88,7 @@ class PostgisQueryParserTest {
   @Test
   void parse() {
     for (TestQuery testQuery : testQueries) {
-      Parse q1 = PostgisQueryParser.parse(new Layer(), testQuery.query);
+      Parse q1 = PostgresQueryParser.parse(new Layer(), testQuery.query);
       assertEquals(q1.getId(), testQuery.id);
       assertEquals(q1.getTags(), testQuery.tags);
       assertEquals(q1.getGeom(), testQuery.geom);

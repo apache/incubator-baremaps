@@ -5,11 +5,13 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.config.BlobMapper;
 import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
-import com.baremaps.osm.postgres.PostgresHelper;
+import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.BlobResources;
 import com.baremaps.server.ViewerResources;
+import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
-import com.baremaps.tile.postgres.PostgisTileStore;
+import com.baremaps.tile.postgres.PostgresTileStore;
+import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
@@ -85,11 +87,14 @@ public class Serve implements Callable<Integer> {
     Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
 
     BlobStore blobStore = options.blobStore();
-    BlobMapper blobMapper = new BlobMapper(blobStore);
-    Style style = blobMapper.read(this.style, Style.class);
-    Tileset tileset = blobMapper.read(this.tileset, Tileset.class);
-    DataSource datasource = PostgresHelper.datasource(database);
-    TileStore tileStore = new PostgisTileStore(datasource, tileset);
+
+    Tileset tileset = new BlobMapper(blobStore).read(this.tileset, Tileset.class);
+    Style style = new BlobMapper(blobStore).read(this.style, Style.class);
+
+    CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
+    DataSource datasource = PostgresUtils.datasource(database);
+    TileStore tileStore = new PostgresTileStore(datasource, tileset);
+    TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
     ResourceConfig config = new ResourceConfig()
         .register(ViewerResources.class)
@@ -99,7 +104,7 @@ public class Serve implements Callable<Integer> {
           protected void configure() {
             bind(tileset).to(Tileset.class);
             bind(style).to(Style.class);
-            bind(tileStore).to(TileStore.class);
+            bind(tileCache).to(TileStore.class);
             bind(blobStore).to(BlobStore.class);
             bind(assets).named("assets").to(URI.class);
           }

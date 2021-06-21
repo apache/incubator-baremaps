@@ -18,8 +18,8 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.config.BlobMapper;
 import com.baremaps.config.tileset.Query;
 import com.baremaps.config.tileset.Tileset;
-import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.osm.progress.StreamProgress;
+import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.stream.StreamUtils;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileBatcher;
@@ -28,7 +28,7 @@ import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
 import com.baremaps.tile.Tiler;
 import com.baremaps.tile.mbtiles.MBTiles;
-import com.baremaps.tile.postgres.PostgisTileStore;
+import com.baremaps.tile.postgres.PostgresTileStore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
@@ -111,7 +111,7 @@ public class Export implements Callable<Integer> {
     logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
 
     // Initialize the datasource
-    DataSource datasource = PostgresHelper.datasource(database);
+    DataSource datasource = PostgresUtils.datasource(database);
 
     // Initialize the blob store
     BlobStore blobStore = options.blobStore();
@@ -164,7 +164,7 @@ public class Export implements Callable<Integer> {
   }
 
   private TileStore sourceTileStore(Tileset tileset, DataSource datasource) {
-    return new PostgisTileStore(datasource, tileset);
+    return new PostgresTileStore(datasource, tileset);
   }
 
   private TileStore targetTileStore(Tileset source, BlobStore blobStore)

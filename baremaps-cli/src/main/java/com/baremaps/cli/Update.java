@@ -24,11 +24,11 @@ import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.postgres.PostgresCoordinateCache;
 import com.baremaps.osm.postgres.PostgresHeaderTable;
-import com.baremaps.osm.postgres.PostgresHelper;
 import com.baremaps.osm.postgres.PostgresNodeTable;
 import com.baremaps.osm.postgres.PostgresReferenceCache;
 import com.baremaps.osm.postgres.PostgresRelationTable;
 import com.baremaps.osm.postgres.PostgresWayTable;
+import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.tile.Tile;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -82,7 +82,8 @@ public class Update implements Callable<Integer> {
     logger.info("{} processors available.", Runtime.getRuntime().availableProcessors());
 
     BlobStore blobStore = options.blobStore();
-    DataSource datasource = PostgresHelper.datasource(database);
+    DataSource datasource = PostgresUtils.datasource(database);
+
     CoordinateCache coordinateCache = new PostgresCoordinateCache(datasource);
     ReferenceCache referenceCache = new PostgresReferenceCache(datasource);
     HeaderTable headerTable = new PostgresHeaderTable(datasource);

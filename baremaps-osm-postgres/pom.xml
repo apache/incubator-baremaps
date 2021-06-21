@@ -12,19 +12,15 @@
   <dependencies>
     <dependency>
       <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-postgres</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
       <artifactId>baremaps-osm</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-testing</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-    </dependency>
-    <dependency>
-      <artifactId>commons-dbcp2</artifactId>
-      <groupId>org.apache.commons</groupId>
     </dependency>
   </dependencies>
 

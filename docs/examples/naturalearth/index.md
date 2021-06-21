@@ -60,7 +60,7 @@ To preview and edit the map in the browser, run the tile server with the followi
 
 ```
 baremaps edit \
-  --database 'jdbc:postgresql://localhost:5432/baremaps?allowMultiQueries=true&user=baremaps&password=baremaps' \
+  --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
   --tileset 'tileset.json' \
   --style 'style.json'
 ```
