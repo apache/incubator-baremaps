@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * Utility methods for creating buffered and bached streams.
+ * Utility methods for creating buffered and batched streams.
  */
 public class StreamUtils {
 

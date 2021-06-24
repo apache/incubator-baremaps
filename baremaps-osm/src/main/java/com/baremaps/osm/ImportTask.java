@@ -63,6 +63,9 @@ public class ImportTask {
 
     logger.info("Creating cache");
     CacheImporter cacheImporter = new CacheImporter(coordinateCache, referenceCache);
+
+
+
     try (InputStream cacheInputStream = new BufferedInputStream(Files.newInputStream(path))) {
       OpenStreetMap.streamPbfBlocks(cacheInputStream, false).forEach(cacheImporter);
     }
