@@ -135,9 +135,11 @@ public class PostgresTileStore implements TileStore {
   }
 
   private String query(Tile tile) {
+    // Parse all the queries
     Map<Layer, List<Parse>> parses = tileset.getLayers().stream()
         .flatMap(layer -> layer.getQueries().stream().map(query -> PostgresQueryParser.parse(layer, query)))
         .collect(Collectors.groupingBy(q -> q.getLayer()));
+
     String sources = parses.entrySet().stream()
         .flatMap(entry -> entry.getValue().stream()
             .filter(parse -> zoomFilter(tile, parse))

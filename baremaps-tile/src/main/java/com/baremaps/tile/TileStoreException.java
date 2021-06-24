@@ -15,6 +15,10 @@ package com.baremaps.tile;
 
 public class TileStoreException extends Exception {
 
+  public TileStoreException(String e) {
+    super(e);
+  }
+
   public TileStoreException(Throwable e) {
     super(e);
   }

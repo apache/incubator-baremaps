@@ -16,113 +16,69 @@ package com.baremaps.tile.postgres;
 
 import com.baremaps.config.tileset.Layer;
 import com.baremaps.config.tileset.Query;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.statement.select.Join;
+import net.sf.jsqlparser.statement.select.PlainSelect;
+import net.sf.jsqlparser.statement.select.Select;
+import net.sf.jsqlparser.statement.select.SelectExpressionItem;
+import net.sf.jsqlparser.statement.select.SelectItem;
+import net.sf.jsqlparser.statement.select.SelectItemVisitorAdapter;
 
 public class PostgresQueryParser {
-
-  private static final Pattern QUERY_PATTERN = Pattern
-      .compile("SELECT\\s(.*?)\\sFROM\\s(.*?)(?:\\sWHERE\\s(.*))?", Pattern.CASE_INSENSITIVE);
-
-  private static final Pattern COLUMN_PATTERN = Pattern
-      .compile("(.*?)(?:\\sAS\\s(.*))?", Pattern.CASE_INSENSITIVE);
 
   private PostgresQueryParser() {
 
   }
 
   public static Parse parse(Layer layer, Query query) {
-    String sql = query.getSql().replaceAll("\\s+", " ").trim();
-    Matcher matcher = QUERY_PATTERN.matcher(sql);
-
-    if (!matcher.matches()) {
-      throw new IllegalArgumentException("The SQL query is malformed");
+    // Try to parse the query
+    PlainSelect plainSelect;
+    try {
+      Select select = (Select) CCJSqlParserUtil.parse(query.getSql());
+      plainSelect = (PlainSelect) select.getSelectBody();
+    } catch (JSQLParserException e) {
+      String message = String.format("The layer '%s' contains a malformed query.\n"
+          + "\tActual query:\n\t\t%s", layer.getId(), query.getSql());
+      throw new IllegalArgumentException(message, e);
     }
 
-    String select = matcher.group(1).trim();
-    String from = matcher.group(2).trim();
-    Optional<String> where = Optional.ofNullable(matcher.group(3)).map(s -> s.trim());
-
-    List<String> columns = split(select);
-    if (columns.size() != 3) {
+    // Check the number of columns
+    if (plainSelect.getSelectItems().size() != 3) {
       String message = String.format("The layer '%s' contains a malformed query.\n"
           + "\tExpected format:\n\t\tSELECT c1::bigint, c2::hstore, c3::geometry FROM t WHERE c\n"
-          + "\tActual query:\n\t\t%s", layer.getId(), sql);
+          + "\tActual query:\n\t\t%s", layer.getId(), query.getSql());
       throw new IllegalArgumentException(message);
     }
 
-    String id = column(columns.get(0));
-    String tags = column(columns.get(1));
-    String geom = column(columns.get(2));
-
-    String source = "H" + Math.abs(Objects.hash(id, tags, geom, from));
-
-    return new Parse(layer, query, source, id, tags, geom, from, where);
-  }
-
-  private static List<String> split(String s) {
-    List<String> results = new ArrayList<>();
-    int level = 0;
-    StringBuilder result = new StringBuilder();
-    for (char c : s.toCharArray()) {
-      if (c == ',' && level == 0) {
-        results.add(result.toString());
-        result.setLength(0);
-      } else {
-        if (c == '(' || c == '[') {
-          level++;
+    // Remove aliases
+    for (SelectItem item : plainSelect.getSelectItems()) {
+      item.accept(new SelectItemVisitorAdapter() {
+        public void visit(SelectExpressionItem item) {
+          item.setAlias(null);
         }
-        if (c == ')' || c == ']') {
-          level--;
-        }
-        result.append(c);
-      }
+      });
     }
-    results.add(result.toString());
-    return results;
-  }
 
-  private static String column(String column) {
-    Matcher matcher = COLUMN_PATTERN.matcher(column);
-    if (!matcher.matches()) {
-      throw new IllegalArgumentException("The SQL query malformed");
-    }
-    return matcher.group(1).trim();
+    return new Parse(layer, query, plainSelect);
   }
-
 
   public static class Parse {
 
     private final Layer layer;
     private final Query query;
-    private final String source;
-    private final String id;
-    private final String tags;
-    private final String geom;
-    private final String from;
-    private final Optional<String> where;
+    private final PlainSelect parse;
 
     private Parse(
         Layer layer,
         Query query,
-        String source,
-        String id,
-        String tags,
-        String geom,
-        String from,
-        Optional<String> where) {
+        PlainSelect result) {
       this.layer = layer;
       this.query = query;
-      this.source = source;
-      this.id = id;
-      this.tags = tags;
-      this.geom = geom;
-      this.from = from;
-      this.where = where;
+      this.parse = result;
     }
 
     public Layer getLayer() {
@@ -133,30 +89,48 @@ public class PostgresQueryParser {
       return query;
     }
 
+    public PlainSelect getParse() {
+      return parse;
+    }
+
     public String getSource() {
-      return source;
+      return "H" + Math.abs(Objects.hash(
+          PlainSelect.getStringList(parse.getSelectItems()),
+          parse.getFromItem().toString(),
+          PlainSelect.getStringList(parse.getJoins())
+      ));
     }
 
     public String getId() {
-      return id;
+      return parse.getSelectItems().get(0).toString();
     }
 
     public String getTags() {
-      return tags;
+      return parse.getSelectItems().get(1).toString();
     }
 
     public String getGeom() {
-      return geom;
+      return parse.getSelectItems().get(2).toString();
     }
 
     public String getFrom() {
-      return from;
+      StringBuilder sql = new StringBuilder();
+      sql.append(parse.getFromItem());
+      if (parse.getJoins() != null) {
+        for (Join join : parse.getJoins()) {
+          if (join.isSimple()) {
+            sql.append(", ").append(join);
+          } else {
+            sql.append(" ").append(join);
+          }
+        }
+      }
+      return sql.toString();
     }
 
     public Optional<String> getWhere() {
-      return where;
+      return Optional.ofNullable(parse.getWhere()).map(where -> where.toString());
     }
-
   }
 
 }
