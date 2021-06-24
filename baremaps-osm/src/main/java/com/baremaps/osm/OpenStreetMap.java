@@ -6,7 +6,7 @@ import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.State;
 import com.baremaps.osm.handler.BlockEntityHandler;
 import com.baremaps.osm.pbf.BlobIterator;
-import com.baremaps.osm.pbf.BlockReader;
+import com.baremaps.osm.pbf.BlobUtils;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
 import com.baremaps.osm.xml.XmlChangeSpliterator;
@@ -60,12 +60,12 @@ public class OpenStreetMap {
       return StreamUtils.batch(
           StreamUtils.bufferInCompletionOrder(
               StreamUtils.stream(new BlobIterator(input)),
-              blob -> new BlockReader(blob).readBlock(),
+              BlobUtils::readBlock,
               Runtime.getRuntime().availableProcessors()), 1);
     } else {
       return StreamUtils.bufferInSourceOrder(
           StreamUtils.stream(new BlobIterator(input)),
-          blob -> new BlockReader(blob).readBlock(),
+          BlobUtils::readBlock,
           Runtime.getRuntime().availableProcessors());
     }
   }
