@@ -19,87 +19,103 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.baremaps.config.tileset.Layer;
 import com.baremaps.config.tileset.Query;
 import com.baremaps.tile.postgres.PostgresQueryParser.Parse;
-import com.google.common.collect.ImmutableList;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class PostgisQueryParserTest {
 
-  private class TestQuery {
-
-    public final Query query;
-    public final String id;
-    public final String tags;
-    public final String geom;
-    public final String from;
-    public final Optional<String> where;
-
-    public TestQuery(Query query, String id, String tags, String geom, String from, Optional<String> where) {
-      this.query = query;
-      this.id = id;
-      this.tags = tags;
-      this.geom = geom;
-      this.from = from;
-      this.where = where;
-    }
-
+  @Test
+  void parse1() {
+    parse(new Query(0, 1, "SELECT id, tags, geom FROM table"),
+        "id", "tags", "geom", "table", Optional.empty());
   }
 
-  private final List<TestQuery> testQueries = ImmutableList.of(
-      new TestQuery(new Query(0, 1, "SELECT id, tags, geom FROM table"),
-          "id", "tags", "geom", "table",
-          Optional.empty()),
-      new TestQuery(new Query(0, 1, "select id, tags, geom from table"),
-          "id", "tags", "geom", "table",
-          Optional.empty()),
-      new TestQuery(new Query(0, 1, "SELECT id AS a, tags AS b, geom AS c FROM table"),
-          "id", "tags", "geom", "table",
-          Optional.empty()),
-      new TestQuery(new Query(0, 1, "select id as a, tags as b, geom as c from table"),
-          "id", "tags", "geom", "table",
-          Optional.empty()),
-      new TestQuery(new Query(0, 1, "SELECT id, tags, geom FROM table WHERE condition"),
-          "id", "tags", "geom", "table",
-          Optional.of("condition")),
-      new TestQuery(new Query(0, 1, "SELECT id, tags, geom FROM table WHERE tags ? 'building' AND st_geometrytype(geom) LIKE 'ST_Polygon'"),
-          "id", "tags", "geom", "table",
-          Optional.of("tags ? 'building' AND st_geometrytype(geom) LIKE 'ST_Polygon'")),
-      new TestQuery(new Query(0, 1, "select id, tags, geom from table where condition"),
-          "id", "tags", "geom", "table",
-          Optional.of("condition")),
-      new TestQuery(new Query(0, 1, "SELECT id, hstore('tag', tag), geom FROM table"),
-          "id", "hstore('tag', tag)", "geom", "table",
-          Optional.empty()),
-      new TestQuery(new Query(0, 1, "SELECT id, hstore('tag', tag) as tags, geom FROM table"),
-          "id", "hstore('tag', tag)", "geom", "table",
-          Optional.empty()),
-      new TestQuery(new Query(0, 1, "SELECT id, tags, st_transform(geom, '1234') as geom FROM table"),
-          "id", "tags", "st_transform(geom, '1234')", "table",
-          Optional.empty()),
-      new TestQuery(new Query(0, 1, "SELECT id, a(b(c), d(e)), geom FROM table"),
-          "id", "a(b(c), d(e))", "geom", "table",
-          Optional.empty()));
-
-  /*
-  TODO: The following query is not supported by JSQLParser
-  new TestQuery(new Query(0, 1,
-      "SELECT id, hstore(array['tag1'::text, 'tag2'::text], array['tag1'::text, 'tag2'::text]), geom FROM table"),
-          "id", "hstore(array['tag1'::text, 'tag2'::text], array['tag1'::text, 'tag2'::text])", "geom", "table",
-              Optional.empty()),
-   */
+  @Test
+  void parse2() {
+    parse(new Query(0, 1, "select id, tags, geom from table"),
+        "id", "tags", "geom", "table",
+        Optional.empty());
+  }
 
   @Test
-  void parse() {
-    for (TestQuery testQuery : testQueries) {
-      System.out.println(testQuery.query.getSql());
-      Parse q1 = PostgresQueryParser.parse(new Layer(), testQuery.query);
-      assertEquals(q1.getId(), testQuery.id);
-      assertEquals(q1.getTags(), testQuery.tags);
-      assertEquals(q1.getGeom(), testQuery.geom);
-      assertEquals(q1.getFrom(), testQuery.from);
-      assertEquals(q1.getWhere(), testQuery.where);
-    }
+  void parse3() {
+    parse(new Query(0, 1, "SELECT id AS a, tags AS b, geom AS c FROM table"),
+        "id", "tags", "geom", "table",
+        Optional.empty());
+  }
+
+  @Test
+  void parse4() {
+    parse(new Query(0, 1, "select id as a, tags as b, geom as c from table"),
+        "id", "tags", "geom", "table",
+        Optional.empty());
+  }
+
+  @Test
+  void parse5() {
+    parse(new Query(0, 1, "SELECT id, tags, geom FROM table WHERE condition"),
+        "id", "tags", "geom", "table",
+        Optional.of("condition"));
+  }
+
+  @Test
+  void parse6() {
+    parse(new Query(0, 1,
+            "SELECT id, tags, geom FROM table WHERE tags ? 'building' AND st_geometrytype(geom) LIKE 'ST_Polygon'"),
+        "id", "tags", "geom", "table",
+        Optional.of("tags ? 'building' AND st_geometrytype(geom) LIKE 'ST_Polygon'"));
+  }
+
+  @Test
+  void parse7() {
+    parse(new Query(0, 1, "select id, tags, geom from table where condition"),
+        "id", "tags", "geom", "table",
+        Optional.of("condition"));
+  }
+
+  @Test
+  void parse8() {
+    parse(new Query(0, 1,
+            "SELECT id, hstore(array['tag1', 'tag2'], array[tag1, tag2]), geom FROM table"),
+        "id", "hstore(array['tag1', 'tag2'], array[tag1, tag2])", "geom", "table",
+        Optional.empty());
+  }
+
+  @Test
+  void parse9() {
+    parse(new Query(0, 1, "SELECT id, hstore('tag', tag), geom FROM table"),
+        "id", "hstore('tag', tag)", "geom", "table",
+        Optional.empty());
+  }
+
+  @Test
+  void parse10() {
+    parse(new Query(0, 1, "SELECT id, hstore('tag', tag) as tags, geom FROM table"),
+        "id", "hstore('tag', tag)", "geom", "table",
+        Optional.empty());
+  }
+
+  @Test
+  void parse11() {
+    parse(new Query(0, 1, "SELECT id, tags, st_transform(geom, '1234') as geom FROM table"),
+        "id", "tags", "st_transform(geom, '1234')", "table",
+        Optional.empty());
+  }
+
+  @Test
+  void parse12() {
+    parse(new Query(0, 1, "SELECT id, a(b(c), d(e)), geom FROM table"),
+        "id", "a(b(c), d(e))", "geom", "table",
+        Optional.empty());
+  }
+
+  void parse(Query query, String id, String tags, String geom, String from, Optional<String> where) {
+    Parse q1 = PostgresQueryParser.parse(new Layer(), query);
+    assertEquals(id, q1.getId());
+    assertEquals(tags, q1.getTags());
+    assertEquals(geom, q1.getGeom());
+    assertEquals(from, q1.getFrom());
+    assertEquals(where, q1.getWhere());
   }
 
 }
