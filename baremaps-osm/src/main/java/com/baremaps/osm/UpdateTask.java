@@ -76,7 +76,7 @@ public class UpdateTask {
     URI changeFileUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
     URI stateFileUri = resolve(replicationUrl, sequenceNumber, "state.txt");
 
-    logger.info("Importing changes and state in database");
+    logger.info("Importing changes");
     GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
     ChangeTiler changeTiler = new ChangeTiler(nodeTable, wayTable, relationTable, new ProjectionTransformer(srid, 4326), zoom);

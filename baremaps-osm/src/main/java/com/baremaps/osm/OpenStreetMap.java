@@ -55,6 +55,10 @@ public class OpenStreetMap {
     }
   }
 
+  public static Stream<Block> streamPbfBlocks(Path path, boolean parallel) throws IOException {
+    return streamPbfBlocks(newInputStream(path), parallel);
+  }
+
   public static Stream<Block> streamPbfBlocks(InputStream input, boolean parallel) {
     if (parallel) {
       return StreamUtils.batch(

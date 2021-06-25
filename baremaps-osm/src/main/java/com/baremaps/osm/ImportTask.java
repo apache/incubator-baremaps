@@ -1,7 +1,6 @@
 package com.baremaps.osm;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.DownloadManager;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheImporter;
 import com.baremaps.osm.database.DatabaseImporter;
@@ -12,11 +11,8 @@ import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.geometry.GeometryHandler;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.handler.BlockEntityHandler;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
+import com.baremaps.stream.StreamUtils;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
@@ -58,24 +54,15 @@ public class ImportTask {
   }
 
   public void execute() throws Exception {
-    logger.info("Fetch the file");
-    Path path = new DownloadManager(blobStore).download(this.file);
-
-    logger.info("Creating cache");
-    CacheImporter cacheImporter = new CacheImporter(coordinateCache, referenceCache);
-    try (InputStream cacheInputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      OpenStreetMap.streamPbfBlocks(cacheInputStream, false).forEach(cacheImporter);
-    }
-
     logger.info("Importing data");
+    CacheImporter cacheImporter = new CacheImporter(coordinateCache, referenceCache);
     DatabaseImporter databaseDatabaseImporter = new DatabaseImporter(headerTable, nodeTable, wayTable, relationTable);
     GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
-    try (InputStream dataInputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      OpenStreetMap.streamPbfBlocks(dataInputStream, true)
-          .peek(new BlockEntityHandler(geometryHandler.andThen(projectionTransformer)))
-          .forEach(databaseDatabaseImporter);
-    }
+    StreamUtils.batch(OpenStreetMap
+        .streamPbfBlocks(blobStore.read(this.file), false)
+        .peek(cacheImporter.andThen(new BlockEntityHandler(geometryHandler.andThen(projectionTransformer)))), 1)
+        .forEach(databaseDatabaseImporter);
   }
 
 }

@@ -16,6 +16,7 @@ package com.baremaps.blob;
 
 import com.google.common.io.ByteStreams;
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -76,7 +77,7 @@ public class HttpBlobStore implements BlobStore {
         conn.setRequestProperty("Content-Type", contentType);
         conn.setRequestProperty("Content-Encoding", contentEncoding);
         conn.setRequestProperty("Content-Length", String.valueOf(bytes.length));
-        try (OutputStream outputStream = conn.getOutputStream();
+        try (OutputStream outputStream = new BufferedOutputStream(conn.getOutputStream());
             InputStream inputStream = new ByteArrayInputStream(bytes)) {
           ByteStreams.copy(inputStream, outputStream);
         }
