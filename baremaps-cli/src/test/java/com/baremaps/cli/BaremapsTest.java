@@ -100,7 +100,7 @@ public class BaremapsTest {
     thread.start();
 
     // Wait for ServiceTalk and JAX-RS  to start
-    Thread.sleep(2000);
+    Thread.sleep(5000);
 
     // Download a tile file
     HttpURLConnection connection = (HttpURLConnection) new URL("http://127.0.0.1:9000/tiles/14/8626/5750.mvt")
