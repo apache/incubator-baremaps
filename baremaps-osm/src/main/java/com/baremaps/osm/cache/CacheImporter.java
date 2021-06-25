@@ -2,12 +2,12 @@ package com.baremaps.osm.cache;
 
 import com.baremaps.osm.cache.Cache.Entry;
 import com.baremaps.osm.domain.DataBlock;
-import com.baremaps.osm.handler.DefaultBlockHandler;
+import com.baremaps.osm.handler.BlockHandlerAdapter;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
 
-public class CacheImporter implements DefaultBlockHandler {
+public class CacheImporter implements BlockHandlerAdapter {
 
   private final Cache<Long, Coordinate> coordiateCache;
   private final Cache<Long, List<Long>> referenceCache;

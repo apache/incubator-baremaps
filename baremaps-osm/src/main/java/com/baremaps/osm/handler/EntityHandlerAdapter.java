@@ -9,7 +9,7 @@ import com.baremaps.osm.domain.Way;
 /**
  * A class that uses the visitor pattern to dispatch operations on entities.
  */
-public interface DefaultEntityHandler extends EntityHandler {
+public interface EntityHandlerAdapter extends EntityHandler {
 
   default void handle(Header header) throws Exception {
   }
