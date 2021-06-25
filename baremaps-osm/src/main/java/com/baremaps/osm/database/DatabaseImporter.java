@@ -2,9 +2,9 @@ package com.baremaps.osm.database;
 
 import com.baremaps.osm.domain.DataBlock;
 import com.baremaps.osm.domain.HeaderBlock;
-import com.baremaps.osm.handler.BlockHandler;
+import com.baremaps.osm.handler.BlockHandlerAdapter;
 
-public class DatabaseImporter implements BlockHandler {
+public class DatabaseImporter implements BlockHandlerAdapter {
 
   private final HeaderTable headerTable;
   private final NodeTable nodeTable;

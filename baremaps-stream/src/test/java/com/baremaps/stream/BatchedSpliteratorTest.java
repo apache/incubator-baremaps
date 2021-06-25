@@ -28,7 +28,7 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class ParallelSpliteratorTest {
+public class BatchedSpliteratorTest {
 
   private int spliteratorSize = 105;
   private int batchSize = 10;
@@ -41,8 +41,7 @@ public class ParallelSpliteratorTest {
     for (int i = 0; i < spliteratorSize; i++) {
       ints.add(i);
     }
-    spliterator = new BatchedSpliterator<Integer>(IntStream.range(0, spliteratorSize).spliterator(),
-        batchSize) {
+    spliterator = new BatchedSpliterator<>(IntStream.range(0, spliteratorSize).spliterator(), batchSize) {
       int i = 0;
 
       @Override

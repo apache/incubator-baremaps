@@ -86,7 +86,6 @@ class BufferedSpliterator<T> implements Spliterator<CompletableFuture<T>> {
   }
 
   public interface CompletionStrategy {
-
     <T> void registerCompletion(CompletableFuture<T> future, Consumer<CompletableFuture<T>> resultConsumer);
   }
 

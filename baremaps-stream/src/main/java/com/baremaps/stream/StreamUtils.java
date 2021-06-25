@@ -13,12 +13,13 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * Utility methods for creating buffered and batched streams.
+ * Utility methods for creating parallel, buffered and batched streams of unknown size.
  */
 public class StreamUtils {
 
   /**
-   * Create an ordered sequential stream from an iterator.
+   * Create an ordered sequential stream from an iterator of unknown size.
+   *
    * @param iterator
    * @param <T>
    * @return a ordered sequential stream.
@@ -28,7 +29,7 @@ public class StreamUtils {
   }
 
   /**
-   * Parallelize the provide stream and split it according to the batch size.
+   * Parallelize the provided stream of unknown size and split it according to the batch size.
    *
    * @param stream
    * @param batchSize
@@ -134,6 +135,15 @@ public class StreamUtils {
    */
   public static <T, U> Stream<U> bufferInSourceOrder(Stream<T> stream, Function<T, U> asyncMapper, int bufferSize) {
     return buffer(stream, asyncMapper, InSourceOrder.INSTANCE, bufferSize);
+  }
+
+  /**
+   * Partition the provided stream according to a partition size.
+   */
+  public static <T> Stream<Stream<T>> partition(Stream<T> stream, int partitionSize) {
+    return StreamSupport.stream(
+        new PartitionedSpliterator<T>(stream.spliterator(), partitionSize),
+        stream.isParallel());
   }
 
 }
