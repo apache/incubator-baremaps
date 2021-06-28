@@ -83,7 +83,7 @@ public class UpdateTask {
     DatabaseUpdater databaseUpdater = new DatabaseUpdater(headerTable, nodeTable, wayTable, relationTable);
 
     try(InputStream changesInputStream = new GZIPInputStream(blobStore.read(changeFileUri))) {
-      OpenStreetMap.streamXmlChanges(changesInputStream, false)
+      OpenStreetMap.streamXmlChanges(changesInputStream)
           .peek(change -> change.getElements().forEach(geometryHandler))
           .peek(change -> change.getElements().forEach(projectionTransformer))
           .peek(changeTiler)

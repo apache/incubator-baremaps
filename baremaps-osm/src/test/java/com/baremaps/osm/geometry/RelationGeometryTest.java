@@ -23,7 +23,7 @@ public class RelationGeometryTest {
   
   public Geometry handleRelation(String file) throws IOException {
     InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
-    List<Entity> entities = OpenStreetMap.streamXmlEntities(input, false).collect(Collectors.toList());
+    List<Entity> entities = OpenStreetMap.streamXmlEntities(input).collect(Collectors.toList());
     Cache<Long, Coordinate> coordinateCache = new MockCache<>(entities.stream()
         .filter(e -> e instanceof Node)
         .map(e -> (Node) e)

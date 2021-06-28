@@ -8,12 +8,16 @@ import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
+import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.geometry.GeometryHandler;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.handler.BlockEntityHandler;
 import com.baremaps.stream.StreamUtils;
+import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,14 +59,18 @@ public class ImportTask {
 
   public void execute() throws Exception {
     logger.info("Importing data");
+
     CacheImporter cacheImporter = new CacheImporter(coordinateCache, referenceCache);
     DatabaseImporter databaseDatabaseImporter = new DatabaseImporter(headerTable, nodeTable, wayTable, relationTable);
-    GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
+    GeometryHandler geometryFetcher = new GeometryHandler(coordinateCache, referenceCache);
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
-    StreamUtils.batch(OpenStreetMap
-        .streamPbfBlocks(blobStore.read(this.file), false)
-        .peek(cacheImporter.andThen(new BlockEntityHandler(geometryHandler.andThen(projectionTransformer)))), 1)
-        .forEach(databaseDatabaseImporter);
+    BlockEntityHandler geometryFactory = new BlockEntityHandler(geometryFetcher.andThen(projectionTransformer));
+    Consumer<Block> blockHandler = cacheImporter.andThen(geometryFactory);
+
+    try (InputStream inputStream = blobStore.read(this.file)) {
+      Stream<Block> stream = OpenStreetMap.streamPbfBlocks(inputStream).peek(blockHandler);
+      StreamUtils.batch(stream).forEach(databaseDatabaseImporter);
+    }
   }
 
 }
