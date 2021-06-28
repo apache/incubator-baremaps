@@ -21,7 +21,6 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -53,23 +52,24 @@ public class EntityReaderBenchmark {
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
 
-    InputStream inputStream = new BufferedInputStream(Files.newInputStream(path));
-    OpenStreetMap.streamPbfEntities(inputStream).forEach(new ElementHandler() {
-      @Override
-      public void handle(Node node) {
-        nodes.incrementAndGet();
-      }
+    try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
+      OpenStreetMap.streamPbfEntities(inputStream).forEach(new ElementHandler() {
+        @Override
+        public void handle(Node node) {
+          nodes.incrementAndGet();
+        }
 
-      @Override
-      public void handle(Way way) {
-        ways.incrementAndGet();
-      }
+        @Override
+        public void handle(Way way) {
+          ways.incrementAndGet();
+        }
 
-      @Override
-      public void handle(Relation relation) {
-        relations.incrementAndGet();
-      }
-    });
+        @Override
+        public void handle(Relation relation) {
+          relations.incrementAndGet();
+        }
+      });
+    }
 
     System.out.println();
     System.out.println("----------------------");

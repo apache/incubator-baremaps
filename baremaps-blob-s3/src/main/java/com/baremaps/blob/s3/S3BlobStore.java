@@ -27,6 +27,7 @@ import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
@@ -51,8 +52,17 @@ public class S3BlobStore implements BlobStore {
   }
 
   @Override
+  public long size(URI uri) {
+    HeadObjectRequest request =  HeadObjectRequest.builder()
+        .bucket(uri.getHost())
+        .key(uri.getPath().substring(1))
+        .build();
+    return client.headObject(request).contentLength();
+  }
+
+  @Override
   public InputStream read(URI uri) throws IOException {
-    logger.info("Read {}", uri);
+    logger.debug("Read {}", uri);
     try {
       GetObjectRequest request = GetObjectRequest.builder()
           .bucket(uri.getHost())
@@ -66,7 +76,7 @@ public class S3BlobStore implements BlobStore {
 
   @Override
   public byte[] readByteArray(URI uri) throws IOException {
-    logger.info("Write {}", uri);
+    logger.debug("Write {}", uri);
     try {
       GetObjectRequest request = GetObjectRequest.builder()
           .bucket(uri.getHost())
@@ -80,7 +90,7 @@ public class S3BlobStore implements BlobStore {
 
   @Override
   public OutputStream write(URI uri) throws IOException {
-    logger.info("Write {}", uri);
+    logger.debug("Write {}", uri);
     return new ByteArrayOutputStream() {
       @Override
       public void close() throws IOException {
@@ -100,7 +110,7 @@ public class S3BlobStore implements BlobStore {
 
   @Override
   public void writeByteArray(URI uri, byte[] bytes) throws IOException {
-    logger.info("Write {}", uri);
+    logger.debug("Write {}", uri);
     try {
       PutObjectRequest request = PutObjectRequest.builder()
           .bucket(uri.getHost())
@@ -114,7 +124,7 @@ public class S3BlobStore implements BlobStore {
 
   @Override
   public void delete(URI uri) throws IOException {
-    logger.info("Delete {}", uri);
+    logger.debug("Delete {}", uri);
     try {
       DeleteObjectRequest request = DeleteObjectRequest.builder()
           .bucket(uri.getHost())

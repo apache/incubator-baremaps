@@ -24,6 +24,8 @@ import java.net.URI;
  */
 public interface BlobStore {
 
+  long size(URI uri) throws IOException;
+
   InputStream read(URI uri) throws IOException;
 
   byte[] readByteArray(URI uri) throws IOException;

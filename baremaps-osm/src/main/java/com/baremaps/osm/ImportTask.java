@@ -12,9 +12,13 @@ import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.geometry.GeometryHandler;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.handler.BlockEntityHandler;
+import com.baremaps.osm.progress.InputStreamProgress;
+import com.baremaps.osm.progress.ProgressLogger;
 import com.baremaps.stream.StreamUtils;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -67,7 +71,8 @@ public class ImportTask {
     BlockEntityHandler geometryFactory = new BlockEntityHandler(geometryFetcher.andThen(projectionTransformer));
     Consumer<Block> blockHandler = cacheImporter.andThen(geometryFactory);
 
-    try (InputStream inputStream = blobStore.read(this.file)) {
+    ProgressLogger progressLogger = new ProgressLogger(blobStore.size(file), 5000);
+    try (InputStream inputStream = new InputStreamProgress(blobStore.read(this.file), progressLogger)) {
       Stream<Block> stream = OpenStreetMap.streamPbfBlocks(inputStream).peek(blockHandler);
       StreamUtils.batch(stream).forEach(databaseDatabaseImporter);
     }

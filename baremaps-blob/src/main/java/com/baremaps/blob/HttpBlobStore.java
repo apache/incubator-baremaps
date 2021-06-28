@@ -24,6 +24,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,19 +50,28 @@ public class HttpBlobStore implements BlobStore {
   }
 
   @Override
-  public InputStream read(URI uri) throws IOException {
-    logger.info("Read {}", uri);
+  public long size(URI uri) throws IOException {
+    logger.debug("Size {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-    conn.setDoOutput(true);
+    conn.setDoInput(true);
+    conn.setRequestMethod("HEAD");
+    return conn.getContentLengthLong();
+  }
+
+  @Override
+  public InputStream read(URI uri) throws IOException {
+    logger.debug("Read {}", uri);
+    HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
+    conn.setDoInput(true);
     conn.setRequestMethod("GET");
     return new BufferedInputStream(conn.getInputStream());
   }
 
   @Override
   public byte[] readByteArray(URI uri) throws IOException {
-    logger.info("Read {}", uri);
+    logger.debug("Read {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-    conn.setDoOutput(true);
+    conn.setDoInput(true);
     conn.setRequestMethod("GET");
     try (InputStream inputStream = conn.getInputStream()) {
       return ByteStreams.toByteArray(inputStream);
@@ -66,7 +80,7 @@ public class HttpBlobStore implements BlobStore {
 
   @Override
   public OutputStream write(URI uri) {
-    logger.info("Write {}", uri);
+    logger.debug("Write {}", uri);
     return new ByteArrayOutputStream() {
       @Override
       public void close() throws IOException {
@@ -87,7 +101,7 @@ public class HttpBlobStore implements BlobStore {
 
   @Override
   public void writeByteArray(URI uri, byte[] bytes) throws IOException {
-    logger.info("Write {}", uri);
+    logger.debug("Write {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
     conn.setDoOutput(true);
     conn.setRequestMethod("PUT");
@@ -102,7 +116,7 @@ public class HttpBlobStore implements BlobStore {
 
   @Override
   public void delete(URI uri) throws IOException {
-    logger.info("Delete {}", uri);
+    logger.debug("Delete {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
     conn.setDoOutput(true);
     conn.setRequestMethod("DELETE");
