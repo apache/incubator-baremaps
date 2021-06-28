@@ -42,25 +42,55 @@ public class OpenStreetMap {
     }
   }
 
+  /**
+   * Create an ordered stream of OSM blocks from a PBF file.
+   *
+   * @param input
+   * @return
+   */
   public static Stream<Block> streamPbfBlocks(InputStream input) {
-      return StreamUtils.bufferInSourceOrder(
-          StreamUtils.stream(new BlobIterator(input)),
-          BlobUtils::readBlock,
-          Runtime.getRuntime().availableProcessors());
+    return StreamUtils.bufferInSourceOrder(
+        StreamUtils.stream(new BlobIterator(input)),
+        BlobUtils::readBlock,
+        Runtime.getRuntime().availableProcessors());
   }
 
+  /**
+   * Create an ordered stream of OSM entities from a PBF file.
+   *
+   * @param input
+   * @return
+   */
   public static Stream<Entity> streamPbfEntities(InputStream input) {
     return streamPbfBlocks(input).flatMap(OpenStreetMap::streamPbfBlockEntities);
   }
 
+  /**
+   * Create an ordered stream of OSM entities from a XML file.
+   *
+   * @param input
+   * @return
+   */
   public static Stream<Entity> streamXmlEntities(InputStream input) {
     return StreamSupport.stream(new XmlEntitySpliterator(input), false);
   }
 
+  /**
+   * Create an ordered stream of OSM changes from a XML file.
+   *
+   * @param input
+   * @return
+   */
   public static Stream<Change> streamXmlChanges(InputStream input) {
     return StreamSupport.stream(new XmlChangeSpliterator(input), false);
   }
 
+  /**
+   * Read the content of an OSM state file.
+   *
+   * @param input
+   * @return
+   */
   public static State readState(InputStream input) throws IOException {
     InputStreamReader reader = new InputStreamReader(input, Charsets.UTF_8);
     Map<String, String> map = new HashMap<>();

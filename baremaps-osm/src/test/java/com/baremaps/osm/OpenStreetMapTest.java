@@ -20,6 +20,7 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.State;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.handler.EntityHandler;
+import com.baremaps.osm.state.StateReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
