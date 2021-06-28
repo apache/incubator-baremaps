@@ -5,6 +5,7 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.handler.ElementHandler;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -33,9 +34,6 @@ public class EntityReaderBenchmark {
 
   private Path path = Paths.get("./switzerland-latest.pbf");
 
-  @Param({"false", "true"})
-  public boolean parallel;
-
   @Setup
   public void setup() throws IOException {
     URL url = new URL("http://download.geofabrik.de/europe/switzerland-latest.osm.pbf");
@@ -48,14 +46,15 @@ public class EntityReaderBenchmark {
 
   @Benchmark
   @BenchmarkMode(Mode.SingleShotTime)
-  @Warmup(iterations = 1)
-  @Measurement(iterations = 1)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
   public void entityStream() throws IOException {
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
 
-    OpenStreetMap.streamEntities(path, parallel).forEach(new ElementHandler() {
+    InputStream inputStream = new BufferedInputStream(Files.newInputStream(path));
+    OpenStreetMap.streamPbfEntities(inputStream).forEach(new ElementHandler() {
       @Override
       public void handle(Node node) {
         nodes.incrementAndGet();

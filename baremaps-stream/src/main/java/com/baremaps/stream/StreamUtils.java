@@ -29,6 +29,17 @@ public class StreamUtils {
   }
 
   /**
+   * Parallelize the provided stream of unknown size.
+   *
+   * @param stream
+   * @param <T>
+   * @return a parallel stream
+   */
+  public static <T> Stream<T> batch(Stream<T> stream) {
+    return batch(stream, 1);
+  }
+
+  /**
    * Parallelize the provided stream of unknown size and split it according to the batch size.
    *
    * @param stream
@@ -37,7 +48,23 @@ public class StreamUtils {
    * @return a parallel stream
    */
   public static <T> Stream<T> batch(Stream<T> stream, int batchSize) {
-    return StreamSupport.stream(new BatchedSpliterator<T>(stream.spliterator(), batchSize), true);
+    return StreamSupport.stream(
+        new BatchedSpliterator<T>(stream.spliterator(), batchSize),
+        true);
+  }
+
+  /**
+   * Buffer the completion of the provided asynchronous stream according to a completion strategy and a buffer size.
+   *
+   * @param asyncStream
+   * @param completionStrategy
+   * @param <T>
+   * @return a buffered stream
+   */
+  private static <T> Stream<CompletableFuture<T>> buffer(
+      Stream<CompletableFuture<T>> asyncStream,
+      CompletionStrategy completionStrategy) {
+    return buffer(asyncStream, completionStrategy, Runtime.getRuntime().availableProcessors());
   }
 
   /**
@@ -53,8 +80,10 @@ public class StreamUtils {
       Stream<CompletableFuture<T>> asyncStream,
       CompletionStrategy completionStrategy,
       int bufferSize) {
-    return StreamSupport.stream(
-        new BufferedSpliterator<>(asyncStream.spliterator(), bufferSize, completionStrategy),
+    return StreamSupport.stream(new BufferedSpliterator<>(
+            asyncStream.spliterator(),
+            bufferSize,
+            completionStrategy),
         asyncStream.isParallel());
   }
 

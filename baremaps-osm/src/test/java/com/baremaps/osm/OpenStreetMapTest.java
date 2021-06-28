@@ -17,9 +17,11 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.State;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.handler.EntityHandler;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
@@ -32,7 +34,7 @@ public class OpenStreetMapTest {
   void dataOsmXml() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
       assertEquals(12,
-          OpenStreetMap.streamXmlEntities(input, true)
+          OpenStreetMap.streamXmlEntities(input)
               .collect(Collectors.toList()).size());
     }
   }
@@ -41,7 +43,7 @@ public class OpenStreetMapTest {
   void dataOsmXmlNodes() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
       assertEquals(6,
-          OpenStreetMap.streamXmlEntities(input, true)
+          OpenStreetMap.streamXmlEntities(input)
               .filter(e -> e instanceof Node)
               .count());
     }
@@ -51,7 +53,7 @@ public class OpenStreetMapTest {
   void dataOsmXmlWays() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
       assertEquals(3,
-          OpenStreetMap.streamXmlEntities(input, true)
+          OpenStreetMap.streamXmlEntities(input)
               .filter(e -> e instanceof Way)
               .count());
     }
@@ -61,7 +63,7 @@ public class OpenStreetMapTest {
   void dataOsmXmlRelations() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
       assertEquals(1,
-          OpenStreetMap.streamXmlEntities(input, true)
+          OpenStreetMap.streamXmlEntities(input)
               .filter(e -> e instanceof Relation)
               .count());
     }
@@ -71,7 +73,7 @@ public class OpenStreetMapTest {
   void dataOscXml() throws IOException {
     try (InputStream input = DATA_OSC_XML.openStream()) {
       assertEquals(7,
-          OpenStreetMap.streamXmlChanges(input, true)
+          OpenStreetMap.streamXmlChanges(input)
               .collect(Collectors.toList())
               .size());
     }
@@ -81,7 +83,7 @@ public class OpenStreetMapTest {
   void dataOsmPbf() throws IOException {
     try (InputStream input = DATA_OSM_PBF.openStream()) {
       assertEquals(72002,
-          OpenStreetMap.streamPbfEntities(input, true)
+          OpenStreetMap.streamPbfEntities(input)
               .count());
     }
 
@@ -91,7 +93,7 @@ public class OpenStreetMapTest {
   void denseNodesOsmPbf() throws IOException {
     try (InputStream input = DENSE_NODES_OSM_PBF.openStream()) {
       assertEquals(8000,
-          OpenStreetMap.streamPbfEntities(input, true)
+          OpenStreetMap.streamPbfEntities(input)
               .filter(e -> e instanceof Node)
               .count());
     }
@@ -102,7 +104,7 @@ public class OpenStreetMapTest {
   void waysOsmPbf() throws IOException {
     try (InputStream input = WAYS_OSM_PBF.openStream()) {
       assertEquals(8000,
-          OpenStreetMap.streamPbfEntities(input, true)
+          OpenStreetMap.streamPbfEntities(input)
               .filter(e -> e instanceof Way)
               .count());
     }
@@ -112,7 +114,7 @@ public class OpenStreetMapTest {
   void relationsOsmPbf() throws IOException {
     try (InputStream input = RELATIONS_OSM_PBF.openStream()) {
       assertEquals(8000,
-          OpenStreetMap.streamPbfEntities(input, true)
+          OpenStreetMap.streamPbfEntities(input)
               .filter(e -> e instanceof Relation)
               .count());
     }
@@ -149,7 +151,9 @@ public class OpenStreetMapTest {
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
-    OpenStreetMap.streamEntities(path, true).forEach(new EntityHandler() {
+
+    InputStream inputStream = new BufferedInputStream(Files.newInputStream(path));
+    OpenStreetMap.streamPbfEntities(inputStream).forEach(new EntityHandler() {
       @Override
       public void handle(Header header) {
         assertTrue(header != null);
