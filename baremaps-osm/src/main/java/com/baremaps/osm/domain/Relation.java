@@ -15,6 +15,7 @@
 package com.baremaps.osm.domain;
 
 import com.baremaps.osm.handler.EntityHandler;
+import com.baremaps.osm.handler.EntityMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,6 +46,11 @@ public final class Relation extends Element {
   @Override
   public void accept(EntityHandler handler) throws Exception {
     handler.handle(this);
+  }
+
+  @Override
+  public <T> T accept(EntityMapper<T> mapper) throws Exception {
+    return mapper.map(this);
   }
 
   @Override

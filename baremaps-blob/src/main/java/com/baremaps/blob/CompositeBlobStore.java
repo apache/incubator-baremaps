@@ -38,6 +38,15 @@ public class CompositeBlobStore implements BlobStore {
   }
 
   @Override
+  public long size(URI uri) throws IOException {
+    if (schemes.containsKey(uri.getScheme())) {
+      return schemes.get(uri.getScheme()).size(uri);
+    } else {
+      throw new IOException("Unsupported scheme: " + uri.getScheme());
+    }
+  }
+
+  @Override
   public InputStream read(URI uri) throws IOException {
     if (schemes.containsKey(uri.getScheme())) {
       return schemes.get(uri.getScheme()).read(uri);

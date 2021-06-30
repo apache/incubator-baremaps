@@ -13,38 +13,33 @@
  */
 package com.baremaps.testing;
 
+import com.google.common.io.Resources;
 import java.net.URL;
 
 public class TestFiles {
 
-  public static final URL DATA_OSC_XML =
-      TestFiles.class.getClassLoader().getResource("data.osc.xml");
+  public static URL get(String path) {
+    return Resources.getResource(path);
+  }
 
-  public static final URL DATA_OSM_PBF =
-      TestFiles.class.getClassLoader().getResource("data.osm.pbf");
+  public static final URL DATA_OSC_XML = get("data.osc.xml");
 
-  public static final URL DATA_OSM_XML =
-      TestFiles.class.getClassLoader().getResource("data.osm.xml");
+  public static final URL DATA_OSM_PBF = get("data.osm.pbf");
 
-  public static final URL DENSE_NODES_OSM_PBF =
-      TestFiles.class.getClassLoader().getResource("dense-nodes.osm.pbf");
+  public static final URL DATA_OSM_XML = get("data.osm.xml");
 
-  public static final URL WAYS_OSM_PBF =
-      TestFiles.class.getClassLoader().getResource("ways.osm.pbf");
+  public static final URL DENSE_NODES_OSM_PBF = get("dense-nodes.osm.pbf");
 
-  public static final URL RELATIONS_OSM_PBF =
-      TestFiles.class.getClassLoader().getResource("relations.osm.pbf");
+  public static final URL WAYS_OSM_PBF = get("ways.osm.pbf");
 
-  public static final URL MONACO_OSC_GZ =
-      TestFiles.class.getClassLoader().getResource("monaco.osc.gz");
+  public static final URL RELATIONS_OSM_PBF = get("relations.osm.pbf");
 
-  public static final URL MONACO_OSM_BZ2 =
-      TestFiles.class.getClassLoader().getResource("monaco.osm.bz2");
+  public static final URL MONACO_OSC_GZ = get("monaco/monaco.osc.gz");
 
-  public static final URL MONACO_OSM_PBF =
-      TestFiles.class.getClassLoader().getResource("monaco.osm.pbf");
+  public static final URL MONACO_OSM_BZ2 = get("monaco/monaco.osm.bz2");
 
-  public static final URL MONACO_STATE_TXT =
-      TestFiles.class.getClassLoader().getResource("monaco-state.txt");
+  public static final URL MONACO_OSM_PBF = get("monaco/monaco.osm.pbf");
+
+  public static final URL MONACO_STATE_TXT = get("monaco/monaco-state.txt");
 
 }

@@ -29,22 +29,23 @@ public class ResourceBlobStore implements BlobStore {
   private static Logger logger = LoggerFactory.getLogger(ResourceBlobStore.class);
 
   @Override
+  public long size(URI uri) throws IOException {
+    logger.debug("Size {}", uri);
+    return Resources.asByteSource(Resources.getResource(path(uri))).size();
+  }
+
+  @Override
   public InputStream read(URI uri) throws IOException {
-    String path = path(uri);
-    logger.debug("Read {}", path);
-    return Resources.asByteSource(Resources.getResource(path)).openStream();
+    logger.debug("Read {}", uri);
+    return Resources.asByteSource(Resources.getResource(path(uri))).openStream();
   }
 
   @Override
   public byte[] readByteArray(URI uri) throws IOException {
-    String path = path(uri);
-    logger.debug("Read {}", path);
-    return Resources.toByteArray(Resources.getResource(path));
+    logger.debug("Read {}", uri);
+    return Resources.toByteArray(Resources.getResource(path(uri)));
   }
 
-  private String path(URI uri) {
-    return uri.toString().replace(SCHEMA, "");
-  }
 
   @Override
   public OutputStream write(URI uri) {
@@ -59,6 +60,10 @@ public class ResourceBlobStore implements BlobStore {
   @Override
   public void delete(URI uri) {
     throw new UnsupportedOperationException();
+  }
+
+  private String path(URI uri) {
+    return uri.toString().replace(SCHEMA, "");
   }
 
 }

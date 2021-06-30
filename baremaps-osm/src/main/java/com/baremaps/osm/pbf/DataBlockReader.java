@@ -12,6 +12,7 @@ import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.stream.StreamException;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -34,7 +35,7 @@ public class DataBlockReader {
   private final long lonOffset;
   private final String[] stringTable;
 
-  protected DataBlockReader(Blob blob) throws DataFormatException, InvalidProtocolBufferException {
+  public DataBlockReader(Blob blob) throws DataFormatException, InvalidProtocolBufferException {
     this.blob = blob;
     this.primitiveBlock = Osmformat.PrimitiveBlock.parseFrom(blob.data());
     this.granularity = primitiveBlock.getGranularity();
@@ -177,7 +178,7 @@ public class DataBlockReader {
     }
   }
 
-  protected MemberType type(Osmformat.Relation.MemberType type) {
+  private MemberType type(Osmformat.Relation.MemberType type) {
     switch (type) {
       case NODE:
         return MemberType.node;
@@ -190,20 +191,20 @@ public class DataBlockReader {
     }
   }
 
-  protected double getLat(long lat) {
+  private double getLat(long lat) {
     return (granularity * lat + latOffset) * .000000001;
   }
 
-  protected double getLon(long lon) {
+  private double getLon(long lon) {
     return (granularity * lon + lonOffset) * .000000001;
   }
 
-  protected LocalDateTime getTimestamp(long timestamp) {
+  private LocalDateTime getTimestamp(long timestamp) {
     return LocalDateTime
         .ofInstant(Instant.ofEpochMilli(dateGranularity * timestamp), TimeZone.getDefault().toZoneId());
   }
 
-  protected Map<String, String> getTags(List<Integer> keys, List<Integer> vals) {
+  private Map<String, String> getTags(List<Integer> keys, List<Integer> vals) {
     Map<String, String> tags = new HashMap<>();
     for (int t = 0; t < keys.size(); t++) {
       tags.put(getString(keys.get(t)), getString(vals.get(t)));
@@ -211,7 +212,7 @@ public class DataBlockReader {
     return tags;
   }
 
-  protected String getString(int id) {
+  private String getString(int id) {
     return stringTable[id];
   }
 

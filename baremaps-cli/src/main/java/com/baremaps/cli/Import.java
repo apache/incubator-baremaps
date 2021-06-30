@@ -15,7 +15,7 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.ImportTask;
+import com.baremaps.osm.database.DatabaseImporter;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.InMemoryCache;
 import com.baremaps.osm.database.HeaderTable;
@@ -87,7 +87,7 @@ public class Import implements Callable<Integer> {
   @Option(
       names = {"--srid"},
       paramLabel = "SRID",
-      description = "The projection.")
+      description = "The projection used by the database.")
   private int srid = 3857;
 
   @Override
@@ -97,7 +97,6 @@ public class Import implements Callable<Integer> {
 
     BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.datasource(database);
-
     HeaderTable headerTable = new PostgresHeaderTable(datasource);
     NodeTable nodeTable = new PostgresNodeTable(datasource);
     WayTable wayTable = new PostgresWayTable(datasource);
@@ -127,7 +126,7 @@ public class Import implements Callable<Integer> {
         throw new UnsupportedOperationException("Unsupported cache type");
     }
 
-    new ImportTask(
+    new DatabaseImporter(
         file,
         blobStore,
         coordinateCache,
@@ -137,7 +136,7 @@ public class Import implements Callable<Integer> {
         wayTable,
         relationTable,
         srid
-    ).execute();
+    ).call();
 
     return 0;
   }

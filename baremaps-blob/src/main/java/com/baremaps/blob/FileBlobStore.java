@@ -14,6 +14,9 @@
 
 package com.baremaps.blob;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,9 +32,14 @@ public class FileBlobStore implements BlobStore {
   private static Logger logger = LoggerFactory.getLogger(FileBlobStore.class);
 
   @Override
+  public long size(URI uri) throws IOException {
+    return Files.size(Paths.get(uri.getPath()).toAbsolutePath());
+  }
+
+  @Override
   public InputStream read(URI uri) throws IOException {
     logger.debug("Read {}", uri);
-    return Files.newInputStream(Paths.get(uri.getPath()).toAbsolutePath());
+    return new BufferedInputStream(Files.newInputStream(Paths.get(uri.getPath()).toAbsolutePath()));
   }
 
   @Override
@@ -47,7 +55,7 @@ public class FileBlobStore implements BlobStore {
     if (!Files.exists(path.getParent())) {
       Files.createDirectories(path.getParent());
     }
-    return Files.newOutputStream(Paths.get(uri.getPath()));
+    return new BufferedOutputStream(Files.newOutputStream(Paths.get(uri.getPath())));
   }
 
   @Override

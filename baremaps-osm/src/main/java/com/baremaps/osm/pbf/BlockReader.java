@@ -14,19 +14,17 @@ public class BlockReader {
     this.blob = blob;
   }
 
-  public Block readBlock() {
-    try {
-      switch (blob.header().getType()) {
-        case "OSMHeader":
-          return new HeaderBlockReader(blob).readHeaderBlock();
-        case "OSMData":
-          return new DataBlockReader(blob).readDataBlock();
-        default:
-          throw new RuntimeException("Unknown blob type");
-      }
-    } catch (InvalidProtocolBufferException | DataFormatException e) {
-      throw new StreamException(e);
+  public Block readBlock() throws DataFormatException, InvalidProtocolBufferException {
+    switch (blob.header().getType()) {
+      case "OSMHeader":
+        return BlobUtils.readHeaderBlock(blob);
+      case "OSMData":
+        return BlobUtils.readDataBlock(blob);
+      default:
+        throw new RuntimeException("Unknown blob type");
     }
   }
+
+
 
 }

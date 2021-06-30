@@ -26,8 +26,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PostgresCoordinateCache implements CoordinateCache {
+
+  private static final Logger logger = LoggerFactory.getLogger(PostgresCoordinateCache.class);
 
   private static final String SELECT =
       "SELECT lon, lat FROM osm_nodes WHERE id = ?";

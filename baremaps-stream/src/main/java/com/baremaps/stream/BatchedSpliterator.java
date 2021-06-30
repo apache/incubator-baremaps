@@ -21,8 +21,8 @@ import java.util.Spliterators;
 import java.util.function.Consumer;
 
 /**
- * A {@code BatchedSpliterator} wraps another spliterator and partition its elements according to a given batch size when
- * trySplit is invoked.
+ * A {@code BatchedSpliterator} wraps another spliterator and partition its elements according to a given batch size
+ * when trySplit is invoked.
  *
  * @param <T>
  */
@@ -56,7 +56,7 @@ class BatchedSpliterator<T> implements Spliterator<T> {
   public Spliterator<T> trySplit() {
     List<T> batch = new ArrayList<>();
     while (batch.size() < batchSize && tryAdvance(entry -> batch.add(entry))) {
-      continue;
+
     }
     if (batch.size() > 0) {
       return Spliterators.spliterator(batch, characteristics());

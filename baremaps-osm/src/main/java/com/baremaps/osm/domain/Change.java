@@ -15,11 +15,20 @@
 package com.baremaps.osm.domain;
 
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * A class used to represent the changes to be applied to a dataset.
  */
 public final class Change {
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Change.class.getSimpleName() + "[", "]")
+        .add("type=" + type)
+        .add("elements=" + elements)
+        .toString();
+  }
 
   public enum ChangeType {
     delete,

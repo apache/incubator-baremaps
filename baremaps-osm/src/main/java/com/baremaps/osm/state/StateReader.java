@@ -1,4 +1,4 @@
-package com.baremaps.osm;
+package com.baremaps.osm.state;
 
 import com.baremaps.osm.domain.State;
 import com.google.common.base.Charsets;
