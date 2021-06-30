@@ -15,10 +15,12 @@
 package com.baremaps.cli;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.osm.postgres.PostgresNodeTable;
 import com.baremaps.postgres.jdbc.PostgresUtils;
+import com.google.common.io.Resources;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -78,13 +80,13 @@ public class BaremapsTest {
     // Test the import command
     int importExitCode = cmd.execute("import",
         "--database", DATABASE_URL,
-        "--file", "src/test/resources/liechtenstein-latest.osm.pbf");
+        "--file", "res://liechtenstein/liechtenstein.osm.pbf");
     assertEquals(0, importExitCode);
 
     // Test the export command
     int exportExitCode = cmd.execute("export",
         "--database", DATABASE_URL,
-        "--tileset", "src/test/resources/tileset.json",
+        "--tileset", "res://tileset.json",
         "--repository", "repository/");
     assertEquals(0, exportExitCode);
     assertTrue(Files.exists(Paths.get("repository/14/8626/5750.pbf")));
@@ -93,8 +95,8 @@ public class BaremapsTest {
     Thread thread = new Thread(() -> {
       cmd.execute("edit",
           "--database", DATABASE_URL,
-          "--tileset", "src/test/resources/tileset.json",
-          "--style", "src/test/resources/style.json",
+          "--tileset", "res://tileset.json",
+          "--style", "res://style.json",
           "--port", "9000");
     });
     thread.start();

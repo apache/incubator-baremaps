@@ -47,7 +47,6 @@ public class DiffTask implements Task {
   private final int srid;
   private final int zoom;
   private final PrintWriter printWriter;
-  private final ProjectionTransformer projectionTransformer;
 
   public DiffTask(
       BlobStore blobStore,
@@ -57,7 +56,8 @@ public class DiffTask implements Task {
       NodeTable nodeTable,
       WayTable wayTable,
       RelationTable relationTable,
-      PrintWriter printWriter, int srid,
+      PrintWriter printWriter,
+      int srid,
       int zoom) {
     this.blobStore = blobStore;
     this.coordinateCache = coordinateCache;
@@ -69,7 +69,6 @@ public class DiffTask implements Task {
     this.srid = srid;
     this.zoom = zoom;
     this.printWriter = printWriter;
-    this.projectionTransformer = new ProjectionTransformer(srid, 4326);
   }
 
   @Override
@@ -87,9 +86,10 @@ public class DiffTask implements Task {
     try (InputStream changesInputStream = new GZIPInputStream(
         new InputStreamProgress(blobStore.read(changeUri), progressLogger))) {
       OpenStreetMap.streamXmlChanges(changesInputStream)
-          .peek(change -> change.getElements().forEach(geometryHandler))
-          .flatMap(this::tilesForChange)
-          .forEach(tile -> printWriter.println(String.format("%d/%d/%d", tile.x(), tile.y(), tile.z())));
+          .forEach(System.out::println);
+          //.peek(change -> change.getElements().forEach(geometryHandler))
+          //.flatMap(this::tilesForChange)
+          //.forEach(tile -> printWriter.println(String.format("%d/%d/%d", tile.x(), tile.y(), tile.z())));
     }
 
     return null;
@@ -109,6 +109,7 @@ public class DiffTask implements Task {
   }
 
   private Stream<Tile> tilesForPreviousVersion(Change change) {
+    ProjectionTransformer projectionTransformer = new ProjectionTransformer(srid, 4326);
     return change.getElements().stream()
         .map(new EntityMapper<Optional<Geometry>>() {
           @Override

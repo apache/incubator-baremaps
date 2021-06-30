@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.FileBlobStore;
+import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.osm.task.ImportTask;
 import com.baremaps.osm.task.UpdateTask;
 import com.baremaps.osm.cache.InMemoryCache;
@@ -12,7 +13,9 @@ import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.postgres.jdbc.PostgresUtils;
+import com.baremaps.testing.TestFiles;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -36,7 +39,7 @@ class ImportUpdateTest {
   public void createTable() throws SQLException, IOException, URISyntaxException {
     dataSource = PostgresUtils.datasource(DatabaseConstants.DATABASE_URL);
 
-    blobStore = new FileBlobStore();
+    blobStore = new ResourceBlobStore();
     headerTable = new PostgresHeaderTable(dataSource);
     nodeTable = new PostgresNodeTable(dataSource);
     wayTable = new PostgresWayTable(dataSource);
@@ -57,7 +60,7 @@ class ImportUpdateTest {
 
     // Import data
     new ImportTask(
-        getClass().getClassLoader().getResource("update.osm.pbf").toURI(),
+        new URI("res://simple/data.osm.pbf"),
         blobStore,
         new InMemoryCache<>(),
         new InMemoryCache<>(),
@@ -68,7 +71,7 @@ class ImportUpdateTest {
         3857
     ).call();
 
-    headerTable.insert(new Header(LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), 0l, "target/test-classes", "", ""));
+    headerTable.insert(new Header(LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), 0l, "res://simple", "", ""));
 
     // Check node importation
     assertNull(nodeTable.select(0l));
@@ -96,6 +99,7 @@ class ImportUpdateTest {
     way = wayTable.select(1l);
     assertNotNull(way);
 
+    // Update the database
     new UpdateTask(
         blobStore,
         new PostgresCoordinateCache(dataSource),
@@ -107,8 +111,11 @@ class ImportUpdateTest {
         3857
     ).call();
 
+    // Check deletions
     assertNull(nodeTable.select(0l));
     assertNull(nodeTable.select(1l));
+
+    // Check insertions
     assertNotNull(nodeTable.select(2l));
     assertNotNull(nodeTable.select(3l));
     assertNotNull(nodeTable.select(4l));
