@@ -1,19 +1,21 @@
 package com.baremaps.osm.postgres;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.FileBlobStore;
 import com.baremaps.blob.ResourceBlobStore;
-import com.baremaps.osm.task.ImportTask;
-import com.baremaps.osm.task.UpdateTask;
+import com.baremaps.osm.cache.CoordinateCache;
+import com.baremaps.osm.cache.ReferenceCache;
+import com.baremaps.osm.database.DatabaseDiffer;
+import com.baremaps.osm.database.DatabaseImporter;
+import com.baremaps.osm.database.DatabaseUpdater;
 import com.baremaps.osm.cache.InMemoryCache;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.testing.TestFiles;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -54,12 +56,10 @@ class ImportUpdateTest {
 
   @Test
   @Tag("integration")
-  void test() throws Exception {
-    Node node;
-    Way way;
+  void simple() throws Exception {
 
     // Import data
-    new ImportTask(
+    new DatabaseImporter(
         new URI("res://simple/data.osm.pbf"),
         blobStore,
         new InMemoryCache<>(),
@@ -91,16 +91,16 @@ class ImportUpdateTest {
     assertNull(relationTable.select(2l));
 
     // Check node properties
-    node = nodeTable.select(1l);
+    Node node = nodeTable.select(1l);
     Assertions.assertEquals(1, node.getLon());
     Assertions.assertEquals(1, node.getLat());
 
     // Check way properties
-    way = wayTable.select(1l);
+    Way way = wayTable.select(1l);
     assertNotNull(way);
 
     // Update the database
-    new UpdateTask(
+    new DatabaseUpdater(
         blobStore,
         new PostgresCoordinateCache(dataSource),
         new PostgresReferenceCache(dataSource),
@@ -119,6 +119,104 @@ class ImportUpdateTest {
     assertNotNull(nodeTable.select(2l));
     assertNotNull(nodeTable.select(3l));
     assertNotNull(nodeTable.select(4l));
+  }
+
+  @Test
+  @Tag("integration")
+  void liechtenstein() throws Exception {
+
+    // Import data
+    new DatabaseImporter(
+        new URI("res://liechtenstein/liechtenstein.osm.pbf"),
+        blobStore,
+        new InMemoryCache<>(),
+        new InMemoryCache<>(),
+        headerTable,
+        nodeTable,
+        wayTable,
+        relationTable,
+        3857
+    ).call();
+    assertEquals(2434l, headerTable.latest().getReplicationSequenceNumber());
+
+    // Fix the replicationUrl so that we can update the database with local files
+    headerTable.insert(new Header(LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), 2434l, "res://liechtenstein", "", ""));
+
+    CoordinateCache coordinateCache = new PostgresCoordinateCache(dataSource);
+    ReferenceCache referenceCache = new PostgresReferenceCache(dataSource);
+
+    assertEquals(0, new DatabaseDiffer(
+        blobStore,
+        coordinateCache,
+        referenceCache,
+        headerTable,
+        nodeTable,
+        wayTable,
+        relationTable,
+        3857,
+        14
+    ).call().size());
+
+    // Update the database
+    new DatabaseUpdater(
+        blobStore,
+        coordinateCache,
+        referenceCache,
+        headerTable,
+        nodeTable,
+        wayTable,
+        relationTable,
+        3857
+    ).call();
+    assertEquals(2435l, headerTable.latest().getReplicationSequenceNumber());
+
+    assertEquals(7, new DatabaseDiffer(
+        blobStore,
+        coordinateCache,
+        referenceCache,
+        headerTable,
+        nodeTable,
+        wayTable,
+        relationTable,
+        3857,
+        14
+    ).call().size());
+
+    new DatabaseUpdater(
+        blobStore,
+        coordinateCache,
+        referenceCache,
+        headerTable,
+        nodeTable,
+        wayTable,
+        relationTable,
+        3857
+    ).call();
+    assertEquals(2436l, headerTable.latest().getReplicationSequenceNumber());
+
+    assertEquals(0, new DatabaseDiffer(
+        blobStore,
+        coordinateCache,
+        referenceCache,
+        headerTable,
+        nodeTable,
+        wayTable,
+        relationTable,
+        3857,
+        14
+    ).call().size());
+
+    new DatabaseUpdater(
+        blobStore,
+        coordinateCache,
+        referenceCache,
+        headerTable,
+        nodeTable,
+        wayTable,
+        relationTable,
+        3857
+    ).call();
+    assertEquals(2437l, headerTable.latest().getReplicationSequenceNumber());
   }
 
 }
