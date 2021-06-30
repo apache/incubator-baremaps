@@ -18,6 +18,15 @@
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-tile</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.github.jsqlparser</groupId>
+      <artifactId>jsqlparser</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-postgres</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

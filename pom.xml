@@ -76,6 +76,8 @@
     <version.lib.testng>7.4.0</version.lib.testng>
     <version.lib.validation>2.0.1.Final</version.lib.validation>
     <version.lib.jackson>2.12.1</version.lib.jackson>
+    <version.lib.jdbi>3.20.1</version.lib.jdbi>
+    <version.lib.jsqlparser>4.1</version.lib.jsqlparser>
     <version.plugin.compiler>3.8.1</version.plugin.compiler>
     <version.plugin.jacoco>0.8.7</version.plugin.jacoco>
     <version.plugin.surefire>2.22.2</version.plugin.surefire>
@@ -521,8 +523,13 @@
         <groupId>org.jdbi</groupId>
         <artifactId>jdbi3-bom</artifactId>
         <type>pom</type>
-        <version>3.20.1</version>
+        <version>${version.lib.jdbi}</version>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.github.jsqlparser</groupId>
+        <artifactId>jsqlparser</artifactId>
+        <version>${version.lib.jsqlparser}</version>
       </dependency>
 
       <!-- Logging libraries -->

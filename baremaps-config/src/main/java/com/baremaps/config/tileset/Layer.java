@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.google.common.collect.Lists;
+import java.util.Arrays;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -28,7 +29,17 @@ public class Layer {
 
   private String description;
 
-  private List<Query> queries = Lists.newArrayList();
+  private List<Query> queries;
+
+  public Layer() {
+
+  }
+
+  public Layer(Query... queries) {
+    this.queries = Arrays.asList(queries);
+  }
+
+
 
   public String getId() {
     return id;

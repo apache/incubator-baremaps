@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -44,6 +45,14 @@ public class Tileset {
   private double maxZoom;
 
   private List<String> tiles = new ArrayList<>();
+
+  public Tileset() {
+
+  }
+
+  public Tileset(Layer... layers) {
+    this.layers = Arrays.asList(layers);
+  }
 
   @JsonProperty("vector_layers")
   private List<Layer> layers = new ArrayList<>();
