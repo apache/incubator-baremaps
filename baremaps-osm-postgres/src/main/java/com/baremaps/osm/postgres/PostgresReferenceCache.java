@@ -28,8 +28,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PostgresReferenceCache implements ReferenceCache {
+
+  private static final Logger logger = LoggerFactory.getLogger(PostgresReferenceCache.class);
 
   private static final String SELECT =
       "SELECT nodes FROM osm_ways WHERE id = ?";

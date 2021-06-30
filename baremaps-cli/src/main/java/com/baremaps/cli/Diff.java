@@ -1,21 +1,6 @@
-/*
- * Copyright (C) 2020 The Baremaps Authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
- */
-
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.task.UpdateTask;
 import com.baremaps.osm.cache.CoordinateCache;
 import com.baremaps.osm.cache.ReferenceCache;
 import com.baremaps.osm.database.HeaderTable;
@@ -28,7 +13,10 @@ import com.baremaps.osm.postgres.PostgresNodeTable;
 import com.baremaps.osm.postgres.PostgresReferenceCache;
 import com.baremaps.osm.postgres.PostgresRelationTable;
 import com.baremaps.osm.postgres.PostgresWayTable;
+import com.baremaps.osm.task.DiffTask;
 import com.baremaps.postgres.jdbc.PostgresUtils;
+import java.io.PrintWriter;
+import java.net.URI;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Level;
@@ -39,10 +27,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "update", description = "Update OpenStreetMap data in the database.")
-public class Update implements Callable<Integer> {
+@Command(name = "diff", description = "List the tiles affected by changes.")
+public class Diff implements Callable<Integer> {
 
-  private static Logger logger = LoggerFactory.getLogger(Update.class);
+  private static Logger logger = LoggerFactory.getLogger(Diff.class);
 
   @Mixin
   private Options options;
@@ -55,10 +43,24 @@ public class Update implements Callable<Integer> {
   private String database;
 
   @Option(
+      names = {"--tiles"},
+      paramLabel = "TILES",
+      description = "The tiles affected by the update.",
+      required = true)
+  private URI tiles;
+
+  @Option(
+      names = {"--zoom"},
+      paramLabel = "ZOOM",
+      description = "The zoom level at which to compute the diff.")
+  private int zoom = 12;
+
+  @Option(
       names = {"--srid"},
       paramLabel = "SRID",
       description = "The projection used by the database.")
   private int srid = 3857;
+
 
   @Override
   public Integer call() throws Exception {
@@ -73,26 +75,23 @@ public class Update implements Callable<Integer> {
     WayTable wayTable = new PostgresWayTable(datasource);
     RelationTable relationTable = new PostgresRelationTable(datasource);
 
-    logger.info("Importing changes");
-    new UpdateTask(
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerTable,
-        nodeTable,
-        wayTable,
-        relationTable,
-        srid
-    ).call();
+    logger.info("Saving diff file");
+    try (PrintWriter printWriter = new PrintWriter(blobStore.write(this.tiles))) {
+      new DiffTask(
+          blobStore,
+          coordinateCache,
+          referenceCache,
+          headerTable,
+          nodeTable,
+          wayTable,
+          relationTable,
+          printWriter,
+          srid,
+          zoom
+      ).call();
+    }
 
     return 0;
-  }
-
-  public String path(long sequenceNumber) {
-    String leading = String.format("%09d", sequenceNumber);
-    return leading.substring(0, 3) + "/"
-        + leading.substring(3, 6) + "/"
-        + leading.substring(6, 9);
   }
 
 }

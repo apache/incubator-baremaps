@@ -33,25 +33,25 @@ public class FileBlobStore implements BlobStore {
 
   @Override
   public long size(URI uri) throws IOException {
-    return Files.size(Paths.get(uri.getPath()));
+    return Files.size(Paths.get(uri.getPath()).toAbsolutePath());
   }
 
   @Override
   public InputStream read(URI uri) throws IOException {
     logger.debug("Read {}", uri);
-    return new BufferedInputStream(Files.newInputStream(Paths.get(uri.getPath())));
+    return new BufferedInputStream(Files.newInputStream(Paths.get(uri.getPath()).toAbsolutePath()));
   }
 
   @Override
   public byte[] readByteArray(URI uri) throws IOException {
     logger.debug("Read {}", uri);
-    return Files.readAllBytes(Paths.get(uri.getPath()));
+    return Files.readAllBytes(Paths.get(uri.getPath()).toAbsolutePath());
   }
 
   @Override
   public OutputStream write(URI uri) throws IOException {
     logger.debug("Write {}", uri);
-    Path path = Paths.get(uri.getPath());
+    Path path = Paths.get(uri.getPath()).toAbsolutePath();
     if (!Files.exists(path.getParent())) {
       Files.createDirectories(path.getParent());
     }
@@ -61,7 +61,7 @@ public class FileBlobStore implements BlobStore {
   @Override
   public void writeByteArray(URI uri, byte[] bytes) throws IOException {
     logger.debug("Write {}", uri);
-    Path path = Paths.get(uri.getPath());
+    Path path = Paths.get(uri.getPath()).toAbsolutePath();
     if (!Files.exists(path.getParent())) {
       Files.createDirectories(path.getParent());
     }
@@ -71,7 +71,7 @@ public class FileBlobStore implements BlobStore {
   @Override
   public void delete(URI uri) throws IOException {
     logger.debug("Delete {}", uri);
-    Files.deleteIfExists(Paths.get(uri.getPath()));
+    Files.deleteIfExists(Paths.get(uri.getPath()).toAbsolutePath());
   }
 
 }

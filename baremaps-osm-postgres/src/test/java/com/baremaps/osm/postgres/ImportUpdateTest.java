@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.FileBlobStore;
-import com.baremaps.osm.ImportTask;
-import com.baremaps.osm.UpdateTask;
+import com.baremaps.osm.task.ImportTask;
+import com.baremaps.osm.task.UpdateTask;
 import com.baremaps.osm.cache.InMemoryCache;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
@@ -66,7 +66,7 @@ class ImportUpdateTest {
         wayTable,
         relationTable,
         3857
-    ).execute();
+    ).call();
 
     headerTable.insert(new Header(LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), 0l, "target/test-classes", "", ""));
 
@@ -104,9 +104,8 @@ class ImportUpdateTest {
         nodeTable,
         wayTable,
         relationTable,
-        3857,
-        1
-    ).execute();
+        3857
+    ).call();
 
     assertNull(nodeTable.select(0l));
     assertNull(nodeTable.select(1l));

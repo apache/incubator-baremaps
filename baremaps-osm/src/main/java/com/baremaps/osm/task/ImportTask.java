@@ -1,6 +1,7 @@
-package com.baremaps.osm;
+package com.baremaps.osm.task;
 
 import com.baremaps.blob.BlobStore;
+import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheImporter;
 import com.baremaps.osm.database.DatabaseImporter;
@@ -17,16 +18,15 @@ import com.baremaps.osm.progress.ProgressLogger;
 import com.baremaps.stream.StreamUtils;
 import java.io.InputStream;
 import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ImportTask {
+public class ImportTask implements Task {
 
   private static Logger logger = LoggerFactory.getLogger(ImportTask.class);
 
@@ -61,7 +61,8 @@ public class ImportTask {
     this.srid = srid;
   }
 
-  public void execute() throws Exception {
+  @Override
+  public Void call() throws Exception {
     logger.info("Importing data");
 
     CacheImporter cacheImporter = new CacheImporter(coordinateCache, referenceCache);
@@ -76,6 +77,7 @@ public class ImportTask {
       Stream<Block> stream = OpenStreetMap.streamPbfBlocks(inputStream).peek(blockHandler);
       StreamUtils.batch(stream).forEach(databaseDatabaseImporter);
     }
-  }
 
+    return null;
+  }
 }

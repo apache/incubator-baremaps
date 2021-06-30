@@ -32,6 +32,7 @@ import picocli.CommandLine.Option;
         Execute.class,
         Import.class,
         Update.class,
+        Diff.class,
         Export.class,
         Edit.class,
         Serve.class,

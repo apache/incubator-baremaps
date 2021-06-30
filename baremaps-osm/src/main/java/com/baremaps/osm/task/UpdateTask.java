@@ -1,8 +1,8 @@
-package com.baremaps.osm;
+package com.baremaps.osm.task;
 
 import com.baremaps.blob.BlobStore;
+import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.database.ChangeTiler;
 import com.baremaps.osm.database.DatabaseUpdater;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
@@ -12,18 +12,19 @@ import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.State;
 import com.baremaps.osm.geometry.GeometryHandler;
 import com.baremaps.osm.geometry.ProjectionTransformer;
-import com.baremaps.tile.Tile;
+import com.baremaps.osm.progress.InputStreamProgress;
+import com.baremaps.osm.progress.ProgressLogger;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.zip.GZIPInputStream;
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UpdateTask {
+public class UpdateTask implements Task {
 
   private static Logger logger = LoggerFactory.getLogger(UpdateTask.class);
 
@@ -35,7 +36,6 @@ public class UpdateTask {
   private final WayTable wayTable;
   private final RelationTable relationTable;
   private final int srid;
-  private final int zoom;
 
   public UpdateTask(
       BlobStore blobStore,
@@ -45,8 +45,7 @@ public class UpdateTask {
       NodeTable nodeTable,
       WayTable wayTable,
       RelationTable relationTable,
-      int srid,
-      int zoom) {
+      int srid) {
     this.blobStore = blobStore;
     this.coordinateCache = coordinateCache;
     this.referenceCache = referenceCache;
@@ -55,7 +54,38 @@ public class UpdateTask {
     this.wayTable = wayTable;
     this.relationTable = relationTable;
     this.srid = srid;
-    this.zoom = zoom;
+  }
+
+  @Override
+  public Void call() throws Exception {
+    Header header = headerTable.latest();
+    String replicationUrl = header.getReplicationUrl();
+    Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
+
+    GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
+    ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
+    DatabaseUpdater databaseUpdater = new DatabaseUpdater(headerTable, nodeTable, wayTable, relationTable);
+    URI changeUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
+    ProgressLogger progressLogger = new ProgressLogger(blobStore.size(changeUri), 5000);
+    try (InputStream changesInputStream = new GZIPInputStream(
+        new InputStreamProgress(blobStore.read(changeUri), progressLogger))) {
+      OpenStreetMap.streamXmlChanges(changesInputStream)
+          .peek(change -> change.getElements().forEach(geometryHandler.andThen(projectionTransformer)))
+          .forEach(databaseUpdater);
+    }
+
+    URI stateUri = resolve(replicationUrl, sequenceNumber, "state.txt");
+    try (InputStream stateInputStream = blobStore.read(stateUri)) {
+      State state = OpenStreetMap.readState(stateInputStream);
+      headerTable.insert(new Header(
+          state.getTimestamp(),
+          state.getSequenceNumber(),
+          header.getReplicationUrl(),
+          header.getSource(),
+          header.getWritingProgram()));
+    }
+
+    return null;
   }
 
   public URI resolve(String replicationUrl, Long sequenceNumber, String extension) throws URISyntaxException {
@@ -68,38 +98,4 @@ public class UpdateTask {
         extension));
   }
 
-  public Set<Tile> execute() throws Exception {
-    Header header = headerTable.latest();
-    String replicationUrl = header.getReplicationUrl();
-    Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
-
-    URI changeFileUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
-    URI stateFileUri = resolve(replicationUrl, sequenceNumber, "state.txt");
-
-    logger.info("Importing changes");
-    GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
-    ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
-    ChangeTiler changeTiler = new ChangeTiler(nodeTable, wayTable, relationTable, new ProjectionTransformer(srid, 4326), zoom);
-    DatabaseUpdater databaseUpdater = new DatabaseUpdater(headerTable, nodeTable, wayTable, relationTable);
-
-    try(InputStream changesInputStream = new GZIPInputStream(blobStore.read(changeFileUri))) {
-      OpenStreetMap.streamXmlChanges(changesInputStream)
-          .peek(change -> change.getElements().forEach(geometryHandler))
-          .peek(change -> change.getElements().forEach(projectionTransformer))
-          .peek(changeTiler)
-          .forEach(databaseUpdater);
-    }
-
-    try(InputStream stateInputStream = blobStore.read(stateFileUri)) {
-      State state = OpenStreetMap.readState(stateInputStream);
-      headerTable.insert(new Header(
-          state.getTimestamp(),
-          state.getSequenceNumber(),
-          header.getReplicationUrl(),
-          header.getSource(),
-          header.getWritingProgram()));
-    }
-
-    return changeTiler.getTiles();
-  }
 }
