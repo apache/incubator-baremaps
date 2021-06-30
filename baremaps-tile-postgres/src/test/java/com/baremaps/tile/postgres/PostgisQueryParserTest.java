@@ -76,8 +76,8 @@ class PostgisQueryParserTest {
   @Test
   void parse8() {
     parse(new Query(0, 1,
-            "SELECT id, hstore(array['tag1', 'tag2'], array[tag1, tag2]), geom FROM table"),
-        "id", "hstore(array['tag1', 'tag2'], array[tag1, tag2])", "geom", "table",
+            "SELECT id, hstore(ARRAY['tag1', 'tag2'], ARRAY[tag1, tag2]), geom FROM table"),
+        "id", "hstore(ARRAY['tag1', 'tag2'], ARRAY[tag1, tag2])", "geom", "table",
         Optional.empty());
   }
 
