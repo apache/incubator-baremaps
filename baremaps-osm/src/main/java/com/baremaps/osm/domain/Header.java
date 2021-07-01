@@ -25,13 +25,16 @@ import java.util.StringJoiner;
  */
 public class Header extends Entity {
 
-  private final LocalDateTime replicationTimestamp;
   private final Long replicationSequenceNumber;
+  private final LocalDateTime replicationTimestamp;
   private final String replicationUrl;
   private final String source;
   private final String writingProgram;
 
-  public Header(LocalDateTime replicationTimestamp, Long replicationSequenceNumber, String replicationUrl,
+  public Header(
+      Long replicationSequenceNumber,
+      LocalDateTime replicationTimestamp,
+      String replicationUrl,
       String source,
       String writingProgram) {
     this.replicationTimestamp = replicationTimestamp;

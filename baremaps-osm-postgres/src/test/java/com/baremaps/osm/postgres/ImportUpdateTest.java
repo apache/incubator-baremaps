@@ -71,7 +71,7 @@ class ImportUpdateTest {
         3857
     ).call();
 
-    headerTable.insert(new Header(LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), 0l, "res://simple", "", ""));
+    headerTable.insert(new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), "res://simple", "", ""));
 
     // Check node importation
     assertNull(nodeTable.select(0l));
@@ -140,7 +140,7 @@ class ImportUpdateTest {
     assertEquals(2434l, headerTable.latest().getReplicationSequenceNumber());
 
     // Fix the replicationUrl so that we can update the database with local files
-    headerTable.insert(new Header(LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), 2434l, "res://liechtenstein", "", ""));
+    headerTable.insert(new Header(2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), "res://liechtenstein", "", ""));
 
     CoordinateCache coordinateCache = new PostgresCoordinateCache(dataSource);
     ReferenceCache referenceCache = new PostgresReferenceCache(dataSource);

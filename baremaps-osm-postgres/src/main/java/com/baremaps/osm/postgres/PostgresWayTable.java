@@ -65,8 +65,17 @@ public class PostgresWayTable implements WayTable {
         "geom");
   }
 
-  public PostgresWayTable(DataSource dataSource, String wayTable, String idColumn, String versionColumn, String uidColumn,
-      String timestampColumn, String changesetColumn, String tagsColumn, String nodesColumn, String geometryColumn) {
+  public PostgresWayTable(
+      DataSource dataSource,
+      String wayTable,
+      String idColumn,
+      String versionColumn,
+      String uidColumn,
+      String timestampColumn,
+      String changesetColumn,
+      String tagsColumn,
+      String nodesColumn,
+      String geometryColumn) {
     this.dataSource = dataSource;
     this.select = String.format(
         "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, st_asbinary(%9$s) FROM %1$s WHERE %2$s = ?",
@@ -104,7 +113,7 @@ public class PostgresWayTable implements WayTable {
       statement.setObject(1, id);
       ResultSet result = statement.executeQuery();
       if (result.next()) {
-        return getWay(result);
+        return getEntity(result);
       } else {
         return null;
       }
@@ -116,43 +125,30 @@ public class PostgresWayTable implements WayTable {
 
   @Override
   public List<Way> select(List<Long> ids) throws DatabaseException {
-    if (ids.isEmpty()) return List.of();
+    if (ids.isEmpty()) {
+      return List.of();
+    }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(selectIn)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
       ResultSet result = statement.executeQuery();
-      Map<Long, Way> ways = new HashMap<>();
+      Map<Long, Way> entities = new HashMap<>();
       while (result.next()) {
-        Way way = getWay(result);
-        ways.put(way.getId(), way);
+        Way entity = getEntity(result);
+        entities.put(entity.getId(), entity);
       }
-      return ids.stream().map(key -> ways.get(key)).collect(Collectors.toList());
+      return ids.stream().map(key -> entities.get(key)).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
   }
 
-  private Way getWay(ResultSet result) throws SQLException {
-    long id = result.getLong(1);
-    int version = result.getInt(2);
-    int uid = result.getInt(3);
-    LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
-    long changeset = result.getLong(5);
-    Map<String, String> tags = (Map<String, String>) result.getObject(6);
-    List<Long> nodes = new ArrayList<>();
-    Array array = result.getArray(7);
-    if (array != null) {
-      nodes = Arrays.asList((Long[]) array.getArray());
-    }
-    Geometry geometry = GeometryUtils.deserialize(result.getBytes(8));
-    Info info = new Info(version, timestamp, changeset, uid);
-    return new Way(id, info, tags, nodes, geometry);
-  }
+
 
   public void insert(Way entity) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      setWay(statement, entity);
+      setEntity(statement, entity);
       statement.execute();
     } catch (SQLException e) {
       throw new DatabaseException(e);
@@ -161,29 +157,20 @@ public class PostgresWayTable implements WayTable {
 
   @Override
   public void insert(List<Way> entities) throws DatabaseException {
-    if (entities.isEmpty()) return;
+    if (entities.isEmpty()) {
+      return;
+    }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
       for (Way entity : entities) {
         statement.clearParameters();
-        setWay(statement, entity);
+        setEntity(statement, entity);
         statement.addBatch();
       }
       statement.executeBatch();
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
-  }
-
-  private void setWay(PreparedStatement statement, Way entity) throws SQLException {
-    statement.setObject(1, entity.getId());
-    statement.setObject(2, entity.getInfo().getVersion());
-    statement.setObject(3, entity.getInfo().getUid());
-    statement.setObject(4, entity.getInfo().getTimestamp());
-    statement.setObject(5, entity.getInfo().getChangeset());
-    statement.setObject(6, entity.getTags());
-    statement.setObject(7, entity.getNodes().stream().mapToLong(Long::longValue).toArray());
-    statement.setBytes(8, GeometryUtils.serialize(entity.getGeometry()));
   }
 
   public void delete(Long id) throws DatabaseException {
@@ -198,7 +185,9 @@ public class PostgresWayTable implements WayTable {
 
   @Override
   public void delete(List<Long> ids) throws DatabaseException {
-    if (ids.isEmpty()) return;
+    if (ids.isEmpty()) {
+      return;
+    }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(delete)) {
       for (Long id : ids) {
@@ -213,7 +202,9 @@ public class PostgresWayTable implements WayTable {
   }
 
   public void copy(List<Way> entities) throws DatabaseException {
-    if (entities.isEmpty()) return;
+    if (entities.isEmpty()) {
+      return;
+    }
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copy))) {
@@ -234,4 +225,33 @@ public class PostgresWayTable implements WayTable {
       throw new DatabaseException(e);
     }
   }
+
+  private Way getEntity(ResultSet result) throws SQLException {
+    long id = result.getLong(1);
+    int version = result.getInt(2);
+    int uid = result.getInt(3);
+    LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
+    long changeset = result.getLong(5);
+    Map<String, String> tags = (Map<String, String>) result.getObject(6);
+    List<Long> nodes = new ArrayList<>();
+    Array array = result.getArray(7);
+    if (array != null) {
+      nodes = Arrays.asList((Long[]) array.getArray());
+    }
+    Geometry geometry = GeometryUtils.deserialize(result.getBytes(8));
+    Info info = new Info(version, timestamp, changeset, uid);
+    return new Way(id, info, tags, nodes, geometry);
+  }
+
+  private void setEntity(PreparedStatement statement, Way entity) throws SQLException {
+    statement.setObject(1, entity.getId());
+    statement.setObject(2, entity.getInfo().getVersion());
+    statement.setObject(3, entity.getInfo().getUid());
+    statement.setObject(4, entity.getInfo().getTimestamp());
+    statement.setObject(5, entity.getInfo().getChangeset());
+    statement.setObject(6, entity.getTags());
+    statement.setObject(7, entity.getNodes().stream().mapToLong(Long::longValue).toArray());
+    statement.setBytes(8, GeometryUtils.serialize(entity.getGeometry()));
+  }
+
 }

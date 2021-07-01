@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.osm.postgres.PostgresNodeTable;
 import com.baremaps.postgres.jdbc.PostgresUtils;
+import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +33,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Comparator;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
@@ -110,4 +112,7 @@ public class BaremapsTest {
     connection.connect();
     assertEquals(connection.getResponseCode(), 200);
   }
+
+
+
 }

@@ -72,8 +72,7 @@ public class DatabaseUpdateService implements Callable<Void> {
     try (InputStream stateInputStream = blobStore.read(stateUri)) {
       State state = OpenStreetMap.readState(stateInputStream);
       headerTable.insert(new Header(
-          state.getTimestamp(),
-          state.getSequenceNumber(),
+          state.getSequenceNumber(), state.getTimestamp(),
           header.getReplicationUrl(),
           header.getSource(),
           header.getWritingProgram()));

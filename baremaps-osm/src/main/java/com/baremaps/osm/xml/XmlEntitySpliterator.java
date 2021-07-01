@@ -163,7 +163,7 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
         .getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_TIMESTAMP);
     timestamp = osmosisReplicationTimestampValue != null ? LocalDateTime.parse(osmosisReplicationTimestampValue, format)
         : timestamp;
-    return new Header(timestamp, replicationSequenceNumber, replicationUrl, source, generator);
+    return new Header(replicationSequenceNumber, timestamp, replicationUrl, source, generator);
   }
 
   private Bound readBounds() throws XMLStreamException {

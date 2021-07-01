@@ -119,7 +119,7 @@ public class PostgresRelationTable implements RelationTable {
       statement.setObject(1, id);
       ResultSet result = statement.executeQuery();
       if (result.next()) {
-        return getRelation(result);
+        return getEntity(result);
       } else {
         return null;
       }
@@ -130,45 +130,28 @@ public class PostgresRelationTable implements RelationTable {
 
   @Override
   public List<Relation> select(List<Long> ids) throws DatabaseException {
-    if (ids.isEmpty()) return List.of();
+    if (ids.isEmpty()) {
+      return List.of();
+    }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(selectIn)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
       ResultSet result = statement.executeQuery();
-      Map<Long, Relation> relations = new HashMap<>();
+      Map<Long, Relation> entities = new HashMap<>();
       while (result.next()) {
-        Relation relation = getRelation(result);
-        relations.put(relation.getId(), relation);
+        Relation entity = getEntity(result);
+        entities.put(entity.getId(), entity);
       }
-      return ids.stream().map(id -> relations.get(id)).collect(Collectors.toList());
+      return ids.stream().map(id -> entities.get(id)).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
   }
 
-  private Relation getRelation(ResultSet result) throws SQLException {
-    long id = result.getLong(1);
-    int version = result.getInt(2);
-    int uid = result.getInt(3);
-    LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
-    long changeset = result.getLong(5);
-    Map<String, String> tags = (Map<String, String>) result.getObject(6);
-    Long[] refs = (Long[]) result.getArray(7).getArray();
-    Integer[] types = (Integer[]) result.getArray(8).getArray();
-    String[] roles = (String[]) result.getArray(9).getArray();
-    List<Member> members = new ArrayList<>();
-    for (int i = 0; i < refs.length; i++) {
-      members.add(new Member(refs[i], MemberType.forNumber(types[i]), roles[i]));
-    }
-    Geometry geometry = GeometryUtils.deserialize(result.getBytes(10));
-    Info info = new Info(version, timestamp, changeset, uid);
-    return new Relation(id, info, tags, members, geometry);
-  }
-
   public void insert(Relation entity) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      setRelation(statement, entity);
+      setEntity(statement, entity);
       statement.execute();
     } catch (SQLException e) {
       throw new DatabaseException(e);
@@ -177,34 +160,20 @@ public class PostgresRelationTable implements RelationTable {
 
   @Override
   public void insert(List<Relation> entities) throws DatabaseException {
-    if (entities.isEmpty()) return;
+    if (entities.isEmpty()) {
+      return;
+    }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
       for (Relation entity : entities) {
         statement.clearParameters();
-        setRelation(statement, entity);
+        setEntity(statement, entity);
         statement.addBatch();
       }
       statement.executeBatch();
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
-  }
-
-  private void setRelation(PreparedStatement statement, Relation entity) throws SQLException {
-    statement.setObject(1, entity.getId());
-    statement.setObject(2, entity.getInfo().getVersion());
-    statement.setObject(3, entity.getInfo().getUid());
-    statement.setObject(4, entity.getInfo().getTimestamp());
-    statement.setObject(5, entity.getInfo().getChangeset());
-    statement.setObject(6, entity.getTags());
-    Object[] refs = entity.getMembers().stream().map(Member::getRef).toArray();
-    statement.setObject(7, statement.getConnection().createArrayOf("bigint", refs));
-    Object[] types = entity.getMembers().stream().map(m -> m.getType().getNumber()).toArray();
-    statement.setObject(8, statement.getConnection().createArrayOf("int", types));
-    Object[] roles = entity.getMembers().stream().map(Member::getRole).toArray();
-    statement.setObject(9, statement.getConnection().createArrayOf("varchar", roles));
-    statement.setBytes(10, GeometryUtils.serialize(entity.getGeometry()));
   }
 
   public void delete(Long id) throws DatabaseException {
@@ -219,7 +188,9 @@ public class PostgresRelationTable implements RelationTable {
 
   @Override
   public void delete(List<Long> ids) throws DatabaseException {
-    if (ids.isEmpty()) return;
+    if (ids.isEmpty()) {
+      return;
+    }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(delete)) {
       for (Long id : ids) {
@@ -234,7 +205,9 @@ public class PostgresRelationTable implements RelationTable {
   }
 
   public void copy(List<Relation> entities) throws DatabaseException {
-    if (entities.isEmpty()) return;
+    if (entities.isEmpty()) {
+      return;
+    }
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copy))) {
@@ -257,6 +230,41 @@ public class PostgresRelationTable implements RelationTable {
     } catch (IOException | SQLException ex) {
       throw new DatabaseException(ex);
     }
+  }
+
+  private Relation getEntity(ResultSet result) throws SQLException {
+    long id = result.getLong(1);
+    int version = result.getInt(2);
+    int uid = result.getInt(3);
+    LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
+    long changeset = result.getLong(5);
+    Map<String, String> tags = (Map<String, String>) result.getObject(6);
+    Long[] refs = (Long[]) result.getArray(7).getArray();
+    Integer[] types = (Integer[]) result.getArray(8).getArray();
+    String[] roles = (String[]) result.getArray(9).getArray();
+    List<Member> members = new ArrayList<>();
+    for (int i = 0; i < refs.length; i++) {
+      members.add(new Member(refs[i], MemberType.forNumber(types[i]), roles[i]));
+    }
+    Geometry geometry = GeometryUtils.deserialize(result.getBytes(10));
+    Info info = new Info(version, timestamp, changeset, uid);
+    return new Relation(id, info, tags, members, geometry);
+  }
+
+  private void setEntity(PreparedStatement statement, Relation entity) throws SQLException {
+    statement.setObject(1, entity.getId());
+    statement.setObject(2, entity.getInfo().getVersion());
+    statement.setObject(3, entity.getInfo().getUid());
+    statement.setObject(4, entity.getInfo().getTimestamp());
+    statement.setObject(5, entity.getInfo().getChangeset());
+    statement.setObject(6, entity.getTags());
+    Object[] refs = entity.getMembers().stream().map(Member::getRef).toArray();
+    statement.setObject(7, statement.getConnection().createArrayOf("bigint", refs));
+    Object[] types = entity.getMembers().stream().map(m -> m.getType().getNumber()).toArray();
+    statement.setObject(8, statement.getConnection().createArrayOf("int", types));
+    Object[] roles = entity.getMembers().stream().map(Member::getRole).toArray();
+    statement.setObject(9, statement.getConnection().createArrayOf("varchar", roles));
+    statement.setBytes(10, GeometryUtils.serialize(entity.getGeometry()));
   }
 
 }

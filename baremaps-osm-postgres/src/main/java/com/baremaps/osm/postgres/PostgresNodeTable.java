@@ -113,7 +113,7 @@ public class PostgresNodeTable implements NodeTable {
       statement.setObject(1, id);
       ResultSet result = statement.executeQuery();
       if (result.next()) {
-        return getNode(result);
+        return getEntity(result);
       } else {
         return null;
       }
@@ -123,40 +123,28 @@ public class PostgresNodeTable implements NodeTable {
   }
 
   public List<Node> select(List<Long> ids) throws DatabaseException {
-    if (ids.isEmpty()) return List.of();
+    if (ids.isEmpty()) {
+      return List.of();
+    }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(selectIn)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
       ResultSet result = statement.executeQuery();
-      Map<Long, Node> nodes = new HashMap<>();
+      Map<Long, Node> entities = new HashMap<>();
       while (result.next()) {
-        Node node = getNode(result);
-        nodes.put(node.getId(), node);
+        Node entity = getEntity(result);
+        entities.put(entity.getId(), entity);
       }
-      return ids.stream().map(id -> nodes.get(id)).collect(Collectors.toList());
+      return ids.stream().map(id -> entities.get(id)).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
   }
 
-  private Node getNode(ResultSet result) throws SQLException {
-    long id = result.getLong(1);
-    int version = result.getInt(2);
-    int uid = result.getInt(3);
-    LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
-    long changeset = result.getLong(5);
-    Map<String, String> tags = (Map<String, String>) result.getObject(6);
-    double lon = result.getDouble(7);
-    double lat = result.getDouble(8);
-    Geometry point = GeometryUtils.deserialize(result.getBytes(9));
-    Info info = new Info(version, timestamp, changeset, uid);
-    return new Node(id, info, tags, lon, lat, point);
-  }
-
   public void insert(Node entity) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      setNode(statement, entity);
+      setEntity(statement, entity);
       statement.execute();
     } catch (SQLException e) {
       throw new DatabaseException(e);
@@ -164,30 +152,20 @@ public class PostgresNodeTable implements NodeTable {
   }
 
   public void insert(List<Node> entities) throws DatabaseException {
-    if (entities.isEmpty()) return;
+    if (entities.isEmpty()) {
+      return;
+    }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
       for (Node entity : entities) {
         statement.clearParameters();
-        setNode(statement, entity);
+        setEntity(statement, entity);
         statement.addBatch();
       }
       statement.executeBatch();
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
-  }
-
-  private void setNode(PreparedStatement statement, Node entity) throws SQLException {
-    statement.setObject(1, entity.getId());
-    statement.setObject(2, entity.getInfo().getVersion());
-    statement.setObject(3, entity.getInfo().getUid());
-    statement.setObject(4, entity.getInfo().getTimestamp());
-    statement.setObject(5, entity.getInfo().getChangeset());
-    statement.setObject(6, entity.getTags());
-    statement.setObject(7, entity.getLon());
-    statement.setObject(8, entity.getLat());
-    statement.setBytes(9, GeometryUtils.serialize(entity.getGeometry()));
   }
 
   public void delete(Long id) throws DatabaseException {
@@ -201,7 +179,9 @@ public class PostgresNodeTable implements NodeTable {
   }
 
   public void delete(List<Long> ids) throws DatabaseException {
-    if (ids.isEmpty()) return;
+    if (ids.isEmpty()) {
+      return;
+    }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(delete)) {
       for (Long id : ids) {
@@ -216,26 +196,55 @@ public class PostgresNodeTable implements NodeTable {
   }
 
   public void copy(List<Node> entities) throws DatabaseException {
-    if (entities.isEmpty()) return;
+    if (entities.isEmpty()) {
+      return;
+    }
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copy))) {
         writer.writeHeader();
-        for (Node node : entities) {
+        for (Node entity : entities) {
           writer.startRow(9);
-          writer.writeLong(node.getId());
-          writer.writeInteger(node.getInfo().getVersion());
-          writer.writeInteger(node.getInfo().getUid());
-          writer.writeLocalDateTime(node.getInfo().getTimestamp());
-          writer.writeLong(node.getInfo().getChangeset());
-          writer.writeHstore(node.getTags());
-          writer.writeDouble(node.getLon());
-          writer.writeDouble(node.getLat());
-          writer.writeGeometry(node.getGeometry());
+          writer.writeLong(entity.getId());
+          writer.writeInteger(entity.getInfo().getVersion());
+          writer.writeInteger(entity.getInfo().getUid());
+          writer.writeLocalDateTime(entity.getInfo().getTimestamp());
+          writer.writeLong(entity.getInfo().getChangeset());
+          writer.writeHstore(entity.getTags());
+          writer.writeDouble(entity.getLon());
+          writer.writeDouble(entity.getLat());
+          writer.writeGeometry(entity.getGeometry());
         }
       }
     } catch (IOException | SQLException e) {
       throw new DatabaseException(e);
     }
   }
+
+  private Node getEntity(ResultSet result) throws SQLException {
+    long id = result.getLong(1);
+    int version = result.getInt(2);
+    int uid = result.getInt(3);
+    LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
+    long changeset = result.getLong(5);
+    Map<String, String> tags = (Map<String, String>) result.getObject(6);
+    double lon = result.getDouble(7);
+    double lat = result.getDouble(8);
+    Geometry point = GeometryUtils.deserialize(result.getBytes(9));
+    Info info = new Info(version, timestamp, changeset, uid);
+    return new Node(id, info, tags, lon, lat, point);
+  }
+
+  private void setEntity(PreparedStatement statement, Node entity) throws SQLException {
+    statement.setObject(1, entity.getId());
+    statement.setObject(2, entity.getInfo().getVersion());
+    statement.setObject(3, entity.getInfo().getUid());
+    statement.setObject(4, entity.getInfo().getTimestamp());
+    statement.setObject(5, entity.getInfo().getChangeset());
+    statement.setObject(6, entity.getTags());
+    statement.setObject(7, entity.getLon());
+    statement.setObject(8, entity.getLat());
+    statement.setBytes(9, GeometryUtils.serialize(entity.getGeometry()));
+  }
+
 }

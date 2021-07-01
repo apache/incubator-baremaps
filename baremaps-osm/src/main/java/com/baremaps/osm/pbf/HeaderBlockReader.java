@@ -6,7 +6,6 @@ import com.baremaps.osm.domain.Blob;
 import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.HeaderBlock;
-import com.baremaps.stream.StreamException;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -32,7 +31,7 @@ public class HeaderBlockReader {
     String replicationBaseUrl = headerBlock.getOsmosisReplicationBaseUrl();
     String source = headerBlock.getSource();
     String writingProgram = headerBlock.getWritingprogram();
-    Header header = new Header(timestamp, replicationSequenceNumber, replicationBaseUrl, source, writingProgram);
+    Header header = new Header(replicationSequenceNumber, timestamp, replicationBaseUrl, source, writingProgram);
 
     HeaderBBox headerBBox = headerBlock.getBbox();
     double minLon = headerBBox.getLeft() * .000000001;
