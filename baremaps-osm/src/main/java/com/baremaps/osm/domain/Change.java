@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.StringJoiner;
 
 /**
- * A class used to represent the changes to be applied to a dataset.
+ * Represents a change in an OpenStreetMap dataset.
  */
 public final class Change {
 

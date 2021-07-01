@@ -28,6 +28,12 @@ public class GeometryUtils {
 
   }
 
+  /**
+   * Serializes a geometry in the WKB format.
+   *
+   * @param geometry
+   * @return
+   */
   public static byte[] serialize(Geometry geometry) {
     if (geometry == null) {
       return null;
@@ -36,6 +42,12 @@ public class GeometryUtils {
     return writer.write(geometry);
   }
 
+  /**
+   * Deserializes a geometry in the WKB format.
+   *
+   * @param wkb
+   * @return
+   */
   public static Geometry deserialize(byte[] wkb) {
     if (wkb == null) {
       return null;

@@ -43,7 +43,7 @@ public class OpenStreetMap {
   }
 
   /**
-   * Create an ordered stream of OSM blocks from a PBF file.
+   * Creates an ordered stream of OSM blocks from a PBF file.
    *
    * @param input
    * @return
@@ -56,7 +56,7 @@ public class OpenStreetMap {
   }
 
   /**
-   * Create an ordered stream of OSM entities from a PBF file.
+   * Creates an ordered stream of OSM entities from a PBF file.
    *
    * @param input
    * @return
@@ -66,7 +66,7 @@ public class OpenStreetMap {
   }
 
   /**
-   * Create an ordered stream of OSM entities from a XML file.
+   * Creates an ordered stream of OSM entities from a XML file.
    *
    * @param input
    * @return
@@ -76,7 +76,7 @@ public class OpenStreetMap {
   }
 
   /**
-   * Create an ordered stream of OSM changes from a XML file.
+   * Creates an ordered stream of OSM changes from a XML file.
    *
    * @param input
    * @return
@@ -86,7 +86,7 @@ public class OpenStreetMap {
   }
 
   /**
-   * Read the content of an OSM state file.
+   * Reads the content of an OSM state file.
    *
    * @param input
    * @return

@@ -2,6 +2,9 @@ package com.baremaps.osm.domain;
 
 import com.baremaps.osm.handler.BlockConsumer;
 
+/**
+ * Represents a header block in an OpenStreetMap dataset.
+ */
 public class HeaderBlock extends Block {
 
   private final Header header;

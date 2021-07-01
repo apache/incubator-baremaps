@@ -22,6 +22,9 @@ import java.util.StringJoiner;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
+/**
+ * Represents a raw blob of data in an OpenStreetMap dataset.
+ */
 public class Blob {
 
   private final BlobHeader header;

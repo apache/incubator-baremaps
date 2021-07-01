@@ -23,7 +23,7 @@ import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * A class used to represent groups of elements.
+ * Represents a relation element in an OpenStreetMap dataset.
  */
 public final class Relation extends Element {
 
@@ -44,13 +44,13 @@ public final class Relation extends Element {
   }
 
   @Override
-  public void visit(EntityConsumer handler) throws Exception {
-    handler.match(this);
+  public void visit(EntityConsumer consumer) throws Exception {
+    consumer.match(this);
   }
 
   @Override
-  public <T> T visit(EntityFunction<T> mapper) throws Exception {
-    return mapper.match(this);
+  public <T> T visit(EntityFunction<T> function) throws Exception {
+    return function.match(this);
   }
 
   @Override

@@ -17,7 +17,7 @@ package com.baremaps.osm.domain;
 import com.google.common.base.Objects;
 
 /**
- * A class used to represent users and to track authorship in a dataset.
+ * Represents the author of an objet in an OpenStreetMap dataset.
  */
 public final class User {
 

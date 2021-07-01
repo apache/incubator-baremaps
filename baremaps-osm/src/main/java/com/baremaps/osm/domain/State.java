@@ -17,7 +17,7 @@ package com.baremaps.osm.domain;
 import java.time.LocalDateTime;
 
 /**
- * A class used to represent the state of a dataset, enabling its replication.
+ * Represents the state of an OpenStreetMap dataset, enabling its replication.
  */
 public class State {
 

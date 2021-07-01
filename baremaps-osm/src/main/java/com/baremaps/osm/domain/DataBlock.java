@@ -3,6 +3,9 @@ package com.baremaps.osm.domain;
 import com.baremaps.osm.handler.BlockConsumer;
 import java.util.List;
 
+/**
+ * Represents a data block in an OpenStreetMap dataset.
+ */
 public class DataBlock extends Block {
 
   private final List<Node> denseNodes;

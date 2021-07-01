@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * A class used to represent the boundaries of a dataset.
+ * Represents the bounds of an OpenStreetMap dataset.
  */
 public class Bound extends Entity {
 
@@ -42,13 +42,13 @@ public class Bound extends Entity {
   }
 
   @Override
-  public void visit(EntityConsumer handler) throws Exception {
-    handler.match(this);
+  public void visit(EntityConsumer consumer) throws Exception {
+    consumer.match(this);
   }
 
   @Override
-  public <T> T visit(EntityFunction<T> mapper) throws Exception {
-    return mapper.match(this);
+  public <T> T visit(EntityFunction<T> function) throws Exception {
+    return function.match(this);
   }
 
   @Override

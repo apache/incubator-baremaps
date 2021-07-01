@@ -20,7 +20,7 @@ import com.google.common.base.Objects;
 import java.util.StringJoiner;
 
 /**
- * A class used to represent the members of a relation.
+ * Represents a member of a relation in an OpenStreetMap dataset.
  */
 public final class Member {
 

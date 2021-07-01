@@ -4,18 +4,19 @@ import com.baremaps.osm.handler.EntityConsumer;
 import com.baremaps.osm.handler.EntityFunction;
 
 /**
- * An interface to mark the objects of a dataset.
+ * Represents an entity in an OpenStreetMap dataset.
+ * Entities are a basis to model all the objects in OpenStreetMap.
  */
 public abstract class Entity {
 
   /**
-   * A method that uses the visitor pattern to handle entities.
+   * Visits the entity with the provided entity consumer.
    */
-  public abstract void visit(EntityConsumer handler) throws Exception;
+  public abstract void visit(EntityConsumer consumer) throws Exception;
 
   /**
-   * A method that uses the visitor pattern to map entities.
+   * Visits the entity with the provided entity function.
    */
-  public abstract <T> T visit(EntityFunction<T> mapper) throws Exception;
+  public abstract <T> T visit(EntityFunction<T> function) throws Exception;
 
 }
