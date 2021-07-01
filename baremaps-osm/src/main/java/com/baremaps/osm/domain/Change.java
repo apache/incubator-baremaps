@@ -14,6 +14,10 @@
 
 package com.baremaps.osm.domain;
 
+import com.baremaps.osm.handler.ChangeConsumer;
+import com.baremaps.osm.handler.ChangeFunction;
+import com.baremaps.osm.handler.EntityConsumer;
+import com.baremaps.osm.handler.EntityFunction;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -51,6 +55,20 @@ public final class Change {
 
   public List<Element> getElements() {
     return elements;
+  }
+
+  /**
+   * Visits the entity with the provided entity consumer.
+   */
+  public void visit(ChangeConsumer consumer) throws Exception {
+    consumer.match(this);
+  }
+
+  /**
+   * Visits the entity with the provided entity function.
+   */
+  public <T> T visit(ChangeFunction<T> function) throws Exception {
+    return function.match(this);
   }
 
 }

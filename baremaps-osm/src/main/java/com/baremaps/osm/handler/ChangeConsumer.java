@@ -12,7 +12,7 @@ public interface ChangeConsumer extends Consumer<Change> {
   @Override
   default void accept(Change change) {
     try {
-      match(change);
+      change.visit(this);
     } catch (StreamException e) {
       throw e;
     } catch (Exception e) {
