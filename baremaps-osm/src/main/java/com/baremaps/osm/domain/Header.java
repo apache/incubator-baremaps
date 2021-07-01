@@ -14,14 +14,14 @@
 
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.EntityHandler;
-import com.baremaps.osm.handler.EntityMapper;
+import com.baremaps.osm.handler.EntityConsumer;
+import com.baremaps.osm.handler.EntityFunction;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * A class used to store the metadata of an dataset.
+ * Represents a header entity in an OpenStreetMap dataset.
  */
 public class Header extends Entity {
 
@@ -62,13 +62,13 @@ public class Header extends Entity {
   }
 
   @Override
-  public void accept(EntityHandler handler) throws Exception {
-    handler.handle(this);
+  public void visit(EntityConsumer consumer) throws Exception {
+    consumer.match(this);
   }
 
   @Override
-  public <T> T accept(EntityMapper<T> mapper) throws Exception {
-    return mapper.map(this);
+  public <T> T visit(EntityFunction<T> function) throws Exception {
+    return function.match(this);
   }
 
   @Override

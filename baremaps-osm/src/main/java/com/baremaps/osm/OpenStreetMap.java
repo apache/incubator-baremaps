@@ -3,9 +3,8 @@ package com.baremaps.osm;
 import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
-import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.State;
-import com.baremaps.osm.handler.BlockEntityHandler;
+import com.baremaps.osm.handler.BlockEntityConsumer;
 import com.baremaps.osm.pbf.BlobIterator;
 import com.baremaps.osm.pbf.BlobUtils;
 import com.baremaps.osm.xml.XmlChangeSpliterator;
@@ -17,8 +16,6 @@ import com.google.common.io.CharStreams;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -38,7 +35,7 @@ public class OpenStreetMap {
   private static Stream<Entity> streamPbfBlockEntities(Block block) {
     try {
       Stream.Builder<Entity> entities = Stream.builder();
-      block.handle(new BlockEntityHandler(entities::add));
+      block.visit(new BlockEntityConsumer(entities::add));
       return entities.build();
     } catch (Exception e) {
       throw new StreamException(e);
@@ -46,7 +43,7 @@ public class OpenStreetMap {
   }
 
   /**
-   * Create an ordered stream of OSM blocks from a PBF file.
+   * Creates an ordered stream of OSM blocks from a PBF file.
    *
    * @param input
    * @return
@@ -59,7 +56,7 @@ public class OpenStreetMap {
   }
 
   /**
-   * Create an ordered stream of OSM entities from a PBF file.
+   * Creates an ordered stream of OSM entities from a PBF file.
    *
    * @param input
    * @return
@@ -69,7 +66,7 @@ public class OpenStreetMap {
   }
 
   /**
-   * Create an ordered stream of OSM entities from a XML file.
+   * Creates an ordered stream of OSM entities from a XML file.
    *
    * @param input
    * @return
@@ -79,7 +76,7 @@ public class OpenStreetMap {
   }
 
   /**
-   * Create an ordered stream of OSM changes from a XML file.
+   * Creates an ordered stream of OSM changes from a XML file.
    *
    * @param input
    * @return
@@ -89,7 +86,7 @@ public class OpenStreetMap {
   }
 
   /**
-   * Read the content of an OSM state file.
+   * Reads the content of an OSM state file.
    *
    * @param input
    * @return

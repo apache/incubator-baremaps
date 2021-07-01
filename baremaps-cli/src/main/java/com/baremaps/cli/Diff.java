@@ -13,7 +13,7 @@ import com.baremaps.osm.postgres.PostgresNodeTable;
 import com.baremaps.osm.postgres.PostgresReferenceCache;
 import com.baremaps.osm.postgres.PostgresRelationTable;
 import com.baremaps.osm.postgres.PostgresWayTable;
-import com.baremaps.osm.database.DatabaseDiffer;
+import com.baremaps.osm.database.DatabaseDiffService;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -77,7 +77,7 @@ public class Diff implements Callable<Integer> {
 
     logger.info("Saving diff file");
     try (PrintWriter printWriter = new PrintWriter(blobStore.write(this.tiles))) {
-      new DatabaseDiffer(
+      new DatabaseDiffService(
           blobStore,
           coordinateCache,
           referenceCache,

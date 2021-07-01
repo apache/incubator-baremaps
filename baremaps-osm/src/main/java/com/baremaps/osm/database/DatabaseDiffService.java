@@ -9,9 +9,9 @@ import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.geometry.GeometryHandler;
-import com.baremaps.osm.geometry.ProjectionTransformer;
-import com.baremaps.osm.handler.EntityMapper;
+import com.baremaps.osm.geometry.GeometryConsumer;
+import com.baremaps.osm.geometry.ProjectionConsumer;
+import com.baremaps.osm.handler.EntityFunction;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
 import com.baremaps.tile.Tile;
@@ -30,12 +30,12 @@ import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DatabaseDiffer implements Callable<List<Tile>> {
+public class DatabaseDiffService implements Callable<List<Tile>> {
 
-  private static Logger logger = LoggerFactory.getLogger(DatabaseUpdater.class);
+  private static Logger logger = LoggerFactory.getLogger(DatabaseUpdateService.class);
 
   private final BlobStore blobStore;
-  private final GeometryHandler geometryHandler;
+  private final GeometryConsumer geometryHandler;
   private final HeaderTable headerTable;
   private final NodeTable nodeTable;
   private final WayTable wayTable;
@@ -43,7 +43,7 @@ public class DatabaseDiffer implements Callable<List<Tile>> {
   private final int srid;
   private final int zoom;
 
-  public DatabaseDiffer(
+  public DatabaseDiffService(
       BlobStore blobStore,
       Cache<Long, Coordinate> coordinateCache,
       Cache<Long, List<Long>> referenceCache,
@@ -54,7 +54,7 @@ public class DatabaseDiffer implements Callable<List<Tile>> {
       int srid,
       int zoom) {
     this.blobStore = blobStore;
-    this.geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
+    this.geometryHandler = new GeometryConsumer(coordinateCache, referenceCache);
     this.headerTable = headerTable;
     this.nodeTable = nodeTable;
     this.wayTable = wayTable;
@@ -73,12 +73,12 @@ public class DatabaseDiffer implements Callable<List<Tile>> {
     URI changeUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
 
     ProgressLogger progressLogger = new ProgressLogger(blobStore.size(changeUri), 5000);
-    ProjectionTransformer projectionTransformer = new ProjectionTransformer(srid, 4326);
+    ProjectionConsumer projectionConsumer = new ProjectionConsumer(srid, 4326);
 
     try (InputStream changesInputStream = new GZIPInputStream(new InputStreamProgress(blobStore.read(changeUri), progressLogger))) {
       return OpenStreetMap.streamXmlChanges(changesInputStream)
           .flatMap(this::geometriesForChange)
-          .peek(projectionTransformer::transform)
+          .peek(projectionConsumer::transform)
           .flatMap(this::tilesForGeometry)
           .distinct()
           .collect(Collectors.toList());
@@ -103,31 +103,31 @@ public class DatabaseDiffer implements Callable<List<Tile>> {
   }
 
   private Stream<Geometry> geometriesForPreviousVersion(Change change) {
-    return change.getElements().stream().map(new EntityMapper<Optional<Geometry>>() {
+    return change.getElements().stream().map(new EntityFunction<Optional<Geometry>>() {
       @Override
-      public Optional<Geometry> map(Header header) {
+      public Optional<Geometry> match(Header header) {
         return Optional.empty();
       }
 
       @Override
-      public Optional<Geometry> map(Bound bound) {
+      public Optional<Geometry> match(Bound bound) {
         return Optional.empty();
       }
 
       @Override
-      public Optional<Geometry> map(Node node) throws Exception {
+      public Optional<Geometry> match(Node node) throws Exception {
         Node previousNode = nodeTable.select(node.getId());
         return Optional.ofNullable(previousNode).map(n -> n.getGeometry());
       }
 
       @Override
-      public Optional<Geometry> map(Way way) throws Exception {
+      public Optional<Geometry> match(Way way) throws Exception {
         Way previousWay = wayTable.select(way.getId());
         return Optional.ofNullable(previousWay).map(w -> w.getGeometry());
       }
 
       @Override
-      public Optional<Geometry> map(Relation relation) throws Exception {
+      public Optional<Geometry> match(Relation relation) throws Exception {
         Relation previousRelation = relationTable.select(relation.getId());
         return Optional.ofNullable(previousRelation).map(r -> r.getGeometry());
       }

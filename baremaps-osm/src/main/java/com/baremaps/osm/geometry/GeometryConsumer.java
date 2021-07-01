@@ -6,7 +6,7 @@ import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.handler.ElementHandler;
+import com.baremaps.osm.handler.ElementConsumer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,15 +32,18 @@ import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GeometryHandler implements ElementHandler {
+/**
+ * Sets the geometry of an element via side-effects.
+ */
+public class GeometryConsumer implements ElementConsumer {
 
-  private static Logger logger = LoggerFactory.getLogger(GeometryHandler.class);
+  private static Logger logger = LoggerFactory.getLogger(GeometryConsumer.class);
 
   protected final GeometryFactory geometryFactory;
   private final Cache<Long, Coordinate> coordinateCache;
   private final Cache<Long, List<Long>> referenceCache;
 
-  public GeometryHandler(
+  public GeometryConsumer(
       Cache<Long, Coordinate> coordinateCache,
       Cache<Long, List<Long>> referenceCache) {
     this.geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
@@ -49,13 +52,13 @@ public class GeometryHandler implements ElementHandler {
   }
 
   @Override
-  public void handle(Node node) {
+  public void match(Node node) {
     Point point = geometryFactory.createPoint(new Coordinate(node.getLon(), node.getLat()));
     node.setGeometry(point);
   }
 
   @Override
-  public void handle(Way way) {
+  public void match(Way way) {
     try {
       List<Coordinate> coordinates = coordinateCache.get(way.getNodes());
       Coordinate[] array = coordinates.toArray(new Coordinate[coordinates.size()]);
@@ -74,7 +77,7 @@ public class GeometryHandler implements ElementHandler {
   }
 
   @Override
-  public void handle(Relation relation) {
+  public void match(Relation relation) {
     try {
       Map<String, String> tags = relation.getTags();
 

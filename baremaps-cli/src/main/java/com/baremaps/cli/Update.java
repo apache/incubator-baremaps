@@ -15,7 +15,7 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.database.DatabaseUpdater;
+import com.baremaps.osm.database.DatabaseUpdateService;
 import com.baremaps.osm.cache.CoordinateCache;
 import com.baremaps.osm.cache.ReferenceCache;
 import com.baremaps.osm.database.HeaderTable;
@@ -74,7 +74,7 @@ public class Update implements Callable<Integer> {
     RelationTable relationTable = new PostgresRelationTable(datasource);
 
     logger.info("Importing changes");
-    new DatabaseUpdater(
+    new DatabaseUpdateService(
         blobStore,
         coordinateCache,
         referenceCache,

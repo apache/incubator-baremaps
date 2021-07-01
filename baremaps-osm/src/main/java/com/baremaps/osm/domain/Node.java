@@ -14,15 +14,15 @@
 
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.EntityHandler;
-import com.baremaps.osm.handler.EntityMapper;
+import com.baremaps.osm.handler.EntityConsumer;
+import com.baremaps.osm.handler.EntityFunction;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * A class used to represent a single point in space.
+ * Represents a node element in an OpenStreetMap dataset.
  */
 public final class Node extends Element {
 
@@ -51,13 +51,13 @@ public final class Node extends Element {
   }
 
   @Override
-  public void accept(EntityHandler handler) throws Exception {
-    handler.handle(this);
+  public void visit(EntityConsumer consumer) throws Exception {
+    consumer.match(this);
   }
 
   @Override
-  public <T> T accept(EntityMapper<T> mapper) throws Exception {
-    return mapper.map(this);
+  public <T> T visit(EntityFunction<T> function) throws Exception {
+    return function.match(this);
   }
 
   @Override

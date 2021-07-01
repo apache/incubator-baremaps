@@ -48,7 +48,6 @@ public class HttpBlobStore implements BlobStore {
   public long size(URI uri) throws IOException {
     logger.debug("Size {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-    conn.setDoInput(true);
     conn.setRequestMethod("HEAD");
     return conn.getContentLengthLong();
   }
@@ -57,7 +56,6 @@ public class HttpBlobStore implements BlobStore {
   public InputStream read(URI uri) throws IOException {
     logger.debug("Read {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-    conn.setDoInput(true);
     conn.setRequestMethod("GET");
     return new BufferedInputStream(conn.getInputStream());
   }
@@ -66,7 +64,6 @@ public class HttpBlobStore implements BlobStore {
   public byte[] readByteArray(URI uri) throws IOException {
     logger.debug("Read {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-    conn.setDoInput(true);
     conn.setRequestMethod("GET");
     try (InputStream inputStream = conn.getInputStream()) {
       return ByteStreams.toByteArray(inputStream);
@@ -81,7 +78,6 @@ public class HttpBlobStore implements BlobStore {
       public void close() throws IOException {
         byte[] bytes = this.toByteArray();
         HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-        conn.setDoOutput(true);
         conn.setRequestMethod("PUT");
         conn.setRequestProperty("Content-Type", contentType);
         conn.setRequestProperty("Content-Encoding", contentEncoding);
@@ -98,7 +94,6 @@ public class HttpBlobStore implements BlobStore {
   public void writeByteArray(URI uri, byte[] bytes) throws IOException {
     logger.debug("Write {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-    conn.setDoOutput(true);
     conn.setRequestMethod("PUT");
     conn.setRequestProperty("Content-Type", contentType);
     conn.setRequestProperty("Content-Encoding", contentEncoding);
@@ -113,7 +108,6 @@ public class HttpBlobStore implements BlobStore {
   public void delete(URI uri) throws IOException {
     logger.debug("Delete {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-    conn.setDoOutput(true);
     conn.setRequestMethod("DELETE");
     conn.getInputStream();
   }

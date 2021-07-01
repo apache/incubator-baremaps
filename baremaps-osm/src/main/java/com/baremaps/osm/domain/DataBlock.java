@@ -1,8 +1,12 @@
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.BlockHandler;
+import com.baremaps.osm.handler.BlockConsumer;
+import com.baremaps.osm.handler.BlockFunction;
 import java.util.List;
 
+/**
+ * Represents a data block in an OpenStreetMap dataset.
+ */
 public class DataBlock extends Block {
 
   private final List<Node> denseNodes;
@@ -35,8 +39,13 @@ public class DataBlock extends Block {
   }
 
   @Override
-  public void handle(BlockHandler handler) throws Exception {
-    handler.handle(this);
+  public void visit(BlockConsumer consumer) throws Exception {
+    consumer.match(this);
+  }
+
+  @Override
+  public <T> T visit(BlockFunction<T> function) throws Exception {
+    return function.match(this);
   }
 
 }

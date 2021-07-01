@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /**
- * A class used to store the metadata of an element in a dataset.
+ * Represents all the metadata associated to an element in an OpenStreetMap dataset.
  */
 public class Info {
 

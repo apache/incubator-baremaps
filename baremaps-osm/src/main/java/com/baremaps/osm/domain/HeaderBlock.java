@@ -1,7 +1,11 @@
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.BlockHandler;
+import com.baremaps.osm.handler.BlockConsumer;
+import com.baremaps.osm.handler.BlockFunction;
 
+/**
+ * Represents a header block in an OpenStreetMap dataset.
+ */
 public class HeaderBlock extends Block {
 
   private final Header header;
@@ -23,8 +27,13 @@ public class HeaderBlock extends Block {
   }
 
   @Override
-  public void handle(BlockHandler handler) throws Exception {
-    handler.handle(this);
+  public void visit(BlockConsumer consumer) throws Exception {
+    consumer.match(this);
+  }
+
+  @Override
+  public <T> T visit(BlockFunction<T> function) throws Exception {
+    return function.match(this);
   }
 
 }

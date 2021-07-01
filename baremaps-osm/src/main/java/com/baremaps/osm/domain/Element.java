@@ -20,7 +20,8 @@ import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * An abstract class used as a basis to model the physical world.
+ * Represents an element in an OpenStreetMap dataset.
+ * Elements are a basis to model the physical world.
  */
 public abstract class Element extends Entity {
 

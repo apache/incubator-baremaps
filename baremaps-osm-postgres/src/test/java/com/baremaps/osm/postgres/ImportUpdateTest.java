@@ -8,9 +8,9 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.osm.cache.CoordinateCache;
 import com.baremaps.osm.cache.ReferenceCache;
-import com.baremaps.osm.database.DatabaseDiffer;
-import com.baremaps.osm.database.DatabaseImporter;
-import com.baremaps.osm.database.DatabaseUpdater;
+import com.baremaps.osm.database.DatabaseDiffService;
+import com.baremaps.osm.database.DatabaseImportService;
+import com.baremaps.osm.database.DatabaseUpdateService;
 import com.baremaps.osm.cache.InMemoryCache;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
@@ -59,7 +59,7 @@ class ImportUpdateTest {
   void simple() throws Exception {
 
     // Import data
-    new DatabaseImporter(
+    new DatabaseImportService(
         new URI("res://simple/data.osm.pbf"),
         blobStore,
         new InMemoryCache<>(),
@@ -100,7 +100,7 @@ class ImportUpdateTest {
     assertNotNull(way);
 
     // Update the database
-    new DatabaseUpdater(
+    new DatabaseUpdateService(
         blobStore,
         new PostgresCoordinateCache(dataSource),
         new PostgresReferenceCache(dataSource),
@@ -126,7 +126,7 @@ class ImportUpdateTest {
   void liechtenstein() throws Exception {
 
     // Import data
-    new DatabaseImporter(
+    new DatabaseImportService(
         new URI("res://liechtenstein/liechtenstein.osm.pbf"),
         blobStore,
         new InMemoryCache<>(),
@@ -145,7 +145,7 @@ class ImportUpdateTest {
     CoordinateCache coordinateCache = new PostgresCoordinateCache(dataSource);
     ReferenceCache referenceCache = new PostgresReferenceCache(dataSource);
 
-    assertEquals(0, new DatabaseDiffer(
+    assertEquals(0, new DatabaseDiffService(
         blobStore,
         coordinateCache,
         referenceCache,
@@ -158,7 +158,7 @@ class ImportUpdateTest {
     ).call().size());
 
     // Update the database
-    new DatabaseUpdater(
+    new DatabaseUpdateService(
         blobStore,
         coordinateCache,
         referenceCache,
@@ -170,7 +170,7 @@ class ImportUpdateTest {
     ).call();
     assertEquals(2435l, headerTable.latest().getReplicationSequenceNumber());
 
-    assertEquals(7, new DatabaseDiffer(
+    assertEquals(7, new DatabaseDiffService(
         blobStore,
         coordinateCache,
         referenceCache,
@@ -182,7 +182,7 @@ class ImportUpdateTest {
         14
     ).call().size());
 
-    new DatabaseUpdater(
+    new DatabaseUpdateService(
         blobStore,
         coordinateCache,
         referenceCache,
@@ -194,7 +194,7 @@ class ImportUpdateTest {
     ).call();
     assertEquals(2436l, headerTable.latest().getReplicationSequenceNumber());
 
-    assertEquals(0, new DatabaseDiffer(
+    assertEquals(0, new DatabaseDiffService(
         blobStore,
         coordinateCache,
         referenceCache,
@@ -206,7 +206,7 @@ class ImportUpdateTest {
         14
     ).call().size());
 
-    new DatabaseUpdater(
+    new DatabaseUpdateService(
         blobStore,
         coordinateCache,
         referenceCache,

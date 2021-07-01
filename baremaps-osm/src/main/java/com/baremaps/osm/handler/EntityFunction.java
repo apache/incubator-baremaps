@@ -9,12 +9,17 @@ import com.baremaps.osm.domain.Way;
 import com.baremaps.stream.StreamException;
 import java.util.function.Function;
 
-public interface EntityMapper<T> extends Function<Entity, T> {
+/**
+ * Represents a function that transforms entities of different types.
+ *
+ * @param <T>
+ */
+public interface EntityFunction<T> extends Function<Entity, T> {
 
   @Override
   default T apply(Entity entity) {
     try {
-      return entity.accept(this);
+      return entity.visit(this);
     } catch (StreamException e) {
       throw e;
     } catch (Exception e) {
@@ -22,14 +27,14 @@ public interface EntityMapper<T> extends Function<Entity, T> {
     }
   }
 
-  T map(Header header) throws Exception;
+  T match(Header header) throws Exception;
 
-  T map(Bound bound) throws Exception;
+  T match(Bound bound) throws Exception;
 
-  T map(Node node) throws Exception;
+  T match(Node node) throws Exception;
 
-  T map(Way way) throws Exception;
+  T match(Way way) throws Exception;
 
-  T map(Relation relation) throws Exception;
+  T match(Relation relation) throws Exception;
 
 }
