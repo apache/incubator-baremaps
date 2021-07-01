@@ -12,6 +12,7 @@ package com.baremaps.osm.postgres;/*
  * the License.
  */
 
+import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Member;
 import com.baremaps.osm.domain.Member.MemberType;
@@ -34,6 +35,12 @@ public class DatabaseConstants {
   public static final LocalDateTime TIMESTAMP = LocalDateTime.of(2020, 1, 1, 0, 0);
 
   public static final Info INFO = new Info(0, TIMESTAMP, 0, 0);
+
+  public static final Header HEADER_0 = new Header(1l, TIMESTAMP, "", "", "");
+
+  public static final Header HEADER_1 = new Header(2l, TIMESTAMP, "", "", "");
+
+  public static final Header HEADER_2 = new Header(3l, TIMESTAMP, "", "", "");
 
   public static final Node NODE_0 = new Node(0, INFO, ImmutableMap.of(), 0, 0,
       GEOMETRY_FACTORY.createPoint(new Coordinate(0, 0)));

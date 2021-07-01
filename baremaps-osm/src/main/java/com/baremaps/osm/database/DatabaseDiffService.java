@@ -67,7 +67,7 @@ public class DatabaseDiffService implements Callable<List<Tile>> {
   public List<Tile> call() throws Exception {
     logger.info("Importing changes");
 
-    Header header = headerTable.latest();
+    Header header = headerTable.selectLatest();
     String replicationUrl = header.getReplicationUrl();
     Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
     URI changeUri = resolve(replicationUrl, sequenceNumber, "osc.gz");

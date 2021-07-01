@@ -53,7 +53,7 @@ public class DatabaseUpdateService implements Callable<Void> {
 
   @Override
   public Void call() throws Exception {
-    Header header = headerTable.latest();
+    Header header = headerTable.selectLatest();
     String replicationUrl = header.getReplicationUrl();
     Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
 

@@ -7,6 +7,6 @@ public interface HeaderTable extends EntityTable<Header> {
 
   List<Header> selectAll() throws DatabaseException;
 
-  Header latest() throws DatabaseException;
+  Header selectLatest() throws DatabaseException;
 
 }

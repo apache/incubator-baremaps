@@ -117,7 +117,7 @@ public class PostgresHeaderTable implements HeaderTable {
   }
 
   @Override
-  public Header latest() throws DatabaseException {
+  public Header selectLatest() throws DatabaseException {
     return selectAll().get(0);
   }
 

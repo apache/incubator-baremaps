@@ -137,7 +137,7 @@ class ImportUpdateTest {
         relationTable,
         3857
     ).call();
-    assertEquals(2434l, headerTable.latest().getReplicationSequenceNumber());
+    assertEquals(2434l, headerTable.selectLatest().getReplicationSequenceNumber());
 
     // Fix the replicationUrl so that we can update the database with local files
     headerTable.insert(new Header(2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), "res://liechtenstein", "", ""));
@@ -168,7 +168,7 @@ class ImportUpdateTest {
         relationTable,
         3857
     ).call();
-    assertEquals(2435l, headerTable.latest().getReplicationSequenceNumber());
+    assertEquals(2435l, headerTable.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(7, new DatabaseDiffService(
         blobStore,
@@ -192,7 +192,7 @@ class ImportUpdateTest {
         relationTable,
         3857
     ).call();
-    assertEquals(2436l, headerTable.latest().getReplicationSequenceNumber());
+    assertEquals(2436l, headerTable.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(0, new DatabaseDiffService(
         blobStore,
@@ -216,7 +216,7 @@ class ImportUpdateTest {
         relationTable,
         3857
     ).call();
-    assertEquals(2437l, headerTable.latest().getReplicationSequenceNumber());
+    assertEquals(2437l, headerTable.selectLatest().getReplicationSequenceNumber());
   }
 
 }
