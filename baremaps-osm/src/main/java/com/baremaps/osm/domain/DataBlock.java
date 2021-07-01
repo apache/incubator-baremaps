@@ -1,6 +1,6 @@
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.BlockHandler;
+import com.baremaps.osm.handler.BlockConsumer;
 import java.util.List;
 
 public class DataBlock extends Block {
@@ -35,8 +35,8 @@ public class DataBlock extends Block {
   }
 
   @Override
-  public void handle(BlockHandler handler) throws Exception {
-    handler.handle(this);
+  public void visit(BlockConsumer handler) throws Exception {
+    handler.match(this);
   }
 
 }

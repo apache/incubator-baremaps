@@ -18,7 +18,7 @@ import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.handler.ElementHandler;
+import com.baremaps.osm.handler.ElementConsumer;
 import java.util.stream.Stream;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
@@ -31,14 +31,17 @@ import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
-public class ProjectionTransformer extends GeometryTransformer implements ElementHandler {
+/**
+ * Changes the projection of the geometry of an element via side-effects.
+ */
+public class ProjectionConsumer extends GeometryTransformer implements ElementConsumer {
 
   private final int srcSRID;
   private final int dstSRID;
 
   private final CoordinateTransform coordinateTransform;
 
-  public ProjectionTransformer(int srcSRID, int dstSRID) {
+  public ProjectionConsumer(int srcSRID, int dstSRID) {
     this.srcSRID = srcSRID;
     this.dstSRID = dstSRID;
     CRSFactory crsFactory = new CRSFactory();
@@ -63,17 +66,17 @@ public class ProjectionTransformer extends GeometryTransformer implements Elemen
   }
 
   @Override
-  public void handle(Node node) {
+  public void match(Node node) {
     handleElement(node);
   }
 
   @Override
-  public void handle(Way way) {
+  public void match(Way way) {
     handleElement(way);
   }
 
   @Override
-  public void handle(Relation relation) {
+  public void match(Relation relation) {
     handleElement(relation);
   }
 

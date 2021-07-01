@@ -10,10 +10,10 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.State;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.geometry.GeometryHandler;
-import com.baremaps.osm.geometry.ProjectionTransformer;
-import com.baremaps.osm.handler.ChangeHandler;
-import com.baremaps.osm.handler.ElementHandler;
+import com.baremaps.osm.geometry.GeometryConsumer;
+import com.baremaps.osm.geometry.ProjectionConsumer;
+import com.baremaps.osm.handler.ChangeConsumer;
+import com.baremaps.osm.handler.ElementConsumer;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
 import java.io.InputStream;
@@ -64,14 +64,14 @@ public class DatabaseUpdater implements Callable<Void> {
     String replicationUrl = header.getReplicationUrl();
     Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
 
-    GeometryHandler geometryHandler = new GeometryHandler(coordinateCache, referenceCache);
-    ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
-    UpdateHandler updateHandler = new UpdateHandler();
+    GeometryConsumer geometryHandler = new GeometryConsumer(coordinateCache, referenceCache);
+    ProjectionConsumer projectionConsumer = new ProjectionConsumer(4326, srid);
+    UpdateConsumer updateHandler = new UpdateConsumer();
     URI changeUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
     ProgressLogger progressLogger = new ProgressLogger(blobStore.size(changeUri), 5000);
     try (InputStream changesInputStream = new GZIPInputStream(new InputStreamProgress(blobStore.read(changeUri), progressLogger))) {
       OpenStreetMap.streamXmlChanges(changesInputStream)
-          .peek(change -> change.getElements().forEach(geometryHandler.andThen(projectionTransformer)))
+          .peek(change -> change.getElements().forEach(geometryHandler.andThen(projectionConsumer)))
           .forEach(updateHandler);
     }
 
@@ -99,14 +99,14 @@ public class DatabaseUpdater implements Callable<Void> {
         extension));
   }
 
-  private class UpdateHandler implements ChangeHandler {
+  private class UpdateConsumer implements ChangeConsumer {
 
     @Override
-    public void handle(Change change) throws Exception {
+    public void match(Change change) throws Exception {
       for (Element element : change.getElements()) {
-        element.accept(new ElementHandler() {
+        element.visit(new ElementConsumer() {
           @Override
-          public void handle(Node node) throws Exception {
+          public void match(Node node) throws Exception {
             switch (change.getType()) {
               case create:
               case modify:
@@ -119,7 +119,7 @@ public class DatabaseUpdater implements Callable<Void> {
           }
 
           @Override
-          public void handle(Way way) throws Exception {
+          public void match(Way way) throws Exception {
             switch (change.getType()) {
               case create:
               case modify:
@@ -132,7 +132,7 @@ public class DatabaseUpdater implements Callable<Void> {
           }
 
           @Override
-          public void handle(Relation relation) throws Exception {
+          public void match(Relation relation) throws Exception {
             switch (change.getType()) {
               case create:
               case modify:

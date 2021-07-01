@@ -19,7 +19,7 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.State;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.handler.EntityHandler;
+import com.baremaps.osm.handler.EntityConsumer;
 import com.baremaps.osm.state.StateReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -160,16 +160,16 @@ public class OpenStreetMapTest {
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
-    stream.forEach(new EntityHandler() {
+    stream.forEach(new EntityConsumer() {
       @Override
-      public void handle(Header header) {
+      public void match(Header header) {
         assertTrue(header != null);
         assertEquals("osmium/1.8.0", header.getWritingProgram());
         headers.incrementAndGet();
       }
 
       @Override
-      public void handle(Bound bound) {
+      public void match(Bound bound) {
         assertTrue(bound != null);
         assertEquals(43.75169, bound.getMaxLat(), 0.000001);
         assertEquals(7.448637, bound.getMaxLon(), 0.000001);
@@ -179,19 +179,19 @@ public class OpenStreetMapTest {
       }
 
       @Override
-      public void handle(Node node) {
+      public void match(Node node) {
         assertTrue(node != null);
         nodes.incrementAndGet();
       }
 
       @Override
-      public void handle(Way way) {
+      public void match(Way way) {
         assertTrue(way != null);
         ways.incrementAndGet();
       }
 
       @Override
-      public void handle(Relation relation) {
+      public void match(Relation relation) {
         assertTrue(relation != null);
         relations.incrementAndGet();
       }

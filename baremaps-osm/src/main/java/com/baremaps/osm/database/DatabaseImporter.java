@@ -7,10 +7,10 @@ import com.baremaps.osm.cache.CacheImporter;
 import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.domain.DataBlock;
 import com.baremaps.osm.domain.HeaderBlock;
-import com.baremaps.osm.geometry.GeometryHandler;
-import com.baremaps.osm.geometry.ProjectionTransformer;
-import com.baremaps.osm.handler.BlockEntityHandler;
-import com.baremaps.osm.handler.BlockHandlerAdapter;
+import com.baremaps.osm.geometry.GeometryConsumer;
+import com.baremaps.osm.geometry.ProjectionConsumer;
+import com.baremaps.osm.handler.BlockEntityConsumer;
+import com.baremaps.osm.handler.BlockConsumerAdapter;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
 import com.baremaps.stream.StreamUtils;
@@ -64,10 +64,10 @@ public class DatabaseImporter implements Callable<Void> {
     logger.info("Importing data");
 
     CacheImporter cacheImporter = new CacheImporter(coordinateCache, referenceCache);
-    ImportHandler importHandler = new ImportHandler();
-    GeometryHandler geometryFetcher = new GeometryHandler(coordinateCache, referenceCache);
-    ProjectionTransformer projectionTransformer = new ProjectionTransformer(4326, srid);
-    BlockEntityHandler geometryFactory = new BlockEntityHandler(geometryFetcher.andThen(projectionTransformer));
+    ImportConsumer importHandler = new ImportConsumer();
+    GeometryConsumer geometryFetcher = new GeometryConsumer(coordinateCache, referenceCache);
+    ProjectionConsumer projectionConsumer = new ProjectionConsumer(4326, srid);
+    BlockEntityConsumer geometryFactory = new BlockEntityConsumer(geometryFetcher.andThen(projectionConsumer));
     Consumer<Block> blockHandler = cacheImporter.andThen(geometryFactory);
 
     ProgressLogger progressLogger = new ProgressLogger(blobStore.size(file), 5000);
@@ -79,15 +79,15 @@ public class DatabaseImporter implements Callable<Void> {
     return null;
   }
 
-  private class ImportHandler implements BlockHandlerAdapter {
+  private class ImportConsumer implements BlockConsumerAdapter {
 
     @Override
-    public void handle(HeaderBlock headerBlock) throws Exception {
+    public void match(HeaderBlock headerBlock) throws Exception {
       headerTable.insert(headerBlock.getHeader());
     }
 
     @Override
-    public void handle(DataBlock dataBlock) throws Exception {
+    public void match(DataBlock dataBlock) throws Exception {
       nodeTable.copy(dataBlock.getDenseNodes());
       nodeTable.copy(dataBlock.getNodes());
       wayTable.copy(dataBlock.getWays());

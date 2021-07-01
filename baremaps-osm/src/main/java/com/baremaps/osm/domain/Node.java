@@ -14,8 +14,8 @@
 
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.EntityHandler;
-import com.baremaps.osm.handler.EntityMapper;
+import com.baremaps.osm.handler.EntityConsumer;
+import com.baremaps.osm.handler.EntityFunction;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -51,13 +51,13 @@ public final class Node extends Element {
   }
 
   @Override
-  public void accept(EntityHandler handler) throws Exception {
-    handler.handle(this);
+  public void visit(EntityConsumer handler) throws Exception {
+    handler.match(this);
   }
 
   @Override
-  public <T> T accept(EntityMapper<T> mapper) throws Exception {
-    return mapper.map(this);
+  public <T> T visit(EntityFunction<T> mapper) throws Exception {
+    return mapper.match(this);
   }
 
   @Override

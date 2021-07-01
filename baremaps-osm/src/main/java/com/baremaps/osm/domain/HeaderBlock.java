@@ -1,6 +1,6 @@
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.BlockHandler;
+import com.baremaps.osm.handler.BlockConsumer;
 
 public class HeaderBlock extends Block {
 
@@ -23,8 +23,8 @@ public class HeaderBlock extends Block {
   }
 
   @Override
-  public void handle(BlockHandler handler) throws Exception {
-    handler.handle(this);
+  public void visit(BlockConsumer handler) throws Exception {
+    handler.match(this);
   }
 
 }

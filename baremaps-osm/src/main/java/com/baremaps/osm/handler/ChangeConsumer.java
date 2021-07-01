@@ -4,12 +4,15 @@ import com.baremaps.osm.domain.Change;
 import com.baremaps.stream.StreamException;
 import java.util.function.Consumer;
 
-public interface ChangeHandler extends Consumer<Change> {
+/**
+ * Represents an operation on changes of different types.
+ */
+public interface ChangeConsumer extends Consumer<Change> {
 
   @Override
   default void accept(Change change) {
     try {
-      handle(change);
+      match(change);
     } catch (StreamException e) {
       throw e;
     } catch (Exception e) {
@@ -17,6 +20,6 @@ public interface ChangeHandler extends Consumer<Change> {
     }
   }
 
-  void handle(Change change) throws Exception;
+  void match(Change change) throws Exception;
 
 }

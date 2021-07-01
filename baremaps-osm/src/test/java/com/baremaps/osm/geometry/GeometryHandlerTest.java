@@ -172,15 +172,15 @@ public class GeometryHandlerTest {
           new Member(4l, MemberType.way, "inner"),
           new Member(5l, MemberType.way, "inner")));
 
-  public static final GeometryHandler GEOMETRY_BUILDER = new GeometryHandler(COORDINATE_CACHE, REFERENCE_CACHE);
+  public static final GeometryConsumer GEOMETRY_BUILDER = new GeometryConsumer(COORDINATE_CACHE, REFERENCE_CACHE);
 
   @Test
   public void handleNode() {
-    GEOMETRY_BUILDER.handle(NODE_0);
+    GEOMETRY_BUILDER.match(NODE_0);
     Point p0 = (Point) NODE_0.getGeometry();
     assertEquals(p0.getX(), 0);
     assertEquals(p0.getY(), 0);
-    GEOMETRY_BUILDER.handle(NODE_2);
+    GEOMETRY_BUILDER.match(NODE_2);
     Point p1 = (Point) NODE_2.getGeometry();
     assertEquals(p1.getX(), 4);
     assertEquals(p1.getY(), 4);
@@ -188,25 +188,25 @@ public class GeometryHandlerTest {
 
   @Test
   public void handleWay() {
-    GEOMETRY_BUILDER.handle(WAY_0);
+    GEOMETRY_BUILDER.match(WAY_0);
     assertNull(WAY_0.getGeometry());
-    GEOMETRY_BUILDER.handle(WAY_1);
+    GEOMETRY_BUILDER.match(WAY_1);
     assertTrue(WAY_1.getGeometry() instanceof LineString);
-    GEOMETRY_BUILDER.handle(WAY_2);
+    GEOMETRY_BUILDER.match(WAY_2);
     assertTrue(WAY_2.getGeometry() instanceof Polygon);
   }
 
   @Test
   public void handleRelation() {
-    GEOMETRY_BUILDER.handle(RELATION_0);
+    GEOMETRY_BUILDER.match(RELATION_0);
     assertNull(RELATION_0.getGeometry());
-    GEOMETRY_BUILDER.handle(RELATION_1);
+    GEOMETRY_BUILDER.match(RELATION_1);
     assertNull(RELATION_1.getGeometry());
-    GEOMETRY_BUILDER.handle(RELATION_2);
+    GEOMETRY_BUILDER.match(RELATION_2);
     assertTrue(RELATION_2.getGeometry() instanceof Polygon);
-    GEOMETRY_BUILDER.handle(RELATION_3);
+    GEOMETRY_BUILDER.match(RELATION_3);
     assertTrue(RELATION_3.getGeometry() instanceof Polygon);
-    GEOMETRY_BUILDER.handle(RELATION_4);
+    GEOMETRY_BUILDER.match(RELATION_4);
     assertTrue(RELATION_4.getGeometry() instanceof MultiPolygon);
 
 
@@ -214,7 +214,7 @@ public class GeometryHandlerTest {
 
   @Test
   public void handleRelationWithHole() {
-    GEOMETRY_BUILDER.handle(RELATION_5);
+    GEOMETRY_BUILDER.match(RELATION_5);
     assertTrue(RELATION_5.getGeometry() instanceof Polygon);
     assertTrue(((Polygon) RELATION_5.getGeometry()).getExteriorRing() != null);
     assertTrue(((Polygon) RELATION_5.getGeometry()).getNumInteriorRing() == 1);

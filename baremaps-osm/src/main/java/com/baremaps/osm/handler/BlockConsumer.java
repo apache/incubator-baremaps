@@ -6,14 +6,15 @@ import com.baremaps.osm.domain.HeaderBlock;
 import com.baremaps.stream.StreamException;
 import java.util.function.Consumer;
 
-public interface BlockHandler extends Consumer<Block> {
+/**
+ * Represents an operation on blocks of different types.
+ */
+public interface BlockConsumer extends Consumer<Block> {
 
   @Override
   default void accept(Block block) {
     try {
-      if (block != null) {
-        block.handle(this);
-      }
+      block.visit(this);
     } catch (StreamException e) {
       throw e;
     } catch (Exception e) {
@@ -21,8 +22,8 @@ public interface BlockHandler extends Consumer<Block> {
     }
   }
 
-  void handle(HeaderBlock headerBlock) throws Exception;
+  void match(HeaderBlock headerBlock) throws Exception;
 
-  void handle(DataBlock dataBlock) throws Exception;
+  void match(DataBlock dataBlock) throws Exception;
 
 }

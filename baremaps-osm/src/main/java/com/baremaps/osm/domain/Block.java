@@ -1,6 +1,6 @@
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.BlockHandler;
+import com.baremaps.osm.handler.BlockConsumer;
 
 public abstract class Block {
 
@@ -14,6 +14,6 @@ public abstract class Block {
     return blob;
   }
 
-  public abstract void handle(BlockHandler handler) throws Exception;
+  public abstract void visit(BlockConsumer handler) throws Exception;
 
 }
