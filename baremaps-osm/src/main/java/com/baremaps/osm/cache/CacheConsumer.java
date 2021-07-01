@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
 
-public class CacheImporter implements BlockConsumerAdapter {
+public class CacheConsumer implements BlockConsumerAdapter {
 
   private final Cache<Long, Coordinate> coordiateCache;
   private final Cache<Long, List<Long>> referenceCache;
 
-  public CacheImporter(
+  public CacheConsumer(
       Cache<Long, Coordinate> coordiateCache,
       Cache<Long, List<Long>> referenceCache) {
     this.coordiateCache = coordiateCache;

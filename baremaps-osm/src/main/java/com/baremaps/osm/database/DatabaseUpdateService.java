@@ -3,17 +3,10 @@ package com.baremaps.osm.database;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.domain.Change;
-import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Header;
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.State;
-import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.geometry.GeometryConsumer;
 import com.baremaps.osm.geometry.ProjectionConsumer;
-import com.baremaps.osm.handler.ChangeConsumer;
-import com.baremaps.osm.handler.ElementConsumer;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
 import java.io.InputStream;
@@ -26,9 +19,9 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DatabaseUpdater implements Callable<Void> {
+public class DatabaseUpdateService implements Callable<Void> {
 
-  private static Logger logger = LoggerFactory.getLogger(DatabaseUpdater.class);
+  private static Logger logger = LoggerFactory.getLogger(DatabaseUpdateService.class);
 
   private final BlobStore blobStore;
   private final Cache<Long, Coordinate> coordinateCache;
@@ -39,7 +32,7 @@ public class DatabaseUpdater implements Callable<Void> {
   private final RelationTable relationTable;
   private final int srid;
 
-  public DatabaseUpdater(
+  public DatabaseUpdateService(
       BlobStore blobStore,
       Cache<Long, Coordinate> coordinateCache,
       Cache<Long, List<Long>> referenceCache,
@@ -66,7 +59,7 @@ public class DatabaseUpdater implements Callable<Void> {
 
     GeometryConsumer geometryHandler = new GeometryConsumer(coordinateCache, referenceCache);
     ProjectionConsumer projectionConsumer = new ProjectionConsumer(4326, srid);
-    UpdateConsumer updateHandler = new UpdateConsumer();
+    DatabaseUpdateConsumer updateHandler = new DatabaseUpdateConsumer(headerTable, nodeTable, wayTable, relationTable);
     URI changeUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
     ProgressLogger progressLogger = new ProgressLogger(blobStore.size(changeUri), 5000);
     try (InputStream changesInputStream = new GZIPInputStream(new InputStreamProgress(blobStore.read(changeUri), progressLogger))) {
@@ -99,52 +92,4 @@ public class DatabaseUpdater implements Callable<Void> {
         extension));
   }
 
-  private class UpdateConsumer implements ChangeConsumer {
-
-    @Override
-    public void match(Change change) throws Exception {
-      for (Element element : change.getElements()) {
-        element.visit(new ElementConsumer() {
-          @Override
-          public void match(Node node) throws Exception {
-            switch (change.getType()) {
-              case create:
-              case modify:
-                nodeTable.insert(node);
-                break;
-              case delete:
-                nodeTable.delete(node.getId());
-                break;
-            }
-          }
-
-          @Override
-          public void match(Way way) throws Exception {
-            switch (change.getType()) {
-              case create:
-              case modify:
-                wayTable.insert(way);
-                break;
-              case delete:
-                wayTable.delete(way.getId());
-                break;
-            }
-          }
-
-          @Override
-          public void match(Relation relation) throws Exception {
-            switch (change.getType()) {
-              case create:
-              case modify:
-                relationTable.insert(relation);
-                break;
-              case delete:
-                relationTable.delete(relation.getId());
-                break;
-            }
-          }
-        });
-      }
-    }
-  }
 }

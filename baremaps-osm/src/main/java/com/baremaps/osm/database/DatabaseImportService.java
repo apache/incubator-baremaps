@@ -3,14 +3,11 @@ package com.baremaps.osm.database;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.CacheImporter;
+import com.baremaps.osm.cache.CacheConsumer;
 import com.baremaps.osm.domain.Block;
-import com.baremaps.osm.domain.DataBlock;
-import com.baremaps.osm.domain.HeaderBlock;
 import com.baremaps.osm.geometry.GeometryConsumer;
 import com.baremaps.osm.geometry.ProjectionConsumer;
 import com.baremaps.osm.handler.BlockEntityConsumer;
-import com.baremaps.osm.handler.BlockConsumerAdapter;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
 import com.baremaps.stream.StreamUtils;
@@ -24,9 +21,9 @@ import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DatabaseImporter implements Callable<Void> {
+public class DatabaseImportService implements Callable<Void> {
 
-  private static Logger logger = LoggerFactory.getLogger(DatabaseImporter.class);
+  private static Logger logger = LoggerFactory.getLogger(DatabaseImportService.class);
 
   private final URI file;
   private final BlobStore blobStore;
@@ -38,7 +35,7 @@ public class DatabaseImporter implements Callable<Void> {
   private final RelationTable relationTable;
   private final int srid;
 
-  public DatabaseImporter(
+  public DatabaseImportService(
       URI file,
       BlobStore blobStore,
       Cache<Long, Coordinate> coordinateCache,
@@ -63,12 +60,12 @@ public class DatabaseImporter implements Callable<Void> {
   public Void call() throws Exception {
     logger.info("Importing data");
 
-    CacheImporter cacheImporter = new CacheImporter(coordinateCache, referenceCache);
-    ImportConsumer importHandler = new ImportConsumer();
+    CacheConsumer cacheConsumer = new CacheConsumer(coordinateCache, referenceCache);
+    DatabaseImportConsumer importHandler = new DatabaseImportConsumer(headerTable, nodeTable, wayTable, relationTable);
     GeometryConsumer geometryFetcher = new GeometryConsumer(coordinateCache, referenceCache);
     ProjectionConsumer projectionConsumer = new ProjectionConsumer(4326, srid);
     BlockEntityConsumer geometryFactory = new BlockEntityConsumer(geometryFetcher.andThen(projectionConsumer));
-    Consumer<Block> blockHandler = cacheImporter.andThen(geometryFactory);
+    Consumer<Block> blockHandler = cacheConsumer.andThen(geometryFactory);
 
     ProgressLogger progressLogger = new ProgressLogger(blobStore.size(file), 5000);
     try (InputStream inputStream = new InputStreamProgress(blobStore.read(this.file), progressLogger)) {
@@ -77,22 +74,6 @@ public class DatabaseImporter implements Callable<Void> {
     }
 
     return null;
-  }
-
-  private class ImportConsumer implements BlockConsumerAdapter {
-
-    @Override
-    public void match(HeaderBlock headerBlock) throws Exception {
-      headerTable.insert(headerBlock.getHeader());
-    }
-
-    @Override
-    public void match(DataBlock dataBlock) throws Exception {
-      nodeTable.copy(dataBlock.getDenseNodes());
-      nodeTable.copy(dataBlock.getNodes());
-      wayTable.copy(dataBlock.getWays());
-      relationTable.copy(dataBlock.getRelations());
-    }
   }
 
 }

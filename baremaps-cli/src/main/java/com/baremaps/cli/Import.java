@@ -15,7 +15,7 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.database.DatabaseImporter;
+import com.baremaps.osm.database.DatabaseImportService;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.InMemoryCache;
 import com.baremaps.osm.database.HeaderTable;
@@ -126,7 +126,7 @@ public class Import implements Callable<Integer> {
         throw new UnsupportedOperationException("Unsupported cache type");
     }
 
-    new DatabaseImporter(
+    new DatabaseImportService(
         file,
         blobStore,
         coordinateCache,

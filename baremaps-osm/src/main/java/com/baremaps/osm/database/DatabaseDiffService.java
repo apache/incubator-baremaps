@@ -30,9 +30,9 @@ import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DatabaseDiffer implements Callable<List<Tile>> {
+public class DatabaseDiffService implements Callable<List<Tile>> {
 
-  private static Logger logger = LoggerFactory.getLogger(DatabaseUpdater.class);
+  private static Logger logger = LoggerFactory.getLogger(DatabaseUpdateService.class);
 
   private final BlobStore blobStore;
   private final GeometryConsumer geometryHandler;
@@ -43,7 +43,7 @@ public class DatabaseDiffer implements Callable<List<Tile>> {
   private final int srid;
   private final int zoom;
 
-  public DatabaseDiffer(
+  public DatabaseDiffService(
       BlobStore blobStore,
       Cache<Long, Coordinate> coordinateCache,
       Cache<Long, List<Long>> referenceCache,
