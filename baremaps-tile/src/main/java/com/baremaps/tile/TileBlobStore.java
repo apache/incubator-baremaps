@@ -17,12 +17,18 @@ package com.baremaps.tile;
 import com.baremaps.blob.BlobStore;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Map;
 
 public class TileBlobStore implements TileStore {
 
   private final BlobStore blobStore;
 
   private final URI uri;
+
+  private final Map<String, String> metadata = Map.of(
+      "Content-Type", "application/vnd.mapbox-vector-tile",
+      "Content-Encoding", "gzip"
+  );
 
   public TileBlobStore(BlobStore blobStore, URI baseURI) {
     this.blobStore = blobStore;
@@ -41,7 +47,7 @@ public class TileBlobStore implements TileStore {
   @Override
   public void write(Tile tile, byte[] bytes) throws TileStoreException {
     try {
-      blobStore.writeByteArray(getURI(tile), bytes);
+      blobStore.writeByteArray(getURI(tile), bytes, metadata);
     } catch (IOException e) {
       throw new TileStoreException(e);
     }

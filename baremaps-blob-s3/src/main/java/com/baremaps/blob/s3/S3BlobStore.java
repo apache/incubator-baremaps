@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -35,25 +36,19 @@ public class S3BlobStore implements BlobStore {
 
   private static Logger logger = LoggerFactory.getLogger(S3BlobStore.class);
 
-  private final String contentEncoding;
-
-  private final String contentType;
-
   private final S3Client client;
 
   public S3BlobStore() {
-    this("utf-8", "application/octet-stream", S3Client.create());
+    this(S3Client.create());
   }
 
-  public S3BlobStore(String contentEncoding, String contentType, S3Client client) {
-    this.contentEncoding = contentEncoding;
-    this.contentType = contentType;
+  public S3BlobStore(S3Client client) {
     this.client = client;
   }
 
   @Override
   public long size(URI uri) {
-    HeadObjectRequest request =  HeadObjectRequest.builder()
+    HeadObjectRequest request = HeadObjectRequest.builder()
         .bucket(uri.getHost())
         .key(uri.getPath().substring(1))
         .build();
@@ -90,6 +85,11 @@ public class S3BlobStore implements BlobStore {
 
   @Override
   public OutputStream write(URI uri) throws IOException {
+    return write(uri, Map.of());
+  }
+
+  @Override
+  public OutputStream write(URI uri, Map<String, String> metadata) throws IOException {
     logger.debug("Write {}", uri);
     return new ByteArrayOutputStream() {
       @Override
@@ -99,6 +99,7 @@ public class S3BlobStore implements BlobStore {
           PutObjectRequest request = PutObjectRequest.builder()
               .bucket(uri.getHost())
               .key(uri.getPath().substring(1))
+              .metadata(metadata)
               .build();
           client.putObject(request, RequestBody.fromBytes(bytes));
         } catch (S3Exception ex) {
@@ -110,11 +111,17 @@ public class S3BlobStore implements BlobStore {
 
   @Override
   public void writeByteArray(URI uri, byte[] bytes) throws IOException {
+    writeByteArray(uri, bytes, Map.of());
+  }
+
+  @Override
+  public void writeByteArray(URI uri, byte[] bytes, Map<String, String> metadata) throws IOException {
     logger.debug("Write {}", uri);
     try {
       PutObjectRequest request = PutObjectRequest.builder()
           .bucket(uri.getHost())
           .key(uri.getPath().substring(1))
+          .metadata(metadata)
           .build();
       client.putObject(request, RequestBody.fromBytes(bytes));
     } catch (S3Exception ex) {

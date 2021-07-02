@@ -24,6 +24,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +60,11 @@ public class FileBlobStore implements BlobStore {
   }
 
   @Override
+  public OutputStream write(URI uri, Map<String, String> metadata) throws IOException {
+    return write(uri);
+  }
+
+  @Override
   public void writeByteArray(URI uri, byte[] bytes) throws IOException {
     logger.debug("Write {}", uri);
     Path path = Paths.get(uri.getPath()).toAbsolutePath();
@@ -66,6 +72,11 @@ public class FileBlobStore implements BlobStore {
       Files.createDirectories(path.getParent());
     }
     Files.write(path, bytes);
+  }
+
+  @Override
+  public void writeByteArray(URI uri, byte[] bytes, Map<String, String> metadata) throws IOException {
+    writeByteArray(uri, bytes);
   }
 
   @Override

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Map;
 
 /**
  * An abstraction to read and write blobs identified by URIs.
@@ -32,7 +33,11 @@ public interface BlobStore {
 
   OutputStream write(URI uri) throws IOException;
 
+  OutputStream write(URI uri, Map<String, String> metadata) throws IOException;
+
   void writeByteArray(URI uri, byte[] bytes) throws IOException;
+
+  void writeByteArray(URI uri, byte[] bytes, Map<String, String> metadata) throws IOException;
 
   void delete(URI uri) throws IOException;
 

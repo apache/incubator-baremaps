@@ -74,9 +74,27 @@ public class CompositeBlobStore implements BlobStore {
   }
 
   @Override
+  public OutputStream write(URI uri, Map<String, String> metadata) throws IOException {
+    if (schemes.containsKey(uri.getScheme())) {
+      return schemes.get(uri.getScheme()).write(uri, metadata);
+    } else {
+      throw new IOException("Unsupported URI: " + uri);
+    }
+  }
+
+  @Override
   public void writeByteArray(URI uri, byte[] bytes) throws IOException {
     if (schemes.containsKey(uri.getScheme())) {
       schemes.get(uri.getScheme()).writeByteArray(uri, bytes);
+    } else {
+      throw new IOException("Unsupported URI: " + uri);
+    }
+  }
+
+  @Override
+  public void writeByteArray(URI uri, byte[] bytes, Map<String, String> metadata) throws IOException {
+    if (schemes.containsKey(uri.getScheme())) {
+      schemes.get(uri.getScheme()).writeByteArray(uri, bytes, metadata);
     } else {
       throw new IOException("Unsupported URI: " + uri);
     }

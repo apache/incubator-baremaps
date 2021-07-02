@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.Map;
+import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,17 +33,8 @@ public class HttpBlobStore implements BlobStore {
 
   private static Logger logger = LoggerFactory.getLogger(HttpBlobStore.class);
 
-  private final String contentEncoding;
-
-  private final String contentType;
-
   public HttpBlobStore() {
-    this("utf-8", "application/octet-stream");
-  }
 
-  public HttpBlobStore(String contentEncoding, String contentType) {
-    this.contentEncoding = contentEncoding;
-    this.contentType = contentType;
   }
 
   @Override
@@ -71,7 +64,12 @@ public class HttpBlobStore implements BlobStore {
   }
 
   @Override
-  public OutputStream write(URI uri) {
+  public OutputStream write(URI uri) throws IOException {
+    return write(uri, Map.of());
+  }
+
+  @Override
+  public OutputStream write(URI uri, Map<String, String> metadata) throws IOException {
     logger.debug("Write {}", uri);
     return new ByteArrayOutputStream() {
       @Override
@@ -79,8 +77,9 @@ public class HttpBlobStore implements BlobStore {
         byte[] bytes = this.toByteArray();
         HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
         conn.setRequestMethod("PUT");
-        conn.setRequestProperty("Content-Type", contentType);
-        conn.setRequestProperty("Content-Encoding", contentEncoding);
+        for (Entry<String, String> entry : metadata.entrySet()) {
+          conn.setRequestProperty(entry.getKey(), entry.getValue());
+        }
         conn.setRequestProperty("Content-Length", String.valueOf(bytes.length));
         try (OutputStream outputStream = new BufferedOutputStream(conn.getOutputStream());
             InputStream inputStream = new ByteArrayInputStream(bytes)) {
@@ -92,11 +91,17 @@ public class HttpBlobStore implements BlobStore {
 
   @Override
   public void writeByteArray(URI uri, byte[] bytes) throws IOException {
+    writeByteArray(uri, bytes, Map.of());
+  }
+
+  @Override
+  public void writeByteArray(URI uri, byte[] bytes, Map<String, String> metadata) throws IOException {
     logger.debug("Write {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
     conn.setRequestMethod("PUT");
-    conn.setRequestProperty("Content-Type", contentType);
-    conn.setRequestProperty("Content-Encoding", contentEncoding);
+    for (Entry<String, String> entry : metadata.entrySet()) {
+      conn.setRequestProperty(entry.getKey(), entry.getValue());
+    }
     conn.setRequestProperty("Content-Length", String.valueOf(bytes.length));
     try (OutputStream outputStream = conn.getOutputStream();
         InputStream inputStream = new ByteArrayInputStream(bytes)) {

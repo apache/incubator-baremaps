@@ -45,6 +45,6 @@ class S3BlobStoreTest extends BlobStoreTest {
 
   @Override
   protected BlobStore createFileSystem() {
-    return new S3BlobStore("utf-8", "application/octet-stream", s3Client);
+    return new S3BlobStore(s3Client);
   }
 }

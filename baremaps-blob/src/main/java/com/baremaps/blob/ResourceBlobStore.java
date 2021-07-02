@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,17 @@ public class ResourceBlobStore implements BlobStore {
   }
 
   @Override
+  public OutputStream write(URI uri, Map<String, String> metadata) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public void writeByteArray(URI uri, byte[] bytes) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void writeByteArray(URI uri, byte[] bytes, Map<String, String> metadata) throws IOException {
     throw new UnsupportedOperationException();
   }
 
