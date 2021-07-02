@@ -11,11 +11,11 @@ import com.baremaps.osm.xml.XmlChangeSpliterator;
 import com.baremaps.osm.xml.XmlEntitySpliterator;
 import com.baremaps.stream.StreamException;
 import com.baremaps.stream.StreamUtils;
-import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -92,7 +92,7 @@ public class OpenStreetMap {
    * @return
    */
   public static State readState(InputStream input) throws IOException {
-    InputStreamReader reader = new InputStreamReader(input, Charsets.UTF_8);
+    InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
     Map<String, String> map = new HashMap<>();
     for (String line : CharStreams.readLines(reader)) {
       String[] array = line.split("=");

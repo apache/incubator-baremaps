@@ -19,7 +19,7 @@ public class PartitionedSpliterator<T> implements Spliterator<Stream<T>> {
   public boolean tryAdvance(Consumer<? super Stream<T>> action) {
     Stream.Builder<T> partition = Stream.builder();
     int size = 0;
-    while (size < partitionSize && spliterator.tryAdvance(entry -> partition.add(entry))) {
+    while (size < partitionSize && spliterator.tryAdvance(partition::add)) {
       size++;
     }
     if (size == 0) {

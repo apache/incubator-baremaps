@@ -7,6 +7,7 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.handler.ElementConsumer;
+import com.baremaps.stream.StreamException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GeometryConsumer implements ElementConsumer {
 
-  private static Logger logger = LoggerFactory.getLogger(GeometryConsumer.class);
+  private static final Logger logger = LoggerFactory.getLogger(GeometryConsumer.class);
 
   protected final GeometryFactory geometryFactory;
   private final Cache<Long, Coordinate> coordinateCache;
@@ -152,7 +153,6 @@ public class GeometryConsumer implements ElementConsumer {
         relation.setGeometry(multiPolygon);
       }
     } catch (Exception e) {
-      e.printStackTrace();
       logger.warn("Unable to build the geometry for relation #" + relation.getId(), e);
     }
   }
@@ -186,7 +186,7 @@ public class GeometryConsumer implements ElementConsumer {
       Coordinate[] array = coordinates.toArray(new Coordinate[coordinates.size()]);
       return geometryFactory.createLineString(array);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new StreamException(e);
     }
   }
 }

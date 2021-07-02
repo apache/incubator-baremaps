@@ -25,11 +25,11 @@ import java.sql.SQLException;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class SchemaTest {
+class SchemaTest {
 
   @Test
   @Tag("integration")
-  public void resetDatabase() throws SQLException, IOException {
+  void resetDatabase() throws SQLException, IOException {
     try (Connection connection = DriverManager.getConnection(DATABASE_URL)) {
       PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
       PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
@@ -42,7 +42,7 @@ public class SchemaTest {
     }
   }
 
-  public boolean tableExists(String table) throws SQLException {
+  boolean tableExists(String table) throws SQLException {
     try (Connection connection = DriverManager.getConnection(DATABASE_URL)) {
       DatabaseMetaData metadata = connection.getMetaData();
       ResultSet tables = metadata.getTables(null, null, table, null);

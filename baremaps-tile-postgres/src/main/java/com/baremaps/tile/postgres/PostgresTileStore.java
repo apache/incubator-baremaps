@@ -14,7 +14,7 @@
 
 package com.baremaps.tile.postgres;
 
-import static com.baremaps.config.Variables.interpolate;
+import static com.baremaps.config.VariableUtils.interpolate;
 
 import com.baremaps.config.tileset.Layer;
 import com.baremaps.config.tileset.Tileset;
@@ -138,7 +138,7 @@ public class PostgresTileStore implements TileStore {
     // Parse all the queries
     Map<Layer, List<Parse>> parses = tileset.getLayers().stream()
         .flatMap(layer -> layer.getQueries().stream().map(query -> PostgresQueryParser.parse(layer, query)))
-        .collect(Collectors.groupingBy(q -> q.getLayer()));
+        .collect(Collectors.groupingBy(Parse::getLayer));
 
     String sources = parses.entrySet().stream()
         .flatMap(entry -> entry.getValue().stream()

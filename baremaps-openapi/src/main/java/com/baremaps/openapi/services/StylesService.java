@@ -8,26 +8,26 @@ public class StylesService implements StylesApi {
 
   @Override
   public void addStyle(MbStyle mbStyle) {
-
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void deleteStyle(String styleId) {
-
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public MbStyle getStyle(String styleId) {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public StyleSet getStyleSet() {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public void updateStyle(String styleId, MbStyle mbStyle) {
-
+    throw new UnsupportedOperationException();
   }
 }

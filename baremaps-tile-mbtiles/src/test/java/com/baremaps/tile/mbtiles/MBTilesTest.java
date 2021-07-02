@@ -26,7 +26,7 @@ import org.sqlite.SQLiteDataSource;
 class MBTilesTest extends TileStoreTest {
 
   @Override
-  protected MBTiles createTileStore() throws Exception {
+  public MBTiles createTileStore() throws Exception {
     File file = File.createTempFile("baremaps_", ".db");
     file.deleteOnExit();
     SQLiteDataSource dataSource = new SQLiteDataSource();
@@ -37,7 +37,7 @@ class MBTilesTest extends TileStoreTest {
   }
 
   @Test
-  public void readWriteMetadata() throws Exception {
+  void readWriteMetadata() throws Exception {
     MBTiles tileStore = createTileStore();
     Map<String, String> metadata = tileStore.readMetadata();
     assertTrue(metadata.size() == 0);

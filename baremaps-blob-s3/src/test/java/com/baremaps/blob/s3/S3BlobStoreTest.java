@@ -39,12 +39,12 @@ class S3BlobStoreTest extends BlobStoreTest {
   }
 
   @Override
-  protected String createTestURI() throws IOException {
+  public String createTestURI() throws IOException {
     return "s3://test/test/test.txt";
   }
 
   @Override
-  protected BlobStore createFileSystem() {
+  public BlobStore createFileSystem() {
     return new S3BlobStore(s3Client);
   }
 }

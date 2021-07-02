@@ -49,7 +49,6 @@ import javax.xml.stream.XMLStreamReader;
 public class XmlChangeSpliterator implements Spliterator<Change> {
 
   private static final String ELEMENT_NAME_OSMCHANGE = "osmChange";
-  private static final String ELEMENT_NAME_BOUNDS = "bounds";
   private static final String ELEMENT_NAME_CREATE = "create";
   private static final String ELEMENT_NAME_DELETE = "delete";
   private static final String ELEMENT_NAME_MODIFY = "modify";
@@ -61,10 +60,8 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
   private static final String ELEMENT_NAME_MEMBER = "member";
   private static final String ATTRIBUTE_NAME_ID = "id";
   private static final String ATTRIBUTE_NAME_VERSION = "version";
-  private static final String ATTRIBUTE_NAME_GENERATOR = "generator";
   private static final String ATTRIBUTE_NAME_TIMESTAMP = "timestamp";
   private static final String ATTRIBUTE_NAME_USER_ID = "uid";
-  private static final String ATTRIBUTE_NAME_USER = "user";
   private static final String ATTRIBUTE_NAME_CHANGESET_ID = "changeset";
   private static final String ATTRIBUTE_NAME_LATITUDE = "lat";
   private static final String ATTRIBUTE_NAME_LONGITUDE = "lon";
@@ -73,12 +70,6 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
   private static final String ATTRIBUTE_NAME_REF = "ref";
   private static final String ATTRIBUTE_NAME_TYPE = "type";
   private static final String ATTRIBUTE_NAME_ROLE = "role";
-  private static final String ATTRIBUTE_NAME_BOX = "box";
-  private static final String ATTRIBUTE_NAME_ORIGIN = "origin";
-  private static final String ATTRIBUTE_NAME_MAXLON = "maxlon";
-  private static final String ATTRIBUTE_NAME_MAXLAT = "maxlat";
-  private static final String ATTRIBUTE_NAME_MINLON = "minlon";
-  private static final String ATTRIBUTE_NAME_MINLAT = "minlat";
   public static final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   private final XMLStreamReader reader;
@@ -137,7 +128,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
         }
         return new Change(type, elements);
       default:
-        throw new RuntimeException("Unexpected XML element: " + reader.getLocalName());
+        throw new StreamException("Unexpected XML element: " + reader.getLocalName());
     }
   }
 
@@ -150,7 +141,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
       case ELEMENT_NAME_RELATION:
         return readRelation();
       default:
-        throw new RuntimeException("Unexpected XML element: " + reader.getLocalName());
+        throw new StreamException("Unexpected XML element: " + reader.getLocalName());
     }
   }
 
@@ -253,7 +244,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
     return new Info(version, timestamp, changeset, uid);
   }
 
-  private final void readTag(Map<String, String> tags) throws XMLStreamException {
+  private void readTag(Map<String, String> tags) throws XMLStreamException {
     String name = reader.getAttributeValue(null, ATTRIBUTE_NAME_KEY);
     String value = reader.getAttributeValue(null, ATTRIBUTE_NAME_VALUE);
     tags.put(name, value);

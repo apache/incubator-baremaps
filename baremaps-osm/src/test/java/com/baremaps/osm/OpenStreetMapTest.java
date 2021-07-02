@@ -10,7 +10,7 @@ import static com.baremaps.testing.TestFiles.MONACO_STATE_TXT;
 import static com.baremaps.testing.TestFiles.RELATIONS_OSM_PBF;
 import static com.baremaps.testing.TestFiles.WAYS_OSM_PBF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Entity;
@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.junit.jupiter.api.Test;
 
-public class OpenStreetMapTest {
+class OpenStreetMapTest {
 
   @Test
   void dataOsmXml() throws IOException {
@@ -163,14 +163,14 @@ public class OpenStreetMapTest {
     stream.forEach(new EntityConsumer() {
       @Override
       public void match(Header header) {
-        assertTrue(header != null);
+        assertNotNull(header);
         assertEquals("osmium/1.8.0", header.getWritingProgram());
         headers.incrementAndGet();
       }
 
       @Override
       public void match(Bound bound) {
-        assertTrue(bound != null);
+        assertNotNull(bound);
         assertEquals(43.75169, bound.getMaxLat(), 0.000001);
         assertEquals(7.448637, bound.getMaxLon(), 0.000001);
         assertEquals(43.72335, bound.getMinLat(), 0.000001);
@@ -180,19 +180,19 @@ public class OpenStreetMapTest {
 
       @Override
       public void match(Node node) {
-        assertTrue(node != null);
+        assertNotNull(node);
         nodes.incrementAndGet();
       }
 
       @Override
       public void match(Way way) {
-        assertTrue(way != null);
+        assertNotNull(way);
         ways.incrementAndGet();
       }
 
       @Override
       public void match(Relation relation) {
-        assertTrue(relation != null);
+        assertNotNull(relation);
         relations.incrementAndGet();
       }
     });

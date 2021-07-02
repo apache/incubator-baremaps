@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 public class ProgressLogger implements Consumer<Long> {
 
-  private static Logger logger = LoggerFactory.getLogger(ProgressLogger.class);
+  private static final Logger logger = LoggerFactory.getLogger(ProgressLogger.class);
 
   private final long size;
 

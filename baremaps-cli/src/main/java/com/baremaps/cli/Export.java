@@ -55,7 +55,7 @@ import picocli.CommandLine.Option;
 @Command(name = "export", description = "Export vector tiles from the database.")
 public class Export implements Callable<Integer> {
 
-  private static Logger logger = LoggerFactory.getLogger(Export.class);
+  private static final Logger logger = LoggerFactory.getLogger(Export.class);
 
   @Mixin
   private Options options;
@@ -107,8 +107,7 @@ public class Export implements Callable<Integer> {
 
   @Override
   public Integer call() throws TileStoreException, IOException {
-    Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
-    logger.info("{} processors available", Runtime.getRuntime().availableProcessors());
+    System.setProperty("logLevel", options.logLevel.name());
 
     // Initialize the datasource
     DataSource datasource = PostgresUtils.datasource(database);
@@ -184,7 +183,7 @@ public class Export implements Callable<Integer> {
   private Map<String, String> metadata(Tileset tileset) throws JsonProcessingException {
     Map<String, String> metadata = new HashMap<>();
     metadata.put("name", tileset.getName());
-    metadata.put("version", tileset.getVersion().toString());
+    metadata.put("version", tileset.getVersion());
     metadata.put("description", tileset.getDescription());
     metadata.put("attribution", tileset.getAttribution());
     metadata.put("type", "baselayer");

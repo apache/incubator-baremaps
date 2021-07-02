@@ -25,7 +25,7 @@ import picocli.CommandLine.Option;
 @Command(name = "edit", description = "Edit the vector tiles.")
 public class Edit implements Callable<Integer> {
 
-  private static Logger logger = LoggerFactory.getLogger(Edit.class);
+  private static final Logger logger = LoggerFactory.getLogger(Edit.class);
 
   @Mixin
   private Options options;
@@ -71,8 +71,7 @@ public class Edit implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    Configurator.setRootLevel(Level.getLevel(options.logLevel.name()));
-    logger.debug("{} processors available", Runtime.getRuntime().availableProcessors());
+    System.setProperty("logLevel", options.logLevel.name());
 
     BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.datasource(database);

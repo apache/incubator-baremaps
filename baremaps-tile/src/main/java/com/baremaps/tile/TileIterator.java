@@ -9,7 +9,7 @@ import org.locationtech.jts.geom.Envelope;
 
 class TileIterator implements Iterator<Tile> {
 
-  private Envelope envelope;
+  private final Envelope envelope;
 
   private final int zoomMax;
 

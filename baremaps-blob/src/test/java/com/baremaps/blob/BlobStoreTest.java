@@ -15,8 +15,7 @@
 package com.baremaps.blob;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
@@ -26,7 +25,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -51,13 +49,16 @@ public abstract class BlobStoreTest {
 
     // Delete the data
     blobStore.delete(uri);
-    assertThrows(IOException.class, () -> {
-      blobStore.read(uri).close();
-    });
+
+    try (InputStream ignored = blobStore.read(uri)) {
+      fail("Expected an IOException to be thrown");
+    } catch (IOException e) {
+      // Test exception message...
+    }
   }
 
-  protected abstract String createTestURI() throws IOException;
+  public abstract String createTestURI() throws IOException;
 
-  protected abstract BlobStore createFileSystem();
+  public abstract BlobStore createFileSystem();
 
 }

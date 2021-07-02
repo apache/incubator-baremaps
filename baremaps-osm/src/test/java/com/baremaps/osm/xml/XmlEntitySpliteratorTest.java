@@ -27,10 +27,10 @@ import java.io.InputStream;
 import java.util.Spliterator;
 import org.junit.jupiter.api.Test;
 
-public class XMLEntitySpliteratorTest {
+class XmlEntitySpliteratorTest {
 
   @Test
-  public void tryAdvance() throws IOException {
+  void tryAdvance() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
       Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
       spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
@@ -39,7 +39,7 @@ public class XMLEntitySpliteratorTest {
   }
 
   @Test
-  public void forEachRemaining() throws IOException {
+  void forEachRemaining() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
       Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
       AccumulatingConsumer<Object> accumulator = new AccumulatingConsumer<>();

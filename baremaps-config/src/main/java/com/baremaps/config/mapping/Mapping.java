@@ -1,6 +1,5 @@
 package com.baremaps.config.mapping;
 
-import com.baremaps.config.tileset.Bounds;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
@@ -17,8 +16,6 @@ public class Mapping {
 
   @JsonProperty("block-tags")
   private List<String> blockTags;
-
-  private Bounds bounds;
 
   public List<String> getAllowTags() {
     return allowTags;

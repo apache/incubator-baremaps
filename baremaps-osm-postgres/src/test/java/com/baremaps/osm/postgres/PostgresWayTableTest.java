@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.osm.database.DatabaseException;
-import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.IOException;
@@ -36,14 +35,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class PostgresWayTableTest {
+class PostgresWayTableTest {
 
-  public DataSource dataSource;
+  DataSource dataSource;
 
-  public PostgresWayTable wayTable;
+  PostgresWayTable wayTable;
 
   @BeforeEach
-  public void createTable() throws SQLException, IOException {
+  void createTable() throws SQLException, IOException {
     dataSource = PostgresUtils.datasource(DATABASE_URL);
     wayTable = new PostgresWayTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
@@ -55,14 +54,14 @@ public class PostgresWayTableTest {
 
   @Test
   @Tag("integration")
-  public void insert() throws DatabaseException {
+  void insert() throws DatabaseException {
     wayTable.insert(WAY_0);
     assertEquals(WAY_0, wayTable.select(WAY_0.getId()));
   }
 
   @Test
   @Tag("integration")
-  public void insertAll() throws DatabaseException {
+  void insertAll() throws DatabaseException {
     List<Way> ways = Arrays.asList(WAY_0, WAY_1, WAY_2);
     wayTable.insert(ways);
     assertIterableEquals(ways,
@@ -71,7 +70,7 @@ public class PostgresWayTableTest {
 
   @Test
   @Tag("integration")
-  public void delete() throws DatabaseException {
+  void delete() throws DatabaseException {
     wayTable.insert(WAY_0);
     wayTable.delete(WAY_0.getId());
     assertNull(wayTable.select(WAY_0.getId()));
@@ -79,7 +78,7 @@ public class PostgresWayTableTest {
 
   @Test
   @Tag("integration")
-  public void deleteAll() throws DatabaseException {
+  void deleteAll() throws DatabaseException {
     List<Way> ways = Arrays.asList(WAY_0, WAY_1, WAY_2);
     wayTable.insert(ways);
     wayTable.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
@@ -89,7 +88,7 @@ public class PostgresWayTableTest {
 
   @Test
   @Tag("integration")
-  public void copy() throws DatabaseException {
+  void copy() throws DatabaseException {
     List<Way> ways = Arrays.asList(WAY_0, WAY_1, WAY_2);
     wayTable.copy(ways);
     assertIterableEquals(ways,

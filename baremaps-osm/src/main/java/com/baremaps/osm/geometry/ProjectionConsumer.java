@@ -36,17 +36,15 @@ import org.locationtech.proj4j.ProjCoordinate;
  */
 public class ProjectionConsumer extends GeometryTransformer implements ElementConsumer {
 
-  private final int srcSRID;
   private final int dstSRID;
 
   private final CoordinateTransform coordinateTransform;
 
-  public ProjectionConsumer(int srcSRID, int dstSRID) {
-    this.srcSRID = srcSRID;
-    this.dstSRID = dstSRID;
+  public ProjectionConsumer(int sourceSRID, int targetSRID) {
+    this.dstSRID = targetSRID;
     CRSFactory crsFactory = new CRSFactory();
-    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName(String.format("EPSG:%d", srcSRID));
-    CoordinateReferenceSystem targetCRS = crsFactory.createFromName(String.format("EPSG:%d", dstSRID));
+    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName(String.format("EPSG:%d", sourceSRID));
+    CoordinateReferenceSystem targetCRS = crsFactory.createFromName(String.format("EPSG:%d", targetSRID));
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
     coordinateTransform = coordinateTransformFactory.createTransform(sourceCRS, targetCRS);
   }

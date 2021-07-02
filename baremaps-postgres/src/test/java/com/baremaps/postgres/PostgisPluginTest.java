@@ -14,20 +14,20 @@ class PostgisPluginTest {
 
   @Test
   @Tag("integration")
-  public void test() {
+  void test() {
     Jdbi jdbi = Jdbi.create("jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps")
         .installPlugin(new PostgisPlugin());
 
     PostgisRecord record = new PostgisRecord();
     record.setId(1);
     record.setPoint(new GeometryFactory().createPoint(new Coordinate(1, 1)));
-    record.setLineString(new GeometryFactory().createLineString(new Coordinate[] {
+    record.setLineString(new GeometryFactory().createLineString(new Coordinate[]{
         new Coordinate(1, 1),
         new Coordinate(1, 2),
         new Coordinate(2, 2),
         new Coordinate(2, 1)
     }));
-    record.setPolygon(new GeometryFactory().createPolygon(new Coordinate[] {
+    record.setPolygon(new GeometryFactory().createPolygon(new Coordinate[]{
         new Coordinate(1, 1),
         new Coordinate(1, 2),
         new Coordinate(2, 2),
@@ -37,8 +37,10 @@ class PostgisPluginTest {
 
     List<PostgisRecord> result = jdbi.withHandle(handle -> {
       handle.execute("DROP TABLE IF EXISTS record");
-      handle.execute("CREATE TABLE record (id INTEGER PRIMARY KEY, point geometry(point), linestring geometry(linestring), polygon geometry(polygon))");
-      handle.createUpdate("INSERT INTO record (id, point, linestring, polygon) VALUES (:id, :point, :lineString, :polygon)")
+      handle.execute(
+          "CREATE TABLE record (id INTEGER PRIMARY KEY, point geometry(point), linestring geometry(linestring), polygon geometry(polygon))");
+      handle.createUpdate(
+          "INSERT INTO record (id, point, linestring, polygon) VALUES (:id, :point, :lineString, :polygon)")
           .bindBean(record)
           .execute();
       return handle.createQuery("SELECT * FROM record ORDER BY id")

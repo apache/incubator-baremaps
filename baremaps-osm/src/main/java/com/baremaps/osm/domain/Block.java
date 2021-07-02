@@ -10,7 +10,7 @@ public abstract class Block {
 
   private final Blob blob;
 
-  public Block(Blob blob) {
+  protected Block(Blob blob) {
     this.blob = blob;
   }
 

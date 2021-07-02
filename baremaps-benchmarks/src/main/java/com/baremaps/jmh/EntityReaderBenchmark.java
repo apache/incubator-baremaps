@@ -31,7 +31,7 @@ import org.openjdk.jmh.annotations.Warmup;
 @Fork(1)
 public class EntityReaderBenchmark {
 
-  private Path path = Paths.get("./switzerland-latest.pbf");
+  private final Path path = Paths.get("./switzerland-latest.pbf");
 
   @Setup
   public void setup() throws IOException {
@@ -70,14 +70,6 @@ public class EntityReaderBenchmark {
         }
       });
     }
-
-    System.out.println();
-    System.out.println("----------------------");
-    System.out.println("nodes:     " + nodes.get());
-    System.out.println("ways:      " + ways.get());
-    System.out.println("relations: " + relations.get());
-    System.out.println("----------------------");
-    System.out.println();
   }
 
 }

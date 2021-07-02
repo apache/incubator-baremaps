@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class InMemoryCache<K, V> implements Cache<K, V> {
 
-  private Map<K, V> map = new ConcurrentHashMap<>();
+  private final Map<K, V> map = new ConcurrentHashMap<>();
 
   @Override
   public V get(K key) {
@@ -16,7 +16,7 @@ public class InMemoryCache<K, V> implements Cache<K, V> {
 
   @Override
   public List<V> get(List<K> keys) {
-    return keys.stream().map(k -> map.get(k)).collect(Collectors.toList());
+    return keys.stream().map(map::get).collect(Collectors.toList());
   }
 
   @Override
@@ -26,7 +26,7 @@ public class InMemoryCache<K, V> implements Cache<K, V> {
 
   @Override
   public void add(List<Entry<K, V>> entries) {
-    map.putAll(entries.stream().collect(Collectors.toMap(e -> e.key(), e -> e.value())));
+    map.putAll(entries.stream().collect(Collectors.toMap(Entry::key, Entry::value)));
   }
 
   @Override
@@ -36,7 +36,7 @@ public class InMemoryCache<K, V> implements Cache<K, V> {
 
   @Override
   public void deleteAll(List<K> keys) {
-    keys.forEach(key -> map.remove(key));
+    keys.forEach(map::remove);
   }
 
 }

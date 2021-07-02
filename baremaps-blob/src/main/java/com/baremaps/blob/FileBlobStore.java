@@ -16,7 +16,6 @@ package com.baremaps.blob;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,12 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FileBlobStore implements BlobStore {
-
-  private static Logger logger = LoggerFactory.getLogger(FileBlobStore.class);
 
   @Override
   public long size(URI uri) throws IOException {
@@ -39,19 +34,16 @@ public class FileBlobStore implements BlobStore {
 
   @Override
   public InputStream read(URI uri) throws IOException {
-    logger.debug("Read {}", uri);
     return new BufferedInputStream(Files.newInputStream(Paths.get(uri.getPath()).toAbsolutePath()));
   }
 
   @Override
   public byte[] readByteArray(URI uri) throws IOException {
-    logger.debug("Read {}", uri);
     return Files.readAllBytes(Paths.get(uri.getPath()).toAbsolutePath());
   }
 
   @Override
   public OutputStream write(URI uri) throws IOException {
-    logger.debug("Write {}", uri);
     Path path = Paths.get(uri.getPath()).toAbsolutePath();
     if (!Files.exists(path.getParent())) {
       Files.createDirectories(path.getParent());
@@ -66,7 +58,6 @@ public class FileBlobStore implements BlobStore {
 
   @Override
   public void writeByteArray(URI uri, byte[] bytes) throws IOException {
-    logger.debug("Write {}", uri);
     Path path = Paths.get(uri.getPath()).toAbsolutePath();
     if (!Files.exists(path.getParent())) {
       Files.createDirectories(path.getParent());
@@ -81,7 +72,6 @@ public class FileBlobStore implements BlobStore {
 
   @Override
   public void delete(URI uri) throws IOException {
-    logger.debug("Delete {}", uri);
     Files.deleteIfExists(Paths.get(uri.getPath()).toAbsolutePath());
   }
 

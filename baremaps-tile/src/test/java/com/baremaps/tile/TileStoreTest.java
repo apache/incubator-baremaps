@@ -43,6 +43,6 @@ public abstract class TileStoreTest {
     assertThrows(TileStoreException.class, () -> tileStore.read(tile));
   }
 
-  protected abstract TileStore createTileStore() throws Exception;
+  abstract TileStore createTileStore() throws Exception;
 
 }

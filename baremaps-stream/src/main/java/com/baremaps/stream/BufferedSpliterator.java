@@ -55,7 +55,8 @@ class BufferedSpliterator<T> implements Spliterator<CompletableFuture<T>> {
       action.accept(future);
       return true;
     } catch (InterruptedException e) {
-      throw new StreamException((e));
+      Thread.currentThread().interrupt();
+      throw new StreamException(e);
     }
   }
 

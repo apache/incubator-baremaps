@@ -23,7 +23,7 @@ import org.locationtech.jts.geom.Geometry;
  * Represents an element in an OpenStreetMap dataset.
  * Elements are a basis to model the physical world.
  */
-public abstract class Element extends Entity {
+public abstract class Element implements Entity {
 
   protected final long id;
 
@@ -33,7 +33,7 @@ public abstract class Element extends Entity {
 
   protected Geometry geometry;
 
-  public Element(
+  protected Element(
       long id,
       Info info,
       Map<String, String> tags) {

@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TileCache implements TileStore {
 
-  private static Logger logger = LoggerFactory.getLogger(TileCache.class);
+  private static final Logger logger = LoggerFactory.getLogger(TileCache.class);
 
   private final TileStore tileStore;
 

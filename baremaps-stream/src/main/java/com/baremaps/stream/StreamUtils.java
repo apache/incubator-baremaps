@@ -135,6 +135,7 @@ public class StreamUtils {
           try {
             return f.get();
           } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
             throw new StreamException(e);
           }
         });

@@ -8,7 +8,7 @@ import java.util.StringJoiner;
 /**
  * Represents the bounds of an OpenStreetMap dataset.
  */
-public class Bound extends Entity {
+public class Bound implements Entity {
 
   private final double maxLat;
 

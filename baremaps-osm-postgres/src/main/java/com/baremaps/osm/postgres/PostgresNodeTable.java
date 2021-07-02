@@ -135,7 +135,7 @@ public class PostgresNodeTable implements NodeTable {
         Node entity = getEntity(result);
         entities.put(entity.getId(), entity);
       }
-      return ids.stream().map(id -> entities.get(id)).collect(Collectors.toList());
+      return ids.stream().map(entities::get).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }

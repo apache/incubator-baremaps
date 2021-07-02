@@ -24,7 +24,7 @@ import java.nio.file.Path;
 class BlobStoreTileStoreTest extends TileStoreTest {
 
   @Override
-  protected TileStore createTileStore() throws IOException, URISyntaxException {
+  TileStore createTileStore() throws IOException, URISyntaxException {
     Path directory = Files.createTempDirectory("baremaps_");
     return new TileBlobStore(new FileBlobStore(), new URI(directory.toString()));
   }

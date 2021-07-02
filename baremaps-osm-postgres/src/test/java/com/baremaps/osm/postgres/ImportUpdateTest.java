@@ -7,11 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.osm.cache.CoordinateCache;
+import com.baremaps.osm.cache.InMemoryCache;
 import com.baremaps.osm.cache.ReferenceCache;
 import com.baremaps.osm.database.DatabaseDiffService;
 import com.baremaps.osm.database.DatabaseImportService;
 import com.baremaps.osm.database.DatabaseUpdateService;
-import com.baremaps.osm.cache.InMemoryCache;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
@@ -38,7 +38,7 @@ class ImportUpdateTest {
   public PostgresRelationTable relationTable;
 
   @BeforeEach
-  public void createTable() throws SQLException, IOException, URISyntaxException {
+  void createTable() throws SQLException, IOException, URISyntaxException {
     dataSource = PostgresUtils.datasource(DatabaseConstants.DATABASE_URL);
 
     blobStore = new ResourceBlobStore();

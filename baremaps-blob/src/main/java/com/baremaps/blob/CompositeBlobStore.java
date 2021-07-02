@@ -23,9 +23,12 @@ import java.util.Map;
 
 public class CompositeBlobStore implements BlobStore {
 
-  private final Map<String, BlobStore> schemes = new HashMap<>();
+  public static final String UNSUPPORTED_SCHEME = "Unsupported scheme: %s";
 
-  {
+  private final Map<String, BlobStore> schemes;
+
+  public CompositeBlobStore() {
+    schemes = new HashMap<>();
     schemes.put(null, new FileBlobStore());
     schemes.put("file", new FileBlobStore());
     schemes.put("res", new ResourceBlobStore());
@@ -40,7 +43,7 @@ public class CompositeBlobStore implements BlobStore {
     if (schemes.containsKey(uri.getScheme())) {
       return schemes.get(uri.getScheme()).size(uri);
     } else {
-      throw new IOException("Unsupported scheme: " + uri.getScheme());
+      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
     }
   }
 
@@ -49,7 +52,7 @@ public class CompositeBlobStore implements BlobStore {
     if (schemes.containsKey(uri.getScheme())) {
       return schemes.get(uri.getScheme()).read(uri);
     } else {
-      throw new IOException("Unsupported scheme: " + uri.getScheme());
+      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
     }
   }
 
@@ -58,7 +61,7 @@ public class CompositeBlobStore implements BlobStore {
     if (schemes.containsKey(uri.getScheme())) {
       return schemes.get(uri.getScheme()).readByteArray(uri);
     } else {
-      throw new IOException("Unsupported URI: " + uri);
+      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
     }
   }
 
@@ -67,7 +70,7 @@ public class CompositeBlobStore implements BlobStore {
     if (schemes.containsKey(uri.getScheme())) {
       return schemes.get(uri.getScheme()).write(uri);
     } else {
-      throw new IOException("Unsupported URI: " + uri);
+      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
     }
   }
 
@@ -76,7 +79,7 @@ public class CompositeBlobStore implements BlobStore {
     if (schemes.containsKey(uri.getScheme())) {
       return schemes.get(uri.getScheme()).write(uri, metadata);
     } else {
-      throw new IOException("Unsupported URI: " + uri);
+      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
     }
   }
 
@@ -85,7 +88,7 @@ public class CompositeBlobStore implements BlobStore {
     if (schemes.containsKey(uri.getScheme())) {
       schemes.get(uri.getScheme()).writeByteArray(uri, bytes);
     } else {
-      throw new IOException("Unsupported URI: " + uri);
+      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
     }
   }
 
@@ -94,7 +97,7 @@ public class CompositeBlobStore implements BlobStore {
     if (schemes.containsKey(uri.getScheme())) {
       schemes.get(uri.getScheme()).writeByteArray(uri, bytes, metadata);
     } else {
-      throw new IOException("Unsupported URI: " + uri);
+      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
     }
   }
 
@@ -103,7 +106,7 @@ public class CompositeBlobStore implements BlobStore {
     if (schemes.containsKey(uri.getScheme())) {
       schemes.get(uri.getScheme()).delete(uri);
     } else {
-      throw new IOException("Unsupported URI: " + uri);
+      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
     }
   }
 

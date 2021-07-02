@@ -1,14 +1,17 @@
 package com.baremaps.tile.postgres;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import org.junit.jupiter.api.Test;
 
-public class JSQLParserTest {
+class JSQLParserTest {
 
   @Test
-  public void test() throws JSQLParserException {
-    CCJSqlParserUtil.parse("SELECT id, hstore(array['tag1', 'tag2'], array[tag1, tag2]), geom FROM table");
+  void test() throws JSQLParserException {
+    assertNotNull(
+        CCJSqlParserUtil.parse("SELECT id, hstore(array['tag1', 'tag2'], array[tag1, tag2]), geom FROM table"));
   }
 
 }

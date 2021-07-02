@@ -137,7 +137,7 @@ public class PostgresWayTable implements WayTable {
         Way entity = getEntity(result);
         entities.put(entity.getId(), entity);
       }
-      return ids.stream().map(key -> entities.get(key)).collect(Collectors.toList());
+      return ids.stream().map(entities::get).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }

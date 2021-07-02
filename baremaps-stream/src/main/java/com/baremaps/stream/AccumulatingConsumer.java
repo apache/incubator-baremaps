@@ -25,7 +25,7 @@ import java.util.function.Consumer;
  */
 public class AccumulatingConsumer<T> implements Consumer<T> {
 
-  private List<T> values = new ArrayList<>();
+  private final List<T> values = new ArrayList<>();
 
   /**
    * Stores the accepted value.

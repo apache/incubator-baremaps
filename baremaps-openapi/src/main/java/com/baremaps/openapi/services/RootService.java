@@ -14,7 +14,7 @@ public class RootService implements DefaultApi {
     landingPage.setTitle("Baremaps");
     landingPage.setDescription("Baremaps OGC API Landing Page");
 
-    String address = "localhost:8080"; // TODO: Get this from server context
+    String address = "localhost:8080";
 
     Link linkRoot = new Link();
     linkRoot.title("This document (landing page)");

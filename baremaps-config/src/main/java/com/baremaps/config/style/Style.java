@@ -14,7 +14,7 @@ import java.util.Map;
 @JsonInclude(Include.NON_NULL)
 public class Style {
 
-  private final Integer version = 8;
+  private Integer version = 8;
 
   private String name;
 
@@ -64,6 +64,10 @@ public class Style {
 
   public List<Double> getCenter() {
     return center;
+  }
+
+  public void setVersion(int version) {
+    this.version = version;
   }
 
   public void setCenter(List<Double> center) {

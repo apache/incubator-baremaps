@@ -16,4 +16,13 @@ public class StreamException extends RuntimeException {
     super(cause);
   }
 
+  /**
+   * Creates a new StreamException with the specified message.
+   *
+   * @param message The throwable being wrapped.
+   */
+  public StreamException(String message) {
+    super(message);
+  }
+
 }

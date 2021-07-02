@@ -151,7 +151,7 @@ public class PostgresHeaderTable implements HeaderTable {
         Header entity = getEntity(result);
         entities.put(entity.getReplicationSequenceNumber(), entity);
       }
-      return ids.stream().map(id -> entities.get(id)).collect(Collectors.toList());
+      return ids.stream().map(entities::get).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }

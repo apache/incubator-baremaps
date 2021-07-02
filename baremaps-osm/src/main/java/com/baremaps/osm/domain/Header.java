@@ -23,7 +23,7 @@ import java.util.StringJoiner;
 /**
  * Represents a header entity in an OpenStreetMap dataset.
  */
-public class Header extends Entity {
+public class Header implements Entity {
 
   private final Long replicationSequenceNumber;
   private final LocalDateTime replicationTimestamp;

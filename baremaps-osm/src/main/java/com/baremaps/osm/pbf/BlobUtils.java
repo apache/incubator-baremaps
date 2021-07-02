@@ -15,11 +15,7 @@ public class BlobUtils {
   }
 
   public static Block readBlock(Blob blob) {
-    try {
-      return new BlockReader(blob).readBlock();
-    } catch (DataFormatException | InvalidProtocolBufferException e) {
-      throw new StreamException(e);
-    }
+    return new BlockReader(blob).readBlock();
   }
 
   public static HeaderBlock readHeaderBlock(Blob blob) {

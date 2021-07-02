@@ -14,24 +14,20 @@
 
 package com.baremaps.blob;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import org.junit.jupiter.api.Test;
 
 class FileBlobStoreTest extends BlobStoreTest {
 
   @Override
-  protected String createTestURI() throws IOException {
+  public String createTestURI() throws IOException {
     File file = File.createTempFile("baremaps_", ".test");
     file.delete();
     return file.getPath();
   }
 
   @Override
-  protected BlobStore createFileSystem() {
+  public BlobStore createFileSystem() {
     return new FileBlobStore();
   }
 

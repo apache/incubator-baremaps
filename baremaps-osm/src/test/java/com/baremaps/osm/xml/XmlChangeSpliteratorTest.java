@@ -28,20 +28,19 @@ import java.util.Spliterator;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
-public class XMLChangeSpliteratorTest {
+class XmlChangeSpliteratorTest {
 
   @Test
-  public void tryAdvance() throws IOException {
+  void tryAdvance() throws IOException {
     try (InputStream input = DATA_OSC_XML.openStream()) {
       Spliterator<Change> spliterator = new XmlChangeSpliterator(input);
       spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
       assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
     }
-
   }
 
   @Test
-  public void forEachRemaining() throws IOException {
+  void forEachRemaining() throws IOException {
     try (InputStream input = DATA_OSC_XML.openStream()) {
       Spliterator<Change> spliterator = new XmlChangeSpliterator(input);
       AccumulatingConsumer<Change> accumulator = new AccumulatingConsumer<>();
@@ -55,5 +54,4 @@ public class XMLChangeSpliteratorTest {
               .size(), 51);
     }
   }
-
 }

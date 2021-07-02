@@ -15,9 +15,12 @@
 package com.baremaps.cli;
 
 import com.baremaps.cli.Baremaps.VersionProvider;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.Callable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.IVersionProvider;
@@ -61,11 +64,13 @@ public class Baremaps implements Callable<Integer> {
       if (url == null) {
         return new String[] {"No version.txt file found in the classpath."};
       }
-      Properties properties = new Properties();
-      properties.load(url.openStream());
-      return new String[] {
-          properties.getProperty("application") + " v" + properties.getProperty("version"),
-      };
+      try (InputStream inputStream = url.openStream()) {
+        Properties properties = new Properties();
+        properties.load(inputStream);
+        return new String[] {
+            properties.getProperty("application") + " v" + properties.getProperty("version"),
+        };
+      }
     }
   }
 

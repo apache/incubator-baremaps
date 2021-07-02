@@ -41,7 +41,11 @@ public final class Tile {
       .map(j -> LongMath.pow(IntMath.pow(2, (int) j), 2)).sum())
       .toArray();
 
-  private final int x, y, z;
+  private final int x;
+
+  private final int y;
+
+  private final int z;
 
   public Tile(int value) {
     int zoom = 0;

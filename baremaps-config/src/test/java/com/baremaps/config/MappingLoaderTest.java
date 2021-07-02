@@ -12,11 +12,11 @@ import org.junit.jupiter.api.Test;
 class MappingLoaderTest {
 
   @Test
-  public void load() throws URISyntaxException, IOException {
+  void load() throws URISyntaxException, IOException {
     Mapping mapping = new BlobMapper(new ResourceBlobStore()).read(new URI("res://./mapping.json"), Mapping.class);
-    assertEquals(mapping.getAllowTags().size(), 2);
-    assertEquals(mapping.getAllowTags().get(0), "tag1");
-    assertEquals(mapping.getAllowTags().get(1), "tag2");
+    assertEquals(2, mapping.getAllowTags().size());
+    assertEquals("tag1", mapping.getAllowTags().get(0));
+    assertEquals("tag2", mapping.getAllowTags().get(1));
   }
 
 }

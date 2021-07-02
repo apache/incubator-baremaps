@@ -13,22 +13,22 @@ import org.junit.jupiter.api.Test;
 class BlobMapperTest {
 
   @Test
-  public void loadJsonTileset() throws URISyntaxException, IOException {
+  void loadJsonTileset() throws URISyntaxException, IOException {
     Tileset tileset = new BlobMapper(new ResourceBlobStore()).read(new URI("res://./tileset.json"), Tileset.class);
-    assertEquals(tileset.getLayers().size(), 1);
-    assertEquals(tileset.getLayers().get(0).getId(), "layer");
+    assertEquals(1, tileset.getLayers().size());
+    assertEquals("layer",  tileset.getLayers().get(0).getId());
   }
 
   @Test
-  public void loadJsonStyle() throws URISyntaxException, IOException {
+  void loadJsonStyle() throws URISyntaxException, IOException {
     Style style = new BlobMapper(new ResourceBlobStore()).read(new URI("res://./style.json"), Style.class);
-    assertEquals(style.getName(), "style");
+    assertEquals("style", style.getName());
   }
 
   @Test
-  public void loadYamlStyle() throws URISyntaxException, IOException {
+  void loadYamlStyle() throws URISyntaxException, IOException {
     Style style = new BlobMapper(new ResourceBlobStore()).read(new URI("res://./style.yaml"), Style.class);
-    assertEquals(style.getName(), "style");
+    assertEquals("style", style.getName());
   }
 
 }

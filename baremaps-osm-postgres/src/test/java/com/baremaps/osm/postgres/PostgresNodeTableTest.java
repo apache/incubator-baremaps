@@ -35,14 +35,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class PostgresNodeTableTest {
+class PostgresNodeTableTest {
 
-  public DataSource dataSource;
+  DataSource dataSource;
 
-  public PostgresNodeTable nodeStore;
+  PostgresNodeTable nodeStore;
 
   @BeforeEach
-  public void createTable() throws SQLException, IOException {
+  void createTable() throws SQLException, IOException {
     dataSource = PostgresUtils.datasource(DATABASE_URL);
     nodeStore = new PostgresNodeTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
@@ -54,14 +54,14 @@ public class PostgresNodeTableTest {
 
   @Test
   @Tag("integration")
-  public void insert() throws DatabaseException {
+  void insert() throws DatabaseException {
     nodeStore.insert(NODE_0);
     assertEquals(NODE_0, nodeStore.select(NODE_0.getId()));
   }
 
   @Test
   @Tag("integration")
-  public void insertAll() throws DatabaseException {
+  void insertAll() throws DatabaseException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeStore.insert(nodes);
     assertIterableEquals(nodes,
@@ -70,7 +70,7 @@ public class PostgresNodeTableTest {
 
   @Test
   @Tag("integration")
-  public void delete() throws DatabaseException {
+  void delete() throws DatabaseException {
     nodeStore.insert(NODE_0);
     nodeStore.delete(NODE_0.getId());
     assertNull(nodeStore.select(NODE_0.getId()));
@@ -78,7 +78,7 @@ public class PostgresNodeTableTest {
 
   @Test
   @Tag("integration")
-  public void deleteAll() throws DatabaseException {
+  void deleteAll() throws DatabaseException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeStore.insert(nodes);
     nodeStore.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
@@ -88,7 +88,7 @@ public class PostgresNodeTableTest {
 
   @Test
   @Tag("integration")
-  public void copy() throws DatabaseException {
+  void copy() throws DatabaseException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeStore.copy(nodes);
     assertIterableEquals(nodes,

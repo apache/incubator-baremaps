@@ -9,7 +9,6 @@ import com.baremaps.config.tileset.Tileset;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
-import java.io.IOException;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -37,14 +36,14 @@ public class ViewerResources {
   @GET
   @Path("style.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Style getStyle() throws IOException {
+  public Style getStyle() {
     return style;
   }
 
   @GET
   @Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Tileset getTileset() throws IOException {
+  public Tileset getTileset() {
     return tileset;
   }
 
@@ -55,7 +54,7 @@ public class ViewerResources {
     try {
       byte[] bytes = tileStore.read(tile);
       if (bytes != null) {
-        return Response.status(200)
+        return Response.status(200) // lgtm [java/xss]
             .header(CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
             .header(CONTENT_ENCODING, "gzip")
             .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")

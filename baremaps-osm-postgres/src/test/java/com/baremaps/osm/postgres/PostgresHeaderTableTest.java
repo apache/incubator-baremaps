@@ -35,14 +35,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public class PostgresHeaderTableTest {
+class PostgresHeaderTableTest {
 
-  public DataSource dataSource;
+  DataSource dataSource;
 
-  public PostgresHeaderTable headerStore;
+  PostgresHeaderTable headerStore;
 
   @BeforeEach
-  public void createTable() throws SQLException, IOException {
+  void createTable() throws SQLException, IOException {
     dataSource = PostgresUtils.datasource(DATABASE_URL);
     headerStore = new PostgresHeaderTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
@@ -54,7 +54,7 @@ public class PostgresHeaderTableTest {
 
   @Test
   @Tag("integration")
-  public void selectAll() throws DatabaseException {
+  void selectAll() throws DatabaseException {
     List<Header> headers = Arrays.asList(HEADER_0, HEADER_1, HEADER_2);
     headerStore.insert(headers);
     assertEquals(3, headerStore.selectAll().size());
@@ -62,7 +62,7 @@ public class PostgresHeaderTableTest {
 
   @Test
   @Tag("integration")
-  public void selectLatest() throws DatabaseException {
+  void selectLatest() throws DatabaseException {
     List<Header> headers = Arrays.asList(HEADER_0, HEADER_1, HEADER_2);
     headerStore.insert(headers);
     assertEquals(HEADER_2, headerStore.selectLatest());
@@ -70,14 +70,14 @@ public class PostgresHeaderTableTest {
 
   @Test
   @Tag("integration")
-  public void insert() throws DatabaseException {
+  void insert() throws DatabaseException {
     headerStore.insert(HEADER_0);
     assertEquals(HEADER_0, headerStore.select(HEADER_0.getReplicationSequenceNumber()));
   }
 
   @Test
   @Tag("integration")
-  public void insertAll() throws DatabaseException {
+  void insertAll() throws DatabaseException {
     List<Header> headers = Arrays.asList(HEADER_0, HEADER_1, HEADER_2);
     headerStore.insert(headers);
     assertIterableEquals(headers,
@@ -86,7 +86,7 @@ public class PostgresHeaderTableTest {
 
   @Test
   @Tag("integration")
-  public void delete() throws DatabaseException {
+  void delete() throws DatabaseException {
     headerStore.insert(HEADER_0);
     headerStore.delete(HEADER_0.getReplicationSequenceNumber());
     assertNull(headerStore.select(HEADER_0.getReplicationSequenceNumber()));
@@ -94,7 +94,7 @@ public class PostgresHeaderTableTest {
 
   @Test
   @Tag("integration")
-  public void deleteAll() throws DatabaseException {
+  void deleteAll() throws DatabaseException {
     List<Header> headers = Arrays.asList(HEADER_0, HEADER_1, HEADER_2);
     headerStore.insert(headers);
     headerStore.delete(headers.stream().map(e -> e.getReplicationSequenceNumber()).collect(Collectors.toList()));
@@ -104,7 +104,7 @@ public class PostgresHeaderTableTest {
 
   @Test
   @Tag("integration")
-  public void copy() throws DatabaseException {
+  void copy() throws DatabaseException {
     List<Header> headers = Arrays.asList(HEADER_0, HEADER_1, HEADER_2);
     headerStore.copy(headers);
     assertIterableEquals(headers,

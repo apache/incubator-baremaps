@@ -14,6 +14,7 @@
 package com.baremaps.osm.cache;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.osm.cache.Cache.Entry;
 import java.util.Arrays;
@@ -37,8 +38,8 @@ class InMemoryCacheTest {
     assertEquals(cache.get(1), c1);
     assertEquals(cache.get(Arrays.asList(1, 2)), Arrays.asList(c1, c2));
     cache.delete(1);
-    assertEquals(cache.get(1), null);
+    assertNull(cache.get(1));
     cache.deleteAll(Arrays.asList(1, 2));
-    assertEquals(cache.get(Arrays.asList(1, 2)), Arrays.asList(null, null));
+    assertEquals(Arrays.asList(null, null), cache.get(Arrays.asList(1, 2)));
   }
 }

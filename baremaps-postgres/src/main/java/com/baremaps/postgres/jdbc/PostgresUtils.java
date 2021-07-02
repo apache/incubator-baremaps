@@ -14,10 +14,10 @@
 
 package com.baremaps.postgres.jdbc;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -38,7 +38,7 @@ public final class PostgresUtils {
 
   public static void executeResource(Connection connection, String resource) throws IOException, SQLException {
     URL resourceURL = Resources.getResource(resource);
-    String queries = Resources.toString(resourceURL, Charsets.UTF_8);
+    String queries = Resources.toString(resourceURL, StandardCharsets.UTF_8);
     try (Statement statement = connection.createStatement()) {
       statement.execute(queries);
     }

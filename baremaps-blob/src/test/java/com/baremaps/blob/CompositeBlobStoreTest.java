@@ -22,7 +22,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
-public class CompositeBlobStoreTest extends BlobStoreTest {
+class CompositeBlobStoreTest extends BlobStoreTest {
 
   @RegisterExtension
   static final S3MockExtension S3_MOCK = S3MockExtension.builder()
@@ -30,7 +30,7 @@ public class CompositeBlobStoreTest extends BlobStoreTest {
       .withSecureConnection(false)
       .build();
 
-  private final S3Client s3Client = S3_MOCK.createS3ClientV2();
+  final S3Client s3Client = S3_MOCK.createS3ClientV2();
 
   @BeforeEach
   void initAll() {
@@ -38,14 +38,14 @@ public class CompositeBlobStoreTest extends BlobStoreTest {
   }
 
   @Override
-  protected String createTestURI() throws IOException {
+  public String createTestURI() throws IOException {
     File file = File.createTempFile("baremaps_", ".test");
     file.delete();
     return file.getPath();
   }
 
   @Override
-  protected BlobStore createFileSystem() {
+  public BlobStore createFileSystem() {
     return new CompositeBlobStore();
   }
 

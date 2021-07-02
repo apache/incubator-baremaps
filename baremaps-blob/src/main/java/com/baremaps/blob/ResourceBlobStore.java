@@ -20,30 +20,23 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ResourceBlobStore implements BlobStore {
 
   private static final String SCHEMA = "res://";
 
-  private static Logger logger = LoggerFactory.getLogger(ResourceBlobStore.class);
-
   @Override
   public long size(URI uri) throws IOException {
-    logger.debug("Size {}", uri);
     return Resources.asByteSource(Resources.getResource(path(uri))).size();
   }
 
   @Override
   public InputStream read(URI uri) throws IOException {
-    logger.debug("Read {}", uri);
     return Resources.asByteSource(Resources.getResource(path(uri))).openStream();
   }
 
   @Override
   public byte[] readByteArray(URI uri) throws IOException {
-    logger.debug("Read {}", uri);
     return Resources.toByteArray(Resources.getResource(path(uri)));
   }
 

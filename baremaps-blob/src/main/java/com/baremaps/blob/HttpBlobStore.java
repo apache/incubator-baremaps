@@ -26,20 +26,11 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HttpBlobStore implements BlobStore {
 
-  private static Logger logger = LoggerFactory.getLogger(HttpBlobStore.class);
-
-  public HttpBlobStore() {
-
-  }
-
   @Override
   public long size(URI uri) throws IOException {
-    logger.debug("Size {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
     conn.setRequestMethod("HEAD");
     return conn.getContentLengthLong();
@@ -47,7 +38,6 @@ public class HttpBlobStore implements BlobStore {
 
   @Override
   public InputStream read(URI uri) throws IOException {
-    logger.debug("Read {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
     conn.setRequestMethod("GET");
     return new BufferedInputStream(conn.getInputStream());
@@ -55,7 +45,6 @@ public class HttpBlobStore implements BlobStore {
 
   @Override
   public byte[] readByteArray(URI uri) throws IOException {
-    logger.debug("Read {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
     conn.setRequestMethod("GET");
     try (InputStream inputStream = conn.getInputStream()) {
@@ -70,7 +59,6 @@ public class HttpBlobStore implements BlobStore {
 
   @Override
   public OutputStream write(URI uri, Map<String, String> metadata) throws IOException {
-    logger.debug("Write {}", uri);
     return new ByteArrayOutputStream() {
       @Override
       public void close() throws IOException {
@@ -96,7 +84,6 @@ public class HttpBlobStore implements BlobStore {
 
   @Override
   public void writeByteArray(URI uri, byte[] bytes, Map<String, String> metadata) throws IOException {
-    logger.debug("Write {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
     conn.setRequestMethod("PUT");
     for (Entry<String, String> entry : metadata.entrySet()) {
@@ -111,7 +98,6 @@ public class HttpBlobStore implements BlobStore {
 
   @Override
   public void delete(URI uri) throws IOException {
-    logger.debug("Delete {}", uri);
     HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
     conn.setRequestMethod("DELETE");
     conn.getInputStream();

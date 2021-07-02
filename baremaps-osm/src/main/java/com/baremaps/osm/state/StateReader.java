@@ -1,11 +1,11 @@
 package com.baremaps.osm.state;
 
 import com.baremaps.osm.domain.State;
-import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ public class StateReader {
   private final InputStreamReader reader;
 
   public StateReader(InputStream inputStream) {
-    this.reader = new InputStreamReader(inputStream, Charsets.UTF_8);
+    this.reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
   }
 
   public State read() throws IOException {

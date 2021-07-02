@@ -11,7 +11,7 @@ public class MaputnikResources {
 
   @GET
   @Path("{path:.*}")
-  public Response Get(@PathParam("path") String path) throws IOException {
+  public Response get(@PathParam("path") String path) throws IOException {
     if (path.equals("") || path.endsWith("/")) {
       path += "index.html";
     }

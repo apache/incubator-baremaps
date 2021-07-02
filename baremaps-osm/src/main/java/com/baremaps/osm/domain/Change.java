@@ -16,8 +16,6 @@ package com.baremaps.osm.domain;
 
 import com.baremaps.osm.handler.ChangeConsumer;
 import com.baremaps.osm.handler.ChangeFunction;
-import com.baremaps.osm.handler.EntityConsumer;
-import com.baremaps.osm.handler.EntityFunction;
 import java.util.List;
 import java.util.StringJoiner;
 

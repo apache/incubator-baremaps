@@ -30,7 +30,7 @@ public abstract class LmdbCache<K, V> implements Cache<K, V> {
 
   private final Dbi<ByteBuffer> database;
 
-  public LmdbCache(Env<ByteBuffer> env, Dbi<ByteBuffer> database) {
+  protected LmdbCache(Env<ByteBuffer> env, Dbi<ByteBuffer> database) {
     checkNotNull(env);
     checkNotNull(database);
     this.env = env;

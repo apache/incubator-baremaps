@@ -25,8 +25,6 @@ import org.junit.jupiter.api.Test;
 
 public abstract class TileStoreTest {
 
-  // TODO: try to move this in the testing module
-
   @Test
   @Tag("integration")
   void readWriteDeleteTile() throws Exception {
@@ -46,6 +44,6 @@ public abstract class TileStoreTest {
     assertThrows(TileStoreException.class, () -> tileStore.read(tile));
   }
 
-  protected abstract TileStore createTileStore() throws Exception;
+  public abstract TileStore createTileStore() throws Exception;
 
 }

@@ -36,12 +36,12 @@ import org.junit.jupiter.api.Test;
 
 class PostgresRelationTableTest {
 
-  public DataSource dataSource;
+  DataSource dataSource;
 
-  public PostgresRelationTable relationStore;
+  PostgresRelationTable relationStore;
 
   @BeforeEach
-  public void createTable() throws SQLException, IOException {
+  void createTable() throws SQLException, IOException {
     dataSource = PostgresUtils.datasource(DATABASE_URL);
     relationStore = new PostgresRelationTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
@@ -53,14 +53,14 @@ class PostgresRelationTableTest {
 
   @Test
   @Tag("integration")
-  public void insert() throws DatabaseException {
+  void insert() throws DatabaseException {
     relationStore.insert(RELATION_2);
     assertEquals(RELATION_2, relationStore.select(RELATION_2.getId()));
   }
 
   @Test
   @Tag("integration")
-  public void insertAll() throws DatabaseException {
+  void insertAll() throws DatabaseException {
     List<Relation> relations = Arrays
         .asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.insert(relations);
@@ -71,7 +71,7 @@ class PostgresRelationTableTest {
 
   @Test
   @Tag("integration")
-  public void delete() throws DatabaseException {
+  void delete() throws DatabaseException {
     relationStore.insert(RELATION_2);
     relationStore.delete(RELATION_2.getId());
     assertNull(relationStore.select(RELATION_2.getId()));
@@ -79,7 +79,7 @@ class PostgresRelationTableTest {
 
   @Test
   @Tag("integration")
-  public void deleteAll() throws DatabaseException {
+  void deleteAll() throws DatabaseException {
     List<Relation> relations = Arrays
         .asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.insert(relations);
@@ -91,7 +91,7 @@ class PostgresRelationTableTest {
 
   @Test
   @Tag("integration")
-  public void copy() throws DatabaseException {
+  void copy() throws DatabaseException {
     List<Relation> relations = Arrays
         .asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.copy(relations);

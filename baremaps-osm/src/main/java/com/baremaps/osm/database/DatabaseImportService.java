@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 public class DatabaseImportService implements Callable<Void> {
 
-  private static Logger logger = LoggerFactory.getLogger(DatabaseImportService.class);
+  private static final Logger logger = LoggerFactory.getLogger(DatabaseImportService.class);
 
   private final URI file;
   private final BlobStore blobStore;

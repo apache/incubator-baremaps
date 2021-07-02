@@ -2,9 +2,6 @@ package com.baremaps.osm.pbf;
 
 import com.baremaps.osm.domain.Blob;
 import com.baremaps.osm.domain.Block;
-import com.baremaps.stream.StreamException;
-import com.google.protobuf.InvalidProtocolBufferException;
-import java.util.zip.DataFormatException;
 
 public class BlockReader {
 
@@ -14,7 +11,7 @@ public class BlockReader {
     this.blob = blob;
   }
 
-  public Block readBlock() throws DataFormatException, InvalidProtocolBufferException {
+  public Block readBlock() {
     switch (blob.header().getType()) {
       case "OSMHeader":
         return BlobUtils.readHeaderBlock(blob);

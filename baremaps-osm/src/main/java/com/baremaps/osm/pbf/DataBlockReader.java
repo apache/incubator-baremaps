@@ -12,7 +12,6 @@ import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.stream.StreamException;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -61,10 +60,10 @@ public class DataBlockReader {
   }
 
   public void readEntities(Consumer<Entity> consumer) {
-    readDenseNodes(e -> consumer.accept(e));
-    readNodes(e -> consumer.accept(e));
-    readWays(e -> consumer.accept(e));
-    readRelations(e -> consumer.accept(e));
+    readDenseNodes(consumer::accept);
+    readNodes(consumer::accept);
+    readWays(consumer::accept);
+    readRelations(consumer::accept);
   }
 
   public void readDenseNodes(Consumer<Node> consumer) {

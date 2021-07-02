@@ -16,12 +16,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.zip.GZIPInputStream;
 import org.locationtech.jts.geom.Coordinate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DatabaseUpdateService implements Callable<Void> {
-
-  private static Logger logger = LoggerFactory.getLogger(DatabaseUpdateService.class);
 
   private final BlobStore blobStore;
   private final Cache<Long, Coordinate> coordinateCache;
@@ -59,7 +55,7 @@ public class DatabaseUpdateService implements Callable<Void> {
 
     GeometryConsumer geometryHandler = new GeometryConsumer(coordinateCache, referenceCache);
     ProjectionConsumer projectionConsumer = new ProjectionConsumer(4326, srid);
-    DatabaseUpdateConsumer updateHandler = new DatabaseUpdateConsumer(headerTable, nodeTable, wayTable, relationTable);
+    DatabaseUpdateConsumer updateHandler = new DatabaseUpdateConsumer(nodeTable, wayTable, relationTable);
     URI changeUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
     ProgressLogger progressLogger = new ProgressLogger(blobStore.size(changeUri), 5000);
     try (InputStream blobInputStream = blobStore.read(changeUri);

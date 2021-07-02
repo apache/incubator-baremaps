@@ -68,7 +68,6 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
   private static final String ATTRIBUTE_NAME_OSMOSIS_REPLICATION_TIMESTAMP = "osmosis_replication_timestamp";
   private static final String ATTRIBUTE_NAME_OSMOSIS_REPLICATION_SEQUENCE_NUMBER = "osmosis_replication_sequence_number";
   private static final String ATTRIBUTE_NAME_USER_ID = "uid";
-  private static final String ATTRIBUTE_NAME_USER = "user";
   private static final String ATTRIBUTE_NAME_CHANGESET_ID = "changeset";
   private static final String ATTRIBUTE_NAME_LATITUDE = "lat";
   private static final String ATTRIBUTE_NAME_LONGITUDE = "lon";
@@ -77,8 +76,6 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
   private static final String ATTRIBUTE_NAME_REF = "ref";
   private static final String ATTRIBUTE_NAME_TYPE = "type";
   private static final String ATTRIBUTE_NAME_ROLE = "role";
-  private static final String ATTRIBUTE_NAME_BOX = "box";
-  private static final String ATTRIBUTE_NAME_ORIGIN = "origin";
   private static final String ATTRIBUTE_NAME_MAXLON = "maxlon";
   private static final String ATTRIBUTE_NAME_MAXLAT = "maxlat";
   private static final String ATTRIBUTE_NAME_MINLON = "minlon";
@@ -148,8 +145,7 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
     }
   }
 
-  private Header readHeader() throws XMLStreamException {
-    String fileVersion = reader.getAttributeValue(null, ATTRIBUTE_NAME_VERSION);
+  private Header readHeader() {
     String generator = reader.getAttributeValue(null, ATTRIBUTE_NAME_GENERATOR);
     String source = reader.getAttributeValue(null, ATTRIBUTE_NAME_SOURCE);
     String replicationUrl = reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_URL);
@@ -166,7 +162,7 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
     return new Header(replicationSequenceNumber, timestamp, replicationUrl, source, generator);
   }
 
-  private Bound readBounds() throws XMLStreamException {
+  private Bound readBounds() {
     double maxLon = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_MAXLON));
     double maxLat = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_MAXLAT));
     double minLon = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_MINLON));
@@ -275,7 +271,7 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
     return new Info(version, timestamp, changeset, uid);
   }
 
-  private final void readTag(Map<String, String> tags) throws XMLStreamException {
+  private void readTag(Map<String, String> tags) throws XMLStreamException {
     String name = reader.getAttributeValue(null, ATTRIBUTE_NAME_KEY);
     String value = reader.getAttributeValue(null, ATTRIBUTE_NAME_VALUE);
     tags.put(name, value);

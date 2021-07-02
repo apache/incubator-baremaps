@@ -28,15 +28,15 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class BatchedSpliteratorTest {
+class BatchedSpliteratorTest {
 
-  private int spliteratorSize = 105;
-  private int batchSize = 10;
+  final int spliteratorSize = 105;
+  final int batchSize = 10;
 
-  private BatchedSpliterator<Integer> spliterator;
+  BatchedSpliterator<Integer> spliterator;
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     List<Integer> ints = new ArrayList<>();
     for (int i = 0; i < spliteratorSize; i++) {
       ints.add(i);
@@ -56,7 +56,7 @@ public class BatchedSpliteratorTest {
   }
 
   @Test
-  public void tryAdvance() throws Exception {
+  void tryAdvance() throws Exception {
     for (int i = 0; i < spliteratorSize; i++) {
       assertTrue(spliterator.tryAdvance(block -> {
       }));
@@ -66,14 +66,14 @@ public class BatchedSpliteratorTest {
   }
 
   @Test
-  public void forEachRemaining() throws Exception {
+  void forEachRemaining() throws Exception {
     AccumulatingConsumer<Integer> accumulator = new AccumulatingConsumer<>();
     spliterator.forEachRemaining(accumulator);
     assertEquals(accumulator.values().size(), spliteratorSize);
   }
 
   @Test
-  public void trySplit() {
+  void trySplit() {
     Spliterator<Integer> s;
     for (int i = 0; i < spliteratorSize / batchSize; i++) {
       s = spliterator.trySplit();
@@ -86,7 +86,7 @@ public class BatchedSpliteratorTest {
   }
 
   @Test
-  public void estimateSize() {
+  void estimateSize() {
     assertEquals(spliterator.estimateSize(), spliteratorSize);
   }
 

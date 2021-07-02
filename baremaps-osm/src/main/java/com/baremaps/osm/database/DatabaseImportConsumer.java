@@ -8,12 +8,12 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.handler.BlockConsumerAdapter;
 
-class DatabaseImportConsumer implements BlockConsumerAdapter {
+public class DatabaseImportConsumer implements BlockConsumerAdapter {
 
-  private EntityTable<Header> headerTable;
-  private EntityTable<Node> nodeTable;
-  private EntityTable<Way> wayTable;
-  private EntityTable<Relation> relationTable;
+  private final EntityTable<Header> headerTable;
+  private final EntityTable<Node> nodeTable;
+  private final EntityTable<Way> wayTable;
+  private final EntityTable<Relation> relationTable;
 
   public DatabaseImportConsumer(
       EntityTable<Header> headerTable,

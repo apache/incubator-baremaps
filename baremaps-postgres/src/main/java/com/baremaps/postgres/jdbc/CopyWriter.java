@@ -91,7 +91,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeStringList(List<String> value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.Text, CopyWriter::stringWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.TEXT, CopyWriter::stringWriter)).write(data, value);
   }
 
   /**
@@ -109,7 +109,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeBooleanList(List<Boolean> value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.Boolean, CopyWriter::booleanWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.BOOLEAN, CopyWriter::booleanWriter)).write(data, value);
   }
 
   /**
@@ -145,7 +145,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeShortList(List<Short> value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.Int4, CopyWriter::shortWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.INT4, CopyWriter::shortWriter)).write(data, value);
   }
 
   /**
@@ -163,7 +163,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeIntegerList(List<Integer> value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.Int4, CopyWriter::integerWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.INT4, CopyWriter::integerWriter)).write(data, value);
   }
 
   /**
@@ -181,7 +181,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeLongList(List<Long> value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.Int8, CopyWriter::longWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.INT8, CopyWriter::longWriter)).write(data, value);
   }
 
   /**
@@ -199,7 +199,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeFloatList(List<Float> value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.Int8, CopyWriter::floatWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.INT8, CopyWriter::floatWriter)).write(data, value);
   }
 
   /**
@@ -217,7 +217,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeDoubleArray(List<Double> value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.Int8, CopyWriter::doubleWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.INT8, CopyWriter::doubleWriter)).write(data, value);
   }
 
   /**
