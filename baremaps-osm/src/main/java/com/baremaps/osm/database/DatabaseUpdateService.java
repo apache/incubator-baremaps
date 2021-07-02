@@ -62,8 +62,10 @@ public class DatabaseUpdateService implements Callable<Void> {
     DatabaseUpdateConsumer updateHandler = new DatabaseUpdateConsumer(headerTable, nodeTable, wayTable, relationTable);
     URI changeUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
     ProgressLogger progressLogger = new ProgressLogger(blobStore.size(changeUri), 5000);
-    try (InputStream changesInputStream = new GZIPInputStream(new InputStreamProgress(blobStore.read(changeUri), progressLogger))) {
-      OpenStreetMap.streamXmlChanges(changesInputStream)
+    try (InputStream blobInputStream = blobStore.read(changeUri);
+        InputStream progressInputStream = new InputStreamProgress(blobInputStream, progressLogger);
+        InputStream gzipInputStream = new GZIPInputStream(progressInputStream)) {
+      OpenStreetMap.streamXmlChanges(gzipInputStream)
           .peek(change -> change.getElements().forEach(geometryHandler.andThen(projectionConsumer)))
           .forEach(updateHandler);
     }

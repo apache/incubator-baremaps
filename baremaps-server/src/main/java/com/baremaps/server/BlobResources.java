@@ -2,6 +2,7 @@ package com.baremaps.server;
 
 import com.baremaps.blob.BlobStore;
 import java.net.URI;
+import java.net.URISyntaxException;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.GET;
@@ -28,7 +29,11 @@ public class BlobResources {
       path += "index.html";
     }
     try {
-      URI asset = assets.resolve(path);
+      // normalize and strip asset from invalid inputs
+      URI asset = assets.resolve(assets.resolve(path).normalize().getPath());
+      if (asset.getPath().startsWith(assets.getPath())) {
+        throw new IllegalAccessException();
+      }
       var bytes = blobStore.readByteArray(asset);
       return Response.ok().entity(bytes).build();
     } catch (Exception e) {

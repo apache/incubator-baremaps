@@ -28,8 +28,6 @@ public class CompositeBlobStore implements BlobStore {
   {
     schemes.put(null, new FileBlobStore());
     schemes.put("file", new FileBlobStore());
-    schemes.put("http", new HttpBlobStore());
-    schemes.put("https", new HttpBlobStore());
     schemes.put("res", new ResourceBlobStore());
   }
 
