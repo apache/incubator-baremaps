@@ -1,9 +1,10 @@
 package com.baremaps.cli;
 
-import static com.baremaps.config.Variables.interpolate;
+import static com.baremaps.config.VariableUtils.interpolate;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.postgres.jdbc.PostgresUtils;
+import com.baremaps.stream.StreamException;
 import com.baremaps.stream.StreamUtils;
 import com.google.common.base.Splitter;
 import java.net.URI;
@@ -25,7 +26,7 @@ import picocli.CommandLine.Option;
 @Command(name = "execute", description = "Execute queries in the database.")
 public class Execute implements Callable<Integer> {
 
-  private static Logger logger = LoggerFactory.getLogger(Execute.class);
+  private static final Logger logger = LoggerFactory.getLogger(Execute.class);
 
   @Mixin
   private Options options;
@@ -68,7 +69,7 @@ public class Execute implements Callable<Integer> {
                 Statement statement = connection.createStatement()) {
               statement.execute(query);
             } catch (SQLException e) {
-              throw new RuntimeException(e);
+              throw new StreamException(e);
             }
           });
     }

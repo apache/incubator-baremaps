@@ -75,7 +75,7 @@ public class PostgresCoordinateCache implements CoordinateCache {
         double lat = result.getDouble(3);
         nodes.put(id, new Coordinate(lon, lat));
       }
-      return keys.stream().map(key -> nodes.get(key)).collect(Collectors.toList());
+      return keys.stream().map(nodes::get).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new CacheException(e);
     }

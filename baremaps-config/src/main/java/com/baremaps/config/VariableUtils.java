@@ -6,7 +6,11 @@ import java.util.Map.Entry;
 /**
  * A utility class to interpolate variables in strings.
  */
-public class Variables {
+public class VariableUtils {
+
+  private VariableUtils() {
+
+  }
 
   public static String interpolate(Map<String, String> variables, String string) {
     for (Entry<String, String> entry : variables.entrySet()) {

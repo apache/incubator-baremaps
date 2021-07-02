@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GeometryConsumer implements ElementConsumer {
 
-  private static Logger logger = LoggerFactory.getLogger(GeometryConsumer.class);
+  private static final Logger logger = LoggerFactory.getLogger(GeometryConsumer.class);
 
   protected final GeometryFactory geometryFactory;
   private final Cache<Long, Coordinate> coordinateCache;
@@ -152,7 +152,6 @@ public class GeometryConsumer implements ElementConsumer {
         relation.setGeometry(multiPolygon);
       }
     } catch (Exception e) {
-      e.printStackTrace();
       logger.warn("Unable to build the geometry for relation #" + relation.getId(), e);
     }
   }

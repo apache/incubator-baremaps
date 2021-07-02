@@ -14,14 +14,12 @@
 
 package com.baremaps.cli;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.osm.postgres.PostgresNodeTable;
 import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -33,8 +31,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Comparator;
+import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,14 +40,14 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import picocli.CommandLine;
 
-public class BaremapsTest {
+class BaremapsTest {
 
-  public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps";
-  public DataSource dataSource;
-  public PostgresNodeTable nodeStore;
+  static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps";
+  DataSource dataSource;
+  PostgresNodeTable nodeStore;
 
   @BeforeEach
-  public void createTable() throws SQLException, IOException {
+  void createTable() throws SQLException, IOException {
     dataSource = PostgresUtils.datasource(DATABASE_URL);
     nodeStore = new PostgresNodeTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
@@ -62,7 +60,7 @@ public class BaremapsTest {
   }
 
   @AfterEach
-  public void clean() throws IOException {
+  void clean() throws IOException {
     Path repository = Paths.get("repository");
     Files.walk(repository)
         .sorted(Comparator.reverseOrder())
@@ -72,7 +70,7 @@ public class BaremapsTest {
 
   @Test
   @Tag("integration")
-  public void test() throws InterruptedException, IOException {
+  void test() throws InterruptedException, IOException {
     // Initialize the command line client
     Baremaps app = new Baremaps();
     CommandLine cmd = new CommandLine(app);
@@ -93,26 +91,21 @@ public class BaremapsTest {
     assertEquals(0, exportExitCode);
     assertTrue(Files.exists(Paths.get("repository/14/8626/5750.pbf")));
 
-    // Test the serve command in a separate thread
-    Thread thread = new Thread(() -> {
+    // Wait for ServiceTalk and JAX-RS  to start
+    await().atMost(10, TimeUnit.SECONDS).until(() -> {
       cmd.execute("edit",
           "--database", DATABASE_URL,
           "--tileset", "res://tileset.json",
           "--style", "res://style.json",
           "--port", "9000");
+      return null;
     });
-    thread.start();
-
-    // Wait for ServiceTalk and JAX-RS  to start
-    Thread.sleep(5000);
 
     // Download a tile file
     HttpURLConnection connection = (HttpURLConnection) new URL("http://127.0.0.1:9000/tiles/14/8626/5750.mvt")
         .openConnection();
     connection.connect();
-    assertEquals(connection.getResponseCode(), 200);
+    assertEquals(200, connection.getResponseCode());
   }
-
-
 
 }

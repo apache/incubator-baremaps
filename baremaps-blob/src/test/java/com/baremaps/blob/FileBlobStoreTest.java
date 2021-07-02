@@ -14,12 +14,8 @@
 
 package com.baremaps.blob;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import org.junit.jupiter.api.Test;
 
 class FileBlobStoreTest extends BlobStoreTest {
 

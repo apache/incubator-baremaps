@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 public class DatabaseUpdateService implements Callable<Void> {
 
-  private static Logger logger = LoggerFactory.getLogger(DatabaseUpdateService.class);
+  private static final Logger logger = LoggerFactory.getLogger(DatabaseUpdateService.class);
 
   private final BlobStore blobStore;
   private final Cache<Long, Coordinate> coordinateCache;

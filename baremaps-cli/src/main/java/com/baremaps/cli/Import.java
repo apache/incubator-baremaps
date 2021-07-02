@@ -15,9 +15,9 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.database.DatabaseImportService;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.InMemoryCache;
+import com.baremaps.osm.database.DatabaseImportService;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
@@ -49,10 +49,10 @@ import picocli.CommandLine.Option;
 @Command(name = "import", description = "Import OpenStreetMap data in the database.")
 public class Import implements Callable<Integer> {
 
-  private static Logger logger = LoggerFactory.getLogger(Import.class);
+  private static final Logger logger = LoggerFactory.getLogger(Import.class);
 
   private enum CacheType {
-    lmdb, inmemory
+    LMDB, MEMORY
   }
 
   @Mixin
@@ -76,7 +76,7 @@ public class Import implements Callable<Integer> {
       names = {"--cache-type"},
       paramLabel = "CACHE_TYPE",
       description = "The type of cache used when importing data.")
-  private CacheType cacheType = CacheType.lmdb;
+  private final CacheType cacheType = CacheType.LMDB;
 
   @Option(
       names = {"--cache-directory"},
@@ -105,11 +105,11 @@ public class Import implements Callable<Integer> {
     final Cache<Long, Coordinate> coordinateCache;
     final Cache<Long, List<Long>> referenceCache;
     switch (cacheType) {
-      case inmemory:
+      case MEMORY:
         coordinateCache = new InMemoryCache<>();
         referenceCache = new InMemoryCache<>();
         break;
-      case lmdb:
+      case LMDB:
         if (cacheDirectory != null) {
           cacheDirectory = Files.createDirectories(cacheDirectory);
         } else {

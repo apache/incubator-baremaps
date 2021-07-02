@@ -1,7 +1,6 @@
 package com.baremaps.openapi.services;
 
 import com.baremaps.api.TilesApi;
-
 import com.baremaps.model.TileSetsDescription;
 import java.util.List;
 

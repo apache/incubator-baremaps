@@ -30,8 +30,8 @@ import org.junit.jupiter.api.Test;
 
 public class BatchedSpliteratorTest {
 
-  private int spliteratorSize = 105;
-  private int batchSize = 10;
+  private final int spliteratorSize = 105;
+  private final int batchSize = 10;
 
   private BatchedSpliterator<Integer> spliterator;
 

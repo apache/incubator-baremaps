@@ -83,7 +83,7 @@ public class PostgresReferenceCache implements ReferenceCache {
         }
         references.put(id, nodes);
       }
-      return keys.stream().map(key -> references.get(key)).collect(Collectors.toList());
+      return keys.stream().map(references::get).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new CacheException(e);
     }

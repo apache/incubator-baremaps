@@ -25,7 +25,7 @@ import picocli.CommandLine.Option;
 @Command(name = "edit", description = "Edit the vector tiles.")
 public class Edit implements Callable<Integer> {
 
-  private static Logger logger = LoggerFactory.getLogger(Edit.class);
+  private static final Logger logger = LoggerFactory.getLogger(Edit.class);
 
   @Mixin
   private Options options;

@@ -3,6 +3,7 @@ package com.baremaps.cli;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.cache.CoordinateCache;
 import com.baremaps.osm.cache.ReferenceCache;
+import com.baremaps.osm.database.DatabaseDiffService;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
@@ -13,7 +14,6 @@ import com.baremaps.osm.postgres.PostgresNodeTable;
 import com.baremaps.osm.postgres.PostgresReferenceCache;
 import com.baremaps.osm.postgres.PostgresRelationTable;
 import com.baremaps.osm.postgres.PostgresWayTable;
-import com.baremaps.osm.database.DatabaseDiffService;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -30,7 +30,7 @@ import picocli.CommandLine.Option;
 @Command(name = "diff", description = "List the tiles affected by changes.")
 public class Diff implements Callable<Integer> {
 
-  private static Logger logger = LoggerFactory.getLogger(Diff.class);
+  private static final Logger logger = LoggerFactory.getLogger(Diff.class);
 
   @Mixin
   private Options options;

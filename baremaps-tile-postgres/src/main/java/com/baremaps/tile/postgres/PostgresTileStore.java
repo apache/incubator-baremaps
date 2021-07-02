@@ -14,7 +14,7 @@
 
 package com.baremaps.tile.postgres;
 
-import static com.baremaps.config.Variables.interpolate;
+import static com.baremaps.config.VariableUtils.interpolate;
 
 import com.baremaps.config.tileset.Layer;
 import com.baremaps.config.tileset.Tileset;

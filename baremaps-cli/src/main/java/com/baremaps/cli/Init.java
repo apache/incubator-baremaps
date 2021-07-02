@@ -21,7 +21,7 @@ import picocli.CommandLine.Option;
 @Command(name = "init", description = "Init the configuration files.")
 public class Init implements Callable<Integer> {
 
-  private static Logger logger = LoggerFactory.getLogger(Init.class);
+  private static final Logger logger = LoggerFactory.getLogger(Init.class);
 
   @Mixin
   private Options options;

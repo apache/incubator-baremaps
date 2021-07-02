@@ -32,7 +32,7 @@ import picocli.CommandLine.Option;
 @Command(name = "serve", description = "Serve the vector tiles.")
 public class Serve implements Callable<Integer> {
 
-  private static Logger logger = LoggerFactory.getLogger(Serve.class);
+  private static final Logger logger = LoggerFactory.getLogger(Serve.class);
 
   @Mixin
   private Options options;
@@ -88,12 +88,12 @@ public class Serve implements Callable<Integer> {
 
     BlobStore blobStore = options.blobStore();
 
-    Tileset tileset = new BlobMapper(blobStore).read(this.tileset, Tileset.class);
-    Style style = new BlobMapper(blobStore).read(this.style, Style.class);
+    Tileset tilesetObject = new BlobMapper(blobStore).read(this.tileset, Tileset.class);
+    Style styleObject = new BlobMapper(blobStore).read(this.style, Style.class);
 
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
     DataSource datasource = PostgresUtils.datasource(database);
-    TileStore tileStore = new PostgresTileStore(datasource, tileset);
+    TileStore tileStore = new PostgresTileStore(datasource, tilesetObject);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
     ResourceConfig config = new ResourceConfig()
@@ -102,8 +102,8 @@ public class Serve implements Callable<Integer> {
         .register(new AbstractBinder() {
           @Override
           protected void configure() {
-            bind(tileset).to(Tileset.class);
-            bind(style).to(Style.class);
+            bind(tilesetObject).to(Tileset.class);
+            bind(styleObject).to(Style.class);
             bind(tileCache).to(TileStore.class);
             bind(blobStore).to(BlobStore.class);
             bind(assets).named("assets").to(URI.class);

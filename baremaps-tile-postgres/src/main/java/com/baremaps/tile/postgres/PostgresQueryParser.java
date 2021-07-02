@@ -16,7 +16,6 @@ package com.baremaps.tile.postgres;
 
 import com.baremaps.config.tileset.Layer;
 import com.baremaps.config.tileset.Query;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.Optional;
 import net.sf.jsqlparser.JSQLParserException;

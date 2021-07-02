@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.osm.database.DatabaseException;
-import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.IOException;

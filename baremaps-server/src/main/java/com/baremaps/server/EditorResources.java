@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @javax.ws.rs.Path("/")
 public class EditorResources {
 
-  private static Logger logger = LoggerFactory.getLogger(EditorResources.class);
+  private static final Logger logger = LoggerFactory.getLogger(EditorResources.class);
 
   private final URI style;
 
@@ -53,7 +53,6 @@ public class EditorResources {
 
   private final DataSource dataSource;
 
-  private Sse sse;
   private OutboundSseEvent.Builder sseEventBuilder;
   private SseBroadcaster sseBroadcaster;
   private Thread fileWatcher;
@@ -68,7 +67,6 @@ public class EditorResources {
 
   @Context
   public void setSse(Sse sse) {
-    this.sse = sse;
     this.sseEventBuilder = sse.newEventBuilder();
     this.sseBroadcaster = sse.newBroadcaster();
     if (fileWatcher != null) {
@@ -94,6 +92,7 @@ public class EditorResources {
         }
       } catch (InterruptedException e) {
         logger.error(e.getMessage());
+        Thread.currentThread().interrupt();
       } catch (IOException e) {
         logger.error(e.getMessage());
       }

@@ -15,9 +15,9 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.database.DatabaseUpdateService;
 import com.baremaps.osm.cache.CoordinateCache;
 import com.baremaps.osm.cache.ReferenceCache;
+import com.baremaps.osm.database.DatabaseUpdateService;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
@@ -42,7 +42,7 @@ import picocli.CommandLine.Option;
 @Command(name = "update", description = "Update OpenStreetMap data in the database.")
 public class Update implements Callable<Integer> {
 
-  private static Logger logger = LoggerFactory.getLogger(Update.class);
+  private static final Logger logger = LoggerFactory.getLogger(Update.class);
 
   @Mixin
   private Options options;
