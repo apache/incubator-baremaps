@@ -16,7 +16,7 @@ jobs:
         uses: huaxk/postgis-action@v1
         with:
           postgresql version: '11'
-          postgresql password: ${{ secrets.POSTGRESQL_PASSWORD }}
+          postgresql password: 'baremaps'
           postgresql user: 'baremaps'
           postgresql db: 'baremaps'
       - name: Set up Java 11
@@ -25,6 +25,8 @@ jobs:
           java-version: 11
       - name: Build with Maven
         run: mvn -P maputnik,integration -B package --file pom.xml
+      - name: Upload code coverage
+        run: bash <(curl -s https://codecov.io/bash)
 
   build-macos:
     name: Build on MacOS
