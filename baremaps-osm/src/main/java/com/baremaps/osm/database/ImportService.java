@@ -1,0 +1,83 @@
+package com.baremaps.osm.database;
+
+import static com.baremaps.osm.OpenStreetMap.streamPbfBlocks;
+import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
+import static com.baremaps.stream.StreamUtils.batch;
+
+import com.baremaps.blob.BlobStore;
+import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.cache.CacheBlockConsumer;
+import com.baremaps.osm.cache.CoordinateCache;
+import com.baremaps.osm.cache.ReferenceCache;
+import com.baremaps.osm.domain.Block;
+import com.baremaps.osm.domain.Entity;
+import com.baremaps.osm.geometry.CreateGeometryConsumer;
+import com.baremaps.osm.geometry.ReprojectGeometryConsumer;
+import com.baremaps.osm.handler.BlockEntityConsumer;
+import com.baremaps.osm.progress.InputStreamProgress;
+import com.baremaps.osm.progress.ProgressLogger;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import org.locationtech.jts.geom.Coordinate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class ImportService implements Callable<Void> {
+
+  private static final Logger logger = LoggerFactory.getLogger(ImportService.class);
+
+  private final URI uri;
+  private final BlobStore blobStore;
+  private final Cache<Long, Coordinate> coordinateCache;
+  private final Cache<Long, List<Long>> referenceCache;
+  private final HeaderTable headerTable;
+  private final NodeTable nodeTable;
+  private final WayTable wayTable;
+  private final RelationTable relationTable;
+  private final int srid;
+
+  public ImportService(
+      URI uri,
+      BlobStore blobStore,
+      CoordinateCache coordinateCache,
+      ReferenceCache referenceCache,
+      HeaderTable headerTable,
+      NodeTable nodeTable,
+      WayTable wayTable,
+      RelationTable relationTable,
+      int srid) {
+    this.uri = uri;
+    this.blobStore = blobStore;
+    this.coordinateCache = coordinateCache;
+    this.referenceCache = referenceCache;
+    this.headerTable = headerTable;
+    this.nodeTable = nodeTable;
+    this.wayTable = wayTable;
+    this.relationTable = relationTable;
+    this.srid = srid;
+  }
+
+  @Override
+  public Void call() throws Exception {
+    logger.info("Importing data");
+
+    Consumer<Block> cacheBlock = new CacheBlockConsumer(coordinateCache, referenceCache);
+    Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinateCache, referenceCache);
+    Consumer<Entity> reprojectGeometry = new ReprojectGeometryConsumer(4326, srid);
+    Consumer<Block> prepareGeometries = new BlockEntityConsumer(createGeometry.andThen(reprojectGeometry));
+    Function<Block, Block> prepareBlock = consumeThenReturn(cacheBlock.andThen(prepareGeometries));
+    Consumer<Block> saveBlock = new SaveBlockConsumer(headerTable, nodeTable, wayTable, relationTable);
+
+    ProgressLogger progressLogger = new ProgressLogger(blobStore.size(uri), 5000);
+    try (InputStream inputStream = new InputStreamProgress(blobStore.read(this.uri), progressLogger)) {
+      batch(streamPbfBlocks(inputStream).map(prepareBlock)).forEach(saveBlock);
+    }
+
+    return null;
+  }
+
+}

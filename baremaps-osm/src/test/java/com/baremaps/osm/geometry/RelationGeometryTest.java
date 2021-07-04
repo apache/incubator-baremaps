@@ -35,7 +35,7 @@ class RelationGeometryTest {
     Relation relation = entities.stream().filter(e -> e instanceof Relation)
         .map(e -> (Relation) e)
         .findFirst().get();
-    new GeometryConsumer(coordinateCache, referenceCache).match(relation);
+    new CreateGeometryConsumer(coordinateCache, referenceCache).match(relation);
     return relation.getGeometry();
   }
 

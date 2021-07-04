@@ -49,7 +49,7 @@ class XmlChangeSpliteratorTest {
           accumulator.values().size(), 7);
       assertEquals(
           accumulator.values().stream()
-              .flatMap(change -> change.getElements().stream())
+              .flatMap(change -> change.getEntities().stream())
               .collect(Collectors.toList())
               .size(), 51);
     }

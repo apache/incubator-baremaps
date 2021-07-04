@@ -18,7 +18,7 @@ import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.handler.ElementConsumer;
+import com.baremaps.osm.handler.EntityConsumerAdapter;
 import java.util.stream.Stream;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
@@ -34,13 +34,13 @@ import org.locationtech.proj4j.ProjCoordinate;
 /**
  * Changes the projection of the geometry of an element via side-effects.
  */
-public class ProjectionConsumer extends GeometryTransformer implements ElementConsumer {
+public class ReprojectGeometryConsumer extends GeometryTransformer implements EntityConsumerAdapter {
 
   private final int dstSRID;
 
   private final CoordinateTransform coordinateTransform;
 
-  public ProjectionConsumer(int sourceSRID, int targetSRID) {
+  public ReprojectGeometryConsumer(int sourceSRID, int targetSRID) {
     this.dstSRID = targetSRID;
     CRSFactory crsFactory = new CRSFactory();
     CoordinateReferenceSystem sourceCRS = crsFactory.createFromName(String.format("EPSG:%d", sourceSRID));

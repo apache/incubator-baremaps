@@ -173,7 +173,7 @@ class GeometryHandlerTest {
           new Member(4l, MemberType.way, "inner"),
           new Member(5l, MemberType.way, "inner")));
 
-  static final GeometryConsumer GEOMETRY_BUILDER = new GeometryConsumer(COORDINATE_CACHE, REFERENCE_CACHE);
+  static final CreateGeometryConsumer GEOMETRY_BUILDER = new CreateGeometryConsumer(COORDINATE_CACHE, REFERENCE_CACHE);
 
   @Test
   void handleNode() {

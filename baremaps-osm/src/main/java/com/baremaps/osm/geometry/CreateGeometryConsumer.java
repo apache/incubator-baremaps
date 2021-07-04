@@ -6,7 +6,7 @@ import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.handler.ElementConsumer;
+import com.baremaps.osm.handler.EntityConsumerAdapter;
 import com.baremaps.stream.StreamException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,15 +36,15 @@ import org.slf4j.LoggerFactory;
 /**
  * Sets the geometry of an element via side-effects.
  */
-public class GeometryConsumer implements ElementConsumer {
+public class CreateGeometryConsumer implements EntityConsumerAdapter {
 
-  private static final Logger logger = LoggerFactory.getLogger(GeometryConsumer.class);
+  private static final Logger logger = LoggerFactory.getLogger(CreateGeometryConsumer.class);
 
   protected final GeometryFactory geometryFactory;
   private final Cache<Long, Coordinate> coordinateCache;
   private final Cache<Long, List<Long>> referenceCache;
 
-  public GeometryConsumer(
+  public CreateGeometryConsumer(
       Cache<Long, Coordinate> coordinateCache,
       Cache<Long, List<Long>> referenceCache) {
     this.geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);

@@ -7,11 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.osm.cache.CoordinateCache;
-import com.baremaps.osm.cache.InMemoryCache;
+import com.baremaps.osm.cache.InMemoryCoordinateCache;
+import com.baremaps.osm.cache.InMemoryReferenceCache;
 import com.baremaps.osm.cache.ReferenceCache;
-import com.baremaps.osm.database.DatabaseDiffService;
-import com.baremaps.osm.database.DatabaseImportService;
-import com.baremaps.osm.database.DatabaseUpdateService;
+import com.baremaps.osm.database.DiffService;
+import com.baremaps.osm.database.ImportService;
+import com.baremaps.osm.database.UpdateService;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
@@ -59,11 +60,11 @@ class ImportUpdateTest {
   void simple() throws Exception {
 
     // Import data
-    new DatabaseImportService(
+    new ImportService(
         new URI("res://simple/data.osm.pbf"),
         blobStore,
-        new InMemoryCache<>(),
-        new InMemoryCache<>(),
+        new InMemoryCoordinateCache(),
+        new InMemoryReferenceCache(),
         headerTable,
         nodeTable,
         wayTable,
@@ -100,7 +101,7 @@ class ImportUpdateTest {
     assertNotNull(way);
 
     // Update the database
-    new DatabaseUpdateService(
+    new UpdateService(
         blobStore,
         new PostgresCoordinateCache(dataSource),
         new PostgresReferenceCache(dataSource),
@@ -126,11 +127,11 @@ class ImportUpdateTest {
   void liechtenstein() throws Exception {
 
     // Import data
-    new DatabaseImportService(
+    new ImportService(
         new URI("res://liechtenstein/liechtenstein.osm.pbf"),
         blobStore,
-        new InMemoryCache<>(),
-        new InMemoryCache<>(),
+        new InMemoryCoordinateCache(),
+        new InMemoryReferenceCache(),
         headerTable,
         nodeTable,
         wayTable,
@@ -145,7 +146,7 @@ class ImportUpdateTest {
     CoordinateCache coordinateCache = new PostgresCoordinateCache(dataSource);
     ReferenceCache referenceCache = new PostgresReferenceCache(dataSource);
 
-    assertEquals(0, new DatabaseDiffService(
+    assertEquals(0, new DiffService(
         blobStore,
         coordinateCache,
         referenceCache,
@@ -158,7 +159,7 @@ class ImportUpdateTest {
     ).call().size());
 
     // Update the database
-    new DatabaseUpdateService(
+    new UpdateService(
         blobStore,
         coordinateCache,
         referenceCache,
@@ -170,7 +171,7 @@ class ImportUpdateTest {
     ).call();
     assertEquals(2435l, headerTable.selectLatest().getReplicationSequenceNumber());
 
-    assertEquals(7, new DatabaseDiffService(
+    assertEquals(7, new DiffService(
         blobStore,
         coordinateCache,
         referenceCache,
@@ -182,7 +183,7 @@ class ImportUpdateTest {
         14
     ).call().size());
 
-    new DatabaseUpdateService(
+    new UpdateService(
         blobStore,
         coordinateCache,
         referenceCache,
@@ -194,7 +195,7 @@ class ImportUpdateTest {
     ).call();
     assertEquals(2436l, headerTable.selectLatest().getReplicationSequenceNumber());
 
-    assertEquals(0, new DatabaseDiffService(
+    assertEquals(0, new DiffService(
         blobStore,
         coordinateCache,
         referenceCache,
@@ -206,7 +207,7 @@ class ImportUpdateTest {
         14
     ).call().size());
 
-    new DatabaseUpdateService(
+    new UpdateService(
         blobStore,
         coordinateCache,
         referenceCache,

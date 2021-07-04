@@ -3,7 +3,7 @@ package com.baremaps.cli;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.cache.CoordinateCache;
 import com.baremaps.osm.cache.ReferenceCache;
-import com.baremaps.osm.database.DatabaseDiffService;
+import com.baremaps.osm.database.DiffService;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
@@ -19,8 +19,6 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -76,7 +74,7 @@ public class Diff implements Callable<Integer> {
 
     logger.info("Saving diff file");
     try (PrintWriter printWriter = new PrintWriter(blobStore.write(this.tiles))) {
-      new DatabaseDiffService(
+      new DiffService(
           blobStore,
           coordinateCache,
           referenceCache,

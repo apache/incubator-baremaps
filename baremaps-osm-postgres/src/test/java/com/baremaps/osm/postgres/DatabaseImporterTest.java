@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.database.DatabaseException;
-import com.baremaps.osm.database.DatabaseImportConsumer;
+import com.baremaps.osm.database.SaveBlockConsumer;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.IOException;
 import java.net.URI;
@@ -45,7 +45,7 @@ class DatabaseImporterTest {
   @Tag("integration")
   void test() throws IOException, DatabaseException, URISyntaxException {
     // Import data
-    DatabaseImportConsumer dataImporter = new DatabaseImportConsumer(headerTable, nodeTable, wayTable, relationTable);
+    SaveBlockConsumer dataImporter = new SaveBlockConsumer(headerTable, nodeTable, wayTable, relationTable);
     OpenStreetMap.streamPbfBlocks(new ResourceBlobStore().read(new URI("res://simple/data.osm.pbf"))).forEach(dataImporter);
 
     // Check node importation

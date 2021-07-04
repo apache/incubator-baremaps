@@ -1,20 +1,20 @@
 package com.baremaps.osm.database;
 
 import com.baremaps.osm.domain.Change;
-import com.baremaps.osm.domain.Element;
+import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.handler.ChangeConsumer;
-import com.baremaps.osm.handler.ElementConsumer;
+import com.baremaps.osm.handler.EntityConsumerAdapter;
 
-public class DatabaseUpdateConsumer implements ChangeConsumer {
+public class SaveChangeConsumer implements ChangeConsumer {
 
   private final EntityTable<Node> nodeTable;
   private final EntityTable<Way> wayTable;
   private final EntityTable<Relation> relationTable;
 
-  public DatabaseUpdateConsumer(
+  public SaveChangeConsumer(
       EntityTable<Node> nodeTable,
       EntityTable<Way> wayTable,
       EntityTable<Relation> relationTable) {
@@ -25,8 +25,8 @@ public class DatabaseUpdateConsumer implements ChangeConsumer {
 
   @Override
   public void match(Change change) throws Exception {
-    for (Element element : change.getElements()) {
-      element.visit(new ElementConsumer() {
+    for (Entity entity : change.getEntities()) {
+      entity.visit(new EntityConsumerAdapter() {
         @Override
         public void match(Node node) throws Exception {
           switch (change.getType()) {

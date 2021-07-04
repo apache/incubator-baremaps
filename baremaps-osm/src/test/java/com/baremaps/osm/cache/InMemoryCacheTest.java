@@ -25,7 +25,7 @@ class InMemoryCacheTest {
 
   @Test
   void test() throws Exception {
-    Cache cache = new InMemoryCache<Long, Coordinate>();
+    Cache cache = new InMemoryCoordinateCache();
     Coordinate c1 = new Coordinate(1, 0);
     Coordinate c2 = new Coordinate(2, 0);
     Coordinate c3 = new Coordinate(3, 0);

@@ -17,7 +17,7 @@ package com.baremaps.cli;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.cache.CoordinateCache;
 import com.baremaps.osm.cache.ReferenceCache;
-import com.baremaps.osm.database.DatabaseUpdateService;
+import com.baremaps.osm.database.UpdateService;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
@@ -31,8 +31,6 @@ import com.baremaps.osm.postgres.PostgresWayTable;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -74,7 +72,7 @@ public class Update implements Callable<Integer> {
     RelationTable relationTable = new PostgresRelationTable(datasource);
 
     logger.info("Importing changes");
-    new DatabaseUpdateService(
+    new UpdateService(
         blobStore,
         coordinateCache,
         referenceCache,

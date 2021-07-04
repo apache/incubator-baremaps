@@ -25,6 +25,7 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Change.ChangeType;
 import com.baremaps.osm.domain.Element;
+import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Member;
 import com.baremaps.osm.domain.Member.MemberType;
@@ -120,7 +121,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
       case ELEMENT_NAME_DELETE:
       case ELEMENT_NAME_MODIFY:
         ChangeType type = ChangeType.valueOf(reader.getLocalName());
-        List<Element> elements = new ArrayList<>();
+        List<Entity> elements = new ArrayList<>();
         reader.nextTag();
         while (reader.getEventType() == XMLStreamConstants.START_ELEMENT) {
           elements.add(readElement());

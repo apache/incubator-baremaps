@@ -15,9 +15,11 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.InMemoryCache;
-import com.baremaps.osm.database.DatabaseImportService;
+import com.baremaps.osm.cache.CoordinateCache;
+import com.baremaps.osm.cache.InMemoryCoordinateCache;
+import com.baremaps.osm.cache.InMemoryReferenceCache;
+import com.baremaps.osm.cache.ReferenceCache;
+import com.baremaps.osm.database.ImportService;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
@@ -33,13 +35,9 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.lmdbjava.Env;
-import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -101,12 +99,12 @@ public class Import implements Callable<Integer> {
     WayTable wayTable = new PostgresWayTable(datasource);
     RelationTable relationTable = new PostgresRelationTable(datasource);
 
-    final Cache<Long, Coordinate> coordinateCache;
-    final Cache<Long, List<Long>> referenceCache;
+    final CoordinateCache coordinateCache;
+    final ReferenceCache referenceCache;
     switch (cacheType) {
       case MEMORY:
-        coordinateCache = new InMemoryCache<>();
-        referenceCache = new InMemoryCache<>();
+        coordinateCache = new InMemoryCoordinateCache();
+        referenceCache = new InMemoryReferenceCache();
         break;
       case LMDB:
         if (cacheDirectory != null) {
@@ -125,7 +123,7 @@ public class Import implements Callable<Integer> {
         throw new UnsupportedOperationException("Unsupported cache type");
     }
 
-    new DatabaseImportService(
+    new ImportService(
         file,
         blobStore,
         coordinateCache,

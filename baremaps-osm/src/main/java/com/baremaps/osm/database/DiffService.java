@@ -1,17 +1,20 @@
 package com.baremaps.osm.database;
 
+import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
+
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.OpenStreetMap;
-import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.cache.CoordinateCache;
+import com.baremaps.osm.cache.ReferenceCache;
 import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Change;
-import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.geometry.GeometryConsumer;
-import com.baremaps.osm.geometry.ProjectionConsumer;
+import com.baremaps.osm.geometry.CreateGeometryConsumer;
+import com.baremaps.osm.geometry.ExtractGeometryFunction;
+import com.baremaps.osm.geometry.ReprojectGeometryConsumer;
 import com.baremaps.osm.handler.EntityFunction;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
@@ -28,17 +31,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DatabaseDiffService implements Callable<List<Tile>> {
+public class DiffService implements Callable<List<Tile>> {
 
-  private static final Logger logger = LoggerFactory.getLogger(DatabaseDiffService.class);
+  private static final Logger logger = LoggerFactory.getLogger(DiffService.class);
 
   private final BlobStore blobStore;
-  private final GeometryConsumer geometryHandler;
+  private final CreateGeometryConsumer createGeometryConsumer;
   private final HeaderTable headerTable;
   private final NodeTable nodeTable;
   private final WayTable wayTable;
@@ -46,10 +48,10 @@ public class DatabaseDiffService implements Callable<List<Tile>> {
   private final int srid;
   private final int zoom;
 
-  public DatabaseDiffService(
+  public DiffService(
       BlobStore blobStore,
-      Cache<Long, Coordinate> coordinateCache,
-      Cache<Long, List<Long>> referenceCache,
+      CoordinateCache coordinateCache,
+      ReferenceCache referenceCache,
       HeaderTable headerTable,
       NodeTable nodeTable,
       WayTable wayTable,
@@ -57,13 +59,13 @@ public class DatabaseDiffService implements Callable<List<Tile>> {
       int srid,
       int zoom) {
     this.blobStore = blobStore;
-    this.geometryHandler = new GeometryConsumer(coordinateCache, referenceCache);
     this.headerTable = headerTable;
     this.nodeTable = nodeTable;
     this.wayTable = wayTable;
     this.relationTable = relationTable;
     this.srid = srid;
     this.zoom = zoom;
+    this.createGeometryConsumer = new CreateGeometryConsumer(coordinateCache, referenceCache);
   }
 
   @Override
@@ -76,12 +78,12 @@ public class DatabaseDiffService implements Callable<List<Tile>> {
     URI changeUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
 
     ProgressLogger progressLogger = new ProgressLogger(blobStore.size(changeUri), 5000);
-    ProjectionConsumer projectionConsumer = new ProjectionConsumer(srid, 4326);
+    ReprojectGeometryConsumer reprojectGeometryConsumer = new ReprojectGeometryConsumer(srid, 4326);
 
     try (InputStream changesInputStream = new GZIPInputStream(new InputStreamProgress(blobStore.read(changeUri), progressLogger))) {
       return OpenStreetMap.streamXmlChanges(changesInputStream)
           .flatMap(this::geometriesForChange)
-          .peek(projectionConsumer::transform)
+          .map(consumeThenReturn(reprojectGeometryConsumer::transform))
           .flatMap(this::tilesForGeometry)
           .distinct()
           .collect(Collectors.toList());
@@ -108,7 +110,7 @@ public class DatabaseDiffService implements Callable<List<Tile>> {
   }
 
   private Stream<Geometry> geometriesForPreviousVersion(Change change) {
-    return change.getElements().stream().map(new EntityFunction<Optional<Geometry>>() {
+    return change.getEntities().stream().map(new EntityFunction<Optional<Geometry>>() {
       @Override
       public Optional<Geometry> match(Header header) {
         return Optional.empty();
@@ -140,10 +142,9 @@ public class DatabaseDiffService implements Callable<List<Tile>> {
   }
 
   private Stream<Geometry> geometriesForNextVersion(Change change) {
-    return change.getElements().stream()
-        .peek(geometryHandler)
-        .map(element -> Optional.ofNullable(element).map(Element::getGeometry))
-        .flatMap(Optional::stream);
+    return change.getEntities().stream()
+        .map(consumeThenReturn(createGeometryConsumer))
+        .flatMap(new ExtractGeometryFunction().andThen(Optional::stream));
   }
 
   private URI resolve(String replicationUrl, Long sequenceNumber, String extension) throws URISyntaxException {

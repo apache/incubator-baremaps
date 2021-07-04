@@ -4,7 +4,7 @@ import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.handler.ElementConsumer;
+import com.baremaps.osm.handler.EntityConsumerAdapter;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,7 +53,7 @@ public class EntityReaderBenchmark {
     AtomicLong relations = new AtomicLong(0);
 
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      OpenStreetMap.streamPbfEntities(inputStream).forEach(new ElementConsumer() {
+      OpenStreetMap.streamPbfEntities(inputStream).forEach(new EntityConsumerAdapter() {
         @Override
         public void match(Node node) {
           nodes.incrementAndGet();

@@ -40,9 +40,9 @@ public final class Change {
 
   private final ChangeType type;
 
-  private final List<Element> elements;
+  private final List<Entity> elements;
 
-  public Change(ChangeType type, List<Element> elements) {
+  public Change(ChangeType type, List<Entity> elements) {
     this.type = type;
     this.elements = elements;
   }
@@ -51,7 +51,7 @@ public final class Change {
     return type;
   }
 
-  public List<Element> getElements() {
+  public List<Entity> getEntities() {
     return elements;
   }
 

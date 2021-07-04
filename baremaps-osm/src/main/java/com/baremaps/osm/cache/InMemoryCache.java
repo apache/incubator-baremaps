@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public class InMemoryCache<K, V> implements Cache<K, V> {
+public abstract class InMemoryCache<K, V> implements Cache<K, V> {
 
   private final Map<K, V> map = new ConcurrentHashMap<>();
 
