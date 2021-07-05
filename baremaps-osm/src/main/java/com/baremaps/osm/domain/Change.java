@@ -33,9 +33,9 @@ public final class Change {
   }
 
   public enum ChangeType {
-    delete,
-    create,
-    modify
+    DELETE,
+    CREATE,
+    MODIFY
   }
 
   private final ChangeType type;

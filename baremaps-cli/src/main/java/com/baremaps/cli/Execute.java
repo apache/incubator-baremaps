@@ -15,8 +15,6 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -60,7 +58,7 @@ public class Execute implements Callable<Integer> {
     BlobStore blobStore = options.blobStore();
 
     for (URI file : files) {
-      logger.info("{}", file);
+      logger.info("Execute {}", file);
       String blob = new String(blobStore.readByteArray(file), StandardCharsets.UTF_8);
       blob = interpolate(System.getenv(), blob);
       StreamUtils.batch(Splitter.on(";").splitToStream(blob), 1)
@@ -73,6 +71,8 @@ public class Execute implements Callable<Integer> {
             }
           });
     }
+
+    logger.info("Done");
 
     return 0;
   }

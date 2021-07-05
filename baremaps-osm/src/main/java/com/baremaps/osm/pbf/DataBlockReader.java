@@ -180,11 +180,11 @@ public class DataBlockReader {
   private MemberType type(Osmformat.Relation.MemberType type) {
     switch (type) {
       case NODE:
-        return MemberType.node;
+        return MemberType.NODE;
       case WAY:
-        return MemberType.way;
+        return MemberType.WAY;
       case RELATION:
-        return MemberType.relation;
+        return MemberType.RELATION;
       default:
         throw new UnsupportedOperationException();
     }

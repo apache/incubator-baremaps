@@ -42,8 +42,6 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.locationtech.jts.geom.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,24 +107,11 @@ public class Export implements Callable<Integer> {
   public Integer call() throws TileStoreException, IOException {
     System.setProperty("logLevel", options.logLevel.name());
 
-    // Initialize the datasource
     DataSource datasource = PostgresUtils.datasource(database);
-
-    // Initialize the blob store
     BlobStore blobStore = options.blobStore();
-
-    // Read the configuration file
-    logger.info("Reading configuration");
     Tileset source = new BlobMapper(blobStore).read(this.tileset, Tileset.class);
-
-    logger.info("Initializing the source tile store");
-    final TileStore tileSource = sourceTileStore(source, datasource);
-
-    logger.info("Initializing the target tile store");
-    final TileStore tileTarget = targetTileStore(source, blobStore);
-
-    // Export the tiles
-    logger.info("Generating the tiles");
+    TileStore tileSource = sourceTileStore(source, datasource);
+    TileStore tileTarget = targetTileStore(source, blobStore);
 
     Stream<Tile> stream;
     if (tiles == null) {
@@ -155,9 +140,12 @@ public class Export implements Callable<Integer> {
       }
     }
 
+
+    logger.info("Exporting tiles");
     StreamUtils.batch(stream, 10)
         .filter(new TileBatcher(batchArraySize, batchArrayIndex))
         .forEach(new Tiler(tileSource, tileTarget));
+    logger.info("Done");
 
     return 0;
   }

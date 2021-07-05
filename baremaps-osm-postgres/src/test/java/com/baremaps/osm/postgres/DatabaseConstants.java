@@ -116,19 +116,19 @@ public class DatabaseConstants {
 
   public static final Relation RELATION_2 = new Relation(
       2, INFO, ImmutableMap.of("type", "multipolygon"),
-      ImmutableList.of(new Member(2, MemberType.way, "outer")),
+      ImmutableList.of(new Member(2, MemberType.WAY, "outer")),
       null);
 
   public static final Relation RELATION_3 = new Relation(
       3, INFO,
       ImmutableMap.of("type", "multipolygon"),
-      ImmutableList.of(new Member(2, MemberType.way, "outer"), new Member(3, MemberType.way, "inner")),
+      ImmutableList.of(new Member(2, MemberType.WAY, "outer"), new Member(3, MemberType.WAY, "inner")),
       null);
 
   public static final Relation RELATION_4 = new Relation(
       4, INFO, ImmutableMap.of("type", "multipolygon"),
-      ImmutableList.of(new Member(2, MemberType.way, "outer"), new Member(3, MemberType.way, "inner"),
-          new Member(4, MemberType.way, "outer")),
+      ImmutableList.of(new Member(2, MemberType.WAY, "outer"), new Member(3, MemberType.WAY, "inner"),
+          new Member(4, MemberType.WAY, "outer")),
       null);
 
 }

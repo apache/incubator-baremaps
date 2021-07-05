@@ -82,15 +82,9 @@ public class Update implements Callable<Integer> {
         relationTable,
         srid
     ).call();
+    logger.info("Done");
 
     return 0;
-  }
-
-  public String path(long sequenceNumber) {
-    String leading = String.format("%09d", sequenceNumber);
-    return leading.substring(0, 3) + "/"
-        + leading.substring(3, 6) + "/"
-        + leading.substring(6, 9);
   }
 
 }

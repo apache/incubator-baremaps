@@ -151,27 +151,27 @@ class GeometryHandlerTest {
 
   static final Relation RELATION_2 = new Relation(
       2, INFO, ImmutableMap.of("type", "multipolygon"),
-      Arrays.asList(new Member(2l, MemberType.way, "outer")));
+      Arrays.asList(new Member(2l, MemberType.WAY, "outer")));
 
   static final Relation RELATION_3 = new Relation(
       3, INFO, ImmutableMap.of("type", "multipolygon"),
       Arrays.asList(
-          new Member(2l, MemberType.way, "outer"),
-          new Member(3l, MemberType.way, "inner")));
+          new Member(2l, MemberType.WAY, "outer"),
+          new Member(3l, MemberType.WAY, "inner")));
 
   static final Relation RELATION_4 = new Relation(
       4, INFO, ImmutableMap.of("type", "multipolygon"),
       Arrays.asList(
-          new Member(2l, MemberType.way, "outer"),
-          new Member(3l, MemberType.way, "inner"),
-          new Member(4l, MemberType.way, "outer")));
+          new Member(2l, MemberType.WAY, "outer"),
+          new Member(3l, MemberType.WAY, "inner"),
+          new Member(4l, MemberType.WAY, "outer")));
 
   static final Relation RELATION_5 = new Relation(
       5, INFO, ImmutableMap.of("type", "multipolygon"),
       Arrays.asList(
-          new Member(2l, MemberType.way, "outer"),
-          new Member(4l, MemberType.way, "inner"),
-          new Member(5l, MemberType.way, "inner")));
+          new Member(2l, MemberType.WAY, "outer"),
+          new Member(4l, MemberType.WAY, "inner"),
+          new Member(5l, MemberType.WAY, "inner")));
 
   static final CreateGeometryConsumer GEOMETRY_BUILDER = new CreateGeometryConsumer(COORDINATE_CACHE, REFERENCE_CACHE);
 

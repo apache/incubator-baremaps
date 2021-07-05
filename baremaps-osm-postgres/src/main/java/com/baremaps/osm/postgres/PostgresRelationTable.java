@@ -220,10 +220,16 @@ public class PostgresRelationTable implements RelationTable {
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
           writer.writeHstore(entity.getTags());
-          writer.writeLongList(entity.getMembers().stream().map(Member::getRef).collect(Collectors.toList()));
-          writer.writeIntegerList(entity.getMembers().stream().map(Member::getType).map(MemberType::getNumber)
+          writer.writeLongList(entity.getMembers().stream()
+              .map(Member::getRef)
               .collect(Collectors.toList()));
-          writer.writeStringList(entity.getMembers().stream().map(Member::getRole).collect(Collectors.toList()));
+          writer.writeIntegerList(entity.getMembers().stream()
+              .map(Member::getType)
+              .map(MemberType::ordinal)
+              .collect(Collectors.toList()));
+          writer.writeStringList(entity.getMembers().stream()
+              .map(Member::getRole)
+              .collect(Collectors.toList()));
           writer.writeGeometry(entity.getGeometry());
         }
       }
@@ -260,9 +266,14 @@ public class PostgresRelationTable implements RelationTable {
     statement.setObject(6, entity.getTags());
     Object[] refs = entity.getMembers().stream().map(Member::getRef).toArray();
     statement.setObject(7, statement.getConnection().createArrayOf("bigint", refs));
-    Object[] types = entity.getMembers().stream().map(m -> m.getType().getNumber()).toArray();
+    Object[] types = entity.getMembers().stream()
+        .map(Member::getType)
+        .map(MemberType::ordinal)
+        .toArray();
     statement.setObject(8, statement.getConnection().createArrayOf("int", types));
-    Object[] roles = entity.getMembers().stream().map(Member::getRole).toArray();
+    Object[] roles = entity.getMembers().stream()
+        .map(Member::getRole)
+        .toArray();
     statement.setObject(9, statement.getConnection().createArrayOf("varchar", roles));
     statement.setBytes(10, GeometryUtils.serialize(entity.getGeometry()));
   }

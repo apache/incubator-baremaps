@@ -250,7 +250,9 @@ public class PostgresWayTable implements WayTable {
     statement.setObject(4, entity.getInfo().getTimestamp());
     statement.setObject(5, entity.getInfo().getChangeset());
     statement.setObject(6, entity.getTags());
-    statement.setObject(7, entity.getNodes().stream().mapToLong(Long::longValue).toArray());
+    statement.setObject(7, entity.getNodes().stream()
+        .mapToLong(Long::longValue)
+        .toArray());
     statement.setBytes(8, GeometryUtils.serialize(entity.getGeometry()));
   }
 

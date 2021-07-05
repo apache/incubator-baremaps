@@ -123,6 +123,8 @@ public class Import implements Callable<Integer> {
         throw new UnsupportedOperationException("Unsupported cache type");
     }
 
+
+    logger.info("Importing data");
     new ImportService(
         file,
         blobStore,
@@ -134,6 +136,8 @@ public class Import implements Callable<Integer> {
         relationTable,
         srid
     ).call();
+
+    logger.info("Done");
 
     return 0;
   }

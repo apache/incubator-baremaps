@@ -252,7 +252,8 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
 
   private void readRelationMember(List<Member> members) throws XMLStreamException {
     long id = Long.parseLong(reader.getAttributeValue(null, ATTRIBUTE_NAME_REF));
-    MemberType type = Member.MemberType.valueOf(reader.getAttributeValue(null, ATTRIBUTE_NAME_TYPE));
+    MemberType type = Member.MemberType
+        .valueOf(reader.getAttributeValue(null, ATTRIBUTE_NAME_TYPE).toUpperCase());
     String role = reader.getAttributeValue(null, ATTRIBUTE_NAME_ROLE);
     members.add(new Member(id, type, role));
     reader.nextTag();

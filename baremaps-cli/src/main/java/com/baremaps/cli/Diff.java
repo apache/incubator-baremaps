@@ -72,7 +72,7 @@ public class Diff implements Callable<Integer> {
     WayTable wayTable = new PostgresWayTable(datasource);
     RelationTable relationTable = new PostgresRelationTable(datasource);
 
-    logger.info("Saving diff file");
+    logger.info("Saving diff");
     try (PrintWriter printWriter = new PrintWriter(blobStore.write(this.tiles))) {
       new DiffService(
           blobStore,
@@ -86,6 +86,7 @@ public class Diff implements Callable<Integer> {
           zoom
       ).call();
     }
+    logger.info("Done");
 
     return 0;
   }

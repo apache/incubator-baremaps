@@ -30,11 +30,11 @@ public class SaveChangeConsumer implements ChangeConsumer {
         @Override
         public void match(Node node) throws Exception {
           switch (change.getType()) {
-            case create:
-            case modify:
+            case CREATE:
+            case MODIFY:
               nodeTable.insert(node);
               break;
-            case delete:
+            case DELETE:
               nodeTable.delete(node.getId());
               break;
           }
@@ -43,11 +43,11 @@ public class SaveChangeConsumer implements ChangeConsumer {
         @Override
         public void match(Way way) throws Exception {
           switch (change.getType()) {
-            case create:
-            case modify:
+            case CREATE:
+            case MODIFY:
               wayTable.insert(way);
               break;
-            case delete:
+            case DELETE:
               wayTable.delete(way.getId());
               break;
           }
@@ -56,11 +56,11 @@ public class SaveChangeConsumer implements ChangeConsumer {
         @Override
         public void match(Relation relation) throws Exception {
           switch (change.getType()) {
-            case create:
-            case modify:
+            case CREATE:
+            case MODIFY:
               relationTable.insert(relation);
               break;
-            case delete:
+            case DELETE:
               relationTable.delete(relation.getId());
               break;
           }

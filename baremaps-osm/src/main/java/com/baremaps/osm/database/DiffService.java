@@ -98,11 +98,11 @@ public class DiffService implements Callable<List<Tile>> {
 
   private Stream<Geometry> geometriesForChange(Change change) {
     switch (change.getType()) {
-      case create:
+      case CREATE:
         return geometriesForNextVersion(change);
-      case delete:
+      case DELETE:
         return geometriesForPreviousVersion(change);
-      case modify:
+      case MODIFY:
         return Stream.concat(geometriesForPreviousVersion(change), geometriesForNextVersion(change));
       default:
         return Stream.empty();

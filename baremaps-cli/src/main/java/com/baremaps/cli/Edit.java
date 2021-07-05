@@ -12,8 +12,6 @@ import io.servicetalk.transport.api.ServerContext;
 import java.net.URI;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -95,7 +93,6 @@ public class Edit implements Callable<Integer> {
         .listenBlockingStreamingAndAwait(httpService);
 
     logger.info("Listening on {}", serverContext.listenAddress());
-
     serverContext.awaitShutdown();
 
     return 0;

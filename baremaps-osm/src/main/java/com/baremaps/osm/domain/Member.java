@@ -25,25 +25,15 @@ import java.util.StringJoiner;
 public final class Member {
 
   public enum MemberType {
-    node(0),
-    way(1),
-    relation(2);
-
-    private final int value;
-
-    MemberType(int i) {
-      this.value = i;
-    }
-
-    public final int getNumber() {
-      return value;
-    }
+    NODE,
+    WAY,
+    RELATION;
 
     public static MemberType forNumber(int value) {
       switch (value) {
-        case 0: return node;
-        case 1: return way;
-        case 2: return relation;
+        case 0: return NODE;
+        case 1: return WAY;
+        case 2: return RELATION;
         default: throw new IllegalArgumentException();
       }
     }
