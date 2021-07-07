@@ -7,6 +7,7 @@ import com.baremaps.openapi.services.ConformanceService;
 import com.baremaps.openapi.services.RootService;
 import com.baremaps.openapi.services.StylesService;
 import com.baremaps.openapi.services.TilesService;
+import com.baremaps.openapi.services.TilesetsService;
 import java.util.HashSet;
 import java.util.Set;
 import javax.ws.rs.core.Application;
@@ -24,6 +25,7 @@ public class BaremapsApplication extends Application {
         ConformanceService.class,
         CollectionsService.class,
         StylesService.class,
+        TilesetsService.class,
         TilesService.class
     ));
   }
