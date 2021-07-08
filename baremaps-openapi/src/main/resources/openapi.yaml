@@ -403,9 +403,11 @@ paths:
         '200':
           description: the set of available tilesets
           content:
-            application/json:
+            application/text:
               schema:
-                type: object
+                type: array
+                items:
+                  type: string
         '406':
           description: |-
             The media types accepted by the client are not
@@ -444,7 +446,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
+              $ref: '#/components/schemas/tileset'
   '/tilesets/{tilesetId}':
     get:
       tags:
@@ -464,7 +466,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: '#/components/schemas/tileset'
         '404':
           description: |-
             tileset not found
@@ -485,7 +487,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
+              $ref: '#/components/schemas/tileset'
       responses:
         '204':
           description: |-
@@ -1058,6 +1060,8 @@ components:
           nullable: true
         link:
           $ref: '#/components/schemas/link'
+    tileset:
+      type: object
     tileSetsDescription:
       type: object
       required:
