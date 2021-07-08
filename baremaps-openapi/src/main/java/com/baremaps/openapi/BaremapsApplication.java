@@ -12,9 +12,16 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Feature;
+import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 public class BaremapsApplication extends Application {
+
+  private final Binder configuration;
+
+  public BaremapsApplication(Binder configuration) {
+    this.configuration = configuration;
+  }
 
   @Override
   public Set<Class<?>> getClasses() {
@@ -29,4 +36,10 @@ public class BaremapsApplication extends Application {
         TilesService.class
     ));
   }
+
+  @Override
+  public Set<Object> getSingletons() {
+    return new HashSet<>(asList(configuration));
+  }
+
 }
