@@ -38,7 +38,7 @@ public class Tileset {
 
   private Center center;
 
-  private Bounds bounds;
+  private Bounds bounds = new Bounds();
 
   private double minZoom;
 
@@ -51,6 +51,11 @@ public class Tileset {
   }
 
   public Tileset(Layer... layers) {
+    this.layers = Arrays.asList(layers);
+  }
+
+  public Tileset(String name, Layer... layers) {
+    this.name = name;
     this.layers = Arrays.asList(layers);
   }
 

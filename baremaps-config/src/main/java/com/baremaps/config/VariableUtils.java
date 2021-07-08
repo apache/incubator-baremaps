@@ -14,7 +14,7 @@ public class VariableUtils {
 
   public static String interpolate(Map<String, String> variables, String string) {
     for (Entry<String, String> entry : variables.entrySet()) {
-      string = string.replace(String.format("${%s}", entry.getKey()), entry.getValue());
+      string = string.replace(String.format("$%s", entry.getKey()), entry.getValue());
     }
     return string;
   }
