@@ -403,7 +403,7 @@ paths:
         '200':
           description: the set of available tilesets
           content:
-            application/text:
+            application/json:
               schema:
                 type: array
                 items:
@@ -446,7 +446,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/tileset'
+              $ref: '#/components/schemas/tileSet'
   '/tilesets/{tilesetId}':
     get:
       tags:
@@ -466,7 +466,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/tileset'
+                $ref: '#/components/schemas/tileSet'
         '404':
           description: |-
             tileset not found
@@ -487,7 +487,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/tileset'
+              $ref: '#/components/schemas/tileSet'
       responses:
         '204':
           description: |-
@@ -1060,8 +1060,58 @@ components:
           nullable: true
         link:
           $ref: '#/components/schemas/link'
-    tileset:
+    tileSet:
       type: object
+      required:
+        - tilejson
+        - tiles
+      properties:
+        tilejson:
+          type: string
+          pattern: "\\d+\\.\\d+\\.\\d+\\w?[\\w\\d]*"
+        name:
+          type: string
+        description:
+          type: string
+        version:
+          type: string
+          pattern: "\\d+\\.\\d+\\.\\d+\\w?[\\w\\d]*"
+        attribution:
+          type: string
+        template:
+          type: string
+        legend:
+          type: string
+        scheme:
+          type: string
+        tiles:
+          type: array
+          items:
+            type: string
+        grids:
+          type: array
+          items:
+            type: string
+        data:
+          type: array
+          items:
+            type: string
+        minzoom:
+          minimum: 0
+          maximum: 30
+          type: integer
+        maxzoom:
+          minimum: 0
+          maximum: 30
+          type: integer
+        bounds:
+          type: array
+          items:
+            type: number
+        center:
+          type: array
+          items:
+            type: number
     tileSetsDescription:
       type: object
       required:
