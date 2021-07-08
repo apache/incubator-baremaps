@@ -4,30 +4,28 @@ import com.baremaps.api.TilesetsApi;
 import com.baremaps.model.TileSet;
 import java.util.List;
 import java.util.UUID;
+import javax.inject.Inject;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
-import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.jdbi.v3.json.Json;
-import org.jdbi.v3.postgres.PostgresPlugin;
 
 public class TilesetsService implements TilesetsApi {
 
-  private Jdbi jdbi;
+  private static final QualifiedType<TileSet> TILESET = QualifiedType.of(TileSet.class).with(Json.class);
 
-  public TilesetsService() {
-    this.jdbi = Jdbi.create("jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps");
-    this.jdbi.installPlugin(new PostgresPlugin());
-    this.jdbi.installPlugin(new Jackson2Plugin());
+  private final Jdbi jdbi;
+
+  @Inject
+  public TilesetsService(Jdbi jdbi) {
+    this.jdbi = jdbi;
   }
-
-  QualifiedType<TileSet> qualifiedType = QualifiedType.of(TileSet.class).with(Json.class);
 
   @Override
   public void addTileset(TileSet tileset) {
     UUID tilesetId = UUID.randomUUID(); // TODO: Read from body
     jdbi.useHandle(handle -> {
       handle.createUpdate("insert into tilesets (id, tileset) values (:id, :json)")
-          .bindByType("json", tileset, qualifiedType)
+          .bindByType("json", tileset, TILESET)
           .bind("id", tilesetId.toString())
           .execute();
     });
@@ -45,7 +43,7 @@ public class TilesetsService implements TilesetsApi {
     TileSet tilesets = jdbi.withHandle(handle ->
         handle.createQuery("select tileset from tilesets where id = :id")
             .bind("id", tilesetId)
-            .mapTo(qualifiedType)
+            .mapTo(TILESET)
             .one());
     return tilesets;
   }
@@ -63,7 +61,7 @@ public class TilesetsService implements TilesetsApi {
   public void updateTileset(String tilesetId, TileSet tileset) {
     jdbi.useHandle(handle -> {
       handle.createUpdate("update tilesets set tileset = :json where id = :id")
-          .bindByType("json", tileset, qualifiedType)
+          .bindByType("json", tileset, TILESET)
           .bind("id", tilesetId)
           .execute();
     });
