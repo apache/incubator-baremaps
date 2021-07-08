@@ -1,12 +1,11 @@
 package com.baremaps.openapi.services;
 
 import com.baremaps.api.TilesetsApi;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.baremaps.model.TileSet;
 import java.util.List;
 import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
-import org.jdbi.v3.jackson2.Jackson2Config;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.jdbi.v3.json.Json;
 import org.jdbi.v3.postgres.PostgresPlugin;
@@ -19,14 +18,10 @@ public class TilesetsService implements TilesetsApi {
     this.jdbi = Jdbi.create("jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps");
     this.jdbi.installPlugin(new PostgresPlugin());
     this.jdbi.installPlugin(new Jackson2Plugin());
-//    ObjectMapper myObjectMapper = new ObjectMapper();
-//    this.jdbi.getConfig(Jackson2Config.class).setMapper(myObjectMapper);
   }
 
-QualifiedType<Object> qualifiedType = QualifiedType.of(Object.class).with(Json.class);
-
   @Override
-  public void addTileset(Object body) {
+  public void addTileset(TileSet body) {
     UUID tilesetId = UUID.randomUUID(); // TODO: Read from body
     jdbi.useHandle(handle -> {
       handle.execute("insert into tilesets (id, tileset) values (?, ?)", tilesetId, body);
@@ -40,14 +35,16 @@ QualifiedType<Object> qualifiedType = QualifiedType.of(Object.class).with(Json.c
     });
   }
 
-//  @Json
   @Override
-  public Object getTileset(String tilesetId) {
-    Object tileset = jdbi.withHandle(handle ->
-        handle.createQuery("select tileset::json from tilesets where id = ?")
-            .bind(1, tilesetId)
-            .mapTo(qualifiedType));
-    return tileset;
+  public TileSet getTileset(String tilesetId) {
+    QualifiedType<TileSet> qualifiedType = QualifiedType.of(TileSet.class).with(Json.class);
+
+    TileSet tilesets = jdbi.withHandle(handle ->
+        handle.createQuery("select tileset from tilesets where id = :id")
+            .bind("id", tilesetId)
+            .mapTo(qualifiedType)
+            .one());
+    return tilesets;
   }
 
   @Override
@@ -60,7 +57,7 @@ QualifiedType<Object> qualifiedType = QualifiedType.of(Object.class).with(Json.c
   }
 
   @Override
-  public void updateTileset(String tilesetId, Object body) {
+  public void updateTileset(String tilesetId, TileSet body) {
     jdbi.useHandle(handle -> {
       handle.execute("insert into tilesets (id, tileset) values (?, ?)", tilesetId, body);
     });
