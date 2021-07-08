@@ -20,11 +20,16 @@ public class TilesetsService implements TilesetsApi {
     this.jdbi.installPlugin(new Jackson2Plugin());
   }
 
+  QualifiedType<TileSet> qualifiedType = QualifiedType.of(TileSet.class).with(Json.class);
+
   @Override
-  public void addTileset(TileSet body) {
+  public void addTileset(TileSet tileset) {
     UUID tilesetId = UUID.randomUUID(); // TODO: Read from body
     jdbi.useHandle(handle -> {
-      handle.execute("insert into tilesets (id, tileset) values (?, ?)", tilesetId, body);
+      handle.createUpdate("insert into tilesets (id, tileset) values (:id, :json)")
+          .bindByType("json", tileset, qualifiedType)
+          .bind("id", tilesetId.toString())
+          .execute();
     });
   }
 
@@ -37,8 +42,6 @@ public class TilesetsService implements TilesetsApi {
 
   @Override
   public TileSet getTileset(String tilesetId) {
-    QualifiedType<TileSet> qualifiedType = QualifiedType.of(TileSet.class).with(Json.class);
-
     TileSet tilesets = jdbi.withHandle(handle ->
         handle.createQuery("select tileset from tilesets where id = :id")
             .bind("id", tilesetId)
@@ -57,9 +60,12 @@ public class TilesetsService implements TilesetsApi {
   }
 
   @Override
-  public void updateTileset(String tilesetId, TileSet body) {
+  public void updateTileset(String tilesetId, TileSet tileset) {
     jdbi.useHandle(handle -> {
-      handle.execute("insert into tilesets (id, tileset) values (?, ?)", tilesetId, body);
+      handle.createUpdate("update tilesets set tileset = :json where id = :id")
+          .bindByType("json", tileset, qualifiedType)
+          .bind("id", tilesetId)
+          .execute();
     });
   }
 }
