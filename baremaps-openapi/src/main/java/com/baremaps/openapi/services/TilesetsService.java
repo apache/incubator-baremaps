@@ -3,11 +3,13 @@ package com.baremaps.openapi.services;
 import com.baremaps.api.TilesetsApi;
 import com.baremaps.model.TileSet;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.json.Json;
+import org.json.simple.JSONObject;
 
 public class TilesetsService implements TilesetsApi {
 
@@ -21,11 +23,11 @@ public class TilesetsService implements TilesetsApi {
   }
 
   @Override
-  public void addTileset(TileSet tileset) {
+  public void addTileset(Map<String, Object> requestBody) {
     UUID tilesetId = UUID.randomUUID(); // TODO: Read from body
     jdbi.useHandle(handle -> {
-      handle.createUpdate("insert into tilesets (id, tileset) values (:id, :json)")
-          .bindByType("json", tileset, TILESET)
+      handle.createUpdate("insert into tilesets (id, tileset) values (:id, CAST(:json AS JSONB))")
+          .bind("json", new JSONObject(requestBody).toString())
           .bind("id", tilesetId.toString())
           .execute();
     });
@@ -58,10 +60,10 @@ public class TilesetsService implements TilesetsApi {
   }
 
   @Override
-  public void updateTileset(String tilesetId, TileSet tileset) {
+  public void updateTileset(String tilesetId, Map<String, Object> requestBody) {
     jdbi.useHandle(handle -> {
-      handle.createUpdate("update tilesets set tileset = :json where id = :id")
-          .bindByType("json", tileset, TILESET)
+      handle.createUpdate("update tilesets set tileset = cast(:json as jsonb) where id = :id")
+          .bind("json", new JSONObject(requestBody).toString())
           .bind("id", tilesetId)
           .execute();
     });
