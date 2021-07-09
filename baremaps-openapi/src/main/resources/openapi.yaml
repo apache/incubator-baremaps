@@ -898,8 +898,7 @@ components:
           example: night
         sources:
           type: object
-          properties:
-            daraa:
+          additionalProperties:
               type: object
               properties:
                 type:
@@ -918,6 +917,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/layers-array'
+        center:
+          type: array
+          items:
+            type: number
+        metadata:
+          type: object
+        zoom:
+          type: number
     layers-array:
       required:
         - id
@@ -940,6 +947,9 @@ components:
             - raster
             - hillshade
             - background
+        filter:
+          type: array
+          items: {}
         source:
           type: string
           example: daraa
@@ -948,12 +958,12 @@ components:
           example: vegetationsrf
         layout:
           type: object
+        minzoom:
+          type: number
+        maxzoom:
+          type: number
         paint:
           type: object
-          properties:
-            fill-color:
-              type: string
-              example: '#11083b'
     mb-sprite-index:
       type: object
       additionalProperties:
