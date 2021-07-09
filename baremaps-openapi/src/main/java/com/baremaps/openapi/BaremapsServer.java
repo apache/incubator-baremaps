@@ -1,12 +1,15 @@
 package com.baremaps.openapi;
 
 import com.baremaps.postgres.jdbc.PostgresUtils;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
 import javax.sql.DataSource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.jackson2.Jackson2Config;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.jdbi.v3.postgres.PostgresPlugin;
 import org.slf4j.Logger;
@@ -32,6 +35,11 @@ public class BaremapsServer {
     Jdbi jdbi = Jdbi.create(dataSource)
         .installPlugin(new PostgresPlugin())
         .installPlugin(new Jackson2Plugin());
+
+    // Configure ObjectMapper to skip None/NULL
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(Include.NON_NULL);
+    jdbi.getConfig(Jackson2Config.class).setMapper(mapper);
 
     // Create configurable starter for HTTP server.
     ServerContext serverContext = HttpServers.forPort(8080)
