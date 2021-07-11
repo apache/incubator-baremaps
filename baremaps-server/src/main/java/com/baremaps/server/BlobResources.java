@@ -28,9 +28,9 @@ public class BlobResources {
       path += "index.html";
     }
     try {
-      // normalize and strip asset from invalid inputs
+      // normalize and strip asset from invalid inputsd
       URI asset = assets.resolve(assets.resolve(path).normalize().getPath());
-      if (asset.getPath().startsWith(assets.getPath())) {
+      if (!asset.getPath().startsWith(assets.getPath())) {
         throw new IllegalAccessException();
       }
       var bytes = blobStore.readByteArray(asset);

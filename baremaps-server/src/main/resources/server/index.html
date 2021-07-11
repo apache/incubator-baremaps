@@ -1,7 +1,7 @@
 <html>
 <head>
-  <link href='https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css' rel='stylesheet'/>
-  <script src='https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.js'></script>
+  <link href='https://unpkg.com/maplibre-gl@1.15.0/dist/maplibre-gl.css' rel='stylesheet' />
+  <script src='https://unpkg.com/maplibre-gl@1.15.0/dist/maplibre-gl.js'></script>
   <style>
 
     body {
@@ -21,13 +21,13 @@
 <script>
 
   // Initialize the map
-  let map = new mapboxgl.Map({
+  let map = new maplibregl.Map({
     container: 'map',
     style: '/style.json',
     hash: true
   });
 
-  map.addControl(new mapboxgl.NavigationControl());
+  map.addControl(new maplibregl.NavigationControl());
 
 </script>
 </body>
