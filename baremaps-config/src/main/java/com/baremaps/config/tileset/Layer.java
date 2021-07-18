@@ -38,7 +38,10 @@ public class Layer {
     this.queries = Arrays.asList(queries);
   }
 
-
+  public Layer(String id, Query... queries) {
+    this.id = id;
+    this.queries = Arrays.asList(queries);
+  }
 
   public String getId() {
     return id;

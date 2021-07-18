@@ -15,7 +15,7 @@ class PostgisPluginTest {
   @Test
   @Tag("integration")
   void test() {
-    Jdbi jdbi = Jdbi.create("jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps")
+    Jdbi jdbi = Jdbi.create("jdbc:tc:postgis:13-3.1:///test")
         .installPlugin(new PostgisPlugin());
 
     PostgisRecord record = new PostgisRecord();

@@ -14,11 +14,11 @@
 
 package com.baremaps.cli;
 
+import static com.baremaps.testing.TestConstants.DATABASE_URL;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.baremaps.osm.postgres.PostgresNodeTable;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.File;
 import java.io.IOException;
@@ -42,14 +42,9 @@ import picocli.CommandLine;
 
 class BaremapsTest {
 
-  static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps";
-  DataSource dataSource;
-  PostgresNodeTable nodeStore;
-
   @BeforeEach
   void createTable() throws SQLException, IOException {
-    dataSource = PostgresUtils.datasource(DATABASE_URL);
-    nodeStore = new PostgresNodeTable(dataSource);
+    DataSource dataSource = PostgresUtils.datasource(DATABASE_URL);
     try (Connection connection = dataSource.getConnection()) {
       PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
       PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
@@ -102,7 +97,7 @@ class BaremapsTest {
     thread.start();
 
     // Wait for ServiceTalk and JAX-RS to respond with 200 OK
-    await().timeout(10, TimeUnit.SECONDS).pollDelay(5, TimeUnit.SECONDS).until(() -> {
+    await().timeout(60, TimeUnit.SECONDS).pollDelay(5, TimeUnit.SECONDS).until(() -> {
       HttpURLConnection connection = (HttpURLConnection) new URL("http://127.0.0.1:9000/tiles/14/8626/5750.mvt")
           .openConnection();
       connection.connect();
