@@ -87,6 +87,7 @@
     <sonar.organization>baremaps</sonar.organization>
     <sonar.projectKey>baremaps_baremaps</sonar.projectKey>
     <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
+    <version.lib.testcontainers>1.15.3</version.lib.testcontainers>
   </properties>
 
   <modules>
@@ -579,6 +580,24 @@
         <version>${version.lib.junit}</version>
       </dependency>
       <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers</artifactId>
+        <version>${version.lib.testcontainers}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${version.lib.testcontainers}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>${version.lib.testcontainers}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <artifactId>selenium-java</artifactId>
         <groupId>org.seleniumhq.selenium</groupId>
         <scope>test</scope>
@@ -687,6 +706,18 @@
     <dependency>
       <artifactId>junit-jupiter-engine</artifactId>
       <groupId>org.junit.jupiter</groupId>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>junit-jupiter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>postgresql</artifactId>
     </dependency>
     <dependency>
       <groupId>com.adobe.testing</groupId>

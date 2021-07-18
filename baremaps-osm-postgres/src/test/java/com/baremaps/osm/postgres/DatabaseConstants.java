@@ -28,8 +28,7 @@ import org.locationtech.jts.geom.PrecisionModel;
 
 public class DatabaseConstants {
 
-  public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps";
-
+  //public static final String DATABASE_URL = "jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps";
   public static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
 
   public static final LocalDateTime TIMESTAMP = LocalDateTime.of(2020, 1, 1, 0, 0);

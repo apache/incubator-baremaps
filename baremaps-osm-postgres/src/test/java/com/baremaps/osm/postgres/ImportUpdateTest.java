@@ -1,5 +1,6 @@
 package com.baremaps.osm.postgres;
 
+import static com.baremaps.testing.TestConstants.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -40,7 +41,7 @@ class ImportUpdateTest {
 
   @BeforeEach
   void createTable() throws SQLException, IOException, URISyntaxException {
-    dataSource = PostgresUtils.datasource(DatabaseConstants.DATABASE_URL);
+    dataSource = PostgresUtils.datasource(DATABASE_URL);
 
     blobStore = new ResourceBlobStore();
     headerTable = new PostgresHeaderTable(dataSource);

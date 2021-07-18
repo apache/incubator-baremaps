@@ -36,7 +36,7 @@ class QueryKey {
   }
 
   public String getAlias() {
-    return String.format("h%s", Math.abs(hashCode())).substring(0, 9);
+    return String.format("h%x", hashCode()).substring(0, 9);
   }
 
   @Override

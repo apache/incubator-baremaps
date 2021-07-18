@@ -22,7 +22,6 @@ import com.baremaps.config.tileset.Tileset;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
-import com.google.common.collect.ImmutableMap;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -86,12 +85,11 @@ public class PostgresTileStore implements TileStore {
         ByteArrayOutputStream data = new ByteArrayOutputStream()) {
 
       String sql = withQuery(tile);
-
       logger.debug("Executing tile query: {}", sql);
-      ResultSet resultSet = statement.executeQuery(sql);
 
       int length = 0;
       GZIPOutputStream gzip = new GZIPOutputStream(data);
+      ResultSet resultSet = statement.executeQuery(sql);
       while (resultSet.next()) {
         byte[] bytes = resultSet.getBytes(1);
         length += bytes.length;
@@ -114,7 +112,7 @@ public class PostgresTileStore implements TileStore {
     String sourceQueries = sourceQueries(querySelection);
     String targetQueries = targetQueries(querySelection);
     String withQuery = String.format(WITH_QUERY, sourceQueries, targetQueries);
-    Map<String, String> variables = ImmutableMap.of(
+    Map<String, String> variables = Map.of(
         "envelope", envelope(tile),
         "zoom", String.valueOf(tile.z()));
     return interpolate(variables, withQuery);

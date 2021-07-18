@@ -39,6 +39,7 @@ class QueryParser {
     // Remove all the aliases
     for (SelectItem selectItem : plainSelect.getSelectItems()) {
       selectItem.accept(new SelectItemVisitorAdapter() {
+        @Override
         public void visit(SelectExpressionItem selectExpressionItem) {
           selectExpressionItem.setAlias(null);
         }

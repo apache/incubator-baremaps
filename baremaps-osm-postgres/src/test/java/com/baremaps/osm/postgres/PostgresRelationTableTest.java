@@ -1,4 +1,4 @@
-package com.baremaps.osm.postgres;/*
+/*
  * Copyright (C) 2020 The Baremaps Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -12,10 +12,12 @@ package com.baremaps.osm.postgres;/*
  * the License.
  */
 
-import static com.baremaps.osm.postgres.DatabaseConstants.DATABASE_URL;
+package com.baremaps.osm.postgres;
+
 import static com.baremaps.osm.postgres.DatabaseConstants.RELATION_2;
 import static com.baremaps.osm.postgres.DatabaseConstants.RELATION_3;
 import static com.baremaps.osm.postgres.DatabaseConstants.RELATION_4;
+import static com.baremaps.testing.TestConstants.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
