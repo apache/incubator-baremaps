@@ -17,6 +17,7 @@ package com.baremaps.tile.postgres;
 import static com.baremaps.config.VariableUtils.interpolate;
 import static com.baremaps.tile.postgres.QueryParser.parseQuery;
 
+import com.baremaps.config.tileset.Layer;
 import com.baremaps.config.tileset.Query;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.tile.Tile;
@@ -28,6 +29,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,11 +45,11 @@ import org.slf4j.LoggerFactory;
 
 public class PostgresTileStore implements TileStore {
 
-  private static final Logger logger = LoggerFactory.getLogger(PostgresTileStore.class);
+  private static Logger logger = LoggerFactory.getLogger(PostgresTileStore.class);
 
   private static final String TILE_ENVELOPE = "st_tileenvelope(%1$s, %2$s, %3$s)";
 
-  private static final String WITH_QUERY = "WITH %1$s %2$s";
+  private static final String WITH_QUERY = "with %1$s %2$s";
 
   private static final String SOURCE_QUERY = ""
       + "%1$s as ("
@@ -58,19 +60,32 @@ public class PostgresTileStore implements TileStore {
       + "from ("
       + "select %2$s as id, %3$s as tags, %4$s as geom from %5$s%6$s"
       + ") as source "
-      + "where (%7$s) and st_intersects(geom, $envelope)"
+      + "where %7$s st_intersects(geom, $envelope)"
       + ")";
+
+  private static final String SOURCE_WHERE = "(%s) and";
 
   private static final String TARGET_QUERY = ""
       + "select "
       + "st_asmvt(target, '%1$s', 4096) "
-      + "from ("
-      + "select id, hstore_to_jsonb_loose(tags), geom from %2$s where %3$s"
-      + ") as target";
+      + "from (%2$s) as target";
+
+  private static final String TARGET_LAYER_QUERY = ""
+      + "select id, hstore_to_jsonb_loose(tags), geom from %1$s %2$s";
+
+  private static final String TARGET_WHERE = "where %s";
+
+  private static final String UNION = " union all ";
+
+  private static final String COMMA = ", ";
+
+  private static final String SPACE = " ";
+
+  private static final String EMPTY = "";
 
   private final DataSource datasource;
 
-  private final List<QueryValue> queries;
+  private final List<ParsedQuery> queries;
 
   public PostgresTileStore(DataSource datasource, Tileset tileset) {
     this.datasource = datasource;
@@ -85,7 +100,7 @@ public class PostgresTileStore implements TileStore {
         ByteArrayOutputStream data = new ByteArrayOutputStream()) {
 
       String sql = withQuery(tile);
-      logger.debug("Executing tile query: {}", sql);
+      logger.debug("Executing query: {}", sql);
 
       int length = 0;
       GZIPOutputStream gzip = new GZIPOutputStream(data);
@@ -108,32 +123,26 @@ public class PostgresTileStore implements TileStore {
   }
 
   protected String withQuery(Tile tile) {
-    Map<QueryKey, List<QueryValue>> querySelection = selectQueries(queries, tile);
-    String sourceQueries = sourceQueries(querySelection);
-    String targetQueries = targetQueries(querySelection);
+    String sourceQueries = sourceQueries(queries, tile);
+    String targetQueries = targetQueries(queries, tile);
     String withQuery = String.format(WITH_QUERY, sourceQueries, targetQueries);
     Map<String, String> variables = Map.of(
-        "envelope", envelope(tile),
+        "envelope", tileEnvelope(tile),
         "zoom", String.valueOf(tile.z()));
     return interpolate(variables, withQuery);
   }
 
-  protected Map<QueryKey, List<QueryValue>> selectQueries(List<QueryValue> queries, Tile tile) {
+  protected String sourceQueries(List<ParsedQuery> queries, Tile tile) {
     return queries.stream()
         .filter(query -> zoomFilter(tile, query.getQuery()))
-        .collect(Collectors.groupingBy(query -> new QueryKey(
-            query.getValue().getSelectItems(),
-            query.getValue().getFromItem(),
-            query.getValue().getJoins())));
-  }
-
-  protected String sourceQueries(Map<QueryKey, List<QueryValue>> querySelection) {
-    return querySelection.entrySet().stream()
+        .collect(Collectors.groupingBy(this::commonTableExpression, LinkedHashMap::new, Collectors.toList()))
+        .entrySet().stream()
         .map(entry -> sourceQuery(entry.getKey(), entry.getValue()))
-        .collect(Collectors.joining(", "));
+        .distinct()
+        .collect(Collectors.joining(COMMA));
   }
 
-  protected String sourceQuery(QueryKey queryKey, List<QueryValue> queryValues) {
+  protected String sourceQuery(CommonTableExpression queryKey, List<ParsedQuery> queryValues) {
     String alias = queryKey.getAlias();
     String id = queryKey.getSelectItems().get(0).toString();
     String tags = queryKey.getSelectItems().get(1).toString();
@@ -142,36 +151,54 @@ public class PostgresTileStore implements TileStore {
     String joins = Optional.ofNullable(queryKey.getJoins())
         .stream().flatMap(List::stream)
         .map(Join::toString)
-        .collect(Collectors.joining(" "));
+        .collect(Collectors.joining(SPACE));
     String where = queryValues.stream()
         .map(query -> query.getValue().getWhere())
+        .map(Optional::ofNullable)
+        .flatMap(Optional::stream)
         .map(Parenthesis::new)
         .map(Expression.class::cast)
         .reduce(OrExpression::new)
-        .map(Expression::toString)
-        .orElse("");
+        .map(expression -> String.format(SOURCE_WHERE, expression))
+        .orElse(EMPTY);
     return String.format(SOURCE_QUERY, alias, id, tags, geom, from, joins, where);
   }
 
-  protected String targetQueries(Map<QueryKey, List<QueryValue>> querySelection) {
-    return querySelection.entrySet().stream()
-        .flatMap(group -> group.getValue().stream().map(entry -> Map.entry(group.getKey(), entry)))
+  protected String targetQueries(List<ParsedQuery> queries, Tile tile) {
+    return queries.stream()
+        .filter(query -> zoomFilter(tile, query.getQuery()))
+        .collect(Collectors.groupingBy(ParsedQuery::getLayer, LinkedHashMap::new, Collectors.toList()))
+        .entrySet().stream()
         .map(entry -> targetQuery(entry.getKey(), entry.getValue()))
-        .collect(Collectors.joining(" union all "));
+        .collect(Collectors.joining(UNION));
   }
 
-  protected String targetQuery(QueryKey group, QueryValue query) {
-    String layer = query.getLayer().getId();
-    String alias = group.getAlias();
-    String where = query.getValue().getWhere().toString();
-    return String.format(TARGET_QUERY, layer, alias, where);
+  protected String targetQuery(Layer layer, List<ParsedQuery> queryValues) {
+    return String.format(TARGET_QUERY, layer.getId(), queryValues.stream()
+        .map(queryValue -> targetLayerQuery(queryValue))
+        .collect(Collectors.joining(UNION)));
+  }
+
+  protected String targetLayerQuery(ParsedQuery queryValue) {
+    String alias = commonTableExpression(queryValue).getAlias();
+    String where = Optional.ofNullable(queryValue.getValue().getWhere())
+        .map(expression -> String.format(TARGET_WHERE, expression))
+        .orElse(EMPTY);
+    return String.format(TARGET_LAYER_QUERY, alias, where);
   }
 
   protected boolean zoomFilter(Tile tile, Query query) {
     return query.getMinZoom() <= tile.z() && tile.z() < query.getMaxZoom();
   }
 
-  protected String envelope(Tile tile) {
+  public CommonTableExpression commonTableExpression(ParsedQuery query) {
+    return new CommonTableExpression(
+        query.getValue().getSelectItems(),
+        query.getValue().getFromItem(),
+        query.getValue().getJoins());
+  }
+
+  protected String tileEnvelope(Tile tile) {
     return String.format(TILE_ENVELOPE, tile.z(), tile.x(), tile.y());
   }
 

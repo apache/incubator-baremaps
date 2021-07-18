@@ -52,8 +52,6 @@ public class Execute implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    System.setProperty("logLevel", options.logLevel.name());
-
     DataSource datasource = PostgresUtils.datasource(database);
     BlobStore blobStore = options.blobStore();
 

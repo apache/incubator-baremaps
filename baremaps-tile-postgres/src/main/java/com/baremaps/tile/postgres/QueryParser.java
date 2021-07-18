@@ -16,7 +16,7 @@ class QueryParser {
 
   }
 
-  public static QueryValue parseQuery(Layer layer, Query query) {
+  public static ParsedQuery parseQuery(Layer layer, Query query) {
     // Try to parse the query
     PlainSelect plainSelect;
     try {
@@ -46,6 +46,6 @@ class QueryParser {
       });
     }
 
-    return new QueryValue(layer, query, plainSelect);
+    return new ParsedQuery(layer, query, plainSelect);
   }
 }

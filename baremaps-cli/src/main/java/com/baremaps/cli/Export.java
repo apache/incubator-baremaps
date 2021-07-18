@@ -105,8 +105,6 @@ public class Export implements Callable<Integer> {
 
   @Override
   public Integer call() throws TileStoreException, IOException {
-    System.setProperty("logLevel", options.logLevel.name());
-
     DataSource datasource = PostgresUtils.datasource(database);
     BlobStore blobStore = options.blobStore();
     Tileset source = new BlobMapper(blobStore).read(this.tileset, Tileset.class);

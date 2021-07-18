@@ -19,8 +19,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.Callable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.IVersionProvider;
@@ -42,7 +40,10 @@ import picocli.CommandLine.Option;
     })
 public class Baremaps implements Callable<Integer> {
 
-  @Option(names = {"-V", "--version"}, versionHelp = true, description = "Print version info.")
+  @Option(
+      names = {"-V", "--version"},
+      versionHelp = true,
+      description = "Print version info.")
   boolean version;
 
   @Override
@@ -51,23 +52,35 @@ public class Baremaps implements Callable<Integer> {
     return 0;
   }
 
-  public static void main(String[] args) {
+  public static void main(String... args) {
+    // Set the log level
+    for (int i = 0; i < args.length; i++) {
+      String arg = args[i];
+      if (arg.equals("--log-level") && args.length >= i + 1) {
+        System.setProperty("logLevel", args[i + 1].strip());
+      } else if (arg.startsWith("--log-level=")) {
+        System.setProperty("logLevel", arg.substring(12).strip());
+      }
+    }
+
+    // Execute the command
     CommandLine cmd = new CommandLine(new Baremaps())
         .setUsageHelpLongOptionsMaxWidth(30)
-        .addMixin("logging", new Options());
+        .addMixin("options", new Options());
     cmd.execute(args);
   }
 
   static class VersionProvider implements IVersionProvider {
+
     public String[] getVersion() throws Exception {
       URL url = getClass().getResource("/version.txt");
       if (url == null) {
-        return new String[] {"No version.txt file found in the classpath."};
+        return new String[]{"No version.txt file found in the classpath."};
       }
       try (InputStream inputStream = url.openStream()) {
         Properties properties = new Properties();
         properties.load(inputStream);
-        return new String[] {
+        return new String[]{
             properties.getProperty("application") + " v" + properties.getProperty("version"),
         };
       }

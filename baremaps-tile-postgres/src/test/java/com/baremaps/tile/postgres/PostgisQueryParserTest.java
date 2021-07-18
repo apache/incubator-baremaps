@@ -108,7 +108,7 @@ class PostgisQueryParserTest {
   }
 
   void parse(com.baremaps.config.tileset.Query query, String id, String tags, String geom, String from, Optional<String> where) {
-    QueryValue q1 = QueryParser.parseQuery(new Layer(), query);
+    ParsedQuery q1 = QueryParser.parseQuery(new Layer(), query);
     assertEquals(id, String.valueOf(q1.getValue().getSelectItems().get(0)));
     assertEquals(tags, String.valueOf(q1.getValue().getSelectItems().get(1)));
     assertEquals(geom, String.valueOf(q1.getValue().getSelectItems().get(2)));

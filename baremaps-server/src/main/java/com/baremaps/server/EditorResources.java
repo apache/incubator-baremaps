@@ -1,6 +1,5 @@
 package com.baremaps.server;
 
-import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
@@ -144,7 +143,6 @@ public class EditorResources {
         return Response.status(200)
             .header(CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
             .header(CONTENT_ENCODING, "gzip")
-            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
             .entity(bytes)
             .build();
       } else {

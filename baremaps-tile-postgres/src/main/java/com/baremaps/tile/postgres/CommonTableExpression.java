@@ -8,13 +8,13 @@ import net.sf.jsqlparser.statement.select.FromItem;
 import net.sf.jsqlparser.statement.select.Join;
 import net.sf.jsqlparser.statement.select.SelectItem;
 
-class QueryKey {
+class CommonTableExpression {
 
   private final List<SelectItem> selectItems;
   private final FromItem fromItem;
   private final List<Join> joins;
 
-  public QueryKey(
+  public CommonTableExpression(
       List<SelectItem> selectItems,
       FromItem fromItem,
       List<Join> joins) {
@@ -44,7 +44,7 @@ class QueryKey {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof QueryKey)) {
+    if (!(o instanceof CommonTableExpression)) {
       return false;
     }
     return hashCode() == o.hashCode();

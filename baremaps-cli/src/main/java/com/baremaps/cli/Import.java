@@ -90,8 +90,6 @@ public class Import implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    System.setProperty("logLevel", options.logLevel.name());
-
     BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.datasource(database);
     HeaderTable headerTable = new PostgresHeaderTable(datasource);

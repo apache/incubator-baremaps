@@ -19,8 +19,6 @@ import io.servicetalk.transport.api.ServerContext;
 import java.net.URI;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -84,8 +82,6 @@ public class Serve implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    System.setProperty("logLevel", options.logLevel.name());
-
     BlobStore blobStore = options.blobStore();
     Tileset tilesetObject = new BlobMapper(blobStore).read(this.tileset, Tileset.class);
     Style styleObject = new BlobMapper(blobStore).read(this.style, Style.class);

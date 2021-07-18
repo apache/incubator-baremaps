@@ -3,6 +3,7 @@ package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.postgres.jdbc.PostgresUtils;
+import com.baremaps.server.CorsFilter;
 import com.baremaps.server.EditorResources;
 import com.baremaps.server.MaputnikResources;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
@@ -69,12 +70,11 @@ public class Edit implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    System.setProperty("logLevel", options.logLevel.name());
-
     BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.datasource(database);
 
     ResourceConfig config = new ResourceConfig()
+        .register(CorsFilter.class)
         .register(EditorResources.class)
         .register(MaputnikResources.class)
         .register(new AbstractBinder() {

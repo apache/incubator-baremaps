@@ -61,8 +61,6 @@ public class Diff implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    System.setProperty("logLevel", options.logLevel.name());
-
     BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.datasource(database);
     CoordinateCache coordinateCache = new PostgresCoordinateCache(datasource);
