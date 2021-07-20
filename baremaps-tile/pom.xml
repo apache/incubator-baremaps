@@ -3,7 +3,7 @@
   <parent>
     <artifactId>baremaps</artifactId>
     <groupId>com.baremaps</groupId>
-    <version>0.5.14-SNAPSHOT</version>
+    <version>0.5.14</version>
   </parent>
   <artifactId>baremaps-tile</artifactId>
   <modelVersion>4.0.0</modelVersion>
