@@ -56,7 +56,7 @@ public class Baremaps implements Callable<Integer> {
     // Set the log level
     for (int i = 0; i < args.length; i++) {
       String arg = args[i];
-      if (arg.equals("--log-level") && args.length >= i + 1) {
+      if (arg.equals("--log-level") && i + 1 < args.length) {
         System.setProperty("logLevel", args[i + 1].strip());
       } else if (arg.startsWith("--log-level=")) {
         System.setProperty("logLevel", arg.substring(12).strip());
