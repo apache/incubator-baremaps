@@ -89,12 +89,21 @@ public class S3BlobStore implements BlobStore {
       public void close() throws IOException {
         try {
           byte[] bytes = this.toByteArray();
-          PutObjectRequest request = PutObjectRequest.builder()
+          PutObjectRequest.Builder builder = PutObjectRequest.builder()
               .bucket(uri.getHost())
               .key(uri.getPath().substring(1))
-              .metadata(metadata)
-              .build();
-          client.putObject(request, RequestBody.fromBytes(bytes));
+              .metadata(metadata);
+
+          // Must be set explicitly:
+          // https://stackoverflow.com/questions/23467044/how-to-set-the-content-type-of-an-s3-object-via-the-sdk
+          if (metadata.containsKey("Content-Type")) {
+            builder = builder.contentType(metadata.get("Content-Type"));
+          }
+          if (metadata.containsKey("Content-Encoding")) {
+            builder = builder.contentEncoding(metadata.get("Content-Encoding"));
+          }
+
+          client.putObject(builder.build(), RequestBody.fromBytes(bytes));
         } catch (S3Exception ex) {
           throw new IOException(ex);
         }
@@ -110,12 +119,21 @@ public class S3BlobStore implements BlobStore {
   @Override
   public void writeByteArray(URI uri, byte[] bytes, Map<String, String> metadata) throws IOException {
     try {
-      PutObjectRequest request = PutObjectRequest.builder()
+      PutObjectRequest.Builder builder = PutObjectRequest.builder()
           .bucket(uri.getHost())
           .key(uri.getPath().substring(1))
-          .metadata(metadata)
-          .build();
-      client.putObject(request, RequestBody.fromBytes(bytes));
+          .metadata(metadata);
+
+      // Must be set explicitly:
+      // https://stackoverflow.com/questions/23467044/how-to-set-the-content-type-of-an-s3-object-via-the-sdk
+      if (metadata.containsKey("Content-Type")) {
+        builder = builder.contentType(metadata.get("Content-Type"));
+      }
+      if (metadata.containsKey("Content-Encoding")) {
+        builder = builder.contentEncoding(metadata.get("Content-Encoding"));
+      }
+
+      client.putObject(builder.build(), RequestBody.fromBytes(bytes));
     } catch (S3Exception ex) {
       throw new IOException(ex);
     }
