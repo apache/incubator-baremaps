@@ -67,11 +67,11 @@ public class PostgresTileStore implements TileStore {
 
   private static final String TARGET_QUERY = ""
       + "select "
-      + "st_asmvt(target, '%1$s', 4096) "
+      + "st_asmvt(target, '%1$s', 4096, 'geom', 'id') "
       + "from (%2$s) as target";
 
   private static final String TARGET_LAYER_QUERY = ""
-      + "select id, hstore_to_jsonb_loose(tags), geom from %1$s %2$s";
+      + "select id, hstore_to_jsonb_loose(tags) as tags, geom from %1$s %2$s";
 
   private static final String TARGET_WHERE = "where %s";
 
