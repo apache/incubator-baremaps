@@ -6,6 +6,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.config.BlobMapper;
+import com.baremaps.config.BlobMapperException;
 import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.tile.Tile;
@@ -91,7 +92,7 @@ public class EditorResources {
       } catch (InterruptedException e) {
         logger.error(e.getMessage());
         Thread.currentThread().interrupt();
-      } catch (IOException e) {
+      } catch (BlobMapperException | IOException e) {
         logger.error(e.getMessage());
       }
     });
@@ -108,27 +109,27 @@ public class EditorResources {
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @javax.ws.rs.Path("style.json")
-  public void putStyle(Style json) throws IOException {
+  public void putStyle(Style json) throws BlobMapperException {
     new BlobMapper(blobStore).write(style, json);
   }
 
   @PUT
   @javax.ws.rs.Path("tiles.json")
-  public void putTiles(JsonNode json) throws IOException {
+  public void putTiles(JsonNode json) throws BlobMapperException {
     new BlobMapper(blobStore).write(style, json);
   }
 
   @GET
   @javax.ws.rs.Path("style.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Style getStyle() throws IOException {
+  public Style getStyle() throws BlobMapperException {
     return new BlobMapper(blobStore).read(style, Style.class);
   }
 
   @GET
   @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Tileset getTileset() throws IOException {
+  public Tileset getTileset() throws BlobMapperException {
     return new BlobMapper(blobStore).read(tileset, Tileset.class);
   }
 

@@ -17,16 +17,20 @@ public class DownloadManager {
     this.blobStore = blobStore;
   }
 
-  public Path download(URI uri) throws IOException {
+  public Path download(URI uri) throws BlobStoreException {
     if (uri.getScheme() == null || uri.getScheme().equals("file")) {
       return Paths.get(uri.getPath());
     } else {
-      File tempFile = File.createTempFile("baremaps_", ".tmp");
-      tempFile.deleteOnExit();
-      try (InputStream input = blobStore.read(uri)) {
-        Files.copy(input, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+      try {
+        File tempFile = File.createTempFile("baremaps_", ".tmp");
+        tempFile.deleteOnExit();
+        try (InputStream input = blobStore.get(uri).getInputStream()) {
+          Files.copy(input, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+        return tempFile.toPath();
+      } catch (IOException e) {
+        throw new BlobStoreException(e);
       }
-      return tempFile.toPath();
     }
   }
 
