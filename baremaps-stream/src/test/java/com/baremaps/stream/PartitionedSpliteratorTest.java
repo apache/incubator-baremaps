@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.baremaps.stream;
 
 import static org.junit.Assert.assertEquals;
@@ -12,40 +25,41 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 class PartitionedSpliteratorTest {
+
   @Test
   void testStreamRange() {
-    PartitionedSpliterator<Integer> stream = new  PartitionedSpliterator<>(IntStream.range(0, 1000).spliterator(), 250);
+    PartitionedSpliterator<Integer> stream = new PartitionedSpliterator<>(IntStream.range(0, 1000).spliterator(), 250);
     for (int i = 0; i < 4; i++) {
       assertTrue(stream.tryAdvance(block -> {
       }));
     }
-    assertFalse(stream.tryAdvance(block -> {}));
+    assertFalse(stream.tryAdvance(block -> {
+    }));
 
-
-
-    stream = new  PartitionedSpliterator<>(IntStream.range(0, 5000).spliterator(), 250);
+    stream = new PartitionedSpliterator<>(IntStream.range(0, 5000).spliterator(), 250);
     for (int i = 0; i < 20; i++) { //5000/250
       assertTrue(stream.tryAdvance(block -> {
       }));
     }
-    assertFalse(stream.tryAdvance(block -> {}));
+    assertFalse(stream.tryAdvance(block -> {
+    }));
 
   }
 
   @Test
   void testEstimateSize() {
-    PartitionedSpliterator<Integer> stream = new  PartitionedSpliterator<>(IntStream.range(0, 1000).spliterator(), 250);
+    PartitionedSpliterator<Integer> stream = new PartitionedSpliterator<>(IntStream.range(0, 1000).spliterator(), 250);
 
     assertEquals(4, stream.estimateSize());
 
-    stream = new  PartitionedSpliterator<>(IntStream.range(0, 1000).spliterator(), 100);
+    stream = new PartitionedSpliterator<>(IntStream.range(0, 1000).spliterator(), 100);
 
     assertEquals(10, stream.estimateSize());
   }
 
   @Test
   void trySplitTest() {
-    PartitionedSpliterator<Integer> stream = new  PartitionedSpliterator<>(IntStream.range(0, 1000).spliterator(), 250);
+    PartitionedSpliterator<Integer> stream = new PartitionedSpliterator<>(IntStream.range(0, 1000).spliterator(), 250);
 
     Spliterator<Stream<Integer>> a = stream.trySplit();
     Spliterator<Stream<Integer>> b = stream.trySplit();
@@ -53,19 +67,19 @@ class PartitionedSpliteratorTest {
     Spliterator<Stream<Integer>> d = stream.trySplit();
     Spliterator<Stream<Integer>> e = stream.trySplit();
     AtomicInteger i = new AtomicInteger();
-    a.forEachRemaining(s -> s.forEach( item -> {
+    a.forEachRemaining(s -> s.forEach(item -> {
       assertEquals(i.get(), (long) item); // cast necessary otherwise call is ambiguous
       i.getAndIncrement();
     }));
-    b.forEachRemaining(s -> s.forEach( item -> {
+    b.forEachRemaining(s -> s.forEach(item -> {
       assertEquals(i.get(), (long) item);
       i.getAndIncrement();
     }));
-    c.forEachRemaining(s -> s.forEach( item -> {
+    c.forEachRemaining(s -> s.forEach(item -> {
       assertEquals(i.get(), (long) item);
       i.getAndIncrement();
     }));
-    d.forEachRemaining(s -> s.forEach( item -> {
+    d.forEachRemaining(s -> s.forEach(item -> {
       assertEquals(i.get(), (long) item);
       i.getAndIncrement();
     }));
