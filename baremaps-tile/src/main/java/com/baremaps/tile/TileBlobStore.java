@@ -14,21 +14,17 @@
 
 package com.baremaps.tile;
 
+import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
+import com.baremaps.blob.BlobStoreException;
 import java.io.IOException;
 import java.net.URI;
-import java.util.Map;
 
 public class TileBlobStore implements TileStore {
 
   private final BlobStore blobStore;
 
   private final URI uri;
-
-  private final Map<String, String> metadata = Map.of(
-      "Content-Type", "application/vnd.mapbox-vector-tile",
-      "Content-Encoding", "gzip"
-  );
 
   public TileBlobStore(BlobStore blobStore, URI baseURI) {
     this.blobStore = blobStore;
@@ -38,8 +34,8 @@ public class TileBlobStore implements TileStore {
   @Override
   public byte[] read(Tile tile) throws TileStoreException {
     try {
-      return blobStore.readByteArray(getURI(tile));
-    } catch (IOException e) {
+      return blobStore.get(getURI(tile)).getInputStream().readAllBytes();
+    } catch (BlobStoreException | IOException e) {
       throw new TileStoreException(e);
     }
   }
@@ -47,8 +43,12 @@ public class TileBlobStore implements TileStore {
   @Override
   public void write(Tile tile, byte[] bytes) throws TileStoreException {
     try {
-      blobStore.writeByteArray(getURI(tile), bytes, metadata);
-    } catch (IOException e) {
+      blobStore.put(getURI(tile), Blob.builder()
+          .withByteArray(bytes)
+          .withContentEncoding("gzip")
+          .withContentType("application/vnd.mapbox-vector-tile")
+          .build());
+    } catch (BlobStoreException e) {
       throw new TileStoreException(e);
     }
   }
@@ -57,7 +57,7 @@ public class TileBlobStore implements TileStore {
   public void delete(Tile tile) throws TileStoreException {
     try {
       blobStore.delete(getURI(tile));
-    } catch (IOException e) {
+    } catch (BlobStoreException e) {
       throw new TileStoreException(e);
     }
   }

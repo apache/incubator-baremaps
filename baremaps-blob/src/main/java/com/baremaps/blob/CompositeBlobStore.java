@@ -14,9 +14,6 @@
 
 package com.baremaps.blob;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,74 +36,38 @@ public class CompositeBlobStore implements BlobStore {
   }
 
   @Override
-  public long size(URI uri) throws IOException {
+  public Blob head(URI uri) throws BlobStoreException {
     if (schemes.containsKey(uri.getScheme())) {
-      return schemes.get(uri.getScheme()).size(uri);
+      return schemes.get(uri.getScheme()).head(uri);
     } else {
-      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
+      throw new BlobStoreException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
     }
   }
 
   @Override
-  public InputStream read(URI uri) throws IOException {
+  public Blob get(URI uri) throws BlobStoreException {
     if (schemes.containsKey(uri.getScheme())) {
-      return schemes.get(uri.getScheme()).read(uri);
+      return schemes.get(uri.getScheme()).get(uri);
     } else {
-      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
+      throw new BlobStoreException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
     }
   }
 
   @Override
-  public byte[] readByteArray(URI uri) throws IOException {
+  public void put(URI uri, Blob blob) throws BlobStoreException {
     if (schemes.containsKey(uri.getScheme())) {
-      return schemes.get(uri.getScheme()).readByteArray(uri);
+      schemes.get(uri.getScheme()).put(uri, blob);
     } else {
-      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
+      throw new BlobStoreException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
     }
   }
 
   @Override
-  public OutputStream write(URI uri) throws IOException {
-    if (schemes.containsKey(uri.getScheme())) {
-      return schemes.get(uri.getScheme()).write(uri);
-    } else {
-      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
-    }
-  }
-
-  @Override
-  public OutputStream write(URI uri, Map<String, String> metadata) throws IOException {
-    if (schemes.containsKey(uri.getScheme())) {
-      return schemes.get(uri.getScheme()).write(uri, metadata);
-    } else {
-      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
-    }
-  }
-
-  @Override
-  public void writeByteArray(URI uri, byte[] bytes) throws IOException {
-    if (schemes.containsKey(uri.getScheme())) {
-      schemes.get(uri.getScheme()).writeByteArray(uri, bytes);
-    } else {
-      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
-    }
-  }
-
-  @Override
-  public void writeByteArray(URI uri, byte[] bytes, Map<String, String> metadata) throws IOException {
-    if (schemes.containsKey(uri.getScheme())) {
-      schemes.get(uri.getScheme()).writeByteArray(uri, bytes, metadata);
-    } else {
-      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
-    }
-  }
-
-  @Override
-  public void delete(URI uri) throws IOException {
+  public void delete(URI uri) throws BlobStoreException {
     if (schemes.containsKey(uri.getScheme())) {
       schemes.get(uri.getScheme()).delete(uri);
     } else {
-      throw new IOException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
+      throw new BlobStoreException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
     }
   }
 

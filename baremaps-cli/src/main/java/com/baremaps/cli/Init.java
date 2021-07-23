@@ -3,9 +3,9 @@ package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.config.BlobMapper;
+import com.baremaps.config.BlobMapperException;
 import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
-import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class Init implements Callable<Integer> {
   private URI style;
 
   @Override
-  public Integer call() throws IOException {
+  public Integer call() throws BlobMapperException {
     BlobStore blobStore = options.blobStore();
     BlobMapper mapper = new BlobMapper(blobStore);
 

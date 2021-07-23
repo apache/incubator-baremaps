@@ -4,6 +4,7 @@ import static com.baremaps.osm.OpenStreetMap.streamPbfBlocks;
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 import static com.baremaps.stream.StreamUtils.batch;
 
+import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheBlockConsumer;
@@ -72,8 +73,9 @@ public class ImportService implements Callable<Void> {
     Function<Block, Block> prepareBlock = consumeThenReturn(cacheBlock.andThen(prepareGeometries));
     Consumer<Block> saveBlock = new SaveBlockConsumer(headerTable, nodeTable, wayTable, relationTable);
 
-    ProgressLogger progressLogger = new ProgressLogger(blobStore.size(uri), 5000);
-    try (InputStream inputStream = new InputStreamProgress(blobStore.read(this.uri), progressLogger)) {
+    Blob blob = blobStore.get(uri);
+    ProgressLogger progressLogger = new ProgressLogger(blob.getContentLength(), 5000);
+    try (InputStream inputStream = new InputStreamProgress(blob.getInputStream(), progressLogger)) {
       batch(streamPbfBlocks(inputStream).map(prepareBlock)).forEach(saveBlock);
     }
 

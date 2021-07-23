@@ -24,7 +24,7 @@ public class BlobResources {
   @GET
   @javax.ws.rs.Path("{path:.*}")
   public Response get(@PathParam("path") String path) {
-    if (path.equals("") || path.endsWith("/")){
+    if (path.equals("") || path.endsWith("/")) {
       path += "index.html";
     }
     try {
@@ -33,7 +33,7 @@ public class BlobResources {
       if (!asset.getPath().startsWith(assets.getPath())) {
         throw new IllegalAccessException();
       }
-      var bytes = blobStore.readByteArray(asset);
+      var bytes = blobStore.get(asset).getInputStream().readAllBytes();
       return Response.ok() // lgtm [java/xss]
           .entity(bytes)
           .build();
