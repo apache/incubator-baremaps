@@ -1,5 +1,6 @@
 package com.baremaps.cli;
 
+import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.cache.CoordinateCache;
 import com.baremaps.osm.cache.ReferenceCache;
@@ -17,6 +18,9 @@ import com.baremaps.osm.postgres.PostgresWayTable;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
@@ -71,7 +75,8 @@ public class Diff implements Callable<Integer> {
     RelationTable relationTable = new PostgresRelationTable(datasource);
 
     logger.info("Saving diff");
-    try (PrintWriter printWriter = new PrintWriter(blobStore.write(this.tiles))) {
+    Path tmpTiles = Files.createFile(Paths.get("diff.tmp"));
+    try (PrintWriter printWriter = new PrintWriter(Files.newBufferedWriter(tmpTiles))) {
       new DiffService(
           blobStore,
           coordinateCache,
@@ -84,6 +89,12 @@ public class Diff implements Callable<Integer> {
           zoom
       ).call();
     }
+    blobStore.put(this.tiles, Blob.builder()
+        .withContentLength(Files.size(tmpTiles))
+        .withInputStream(Files.newInputStream(tmpTiles))
+        .build());
+    Files.deleteIfExists(tmpTiles);
+
     logger.info("Done");
 
     return 0;

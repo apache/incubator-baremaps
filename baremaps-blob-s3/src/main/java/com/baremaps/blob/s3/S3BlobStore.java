@@ -14,19 +14,18 @@
 
 package com.baremaps.blob.s3;
 
+import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.baremaps.blob.BlobStoreException;
 import java.net.URI;
-import java.util.Map;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
@@ -43,94 +42,69 @@ public class S3BlobStore implements BlobStore {
   }
 
   @Override
-  public long size(URI uri) {
-    HeadObjectRequest request = HeadObjectRequest.builder()
-        .bucket(uri.getHost())
-        .key(uri.getPath().substring(1))
-        .build();
-    return client.headObject(request).contentLength();
+  public Blob head(URI uri) throws BlobStoreException {
+    try {
+      HeadObjectRequest request = HeadObjectRequest.builder()
+          .bucket(uri.getHost())
+          .key(uri.getPath().substring(1))
+          .build();
+      HeadObjectResponse response = client.headObject(request);
+      return Blob.builder()
+          .withContentLength(response.contentLength())
+          .withContentType(response.contentType())
+          .withContentEncoding(response.contentEncoding())
+          .build();
+    } catch (S3Exception e) {
+      throw new BlobStoreException(e);
+    }
   }
 
   @Override
-  public InputStream read(URI uri) throws IOException {
+  public Blob get(URI uri) throws BlobStoreException {
     try {
       GetObjectRequest request = GetObjectRequest.builder()
           .bucket(uri.getHost())
           .key(uri.getPath().substring(1))
           .build();
-      return client.getObject(request, ResponseTransformer.toInputStream());
-    } catch (S3Exception ex) {
-      throw new IOException(ex);
+      ResponseInputStream<GetObjectResponse> responseInputStream = client.getObject(request);
+      GetObjectResponse getObjectResponse = responseInputStream.response();
+      return Blob.builder()
+          .withContentLength(getObjectResponse.contentLength())
+          .withContentType(getObjectResponse.contentType())
+          .withContentEncoding(getObjectResponse.contentEncoding())
+          .withInputStream(responseInputStream)
+          .build();
+    } catch (S3Exception e) {
+      throw new BlobStoreException(e);
     }
   }
 
   @Override
-  public byte[] readByteArray(URI uri) throws IOException {
+  public void put(URI uri, Blob blob) throws BlobStoreException {
     try {
-      GetObjectRequest request = GetObjectRequest.builder()
+      PutObjectRequest.Builder builder = PutObjectRequest.builder()
           .bucket(uri.getHost())
           .key(uri.getPath().substring(1))
-          .build();
-      return client.getObject(request, ResponseTransformer.toBytes()).asByteArray();
-    } catch (S3Exception ex) {
-      throw new IOException(ex);
+          .contentLength(blob.getContentLength())
+          .contentType(blob.getContentType())
+          .contentEncoding(blob.getContentEncoding());
+      RequestBody requestBody = RequestBody.fromInputStream(blob.getInputStream(), blob.getContentLength());
+      client.putObject(builder.build(), requestBody);
+    } catch (S3Exception e) {
+      throw new BlobStoreException(e);
     }
   }
 
   @Override
-  public OutputStream write(URI uri) throws IOException {
-    return write(uri, Map.of());
-  }
-
-  @Override
-  public OutputStream write(URI uri, Map<String, String> metadata) throws IOException {
-    return new ByteArrayOutputStream() {
-      @Override
-      public void close() throws IOException {
-        try {
-          byte[] bytes = this.toByteArray();
-          PutObjectRequest request = PutObjectRequest.builder()
-              .bucket(uri.getHost())
-              .key(uri.getPath().substring(1))
-              .metadata(metadata)
-              .build();
-          client.putObject(request, RequestBody.fromBytes(bytes));
-        } catch (S3Exception ex) {
-          throw new IOException(ex);
-        }
-      }
-    };
-  }
-
-  @Override
-  public void writeByteArray(URI uri, byte[] bytes) throws IOException {
-    writeByteArray(uri, bytes, Map.of());
-  }
-
-  @Override
-  public void writeByteArray(URI uri, byte[] bytes, Map<String, String> metadata) throws IOException {
-    try {
-      PutObjectRequest request = PutObjectRequest.builder()
-          .bucket(uri.getHost())
-          .key(uri.getPath().substring(1))
-          .metadata(metadata)
-          .build();
-      client.putObject(request, RequestBody.fromBytes(bytes));
-    } catch (S3Exception ex) {
-      throw new IOException(ex);
-    }
-  }
-
-  @Override
-  public void delete(URI uri) throws IOException {
+  public void delete(URI uri) throws BlobStoreException {
     try {
       DeleteObjectRequest request = DeleteObjectRequest.builder()
           .bucket(uri.getHost())
           .key(uri.getPath().substring(1))
           .build();
       client.deleteObject(request);
-    } catch (S3Exception ex) {
-      throw new IOException(ex);
+    } catch (S3Exception e) {
+      throw new BlobStoreException(e);
     }
   }
 

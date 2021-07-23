@@ -2,6 +2,7 @@ package com.baremaps.osm.database;
 
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
+import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.cache.Cache;
@@ -67,15 +68,17 @@ public class UpdateService implements Callable<Void> {
     Consumer<Change> saveChange = new SaveChangeConsumer(nodeTable, wayTable, relationTable);
 
     URI changeUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
-    ProgressLogger progressLogger = new ProgressLogger(blobStore.size(changeUri), 5000);
-    try (InputStream blobInputStream = blobStore.read(changeUri);
+    Blob changeBlob = blobStore.get(changeUri);
+    ProgressLogger progressLogger = new ProgressLogger(changeBlob.getContentLength(), 5000);
+    try (InputStream blobInputStream = changeBlob.getInputStream();
         InputStream progressInputStream = new InputStreamProgress(blobInputStream, progressLogger);
         InputStream gzipInputStream = new GZIPInputStream(progressInputStream)) {
       OpenStreetMap.streamXmlChanges(gzipInputStream).map(prepareChange).forEach(saveChange);
     }
 
     URI stateUri = resolve(replicationUrl, sequenceNumber, "state.txt");
-    try (InputStream stateInputStream = blobStore.read(stateUri)) {
+    Blob stateBlob = blobStore.get(stateUri);
+    try (InputStream stateInputStream = stateBlob.getInputStream()) {
       State state = OpenStreetMap.readState(stateInputStream);
       headerTable.insert(new Header(
           state.getSequenceNumber(), state.getTimestamp(),

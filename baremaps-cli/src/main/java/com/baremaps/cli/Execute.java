@@ -57,7 +57,7 @@ public class Execute implements Callable<Integer> {
 
     for (URI file : files) {
       logger.info("Execute {}", file);
-      String blob = new String(blobStore.readByteArray(file), StandardCharsets.UTF_8);
+      String blob = new String(blobStore.get(file).getInputStream().readAllBytes(), StandardCharsets.UTF_8);
       blob = interpolate(System.getenv(), blob);
       StreamUtils.batch(Splitter.on(";").splitToStream(blob), 1)
           .forEach(query -> {

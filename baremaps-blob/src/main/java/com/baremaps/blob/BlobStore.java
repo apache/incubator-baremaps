@@ -14,31 +14,19 @@
 
 package com.baremaps.blob;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
-import java.util.Map;
 
 /**
  * An abstraction to read and write blobs identified by URIs.
  */
 public interface BlobStore {
 
-  long size(URI uri) throws IOException;
+  Blob head(URI uri) throws BlobStoreException;
 
-  InputStream read(URI uri) throws IOException;
+  Blob get(URI uri) throws BlobStoreException;
 
-  byte[] readByteArray(URI uri) throws IOException;
+  void put(URI uri, Blob blob) throws BlobStoreException;
 
-  OutputStream write(URI uri) throws IOException;
-
-  OutputStream write(URI uri, Map<String, String> metadata) throws IOException;
-
-  void writeByteArray(URI uri, byte[] bytes) throws IOException;
-
-  void writeByteArray(URI uri, byte[] bytes, Map<String, String> metadata) throws IOException;
-
-  void delete(URI uri) throws IOException;
+  void delete(URI uri) throws BlobStoreException;
 
 }

@@ -22,7 +22,6 @@ import com.google.common.io.CharStreams;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.jupiter.api.Tag;
@@ -32,27 +31,27 @@ public abstract class BlobStoreTest {
 
   @Test
   @Tag("integration")
-  void readWriteDelete() throws IOException, URISyntaxException {
+  void readWriteDelete() throws IOException, URISyntaxException, BlobStoreException {
     BlobStore blobStore = createFileSystem();
     URI uri = new URI(createTestURI());
     String content = "content";
 
     // Write data
-    try (OutputStream outputStream = blobStore.write(uri)) {
-      outputStream.write(content.getBytes(Charsets.UTF_8));
-    }
+    blobStore.put(uri, Blob.builder()
+        .withByteArray(content.getBytes(Charsets.UTF_8))
+        .build());
 
     // Read the data
-    try (InputStream inputStream = blobStore.read(uri)) {
+    try (InputStream inputStream = blobStore.get(uri).getInputStream()) {
       assertEquals(content, CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8)));
     }
 
     // Delete the data
     blobStore.delete(uri);
 
-    try (InputStream ignored = blobStore.read(uri)) {
+    try (InputStream ignored = blobStore.get(uri).getInputStream()) {
       fail("Expected an IOException to be thrown");
-    } catch (IOException e) {
+    } catch (BlobStoreException e) {
       // Test exception message...
     }
   }

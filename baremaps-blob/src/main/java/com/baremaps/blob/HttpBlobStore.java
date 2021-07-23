@@ -14,92 +14,69 @@
 
 package com.baremaps.blob;
 
-import com.google.common.io.ByteStreams;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class HttpBlobStore implements BlobStore {
 
   @Override
-  public long size(URI uri) throws IOException {
-    HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-    conn.setRequestMethod("HEAD");
-    return conn.getContentLengthLong();
-  }
-
-  @Override
-  public InputStream read(URI uri) throws IOException {
-    HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-    conn.setRequestMethod("GET");
-    return new BufferedInputStream(conn.getInputStream());
-  }
-
-  @Override
-  public byte[] readByteArray(URI uri) throws IOException {
-    HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-    conn.setRequestMethod("GET");
-    try (InputStream inputStream = conn.getInputStream()) {
-      return ByteStreams.toByteArray(inputStream);
+  public Blob head(URI uri) throws BlobStoreException {
+    try {
+      HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
+      conn.setRequestMethod("HEAD");
+      return Blob.builder()
+          .withContentLength(conn.getContentLengthLong())
+          .withContentType(conn.getContentType())
+          .build();
+    } catch (IOException e) {
+      throw new BlobStoreException(e);
     }
   }
 
   @Override
-  public OutputStream write(URI uri) throws IOException {
-    return write(uri, Map.of());
+  public Blob get(URI uri) throws BlobStoreException {
+    try {
+      HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
+      conn.setRequestMethod("GET");
+      return Blob.builder()
+          .withContentLength(conn.getContentLengthLong())
+          .withContentType(conn.getContentType())
+          .withInputStream(new BufferedInputStream(conn.getInputStream()))
+          .build();
+    } catch (IOException e) {
+      throw new BlobStoreException(e);
+    }
   }
 
   @Override
-  public OutputStream write(URI uri, Map<String, String> metadata) throws IOException {
-    return new ByteArrayOutputStream() {
-      @Override
-      public void close() throws IOException {
-        byte[] bytes = this.toByteArray();
-        HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-        conn.setRequestMethod("PUT");
-        for (Entry<String, String> entry : metadata.entrySet()) {
-          conn.setRequestProperty(entry.getKey(), entry.getValue());
-        }
-        conn.setRequestProperty("Content-Length", String.valueOf(bytes.length));
-        try (OutputStream outputStream = new BufferedOutputStream(conn.getOutputStream());
-            InputStream inputStream = new ByteArrayInputStream(bytes)) {
-          ByteStreams.copy(inputStream, outputStream);
-        }
+  public void put(URI uri, Blob blob) throws BlobStoreException {
+    try {
+      HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
+      conn.setRequestMethod("PUT");
+      conn.setRequestProperty("Content-Length", String.valueOf(blob.getContentLength()));
+      conn.setRequestProperty("Content-Type", String.valueOf(blob.getContentType()));
+      conn.setRequestProperty("Content-Encoding", String.valueOf(blob.getContentEncoding()));
+      try (OutputStream outputStream = new BufferedOutputStream(conn.getOutputStream())) {
+        blob.getInputStream().transferTo(outputStream);
       }
-    };
-  }
-
-  @Override
-  public void writeByteArray(URI uri, byte[] bytes) throws IOException {
-    writeByteArray(uri, bytes, Map.of());
-  }
-
-  @Override
-  public void writeByteArray(URI uri, byte[] bytes, Map<String, String> metadata) throws IOException {
-    HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-    conn.setRequestMethod("PUT");
-    for (Entry<String, String> entry : metadata.entrySet()) {
-      conn.setRequestProperty(entry.getKey(), entry.getValue());
-    }
-    conn.setRequestProperty("Content-Length", String.valueOf(bytes.length));
-    try (OutputStream outputStream = conn.getOutputStream();
-        InputStream inputStream = new ByteArrayInputStream(bytes)) {
-      ByteStreams.copy(inputStream, outputStream);
+    } catch (IOException exception) {
+      throw new BlobStoreException(exception);
     }
   }
 
   @Override
-  public void delete(URI uri) throws IOException {
-    HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-    conn.setRequestMethod("DELETE");
-    conn.getInputStream();
+  public void delete(URI uri) throws BlobStoreException {
+    try {
+      HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
+      conn.setRequestMethod("DELETE");
+      conn.getInputStream();
+    } catch (IOException e) {
+      throw new BlobStoreException(e);
+    }
   }
+
 }
