@@ -14,60 +14,52 @@
 
 package com.baremaps.blob;
 
+import com.google.common.io.ByteSource;
 import com.google.common.io.Resources;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
-import java.util.Map;
 
 public class ResourceBlobStore implements BlobStore {
 
   private static final String SCHEMA = "res://";
 
   @Override
-  public long size(URI uri) throws IOException {
-    return Resources.asByteSource(Resources.getResource(path(uri))).size();
+  public Blob head(URI uri) throws BlobStoreException {
+    try {
+      ByteSource byteSource = byteSource(uri);
+      return Blob.builder()
+          .withContentLength(byteSource.size())
+          .build();
+    } catch (IOException e) {
+      throw new BlobStoreException(e);
+    }
   }
 
   @Override
-  public InputStream read(URI uri) throws IOException {
-    return Resources.asByteSource(Resources.getResource(path(uri))).openStream();
+  public Blob get(URI uri) throws BlobStoreException {
+    try {
+      ByteSource byteSource = byteSource(uri);
+      return Blob.builder()
+          .withContentLength(byteSource.size())
+          .withInputStream(byteSource.openBufferedStream())
+          .build();
+    } catch (IOException e) {
+      throw new BlobStoreException(e);
+    }
   }
 
   @Override
-  public byte[] readByteArray(URI uri) throws IOException {
-    return Resources.toByteArray(Resources.getResource(path(uri)));
-  }
-
-
-  @Override
-  public OutputStream write(URI uri) {
+  public void put(URI uri, Blob blob) throws BlobStoreException {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public OutputStream write(URI uri, Map<String, String> metadata) throws IOException {
+  public void delete(URI uri) throws BlobStoreException {
     throw new UnsupportedOperationException();
   }
 
-  @Override
-  public void writeByteArray(URI uri, byte[] bytes) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void writeByteArray(URI uri, byte[] bytes, Map<String, String> metadata) throws IOException {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void delete(URI uri) {
-    throw new UnsupportedOperationException();
-  }
-
-  private String path(URI uri) {
-    return uri.toString().replace(SCHEMA, "");
+  private ByteSource byteSource(URI uri) {
+    return Resources.asByteSource(Resources.getResource(uri.toString().replace(SCHEMA, "")));
   }
 
 }

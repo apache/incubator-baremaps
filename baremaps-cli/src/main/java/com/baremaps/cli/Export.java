@@ -15,7 +15,9 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
+import com.baremaps.blob.BlobStoreException;
 import com.baremaps.config.BlobMapper;
+import com.baremaps.config.BlobMapperException;
 import com.baremaps.config.tileset.Query;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.osm.progress.StreamProgress;
@@ -104,7 +106,7 @@ public class Export implements Callable<Integer> {
   private boolean mbtiles = false;
 
   @Override
-  public Integer call() throws TileStoreException, IOException {
+  public Integer call() throws TileStoreException, BlobStoreException, BlobMapperException, IOException {
     DataSource datasource = PostgresUtils.datasource(database);
     BlobStore blobStore = options.blobStore();
     Tileset source = new BlobMapper(blobStore).read(this.tileset, Tileset.class);
@@ -124,7 +126,7 @@ public class Export implements Callable<Integer> {
           (int) source.getMaxZoom()))
           .peek(new StreamProgress<>(count, 5000));
     } else {
-      try (BufferedReader reader = new BufferedReader(new InputStreamReader(blobStore.read(tiles)))) {
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(blobStore.get(tiles).getInputStream()))) {
         stream = reader.lines().flatMap(line -> {
           String[] array = line.split(",");
           int x = Integer.parseInt(array[0]);
@@ -137,7 +139,6 @@ public class Export implements Callable<Integer> {
         });
       }
     }
-
 
     logger.info("Exporting tiles");
     StreamUtils.batch(stream, 10)

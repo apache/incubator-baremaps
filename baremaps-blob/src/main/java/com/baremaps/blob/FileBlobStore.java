@@ -14,65 +14,65 @@
 
 package com.baremaps.blob;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
+import java.nio.file.StandardCopyOption;
 
 public class FileBlobStore implements BlobStore {
 
-  @Override
-  public long size(URI uri) throws IOException {
-    return Files.size(Paths.get(uri.getPath()).toAbsolutePath());
+  private Path file(URI uri) {
+    return Paths.get(uri.getPath()).toAbsolutePath();
   }
 
   @Override
-  public InputStream read(URI uri) throws IOException {
-    return new BufferedInputStream(Files.newInputStream(Paths.get(uri.getPath()).toAbsolutePath()));
-  }
-
-  @Override
-  public byte[] readByteArray(URI uri) throws IOException {
-    return Files.readAllBytes(Paths.get(uri.getPath()).toAbsolutePath());
-  }
-
-  @Override
-  public OutputStream write(URI uri) throws IOException {
-    Path path = Paths.get(uri.getPath()).toAbsolutePath();
-    if (!Files.exists(path.getParent())) {
-      Files.createDirectories(path.getParent());
+  public Blob head(URI uri) throws BlobStoreException {
+    try {
+      Path file = file(uri);
+      return Blob.builder()
+          .withContentLength(Files.size(file))
+          .build();
+    } catch (IOException e) {
+      throw new BlobStoreException(e);
     }
-    return new BufferedOutputStream(Files.newOutputStream(Paths.get(uri.getPath())));
   }
 
   @Override
-  public OutputStream write(URI uri, Map<String, String> metadata) throws IOException {
-    return write(uri);
-  }
-
-  @Override
-  public void writeByteArray(URI uri, byte[] bytes) throws IOException {
-    Path path = Paths.get(uri.getPath()).toAbsolutePath();
-    if (!Files.exists(path.getParent())) {
-      Files.createDirectories(path.getParent());
+  public Blob get(URI uri) throws BlobStoreException {
+    try {
+      Path file = file(uri);
+      return Blob.builder()
+          .withContentLength(Files.size(file))
+          .withInputStream(Files.newInputStream(file))
+          .build();
+    } catch (IOException e) {
+      throw new BlobStoreException(e);
     }
-    Files.write(path, bytes);
   }
 
   @Override
-  public void writeByteArray(URI uri, byte[] bytes, Map<String, String> metadata) throws IOException {
-    writeByteArray(uri, bytes);
+  public void put(URI uri, Blob blob) throws BlobStoreException {
+    try {
+      Path file = file(uri);
+      if (!Files.exists(file.getParent())) {
+        Files.createDirectories(file.getParent());
+      }
+      Files.copy(blob.getInputStream(), file, StandardCopyOption.REPLACE_EXISTING);
+    } catch (IOException e) {
+      throw new BlobStoreException(e);
+    }
   }
 
   @Override
-  public void delete(URI uri) throws IOException {
-    Files.deleteIfExists(Paths.get(uri.getPath()).toAbsolutePath());
+  public void delete(URI uri) throws BlobStoreException {
+    try {
+      Path file = file(uri);
+      Files.deleteIfExists(file);
+    } catch (IOException e) {
+      throw new BlobStoreException(e);
+    }
   }
 
 }

@@ -2,6 +2,7 @@ package com.baremaps.osm.database;
 
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
+import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.cache.CoordinateCache;
@@ -77,10 +78,10 @@ public class DiffService implements Callable<List<Tile>> {
     Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
     URI changeUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
 
-    ProgressLogger progressLogger = new ProgressLogger(blobStore.size(changeUri), 5000);
+    Blob blob = blobStore.get(changeUri);
+    ProgressLogger progressLogger = new ProgressLogger(blob.getContentLength(), 5000);
     ReprojectGeometryConsumer reprojectGeometryConsumer = new ReprojectGeometryConsumer(srid, 4326);
-
-    try (InputStream changesInputStream = new GZIPInputStream(new InputStreamProgress(blobStore.read(changeUri), progressLogger))) {
+    try (InputStream changesInputStream = new GZIPInputStream(new InputStreamProgress(blob.getInputStream(), progressLogger))) {
       return OpenStreetMap.streamXmlChanges(changesInputStream)
           .flatMap(this::geometriesForChange)
           .map(consumeThenReturn(reprojectGeometryConsumer::transform))
