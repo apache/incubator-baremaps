@@ -75,7 +75,6 @@
       <groupId>io.servicetalk</groupId>
       <artifactId>servicetalk-http-router-jersey</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-multipart</artifactId>
