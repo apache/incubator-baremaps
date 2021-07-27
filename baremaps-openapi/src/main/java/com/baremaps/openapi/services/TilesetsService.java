@@ -2,16 +2,18 @@ package com.baremaps.openapi.services;
 
 import com.baremaps.api.TilesetsApi;
 import com.baremaps.model.TileSet;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import javax.inject.Inject;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.json.Json;
-import org.json.simple.JSONObject;
 
 public class TilesetsService implements TilesetsApi {
+
+  private static final ObjectMapper MAPPER = new ObjectMapper();
 
   private static final QualifiedType<TileSet> TILESET = QualifiedType.of(TileSet.class).with(Json.class);
 
@@ -23,11 +25,11 @@ public class TilesetsService implements TilesetsApi {
   }
 
   @Override
-  public void addTileset(Map<String, Object> requestBody) {
+  public void addTileset(TileSet tileSet) {
     UUID tilesetId = UUID.randomUUID(); // TODO: Read from body
     jdbi.useHandle(handle -> {
       handle.createUpdate("insert into tilesets (id, tileset) values (:id, CAST(:json AS JSONB))")
-          .bind("json", new JSONObject(requestBody).toString())
+          .bind("json", serialize(tileSet))
           .bind("id", tilesetId.toString())
           .execute();
     });
@@ -42,12 +44,12 @@ public class TilesetsService implements TilesetsApi {
 
   @Override
   public TileSet getTileset(String tilesetId) {
-    TileSet tilesets = jdbi.withHandle(handle ->
+    TileSet tileset = jdbi.withHandle(handle ->
         handle.createQuery("select tileset from tilesets where id = :id")
             .bind("id", tilesetId)
             .mapTo(TILESET)
             .one());
-    return tilesets;
+    return tileset;
   }
 
   @Override
@@ -60,12 +62,21 @@ public class TilesetsService implements TilesetsApi {
   }
 
   @Override
-  public void updateTileset(String tilesetId, Map<String, Object> requestBody) {
+  public void updateTileset(String tilesetId, TileSet tileSet) {
     jdbi.useHandle(handle -> {
       handle.createUpdate("update tilesets set tileset = cast(:json as jsonb) where id = :id")
-          .bind("json", new JSONObject(requestBody).toString())
+          .bind("json", serialize(tileSet))
           .bind("id", tilesetId)
           .execute();
     });
   }
+
+  private String serialize(TileSet tileSet) {
+    try {
+      return MAPPER.writeValueAsString(tileSet);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException("Unable serialize the tileset");
+    }
+  }
+
 }
