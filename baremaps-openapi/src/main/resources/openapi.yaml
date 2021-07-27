@@ -483,7 +483,7 @@ paths:
         - $ref: '#/components/parameters/tilesetId'
       requestBody:
         description: |-
-          A single tileste in one of the supported tileset encodings.
+          A single tileset in one of the supported tileset encodings.
         content:
           application/json:
             schema:
@@ -1122,7 +1122,6 @@ components:
           type: array
           items:
             type: number
-      additionalProperties: true
     tileSetsDescription:
       type: object
       required:
