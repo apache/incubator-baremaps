@@ -19,43 +19,43 @@ import java.util.List;
 @JsonFormat(shape= JsonFormat.Shape.ARRAY)
 public class Bounds {
 
-  private double minLon = -180;
+  private Double minLon = -180d;
 
-  private double minLat = -85.05112877980659;
+  private Double minLat = -85.05112877980659d;
 
-  private double maxLon = 180;
+  private Double maxLon = 180d;
 
-  private double maxLat = 85.0511287798066;
+  private Double maxLat = 85.0511287798066d;
 
-  public double getMinLon() {
+  public Double getMinLon() {
     return minLon;
   }
 
-  public void setMinLon(double minLon) {
+  public void setMinLon(Double minLon) {
     this.minLon = minLon;
   }
 
-  public double getMinLat() {
+  public Double getMinLat() {
     return minLat;
   }
 
-  public void setMinLat(double minLat) {
+  public void setMinLat(Double minLat) {
     this.minLat = minLat;
   }
 
-  public double getMaxLon() {
+  public Double getMaxLon() {
     return maxLon;
   }
 
-  public void setMaxLon(double maxLon) {
+  public void setMaxLon(Double maxLon) {
     this.maxLon = maxLon;
   }
 
-  public double getMaxLat() {
+  public Double getMaxLat() {
     return maxLat;
   }
 
-  public void setMaxLat(double maxLat) {
+  public void setMaxLat(Double maxLat) {
     this.maxLat = maxLat;
   }
 

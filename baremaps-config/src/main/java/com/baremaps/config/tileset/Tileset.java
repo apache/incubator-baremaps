@@ -40,9 +40,9 @@ public class Tileset {
 
   private Bounds bounds = new Bounds();
 
-  private double minZoom;
+  private Double minZoom;
 
-  private double maxZoom;
+  private Double maxZoom;
 
   private List<String> tiles = new ArrayList<>();
 

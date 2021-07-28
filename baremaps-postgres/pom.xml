@@ -19,6 +19,10 @@
       <artifactId>jdbi3-postgres</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.jdbi</groupId>
+      <artifactId>jdbi3-jpa</artifactId>
+    </dependency>
+    <dependency>
       <artifactId>jts-core</artifactId>
       <groupId>org.locationtech.jts</groupId>
     </dependency>

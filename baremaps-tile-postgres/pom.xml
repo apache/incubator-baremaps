@@ -25,7 +25,6 @@
     <dependency>
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-postgres</artifactId>
-      <scope>test</scope>
     </dependency>
   </dependencies>
 
