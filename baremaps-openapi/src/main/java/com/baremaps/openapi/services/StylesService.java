@@ -28,7 +28,7 @@ public class StylesService implements StylesApi {
   public void addStyle(MbStyle mbStyle) {
     UUID styleId = UUID.randomUUID(); // TODO: Read from body
     jdbi.useHandle(handle -> {
-      handle.createUpdate("insert into styles (id, style) values (:id, :json)")
+      handle.createUpdate("insert into styles (id, style) values (:id, CAST(:json AS jsonb))")
           .bindByType("json", mbStyle, MBSTYLE)
           .bind("id", styleId.toString())
           .execute();
