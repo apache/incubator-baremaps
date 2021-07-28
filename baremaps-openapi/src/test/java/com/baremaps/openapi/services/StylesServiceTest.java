@@ -2,14 +2,13 @@ package com.baremaps.openapi.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.baremaps.model.TileSet;
+import com.baremaps.model.MbStyle;
+import com.baremaps.model.StyleSet;
 import com.baremaps.postgres.jdbi.PostgisPlugin;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -19,7 +18,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.junit.Test;
 
-public class TilesetsServiceTest extends JerseyTest {
+public class StylesServiceTest extends JerseyTest {
 
   Jdbi jdbi;
 
@@ -41,12 +40,12 @@ public class TilesetsServiceTest extends JerseyTest {
         .installPlugin(new PostgisPlugin())
         .installPlugin(new Jackson2Plugin());
     jdbi.useHandle(handle -> {
-      handle.execute("create table tilesets (id varchar primary key, tileset jsonb)");
+      handle.execute("create table styles (id varchar primary key, style jsonb)");
     });
 
     // Configure the service
     return new ResourceConfig()
-        .register(TilesetsService.class)
+        .register(StylesService.class)
         .register(new AbstractBinder() {
           @Override
           protected void configure() {
@@ -57,32 +56,32 @@ public class TilesetsServiceTest extends JerseyTest {
 
   @Test
   public void test() {
-    // List the tilesets
-    List<String> ids = target().path("/tilesets").request().get(new GenericType<>() {});
-    assertEquals(0, ids.size());
+    // List the styles
+    StyleSet styles = target().path("/styles").request().get(StyleSet.class);
+    assertEquals(0, styles.getStyles().size());
 
-    // Create a new tileset with the service
-    TileSet tileSet = new TileSet();
-    tileSet.setName("test");
-    target().path("/tilesets")
+    // Create a new style with the service
+    MbStyle style = new MbStyle();
+    style.setName("test");
+    target().path("/styles")
         .request(MediaType.APPLICATION_JSON)
-        .post(Entity.json(tileSet));
+        .post(Entity.entity(style, MediaType.valueOf("application/vnd.mapbox.style+json")));
 
-    // List the tilesets
-    ids = target().path("/tilesets").request().get(new GenericType<>() {});
-    assertEquals(1, ids.size());
+    // List the styles
+    styles = target().path("/styles").request().get(StyleSet.class);
+    assertEquals(1, styles.getStyles().size());
 
-    // Get the tileset
-    String id = ids.get(0);
-    tileSet = target().path("/tilesets/" + id).request().get(TileSet.class);
-    assertEquals("test", tileSet.getName());
+    // Get the style
+    String id = styles.getStyles().get(0).getId();
+    style = target().path("/styles/" + id).request().get(MbStyle.class);
+    assertEquals("test", style.getName());
 
-    // Delete the tileset
-    target().path("/tilesets/" + ids.get(0)).request().delete();
+    // Delete the style
+    target().path("/styles/" + styles.getStyles().get(0).getId()).request().delete();
 
-    // List the tilesets
-    ids = target().path("/tilesets").request().get(new GenericType<>() {});
-    assertEquals(0, ids.size());
+    // List the styles
+    styles = target().path("/styles").request().get(StyleSet.class);
+    assertEquals(0, styles.getStyles().size());
   }
 
 }
