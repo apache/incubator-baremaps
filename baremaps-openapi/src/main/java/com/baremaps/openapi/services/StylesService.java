@@ -30,20 +30,20 @@ public class StylesService implements StylesApi {
     jdbi.useHandle(handle -> {
       handle.createUpdate("insert into styles (id, style) values (:id, CAST(:json AS jsonb))")
           .bindByType("json", mbStyle, MBSTYLE)
-          .bind("id", styleId.toString())
+          .bind("id", styleId)
           .execute();
     });
   }
 
   @Override
-  public void deleteStyle(String styleId) {
+  public void deleteStyle(UUID styleId) {
     jdbi.useHandle(handle -> {
       handle.execute("delete from styles where id = (?)", styleId);
     });
   }
 
   @Override
-  public MbStyle getStyle(String styleId) {
+  public MbStyle getStyle(UUID styleId) {
     MbStyle style = jdbi.withHandle(handle ->
         handle.createQuery("select style from styles where id = :id")
             .bind("id", styleId)
@@ -54,15 +54,15 @@ public class StylesService implements StylesApi {
 
   @Override
   public StyleSet getStyleSet() {
-    List<String> ids = jdbi.withHandle(handle ->
+    List<UUID> ids = jdbi.withHandle(handle ->
         handle.createQuery("select id from styles")
-            .mapTo(String.class)
+            .mapTo(UUID.class)
             .list());
 
     StyleSet styleSet = new StyleSet();
     List<StyleSetEntry> entries = new ArrayList<StyleSetEntry>();
 
-    for (String id : ids) {
+    for (UUID id : ids) {
       Link link = new Link();
       link.setHref(
           "http://localhost:8080/styles/" + id); // TODO: set dynamically from server or where the server gets it from
@@ -85,7 +85,7 @@ public class StylesService implements StylesApi {
   }
 
   @Override
-  public void updateStyle(String styleId, MbStyle mbStyle) {
+  public void updateStyle(UUID styleId, MbStyle mbStyle) {
     jdbi.useHandle(handle -> {
       handle.createUpdate("update styles set style = :json where id = :id")
           .bindByType("json", mbStyle, MBSTYLE)
