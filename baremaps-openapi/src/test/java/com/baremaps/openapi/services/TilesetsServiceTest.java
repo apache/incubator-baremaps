@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -41,7 +42,7 @@ public class TilesetsServiceTest extends JerseyTest {
         .installPlugin(new PostgisPlugin())
         .installPlugin(new Jackson2Plugin());
     jdbi.useHandle(handle -> {
-      handle.execute("create table tilesets (id varchar primary key, tileset jsonb)");
+      handle.execute("create table tilesets (id uuid primary key, tileset jsonb)");
     });
 
     // Configure the service
@@ -58,7 +59,7 @@ public class TilesetsServiceTest extends JerseyTest {
   @Test
   public void test() {
     // List the tilesets
-    List<String> ids = target().path("/tilesets").request().get(new GenericType<>() {});
+    List<UUID> ids = target().path("/tilesets").request().get(new GenericType<>() {});
     assertEquals(0, ids.size());
 
     // Create a new tileset with the service
@@ -73,7 +74,7 @@ public class TilesetsServiceTest extends JerseyTest {
     assertEquals(1, ids.size());
 
     // Get the tileset
-    String id = ids.get(0);
+    UUID id = ids.get(0);
     tileSet = target().path("/tilesets/" + id).request().get(TileSet.class);
     assertEquals("test", tileSet.getName());
 
