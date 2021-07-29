@@ -30,20 +30,20 @@ public class TilesetsService implements TilesetsApi {
     jdbi.useHandle(handle -> {
       handle.createUpdate("insert into tilesets (id, tileset) values (:id, CAST(:json AS JSONB))")
           .bind("json", serialize(tileSet))
-          .bind("id", tilesetId.toString())
+          .bind("id", tilesetId)
           .execute();
     });
   }
 
   @Override
-  public void deleteTileset(String tilesetId) {
+  public void deleteTileset(UUID tilesetId) {
     jdbi.useHandle(handle -> {
       handle.execute("delete from tilesets where id = (?)", tilesetId);
     });
   }
 
   @Override
-  public TileSet getTileset(String tilesetId) {
+  public TileSet getTileset(UUID tilesetId) {
     TileSet tileset = jdbi.withHandle(handle ->
         handle.createQuery("select tileset from tilesets where id = :id")
             .bind("id", tilesetId)
@@ -53,16 +53,16 @@ public class TilesetsService implements TilesetsApi {
   }
 
   @Override
-  public List<String> getTilesets() {
-    List<String> tilesets = jdbi.withHandle(handle ->
+  public List<UUID> getTilesets() {
+    List<UUID> tilesets = jdbi.withHandle(handle ->
         handle.createQuery("select id from tilesets")
-            .mapTo(String.class)
+            .mapTo(UUID.class)
             .list());
     return tilesets;
   }
 
   @Override
-  public void updateTileset(String tilesetId, TileSet tileSet) {
+  public void updateTileset(UUID tilesetId, TileSet tileSet) {
     jdbi.useHandle(handle -> {
       handle.createUpdate("update tilesets set tileset = cast(:json as jsonb) where id = :id")
           .bind("json", serialize(tileSet))

@@ -408,6 +408,7 @@ paths:
                 type: array
                 items:
                   type: string
+                  format: uuid
         '406':
           description: |-
             The media types accepted by the client are not
@@ -637,6 +638,7 @@ components:
       required: true
       schema:
         type: string
+        format: uuid
     styleId:
       name: styleId
       in: path
@@ -647,6 +649,7 @@ components:
       required: true
       schema:
         type: string
+        format: uuid
     tilesetId:
       name: tilesetId
       in: path
@@ -657,6 +660,7 @@ components:
       required: true
       schema:
         type: string
+        format: uuid
   schemas:
     collection:
       type: object
@@ -667,6 +671,7 @@ components:
         id:
           description: identifier of the collection used, for example, in URIs
           type: string
+          format: uuid
           example: address
         title:
           description: human readable title of the collection
@@ -1036,6 +1041,7 @@ components:
       properties:
         id:
           type: string
+          format: uuid
           nullable: true
         title:
           type: string

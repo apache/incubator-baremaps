@@ -8,6 +8,7 @@ import com.baremaps.postgres.jdbi.PostgisPlugin;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.UUID;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -40,7 +41,7 @@ public class StylesServiceTest extends JerseyTest {
         .installPlugin(new PostgisPlugin())
         .installPlugin(new Jackson2Plugin());
     jdbi.useHandle(handle -> {
-      handle.execute("create table styles (id varchar primary key, style jsonb)");
+      handle.execute("create table styles (id uuid primary key, style jsonb)");
     });
 
     // Configure the service
@@ -72,7 +73,7 @@ public class StylesServiceTest extends JerseyTest {
     assertEquals(1, styles.getStyles().size());
 
     // Get the style
-    String id = styles.getStyles().get(0).getId();
+    UUID id = styles.getStyles().get(0).getId();
     style = target().path("/styles/" + id).request().get(MbStyle.class);
     assertEquals("test", style.getName());
 
