@@ -1,0 +1,1 @@
+create table if not exists tilesets (id uuid primary key, tileset jsonb);
