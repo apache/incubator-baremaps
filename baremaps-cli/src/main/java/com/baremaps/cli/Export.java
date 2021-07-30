@@ -119,11 +119,11 @@ public class Export implements Callable<Integer> {
           source.getBounds().getMinLon(), source.getBounds().getMaxLon(),
           source.getBounds().getMinLat(), source.getBounds().getMaxLat());
       long count = Tile.count(envelope,
-          (int) source.getMinZoom(),
-          (int) source.getMaxZoom());
+          source.getMinZoom().intValue(),
+          source.getMaxZoom().intValue());
       stream = StreamUtils.stream(Tile.iterator(envelope,
-          (int) source.getMinZoom(),
-          (int) source.getMaxZoom()))
+          source.getMinZoom().intValue(),
+          source.getMaxZoom().intValue()))
           .peek(new StreamProgress<>(count, 5000));
     } else {
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(blobStore.get(tiles).getInputStream()))) {
@@ -134,8 +134,8 @@ public class Export implements Callable<Integer> {
           int z = Integer.parseInt(array[2]);
           Tile tile = new Tile(x, y, z);
           return StreamUtils.stream(Tile.iterator(tile.envelope(),
-              (int) source.getMinZoom(),
-              (int) source.getMaxZoom()));
+              source.getMinZoom().intValue(),
+              source.getMaxZoom().intValue()));
         });
       }
     }

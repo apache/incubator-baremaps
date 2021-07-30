@@ -39,7 +39,7 @@ public class PostgresTilesetFactory {
     System.out.println(tileset);
   }
 
-  private Tileset getTileset() {
+  public Tileset getTileset() {
     return new Tileset("postgres", listTables().stream()
         .filter(table -> table.getPrimaryKeyColumns().size() == 1)
         .filter(table -> table.getGeometryColumns().size() == 1)
@@ -98,7 +98,6 @@ public class PostgresTilesetFactory {
   }
 
 }
-
 
 class Table {
 

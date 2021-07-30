@@ -110,19 +110,19 @@ public class Tileset {
     this.bounds = bounds;
   }
 
-  public double getMinZoom() {
+  public Double getMinZoom() {
     return minZoom;
   }
 
-  public void setMinZoom(double minZoom) {
+  public void setMinZoom(Double minZoom) {
     this.minZoom = minZoom;
   }
 
-  public double getMaxZoom() {
+  public Double getMaxZoom() {
     return maxZoom;
   }
 
-  public void setMaxZoom(double maxZoom) {
+  public void setMaxZoom(Double maxZoom) {
     this.maxZoom = maxZoom;
   }
 
