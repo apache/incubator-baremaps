@@ -40,7 +40,8 @@ To import the sample OSM data (`liechtenstein-latest.osm.pbf`) in Postgis with B
 ```
 baremaps import \
   --database 'jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps' \
-  --file 'https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf'
+  --file 'https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf' \
+  --enable-http
 ```
 
 Depending on the size of the PBF file, the execution of this command may take some time.
