@@ -4,7 +4,6 @@ import com.baremaps.openapi.services.CollectionsService;
 import com.baremaps.openapi.services.ConformanceService;
 import com.baremaps.openapi.services.RootService;
 import com.baremaps.openapi.services.StylesService;
-import com.baremaps.openapi.services.TilesService;
 import com.baremaps.openapi.services.TilesetsService;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -54,8 +53,7 @@ public class BaremapsServer {
             ConformanceService.class,
             CollectionsService.class,
             StylesService.class,
-            TilesetsService.class,
-            TilesService.class)
+            TilesetsService.class)
         .register(new AbstractBinder() {
           @Override
           protected void configure() {
