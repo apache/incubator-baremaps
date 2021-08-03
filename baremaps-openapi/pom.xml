@@ -144,6 +144,10 @@
       <artifactId>jersey-test-framework-provider-inmemory</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-tile-postgres</artifactId>
+    </dependency>
   </dependencies>
 
 </project>
