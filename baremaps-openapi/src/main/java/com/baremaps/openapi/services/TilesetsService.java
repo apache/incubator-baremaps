@@ -2,10 +2,14 @@ package com.baremaps.openapi.services;
 
 import com.baremaps.api.TilesetsApi;
 import com.baremaps.model.TileSet;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.baremaps.openapi.TilesetQueryParser;
+import com.baremaps.tile.Tile;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.zip.GZIPOutputStream;
 import javax.inject.Inject;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
@@ -13,11 +17,11 @@ import org.jdbi.v3.json.Json;
 
 public class TilesetsService implements TilesetsApi {
 
-  private static final ObjectMapper MAPPER = new ObjectMapper();
-
   private static final QualifiedType<TileSet> TILESET = QualifiedType.of(TileSet.class).with(Json.class);
 
   private final Jdbi jdbi;
+
+  private final HashMap<UUID, TileSet> tilesets = new HashMap<>();
 
   @Inject
   public TilesetsService(Jdbi jdbi) {
@@ -29,7 +33,7 @@ public class TilesetsService implements TilesetsApi {
     UUID tilesetId = UUID.randomUUID(); // TODO: Read from body
     jdbi.useHandle(handle -> {
       handle.createUpdate("insert into tilesets (id, tileset) values (:id, CAST(:json AS JSONB))")
-          .bind("json", serialize(tileSet))
+          .bindByType("json", tileSet, TILESET)
           .bind("id", tilesetId)
           .execute();
     });
@@ -37,6 +41,7 @@ public class TilesetsService implements TilesetsApi {
 
   @Override
   public void deleteTileset(UUID tilesetId) {
+    tilesets.remove(tilesetId);
     jdbi.useHandle(handle -> {
       handle.execute("delete from tilesets where id = (?)", tilesetId);
     });
@@ -44,39 +49,58 @@ public class TilesetsService implements TilesetsApi {
 
   @Override
   public TileSet getTileset(UUID tilesetId) {
-    TileSet tileset = jdbi.withHandle(handle ->
+    return jdbi.withHandle(handle ->
         handle.createQuery("select tileset from tilesets where id = :id")
             .bind("id", tilesetId)
             .mapTo(TILESET)
             .one());
-    return tileset;
   }
 
   @Override
   public List<UUID> getTilesets() {
-    List<UUID> tilesets = jdbi.withHandle(handle ->
+    return jdbi.withHandle(handle ->
         handle.createQuery("select id from tilesets")
             .mapTo(UUID.class)
             .list());
-    return tilesets;
   }
 
   @Override
   public void updateTileset(UUID tilesetId, TileSet tileSet) {
+    tilesets.remove(tilesetId);
     jdbi.useHandle(handle -> {
       handle.createUpdate("update tilesets set tileset = cast(:json as jsonb) where id = :id")
-          .bind("json", serialize(tileSet))
+          .bindByType("json", tileSet, TILESET)
           .bind("id", tilesetId)
           .execute();
     });
   }
 
-  private String serialize(TileSet tileSet) {
-    try {
-      return MAPPER.writeValueAsString(tileSet);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException("Unable serialize the tileset");
+  @Override
+  public byte[] getTile(UUID tilesetId, String tileMatrixSetId, Integer tileMatrix, Integer tileRow, Integer tileCol) {
+    TileSet tileset;
+    if (tilesets.containsKey(tilesetId)) {
+      tileset = tilesets.get(tilesetId);
+    } else {
+      tileset = getTileset(tilesetId);
+      tilesets.put(tilesetId, tileset);
     }
-  }
 
+    Tile tile = new Tile(tileCol, tileRow, tileMatrix);
+
+    try (ByteArrayOutputStream data = new ByteArrayOutputStream()) {
+
+      String sql = TilesetQueryParser.parse(tileset, tile);
+      byte[] bytes = jdbi.withHandle(handle -> handle.createQuery(sql).mapTo(byte[].class).one());
+
+      GZIPOutputStream gzip = new GZIPOutputStream(data);
+      gzip.write(bytes);
+      gzip.close();
+
+      return data.toByteArray();
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return new byte[] {};
+  }
 }
