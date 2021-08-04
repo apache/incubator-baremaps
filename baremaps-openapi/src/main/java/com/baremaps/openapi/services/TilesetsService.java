@@ -6,16 +6,25 @@ import com.baremaps.openapi.TilesetQueryParser;
 import com.baremaps.tile.Tile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
 import javax.inject.Inject;
+import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.json.Json;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TilesetsService implements TilesetsApi {
+
+  private static final Logger logger = LoggerFactory.getLogger(TilesetsService.class);
 
   private static final QualifiedType<TileSet> TILESET = QualifiedType.of(TileSet.class).with(Json.class);
 
@@ -31,20 +40,17 @@ public class TilesetsService implements TilesetsApi {
   @Override
   public void addTileset(TileSet tileSet) {
     UUID tilesetId = UUID.randomUUID(); // TODO: Read from body
-    jdbi.useHandle(handle -> {
-      handle.createUpdate("insert into tilesets (id, tileset) values (:id, CAST(:json AS JSONB))")
-          .bindByType("json", tileSet, TILESET)
-          .bind("id", tilesetId)
-          .execute();
-    });
+    jdbi.useHandle(
+        handle -> handle.createUpdate("insert into tilesets (id, tileset) values (:id, CAST(:json AS JSONB))")
+            .bindByType("json", tileSet, TILESET)
+            .bind("id", tilesetId)
+            .execute());
   }
 
   @Override
   public void deleteTileset(UUID tilesetId) {
     tilesets.remove(tilesetId);
-    jdbi.useHandle(handle -> {
-      handle.execute("delete from tilesets where id = (?)", tilesetId);
-    });
+    jdbi.useHandle(handle -> handle.execute("delete from tilesets where id = (?)", tilesetId));
   }
 
   @Override
@@ -67,12 +73,10 @@ public class TilesetsService implements TilesetsApi {
   @Override
   public void updateTileset(UUID tilesetId, TileSet tileSet) {
     tilesets.remove(tilesetId);
-    jdbi.useHandle(handle -> {
-      handle.createUpdate("update tilesets set tileset = cast(:json as jsonb) where id = :id")
-          .bindByType("json", tileSet, TILESET)
-          .bind("id", tilesetId)
-          .execute();
-    });
+    jdbi.useHandle(handle -> handle.createUpdate("update tilesets set tileset = cast(:json as jsonb) where id = :id")
+        .bindByType("json", tileSet, TILESET)
+        .bind("id", tilesetId)
+        .execute());
   }
 
   @Override
@@ -87,20 +91,33 @@ public class TilesetsService implements TilesetsApi {
 
     Tile tile = new Tile(tileCol, tileRow, tileMatrix);
 
-    try (ByteArrayOutputStream data = new ByteArrayOutputStream()) {
+    TilesetQueryParser parser = new TilesetQueryParser();
+    String sql = parser.parse(tileset, tile);
+    logger.debug("Executing query: {}", sql);
 
-      String sql = TilesetQueryParser.parse(tileset, tile);
-      byte[] bytes = jdbi.withHandle(handle -> handle.createQuery(sql).mapTo(byte[].class).one());
+    try (Handle handle = jdbi.open();
+        Connection connection = handle.getConnection();
+        Statement statement = connection.createStatement();
+        ByteArrayOutputStream data = new ByteArrayOutputStream()) {
 
+      int length = 0;
       GZIPOutputStream gzip = new GZIPOutputStream(data);
-      gzip.write(bytes);
+      ResultSet resultSet = statement.executeQuery(sql);
+      while (resultSet.next()) {
+        byte[] bytes = resultSet.getBytes(1);
+        length += bytes.length;
+        gzip.write(bytes);
+      }
       gzip.close();
+      handle.close();
 
-      return data.toByteArray();
-
-    } catch (IOException e) {
+      if (length > 0) {
+        return data.toByteArray();
+      }
+    } catch (IOException | SQLException e) {
       e.printStackTrace();
     }
-    return new byte[] {};
+
+    return null;
   }
 }

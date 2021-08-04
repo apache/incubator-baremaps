@@ -1,7 +1,5 @@
 package com.baremaps.openapi;
 
-import static com.baremaps.config.VariableUtils.interpolate;
-
 import com.baremaps.model.Layer;
 import com.baremaps.model.Query;
 import com.baremaps.model.TileSet;
@@ -9,6 +7,7 @@ import com.baremaps.tile.Tile;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,9 +62,9 @@ public class TilesetQueryParser {
 
   private static final String EMPTY = "";
 
-  private TilesetQueryParser() {};
+  public TilesetQueryParser() {}
 
-  public static String parse(TileSet tileset, Tile tile) {
+  public String parse(TileSet tileset, Tile tile) {
     List<ParsedQuery> queries = tileset.getLayers().stream()
         .flatMap(layer -> layer.getQueries().stream().map(query -> parseQuery(layer, query)))
         .collect(Collectors.toList());
@@ -78,7 +77,7 @@ public class TilesetQueryParser {
     return interpolate(variables, withQuery);
   }
 
-  protected static ParsedQuery parseQuery(Layer layer, Query query) {
+  private ParsedQuery parseQuery(Layer layer, Query query) {
     // Try to parse the query
     PlainSelect plainSelect;
     try {
@@ -110,17 +109,18 @@ public class TilesetQueryParser {
     return new ParsedQuery(layer, query, plainSelect);
   }
 
-  protected static String sourceQueries(List<ParsedQuery> queries, Tile tile) {
+  private String sourceQueries(List<ParsedQuery> queries, Tile tile) {
     return queries.stream()
         .filter(query -> zoomFilter(tile, query.getQuery()))
-        .collect(Collectors.groupingBy(TilesetQueryParser::commonTableExpression, LinkedHashMap::new, Collectors.toList()))
+        .collect(
+            Collectors.groupingBy(this::commonTableExpression, LinkedHashMap::new, Collectors.toList()))
         .entrySet().stream()
         .map(entry -> sourceQuery(entry.getKey(), entry.getValue()))
         .distinct()
         .collect(Collectors.joining(COMMA));
   }
 
-  protected static String sourceQuery(CommonTableExpression queryKey, List<ParsedQuery> queryValues) {
+  private String sourceQuery(CommonTableExpression queryKey, List<ParsedQuery> queryValues) {
     String alias = queryKey.getAlias();
     String id = queryKey.getSelectItems().get(0).toString();
     String tags = queryKey.getSelectItems().get(1).toString();
@@ -142,7 +142,7 @@ public class TilesetQueryParser {
     return String.format(SOURCE_QUERY, alias, id, tags, geom, from, joins, where);
   }
 
-  protected static String targetQueries(List<ParsedQuery> queries, Tile tile) {
+  private String targetQueries(List<ParsedQuery> queries, Tile tile) {
     return queries.stream()
         .filter(query -> zoomFilter(tile, query.getQuery()))
         .collect(Collectors.groupingBy(ParsedQuery::getLayer, LinkedHashMap::new, Collectors.toList()))
@@ -151,13 +151,13 @@ public class TilesetQueryParser {
         .collect(Collectors.joining(UNION));
   }
 
-  protected static String targetQuery(Layer layer, List<ParsedQuery> queryValues) {
+  private String targetQuery(Layer layer, List<ParsedQuery> queryValues) {
     return String.format(TARGET_QUERY, layer.getId(), queryValues.stream()
-        .map(queryValue -> targetLayerQuery(queryValue))
+        .map(this::targetLayerQuery)
         .collect(Collectors.joining(UNION)));
   }
 
-  protected static String targetLayerQuery(ParsedQuery queryValue) {
+  private String targetLayerQuery(ParsedQuery queryValue) {
     String alias = commonTableExpression(queryValue).getAlias();
     String where = Optional.ofNullable(queryValue.getValue().getWhere())
         .map(expression -> String.format(TARGET_WHERE, expression))
@@ -165,102 +165,109 @@ public class TilesetQueryParser {
     return String.format(TARGET_LAYER_QUERY, alias, where);
   }
 
-  protected static boolean zoomFilter(Tile tile, Query query) {
+  private boolean zoomFilter(Tile tile, Query query) {
     return query.getMinzoom() <= tile.z() && tile.z() < query.getMaxzoom();
   }
 
-  public static CommonTableExpression commonTableExpression(ParsedQuery query) {
+  private CommonTableExpression commonTableExpression(ParsedQuery query) {
     return new CommonTableExpression(
         query.getValue().getSelectItems(),
         query.getValue().getFromItem(),
         query.getValue().getJoins());
   }
 
-  protected static String tileEnvelope(Tile tile) {
+  private String tileEnvelope(Tile tile) {
     return String.format(TILE_ENVELOPE, tile.z(), tile.x(), tile.y());
   }
 
-}
-
-
-class ParsedQuery {
-
-  private final Layer layer;
-  private final Query query;
-  private final PlainSelect value;
-
-  public ParsedQuery(Layer layer, Query query, PlainSelect parse) {
-    this.layer = layer;
-    this.query = query;
-    this.value = parse;
-  }
-
-  public Layer getLayer() {
-    return layer;
-  }
-
-  public Query getQuery() {
-    return query;
-  }
-
-  public PlainSelect getValue() {
-    return value;
-  }
-
-}
-
-
-class CommonTableExpression {
-
-  private final List<SelectItem> selectItems;
-  private final FromItem fromItem;
-  private final List<Join> joins;
-
-  public CommonTableExpression(
-      List<SelectItem> selectItems,
-      FromItem fromItem,
-      List<Join> joins) {
-    this.selectItems = selectItems;
-    this.fromItem = fromItem;
-    this.joins = joins;
-  }
-
-  public List<SelectItem> getSelectItems() {
-    return selectItems;
-  }
-
-  public FromItem getFromItem() {
-    return fromItem;
-  }
-
-  public List<Join> getJoins() {
-    return joins;
-  }
-
-  public String getAlias() {
-    return String.format("h%x", hashCode()).substring(0, 9);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+  private String interpolate(Map<String, String> variables, String string) {
+    for (Entry<String, String> entry : variables.entrySet()) {
+      string = string.replace(String.format("$%s", entry.getKey()), entry.getValue());
     }
-    if (!(o instanceof CommonTableExpression)) {
-      return false;
-    }
-    return hashCode() == o.hashCode();
+    return string;
   }
 
-  @Override
-  public int hashCode() {
-    String selectItemsString = selectItems.toString();
-    String fromItemString = fromItem.toString();
-    String joinsString = Optional.ofNullable(joins).stream()
-        .flatMap(List::stream)
-        .map(Join::toString)
-        .collect(Collectors.joining());
-    return Objects.hash(selectItemsString, fromItemString, joinsString);
+
+  private class ParsedQuery {
+
+    private final Layer layer;
+    private final Query query;
+    private final PlainSelect value;
+
+    private ParsedQuery(Layer layer, Query query, PlainSelect parse) {
+      this.layer = layer;
+      this.query = query;
+      this.value = parse;
+    }
+
+    private Layer getLayer() {
+      return layer;
+    }
+
+    private Query getQuery() {
+      return query;
+    }
+
+    private PlainSelect getValue() {
+      return value;
+    }
+
+  }
+
+
+  private class CommonTableExpression {
+
+    private final List<SelectItem> selectItems;
+    private final FromItem fromItem;
+    private final List<Join> joins;
+
+    private CommonTableExpression(
+        List<SelectItem> selectItems,
+        FromItem fromItem,
+        List<Join> joins) {
+      this.selectItems = selectItems;
+      this.fromItem = fromItem;
+      this.joins = joins;
+    }
+
+    private List<SelectItem> getSelectItems() {
+      return selectItems;
+    }
+
+    private FromItem getFromItem() {
+      return fromItem;
+    }
+
+    private List<Join> getJoins() {
+      return joins;
+    }
+
+    private String getAlias() {
+      return String.format("h%x", hashCode()).substring(0, 9);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!(o instanceof CommonTableExpression)) {
+        return false;
+      }
+      return hashCode() == o.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+      String selectItemsString = selectItems.toString();
+      String fromItemString = fromItem.toString();
+      String joinsString = Optional.ofNullable(joins).stream()
+          .flatMap(List::stream)
+          .map(Join::toString)
+          .collect(Collectors.joining());
+      return Objects.hash(selectItemsString, fromItemString, joinsString);
+    }
+
   }
 
 }

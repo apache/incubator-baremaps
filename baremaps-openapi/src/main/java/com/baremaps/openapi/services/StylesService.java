@@ -27,29 +27,24 @@ public class StylesService implements StylesApi {
   @Override
   public void addStyle(MbStyle mbStyle) {
     UUID styleId = UUID.randomUUID(); // TODO: Read from body
-    jdbi.useHandle(handle -> {
-      handle.createUpdate("insert into styles (id, style) values (:id, CAST(:json AS jsonb))")
-          .bindByType("json", mbStyle, MBSTYLE)
-          .bind("id", styleId)
-          .execute();
-    });
+    jdbi.useHandle(handle -> handle.createUpdate("insert into styles (id, style) values (:id, CAST(:json AS jsonb))")
+        .bindByType("json", mbStyle, MBSTYLE)
+        .bind("id", styleId)
+        .execute());
   }
 
   @Override
   public void deleteStyle(UUID styleId) {
-    jdbi.useHandle(handle -> {
-      handle.execute("delete from styles where id = (?)", styleId);
-    });
+    jdbi.useHandle(handle -> handle.execute("delete from styles where id = (?)", styleId));
   }
 
   @Override
   public MbStyle getStyle(UUID styleId) {
-    MbStyle style = jdbi.withHandle(handle ->
+    return jdbi.withHandle(handle ->
         handle.createQuery("select style from styles where id = :id")
             .bind("id", styleId)
             .mapTo(MBSTYLE)
             .one());
-    return style;
   }
 
   @Override
@@ -60,7 +55,7 @@ public class StylesService implements StylesApi {
             .list());
 
     StyleSet styleSet = new StyleSet();
-    List<StyleSetEntry> entries = new ArrayList<StyleSetEntry>();
+    List<StyleSetEntry> entries = new ArrayList<>();
 
     for (UUID id : ids) {
       Link link = new Link();
@@ -69,12 +64,9 @@ public class StylesService implements StylesApi {
       link.setType("application/vnd.mapbox.style+json");
       link.setRel("stylesheet");
 
-      List<Link> links = new ArrayList<>();
-      links.add(link);
-
       StyleSetEntry entry = new StyleSetEntry();
       entry.setId(id);
-      entry.setLinks(links);
+      entry.setLinks(List.of(link));
 
       entries.add(entry);
     }
@@ -86,11 +78,9 @@ public class StylesService implements StylesApi {
 
   @Override
   public void updateStyle(UUID styleId, MbStyle mbStyle) {
-    jdbi.useHandle(handle -> {
-      handle.createUpdate("update styles set style = :json where id = :id")
-          .bindByType("json", mbStyle, MBSTYLE)
-          .bind("id", styleId)
-          .execute();
-    });
+    jdbi.useHandle(handle -> handle.createUpdate("update styles set style = :json where id = :id")
+        .bindByType("json", mbStyle, MBSTYLE)
+        .bind("id", styleId)
+        .execute());
   }
 }
