@@ -101,14 +101,12 @@ public class TilesetsService implements TilesetsApi {
         ByteArrayOutputStream data = new ByteArrayOutputStream()) {
 
       int length = 0;
-      GZIPOutputStream gzip = new GZIPOutputStream(data);
       ResultSet resultSet = statement.executeQuery(sql);
       while (resultSet.next()) {
         byte[] bytes = resultSet.getBytes(1);
         length += bytes.length;
-        gzip.write(bytes);
+        data.write(bytes);
       }
-      gzip.close();
       handle.close();
 
       if (length > 0) {
