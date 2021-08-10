@@ -1072,7 +1072,7 @@ components:
           type: array
           items:
             type: number
-        layers:
+        vector_layers:
           type: array
           items:
             $ref: '#/components/schemas/layer'

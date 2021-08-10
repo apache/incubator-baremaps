@@ -65,7 +65,7 @@ public class TilesetQueryParser {
   public TilesetQueryParser() {}
 
   public String parse(TileSet tileset, Tile tile) {
-    List<ParsedQuery> queries = tileset.getLayers().stream()
+    List<ParsedQuery> queries = tileset.getVectorLayers().stream()
         .flatMap(layer -> layer.getQueries().stream().map(query -> parseQuery(layer, query)))
         .collect(Collectors.toList());
     String sourceQueries = sourceQueries(queries, tile);
