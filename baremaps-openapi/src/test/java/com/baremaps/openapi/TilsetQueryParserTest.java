@@ -28,7 +28,7 @@ public class TilsetQueryParserTest {
     b.setQueries(List.of(q));
 
     TileSet tileset = new TileSet();
-    tileset.setLayers(Arrays.asList(a, b));
+    tileset.setVectorLayers(Arrays.asList(a, b));
 
     TilesetQueryParser parser = new TilesetQueryParser();
     String query = parser.parse(tileset, new Tile(0, 0, 10));
@@ -56,7 +56,7 @@ public class TilsetQueryParserTest {
     b.setQueries(List.of(q2));
 
     TileSet tileset = new TileSet();
-    tileset.setLayers(Arrays.asList(a, b));
+    tileset.setVectorLayers(Arrays.asList(a, b));
 
     TilesetQueryParser parser = new TilesetQueryParser();
     String query = parser.parse(tileset, new Tile(0, 0, 10));
