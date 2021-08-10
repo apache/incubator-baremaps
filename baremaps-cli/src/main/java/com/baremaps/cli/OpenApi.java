@@ -30,9 +30,6 @@ public class OpenApi implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(OpenApi.class);
 
-  @Mixin
-  private Options options;
-
   @Option(
       names = {"--database"},
       paramLabel = "DATABASE",
