@@ -1,13 +1,9 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.blob.BlobStore;
-import com.baremaps.openapi.services.CollectionsService;
-import com.baremaps.openapi.services.ConformanceService;
-import com.baremaps.openapi.services.RootService;
-import com.baremaps.openapi.services.StylesService;
-import com.baremaps.openapi.services.TilesetsService;
+import com.baremaps.openapi.services.*;
 import com.baremaps.postgres.jdbc.PostgresUtils;
+import com.baremaps.server.CorsFilter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
@@ -71,6 +67,7 @@ public class OpenApi implements Callable<Integer> {
 
     // Initialize the application
     ResourceConfig application = new ResourceConfig()
+            .register(CorsFilter.class)
             .registerClasses(RootService.class,
                     ConformanceService.class,
                     CollectionsService.class,
