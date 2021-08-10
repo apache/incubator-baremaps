@@ -28,6 +28,7 @@ import picocli.CommandLine.Option;
     name = "baremaps",
     description = "A toolkit for producing vector tiles.",
     versionProvider = VersionProvider.class,
+    //TODO: add api class that points to baremaps-openapi stuff
     subcommands = {
         Init.class,
         Execute.class,
@@ -37,6 +38,7 @@ import picocli.CommandLine.Option;
         Export.class,
         Edit.class,
         Serve.class,
+        OpenApi.class,
     })
 public class Baremaps implements Callable<Integer> {
 
