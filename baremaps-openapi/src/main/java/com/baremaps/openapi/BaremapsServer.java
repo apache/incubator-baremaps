@@ -5,13 +5,11 @@ import com.baremaps.openapi.services.ConformanceService;
 import com.baremaps.openapi.services.RootService;
 import com.baremaps.openapi.services.StylesService;
 import com.baremaps.openapi.services.TilesetsService;
-import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
-import javax.sql.DataSource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.jdbi.v3.core.Jdbi;
@@ -37,8 +35,7 @@ public class BaremapsServer {
    */
   public static void main(String[] args) throws Exception {
     // Create a Postgresql datasource
-    DataSource dataSource = PostgresUtils.datasource("jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps");
-    Jdbi jdbi = Jdbi.create(dataSource)
+    Jdbi jdbi = Jdbi.create("jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps")
         .installPlugin(new PostgresPlugin())
         .installPlugin(new Jackson2Plugin());
 

@@ -1,10 +1,9 @@
 package com.baremaps.openapi.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.StyleSet;
-import com.baremaps.postgres.jdbi.PostgisPlugin;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -31,18 +30,14 @@ public class StylesServiceTest extends JerseyTest {
     // Create a connection to a throwaway postgis database
     Connection connection;
     try {
-      connection = DriverManager.getConnection("jdbc:tc:postgis:13-3.1:///test");
+      connection = DriverManager.getConnection("jdbc:tc:postgresql:13:///test");
     } catch (SQLException throwables) {
       throw new RuntimeException("Unable to connect to the database");
     }
 
     // Initialize the database
-    jdbi = Jdbi.create(connection)
-        .installPlugin(new PostgisPlugin())
-        .installPlugin(new Jackson2Plugin());
-    jdbi.useHandle(handle -> {
-      handle.execute("create table styles (id uuid primary key, style jsonb)");
-    });
+    jdbi = Jdbi.create(connection).installPlugin(new Jackson2Plugin());
+    jdbi.useHandle(handle -> handle.execute("create table styles (id uuid primary key, style jsonb)"));
 
     // Configure the service
     return new ResourceConfig()

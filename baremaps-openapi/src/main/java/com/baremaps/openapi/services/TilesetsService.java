@@ -13,7 +13,6 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.zip.GZIPOutputStream;
 import javax.inject.Inject;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;

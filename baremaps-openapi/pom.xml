@@ -42,10 +42,12 @@
               <inputSpec>${project.basedir}/src/main/resources/openapi.yaml</inputSpec>
               <generatorName>jaxrs-spec</generatorName>
               <configOptions>
-                <sourceFolder>src/gen/java/main</sourceFolder>
                 <apiPackage>com.baremaps.api</apiPackage>
-                <modelPackage>com.baremaps.model</modelPackage>
                 <interfaceOnly>true</interfaceOnly>
+                <modelPackage>com.baremaps.model</modelPackage>
+                <sortModelPropertiesByRequiredFlag>false</sortModelPropertiesByRequiredFlag>
+                <sortParamsByRequiredFlag>false</sortParamsByRequiredFlag>
+                <sourceFolder>src/gen/java/main</sourceFolder>
               </configOptions>
             </configuration>
           </execution>
@@ -119,10 +121,6 @@
     <dependency>
       <artifactId>postgresql</artifactId>
       <groupId>org.postgresql</groupId>
-    </dependency>
-    <dependency>
-      <artifactId>baremaps-postgres</artifactId>
-      <groupId>com.baremaps</groupId>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.containers</groupId>
