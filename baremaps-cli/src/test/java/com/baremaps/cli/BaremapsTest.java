@@ -103,19 +103,6 @@ class BaremapsTest {
       connection.connect();
       return connection.getResponseCode() == 200;
     });
-
-    // Try a preflight request
-    await().timeout(60, TimeUnit.SECONDS).pollDelay(5, TimeUnit.SECONDS).until(() -> {
-      HttpURLConnection connection = (HttpURLConnection) new URL("http://127.0.0.1:9000/tiles/14/8626/5750.mvt")
-              .openConnection();
-      connection.setRequestMethod("OPTIONS");
-      connection.addRequestProperty("Origin", "this is a test");
-      connection.connect();
-      assertTrue(connection.getHeaderFields().containsKey("Access-Control-Allow-Origin"));
-      assertEquals(connection.getHeaderFields().get("Access-Control-Allow-Origin").get(0), "this is a test");
-      return connection.getResponseCode() == 204;
-    });
-
   }
 
 }
