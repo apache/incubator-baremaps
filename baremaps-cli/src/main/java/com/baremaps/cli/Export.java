@@ -182,14 +182,14 @@ public class Export implements Callable<Integer> {
     metadata.put("bounds", String.format("%f, %f, %f, %f",
         tileset.getBounds().getMinLon(), tileset.getBounds().getMinLat(),
         tileset.getBounds().getMaxLon(), tileset.getBounds().getMaxLat()));
-    metadata.put("minzoom", Double.toString(tileset.getMinZoom()));
-    metadata.put("maxzoom", Double.toString(tileset.getMaxZoom()));
-    List<Map<String, Object>> layers = tileset.getLayers().stream().map(layer -> {
+    metadata.put("minzoom", Double.toString(tileset.getMinzoom()));
+    metadata.put("maxzoom", Double.toString(tileset.getMaxzoom()));
+    List<Map<String, Object>> layers = tileset.getVectorLayers().stream().map(layer -> {
       Map<String, Object> map = new HashMap<>();
       map.put("id", layer.getId());
       map.put("description", layer.getDescription());
-      map.put("minzoom", layer.getQueries().stream().mapToInt(Query::getMinZoom).min().getAsInt());
-      map.put("maxzoom", layer.getQueries().stream().mapToInt(Query::getMaxZoom).max().getAsInt());
+      map.put("minzoom", layer.getQueries().stream().mapToInt(Query::getMinzoom).min().getAsInt());
+      map.put("maxzoom", layer.getQueries().stream().mapToInt(Query::getMaxzoom).max().getAsInt());
       return map;
     }).collect(Collectors.toList());
     metadata.put("json", new ObjectMapper().writeValueAsString(layers));

@@ -19,8 +19,8 @@
       "id": "aster_dem",
       "queries": [
         {
-          "minZoom": 0,
-          "maxZoom": 20,
+          "minzoom": 0,
+          "maxzoom": 20,
           "sql": "SELECT id, hstore('elevation', elevation::text), wkb_geometry FROM aster_dem"
         }
       ]
