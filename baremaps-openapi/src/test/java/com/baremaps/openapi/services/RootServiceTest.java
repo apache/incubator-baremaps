@@ -1,6 +1,6 @@
 package com.baremaps.openapi.services;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 import com.baremaps.model.LandingPage;
 import org.glassfish.jersey.server.ResourceConfig;
