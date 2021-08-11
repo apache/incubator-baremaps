@@ -10,7 +10,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Config;
@@ -46,6 +49,9 @@ public class BaremapsServer {
 
     // Initialize the application
     ResourceConfig application = new ResourceConfig()
+        .packages("org.glassfish.jersey.examples.jackson")
+        .register(MyObjectMapperProvider.class)
+        .register(JacksonFeature.class)
         .registerClasses(RootService.class,
             ConformanceService.class,
             CollectionsService.class,
@@ -67,6 +73,28 @@ public class BaremapsServer {
 
     // Blocks and awaits shutdown of the server this ServerContext represents.
     serverContext.awaitShutdown();
+  }
+
+  @Provider
+  private static class MyObjectMapperProvider implements ContextResolver<ObjectMapper> {
+
+    final ObjectMapper defaultObjectMapper;
+
+    public MyObjectMapperProvider() {
+      defaultObjectMapper = createDefaultMapper();
+    }
+
+    @Override
+    public ObjectMapper getContext(Class<?> type) {
+      return defaultObjectMapper;
+    }
+  }
+
+  private static ObjectMapper createDefaultMapper() {
+    final ObjectMapper mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(Include.NON_NULL);
+
+    return mapper;
   }
 
 }
