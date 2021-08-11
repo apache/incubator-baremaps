@@ -107,8 +107,8 @@ However, in the following excerpt of the json configuration file, none of these 
       "id": "aeroway",
       "queries": [
         {
-          "minZoom": 12,
-          "maxZoom": 20,
+          "minzoom": 12,
+          "maxzoom": 20,
           "sql": "SELECT id, tags, geom FROM osm_nodes WHERE tags ? 'aeroway'"
         }
       ]
