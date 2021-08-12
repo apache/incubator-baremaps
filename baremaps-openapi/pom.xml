@@ -45,6 +45,7 @@
                 <apiPackage>com.baremaps.api</apiPackage>
                 <interfaceOnly>true</interfaceOnly>
                 <modelPackage>com.baremaps.model</modelPackage>
+                <returnResponse>true</returnResponse>
                 <sortModelPropertiesByRequiredFlag>false</sortModelPropertiesByRequiredFlag>
                 <sortParamsByRequiredFlag>false</sortParamsByRequiredFlag>
                 <sourceFolder>src/gen/java/main</sourceFolder>
