@@ -7,6 +7,7 @@ import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.BlobResources;
+import com.baremaps.server.CorsFilter;
 import com.baremaps.server.ViewerResources;
 import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
@@ -91,6 +92,7 @@ public class Serve implements Callable<Integer> {
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
     ResourceConfig config = new ResourceConfig()
+        .register(CorsFilter.class)
         .register(ViewerResources.class)
         .register(BlobResources.class)
         .register(new AbstractBinder() {
