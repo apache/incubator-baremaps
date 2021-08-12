@@ -11,15 +11,15 @@
     3,
     4
   ],
-  "minZoom": 5,
-  "maxZoom": 6,
+  "minzoom": 5,
+  "maxzoom": 6,
   "vector_layers": [
     {
       "id": "layer",
       "queries": [
         {
-          "minZoom": 1,
-          "maxZoom": 2,
+          "minzoom": 1,
+          "maxzoom": 2,
           "sql": "query"
         }
       ]

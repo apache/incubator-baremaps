@@ -14,8 +14,8 @@ class BlobMapperTest {
   @Test
   void loadJsonTileset() throws URISyntaxException, BlobMapperException {
     Tileset tileset = new BlobMapper(new ResourceBlobStore()).read(new URI("res://./tileset.json"), Tileset.class);
-    assertEquals(1, tileset.getLayers().size());
-    assertEquals("layer",  tileset.getLayers().get(0).getId());
+    assertEquals(1, tileset.getVectorLayers().size());
+    assertEquals("layer",  tileset.getVectorLayers().get(0).getId());
   }
 
   @Test

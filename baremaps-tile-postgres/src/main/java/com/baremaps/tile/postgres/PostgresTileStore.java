@@ -89,7 +89,7 @@ public class PostgresTileStore implements TileStore {
 
   public PostgresTileStore(DataSource datasource, Tileset tileset) {
     this.datasource = datasource;
-    this.queries = tileset.getLayers().stream()
+    this.queries = tileset.getVectorLayers().stream()
         .flatMap(layer -> layer.getQueries().stream().map(query -> parseQuery(layer, query)))
         .collect(Collectors.toList());
   }
@@ -188,7 +188,7 @@ public class PostgresTileStore implements TileStore {
   }
 
   protected boolean zoomFilter(Tile tile, Query query) {
-    return query.getMinZoom() <= tile.z() && tile.z() < query.getMaxZoom();
+    return query.getMinzoom() <= tile.z() && tile.z() < query.getMaxzoom();
   }
 
   public CommonTableExpression commonTableExpression(ParsedQuery query) {
