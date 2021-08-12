@@ -3,6 +3,7 @@ package com.baremaps.openapi.services;
 import com.baremaps.api.CollectionsApi;
 import com.baremaps.model.Collection;
 import com.baremaps.model.Collections;
+import java.util.UUID;
 
 public class CollectionsService implements CollectionsApi {
 
@@ -12,12 +13,12 @@ public class CollectionsService implements CollectionsApi {
   }
 
   @Override
-  public void deleteCollection(String collectionId) {
+  public void deleteCollection(UUID collectionId) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public Collection getCollection(String collectionId) {
+  public Collection getCollection(UUID collectionId) {
     throw new UnsupportedOperationException();
   }
 
@@ -27,7 +28,7 @@ public class CollectionsService implements CollectionsApi {
   }
 
   @Override
-  public void updateCollection(String collectionId, Collection collection) {
+  public void updateCollection(UUID collectionId, Collection collection) {
     throw new UnsupportedOperationException();
   }
 

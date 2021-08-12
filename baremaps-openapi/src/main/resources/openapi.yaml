@@ -12,8 +12,8 @@ tags:
     description: Discover, create, update and delete collections
   - name: Styles
     description: Discover, create, fetch, update and delete styles
-  - name: Tiles
-    description: Access vector tiles resources
+  - name: Tilesets
+    description: Discover, create, fetch, update and delete tilesets
 paths:
   '/':
     get:
@@ -381,73 +381,146 @@ paths:
         '404':
           description: |-
             style not found
-  /tiles:
+  '/tilesets':
+    summary: ddd
+    description: xxx
     get:
       tags:
-        - Tiles
-      summary: fetch a tiles description
-      description: Retrieves the tiles description for this collection including the
-        `links` to get a `tile`
-      operationId: describeTilesCollections
+        - Tilesets
+      summary: |-
+        information about the available tilesets
+      operationId: getTilesets
+      description: |-
+        This operation fetches the set of tilesets available. For
+        each tileset the id, a title, links to the tileset is provided.
+
+        For a small number of the tilesets the currently simple approach is sufficient,
+        but in general the operation should support paging (using a
+        parameter `limit` and links to the `next` page in responses).
       responses:
-        "200":
-          description: Description of the tiles.
+        '200':
+          description: the set of available tilesets
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/tileSetsDescription'
-              example:
-                - href: http://data.example.com/tiles
-                  rel: self
-                  type: application/json
-                - href: http://data.example.com/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}.png
-                  templated: true
-                  rel: item
-                  type: image/png
-                - href: http://data.example.com/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}/info
-                  templated: true
-                  rel: info
-                  type: text/html
-        "404":
-          description: The requested URI was not found
-        "500":
-          description: A server error occurred
-          content:
-            application/json:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+        '406':
+          description: |-
+            The media types accepted by the client are not
+            supported for this resource
+    post:
+      tags:
+        - Tilesets
+      summary: |-
+        adds a new tileset
+      operationId: addTileset
+      description: |-
+        Adds a tileset to the tileset repository.
+
+        If no identifier can be determined from the submitted
+        tileset, the server will assign a new identifier to the
+        style.
+
+        The URI of the new tileset is returned in the header
+        `Location`.
+      responses:
+        '201':
+          description: |-
+            tileset created
+          headers:
+            Location:
               schema:
-                $ref: '#/components/schemas/exception'
-  /tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}:
+                type: string
+              description: |-
+                URI of the new tileset
+        '409':
+          description: |-
+            a tileset with that id already exists
+      requestBody:
+        description: |-
+          Tileset to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tileSet'
+  '/tilesets/{tilesetId}':
     get:
       tags:
-        - Tiles
+        - Tilesets
+      summary: |-
+        fetch a tileset by id
+      description: |-
+        Fetches the tileset with identifier `tilesetId`. The set of
+        available tilesets can be retrieved at `/tilesets`.
+      operationId: getTileset
+      parameters:
+        - $ref: '#/components/parameters/tilesetId'
+      responses:
+        '200':
+          description: |-
+            The tileset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tileSet'
+        '404':
+          description: |-
+            tileset not found
+    put:
+      tags:
+        - Tilesets
+      summary: |-
+        replace a tileset or add a new tileset
+      description: |-
+        Replace an existing tileset with the id `tilesetId`. If no
+        such style exists, a new style with that id is added.
+      operationId: updateTileset
+      parameters:
+        - $ref: '#/components/parameters/tilesetId'
+      requestBody:
+        description: |-
+          A single tileset in one of the supported tileset encodings.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tileSet'
+      responses:
+        '204':
+          description: |-
+            tileset updated or created successfully
+    delete:
+      tags:
+        - Tilesets
+      summary: |-
+        delete a tileset
+      description: |-
+        Delete an existing tileset with the id `tilesetId`. If no
+        such tileset exists, an error is returned.
+      operationId: deleteTileset
+      parameters:
+        - $ref: '#/components/parameters/tilesetId'
+      responses:
+        '204':
+          description: |-
+            tileset deleted
+        '404':
+          description: |-
+            tileset not found
+  /tilesets/{tilesetId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}:
+    get:
+      tags:
+        - Tilesets
       summary: fetch a tile from one or more geospatial data resources
       description: Retrieves a tile in the requested tileMatrixSet, on the requested
         tileMatrix in the TileMatrixSet, with the requested tile indices (tileRow,
         tileCol). The tile has multiple collections (formerly refered as layers) with
         all selected features in the bounding box of the tile.
-      operationId: getTileSQL
+      operationId: getTile
       parameters:
-        - name: geodata
-          in: query
-          description: The collections that should be included in the response. The
-            parameter value is a comma-separated list of collection identifiers. If
-            the parameters is missing, some or all collections will be included.
-          required: false
-          style: form
-          explode: false
-          schema:
-            type: array
-            items:
-              type: string
-            example: [streets,rivers]
-        - name: sql
-          in: query
-          description: Arbitrary SQL query executed against the available geospatial data resources.
-            In combination with collections only a/the where part is considered.
-          required: false
-          schema:
-            type: string
-            example: select * from boundaries where level = 1
+        - $ref: '#/components/parameters/tilesetId'
         - name: tileMatrixSetId
           in: path
           description: Identifier of a specific tiling scheme. It can be one of those
@@ -464,7 +537,7 @@ paths:
             representing the scaleDenominator the tile.
           required: true
           schema:
-            type: string
+            type: integer
           example: "11"
         - name: tileRow
           in: path
@@ -491,6 +564,7 @@ paths:
             application/vnd.mapbox-vector-tile:
               schema:
                 type: string
+                format: byte
         "404":
           description: The requested URI was not found
         "500":
@@ -508,6 +582,7 @@ components:
       required: true
       schema:
         type: string
+        format: uuid
     styleId:
       name: styleId
       in: path
@@ -518,6 +593,18 @@ components:
       required: true
       schema:
         type: string
+        format: uuid
+    tilesetId:
+      name: tilesetId
+      in: path
+      description: |-
+        Local identifier of a tileset. \
+        A list of all available tilesets can be found
+        under the /styles path.
+      required: true
+      schema:
+        type: string
+        format: uuid
   schemas:
     collection:
       type: object
@@ -528,6 +615,7 @@ components:
         id:
           description: identifier of the collection used, for example, in URIs
           type: string
+          format: uuid
           example: address
         title:
           description: human readable title of the collection
@@ -759,8 +847,7 @@ components:
           example: night
         sources:
           type: object
-          properties:
-            daraa:
+          additionalProperties:
               type: object
               properties:
                 type:
@@ -779,6 +866,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/layers-array'
+        center:
+          type: array
+          items:
+            type: number
+        metadata:
+          type: object
+        zoom:
+          type: number
     layers-array:
       required:
         - id
@@ -801,6 +896,9 @@ components:
             - raster
             - hillshade
             - background
+        filter:
+          type: array
+          items: {}
         source:
           type: string
           example: daraa
@@ -809,12 +907,12 @@ components:
           example: vegetationsrf
         layout:
           type: object
+        minzoom:
+          type: number
+        maxzoom:
+          type: number
         paint:
           type: object
-          properties:
-            fill-color:
-              type: string
-              example: '#11083b'
     mb-sprite-index:
       type: object
       additionalProperties:
@@ -887,6 +985,7 @@ components:
       properties:
         id:
           type: string
+          format: uuid
           nullable: true
         title:
           type: string
@@ -921,12 +1020,81 @@ components:
           nullable: true
         link:
           $ref: '#/components/schemas/link'
-    tileSetsDescription:
+    tileSet:
       type: object
       required:
-        - links
+        - tilejson
+        - tiles
       properties:
-        links:
+        tilejson:
+          type: string
+          pattern: "\\d+\\.\\d+\\.\\d+\\w?[\\w\\d]*"
+        name:
+          type: string
+        description:
+          type: string
+        version:
+          type: string
+          pattern: "\\d+\\.\\d+\\.\\d+\\w?[\\w\\d]*"
+        attribution:
+          type: string
+        template:
+          type: string
+        legend:
+          type: string
+        scheme:
+          type: string
+        tiles:
           type: array
           items:
-            $ref: "#/components/schemas/link"
+            type: string
+        grids:
+          type: array
+          items:
+            type: string
+        data:
+          type: array
+          items:
+            type: string
+        minzoom:
+          minimum: 0
+          maximum: 30
+          type: integer
+        maxzoom:
+          minimum: 0
+          maximum: 30
+          type: integer
+        bounds:
+          type: array
+          items:
+            type: number
+        center:
+          type: array
+          items:
+            type: number
+        vector_layers:
+          type: array
+          items:
+            $ref: '#/components/schemas/layer'
+    layer:
+      type: object
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        queries:
+          type: array
+          items:
+            $ref: '#/components/schemas/query'
+    query:
+      type: object
+      properties:
+        minzoom:
+          type: integer
+        maxzoom:
+          type: integer
+        sql:
+          type: string
+
+

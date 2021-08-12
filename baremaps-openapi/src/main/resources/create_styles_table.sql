@@ -1,0 +1,1 @@
+create table if not exists styles (id uuid primary key, style jsonb);
