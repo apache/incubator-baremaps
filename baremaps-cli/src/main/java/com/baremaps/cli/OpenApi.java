@@ -1,7 +1,6 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.openapi.BaremapsServer;
 import com.baremaps.openapi.services.*;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.CorsFilter;
