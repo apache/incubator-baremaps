@@ -6,6 +6,7 @@ import com.baremaps.openapi.TilesetQueryParser;
 import com.baremaps.tile.Tile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
@@ -37,54 +39,69 @@ public class TilesetsService implements TilesetsApi {
   }
 
   @Override
-  public void addTileset(TileSet tileSet) {
+  public Response addTileset(TileSet tileSet) {
     UUID tilesetId = UUID.randomUUID(); // TODO: Read from body
     jdbi.useHandle(
         handle -> handle.createUpdate("insert into tilesets (id, tileset) values (:id, CAST(:json AS JSONB))")
             .bindByType("json", tileSet, TILESET)
             .bind("id", tilesetId)
             .execute());
+
+    return Response.created(URI.create("tilesets/" + tilesetId)).build();
   }
 
   @Override
-  public void deleteTileset(UUID tilesetId) {
+  public Response deleteTileset(UUID tilesetId) {
     tilesets.remove(tilesetId);
     jdbi.useHandle(handle -> handle.execute("delete from tilesets where id = (?)", tilesetId));
+
+    return Response.noContent().build();
   }
 
   @Override
-  public TileSet getTileset(UUID tilesetId) {
-    return jdbi.withHandle(handle ->
+  public Response getTileset(UUID tilesetId) {
+    TileSet tileset = jdbi.withHandle(handle ->
         handle.createQuery("select tileset from tilesets where id = :id")
             .bind("id", tilesetId)
             .mapTo(TILESET)
             .one());
+
+    return Response.ok(tileset).build();
   }
 
   @Override
-  public List<UUID> getTilesets() {
-    return jdbi.withHandle(handle ->
+  public Response getTilesets() {
+    List<UUID> ids = jdbi.withHandle(handle ->
         handle.createQuery("select id from tilesets")
             .mapTo(UUID.class)
             .list());
+
+    return Response.ok(ids).build();
   }
 
   @Override
-  public void updateTileset(UUID tilesetId, TileSet tileSet) {
+  public Response updateTileset(UUID tilesetId, TileSet tileSet) {
     tilesets.remove(tilesetId);
     jdbi.useHandle(handle -> handle.createUpdate("update tilesets set tileset = cast(:json as jsonb) where id = :id")
         .bindByType("json", tileSet, TILESET)
         .bind("id", tilesetId)
         .execute());
+
+    return Response.noContent().build();
   }
 
   @Override
-  public byte[] getTile(UUID tilesetId, String tileMatrixSetId, Integer tileMatrix, Integer tileRow, Integer tileCol) {
+  public Response getTile(UUID tilesetId, String tileMatrixSetId, Integer tileMatrix, Integer tileRow,
+      Integer tileCol) {
     TileSet tileset;
     if (tilesets.containsKey(tilesetId)) {
       tileset = tilesets.get(tilesetId);
     } else {
-      tileset = getTileset(tilesetId);
+      tileset = jdbi.withHandle(handle ->
+          handle.createQuery("select tileset from tilesets where id = :id")
+              .bind("id", tilesetId)
+              .mapTo(TILESET)
+              .one());
       tilesets.put(tilesetId, tileset);
     }
 
@@ -109,7 +126,7 @@ public class TilesetsService implements TilesetsApi {
       handle.close();
 
       if (length > 0) {
-        return data.toByteArray();
+        return Response.ok(data.toByteArray()).build();
       }
     } catch (IOException | SQLException e) {
       e.printStackTrace();

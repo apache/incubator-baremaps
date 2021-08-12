@@ -3,11 +3,12 @@ package com.baremaps.openapi.services;
 import com.baremaps.api.DefaultApi;
 import com.baremaps.model.LandingPage;
 import com.baremaps.model.Link;
+import javax.ws.rs.core.Response;
 
 public class RootService implements DefaultApi {
 
   @Override
-  public LandingPage getLandingPage() {
+  public Response getLandingPage() {
 
     LandingPage landingPage = new LandingPage();
 
@@ -28,7 +29,6 @@ public class RootService implements DefaultApi {
     linkConformance.setRel("application/json");
     landingPage.getLinks().add(linkConformance);
 
-    return landingPage;
-
+    return Response.ok().entity(landingPage).build();
   }
 }
