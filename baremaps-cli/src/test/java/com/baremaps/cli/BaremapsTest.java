@@ -25,7 +25,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -103,6 +107,30 @@ class BaremapsTest {
       connection.connect();
       return connection.getResponseCode() == 200;
     });
-  }
 
+    //test CORS preflight request
+    await().timeout(60, TimeUnit.SECONDS).pollDelay(5, TimeUnit.SECONDS).until(() -> {
+        HttpRequest request = HttpRequest.newBuilder()
+        .method("OPTIONS", HttpRequest.BodyPublishers.noBody())
+                .header("Origin", "ThisIsATest")
+        .uri(URI.create("http://127.0.0.1:9000/tiles/14/8626/5750.mvt"))
+        .build();
+
+      HttpResponse<String> response = HttpClient.newBuilder().build().send(request, HttpResponse.BodyHandlers.ofString());
+      assertEquals(response.headers().firstValue("Access-Control-Allow-Origin").orElse("Nope"), "ThisIsATest");
+      return response.statusCode() == 204;
+    });
+    //test cors
+    await().timeout(60, TimeUnit.SECONDS).pollDelay(5, TimeUnit.SECONDS).until(() -> {
+      HttpRequest request = HttpRequest.newBuilder()
+              .GET()
+              .header("Origin", "ThisIsATest")
+              .uri(URI.create("http://127.0.0.1:9000/tiles/14/8626/5750.mvt"))
+              .build();
+
+      HttpResponse<String> response = HttpClient.newBuilder().build().send(request, HttpResponse.BodyHandlers.ofString());
+      assertEquals(response.headers().firstValue("Access-Control-Allow-Origin").orElse("Nope"), "ThisIsATest");
+      return response.statusCode() == 200;
+    });
+  }
 }
