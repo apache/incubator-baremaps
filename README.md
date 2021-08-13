@@ -20,3 +20,15 @@ Baremaps is inspired by [Osmosis](https://github.com/openstreetmap/osmosis), but
 -   Create and serve customized [Mapbox Vector Tiles](https://docs.mapbox.com/vector-tiles/specification/)
 
 On the longer run, the aim of the project is to work with a variety of data sources in order to create highly specialized and customized maps.
+
+
+## Start Hacking
+
+* To contribute to this repo see [CONTRIBUTING](CONTRIBUTING.md) and [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md).
+* To build baremaps. You'll need `maven` and `Java 11`. 
+* `cd baremaps-cli && mvn package -P maputnik -B`. This creates a `.zip` in the `target` folder.
+* alternatively you can build a docker image with `mvn jib:dockerBuild -DskipTests`.
+
+To help you starts without worring to much a "starter" [openstreetmap](https://github.com/baremaps/openstreetmap-vecto) project is avaiblable
+
+
