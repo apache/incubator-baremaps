@@ -129,7 +129,8 @@ public class TilesetsService implements TilesetsApi {
         return Response.ok(data.toByteArray()).build();
       }
     } catch (IOException | SQLException e) {
-      e.printStackTrace();
+//      TODO: proper error handling
+      return Response.serverError().build();
     }
 
     return null;
