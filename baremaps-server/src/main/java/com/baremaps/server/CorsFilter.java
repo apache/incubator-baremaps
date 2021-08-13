@@ -16,13 +16,13 @@ import javax.ws.rs.ext.Provider;
 
 @Provider
 public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilter {
-  
-    private final String ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
-    private final String ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
-    private final String ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
-    private final String ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
-    private final String ORIGIN = "Origin";
-    private final String VARY = "Vary";
+
+  private final String ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
+  private final String ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
+  private final String ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
+  private final String ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
+  private final String ORIGIN = "Origin";
+  private final String VARY = "Vary";
 
   @Override
   public void filter(ContainerRequestContext requestContext) {
@@ -38,7 +38,8 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
   @Override
   public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
     String origin = requestContext.getHeaderString(ORIGIN);
-    if (origin == null || requestContext.getMethod().equalsIgnoreCase("OPTIONS") || requestContext.getProperty("cors.failure") != null) {
+    if (origin == null || requestContext.getMethod().equalsIgnoreCase("OPTIONS")
+        || requestContext.getProperty("cors.failure") != null) {
       return;
     }
     responseContext.getHeaders().putSingle(ACCESS_CONTROL_ALLOW_ORIGIN, origin);
