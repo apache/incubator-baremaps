@@ -10,6 +10,7 @@ import com.baremaps.server.BlobResources;
 import com.baremaps.server.ViewerResources;
 import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
+import com.baremaps.tile.postgres.PostgresQuery;
 import com.baremaps.tile.postgres.PostgresTileStore;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
@@ -17,7 +18,9 @@ import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
 import java.net.URI;
+import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -87,7 +90,13 @@ public class Serve implements Callable<Integer> {
     Style styleObject = new BlobMapper(blobStore).read(this.style, Style.class);
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
     DataSource datasource = PostgresUtils.datasource(database);
-    TileStore tileStore = new PostgresTileStore(datasource, tilesetObject);
+
+    List<PostgresQuery> queries = tilesetObject.getLayers().stream()
+        .flatMap(layer -> layer.getQueries().stream()
+            .map(query -> new PostgresQuery(layer.getId(), query.getMinZoom(), query.getMaxZoom(), query.getSql())))
+        .collect(Collectors.toList());
+
+    TileStore tileStore = new PostgresTileStore(datasource, queries);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
     ResourceConfig config = new ResourceConfig()

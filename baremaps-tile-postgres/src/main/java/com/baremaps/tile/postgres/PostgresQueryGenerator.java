@@ -1,10 +1,5 @@
 package com.baremaps.tile.postgres;
 
-import com.baremaps.config.tileset.Layer;
-import com.baremaps.config.tileset.Query;
-import com.baremaps.config.tileset.Tileset;
-import com.baremaps.postgres.jdbc.PostgresUtils;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -17,39 +12,32 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.result.ResultBearing;
 import org.jdbi.v3.jpa.JpaPlugin;
 
-public class PostgresTilesetFactory {
+public class PostgresQueryGenerator {
 
   private static final String CATALOG = null;
-  private static final String SCHEMA_PATTERN = "public";
-  private static final String TABLE_NAME_PATTERN = "osm_%";
+  private static final String SCHEMA_PATTERN = null;
+  private static final String TABLE_NAME_PATTERN = null;
   private static final String COLUMN_NAME_PATTERN = null;
   private static final String[] TYPES = {"TABLE"};
 
   private final Jdbi jdbi;
 
-  public PostgresTilesetFactory(DataSource dataSource) {
+  public PostgresQueryGenerator(DataSource dataSource) {
     this.jdbi = Jdbi.create(dataSource).installPlugin(new JpaPlugin());
   }
 
-  public static void main(String[] args) throws SQLException {
-    String url = "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps";
-    DataSource dataSource = PostgresUtils.datasource(url);
-    PostgresTilesetFactory postgresTilesetFactory = new PostgresTilesetFactory(dataSource);
-    Tileset tileset = postgresTilesetFactory.getTileset();
-    System.out.println(tileset);
-  }
-
-  public Tileset getTileset() {
-    return new Tileset("postgres", listTables().stream()
+  public List<PostgresQuery> generate() {
+    return listTables().stream()
         .filter(table -> table.getPrimaryKeyColumns().size() == 1)
         .filter(table -> table.getGeometryColumns().size() == 1)
         .map(this::getLayer)
-        .collect(Collectors.toList())
-        .toArray(new Layer[0]));
+        .collect(Collectors.toList());
   }
 
-  private Layer getLayer(Table table) {
+  private PostgresQuery getLayer(Table table) {
+    String tableSchema = table.getDescription().getTableSchem();
     String tableName = table.getDescription().getTableName();
+    String layer = String.format("%s.%s", tableSchema, tableName);
     String idColumn = table.getPrimaryKeyColumns().get(0).getColumnName();
     String geometryColumn = table.getGeometryColumns().get(0).getColumnName();
     String tagsColumns = table.getColumns().stream()
@@ -58,7 +46,7 @@ public class PostgresTilesetFactory {
         .map(column -> String.format("'%1$s', %1$s::text", column.getColumnName()))
         .collect(Collectors.joining(", ", "hstore(array[", "])"));
     String sql = String.format("SELECT %s, %s, %s FROM %s", idColumn, tagsColumns, geometryColumn, tableName);
-    return new Layer(tableName, new Query(0, 20, sql));
+    return new PostgresQuery(layer, 0, 20, sql);
   }
 
   private List<Table> listTables() {
@@ -229,7 +217,6 @@ class TableDescription {
         .add("REF_GENERATION='" + refGeneration + "'")
         .toString();
   }
-
 }
 
 @Entity
@@ -322,7 +309,7 @@ class TablePrimaryKeyColumn {
   private String columnName;
 
   @Column(name = "key_seq")
-  private short key_seq;
+  private short keySeq;
 
   @Column(name = "pk_name")
   private String pkName;
@@ -343,8 +330,8 @@ class TablePrimaryKeyColumn {
     return columnName;
   }
 
-  public short getKey_seq() {
-    return key_seq;
+  public short getKeySeq() {
+    return keySeq;
   }
 
   public String getPkName() {
@@ -358,7 +345,7 @@ class TablePrimaryKeyColumn {
         .add("tableSchem='" + tableSchem + "'")
         .add("tableName='" + tableName + "'")
         .add("columnName='" + columnName + "'")
-        .add("key_seq=" + key_seq)
+        .add("key_seq=" + keySeq)
         .add("pkName='" + pkName + "'")
         .toString();
   }

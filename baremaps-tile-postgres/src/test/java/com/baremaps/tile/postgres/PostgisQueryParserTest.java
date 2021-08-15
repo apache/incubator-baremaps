@@ -16,7 +16,7 @@ package com.baremaps.tile.postgres;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.baremaps.config.tileset.Layer;
+import com.baremaps.config.tileset.Query;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
@@ -24,41 +24,41 @@ class PostgisQueryParserTest {
 
   @Test
   void parse1() {
-    parse(new com.baremaps.config.tileset.Query(0, 1, "SELECT id, tags, geom FROM table"),
+    parse(new Query(0, 1, "SELECT id, tags, geom FROM table"),
         "id", "tags", "geom", "table", Optional.empty());
   }
 
   @Test
   void parse2() {
-    parse(new com.baremaps.config.tileset.Query(0, 1, "select id, tags, geom from table"),
+    parse(new Query(0, 1, "select id, tags, geom from table"),
         "id", "tags", "geom", "table",
         Optional.empty());
   }
 
   @Test
   void parse3() {
-    parse(new com.baremaps.config.tileset.Query(0, 1, "SELECT id AS a, tags AS b, geom AS c FROM table"),
+    parse(new Query(0, 1, "SELECT id AS a, tags AS b, geom AS c FROM table"),
         "id", "tags", "geom", "table",
         Optional.empty());
   }
 
   @Test
   void parse4() {
-    parse(new com.baremaps.config.tileset.Query(0, 1, "select id as a, tags as b, geom as c from table"),
+    parse(new Query(0, 1, "select id as a, tags as b, geom as c from table"),
         "id", "tags", "geom", "table",
         Optional.empty());
   }
 
   @Test
   void parse5() {
-    parse(new com.baremaps.config.tileset.Query(0, 1, "SELECT id, tags, geom FROM table WHERE condition"),
+    parse(new Query(0, 1, "SELECT id, tags, geom FROM table WHERE condition"),
         "id", "tags", "geom", "table",
         Optional.of("condition"));
   }
 
   @Test
   void parse6() {
-    parse(new com.baremaps.config.tileset.Query(0, 1,
+    parse(new Query(0, 1,
             "SELECT id, tags, geom FROM table WHERE tags ? 'building' AND st_geometrytype(geom) LIKE 'ST_Polygon'"),
         "id", "tags", "geom", "table",
         Optional.of("tags ? 'building' AND st_geometrytype(geom) LIKE 'ST_Polygon'"));
@@ -66,14 +66,14 @@ class PostgisQueryParserTest {
 
   @Test
   void parse7() {
-    parse(new com.baremaps.config.tileset.Query(0, 1, "select id, tags, geom from table where condition"),
+    parse(new Query(0, 1, "select id, tags, geom from table where condition"),
         "id", "tags", "geom", "table",
         Optional.of("condition"));
   }
 
   @Test
   void parse8() {
-    parse(new com.baremaps.config.tileset.Query(0, 1,
+    parse(new Query(0, 1,
             "SELECT id, hstore(ARRAY['tag1', 'tag2'], ARRAY[tag1, tag2]), geom FROM table"),
         "id", "hstore(ARRAY['tag1', 'tag2'], ARRAY[tag1, tag2])", "geom", "table",
         Optional.empty());
@@ -81,39 +81,39 @@ class PostgisQueryParserTest {
 
   @Test
   void parse9() {
-    parse(new com.baremaps.config.tileset.Query(0, 1, "SELECT id, hstore('tag', tag), geom FROM table"),
+    parse(new Query(0, 1, "SELECT id, hstore('tag', tag), geom FROM table"),
         "id", "hstore('tag', tag)", "geom", "table",
         Optional.empty());
   }
 
   @Test
   void parse10() {
-    parse(new com.baremaps.config.tileset.Query(0, 1, "SELECT id, hstore('tag', tag) as tags, geom FROM table"),
+    parse(new Query(0, 1, "SELECT id, hstore('tag', tag) as tags, geom FROM table"),
         "id", "hstore('tag', tag)", "geom", "table",
         Optional.empty());
   }
 
   @Test
   void parse11() {
-    parse(new com.baremaps.config.tileset.Query(0, 1, "SELECT id, tags, st_transform(geom, '1234') as geom FROM table"),
+    parse(new Query(0, 1, "SELECT id, tags, st_transform(geom, '1234') as geom FROM table"),
         "id", "tags", "st_transform(geom, '1234')", "table",
         Optional.empty());
   }
 
   @Test
   void parse12() {
-    parse(new com.baremaps.config.tileset.Query(0, 1, "SELECT id, a(b(c), d(e)), geom FROM table"),
+    parse(new Query(0, 1, "SELECT id, a(b(c), d(e)), geom FROM table"),
         "id", "a(b(c), d(e))", "geom", "table",
         Optional.empty());
   }
 
-  void parse(com.baremaps.config.tileset.Query query, String id, String tags, String geom, String from, Optional<String> where) {
-    ParsedQuery q1 = QueryParser.parseQuery(new Layer(), query);
-    assertEquals(id, String.valueOf(q1.getValue().getSelectItems().get(0)));
-    assertEquals(tags, String.valueOf(q1.getValue().getSelectItems().get(1)));
-    assertEquals(geom, String.valueOf(q1.getValue().getSelectItems().get(2)));
-    assertEquals(from, String.valueOf(q1.getValue().getFromItem()));
-    assertEquals(where, Optional.ofNullable(q1.getValue().getWhere()).map(String::valueOf));
+  void parse(Query query, String id, String tags, String geom, String from, Optional<String> where) {
+    PostgresQuery q1 = new PostgresQuery("layer", query.getMinZoom(), query.getMaxZoom(), query.getSql());
+    assertEquals(id, String.valueOf(q1.getAst().getSelectItems().get(0)));
+    assertEquals(tags, String.valueOf(q1.getAst().getSelectItems().get(1)));
+    assertEquals(geom, String.valueOf(q1.getAst().getSelectItems().get(2)));
+    assertEquals(from, String.valueOf(q1.getAst().getFromItem()));
+    assertEquals(where, Optional.ofNullable(q1.getAst().getWhere()).map(String::valueOf));
   }
 
 }

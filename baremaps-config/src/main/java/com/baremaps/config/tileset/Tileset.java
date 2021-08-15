@@ -46,6 +46,9 @@ public class Tileset {
 
   private List<String> tiles = new ArrayList<>();
 
+  @JsonProperty("vector_layers")
+  private List<Layer> layers = new ArrayList<>();
+
   public Tileset() {
 
   }
@@ -58,9 +61,6 @@ public class Tileset {
     this.name = name;
     this.layers = Arrays.asList(layers);
   }
-
-  @JsonProperty("vector_layers")
-  private List<Layer> layers = new ArrayList<>();
 
   public String getName() {
     return name;

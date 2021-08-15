@@ -15,11 +15,7 @@
 package com.baremaps.tile.postgres;
 
 import static com.baremaps.config.VariableUtils.interpolate;
-import static com.baremaps.tile.postgres.QueryParser.parseQuery;
 
-import com.baremaps.config.tileset.Layer;
-import com.baremaps.config.tileset.Query;
-import com.baremaps.config.tileset.Tileset;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
@@ -85,13 +81,11 @@ public class PostgresTileStore implements TileStore {
 
   private final DataSource datasource;
 
-  private final List<ParsedQuery> queries;
+  private final List<PostgresQuery> queries;
 
-  public PostgresTileStore(DataSource datasource, Tileset tileset) {
+  public PostgresTileStore(DataSource datasource, List<PostgresQuery> queries) {
     this.datasource = datasource;
-    this.queries = tileset.getLayers().stream()
-        .flatMap(layer -> layer.getQueries().stream().map(query -> parseQuery(layer, query)))
-        .collect(Collectors.toList());
+    this.queries = queries;
   }
 
   public byte[] read(Tile tile) throws TileStoreException {
@@ -132,9 +126,9 @@ public class PostgresTileStore implements TileStore {
     return interpolate(variables, withQuery);
   }
 
-  protected String sourceQueries(List<ParsedQuery> queries, Tile tile) {
+  protected String sourceQueries(List<PostgresQuery> queries, Tile tile) {
     return queries.stream()
-        .filter(query -> zoomFilter(tile, query.getQuery()))
+        .filter(query -> zoomFilter(tile, query))
         .collect(Collectors.groupingBy(this::commonTableExpression, LinkedHashMap::new, Collectors.toList()))
         .entrySet().stream()
         .map(entry -> sourceQuery(entry.getKey(), entry.getValue()))
@@ -142,7 +136,7 @@ public class PostgresTileStore implements TileStore {
         .collect(Collectors.joining(COMMA));
   }
 
-  protected String sourceQuery(CommonTableExpression queryKey, List<ParsedQuery> queryValues) {
+  protected String sourceQuery(PostgresCTE queryKey, List<PostgresQuery> queryValues) {
     String alias = queryKey.getAlias();
     String id = queryKey.getSelectItems().get(0).toString();
     String tags = queryKey.getSelectItems().get(1).toString();
@@ -153,7 +147,7 @@ public class PostgresTileStore implements TileStore {
         .map(Join::toString)
         .collect(Collectors.joining(SPACE));
     String where = queryValues.stream()
-        .map(query -> query.getValue().getWhere())
+        .map(query -> query.getAst().getWhere())
         .map(Optional::ofNullable)
         .flatMap(Optional::stream)
         .map(Parenthesis::new)
@@ -164,38 +158,38 @@ public class PostgresTileStore implements TileStore {
     return String.format(SOURCE_QUERY, alias, id, tags, geom, from, joins, where);
   }
 
-  protected String targetQueries(List<ParsedQuery> queries, Tile tile) {
+  protected String targetQueries(List<PostgresQuery> queries, Tile tile) {
     return queries.stream()
-        .filter(query -> zoomFilter(tile, query.getQuery()))
-        .collect(Collectors.groupingBy(ParsedQuery::getLayer, LinkedHashMap::new, Collectors.toList()))
+        .filter(query -> zoomFilter(tile, query))
+        .collect(Collectors.groupingBy(PostgresQuery::getLayer, LinkedHashMap::new, Collectors.toList()))
         .entrySet().stream()
         .map(entry -> targetQuery(entry.getKey(), entry.getValue()))
         .collect(Collectors.joining(UNION));
   }
 
-  protected String targetQuery(Layer layer, List<ParsedQuery> queryValues) {
-    return String.format(TARGET_QUERY, layer.getId(), queryValues.stream()
+  protected String targetQuery(String layer, List<PostgresQuery> queryValues) {
+    return String.format(TARGET_QUERY, layer, queryValues.stream()
         .map(queryValue -> targetLayerQuery(queryValue))
         .collect(Collectors.joining(UNION)));
   }
 
-  protected String targetLayerQuery(ParsedQuery queryValue) {
+  protected String targetLayerQuery(PostgresQuery queryValue) {
     String alias = commonTableExpression(queryValue).getAlias();
-    String where = Optional.ofNullable(queryValue.getValue().getWhere())
+    String where = Optional.ofNullable(queryValue.getAst().getWhere())
         .map(expression -> String.format(TARGET_WHERE, expression))
         .orElse(EMPTY);
     return String.format(TARGET_LAYER_QUERY, alias, where);
   }
 
-  protected boolean zoomFilter(Tile tile, Query query) {
-    return query.getMinZoom() <= tile.z() && tile.z() < query.getMaxZoom();
+  protected boolean zoomFilter(Tile tile, PostgresQuery query) {
+    return query.getMinzoom() <= tile.z() && tile.z() < query.getMaxzoom();
   }
 
-  public CommonTableExpression commonTableExpression(ParsedQuery query) {
-    return new CommonTableExpression(
-        query.getValue().getSelectItems(),
-        query.getValue().getFromItem(),
-        query.getValue().getJoins());
+  public PostgresCTE commonTableExpression(PostgresQuery query) {
+    return new PostgresCTE(
+        query.getAst().getSelectItems(),
+        query.getAst().getFromItem(),
+        query.getAst().getJoins());
   }
 
   protected String tileEnvelope(Tile tile) {

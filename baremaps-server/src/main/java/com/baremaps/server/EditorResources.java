@@ -11,6 +11,7 @@ import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
+import com.baremaps.tile.postgres.PostgresQuery;
 import com.baremaps.tile.postgres.PostgresTileStore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -22,6 +23,8 @@ import java.nio.file.Paths;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
@@ -57,7 +60,8 @@ public class EditorResources {
   private Thread fileWatcher;
 
   @Inject
-  public EditorResources(@Named("style") URI style, @Named("tileset") URI tileset, BlobStore blobStore, DataSource dataSource) {
+  public EditorResources(@Named("style") URI style, @Named("tileset") URI tileset, BlobStore blobStore,
+      DataSource dataSource) {
     this.tileset = tileset;
     this.style = style;
     this.blobStore = blobStore;
@@ -137,7 +141,11 @@ public class EditorResources {
   @javax.ws.rs.Path("/tiles/{z}/{x}/{y}.mvt")
   public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
     try {
-      TileStore tileStore = new PostgresTileStore(dataSource, getTileset());
+      List<PostgresQuery> queries = getTileset().getLayers().stream()
+          .flatMap(layer -> layer.getQueries().stream()
+              .map(query -> new PostgresQuery(layer.getId(), query.getMinZoom(), query.getMaxZoom(), query.getSql())))
+          .collect(Collectors.toList());
+      TileStore tileStore = new PostgresTileStore(dataSource, queries);
       Tile tile = new Tile(x, y, z);
       byte[] bytes = tileStore.read(tile);
       if (bytes != null) {
