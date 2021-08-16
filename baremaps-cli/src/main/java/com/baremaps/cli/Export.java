@@ -22,6 +22,7 @@ import com.baremaps.config.tileset.Query;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.postgres.jdbc.PostgresUtils;
+import com.baremaps.server.Mappers;
 import com.baremaps.stream.StreamUtils;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileBatcher;
@@ -151,10 +152,7 @@ public class Export implements Callable<Integer> {
   }
 
   private TileStore sourceTileStore(Tileset tileset, DataSource datasource) {
-    List<PostgresQuery> queries = tileset.getLayers().stream()
-        .flatMap(layer -> layer.getQueries().stream()
-            .map(query -> new PostgresQuery(layer.getId(), query.getMinZoom(), query.getMaxZoom(), query.getSql())))
-        .collect(Collectors.toList());
+    List<PostgresQuery> queries = Mappers.map(tileset);
     return new PostgresTileStore(datasource, queries);
   }
 

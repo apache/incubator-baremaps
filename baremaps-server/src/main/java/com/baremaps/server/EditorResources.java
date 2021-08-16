@@ -24,7 +24,6 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
@@ -141,10 +140,7 @@ public class EditorResources {
   @javax.ws.rs.Path("/tiles/{z}/{x}/{y}.mvt")
   public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
     try {
-      List<PostgresQuery> queries = getTileset().getLayers().stream()
-          .flatMap(layer -> layer.getQueries().stream()
-              .map(query -> new PostgresQuery(layer.getId(), query.getMinZoom(), query.getMaxZoom(), query.getSql())))
-          .collect(Collectors.toList());
+      List<PostgresQuery> queries = Mappers.map(getTileset());
       TileStore tileStore = new PostgresTileStore(dataSource, queries);
       Tile tile = new Tile(x, y, z);
       byte[] bytes = tileStore.read(tile);

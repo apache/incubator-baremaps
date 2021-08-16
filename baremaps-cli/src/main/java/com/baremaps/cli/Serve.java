@@ -7,6 +7,7 @@ import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.BlobResources;
+import com.baremaps.server.Mappers;
 import com.baremaps.server.ViewerResources;
 import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
@@ -20,7 +21,6 @@ import io.servicetalk.transport.api.ServerContext;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -91,11 +91,7 @@ public class Serve implements Callable<Integer> {
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
     DataSource datasource = PostgresUtils.datasource(database);
 
-    List<PostgresQuery> queries = tilesetObject.getLayers().stream()
-        .flatMap(layer -> layer.getQueries().stream()
-            .map(query -> new PostgresQuery(layer.getId(), query.getMinZoom(), query.getMaxZoom(), query.getSql())))
-        .collect(Collectors.toList());
-
+    List<PostgresQuery> queries = Mappers.map(tilesetObject);
     TileStore tileStore = new PostgresTileStore(datasource, queries);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 

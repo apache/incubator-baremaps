@@ -14,16 +14,31 @@ import org.jdbi.v3.jpa.JpaPlugin;
 
 public class PostgresQueryGenerator {
 
-  private static final String CATALOG = null;
-  private static final String SCHEMA_PATTERN = null;
-  private static final String TABLE_NAME_PATTERN = null;
-  private static final String COLUMN_NAME_PATTERN = null;
-  private static final String[] TYPES = {"TABLE"};
+  private final String catalog;
+  private final String schemaPattern;
+  private final String typeNamePattern;
+  private final String columnNamePattern;
+  private final String[] types;
 
   private final Jdbi jdbi;
 
   public PostgresQueryGenerator(DataSource dataSource) {
+    this(dataSource, null, null, null, null, null);
+  }
+
+  public PostgresQueryGenerator(
+      DataSource dataSource,
+      String catalog,
+      String schemaPattern,
+      String typeNamePattern,
+      String columnNamePattern,
+      String... types) {
     this.jdbi = Jdbi.create(dataSource).installPlugin(new JpaPlugin());
+    this.catalog = catalog;
+    this.schemaPattern = schemaPattern;
+    this.typeNamePattern = typeNamePattern;
+    this.columnNamePattern = columnNamePattern;
+    this.types = types;
   }
 
   public List<PostgresQuery> generate() {
@@ -57,14 +72,16 @@ public class PostgresQueryGenerator {
     Map<String, List<TablePrimaryKeyColumn>> primaryKeys = listTablePrimaryKeyColumns().stream()
         .collect(Collectors.groupingBy(TablePrimaryKeyColumn::getTableName));
     return descriptions.entrySet().stream()
-        .map(entry -> new Table(entry.getValue(), primaryKeys.get(entry.getKey()), columns.get(entry.getKey())))
+        .map(entry -> new Table(entry.getValue(),
+            primaryKeys.getOrDefault(entry.getKey(), List.of()),
+            columns.getOrDefault(entry.getKey(), List.of())))
         .collect(Collectors.toList());
   }
 
   private List<TableDescription> listTableDescriptions() {
     return jdbi.withHandle(handle -> {
       ResultBearing resultBearing = handle
-          .queryMetadata(f -> f.getTables(CATALOG, SCHEMA_PATTERN, TABLE_NAME_PATTERN, TYPES));
+          .queryMetadata(f -> f.getTables(catalog, schemaPattern, typeNamePattern, types));
       return resultBearing.mapTo(TableDescription.class).list();
     });
   }
@@ -72,7 +89,7 @@ public class PostgresQueryGenerator {
   private List<TableColumn> listTableColumns() {
     return jdbi.withHandle(handle -> {
       ResultBearing resultBearing = handle
-          .queryMetadata(f -> f.getColumns(CATALOG, SCHEMA_PATTERN, TABLE_NAME_PATTERN, COLUMN_NAME_PATTERN));
+          .queryMetadata(f -> f.getColumns(catalog, schemaPattern, typeNamePattern, columnNamePattern));
       return resultBearing.mapTo(TableColumn.class).list();
     });
   }
@@ -80,7 +97,7 @@ public class PostgresQueryGenerator {
   private List<TablePrimaryKeyColumn> listTablePrimaryKeyColumns() {
     return jdbi.withHandle(handle -> {
       ResultBearing resultBearing = handle
-          .queryMetadata(f -> f.getPrimaryKeys(CATALOG, SCHEMA_PATTERN, null));
+          .queryMetadata(f -> f.getPrimaryKeys(catalog, schemaPattern, null));
       return resultBearing.mapTo(TablePrimaryKeyColumn.class).list();
     });
   }
