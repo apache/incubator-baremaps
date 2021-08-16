@@ -59,6 +59,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-tile</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.servicetalk</groupId>
       <artifactId>servicetalk-data-jackson</artifactId>
     </dependency>
