@@ -22,6 +22,7 @@ import com.baremaps.config.tileset.Query;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.postgres.jdbc.PostgresUtils;
+import com.baremaps.server.Mappers;
 import com.baremaps.stream.StreamUtils;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileBatcher;
@@ -30,6 +31,7 @@ import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
 import com.baremaps.tile.Tiler;
 import com.baremaps.tile.mbtiles.MBTiles;
+import com.baremaps.tile.postgres.PostgresQuery;
 import com.baremaps.tile.postgres.PostgresTileStore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -119,11 +121,11 @@ public class Export implements Callable<Integer> {
           source.getBounds().getMinLon(), source.getBounds().getMaxLon(),
           source.getBounds().getMinLat(), source.getBounds().getMaxLat());
       long count = Tile.count(envelope,
-          (int) source.getMinZoom(),
-          (int) source.getMaxZoom());
+          source.getMinZoom().intValue(),
+          source.getMaxZoom().intValue());
       stream = StreamUtils.stream(Tile.iterator(envelope,
-          (int) source.getMinZoom(),
-          (int) source.getMaxZoom()))
+          source.getMinZoom().intValue(),
+          source.getMaxZoom().intValue()))
           .peek(new StreamProgress<>(count, 5000));
     } else {
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(blobStore.get(tiles).getInputStream()))) {
@@ -134,8 +136,8 @@ public class Export implements Callable<Integer> {
           int z = Integer.parseInt(array[2]);
           Tile tile = new Tile(x, y, z);
           return StreamUtils.stream(Tile.iterator(tile.envelope(),
-              (int) source.getMinZoom(),
-              (int) source.getMaxZoom()));
+              source.getMinZoom().intValue(),
+              source.getMaxZoom().intValue()));
         });
       }
     }
@@ -150,7 +152,8 @@ public class Export implements Callable<Integer> {
   }
 
   private TileStore sourceTileStore(Tileset tileset, DataSource datasource) {
-    return new PostgresTileStore(datasource, tileset);
+    List<PostgresQuery> queries = Mappers.map(tileset);
+    return new PostgresTileStore(datasource, queries);
   }
 
   private TileStore targetTileStore(Tileset source, BlobStore blobStore)

@@ -7,9 +7,11 @@ import com.baremaps.config.style.Style;
 import com.baremaps.config.tileset.Tileset;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.BlobResources;
+import com.baremaps.server.Mappers;
 import com.baremaps.server.ViewerResources;
 import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
+import com.baremaps.tile.postgres.PostgresQuery;
 import com.baremaps.tile.postgres.PostgresTileStore;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
@@ -17,6 +19,7 @@ import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
 import java.net.URI;
+import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -87,7 +90,9 @@ public class Serve implements Callable<Integer> {
     Style styleObject = new BlobMapper(blobStore).read(this.style, Style.class);
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
     DataSource datasource = PostgresUtils.datasource(database);
-    TileStore tileStore = new PostgresTileStore(datasource, tilesetObject);
+
+    List<PostgresQuery> queries = Mappers.map(tilesetObject);
+    TileStore tileStore = new PostgresTileStore(datasource, queries);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
     ResourceConfig config = new ResourceConfig()

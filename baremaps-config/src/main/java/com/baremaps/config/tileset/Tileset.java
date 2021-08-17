@@ -40,11 +40,14 @@ public class Tileset {
 
   private Bounds bounds = new Bounds();
 
-  private double minZoom;
+  private Double minZoom;
 
-  private double maxZoom;
+  private Double maxZoom;
 
   private List<String> tiles = new ArrayList<>();
+
+  @JsonProperty("vector_layers")
+  private List<Layer> layers = new ArrayList<>();
 
   public Tileset() {
 
@@ -58,9 +61,6 @@ public class Tileset {
     this.name = name;
     this.layers = Arrays.asList(layers);
   }
-
-  @JsonProperty("vector_layers")
-  private List<Layer> layers = new ArrayList<>();
 
   public String getName() {
     return name;
@@ -110,19 +110,19 @@ public class Tileset {
     this.bounds = bounds;
   }
 
-  public double getMinZoom() {
+  public Double getMinZoom() {
     return minZoom;
   }
 
-  public void setMinZoom(double minZoom) {
+  public void setMinZoom(Double minZoom) {
     this.minZoom = minZoom;
   }
 
-  public double getMaxZoom() {
+  public Double getMaxZoom() {
     return maxZoom;
   }
 
-  public void setMaxZoom(double maxZoom) {
+  public void setMaxZoom(Double maxZoom) {
     this.maxZoom = maxZoom;
   }
 

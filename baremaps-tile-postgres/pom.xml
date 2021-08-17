@@ -12,11 +12,11 @@
   <dependencies>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-config</artifactId>
+      <artifactId>baremaps-tile</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-tile</artifactId>
+      <artifactId>baremaps-postgres</artifactId>
     </dependency>
     <dependency>
       <groupId>com.github.jsqlparser</groupId>
@@ -24,8 +24,7 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-postgres</artifactId>
-      <scope>test</scope>
+      <artifactId>baremaps-testing</artifactId>
     </dependency>
   </dependencies>
 

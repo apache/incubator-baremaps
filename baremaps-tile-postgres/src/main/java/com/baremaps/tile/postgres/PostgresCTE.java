@@ -8,13 +8,13 @@ import net.sf.jsqlparser.statement.select.FromItem;
 import net.sf.jsqlparser.statement.select.Join;
 import net.sf.jsqlparser.statement.select.SelectItem;
 
-class CommonTableExpression {
+class PostgresCTE {
 
   private final List<SelectItem> selectItems;
   private final FromItem fromItem;
   private final List<Join> joins;
 
-  public CommonTableExpression(
+  public PostgresCTE(
       List<SelectItem> selectItems,
       FromItem fromItem,
       List<Join> joins) {
@@ -44,7 +44,7 @@ class CommonTableExpression {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof CommonTableExpression)) {
+    if (!(o instanceof PostgresCTE)) {
       return false;
     }
     return hashCode() == o.hashCode();

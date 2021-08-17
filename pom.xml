@@ -75,7 +75,7 @@
     <version.lib.testng>7.4.0</version.lib.testng>
     <version.lib.validation>2.0.1.Final</version.lib.validation>
     <version.lib.jackson>2.12.1</version.lib.jackson>
-    <version.lib.jdbi>3.20.1</version.lib.jdbi>
+    <version.lib.jdbi>3.21.0</version.lib.jdbi>
     <version.lib.awaitability>3.0.0</version.lib.awaitability>
     <version.lib.jsqlparser>4.1</version.lib.jsqlparser>
     <version.plugin.compiler>3.8.1</version.plugin.compiler>
