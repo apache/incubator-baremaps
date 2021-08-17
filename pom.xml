@@ -88,6 +88,7 @@
     <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
     <version.lib.testcontainers>1.15.3</version.lib.testcontainers>
     <version.lib.junit-vintage>5.7.2</version.lib.junit-vintage>
+    <version.lib.rocksdb>6.22.1.1</version.lib.rocksdb>
   </properties>
 
   <modules>
@@ -99,6 +100,7 @@
     <module>baremaps-openapi</module>
     <module>baremaps-osm</module>
     <module>baremaps-osm-lmdb</module>
+    <module>baremaps-osm-rocksdb</module>
     <module>baremaps-osm-postgres</module>
     <module>baremaps-stream</module>
     <module>baremaps-server</module>
@@ -444,6 +446,11 @@
         <artifactId>lmdbjava</artifactId>
         <groupId>org.lmdbjava</groupId>
         <version>${version.lib.lmdb}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.rocksdb</groupId>
+        <artifactId>rocksdbjni</artifactId>
+        <version>${version.lib.rocksdb}</version>
       </dependency>
       <dependency>
         <artifactId>protobuf-java</artifactId>
