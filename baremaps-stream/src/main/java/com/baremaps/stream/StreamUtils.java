@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.baremaps.stream;
 
 import com.baremaps.stream.BufferedSpliterator.CompletionStrategy;
@@ -12,9 +25,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-/**
- * Utility methods for creating parallel, buffered and batched streams of unknown size.
- */
+/** Utility methods for creating parallel, buffered and batched streams of unknown size. */
 public class StreamUtils {
 
   /**
@@ -25,7 +36,8 @@ public class StreamUtils {
    * @return a ordered sequential stream.
    */
   public static <T> Stream<T> stream(Iterator<T> iterator) {
-    return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false);
+    return StreamSupport.stream(
+        Spliterators.spliteratorUnknownSize(iterator, Spliterator.ORDERED), false);
   }
 
   /**
@@ -48,13 +60,12 @@ public class StreamUtils {
    * @return a parallel stream
    */
   public static <T> Stream<T> batch(Stream<T> stream, int batchSize) {
-    return StreamSupport.stream(
-        new BatchedSpliterator<T>(stream.spliterator(), batchSize),
-        true);
+    return StreamSupport.stream(new BatchedSpliterator<T>(stream.spliterator(), batchSize), true);
   }
 
   /**
-   * Buffer the completion of the provided asynchronous stream according to a completion strategy and a buffer size.
+   * Buffer the completion of the provided asynchronous stream according to a completion strategy
+   * and a buffer size.
    *
    * @param asyncStream
    * @param completionStrategy
@@ -62,13 +73,13 @@ public class StreamUtils {
    * @return a buffered stream
    */
   private static <T> Stream<CompletableFuture<T>> buffer(
-      Stream<CompletableFuture<T>> asyncStream,
-      CompletionStrategy completionStrategy) {
+      Stream<CompletableFuture<T>> asyncStream, CompletionStrategy completionStrategy) {
     return buffer(asyncStream, completionStrategy, Runtime.getRuntime().availableProcessors());
   }
 
   /**
-   * Buffer the completion of the provided asynchronous stream according to a completion strategy and a buffer size.
+   * Buffer the completion of the provided asynchronous stream according to a completion strategy
+   * and a buffer size.
    *
    * @param asyncStream
    * @param completionStrategy
@@ -80,10 +91,8 @@ public class StreamUtils {
       Stream<CompletableFuture<T>> asyncStream,
       CompletionStrategy completionStrategy,
       int bufferSize) {
-    return StreamSupport.stream(new BufferedSpliterator<>(
-            asyncStream.spliterator(),
-            bufferSize,
-            completionStrategy),
+    return StreamSupport.stream(
+        new BufferedSpliterator<>(asyncStream.spliterator(), bufferSize, completionStrategy),
         asyncStream.isParallel());
   }
 
@@ -95,8 +104,8 @@ public class StreamUtils {
    * @param <T>
    * @return a buffered stream
    */
-  public static <T> Stream<CompletableFuture<T>> bufferInCompletionOrder(Stream<CompletableFuture<T>> asyncStream,
-      int bufferSize) {
+  public static <T> Stream<CompletableFuture<T>> bufferInCompletionOrder(
+      Stream<CompletableFuture<T>> asyncStream, int bufferSize) {
     return buffer(asyncStream, InCompletionOrder.INSTANCE, bufferSize);
   }
 
@@ -109,8 +118,7 @@ public class StreamUtils {
    * @return a buffered stream
    */
   public static <T> Stream<CompletableFuture<T>> bufferInSourceOrder(
-      Stream<CompletableFuture<T>> asyncStream,
-      int bufferSize) {
+      Stream<CompletableFuture<T>> asyncStream, int bufferSize) {
     return buffer(asyncStream, InSourceOrder.INSTANCE, bufferSize);
   }
 
@@ -128,17 +136,18 @@ public class StreamUtils {
       Function<T, U> asyncMapper,
       CompletionStrategy completionStrategy,
       int bufferSize) {
-    Stream<CompletableFuture<U>> asyncStream = stream
-        .map(t -> CompletableFuture.supplyAsync(() -> asyncMapper.apply(t)));
+    Stream<CompletableFuture<U>> asyncStream =
+        stream.map(t -> CompletableFuture.supplyAsync(() -> asyncMapper.apply(t)));
     return buffer(asyncStream, completionStrategy, bufferSize)
-        .map(f -> {
-          try {
-            return f.get();
-          } catch (InterruptedException | ExecutionException e) {
-            Thread.currentThread().interrupt();
-            throw new StreamException(e);
-          }
-        });
+        .map(
+            f -> {
+              try {
+                return f.get();
+              } catch (InterruptedException | ExecutionException e) {
+                Thread.currentThread().interrupt();
+                throw new StreamException(e);
+              }
+            });
   }
 
   /**
@@ -150,7 +159,8 @@ public class StreamUtils {
    * @param <T>
    * @return a buffered stream
    */
-  public static <T, U> Stream<U> bufferInCompletionOrder(Stream<T> stream, Function<T, U> asyncMapper, int bufferSize) {
+  public static <T, U> Stream<U> bufferInCompletionOrder(
+      Stream<T> stream, Function<T, U> asyncMapper, int bufferSize) {
     return buffer(stream, asyncMapper, InCompletionOrder.INSTANCE, bufferSize);
   }
 
@@ -163,17 +173,14 @@ public class StreamUtils {
    * @param <T>
    * @return a buffered stream
    */
-  public static <T, U> Stream<U> bufferInSourceOrder(Stream<T> stream, Function<T, U> asyncMapper, int bufferSize) {
+  public static <T, U> Stream<U> bufferInSourceOrder(
+      Stream<T> stream, Function<T, U> asyncMapper, int bufferSize) {
     return buffer(stream, asyncMapper, InSourceOrder.INSTANCE, bufferSize);
   }
 
-  /**
-   * Partition the provided stream according to a partition size.
-   */
+  /** Partition the provided stream according to a partition size. */
   public static <T> Stream<Stream<T>> partition(Stream<T> stream, int partitionSize) {
     return StreamSupport.stream(
-        new PartitionedSpliterator<T>(stream.spliterator(), partitionSize),
-        stream.isParallel());
+        new PartitionedSpliterator<T>(stream.spliterator(), partitionSize), stream.isParallel());
   }
-
 }

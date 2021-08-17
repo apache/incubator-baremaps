@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.stream;
 
 import java.util.function.Consumer;
@@ -25,9 +24,7 @@ public class HoldingConsumer<T> implements Consumer<T> {
 
   private T value;
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void accept(T value) {
     this.value = value;

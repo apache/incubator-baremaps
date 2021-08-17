@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.domain;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -19,9 +18,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.google.common.base.Objects;
 import java.util.StringJoiner;
 
-/**
- * Represents a member of a relation in an OpenStreetMap dataset.
- */
+/** Represents a member of a relation in an OpenStreetMap dataset. */
 public final class Member {
 
   public enum MemberType {
@@ -31,10 +28,14 @@ public final class Member {
 
     public static MemberType forNumber(int value) {
       switch (value) {
-        case 0: return NODE;
-        case 1: return WAY;
-        case 2: return RELATION;
-        default: throw new IllegalArgumentException();
+        case 0:
+          return NODE;
+        case 1:
+          return WAY;
+        case 2:
+          return RELATION;
+        default:
+          throw new IllegalArgumentException();
       }
     }
   }
@@ -74,9 +75,9 @@ public final class Member {
       return false;
     }
     Member member = (Member) o;
-    return ref == member.ref &&
-        Objects.equal(type, member.type) &&
-        Objects.equal(role, member.role);
+    return ref == member.ref
+        && Objects.equal(type, member.type)
+        && Objects.equal(role, member.role);
   }
 
   @Override

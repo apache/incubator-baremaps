@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.domain;
 
 import java.util.Map;
@@ -20,8 +19,8 @@ import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * Represents an element in an OpenStreetMap dataset.
- * Elements are a basis to model the physical world.
+ * Represents an element in an OpenStreetMap dataset. Elements are a basis to model the physical
+ * world.
  */
 public abstract class Element implements Entity {
 
@@ -33,18 +32,11 @@ public abstract class Element implements Entity {
 
   protected Geometry geometry;
 
-  protected Element(
-      long id,
-      Info info,
-      Map<String, String> tags) {
+  protected Element(long id, Info info, Map<String, String> tags) {
     this(id, info, tags, null);
   }
 
-  public Element(
-      long id,
-      Info info,
-      Map<String, String> tags,
-      Geometry geometry) {
+  public Element(long id, Info info, Map<String, String> tags, Geometry geometry) {
     this.id = id;
     this.info = info;
     this.tags = tags;
@@ -55,7 +47,9 @@ public abstract class Element implements Entity {
     return id;
   }
 
-  public Info getInfo() {return info; }
+  public Info getInfo() {
+    return info;
+  }
 
   public Map<String, String> getTags() {
     return tags;
@@ -78,10 +72,10 @@ public abstract class Element implements Entity {
       return false;
     }
     Element element = (Element) o;
-    return id == element.id &&
-        Objects.equals(info, element.info) &&
-        Objects.equals(tags, element.tags) &&
-        Objects.equals(geometry, element.geometry);
+    return id == element.id
+        && Objects.equals(info, element.info)
+        && Objects.equals(tags, element.tags)
+        && Objects.equals(geometry, element.geometry);
   }
 
   @Override

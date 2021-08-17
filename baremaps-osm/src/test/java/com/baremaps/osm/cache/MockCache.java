@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.cache;
 
 import java.util.ArrayList;
@@ -59,5 +58,4 @@ public class MockCache<T> implements Cache<Long, T> {
   public void deleteAll(List<Long> keys) {
     throw new UnsupportedOperationException();
   }
-
 }

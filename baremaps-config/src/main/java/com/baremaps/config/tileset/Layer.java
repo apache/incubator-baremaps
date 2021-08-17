@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.config.tileset;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -30,9 +29,7 @@ public class Layer {
 
   private List<Query> queries;
 
-  public Layer() {
-
-  }
+  public Layer() {}
 
   public Layer(Query... queries) {
     this.queries = Arrays.asList(queries);
@@ -66,5 +63,4 @@ public class Layer {
   public void setQueries(List<Query> queries) {
     this.queries = queries;
   }
-
 }

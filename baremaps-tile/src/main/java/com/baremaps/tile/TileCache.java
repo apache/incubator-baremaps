@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.baremaps.tile;
 
 import com.github.benmanes.caffeine.cache.Cache;
@@ -9,9 +22,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * A TileStore decorator that uses caffeine to cache the content of tiles.
- */
+/** A TileStore decorator that uses caffeine to cache the content of tiles. */
 public class TileCache implements TileStore {
 
   private static final Logger logger = LoggerFactory.getLogger(TileCache.class);
@@ -22,29 +33,36 @@ public class TileCache implements TileStore {
 
   /**
    * Decorates the TileStore with a cache.
+   *
    * @param tileStore
    * @param spec
    */
   public TileCache(TileStore tileStore, CaffeineSpec spec) {
     this.tileStore = tileStore;
-    this.cache = Caffeine.from(spec).weigher(new Weigher<Tile, byte[]>() {
-      @Override
-      public @NonNegative int weigh(@NonNull Tile tile, byte @NonNull [] bytes) {
-        return 28 + bytes.length;
-      }
-    }).build();
+    this.cache =
+        Caffeine.from(spec)
+            .weigher(
+                new Weigher<Tile, byte[]>() {
+                  @Override
+                  public @NonNegative int weigh(@NonNull Tile tile, byte @NonNull [] bytes) {
+                    return 28 + bytes.length;
+                  }
+                })
+            .build();
   }
 
   @Override
   public byte[] read(Tile tile) throws TileStoreException {
-    return cache.get(tile, t -> {
-      try {
-        return tileStore.read(t);
-      } catch (TileStoreException e) {
-        logger.error("Unable to read the tile.", e);
-        return null;
-      }
-    });
+    return cache.get(
+        tile,
+        t -> {
+          try {
+            return tileStore.read(t);
+          } catch (TileStoreException e) {
+            logger.error("Unable to read the tile.", e);
+            return null;
+          }
+        });
   }
 
   @Override

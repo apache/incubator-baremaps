@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.tile;
 
 import com.google.common.base.MoreObjects;
@@ -29,17 +28,15 @@ public final class Tile {
 
   private static final double EPSILON = 0.0000001;
 
-  private static final int[] sides = IntStream.range(0, 30)
-      .map(i -> IntMath.pow(2, i))
-      .toArray();
+  private static final int[] sides = IntStream.range(0, 30).map(i -> IntMath.pow(2, i)).toArray();
 
-  private static final long[] squares = LongStream.range(0, 30)
-      .map(i -> LongMath.pow(IntMath.pow(2, (int) i), 2))
-      .toArray();
+  private static final long[] squares =
+      LongStream.range(0, 30).map(i -> LongMath.pow(IntMath.pow(2, (int) i), 2)).toArray();
 
-  private static final long[] offsets = LongStream.range(0, 30).map(i -> LongStream.range(0, i)
-      .map(j -> LongMath.pow(IntMath.pow(2, (int) j), 2)).sum())
-      .toArray();
+  private static final long[] offsets =
+      LongStream.range(0, 30)
+          .map(i -> LongStream.range(0, i).map(j -> LongMath.pow(IntMath.pow(2, (int) j), 2)).sum())
+          .toArray();
 
   private final int x;
 
@@ -88,8 +85,13 @@ public final class Tile {
 
   public static Tile fromLonLat(double lon, double lat, int z) {
     int x = (int) ((lon + 180.0) / 360.0 * (1 << z));
-    int y = (int) ((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat)))
-        / Math.PI) / 2.0 * (1 << z));
+    int y =
+        (int)
+            ((1
+                    - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat)))
+                        / Math.PI)
+                / 2.0
+                * (1 << z));
     return new Tile(x, y, z);
   }
 
@@ -125,9 +127,7 @@ public final class Tile {
     return new Envelope(west, east, south, north);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -140,9 +140,7 @@ public final class Tile {
     return x == that.x && y == that.y && z == that.z;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public int hashCode() {
     return Objects.hashCode(x, y, z);
@@ -150,11 +148,7 @@ public final class Tile {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("x", x)
-        .add("y", y)
-        .add("z", z)
-        .toString();
+    return MoreObjects.toStringHelper(this).add("x", x).add("y", y).add("z", z).toString();
   }
 
   protected static double tile2lon(int x, int z) {
@@ -173,5 +167,4 @@ public final class Tile {
   protected static Tile max(Envelope envelope, int zoom) {
     return Tile.fromLonLat(envelope.getMaxX() - EPSILON, envelope.getMinY() + EPSILON, zoom);
   }
-
 }

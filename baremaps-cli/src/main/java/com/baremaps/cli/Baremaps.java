@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.cli;
 
 import com.baremaps.cli.Baremaps.VersionProvider;
@@ -29,14 +28,14 @@ import picocli.CommandLine.Option;
     description = "A toolkit for producing vector tiles.",
     versionProvider = VersionProvider.class,
     subcommands = {
-        Init.class,
-        Execute.class,
-        Import.class,
-        Update.class,
-        Diff.class,
-        Export.class,
-        Edit.class,
-        Serve.class,
+      Init.class,
+      Execute.class,
+      Import.class,
+      Update.class,
+      Diff.class,
+      Export.class,
+      Edit.class,
+      Serve.class,
     })
 public class Baremaps implements Callable<Integer> {
 
@@ -64,9 +63,10 @@ public class Baremaps implements Callable<Integer> {
     }
 
     // Execute the command
-    CommandLine cmd = new CommandLine(new Baremaps())
-        .setUsageHelpLongOptionsMaxWidth(30)
-        .addMixin("options", new Options());
+    CommandLine cmd =
+        new CommandLine(new Baremaps())
+            .setUsageHelpLongOptionsMaxWidth(30)
+            .addMixin("options", new Options());
     cmd.execute(args);
   }
 
@@ -75,16 +75,15 @@ public class Baremaps implements Callable<Integer> {
     public String[] getVersion() throws Exception {
       URL url = getClass().getResource("/version.txt");
       if (url == null) {
-        return new String[]{"No version.txt file found in the classpath."};
+        return new String[] {"No version.txt file found in the classpath."};
       }
       try (InputStream inputStream = url.openStream()) {
         Properties properties = new Properties();
         properties.load(inputStream);
-        return new String[]{
-            properties.getProperty("application") + " v" + properties.getProperty("version"),
+        return new String[] {
+          properties.getProperty("application") + " v" + properties.getProperty("version"),
         };
       }
     }
   }
-
 }

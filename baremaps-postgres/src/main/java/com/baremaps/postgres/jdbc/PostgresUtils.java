@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.postgres.jdbc;
 
 import com.google.common.io.Resources;
@@ -26,9 +25,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 public final class PostgresUtils {
 
-  private PostgresUtils() {
-
-  }
+  private PostgresUtils() {}
 
   public static DataSource datasource(String url) {
     BasicDataSource datasource = new BasicDataSource();
@@ -36,12 +33,12 @@ public final class PostgresUtils {
     return datasource;
   }
 
-  public static void executeResource(Connection connection, String resource) throws IOException, SQLException {
+  public static void executeResource(Connection connection, String resource)
+      throws IOException, SQLException {
     URL resourceURL = Resources.getResource(resource);
     String queries = Resources.toString(resourceURL, StandardCharsets.UTF_8);
     try (Statement statement = connection.createStatement()) {
       statement.execute(queries);
     }
   }
-
 }

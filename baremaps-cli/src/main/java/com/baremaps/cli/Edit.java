@@ -1,4 +1,16 @@
-
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
@@ -26,8 +38,7 @@ public class Edit implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Edit.class);
 
-  @Mixin
-  private Options options;
+  @Mixin private Options options;
 
   @Option(
       names = {"--database"},
@@ -73,29 +84,30 @@ public class Edit implements Callable<Integer> {
     BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.datasource(database);
 
-    ResourceConfig config = new ResourceConfig()
-        .register(CorsFilter.class)
-        .register(EditorResources.class)
-        .register(MaputnikResources.class)
-        .register(new AbstractBinder() {
-          @Override
-          protected void configure() {
-            bind(style).named("style").to(URI.class);
-            bind(tileset).named("tileset").to(URI.class);
-            bind(blobStore).to(BlobStore.class);
-            bind(datasource).to(DataSource.class);
-          }
-        });
+    ResourceConfig config =
+        new ResourceConfig()
+            .register(CorsFilter.class)
+            .register(EditorResources.class)
+            .register(MaputnikResources.class)
+            .register(
+                new AbstractBinder() {
+                  @Override
+                  protected void configure() {
+                    bind(style).named("style").to(URI.class);
+                    bind(tileset).named("tileset").to(URI.class);
+                    bind(blobStore).to(BlobStore.class);
+                    bind(datasource).to(DataSource.class);
+                  }
+                });
 
-    BlockingStreamingHttpService httpService = new HttpJerseyRouterBuilder()
-        .buildBlockingStreaming(config);
-    ServerContext serverContext = HttpServers.forPort(port)
-        .listenBlockingStreamingAndAwait(httpService);
+    BlockingStreamingHttpService httpService =
+        new HttpJerseyRouterBuilder().buildBlockingStreaming(config);
+    ServerContext serverContext =
+        HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
     logger.info("Listening on {}", serverContext.listenAddress());
     serverContext.awaitShutdown();
 
     return 0;
   }
-
 }

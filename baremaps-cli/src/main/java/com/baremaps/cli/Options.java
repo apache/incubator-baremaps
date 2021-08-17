@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
@@ -23,7 +22,10 @@ import picocli.CommandLine.Option;
 public class Options {
 
   public enum LogLevel {
-    DEBUG, INFO, TRACE, ERROR
+    DEBUG,
+    INFO,
+    TRACE,
+    ERROR
   }
 
   @Option(
@@ -55,5 +57,4 @@ public class Options {
     }
     return blobStore;
   }
-
 }

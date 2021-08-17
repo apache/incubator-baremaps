@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.baremaps.server;
 
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
@@ -59,7 +72,10 @@ public class EditorResources {
   private Thread fileWatcher;
 
   @Inject
-  public EditorResources(@Named("style") URI style, @Named("tileset") URI tileset, BlobStore blobStore,
+  public EditorResources(
+      @Named("style") URI style,
+      @Named("tileset") URI tileset,
+      BlobStore blobStore,
       DataSource dataSource) {
     this.tileset = tileset;
     this.style = style;
@@ -74,31 +90,33 @@ public class EditorResources {
     if (fileWatcher != null) {
       fileWatcher.interrupt();
     }
-    fileWatcher = new Thread(() -> {
-      try {
-        Path tilesetFile = Paths.get(tileset.getPath()).toAbsolutePath();
-        Path styleFile = Paths.get(style.getPath()).toAbsolutePath();
-        WatchService watchService = FileSystems.getDefault().newWatchService();
-        tilesetFile.getParent().register(watchService, ENTRY_MODIFY);
-        styleFile.getParent().register(watchService, ENTRY_MODIFY);
-        WatchKey key;
-        while ((key = watchService.take()) != null) {
-          Path dir = (Path) key.watchable();
-          for (WatchEvent<?> event : key.pollEvents()) {
-            Path path = dir.resolve((Path) event.context());
-            ObjectNode jsonNode = new BlobMapper(blobStore).read(style, ObjectNode.class);
-            jsonNode.put("reload", path.endsWith(tilesetFile.getFileName()));
-            sseBroadcaster.broadcast(sseEventBuilder.data(jsonNode.toString()).build());
-          }
-          key.reset();
-        }
-      } catch (InterruptedException e) {
-        logger.error(e.getMessage());
-        Thread.currentThread().interrupt();
-      } catch (BlobMapperException | IOException e) {
-        logger.error(e.getMessage());
-      }
-    });
+    fileWatcher =
+        new Thread(
+            () -> {
+              try {
+                Path tilesetFile = Paths.get(tileset.getPath()).toAbsolutePath();
+                Path styleFile = Paths.get(style.getPath()).toAbsolutePath();
+                WatchService watchService = FileSystems.getDefault().newWatchService();
+                tilesetFile.getParent().register(watchService, ENTRY_MODIFY);
+                styleFile.getParent().register(watchService, ENTRY_MODIFY);
+                WatchKey key;
+                while ((key = watchService.take()) != null) {
+                  Path dir = (Path) key.watchable();
+                  for (WatchEvent<?> event : key.pollEvents()) {
+                    Path path = dir.resolve((Path) event.context());
+                    ObjectNode jsonNode = new BlobMapper(blobStore).read(style, ObjectNode.class);
+                    jsonNode.put("reload", path.endsWith(tilesetFile.getFileName()));
+                    sseBroadcaster.broadcast(sseEventBuilder.data(jsonNode.toString()).build());
+                  }
+                  key.reset();
+                }
+              } catch (InterruptedException e) {
+                logger.error(e.getMessage());
+                Thread.currentThread().interrupt();
+              } catch (BlobMapperException | IOException e) {
+                logger.error(e.getMessage());
+              }
+            });
     fileWatcher.start();
   }
 
@@ -158,5 +176,4 @@ public class EditorResources {
       return Response.status(404).build();
     }
   }
-
 }

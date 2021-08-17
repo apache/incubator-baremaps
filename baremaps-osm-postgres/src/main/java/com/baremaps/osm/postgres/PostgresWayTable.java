@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.postgres;
 
 import com.baremaps.osm.database.DatabaseException;
@@ -53,7 +52,8 @@ public class PostgresWayTable implements WayTable {
   private final String copy;
 
   public PostgresWayTable(DataSource dataSource) {
-    this(dataSource,
+    this(
+        dataSource,
         "osm_ways",
         "id",
         "version",
@@ -77,34 +77,64 @@ public class PostgresWayTable implements WayTable {
       String nodesColumn,
       String geometryColumn) {
     this.dataSource = dataSource;
-    this.select = String.format(
-        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, st_asbinary(%9$s) FROM %1$s WHERE %2$s = ?",
-        wayTable, idColumn, versionColumn, uidColumn, timestampColumn,
-        changesetColumn, tagsColumn, nodesColumn, geometryColumn);
-    this.selectIn = String.format(
-        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, st_asbinary(%9$s) FROM %1$s WHERE %2$s = ANY (?)",
-        wayTable, idColumn, versionColumn, uidColumn, timestampColumn,
-        changesetColumn, tagsColumn, nodesColumn, geometryColumn);
-    this.insert = String.format(
-        "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-            + "ON CONFLICT (%2$s) DO UPDATE SET "
-            + "%3$s = excluded.%3$s, "
-            + "%4$s = excluded.%4$s, "
-            + "%5$s = excluded.%5$s, "
-            + "%6$s = excluded.%6$s, "
-            + "%7$s = excluded.%7$s, "
-            + "%8$s = excluded.%8$s, "
-            + "%9$s = excluded.%9$s",
-        wayTable, idColumn, versionColumn, uidColumn, timestampColumn,
-        changesetColumn, tagsColumn, nodesColumn, geometryColumn);
-    this.delete = String.format(
-        "DELETE FROM %1$s WHERE %2$s = ?",
-        wayTable, idColumn);
-    this.copy = String.format(
-        "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s) FROM STDIN BINARY",
-        wayTable, idColumn, versionColumn, uidColumn, timestampColumn,
-        changesetColumn, tagsColumn, nodesColumn, geometryColumn);
+    this.select =
+        String.format(
+            "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, st_asbinary(%9$s) FROM %1$s WHERE %2$s = ?",
+            wayTable,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            nodesColumn,
+            geometryColumn);
+    this.selectIn =
+        String.format(
+            "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, st_asbinary(%9$s) FROM %1$s WHERE %2$s = ANY (?)",
+            wayTable,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            nodesColumn,
+            geometryColumn);
+    this.insert =
+        String.format(
+            "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+                + "ON CONFLICT (%2$s) DO UPDATE SET "
+                + "%3$s = excluded.%3$s, "
+                + "%4$s = excluded.%4$s, "
+                + "%5$s = excluded.%5$s, "
+                + "%6$s = excluded.%6$s, "
+                + "%7$s = excluded.%7$s, "
+                + "%8$s = excluded.%8$s, "
+                + "%9$s = excluded.%9$s",
+            wayTable,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            nodesColumn,
+            geometryColumn);
+    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", wayTable, idColumn);
+    this.copy =
+        String.format(
+            "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s) FROM STDIN BINARY",
+            wayTable,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            nodesColumn,
+            geometryColumn);
   }
 
   public Way select(Long id) throws DatabaseException {
@@ -121,7 +151,6 @@ public class PostgresWayTable implements WayTable {
       throw new DatabaseException(e);
     }
   }
-
 
   @Override
   public List<Way> select(List<Long> ids) throws DatabaseException {
@@ -142,8 +171,6 @@ public class PostgresWayTable implements WayTable {
       throw new DatabaseException(e);
     }
   }
-
-
 
   public void insert(Way entity) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
@@ -250,10 +277,7 @@ public class PostgresWayTable implements WayTable {
     statement.setObject(4, entity.getInfo().getTimestamp());
     statement.setObject(5, entity.getInfo().getChangeset());
     statement.setObject(6, entity.getTags());
-    statement.setObject(7, entity.getNodes().stream()
-        .mapToLong(Long::longValue)
-        .toArray());
+    statement.setObject(7, entity.getNodes().stream().mapToLong(Long::longValue).toArray());
     statement.setBytes(8, GeometryUtils.serialize(entity.getGeometry()));
   }
-
 }

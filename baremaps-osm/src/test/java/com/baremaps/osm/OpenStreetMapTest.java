@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.baremaps.osm;
 
 import static com.baremaps.testing.TestFiles.DATA_OSC_XML;
@@ -36,90 +49,68 @@ class OpenStreetMapTest {
   @Test
   void dataOsmXml() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
-      assertEquals(12,
-          OpenStreetMap.streamXmlEntities(input)
-              .collect(Collectors.toList()).size());
+      assertEquals(12, OpenStreetMap.streamXmlEntities(input).collect(Collectors.toList()).size());
     }
   }
 
   @Test
   void dataOsmXmlNodes() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
-      assertEquals(6,
-          OpenStreetMap.streamXmlEntities(input)
-              .filter(e -> e instanceof Node)
-              .count());
+      assertEquals(
+          6, OpenStreetMap.streamXmlEntities(input).filter(e -> e instanceof Node).count());
     }
   }
 
   @Test
   void dataOsmXmlWays() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
-      assertEquals(3,
-          OpenStreetMap.streamXmlEntities(input)
-              .filter(e -> e instanceof Way)
-              .count());
+      assertEquals(3, OpenStreetMap.streamXmlEntities(input).filter(e -> e instanceof Way).count());
     }
   }
 
   @Test
   void dataOsmXmlRelations() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
-      assertEquals(1,
-          OpenStreetMap.streamXmlEntities(input)
-              .filter(e -> e instanceof Relation)
-              .count());
+      assertEquals(
+          1, OpenStreetMap.streamXmlEntities(input).filter(e -> e instanceof Relation).count());
     }
   }
 
   @Test
   void dataOscXml() throws IOException {
     try (InputStream input = DATA_OSC_XML.openStream()) {
-      assertEquals(7,
-          OpenStreetMap.streamXmlChanges(input)
-              .collect(Collectors.toList())
-              .size());
+      assertEquals(7, OpenStreetMap.streamXmlChanges(input).collect(Collectors.toList()).size());
     }
   }
 
   @Test
   void dataOsmPbf() throws IOException {
     try (InputStream input = DATA_OSM_PBF.openStream()) {
-      assertEquals(72002,
-          OpenStreetMap.streamPbfEntities(input)
-              .count());
+      assertEquals(72002, OpenStreetMap.streamPbfEntities(input).count());
     }
-
   }
 
   @Test
   void denseNodesOsmPbf() throws IOException {
     try (InputStream input = DENSE_NODES_OSM_PBF.openStream()) {
-      assertEquals(8000,
-          OpenStreetMap.streamPbfEntities(input)
-              .filter(e -> e instanceof Node)
-              .count());
+      assertEquals(
+          8000, OpenStreetMap.streamPbfEntities(input).filter(e -> e instanceof Node).count());
     }
-
   }
 
   @Test
   void waysOsmPbf() throws IOException {
     try (InputStream input = WAYS_OSM_PBF.openStream()) {
-      assertEquals(8000,
-          OpenStreetMap.streamPbfEntities(input)
-              .filter(e -> e instanceof Way)
-              .count());
+      assertEquals(
+          8000, OpenStreetMap.streamPbfEntities(input).filter(e -> e instanceof Way).count());
     }
   }
 
   @Test
   void relationsOsmPbf() throws IOException {
     try (InputStream input = RELATIONS_OSM_PBF.openStream()) {
-      assertEquals(8000,
-          OpenStreetMap.streamPbfEntities(input)
-              .filter(e -> e instanceof Relation)
-              .count());
+      assertEquals(
+          8000, OpenStreetMap.streamPbfEntities(input).filter(e -> e instanceof Relation).count());
     }
   }
 
@@ -160,47 +151,47 @@ class OpenStreetMapTest {
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
-    stream.forEach(new EntityConsumer() {
-      @Override
-      public void match(Header header) {
-        assertNotNull(header);
-        assertEquals("osmium/1.8.0", header.getWritingProgram());
-        headers.incrementAndGet();
-      }
+    stream.forEach(
+        new EntityConsumer() {
+          @Override
+          public void match(Header header) {
+            assertNotNull(header);
+            assertEquals("osmium/1.8.0", header.getWritingProgram());
+            headers.incrementAndGet();
+          }
 
-      @Override
-      public void match(Bound bound) {
-        assertNotNull(bound);
-        assertEquals(43.75169, bound.getMaxLat(), 0.000001);
-        assertEquals(7.448637, bound.getMaxLon(), 0.000001);
-        assertEquals(43.72335, bound.getMinLat(), 0.000001);
-        assertEquals(7.409205, bound.getMinLon(), 0.000001);
-        bounds.incrementAndGet();
-      }
+          @Override
+          public void match(Bound bound) {
+            assertNotNull(bound);
+            assertEquals(43.75169, bound.getMaxLat(), 0.000001);
+            assertEquals(7.448637, bound.getMaxLon(), 0.000001);
+            assertEquals(43.72335, bound.getMinLat(), 0.000001);
+            assertEquals(7.409205, bound.getMinLon(), 0.000001);
+            bounds.incrementAndGet();
+          }
 
-      @Override
-      public void match(Node node) {
-        assertNotNull(node);
-        nodes.incrementAndGet();
-      }
+          @Override
+          public void match(Node node) {
+            assertNotNull(node);
+            nodes.incrementAndGet();
+          }
 
-      @Override
-      public void match(Way way) {
-        assertNotNull(way);
-        ways.incrementAndGet();
-      }
+          @Override
+          public void match(Way way) {
+            assertNotNull(way);
+            ways.incrementAndGet();
+          }
 
-      @Override
-      public void match(Relation relation) {
-        assertNotNull(relation);
-        relations.incrementAndGet();
-      }
-    });
+          @Override
+          public void match(Relation relation) {
+            assertNotNull(relation);
+            relations.incrementAndGet();
+          }
+        });
     assertEquals(headerCount, headers.get());
     assertEquals(boundCount, bounds.get());
     assertEquals(nodeCount, nodes.get());
     assertEquals(wayCount, ways.get());
     assertEquals(relationCount, relations.get());
   }
-
 }

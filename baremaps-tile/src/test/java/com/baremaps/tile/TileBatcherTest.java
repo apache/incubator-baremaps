@@ -41,10 +41,11 @@ class TileBatcherTest {
     // ensures that the batches have the correct size and retain de correct tiles
     final int batchArraySize = 5;
     for (int batchArrayIndex = 0; batchArrayIndex < batchArraySize; batchArrayIndex++) {
-      List<Tile> batch = tiles.stream()
-          .filter(new TileBatcher(batchArraySize, batchArrayIndex))
-          .sorted(Comparator.comparingLong(Tile::index))
-          .collect(Collectors.toList());
+      List<Tile> batch =
+          tiles.stream()
+              .filter(new TileBatcher(batchArraySize, batchArrayIndex))
+              .sorted(Comparator.comparingLong(Tile::index))
+              .collect(Collectors.toList());
       assertEquals(streamSize / batchArraySize, batch.size());
       int tileIndex = batchArrayIndex;
       for (Tile tile : batch) {

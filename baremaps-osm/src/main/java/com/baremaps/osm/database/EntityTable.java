@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.database;
 
 import com.baremaps.osm.domain.Entity;
@@ -32,5 +31,4 @@ public interface EntityTable<T extends Entity> {
   void delete(List<Long> ids) throws DatabaseException;
 
   void copy(List<T> entities) throws DatabaseException;
-
 }

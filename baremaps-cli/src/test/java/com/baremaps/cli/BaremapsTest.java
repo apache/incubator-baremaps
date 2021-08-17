@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.cli;
 
 import static com.baremaps.testing.TestConstants.DATABASE_URL;
@@ -73,38 +72,56 @@ class BaremapsTest {
     cmd.setOut(new PrintWriter(writer));
 
     // Test the import command
-    int importExitCode = cmd.execute("import",
-        "--database", DATABASE_URL,
-        "--file", "res://liechtenstein/liechtenstein.osm.pbf");
+    int importExitCode =
+        cmd.execute(
+            "import",
+            "--database",
+            DATABASE_URL,
+            "--file",
+            "res://liechtenstein/liechtenstein.osm.pbf");
     assertEquals(0, importExitCode);
 
     // Test the export command
-    int exportExitCode = cmd.execute("export",
-        "--database", DATABASE_URL,
-        "--tileset", "res://tileset.json",
-        "--repository", "repository/");
+    int exportExitCode =
+        cmd.execute(
+            "export",
+            "--database",
+            DATABASE_URL,
+            "--tileset",
+            "res://tileset.json",
+            "--repository",
+            "repository/");
     assertEquals(0, exportExitCode);
     assertTrue(Files.exists(Paths.get("repository/14/8626/5750.pbf")));
 
     // Test the serve command in a separate thread
-    Thread thread = new Thread(() -> {
-      cmd.execute("edit",
-          "--database", DATABASE_URL,
-          "--tileset", "res://tileset.json",
-          "--style", "res://style.json",
-          "--port", "9000");
-    });
+    Thread thread =
+        new Thread(
+            () -> {
+              cmd.execute(
+                  "edit",
+                  "--database",
+                  DATABASE_URL,
+                  "--tileset",
+                  "res://tileset.json",
+                  "--style",
+                  "res://style.json",
+                  "--port",
+                  "9000");
+            });
     thread.start();
 
     // Wait for ServiceTalk and JAX-RS to respond with 200 OK
-    await().timeout(60, TimeUnit.SECONDS).pollDelay(5, TimeUnit.SECONDS).until(() -> {
-      HttpURLConnection connection = (HttpURLConnection) new URL("http://127.0.0.1:9000/tiles/14/8626/5750.mvt")
-          .openConnection();
-      connection.connect();
-      return connection.getResponseCode() == 200;
-    });
-
-
+    await()
+        .timeout(60, TimeUnit.SECONDS)
+        .pollDelay(5, TimeUnit.SECONDS)
+        .until(
+            () -> {
+              HttpURLConnection connection =
+                  (HttpURLConnection)
+                      new URL("http://127.0.0.1:9000/tiles/14/8626/5750.mvt").openConnection();
+              connection.connect();
+              return connection.getResponseCode() == 200;
+            });
   }
-
 }

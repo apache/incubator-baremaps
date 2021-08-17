@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.stream;
 
 import java.util.ArrayList;
@@ -27,9 +26,7 @@ public class AccumulatingConsumer<T> implements Consumer<T> {
 
   private final List<T> values = new ArrayList<>();
 
-  /**
-   * Stores the accepted value.
-   */
+  /** Stores the accepted value. */
   @Override
   public void accept(T value) {
     values.add(value);

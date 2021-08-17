@@ -278,11 +278,20 @@
         <version>${version.plugin.surefire}</version>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.1.2</version>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.12.2</version>
         <configuration>
-          <configLocation>google_checks.xml</configLocation>
+          <java>
+            <googleJavaFormat>
+              <version>1.8</version>
+              <style>GOOGLE</style>
+            </googleJavaFormat>
+            <removeUnusedImports />
+            <licenseHeader>
+              <file>${maven.multiModuleProjectDirectory}/LICENSE.header</file>
+            </licenseHeader>
+          </java>
         </configuration>
       </plugin>
     </plugins>
@@ -293,7 +302,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.1</version>
       </plugin>
     </plugins>
   </reporting>

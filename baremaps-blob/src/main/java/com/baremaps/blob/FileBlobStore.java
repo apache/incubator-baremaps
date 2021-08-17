@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.blob;
 
 import java.io.IOException;
@@ -31,9 +30,7 @@ public class FileBlobStore implements BlobStore {
   public Blob head(URI uri) throws BlobStoreException {
     try {
       Path file = file(uri);
-      return Blob.builder()
-          .withContentLength(Files.size(file))
-          .build();
+      return Blob.builder().withContentLength(Files.size(file)).build();
     } catch (IOException e) {
       throw new BlobStoreException(e);
     }
@@ -74,5 +71,4 @@ public class FileBlobStore implements BlobStore {
       throw new BlobStoreException(e);
     }
   }
-
 }

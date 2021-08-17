@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.tile.mbtiles;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -45,5 +44,4 @@ public abstract class TileStoreTest {
   }
 
   public abstract TileStore createTileStore() throws Exception;
-
 }

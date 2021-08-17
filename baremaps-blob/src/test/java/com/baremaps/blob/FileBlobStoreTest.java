@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.blob;
 
 import java.io.File;
@@ -30,5 +29,4 @@ class FileBlobStoreTest extends BlobStoreTest {
   public BlobStore createFileSystem() {
     return new FileBlobStore();
   }
-
 }

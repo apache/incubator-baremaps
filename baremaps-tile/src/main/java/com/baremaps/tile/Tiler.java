@@ -46,5 +46,4 @@ public class Tiler implements Consumer<Tile> {
       throw new RuntimeException("An error occurred while creating the tiles", ex);
     }
   }
-
 }

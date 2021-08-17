@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.tile;
 
 public interface TileStore {
@@ -21,5 +20,4 @@ public interface TileStore {
   void write(Tile tile, byte[] bytes) throws TileStoreException;
 
   void delete(Tile tile) throws TileStoreException;
-
 }

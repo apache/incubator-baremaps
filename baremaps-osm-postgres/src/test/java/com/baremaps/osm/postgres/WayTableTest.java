@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.postgres;
 
 import static com.baremaps.osm.postgres.DatabaseConstants.WAY_1;
@@ -66,8 +65,7 @@ class WayTableTest {
     List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayTable.insert(ways);
     assertIterableEquals(
-        ways,
-        wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        ways, wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
@@ -95,7 +93,6 @@ class WayTableTest {
     List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayTable.copy(ways);
     assertIterableEquals(
-        ways,
-        wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        ways, wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

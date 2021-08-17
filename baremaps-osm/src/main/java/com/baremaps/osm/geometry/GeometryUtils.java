@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.geometry;
 
 import static org.locationtech.jts.io.WKBConstants.wkbNDR;
@@ -24,9 +23,7 @@ import org.locationtech.jts.io.WKBWriter;
 
 public class GeometryUtils {
 
-  private GeometryUtils() {
-
-  }
+  private GeometryUtils() {}
 
   /**
    * Serializes a geometry in the WKB format.
@@ -59,5 +56,4 @@ public class GeometryUtils {
       throw new IllegalArgumentException(e);
     }
   }
-
 }

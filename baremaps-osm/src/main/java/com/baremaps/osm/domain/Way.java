@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.domain;
 
 import com.baremaps.osm.handler.EntityConsumer;
@@ -22,9 +21,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
-/**
- * Represents a way element in an OpenStreetMap dataset.
- */
+/** Represents a way element in an OpenStreetMap dataset. */
 public final class Way extends Element {
 
   private final List<Long> nodes;

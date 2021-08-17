@@ -21,9 +21,7 @@ public class Query {
 
   private String sql;
 
-  public Query() {
-
-  }
+  public Query() {}
 
   public Query(int minZoom, int maxZoom, String sql) {
     this.minZoom = minZoom;
@@ -42,5 +40,4 @@ public class Query {
   public int getMaxZoom() {
     return maxZoom;
   }
-
 }

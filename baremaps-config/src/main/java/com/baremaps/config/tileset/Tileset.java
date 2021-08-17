@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.config.tileset;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -49,9 +48,7 @@ public class Tileset {
   @JsonProperty("vector_layers")
   private List<Layer> layers = new ArrayList<>();
 
-  public Tileset() {
-
-  }
+  public Tileset() {}
 
   public Tileset(Layer... layers) {
     this.layers = Arrays.asList(layers);

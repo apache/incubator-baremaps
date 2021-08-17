@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.baremaps.osm.postgres;
 
 import static com.baremaps.testing.TestConstants.DATABASE_URL;
@@ -62,18 +75,19 @@ class ImportUpdateTest {
 
     // Import data
     new ImportService(
-        new URI("res://simple/data.osm.pbf"),
-        blobStore,
-        new InMemoryCoordinateCache(),
-        new InMemoryReferenceCache(),
-        headerTable,
-        nodeTable,
-        wayTable,
-        relationTable,
-        3857
-    ).call();
+            new URI("res://simple/data.osm.pbf"),
+            blobStore,
+            new InMemoryCoordinateCache(),
+            new InMemoryReferenceCache(),
+            headerTable,
+            nodeTable,
+            wayTable,
+            relationTable,
+            3857)
+        .call();
 
-    headerTable.insert(new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), "res://simple", "", ""));
+    headerTable.insert(
+        new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), "res://simple", "", ""));
 
     // Check node importation
     assertNull(nodeTable.select(0l));
@@ -103,15 +117,15 @@ class ImportUpdateTest {
 
     // Update the database
     new UpdateService(
-        blobStore,
-        new PostgresCoordinateCache(dataSource),
-        new PostgresReferenceCache(dataSource),
-        headerTable,
-        nodeTable,
-        wayTable,
-        relationTable,
-        3857
-    ).call();
+            blobStore,
+            new PostgresCoordinateCache(dataSource),
+            new PostgresReferenceCache(dataSource),
+            headerTable,
+            nodeTable,
+            wayTable,
+            relationTable,
+            3857)
+        .call();
 
     // Check deletions
     assertNull(nodeTable.select(0l));
@@ -129,96 +143,106 @@ class ImportUpdateTest {
 
     // Import data
     new ImportService(
-        new URI("res://liechtenstein/liechtenstein.osm.pbf"),
-        blobStore,
-        new InMemoryCoordinateCache(),
-        new InMemoryReferenceCache(),
-        headerTable,
-        nodeTable,
-        wayTable,
-        relationTable,
-        3857
-    ).call();
+            new URI("res://liechtenstein/liechtenstein.osm.pbf"),
+            blobStore,
+            new InMemoryCoordinateCache(),
+            new InMemoryReferenceCache(),
+            headerTable,
+            nodeTable,
+            wayTable,
+            relationTable,
+            3857)
+        .call();
     assertEquals(2434l, headerTable.selectLatest().getReplicationSequenceNumber());
 
     // Fix the replicationUrl so that we can update the database with local files
-    headerTable.insert(new Header(2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), "res://liechtenstein", "", ""));
+    headerTable.insert(
+        new Header(
+            2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), "res://liechtenstein", "", ""));
 
     CoordinateCache coordinateCache = new PostgresCoordinateCache(dataSource);
     ReferenceCache referenceCache = new PostgresReferenceCache(dataSource);
 
-    assertEquals(0, new DiffService(
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerTable,
-        nodeTable,
-        wayTable,
-        relationTable,
-        3857,
-        14
-    ).call().size());
+    assertEquals(
+        0,
+        new DiffService(
+                blobStore,
+                coordinateCache,
+                referenceCache,
+                headerTable,
+                nodeTable,
+                wayTable,
+                relationTable,
+                3857,
+                14)
+            .call()
+            .size());
 
     // Update the database
     new UpdateService(
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerTable,
-        nodeTable,
-        wayTable,
-        relationTable,
-        3857
-    ).call();
+            blobStore,
+            coordinateCache,
+            referenceCache,
+            headerTable,
+            nodeTable,
+            wayTable,
+            relationTable,
+            3857)
+        .call();
     assertEquals(2435l, headerTable.selectLatest().getReplicationSequenceNumber());
 
-    assertEquals(7, new DiffService(
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerTable,
-        nodeTable,
-        wayTable,
-        relationTable,
-        3857,
-        14
-    ).call().size());
+    assertEquals(
+        7,
+        new DiffService(
+                blobStore,
+                coordinateCache,
+                referenceCache,
+                headerTable,
+                nodeTable,
+                wayTable,
+                relationTable,
+                3857,
+                14)
+            .call()
+            .size());
 
     new UpdateService(
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerTable,
-        nodeTable,
-        wayTable,
-        relationTable,
-        3857
-    ).call();
+            blobStore,
+            coordinateCache,
+            referenceCache,
+            headerTable,
+            nodeTable,
+            wayTable,
+            relationTable,
+            3857)
+        .call();
     assertEquals(2436l, headerTable.selectLatest().getReplicationSequenceNumber());
 
-    assertEquals(0, new DiffService(
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerTable,
-        nodeTable,
-        wayTable,
-        relationTable,
-        3857,
-        14
-    ).call().size());
+    assertEquals(
+        0,
+        new DiffService(
+                blobStore,
+                coordinateCache,
+                referenceCache,
+                headerTable,
+                nodeTable,
+                wayTable,
+                relationTable,
+                3857,
+                14)
+            .call()
+            .size());
 
     new UpdateService(
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerTable,
-        nodeTable,
-        wayTable,
-        relationTable,
-        3857
-    ).call();
+            blobStore,
+            coordinateCache,
+            referenceCache,
+            headerTable,
+            nodeTable,
+            wayTable,
+            relationTable,
+            3857)
+        .call();
     assertEquals(2437l, headerTable.selectLatest().getReplicationSequenceNumber());
   }
-
 }

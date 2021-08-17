@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.database;
 
 public class DatabaseException extends Exception {
@@ -23,5 +22,4 @@ public class DatabaseException extends Exception {
   public DatabaseException(Exception e) {
     super(e);
   }
-
 }

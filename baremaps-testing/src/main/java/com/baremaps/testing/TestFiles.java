@@ -41,5 +41,4 @@ public class TestFiles {
   public static final URL MONACO_OSM_PBF = get("monaco/monaco.osm.pbf");
 
   public static final URL MONACO_STATE_TXT = get("monaco/monaco-state.txt");
-
 }

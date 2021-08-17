@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.baremaps.osm.database;
 
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
@@ -63,7 +76,8 @@ public class UpdateService implements Callable<Void> {
 
     Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinateCache, referenceCache);
     Consumer<Entity> reprojectGeometry = new ReprojectGeometryConsumer(4326, srid);
-    Consumer<Change> prepareGeometries = new ChangeEntityConsumer(createGeometry.andThen(reprojectGeometry));
+    Consumer<Change> prepareGeometries =
+        new ChangeEntityConsumer(createGeometry.andThen(reprojectGeometry));
     Function<Change, Change> prepareChange = consumeThenReturn(prepareGeometries);
     Consumer<Change> saveChange = new SaveChangeConsumer(nodeTable, wayTable, relationTable);
 
@@ -80,24 +94,24 @@ public class UpdateService implements Callable<Void> {
     Blob stateBlob = blobStore.get(stateUri);
     try (InputStream stateInputStream = stateBlob.getInputStream()) {
       State state = OpenStreetMap.readState(stateInputStream);
-      headerTable.insert(new Header(
-          state.getSequenceNumber(), state.getTimestamp(),
-          header.getReplicationUrl(),
-          header.getSource(),
-          header.getWritingProgram()));
+      headerTable.insert(
+          new Header(
+              state.getSequenceNumber(),
+              state.getTimestamp(),
+              header.getReplicationUrl(),
+              header.getSource(),
+              header.getWritingProgram()));
     }
 
     return null;
   }
 
-  public URI resolve(String replicationUrl, Long sequenceNumber, String extension) throws URISyntaxException {
+  public URI resolve(String replicationUrl, Long sequenceNumber, String extension)
+      throws URISyntaxException {
     String s = String.format("%09d", sequenceNumber);
-    return new URI(String.format("%s/%s/%s/%s.%s",
-        replicationUrl,
-        s.substring(0, 3),
-        s.substring(3, 6),
-        s.substring(6, 9),
-        extension));
+    return new URI(
+        String.format(
+            "%s/%s/%s/%s.%s",
+            replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension));
   }
-
 }

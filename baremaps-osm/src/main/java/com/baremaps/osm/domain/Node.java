@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.domain;
 
 import com.baremaps.osm.handler.EntityConsumer;
@@ -21,9 +20,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
-/**
- * Represents a node element in an OpenStreetMap dataset.
- */
+/** Represents a node element in an OpenStreetMap dataset. */
 public final class Node extends Element {
 
   private final double lon;
@@ -36,7 +33,8 @@ public final class Node extends Element {
     this.lat = lat;
   }
 
-  public Node(long id, Info info, Map<String, String> tags, double lon, double lat, Geometry geometry) {
+  public Node(
+      long id, Info info, Map<String, String> tags, double lon, double lat, Geometry geometry) {
     super(id, info, tags, geometry);
     this.lon = lon;
     this.lat = lat;
@@ -72,8 +70,7 @@ public final class Node extends Element {
       return false;
     }
     Node node = (Node) o;
-    return Double.compare(node.lon, lon) == 0 &&
-        Double.compare(node.lat, lat) == 0;
+    return Double.compare(node.lon, lon) == 0 && Double.compare(node.lat, lat) == 0;
   }
 
   @Override

@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.lmdb;
 
 import com.baremaps.osm.cache.ReferenceCache;
@@ -55,5 +54,4 @@ public class LmdbReferencesCache extends LmdbCache<Long, List<Long>> implements 
     buffer.flip();
     return buffer;
   }
-
 }

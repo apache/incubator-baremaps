@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.lmdb;
 
 import com.baremaps.osm.cache.CoordinateCache;
@@ -54,5 +53,4 @@ public class LmdbCoordinateCache extends LmdbCache<Long, Coordinate> implements 
     buffer.flip();
     return buffer;
   }
-
 }

@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.blob;
 
 import java.net.URI;
@@ -70,5 +69,4 @@ public class CompositeBlobStore implements BlobStore {
       throw new BlobStoreException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
     }
   }
-
 }

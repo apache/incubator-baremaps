@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.tile;
 
 import com.baremaps.blob.FileBlobStore;
@@ -28,5 +27,4 @@ class BlobStoreTileStoreTest extends TileStoreTest {
     Path directory = Files.createTempDirectory("baremaps_");
     return new TileBlobStore(new FileBlobStore(), new URI(directory.toString()));
   }
-
 }

@@ -30,5 +30,4 @@ public class TileBatcher implements Predicate<Tile> {
   public boolean test(Tile tile) {
     return batchArraySize <= 1 || tile.index() % batchArraySize == batchArrayIndex;
   }
-
 }

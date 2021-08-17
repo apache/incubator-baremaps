@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.baremaps.cli;
 
 import static com.baremaps.config.VariableUtils.interpolate;
@@ -26,8 +39,7 @@ public class Execute implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Execute.class);
 
-  @Mixin
-  private Options options;
+  @Mixin private Options options;
 
   @Option(
       names = {"--database"},
@@ -57,22 +69,23 @@ public class Execute implements Callable<Integer> {
 
     for (URI file : files) {
       logger.info("Execute {}", file);
-      String blob = new String(blobStore.get(file).getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+      String blob =
+          new String(blobStore.get(file).getInputStream().readAllBytes(), StandardCharsets.UTF_8);
       blob = interpolate(System.getenv(), blob);
       StreamUtils.batch(Splitter.on(";").splitToStream(blob), 1)
-          .forEach(query -> {
-            try (Connection connection = datasource.getConnection();
-                Statement statement = connection.createStatement()) {
-              statement.execute(query);
-            } catch (SQLException e) {
-              throw new StreamException(e);
-            }
-          });
+          .forEach(
+              query -> {
+                try (Connection connection = datasource.getConnection();
+                    Statement statement = connection.createStatement()) {
+                  statement.execute(query);
+                } catch (SQLException e) {
+                  throw new StreamException(e);
+                }
+              });
     }
 
     logger.info("Done");
 
     return 0;
   }
-
 }

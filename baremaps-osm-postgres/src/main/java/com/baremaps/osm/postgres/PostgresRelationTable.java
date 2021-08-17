@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.postgres;
 
 import com.baremaps.osm.database.DatabaseException;
@@ -53,7 +52,8 @@ public class PostgresRelationTable implements RelationTable {
   private final DataSource dataSource;
 
   public PostgresRelationTable(DataSource dataSource) {
-    this(dataSource,
+    this(
+        dataSource,
         "osm_relations",
         "id",
         "version",
@@ -81,36 +81,74 @@ public class PostgresRelationTable implements RelationTable {
       String memberRoles,
       String geometryColumn) {
     this.dataSource = dataSource;
-    this.select = String.format(
-        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, st_asbinary(%11$s) FROM %1$s WHERE %2$s = ?",
-        nodeTable, idColumn, versionColumn, uidColumn, timestampColumn,
-        changesetColumn, tagsColumn, memberRefs, memberTypes, memberRoles, geometryColumn);
-    this.selectIn = String.format(
-        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, st_asbinary(%11$s) FROM %1$s WHERE %2$s = ANY (?)",
-        nodeTable, idColumn, versionColumn, uidColumn, timestampColumn,
-        changesetColumn, tagsColumn, memberRefs, memberTypes, memberRoles, geometryColumn);
-    this.insert = String.format(
-        "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-            + "ON CONFLICT (%2$s) DO UPDATE SET "
-            + "%3$s = excluded.%3$s, "
-            + "%4$s = excluded.%4$s, "
-            + "%5$s = excluded.%5$s, "
-            + "%6$s = excluded.%6$s, "
-            + "%7$s = excluded.%7$s, "
-            + "%8$s = excluded.%8$s, "
-            + "%9$s = excluded.%9$s, "
-            + "%10$s = excluded.%10$s, "
-            + "%11$s = excluded.%11$s",
-        nodeTable, idColumn, versionColumn, uidColumn, timestampColumn,
-        changesetColumn, tagsColumn, memberRefs, memberTypes, memberRoles, geometryColumn);
-    this.delete = String.format(
-        "DELETE FROM %1$s WHERE %2$s = ?",
-        nodeTable, idColumn);
-    this.copy = String.format(
-        "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s) FROM STDIN BINARY",
-        nodeTable, idColumn, versionColumn, uidColumn, timestampColumn,
-        changesetColumn, tagsColumn, memberRefs, memberTypes, memberRoles, geometryColumn);
+    this.select =
+        String.format(
+            "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, st_asbinary(%11$s) FROM %1$s WHERE %2$s = ?",
+            nodeTable,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            memberRefs,
+            memberTypes,
+            memberRoles,
+            geometryColumn);
+    this.selectIn =
+        String.format(
+            "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, st_asbinary(%11$s) FROM %1$s WHERE %2$s = ANY (?)",
+            nodeTable,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            memberRefs,
+            memberTypes,
+            memberRoles,
+            geometryColumn);
+    this.insert =
+        String.format(
+            "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                + "ON CONFLICT (%2$s) DO UPDATE SET "
+                + "%3$s = excluded.%3$s, "
+                + "%4$s = excluded.%4$s, "
+                + "%5$s = excluded.%5$s, "
+                + "%6$s = excluded.%6$s, "
+                + "%7$s = excluded.%7$s, "
+                + "%8$s = excluded.%8$s, "
+                + "%9$s = excluded.%9$s, "
+                + "%10$s = excluded.%10$s, "
+                + "%11$s = excluded.%11$s",
+            nodeTable,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            memberRefs,
+            memberTypes,
+            memberRoles,
+            geometryColumn);
+    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", nodeTable, idColumn);
+    this.copy =
+        String.format(
+            "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s) FROM STDIN BINARY",
+            nodeTable,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            memberRefs,
+            memberTypes,
+            memberRoles,
+            geometryColumn);
   }
 
   public Relation select(Long id) throws DatabaseException {
@@ -220,16 +258,15 @@ public class PostgresRelationTable implements RelationTable {
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
           writer.writeHstore(entity.getTags());
-          writer.writeLongList(entity.getMembers().stream()
-              .map(Member::getRef)
-              .collect(Collectors.toList()));
-          writer.writeIntegerList(entity.getMembers().stream()
-              .map(Member::getType)
-              .map(MemberType::ordinal)
-              .collect(Collectors.toList()));
-          writer.writeStringList(entity.getMembers().stream()
-              .map(Member::getRole)
-              .collect(Collectors.toList()));
+          writer.writeLongList(
+              entity.getMembers().stream().map(Member::getRef).collect(Collectors.toList()));
+          writer.writeIntegerList(
+              entity.getMembers().stream()
+                  .map(Member::getType)
+                  .map(MemberType::ordinal)
+                  .collect(Collectors.toList()));
+          writer.writeStringList(
+              entity.getMembers().stream().map(Member::getRole).collect(Collectors.toList()));
           writer.writeGeometry(entity.getGeometry());
         }
       }
@@ -266,16 +303,11 @@ public class PostgresRelationTable implements RelationTable {
     statement.setObject(6, entity.getTags());
     Object[] refs = entity.getMembers().stream().map(Member::getRef).toArray();
     statement.setObject(7, statement.getConnection().createArrayOf("bigint", refs));
-    Object[] types = entity.getMembers().stream()
-        .map(Member::getType)
-        .map(MemberType::ordinal)
-        .toArray();
+    Object[] types =
+        entity.getMembers().stream().map(Member::getType).map(MemberType::ordinal).toArray();
     statement.setObject(8, statement.getConnection().createArrayOf("int", types));
-    Object[] roles = entity.getMembers().stream()
-        .map(Member::getRole)
-        .toArray();
+    Object[] roles = entity.getMembers().stream().map(Member::getRole).toArray();
     statement.setObject(9, statement.getConnection().createArrayOf("varchar", roles));
     statement.setBytes(10, GeometryUtils.serialize(entity.getGeometry()));
   }
-
 }

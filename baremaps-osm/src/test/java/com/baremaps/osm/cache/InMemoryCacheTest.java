@@ -31,10 +31,7 @@ class InMemoryCacheTest {
     Coordinate c3 = new Coordinate(3, 0);
     Coordinate c4 = new Coordinate(4, 0);
     cache.add(1, c1);
-    cache.add(Arrays.asList(
-        new Entry(2, c2),
-        new Entry(3, c3),
-        new Entry(4, c4)));
+    cache.add(Arrays.asList(new Entry(2, c2), new Entry(3, c3), new Entry(4, c4)));
     assertEquals(cache.get(1), c1);
     assertEquals(cache.get(Arrays.asList(1, 2)), Arrays.asList(c1, c2));
     cache.delete(1);

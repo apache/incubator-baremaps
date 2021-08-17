@@ -11,14 +11,11 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.domain;
 
 import com.google.common.base.Objects;
 
-/**
- * Represents the author of an objet in an OpenStreetMap dataset.
- */
+/** Represents the author of an objet in an OpenStreetMap dataset. */
 public final class User {
 
   public static final User NO_USER = new User(-1, "");

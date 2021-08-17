@@ -22,5 +22,4 @@ public class TileStoreException extends Exception {
   public TileStoreException(Throwable e) {
     super(e);
   }
-
 }

@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.stream;
 
 import java.util.ArrayList;
@@ -21,8 +20,8 @@ import java.util.Spliterators;
 import java.util.function.Consumer;
 
 /**
- * A {@code BatchedSpliterator} wraps another spliterator and partition its elements according to a given batch size
- * when trySplit is invoked.
+ * A {@code BatchedSpliterator} wraps another spliterator and partition its elements according to a
+ * given batch size when trySplit is invoked.
  *
  * @param <T>
  */
@@ -32,10 +31,11 @@ class BatchedSpliterator<T> implements Spliterator<T> {
   private final int batchSize;
 
   /**
-   * Creates a spliterator that partitions the underlying spliterator according to a given batch size.
+   * Creates a spliterator that partitions the underlying spliterator according to a given batch
+   * size.
    *
    * @param spliterator the underlying spliterator.
-   * @param batchSize   the batch size.
+   * @param batchSize the batch size.
    */
   public BatchedSpliterator(Spliterator<T> spliterator, int batchSize) {
     this.spliterator = spliterator;
@@ -55,9 +55,8 @@ class BatchedSpliterator<T> implements Spliterator<T> {
   @Override
   public Spliterator<T> trySplit() {
     List<T> batch = new ArrayList<>();
-    while (batch.size() < batchSize && tryAdvance(batch::add)) {
+    while (batch.size() < batchSize && tryAdvance(batch::add)) {}
 
-    }
     if (!batch.isEmpty()) {
       return Spliterators.spliterator(batch, characteristics());
     } else {
@@ -84,5 +83,4 @@ class BatchedSpliterator<T> implements Spliterator<T> {
   public int characteristics() {
     return spliterator.characteristics() | SIZED | SUBSIZED;
   }
-
 }

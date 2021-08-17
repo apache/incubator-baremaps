@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.baremaps.osm.database;
 
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
@@ -81,7 +94,8 @@ public class DiffService implements Callable<List<Tile>> {
     Blob blob = blobStore.get(changeUri);
     ProgressLogger progressLogger = new ProgressLogger(blob.getContentLength(), 5000);
     ReprojectGeometryConsumer reprojectGeometryConsumer = new ReprojectGeometryConsumer(srid, 4326);
-    try (InputStream changesInputStream = new GZIPInputStream(new InputStreamProgress(blob.getInputStream(), progressLogger))) {
+    try (InputStream changesInputStream =
+        new GZIPInputStream(new InputStreamProgress(blob.getInputStream(), progressLogger))) {
       return OpenStreetMap.streamXmlChanges(changesInputStream)
           .flatMap(this::geometriesForChange)
           .map(consumeThenReturn(reprojectGeometryConsumer::transform))
@@ -92,9 +106,10 @@ public class DiffService implements Callable<List<Tile>> {
   }
 
   private Stream<Tile> tilesForGeometry(Geometry geometry) {
-    return StreamSupport.stream(Spliterators.spliteratorUnknownSize(
-        Tile.iterator(geometry.getEnvelopeInternal(), zoom, zoom),
-        Spliterator.IMMUTABLE), false);
+    return StreamSupport.stream(
+        Spliterators.spliteratorUnknownSize(
+            Tile.iterator(geometry.getEnvelopeInternal(), zoom, zoom), Spliterator.IMMUTABLE),
+        false);
   }
 
   private Stream<Geometry> geometriesForChange(Change change) {
@@ -104,42 +119,46 @@ public class DiffService implements Callable<List<Tile>> {
       case DELETE:
         return geometriesForPreviousVersion(change);
       case MODIFY:
-        return Stream.concat(geometriesForPreviousVersion(change), geometriesForNextVersion(change));
+        return Stream.concat(
+            geometriesForPreviousVersion(change), geometriesForNextVersion(change));
       default:
         return Stream.empty();
     }
   }
 
   private Stream<Geometry> geometriesForPreviousVersion(Change change) {
-    return change.getEntities().stream().map(new EntityFunction<Optional<Geometry>>() {
-      @Override
-      public Optional<Geometry> match(Header header) {
-        return Optional.empty();
-      }
+    return change.getEntities().stream()
+        .map(
+            new EntityFunction<Optional<Geometry>>() {
+              @Override
+              public Optional<Geometry> match(Header header) {
+                return Optional.empty();
+              }
 
-      @Override
-      public Optional<Geometry> match(Bound bound) {
-        return Optional.empty();
-      }
+              @Override
+              public Optional<Geometry> match(Bound bound) {
+                return Optional.empty();
+              }
 
-      @Override
-      public Optional<Geometry> match(Node node) throws Exception {
-        Node previousNode = nodeTable.select(node.getId());
-        return Optional.ofNullable(previousNode).map(Node::getGeometry);
-      }
+              @Override
+              public Optional<Geometry> match(Node node) throws Exception {
+                Node previousNode = nodeTable.select(node.getId());
+                return Optional.ofNullable(previousNode).map(Node::getGeometry);
+              }
 
-      @Override
-      public Optional<Geometry> match(Way way) throws Exception {
-        Way previousWay = wayTable.select(way.getId());
-        return Optional.ofNullable(previousWay).map(Way::getGeometry);
-      }
+              @Override
+              public Optional<Geometry> match(Way way) throws Exception {
+                Way previousWay = wayTable.select(way.getId());
+                return Optional.ofNullable(previousWay).map(Way::getGeometry);
+              }
 
-      @Override
-      public Optional<Geometry> match(Relation relation) throws Exception {
-        Relation previousRelation = relationTable.select(relation.getId());
-        return Optional.ofNullable(previousRelation).map(Relation::getGeometry);
-      }
-    }).flatMap(Optional::stream);
+              @Override
+              public Optional<Geometry> match(Relation relation) throws Exception {
+                Relation previousRelation = relationTable.select(relation.getId());
+                return Optional.ofNullable(previousRelation).map(Relation::getGeometry);
+              }
+            })
+        .flatMap(Optional::stream);
   }
 
   private Stream<Geometry> geometriesForNextVersion(Change change) {
@@ -148,14 +167,12 @@ public class DiffService implements Callable<List<Tile>> {
         .flatMap(new ExtractGeometryFunction().andThen(Optional::stream));
   }
 
-  private URI resolve(String replicationUrl, Long sequenceNumber, String extension) throws URISyntaxException {
+  private URI resolve(String replicationUrl, Long sequenceNumber, String extension)
+      throws URISyntaxException {
     String s = String.format("%09d", sequenceNumber);
-    return new URI(String.format("%s/%s/%s/%s.%s",
-        replicationUrl,
-        s.substring(0, 3),
-        s.substring(3, 6),
-        s.substring(6, 9),
-        extension));
+    return new URI(
+        String.format(
+            "%s/%s/%s/%s.%s",
+            replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension));
   }
-
 }

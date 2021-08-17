@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.blob.s3;
 
 import com.adobe.testing.s3mock.junit5.S3MockExtension;
@@ -26,10 +25,8 @@ import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 class S3BlobStoreTest extends BlobStoreTest {
 
   @RegisterExtension
-  static final S3MockExtension S3_MOCK = S3MockExtension.builder()
-      .silent()
-      .withSecureConnection(false)
-      .build();
+  static final S3MockExtension S3_MOCK =
+      S3MockExtension.builder().silent().withSecureConnection(false).build();
 
   private final S3Client s3Client = S3_MOCK.createS3ClientV2();
 

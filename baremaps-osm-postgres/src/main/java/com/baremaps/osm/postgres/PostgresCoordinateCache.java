@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.postgres;
 
 import com.baremaps.osm.cache.CacheException;
@@ -29,11 +28,9 @@ import org.locationtech.jts.geom.Coordinate;
 
 public class PostgresCoordinateCache implements CoordinateCache {
 
-  private static final String SELECT =
-      "SELECT lon, lat FROM osm_nodes WHERE id = ?";
+  private static final String SELECT = "SELECT lon, lat FROM osm_nodes WHERE id = ?";
 
-  private static final String SELECT_IN =
-      "SELECT id, lon, lat FROM osm_nodes WHERE id = ANY (?)";
+  private static final String SELECT_IN = "SELECT id, lon, lat FROM osm_nodes WHERE id = ANY (?)";
 
   private final DataSource dataSource;
 
@@ -96,5 +93,4 @@ public class PostgresCoordinateCache implements CoordinateCache {
   public void deleteAll(List<Long> keys) {
     throw new UnsupportedOperationException();
   }
-
 }

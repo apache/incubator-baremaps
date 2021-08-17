@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.baremaps.tile.postgres;
 
 import java.util.List;
@@ -55,53 +68,65 @@ public class PostgresQueryGenerator {
     String layer = String.format("%s.%s", tableSchema, tableName);
     String idColumn = table.getPrimaryKeyColumns().get(0).getColumnName();
     String geometryColumn = table.getGeometryColumns().get(0).getColumnName();
-    String tagsColumns = table.getColumns().stream()
-        .filter(column -> !idColumn.equals(column.getColumnName()))
-        .filter(column -> !geometryColumn.equals(column.getColumnName()))
-        .map(column -> String.format("'%1$s', %1$s::text", column.getColumnName()))
-        .collect(Collectors.joining(", ", "hstore(array[", "])"));
-    String sql = String.format("SELECT %s, %s, %s FROM %s", idColumn, tagsColumns, geometryColumn, tableName);
+    String tagsColumns =
+        table.getColumns().stream()
+            .filter(column -> !idColumn.equals(column.getColumnName()))
+            .filter(column -> !geometryColumn.equals(column.getColumnName()))
+            .map(column -> String.format("'%1$s', %1$s::text", column.getColumnName()))
+            .collect(Collectors.joining(", ", "hstore(array[", "])"));
+    String sql =
+        String.format(
+            "SELECT %s, %s, %s FROM %s", idColumn, tagsColumns, geometryColumn, tableName);
     return new PostgresQuery(layer, 0, 20, sql);
   }
 
   private List<Table> listTables() {
-    Map<String, TableDescription> descriptions = listTableDescriptions().stream()
-        .collect(Collectors.toMap(TableDescription::getTableName, Function.identity()));
-    Map<String, List<TableColumn>> columns = listTableColumns().stream()
-        .collect(Collectors.groupingBy(TableColumn::getTableName));
-    Map<String, List<TablePrimaryKeyColumn>> primaryKeys = listTablePrimaryKeyColumns().stream()
-        .collect(Collectors.groupingBy(TablePrimaryKeyColumn::getTableName));
+    Map<String, TableDescription> descriptions =
+        listTableDescriptions().stream()
+            .collect(Collectors.toMap(TableDescription::getTableName, Function.identity()));
+    Map<String, List<TableColumn>> columns =
+        listTableColumns().stream().collect(Collectors.groupingBy(TableColumn::getTableName));
+    Map<String, List<TablePrimaryKeyColumn>> primaryKeys =
+        listTablePrimaryKeyColumns().stream()
+            .collect(Collectors.groupingBy(TablePrimaryKeyColumn::getTableName));
     return descriptions.entrySet().stream()
-        .map(entry -> new Table(entry.getValue(),
-            primaryKeys.getOrDefault(entry.getKey(), List.of()),
-            columns.getOrDefault(entry.getKey(), List.of())))
+        .map(
+            entry ->
+                new Table(
+                    entry.getValue(),
+                    primaryKeys.getOrDefault(entry.getKey(), List.of()),
+                    columns.getOrDefault(entry.getKey(), List.of())))
         .collect(Collectors.toList());
   }
 
   private List<TableDescription> listTableDescriptions() {
-    return jdbi.withHandle(handle -> {
-      ResultBearing resultBearing = handle
-          .queryMetadata(f -> f.getTables(catalog, schemaPattern, typeNamePattern, types));
-      return resultBearing.mapTo(TableDescription.class).list();
-    });
+    return jdbi.withHandle(
+        handle -> {
+          ResultBearing resultBearing =
+              handle.queryMetadata(
+                  f -> f.getTables(catalog, schemaPattern, typeNamePattern, types));
+          return resultBearing.mapTo(TableDescription.class).list();
+        });
   }
 
   private List<TableColumn> listTableColumns() {
-    return jdbi.withHandle(handle -> {
-      ResultBearing resultBearing = handle
-          .queryMetadata(f -> f.getColumns(catalog, schemaPattern, typeNamePattern, columnNamePattern));
-      return resultBearing.mapTo(TableColumn.class).list();
-    });
+    return jdbi.withHandle(
+        handle -> {
+          ResultBearing resultBearing =
+              handle.queryMetadata(
+                  f -> f.getColumns(catalog, schemaPattern, typeNamePattern, columnNamePattern));
+          return resultBearing.mapTo(TableColumn.class).list();
+        });
   }
 
   private List<TablePrimaryKeyColumn> listTablePrimaryKeyColumns() {
-    return jdbi.withHandle(handle -> {
-      ResultBearing resultBearing = handle
-          .queryMetadata(f -> f.getPrimaryKeys(catalog, schemaPattern, null));
-      return resultBearing.mapTo(TablePrimaryKeyColumn.class).list();
-    });
+    return jdbi.withHandle(
+        handle -> {
+          ResultBearing resultBearing =
+              handle.queryMetadata(f -> f.getPrimaryKeys(catalog, schemaPattern, null));
+          return resultBearing.mapTo(TablePrimaryKeyColumn.class).list();
+        });
   }
-
 }
 
 class Table {
@@ -112,7 +137,10 @@ class Table {
 
   private List<TableColumn> columns;
 
-  Table(TableDescription description, List<TablePrimaryKeyColumn> primaryKeyColumns, List<TableColumn> columns) {
+  Table(
+      TableDescription description,
+      List<TablePrimaryKeyColumn> primaryKeyColumns,
+      List<TableColumn> columns) {
     this.description = description;
     this.primaryKeyColumns = primaryKeyColumns;
     this.columns = columns;
@@ -307,7 +335,6 @@ class TableColumn {
         .add("ordinalPosition=" + ordinalPosition)
         .toString();
   }
-
 }
 
 @Entity
@@ -366,5 +393,4 @@ class TablePrimaryKeyColumn {
         .add("pkName='" + pkName + "'")
         .toString();
   }
-
 }

@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.domain;
 
 import com.baremaps.osm.handler.EntityConsumer;
@@ -20,9 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-/**
- * Represents a header entity in an OpenStreetMap dataset.
- */
+/** Represents a header entity in an OpenStreetMap dataset. */
 public class Header implements Entity {
 
   private final Long replicationSequenceNumber;
@@ -83,16 +80,17 @@ public class Header implements Entity {
       return false;
     }
     Header header = (Header) o;
-    return Objects.equals(replicationTimestamp, header.replicationTimestamp) &&
-        Objects.equals(replicationSequenceNumber, header.replicationSequenceNumber) &&
-        Objects.equals(replicationUrl, header.replicationUrl) &&
-        Objects.equals(source, header.source) &&
-        Objects.equals(writingProgram, header.writingProgram);
+    return Objects.equals(replicationTimestamp, header.replicationTimestamp)
+        && Objects.equals(replicationSequenceNumber, header.replicationSequenceNumber)
+        && Objects.equals(replicationUrl, header.replicationUrl)
+        && Objects.equals(source, header.source)
+        && Objects.equals(writingProgram, header.writingProgram);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram);
+    return Objects.hash(
+        replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram);
   }
 
   @Override

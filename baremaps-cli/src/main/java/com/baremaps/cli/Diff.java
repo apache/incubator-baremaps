@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.baremaps.cli;
 
 import com.baremaps.blob.Blob;
@@ -34,8 +47,7 @@ public class Diff implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Diff.class);
 
-  @Mixin
-  private Options options;
+  @Mixin private Options options;
 
   @Option(
       names = {"--database"},
@@ -78,26 +90,27 @@ public class Diff implements Callable<Integer> {
     Path tmpTiles = Files.createFile(Paths.get("diff.tmp"));
     try (PrintWriter printWriter = new PrintWriter(Files.newBufferedWriter(tmpTiles))) {
       new DiffService(
-          blobStore,
-          coordinateCache,
-          referenceCache,
-          headerTable,
-          nodeTable,
-          wayTable,
-          relationTable,
-          srid,
-          zoom
-      ).call();
+              blobStore,
+              coordinateCache,
+              referenceCache,
+              headerTable,
+              nodeTable,
+              wayTable,
+              relationTable,
+              srid,
+              zoom)
+          .call();
     }
-    blobStore.put(this.tiles, Blob.builder()
-        .withContentLength(Files.size(tmpTiles))
-        .withInputStream(Files.newInputStream(tmpTiles))
-        .build());
+    blobStore.put(
+        this.tiles,
+        Blob.builder()
+            .withContentLength(Files.size(tmpTiles))
+            .withInputStream(Files.newInputStream(tmpTiles))
+            .build());
     Files.deleteIfExists(tmpTiles);
 
     logger.info("Done");
 
     return 0;
   }
-
 }

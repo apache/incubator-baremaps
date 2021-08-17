@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.domain;
 
 import com.baremaps.osm.binary.Fileformat;
@@ -22,9 +21,7 @@ import java.util.StringJoiner;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-/**
- * Represents a raw blob of data in an OpenStreetMap dataset.
- */
+/** Represents a raw blob of data in an OpenStreetMap dataset. */
 public class Blob {
 
   private final BlobHeader header;

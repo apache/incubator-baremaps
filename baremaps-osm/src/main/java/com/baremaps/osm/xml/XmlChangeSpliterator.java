@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.baremaps.osm.xml;
 
 import static javax.xml.stream.XMLInputFactory.IS_COALESCING;
@@ -71,7 +70,8 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
   private static final String ATTRIBUTE_NAME_REF = "ref";
   private static final String ATTRIBUTE_NAME_TYPE = "type";
   private static final String ATTRIBUTE_NAME_ROLE = "role";
-  public static final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+  public static final DateTimeFormatter format =
+      DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   private final XMLStreamReader reader;
 
@@ -228,8 +228,9 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
 
   private void readRelationMember(List<Member> members) throws XMLStreamException {
     long id = Long.parseLong(reader.getAttributeValue(null, ATTRIBUTE_NAME_REF));
-    MemberType type = Member.MemberType
-        .valueOf(reader.getAttributeValue(null, ATTRIBUTE_NAME_TYPE).toUpperCase());
+    MemberType type =
+        Member.MemberType.valueOf(
+            reader.getAttributeValue(null, ATTRIBUTE_NAME_TYPE).toUpperCase());
     String role = reader.getAttributeValue(null, ATTRIBUTE_NAME_ROLE);
     members.add(new Member(id, type, role));
     reader.nextTag();
@@ -238,7 +239,8 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
 
   private Info readInfo() {
     int version = Integer.parseInt(reader.getAttributeValue(null, ATTRIBUTE_NAME_VERSION));
-    LocalDateTime timestamp = LocalDateTime.parse(reader.getAttributeValue(null, ATTRIBUTE_NAME_TIMESTAMP), format);
+    LocalDateTime timestamp =
+        LocalDateTime.parse(reader.getAttributeValue(null, ATTRIBUTE_NAME_TIMESTAMP), format);
     String changesetValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_CHANGESET_ID);
     long changeset = changesetValue != null ? Long.parseLong(changesetValue) : -1;
     String uidValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_USER_ID);
@@ -266,7 +268,6 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
     } while (level > 0);
   }
 
-
   @Override
   public Spliterator<Change> trySplit() {
     return null;
@@ -281,5 +282,4 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
   public int characteristics() {
     return ORDERED | DISTINCT | NONNULL | IMMUTABLE;
   }
-
 }
