@@ -40,11 +40,18 @@ public class TilesetsService implements TilesetsApi {
 
   @Override
   public Response addTileset(TileSet tileSet) {
-    UUID tilesetId = UUID.randomUUID(); // TODO: Read from body
+    UUID tilesetId;
+    try {
+      tilesetId = UUID.fromString(tileSet.getTiles().get(0).split("/")[4]);
+    } catch (Exception e) {
+      tilesetId = UUID.randomUUID();
+    }
+
+    UUID finalTilesetId = tilesetId;
     jdbi.useHandle(
         handle -> handle.createUpdate("insert into tilesets (id, tileset) values (:id, CAST(:json AS JSONB))")
             .bindByType("json", tileSet, TILESET)
-            .bind("id", tilesetId)
+            .bind("id", finalTilesetId)
             .execute());
 
     return Response.created(URI.create("tilesets/" + tilesetId)).build();
@@ -102,6 +109,8 @@ public class TilesetsService implements TilesetsApi {
               .bind("id", tilesetId)
               .mapTo(TILESET)
               .one());
+      tileset.setTiles(
+          List.of(String.format("http://localhost:8080/tilesets/%s/tiles/matrix-set-id/{z}/{y}/{x}", tilesetId)));
       tilesets.put(tilesetId, tileset);
     }
 
