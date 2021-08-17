@@ -61,5 +61,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn --file pom.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-      - name: Upload code coverage
-        run: bash <(curl -s https://codecov.io/bash)
