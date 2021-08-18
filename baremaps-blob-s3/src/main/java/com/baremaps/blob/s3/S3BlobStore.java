@@ -44,10 +44,8 @@ public class S3BlobStore implements BlobStore {
   @Override
   public Blob head(URI uri) throws BlobStoreException {
     try {
-      HeadObjectRequest request = HeadObjectRequest.builder()
-          .bucket(uri.getHost())
-          .key(uri.getPath().substring(1))
-          .build();
+      HeadObjectRequest request =
+          HeadObjectRequest.builder().bucket(uri.getHost()).key(uri.getPath().substring(1)).build();
       HeadObjectResponse response = client.headObject(request);
       return Blob.builder()
           .withContentLength(response.contentLength())
@@ -62,10 +60,8 @@ public class S3BlobStore implements BlobStore {
   @Override
   public Blob get(URI uri) throws BlobStoreException {
     try {
-      GetObjectRequest request = GetObjectRequest.builder()
-          .bucket(uri.getHost())
-          .key(uri.getPath().substring(1))
-          .build();
+      GetObjectRequest request =
+          GetObjectRequest.builder().bucket(uri.getHost()).key(uri.getPath().substring(1)).build();
       ResponseInputStream<GetObjectResponse> responseInputStream = client.getObject(request);
       GetObjectResponse getObjectResponse = responseInputStream.response();
       return Blob.builder()
@@ -82,13 +78,15 @@ public class S3BlobStore implements BlobStore {
   @Override
   public void put(URI uri, Blob blob) throws BlobStoreException {
     try {
-      PutObjectRequest.Builder builder = PutObjectRequest.builder()
-          .bucket(uri.getHost())
-          .key(uri.getPath().substring(1))
-          .contentLength(blob.getContentLength())
-          .contentType(blob.getContentType())
-          .contentEncoding(blob.getContentEncoding());
-      RequestBody requestBody = RequestBody.fromInputStream(blob.getInputStream(), blob.getContentLength());
+      PutObjectRequest.Builder builder =
+          PutObjectRequest.builder()
+              .bucket(uri.getHost())
+              .key(uri.getPath().substring(1))
+              .contentLength(blob.getContentLength())
+              .contentType(blob.getContentType())
+              .contentEncoding(blob.getContentEncoding());
+      RequestBody requestBody =
+          RequestBody.fromInputStream(blob.getInputStream(), blob.getContentLength());
       client.putObject(builder.build(), requestBody);
     } catch (S3Exception e) {
       throw new BlobStoreException(e);
@@ -98,14 +96,14 @@ public class S3BlobStore implements BlobStore {
   @Override
   public void delete(URI uri) throws BlobStoreException {
     try {
-      DeleteObjectRequest request = DeleteObjectRequest.builder()
-          .bucket(uri.getHost())
-          .key(uri.getPath().substring(1))
-          .build();
+      DeleteObjectRequest request =
+          DeleteObjectRequest.builder()
+              .bucket(uri.getHost())
+              .key(uri.getPath().substring(1))
+              .build();
       client.deleteObject(request);
     } catch (S3Exception e) {
       throw new BlobStoreException(e);
     }
   }
-
 }

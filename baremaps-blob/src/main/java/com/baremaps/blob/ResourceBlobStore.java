@@ -27,9 +27,7 @@ public class ResourceBlobStore implements BlobStore {
   public Blob head(URI uri) throws BlobStoreException {
     try {
       ByteSource byteSource = byteSource(uri);
-      return Blob.builder()
-          .withContentLength(byteSource.size())
-          .build();
+      return Blob.builder().withContentLength(byteSource.size()).build();
     } catch (IOException e) {
       throw new BlobStoreException(e);
     }
@@ -61,5 +59,4 @@ public class ResourceBlobStore implements BlobStore {
   private ByteSource byteSource(URI uri) {
     return Resources.asByteSource(Resources.getResource(uri.toString().replace(SCHEMA, "")));
   }
-
 }

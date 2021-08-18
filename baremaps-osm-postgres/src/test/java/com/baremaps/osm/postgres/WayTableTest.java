@@ -66,8 +66,7 @@ class WayTableTest {
     List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayTable.insert(ways);
     assertIterableEquals(
-        ways,
-        wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        ways, wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
@@ -95,7 +94,6 @@ class WayTableTest {
     List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
     wayTable.copy(ways);
     assertIterableEquals(
-        ways,
-        wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        ways, wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

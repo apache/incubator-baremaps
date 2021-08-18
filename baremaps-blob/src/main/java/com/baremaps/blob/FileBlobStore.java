@@ -31,9 +31,7 @@ public class FileBlobStore implements BlobStore {
   public Blob head(URI uri) throws BlobStoreException {
     try {
       Path file = file(uri);
-      return Blob.builder()
-          .withContentLength(Files.size(file))
-          .build();
+      return Blob.builder().withContentLength(Files.size(file)).build();
     } catch (IOException e) {
       throw new BlobStoreException(e);
     }
@@ -74,5 +72,4 @@ public class FileBlobStore implements BlobStore {
       throw new BlobStoreException(e);
     }
   }
-
 }

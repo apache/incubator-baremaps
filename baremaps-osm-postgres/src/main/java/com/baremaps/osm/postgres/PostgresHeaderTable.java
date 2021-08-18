@@ -50,7 +50,8 @@ public class PostgresHeaderTable implements HeaderTable {
   private final String copy;
 
   public PostgresHeaderTable(DataSource dataSource) {
-    this(dataSource,
+    this(
+        dataSource,
         "osm_headers",
         "replication_sequence_number",
         "replication_timestamp",
@@ -66,38 +67,62 @@ public class PostgresHeaderTable implements HeaderTable {
       String replicationTimestampColumn,
       String replicationUrlColumn,
       String sourceColumn,
-      String writingProgramColumn
-  ) {
+      String writingProgramColumn) {
     this.dataSource = dataSource;
-    this.selectLatest = String.format(
-        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s ORDER BY %2$s DESC",
-        headerTable, replicationSequenceNumberColumn, replicationTimestampColumn,
-        replicationUrlColumn, sourceColumn, writingProgramColumn);
-    this.select = String.format(
-        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s WHERE %2$s = ?",
-        headerTable, replicationSequenceNumberColumn, replicationTimestampColumn,
-        replicationUrlColumn, sourceColumn, writingProgramColumn);
-    this.selectIn = String.format(
-        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s WHERE %2$s = ANY (?)",
-        headerTable, replicationSequenceNumberColumn, replicationTimestampColumn,
-        replicationUrlColumn, sourceColumn, writingProgramColumn);
-    this.insert = String.format(
-        "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s) "
-            + "VALUES (?, ?, ?, ?, ?)"
-            + "ON CONFLICT (%2$s) DO UPDATE SET "
-            + "%3$s = excluded.%3$s, "
-            + "%4$s = excluded.%4$s, "
-            + "%5$s = excluded.%5$s, "
-            + "%6$s = excluded.%6$s",
-        headerTable, replicationSequenceNumberColumn, replicationTimestampColumn,
-        replicationUrlColumn, sourceColumn, writingProgramColumn);
-    this.delete = String.format(
-        "DELETE FROM %1$s WHERE %2$s = ?",
-        headerTable, replicationSequenceNumberColumn);
-    this.copy = String.format(
-        "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s) FROM STDIN BINARY",
-        headerTable, replicationSequenceNumberColumn, replicationTimestampColumn,
-        replicationUrlColumn, sourceColumn, writingProgramColumn);
+    this.selectLatest =
+        String.format(
+            "SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s ORDER BY %2$s DESC",
+            headerTable,
+            replicationSequenceNumberColumn,
+            replicationTimestampColumn,
+            replicationUrlColumn,
+            sourceColumn,
+            writingProgramColumn);
+    this.select =
+        String.format(
+            "SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s WHERE %2$s = ?",
+            headerTable,
+            replicationSequenceNumberColumn,
+            replicationTimestampColumn,
+            replicationUrlColumn,
+            sourceColumn,
+            writingProgramColumn);
+    this.selectIn =
+        String.format(
+            "SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s WHERE %2$s = ANY (?)",
+            headerTable,
+            replicationSequenceNumberColumn,
+            replicationTimestampColumn,
+            replicationUrlColumn,
+            sourceColumn,
+            writingProgramColumn);
+    this.insert =
+        String.format(
+            "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s) "
+                + "VALUES (?, ?, ?, ?, ?)"
+                + "ON CONFLICT (%2$s) DO UPDATE SET "
+                + "%3$s = excluded.%3$s, "
+                + "%4$s = excluded.%4$s, "
+                + "%5$s = excluded.%5$s, "
+                + "%6$s = excluded.%6$s",
+            headerTable,
+            replicationSequenceNumberColumn,
+            replicationTimestampColumn,
+            replicationUrlColumn,
+            sourceColumn,
+            writingProgramColumn);
+    this.delete =
+        String.format(
+            "DELETE FROM %1$s WHERE %2$s = ?", headerTable, replicationSequenceNumberColumn);
+    this.copy =
+        String.format(
+            "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s) FROM STDIN BINARY",
+            headerTable,
+            replicationSequenceNumberColumn,
+            replicationTimestampColumn,
+            replicationUrlColumn,
+            sourceColumn,
+            writingProgramColumn);
   }
 
   @Override
@@ -245,11 +270,7 @@ public class PostgresHeaderTable implements HeaderTable {
     String source = result.getString(4);
     String writingProgram = result.getString(5);
     return new Header(
-        replicationSequenceNumber,
-        replicationTimestamp,
-        replicationUrl,
-        source,
-        writingProgram);
+        replicationSequenceNumber, replicationTimestamp, replicationUrl, source, writingProgram);
   }
 
   private void setEntity(PreparedStatement statement, Header entity) throws SQLException {
@@ -259,5 +280,4 @@ public class PostgresHeaderTable implements HeaderTable {
     statement.setObject(4, entity.getSource());
     statement.setObject(5, entity.getWritingProgram());
   }
-
 }

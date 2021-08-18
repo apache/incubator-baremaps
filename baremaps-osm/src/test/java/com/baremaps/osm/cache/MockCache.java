@@ -59,5 +59,4 @@ public class MockCache<T> implements Cache<Long, T> {
   public void deleteAll(List<Long> keys) {
     throw new UnsupportedOperationException();
   }
-
 }

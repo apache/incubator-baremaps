@@ -63,8 +63,7 @@ class PostgresRelationTableTest {
   @Test
   @Tag("integration")
   void insertAll() throws DatabaseException {
-    List<Relation> relations = Arrays
-        .asList(RELATION_2, RELATION_3, RELATION_4);
+    List<Relation> relations = Arrays.asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.insert(relations);
     assertIterableEquals(
         relations,
@@ -82,8 +81,7 @@ class PostgresRelationTableTest {
   @Test
   @Tag("integration")
   void deleteAll() throws DatabaseException {
-    List<Relation> relations = Arrays
-        .asList(RELATION_2, RELATION_3, RELATION_4);
+    List<Relation> relations = Arrays.asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.insert(relations);
     relationStore.delete(relations.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
@@ -94,8 +92,7 @@ class PostgresRelationTableTest {
   @Test
   @Tag("integration")
   void copy() throws DatabaseException {
-    List<Relation> relations = Arrays
-        .asList(RELATION_2, RELATION_3, RELATION_4);
+    List<Relation> relations = Arrays.asList(RELATION_2, RELATION_3, RELATION_4);
     relationStore.copy(relations);
     assertIterableEquals(
         relations,

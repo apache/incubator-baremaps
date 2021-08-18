@@ -1,5 +1,16 @@
-// Copyright (c) Philipp Wagner. All rights reserved.
-// Licensed under the MIT license.
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
 package com.baremaps.postgres.jdbc;
 
@@ -21,9 +32,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKBWriter;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/**
- * A helper for writing in a {@code PGCopyOutputStream}.
- */
+/** A helper for writing in a {@code PGCopyOutputStream}. */
 public class CopyWriter implements AutoCloseable {
 
   private static final Charset UTF8 = StandardCharsets.UTF_8;
@@ -40,6 +49,7 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Creates a new writer with the specified {@code PGCopyOutputStream}.
+   *
    * @param data
    */
   public CopyWriter(PGCopyOutputStream data) {
@@ -48,6 +58,7 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes the header of the query.
+   *
    * @throws IOException
    */
   public void writeHeader() throws IOException {
@@ -61,6 +72,7 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes the number of columns affected by the query.
+   *
    * @param columns
    * @throws IOException
    */
@@ -70,6 +82,7 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a null value.
+   *
    * @throws IOException
    */
   public void writeNull() throws IOException {
@@ -78,6 +91,7 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a string value.
+   *
    * @param value
    * @throws IOException
    */
@@ -87,15 +101,18 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a list of string values.
+   *
    * @param value
    * @throws IOException
    */
   public void writeStringList(List<String> value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.TEXT, CopyWriter::stringWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.TEXT, CopyWriter::stringWriter))
+        .write(data, value);
   }
 
   /**
    * Writes a boolean value.
+   *
    * @param value
    * @throws IOException
    */
@@ -105,15 +122,18 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a list of boolean values.
+   *
    * @param value
    * @throws IOException
    */
   public void writeBooleanList(List<Boolean> value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.BOOLEAN, CopyWriter::booleanWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.BOOLEAN, CopyWriter::booleanWriter))
+        .write(data, value);
   }
 
   /**
    * Writes a byte value.
+   *
    * @param value
    * @throws IOException
    */
@@ -123,6 +143,7 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a byte array value.
+   *
    * @param value
    * @throws IOException
    */
@@ -132,6 +153,7 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a short value.
+   *
    * @param value
    * @throws IOException
    */
@@ -141,15 +163,18 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a list of short values.
+   *
    * @param value
    * @throws IOException
    */
   public void writeShortList(List<Short> value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.INT4, CopyWriter::shortWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.INT4, CopyWriter::shortWriter))
+        .write(data, value);
   }
 
   /**
    * Writes an integer value.
+   *
    * @param value
    * @throws IOException
    */
@@ -159,15 +184,18 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a list of integer values.
+   *
    * @param value
    * @throws IOException
    */
   public void writeIntegerList(List<Integer> value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.INT4, CopyWriter::integerWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.INT4, CopyWriter::integerWriter))
+        .write(data, value);
   }
 
   /**
    * Writes a long value.
+   *
    * @param value
    * @throws IOException
    */
@@ -177,15 +205,18 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a list of long values.
+   *
    * @param value
    * @throws IOException
    */
   public void writeLongList(List<Long> value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.INT8, CopyWriter::longWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.INT8, CopyWriter::longWriter))
+        .write(data, value);
   }
 
   /**
    * Writes a float value.
+   *
    * @param value
    * @throws IOException
    */
@@ -195,15 +226,18 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a list of float values.
+   *
    * @param value
    * @throws IOException
    */
   public void writeFloatList(List<Float> value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.INT8, CopyWriter::floatWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.INT8, CopyWriter::floatWriter))
+        .write(data, value);
   }
 
   /**
    * Writes a double value.
+   *
    * @param value
    * @throws IOException
    */
@@ -213,15 +247,18 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a list of double values.
+   *
    * @param value
    * @throws IOException
    */
   public void writeDoubleArray(List<Double> value) throws IOException {
-    nullableWriter(collectionWriter(ObjectIdentifier.INT8, CopyWriter::doubleWriter)).write(data, value);
+    nullableWriter(collectionWriter(ObjectIdentifier.INT8, CopyWriter::doubleWriter))
+        .write(data, value);
   }
 
   /**
    * Writes a date value.
+   *
    * @param value
    * @throws IOException
    */
@@ -231,6 +268,7 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a list of date values.
+   *
    * @param value
    * @throws IOException
    */
@@ -240,6 +278,7 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes an inet adress value.
+   *
    * @param value
    * @throws IOException
    */
@@ -249,6 +288,7 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a list of inet adress values.
+   *
    * @param value
    * @throws IOException
    */
@@ -258,6 +298,7 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a map value.
+   *
    * @param value
    * @throws IOException
    */
@@ -267,6 +308,7 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a geometry value.
+   *
    * @param value
    * @throws IOException
    */
@@ -274,9 +316,7 @@ public class CopyWriter implements AutoCloseable {
     nullableWriter(CopyWriter::geometryWriter).write(data, value);
   }
 
-  /**
-   * Close the writer.
-   */
+  /** Close the writer. */
   @Override
   public void close() throws IOException {
     data.writeShort(-1);
@@ -349,12 +389,14 @@ public class CopyWriter implements AutoCloseable {
     data.writeInt(TimestampUtils.toPgDays(value));
   }
 
-  private static void localDateTimeWriter(DataOutputStream data, LocalDateTime value) throws IOException {
+  private static void localDateTimeWriter(DataOutputStream data, LocalDateTime value)
+      throws IOException {
     data.writeInt(8);
     data.writeLong(TimestampUtils.toPgSecs(value));
   }
 
-  private static void inet4AdressWriter(DataOutputStream data, Inet4Address value) throws IOException {
+  private static void inet4AdressWriter(DataOutputStream data, Inet4Address value)
+      throws IOException {
     data.writeInt(8);
     data.writeByte(IPV4);
     data.writeByte(IPV4_MASK);
@@ -364,7 +406,8 @@ public class CopyWriter implements AutoCloseable {
     data.write(inet4AddressBytes);
   }
 
-  private static void inet6AdressWriter(DataOutputStream data, Inet6Address value) throws IOException {
+  private static void inet6AdressWriter(DataOutputStream data, Inet6Address value)
+      throws IOException {
     data.writeInt(20);
     data.writeByte(IPV6);
     data.writeByte(IPV6_MASK);
@@ -413,7 +456,8 @@ public class CopyWriter implements AutoCloseable {
     };
   }
 
-  private static void hstoreWriter(DataOutputStream data, Map<String, String> value) throws IOException {
+  private static void hstoreWriter(DataOutputStream data, Map<String, String> value)
+      throws IOException {
     // Write into a temporary byte array
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
@@ -436,7 +480,5 @@ public class CopyWriter implements AutoCloseable {
   private interface ValueWriter<T> {
 
     void write(DataOutputStream data, T value) throws IOException;
-
   }
-
 }

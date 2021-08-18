@@ -37,13 +37,12 @@ public abstract class BlobStoreTest {
     String content = "content";
 
     // Write data
-    blobStore.put(uri, Blob.builder()
-        .withByteArray(content.getBytes(Charsets.UTF_8))
-        .build());
+    blobStore.put(uri, Blob.builder().withByteArray(content.getBytes(Charsets.UTF_8)).build());
 
     // Read the data
     try (InputStream inputStream = blobStore.get(uri).getInputStream()) {
-      assertEquals(content, CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8)));
+      assertEquals(
+          content, CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8)));
     }
 
     // Delete the data
@@ -59,5 +58,4 @@ public abstract class BlobStoreTest {
   public abstract String createTestURI() throws IOException;
 
   public abstract BlobStore createFileSystem();
-
 }

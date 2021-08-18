@@ -30,9 +30,7 @@ public class Layer {
 
   private List<Query> queries;
 
-  public Layer() {
-
-  }
+  public Layer() {}
 
   public Layer(Query... queries) {
     this.queries = Arrays.asList(queries);
@@ -66,5 +64,4 @@ public class Layer {
   public void setQueries(List<Query> queries) {
     this.queries = queries;
   }
-
 }

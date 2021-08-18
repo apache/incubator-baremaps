@@ -24,9 +24,7 @@ import org.locationtech.jts.io.WKBWriter;
 
 public class GeometryUtils {
 
-  private GeometryUtils() {
-
-  }
+  private GeometryUtils() {}
 
   /**
    * Serializes a geometry in the WKB format.
@@ -59,5 +57,4 @@ public class GeometryUtils {
       throw new IllegalArgumentException(e);
     }
   }
-
 }

@@ -28,5 +28,4 @@ class BlobStoreTileStoreTest extends TileStoreTest {
     Path directory = Files.createTempDirectory("baremaps_");
     return new TileBlobStore(new FileBlobStore(), new URI(directory.toString()));
   }
-
 }

@@ -70,5 +70,4 @@ public class CompositeBlobStore implements BlobStore {
       throw new BlobStoreException(String.format(UNSUPPORTED_SCHEME, uri.getScheme()));
     }
   }
-
 }

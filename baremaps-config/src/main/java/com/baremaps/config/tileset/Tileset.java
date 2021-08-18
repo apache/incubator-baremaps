@@ -49,9 +49,7 @@ public class Tileset {
   @JsonProperty("vector_layers")
   private List<Layer> vectorLayers = new ArrayList<>();
 
-  public Tileset() {
-
-  }
+  public Tileset() {}
 
   public Tileset(Layer... vectorLayers) {
     this.vectorLayers = Arrays.asList(vectorLayers);

@@ -45,5 +45,4 @@ public abstract class TileStoreTest {
   }
 
   public abstract TileStore createTileStore() throws Exception;
-
 }

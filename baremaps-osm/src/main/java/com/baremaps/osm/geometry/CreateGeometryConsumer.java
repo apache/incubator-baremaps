@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.osm.geometry;
 
 import com.baremaps.osm.cache.Cache;
@@ -31,9 +45,7 @@ import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Sets the geometry of an element via side-effects.
- */
+/** Sets the geometry of an element via side-effects. */
 public class CreateGeometryConsumer implements EntityConsumerAdapter {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateGeometryConsumer.class);
@@ -43,8 +55,7 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
   private final Cache<Long, List<Long>> referenceCache;
 
   public CreateGeometryConsumer(
-      Cache<Long, Coordinate> coordinateCache,
-      Cache<Long, List<Long>> referenceCache) {
+      Cache<Long, Coordinate> coordinateCache, Cache<Long, List<Long>> referenceCache) {
     this.geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
     this.coordinateCache = coordinateCache;
     this.referenceCache = referenceCache;
@@ -105,7 +116,8 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
         Polygon polygon = polygons.get(0);
         relation.setGeometry(polygon);
       } else if (polygons.size() > 1) {
-        MultiPolygon multiPolygon = geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[0]));
+        MultiPolygon multiPolygon =
+            geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[0]));
         relation.setGeometry(multiPolygon);
       }
     } catch (Exception e) {
@@ -113,7 +125,8 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
     }
   }
 
-  private List<Polygon> mergeOuterAndInnerPolygons(Set<Polygon> outerPolygons, Set<Polygon> innerPolygons) {
+  private List<Polygon> mergeOuterAndInnerPolygons(
+      Set<Polygon> outerPolygons, Set<Polygon> innerPolygons) {
     List<Polygon> polygons = new ArrayList<>();
     for (Polygon outerPolygon : outerPolygons) {
       LinearRing shell = outerPolygon.getExteriorRing();
@@ -161,23 +174,25 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
     relation.getMembers().stream()
         .filter(m -> MemberType.WAY.equals(m.getType()))
         .filter(m -> role.equals(m.getRole()))
-        .forEach(member -> {
-          LineString line = createLine(member);
-          if (line.isClosed()) {
-            Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
-            polygons.add(polygon);
-          } else {
-            lineMerger.add(line);
-          }
-        });
+        .forEach(
+            member -> {
+              LineString line = createLine(member);
+              if (line.isClosed()) {
+                Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
+                polygons.add(polygon);
+              } else {
+                lineMerger.add(line);
+              }
+            });
     lineMerger.getMergedLineStrings().stream()
-        .forEach(geometry -> {
-          LineString line = (LineString) geometry;
-          if (line.isClosed()) {
-            Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
-            polygons.add(polygon);
-          }
-        });
+        .forEach(
+            geometry -> {
+              LineString line = (LineString) geometry;
+              if (line.isClosed()) {
+                Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
+                polygons.add(polygon);
+              }
+            });
     return polygons;
   }
 

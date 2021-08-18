@@ -22,9 +22,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
-/**
- * Represents a way element in an OpenStreetMap dataset.
- */
+/** Represents a way element in an OpenStreetMap dataset. */
 public final class Way extends Element {
 
   private final List<Long> nodes;

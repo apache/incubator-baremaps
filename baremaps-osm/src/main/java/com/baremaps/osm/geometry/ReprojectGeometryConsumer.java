@@ -31,10 +31,9 @@ import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
-/**
- * Changes the projection of the geometry of an element via side-effects.
- */
-public class ReprojectGeometryConsumer extends GeometryTransformer implements EntityConsumerAdapter {
+/** Changes the projection of the geometry of an element via side-effects. */
+public class ReprojectGeometryConsumer extends GeometryTransformer
+    implements EntityConsumerAdapter {
 
   private final int dstSRID;
 
@@ -43,17 +42,21 @@ public class ReprojectGeometryConsumer extends GeometryTransformer implements En
   public ReprojectGeometryConsumer(int sourceSRID, int targetSRID) {
     this.dstSRID = targetSRID;
     CRSFactory crsFactory = new CRSFactory();
-    CoordinateReferenceSystem sourceCRS = crsFactory.createFromName(String.format("EPSG:%d", sourceSRID));
-    CoordinateReferenceSystem targetCRS = crsFactory.createFromName(String.format("EPSG:%d", targetSRID));
+    CoordinateReferenceSystem sourceCRS =
+        crsFactory.createFromName(String.format("EPSG:%d", sourceSRID));
+    CoordinateReferenceSystem targetCRS =
+        crsFactory.createFromName(String.format("EPSG:%d", targetSRID));
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
     coordinateTransform = coordinateTransformFactory.createTransform(sourceCRS, targetCRS);
   }
 
   @Override
-  protected CoordinateSequence transformCoordinates(CoordinateSequence coordinateSequence, Geometry parent) {
-    Coordinate[] coordinateArray = Stream.of(coordinateSequence.toCoordinateArray())
-        .map(this::transformCoordinate)
-        .toArray(Coordinate[]::new);
+  protected CoordinateSequence transformCoordinates(
+      CoordinateSequence coordinateSequence, Geometry parent) {
+    Coordinate[] coordinateArray =
+        Stream.of(coordinateSequence.toCoordinateArray())
+            .map(this::transformCoordinate)
+            .toArray(Coordinate[]::new);
     return new CoordinateArraySequence(coordinateArray);
   }
 
@@ -85,5 +88,4 @@ public class ReprojectGeometryConsumer extends GeometryTransformer implements En
       element.setGeometry(geometry);
     }
   }
-
 }

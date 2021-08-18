@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import org.rocksdb.RocksDB;
 
-public class RocksdbReferencesCache extends RocksdbCache<Long, List<Long>> implements ReferenceCache {
+public class RocksdbReferencesCache extends RocksdbCache<Long, List<Long>>
+    implements ReferenceCache {
 
   public RocksdbReferencesCache(RocksDB db) {
     super(db);
@@ -55,5 +56,4 @@ public class RocksdbReferencesCache extends RocksdbCache<Long, List<Long>> imple
     buffer.flip();
     return buffer.array();
   }
-
 }

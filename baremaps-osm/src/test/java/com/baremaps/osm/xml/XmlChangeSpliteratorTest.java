@@ -45,13 +45,13 @@ class XmlChangeSpliteratorTest {
       Spliterator<Change> spliterator = new XmlChangeSpliterator(input);
       AccumulatingConsumer<Change> accumulator = new AccumulatingConsumer<>();
       spliterator.forEachRemaining(accumulator);
-      assertEquals(
-          accumulator.values().size(), 7);
+      assertEquals(accumulator.values().size(), 7);
       assertEquals(
           accumulator.values().stream()
               .flatMap(change -> change.getEntities().stream())
               .collect(Collectors.toList())
-              .size(), 51);
+              .size(),
+          51);
     }
   }
 }

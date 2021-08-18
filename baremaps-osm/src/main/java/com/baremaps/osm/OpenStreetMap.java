@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.osm;
 
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
@@ -32,14 +46,10 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-/**
- * Utility methods for creating readers and streams from OpenStreetMap files.
- */
+/** Utility methods for creating readers and streams from OpenStreetMap files. */
 public class OpenStreetMap {
 
-  private OpenStreetMap() {
-
-  }
+  private OpenStreetMap() {}
 
   private static Stream<Entity> streamPbfBlockEntities(Block block) {
     try {
@@ -74,14 +84,12 @@ public class OpenStreetMap {
    * @return
    */
   public static Stream<Block> streamPbfBlocksWithGeometries(
-      InputStream input,
-      CoordinateCache coordinateCache,
-      ReferenceCache referenceCache,
-      int srid) {
+      InputStream input, CoordinateCache coordinateCache, ReferenceCache referenceCache, int srid) {
     Consumer<Block> cacheBlock = new CacheBlockConsumer(coordinateCache, referenceCache);
     Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinateCache, referenceCache);
     Consumer<Entity> reprojectGeometry = new ReprojectGeometryConsumer(4326, srid);
-    Consumer<Block> prepareGeometries = new BlockEntityConsumer(createGeometry.andThen(reprojectGeometry));
+    Consumer<Block> prepareGeometries =
+        new BlockEntityConsumer(createGeometry.andThen(reprojectGeometry));
     Function<Block, Block> prepareBlock = consumeThenReturn(cacheBlock.andThen(prepareGeometries));
     return streamPbfBlocks(input).map(prepareBlock);
   }
@@ -93,8 +101,7 @@ public class OpenStreetMap {
    * @return
    */
   public static Stream<Entity> streamPbfEntities(InputStream input) {
-    return streamPbfBlocks(input)
-        .flatMap(OpenStreetMap::streamPbfBlockEntities);
+    return streamPbfBlocks(input).flatMap(OpenStreetMap::streamPbfBlockEntities);
   }
 
   /**
@@ -107,10 +114,7 @@ public class OpenStreetMap {
    * @return
    */
   public static Stream<Entity> streamPbfEntitiesWithGeometries(
-      InputStream input,
-      CoordinateCache coordinateCache,
-      ReferenceCache referenceCache,
-      int srid) {
+      InputStream input, CoordinateCache coordinateCache, ReferenceCache referenceCache, int srid) {
     return streamPbfBlocksWithGeometries(input, coordinateCache, referenceCache, srid)
         .flatMap(OpenStreetMap::streamPbfBlockEntities);
   }
@@ -155,5 +159,4 @@ public class OpenStreetMap {
     LocalDateTime timestamp = LocalDateTime.parse(map.get("timestamp").replace("\\", ""), format);
     return new State(sequenceNumber, timestamp);
   }
-
 }

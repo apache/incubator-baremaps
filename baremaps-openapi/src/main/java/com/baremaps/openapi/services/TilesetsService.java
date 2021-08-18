@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.openapi.services;
 
 import com.baremaps.api.TilesetsApi;
@@ -27,7 +41,8 @@ public class TilesetsService implements TilesetsApi {
 
   private static final Logger logger = LoggerFactory.getLogger(TilesetsService.class);
 
-  private static final QualifiedType<TileSet> TILESET = QualifiedType.of(TileSet.class).with(Json.class);
+  private static final QualifiedType<TileSet> TILESET =
+      QualifiedType.of(TileSet.class).with(Json.class);
 
   private final Jdbi jdbi;
 
@@ -49,10 +64,13 @@ public class TilesetsService implements TilesetsApi {
 
     UUID finalTilesetId = tilesetId;
     jdbi.useHandle(
-        handle -> handle.createUpdate("insert into tilesets (id, tileset) values (:id, CAST(:json AS JSONB))")
-            .bindByType("json", tileSet, TILESET)
-            .bind("id", finalTilesetId)
-            .execute());
+        handle ->
+            handle
+                .createUpdate(
+                    "insert into tilesets (id, tileset) values (:id, CAST(:json AS JSONB))")
+                .bindByType("json", tileSet, TILESET)
+                .bind("id", finalTilesetId)
+                .execute());
 
     return Response.created(URI.create("tilesets/" + tilesetId)).build();
   }
@@ -67,21 +85,23 @@ public class TilesetsService implements TilesetsApi {
 
   @Override
   public Response getTileset(UUID tilesetId) {
-    TileSet tileset = jdbi.withHandle(handle ->
-        handle.createQuery("select tileset from tilesets where id = :id")
-            .bind("id", tilesetId)
-            .mapTo(TILESET)
-            .one());
+    TileSet tileset =
+        jdbi.withHandle(
+            handle ->
+                handle
+                    .createQuery("select tileset from tilesets where id = :id")
+                    .bind("id", tilesetId)
+                    .mapTo(TILESET)
+                    .one());
 
     return Response.ok(tileset).build();
   }
 
   @Override
   public Response getTilesets() {
-    List<UUID> ids = jdbi.withHandle(handle ->
-        handle.createQuery("select id from tilesets")
-            .mapTo(UUID.class)
-            .list());
+    List<UUID> ids =
+        jdbi.withHandle(
+            handle -> handle.createQuery("select id from tilesets").mapTo(UUID.class).list());
 
     return Response.ok(ids).build();
   }
@@ -89,28 +109,40 @@ public class TilesetsService implements TilesetsApi {
   @Override
   public Response updateTileset(UUID tilesetId, TileSet tileSet) {
     tilesets.remove(tilesetId);
-    jdbi.useHandle(handle -> handle.createUpdate("update tilesets set tileset = cast(:json as jsonb) where id = :id")
-        .bindByType("json", tileSet, TILESET)
-        .bind("id", tilesetId)
-        .execute());
+    jdbi.useHandle(
+        handle ->
+            handle
+                .createUpdate("update tilesets set tileset = cast(:json as jsonb) where id = :id")
+                .bindByType("json", tileSet, TILESET)
+                .bind("id", tilesetId)
+                .execute());
 
     return Response.noContent().build();
   }
 
   @Override
-  public Response getTile(UUID tilesetId, String tileMatrixSetId, Integer tileMatrix, Integer tileRow,
+  public Response getTile(
+      UUID tilesetId,
+      String tileMatrixSetId,
+      Integer tileMatrix,
+      Integer tileRow,
       Integer tileCol) {
     TileSet tileset;
     if (tilesets.containsKey(tilesetId)) {
       tileset = tilesets.get(tilesetId);
     } else {
-      tileset = jdbi.withHandle(handle ->
-          handle.createQuery("select tileset from tilesets where id = :id")
-              .bind("id", tilesetId)
-              .mapTo(TILESET)
-              .one());
+      tileset =
+          jdbi.withHandle(
+              handle ->
+                  handle
+                      .createQuery("select tileset from tilesets where id = :id")
+                      .bind("id", tilesetId)
+                      .mapTo(TILESET)
+                      .one());
       tileset.setTiles(
-          List.of(String.format("http://localhost:8080/tilesets/%s/tiles/matrix-set-id/{z}/{y}/{x}", tilesetId)));
+          List.of(
+              String.format(
+                  "http://localhost:8080/tilesets/%s/tiles/matrix-set-id/{z}/{y}/{x}", tilesetId)));
       tilesets.put(tilesetId, tileset);
     }
 
@@ -138,7 +170,7 @@ public class TilesetsService implements TilesetsApi {
         return Response.ok(data.toByteArray()).build();
       }
     } catch (IOException | SQLException e) {
-//      TODO: proper error handling
+      //      TODO: proper error handling
       return Response.serverError().build();
     }
 

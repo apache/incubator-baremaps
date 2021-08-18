@@ -32,5 +32,4 @@ public interface EntityTable<T extends Entity> {
   void delete(List<Long> ids) throws DatabaseException;
 
   void copy(List<T> entities) throws DatabaseException;
-
 }

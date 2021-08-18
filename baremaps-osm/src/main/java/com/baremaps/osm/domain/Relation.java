@@ -22,9 +22,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
-/**
- * Represents a relation element in an OpenStreetMap dataset.
- */
+/** Represents a relation element in an OpenStreetMap dataset. */
 public final class Relation extends Element {
 
   private final List<Member> members;
@@ -34,7 +32,8 @@ public final class Relation extends Element {
     this.members = members;
   }
 
-  public Relation(long id, Info info, Map<String, String> tags, List<Member> members, Geometry geometry) {
+  public Relation(
+      long id, Info info, Map<String, String> tags, List<Member> members, Geometry geometry) {
     super(id, info, tags, geometry);
     this.members = members;
   }

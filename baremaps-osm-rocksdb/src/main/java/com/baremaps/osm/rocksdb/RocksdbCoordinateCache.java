@@ -19,7 +19,8 @@ import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
 import org.rocksdb.RocksDB;
 
-public class RocksdbCoordinateCache extends RocksdbCache<Long, Coordinate> implements CoordinateCache {
+public class RocksdbCoordinateCache extends RocksdbCache<Long, Coordinate>
+    implements CoordinateCache {
 
   public RocksdbCoordinateCache(RocksDB db) {
     super(db);
@@ -57,5 +58,4 @@ public class RocksdbCoordinateCache extends RocksdbCache<Long, Coordinate> imple
     buffer.flip();
     return buffer.array();
   }
-
 }

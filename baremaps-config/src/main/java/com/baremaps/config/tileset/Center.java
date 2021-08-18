@@ -11,12 +11,13 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.baremaps.config.tileset;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.List;
 
-@JsonFormat(shape= JsonFormat.Shape.ARRAY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
 public class Center {
 
   private double lon = 0;
@@ -25,9 +26,7 @@ public class Center {
 
   private double zoom = 0;
 
-  public Center() {
-
-  }
+  public Center() {}
 
   public Center(double lon, double lat, double zoom) {
     this.lon = lon;

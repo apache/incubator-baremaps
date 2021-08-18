@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.osm.geometry;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -24,17 +38,25 @@ class RelationGeometryTest {
   Geometry handleRelation(String file) throws IOException {
     InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
     List<Entity> entities = OpenStreetMap.streamXmlEntities(input).collect(Collectors.toList());
-    Cache<Long, Coordinate> coordinateCache = new MockCache<>(entities.stream()
-        .filter(e -> e instanceof Node)
-        .map(e -> (Node) e)
-        .collect(Collectors.toMap(n -> n.getId(), n -> new Coordinate(n.getLon(), n.getLat()))));
-    Cache<Long, List<Long>> referenceCache = new MockCache<>(entities.stream()
-        .filter(e -> e instanceof Way)
-        .map(e -> (Way) e)
-        .collect(Collectors.toMap(w -> w.getId(), w -> w.getNodes())));
-    Relation relation = entities.stream().filter(e -> e instanceof Relation)
-        .map(e -> (Relation) e)
-        .findFirst().get();
+    Cache<Long, Coordinate> coordinateCache =
+        new MockCache<>(
+            entities.stream()
+                .filter(e -> e instanceof Node)
+                .map(e -> (Node) e)
+                .collect(
+                    Collectors.toMap(n -> n.getId(), n -> new Coordinate(n.getLon(), n.getLat()))));
+    Cache<Long, List<Long>> referenceCache =
+        new MockCache<>(
+            entities.stream()
+                .filter(e -> e instanceof Way)
+                .map(e -> (Way) e)
+                .collect(Collectors.toMap(w -> w.getId(), w -> w.getNodes())));
+    Relation relation =
+        entities.stream()
+            .filter(e -> e instanceof Relation)
+            .map(e -> (Relation) e)
+            .findFirst()
+            .get();
     new CreateGeometryConsumer(coordinateCache, referenceCache).match(relation);
     return relation.getGeometry();
   }

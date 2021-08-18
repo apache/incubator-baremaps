@@ -17,10 +17,10 @@ package com.baremaps.cli;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.cache.CoordinateCache;
 import com.baremaps.osm.cache.ReferenceCache;
-import com.baremaps.osm.database.UpdateService;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
+import com.baremaps.osm.database.UpdateService;
 import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.postgres.PostgresCoordinateCache;
 import com.baremaps.osm.postgres.PostgresHeaderTable;
@@ -42,8 +42,7 @@ public class Update implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Update.class);
 
-  @Mixin
-  private Options options;
+  @Mixin private Options options;
 
   @Option(
       names = {"--database"},
@@ -71,18 +70,17 @@ public class Update implements Callable<Integer> {
 
     logger.info("Importing changes");
     new UpdateService(
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerTable,
-        nodeTable,
-        wayTable,
-        relationTable,
-        srid
-    ).call();
+            blobStore,
+            coordinateCache,
+            referenceCache,
+            headerTable,
+            nodeTable,
+            wayTable,
+            relationTable,
+            srid)
+        .call();
     logger.info("Done");
 
     return 0;
   }
-
 }

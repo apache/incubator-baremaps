@@ -23,7 +23,10 @@ import picocli.CommandLine.Option;
 public class Options {
 
   public enum LogLevel {
-    DEBUG, INFO, TRACE, ERROR
+    DEBUG,
+    INFO,
+    TRACE,
+    ERROR
   }
 
   @Option(
@@ -55,5 +58,4 @@ public class Options {
     }
     return blobStore;
   }
-
 }

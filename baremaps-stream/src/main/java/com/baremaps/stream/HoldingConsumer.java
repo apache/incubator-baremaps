@@ -25,9 +25,7 @@ public class HoldingConsumer<T> implements Consumer<T> {
 
   private T value;
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void accept(T value) {
     this.value = value;

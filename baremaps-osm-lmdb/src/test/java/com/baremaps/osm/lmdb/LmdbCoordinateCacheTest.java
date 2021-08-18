@@ -12,12 +12,13 @@
  * the License.
  */
 
+package com.baremaps.osm.lmdb;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.osm.cache.Cache.Entry;
 import com.baremaps.osm.cache.CoordinateCache;
-import com.baremaps.osm.lmdb.LmdbCoordinateCache;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,20 +35,15 @@ class LmdbCoordinateCacheTest {
   @Tag("integration")
   void test() throws Exception {
     Path path = Files.createTempDirectory(Paths.get("."), "baremaps_").toAbsolutePath();
-    Env<ByteBuffer> env = Env.create()
-        .setMapSize(1_000_000_000_000L)
-        .setMaxDbs(3)
-        .open(path.toFile());
+    Env<ByteBuffer> env =
+        Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(path.toFile());
     CoordinateCache cache = new LmdbCoordinateCache(env);
     Coordinate c1 = new Coordinate(1, 0);
     Coordinate c2 = new Coordinate(2, 0);
     Coordinate c3 = new Coordinate(3, 0);
     Coordinate c4 = new Coordinate(4, 0);
     cache.add(1l, c1);
-    cache.add(Arrays.asList(
-        new Entry(2l, c2),
-        new Entry(3l, c3),
-        new Entry(4l, c4)));
+    cache.add(Arrays.asList(new Entry(2l, c2), new Entry(3l, c3), new Entry(4l, c4)));
     assertEquals(cache.get(1l), c1);
     assertEquals(cache.get(Arrays.asList(1l, 2l)), Arrays.asList(c1, c2));
     cache.delete(1l);

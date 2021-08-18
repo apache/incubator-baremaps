@@ -11,6 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.baremaps.tile;
 
 import java.util.function.Predicate;
@@ -30,5 +31,4 @@ public class TileBatcher implements Predicate<Tile> {
   public boolean test(Tile tile) {
     return batchArraySize <= 1 || tile.index() % batchArraySize == batchArrayIndex;
   }
-
 }

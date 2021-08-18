@@ -50,5 +50,4 @@ class MBTilesTest extends TileStoreTest {
     assertTrue(m2.size() == 1);
     assertEquals(m2.get("test"), "test");
   }
-
 }

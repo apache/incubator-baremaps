@@ -19,9 +19,7 @@ import com.baremaps.osm.handler.ChangeFunction;
 import java.util.List;
 import java.util.StringJoiner;
 
-/**
- * Represents a change in an OpenStreetMap dataset.
- */
+/** Represents a change in an OpenStreetMap dataset. */
 public final class Change {
 
   @Override
@@ -55,18 +53,13 @@ public final class Change {
     return elements;
   }
 
-  /**
-   * Visits the entity with the provided entity consumer.
-   */
+  /** Visits the entity with the provided entity consumer. */
   public void visit(ChangeConsumer consumer) throws Exception {
     consumer.match(this);
   }
 
-  /**
-   * Visits the entity with the provided entity function.
-   */
+  /** Visits the entity with the provided entity function. */
   public <T> T visit(ChangeFunction<T> function) throws Exception {
     return function.match(this);
   }
-
 }

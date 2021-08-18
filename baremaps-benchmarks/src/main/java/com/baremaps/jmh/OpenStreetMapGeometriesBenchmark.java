@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.jmh;
 
 import com.baremaps.osm.OpenStreetMap;
@@ -63,10 +77,8 @@ public class OpenStreetMapGeometriesBenchmark {
   @Measurement(iterations = 5)
   public void lmdb() throws IOException {
     Path cacheDirectory = Files.createTempDirectory(Paths.get("."), "baremaps_").toAbsolutePath();
-    Env<ByteBuffer> env = Env.create()
-        .setMapSize(1_000_000_000_000L)
-        .setMaxDbs(3)
-        .open(cacheDirectory.toFile());
+    Env<ByteBuffer> env =
+        Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(cacheDirectory.toFile());
     CoordinateCache coordinateCache = new LmdbCoordinateCache(env);
     ReferenceCache referenceCache = new LmdbReferencesCache(env);
 
@@ -75,23 +87,25 @@ public class OpenStreetMapGeometriesBenchmark {
     AtomicLong relations = new AtomicLong(0);
 
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      OpenStreetMap.streamPbfEntitiesWithGeometries(inputStream, coordinateCache, referenceCache, 4326)
-          .forEach(new EntityConsumerAdapter() {
-            @Override
-            public void match(Node node) {
-              nodes.incrementAndGet();
-            }
+      OpenStreetMap.streamPbfEntitiesWithGeometries(
+              inputStream, coordinateCache, referenceCache, 4326)
+          .forEach(
+              new EntityConsumerAdapter() {
+                @Override
+                public void match(Node node) {
+                  nodes.incrementAndGet();
+                }
 
-            @Override
-            public void match(Way way) {
-              ways.incrementAndGet();
-            }
+                @Override
+                public void match(Way way) {
+                  ways.incrementAndGet();
+                }
 
-            @Override
-            public void match(Relation relation) {
-              relations.incrementAndGet();
-            }
-          });
+                @Override
+                public void match(Relation relation) {
+                  relations.incrementAndGet();
+                }
+              });
     }
   }
 
@@ -100,8 +114,10 @@ public class OpenStreetMapGeometriesBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void rocksdb() throws IOException, RocksDBException {
-    Path coordinatesDirectory = Files.createTempDirectory(Paths.get("."), "baremaps_").toAbsolutePath();
-    Path referenceDirectory = Files.createTempDirectory(Paths.get("."), "baremaps_").toAbsolutePath();
+    Path coordinatesDirectory =
+        Files.createTempDirectory(Paths.get("."), "baremaps_").toAbsolutePath();
+    Path referenceDirectory =
+        Files.createTempDirectory(Paths.get("."), "baremaps_").toAbsolutePath();
 
     try (org.rocksdb.Options options = new org.rocksdb.Options().setCreateIfMissing(true);
         RocksDB coordinatesDB = RocksDB.open(options, coordinatesDirectory.toString());
@@ -114,33 +130,35 @@ public class OpenStreetMapGeometriesBenchmark {
       AtomicLong relations = new AtomicLong(0);
 
       try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-        OpenStreetMap.streamPbfEntitiesWithGeometries(inputStream, coordinateCache, referenceCache, 4326)
-            .forEach(new EntityConsumerAdapter() {
-              @Override
-              public void match(Node node) {
-                nodes.incrementAndGet();
-              }
+        OpenStreetMap.streamPbfEntitiesWithGeometries(
+                inputStream, coordinateCache, referenceCache, 4326)
+            .forEach(
+                new EntityConsumerAdapter() {
+                  @Override
+                  public void match(Node node) {
+                    nodes.incrementAndGet();
+                  }
 
-              @Override
-              public void match(Way way) {
-                ways.incrementAndGet();
-              }
+                  @Override
+                  public void match(Way way) {
+                    ways.incrementAndGet();
+                  }
 
-              @Override
-              public void match(Relation relation) {
-                relations.incrementAndGet();
-              }
-            });
+                  @Override
+                  public void match(Relation relation) {
+                    relations.incrementAndGet();
+                  }
+                });
       }
     }
   }
 
   public static void main(String[] args) throws RunnerException {
-    Options opt = new OptionsBuilder()
-        .include(OpenStreetMapGeometriesBenchmark.class.getSimpleName())
-        .forks(1)
-        .build();
+    Options opt =
+        new OptionsBuilder()
+            .include(OpenStreetMapGeometriesBenchmark.class.getSimpleName())
+            .forks(1)
+            .build();
     new Runner(opt).run();
   }
-
 }
