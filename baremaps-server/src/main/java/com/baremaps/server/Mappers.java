@@ -12,9 +12,9 @@ public class Mappers {
   }
 
   public static List<PostgresQuery> map(Tileset tileset) {
-    return tileset.getLayers().stream()
+    return tileset.getVectorLayers().stream()
         .flatMap(layer -> layer.getQueries().stream()
-            .map(query -> new PostgresQuery(layer.getId(), query.getMinZoom(), query.getMaxZoom(), query.getSql())))
+            .map(query -> new PostgresQuery(layer.getId(), query.getMinzoom(), query.getMaxzoom(), query.getSql())))
         .collect(Collectors.toList());
   }
 

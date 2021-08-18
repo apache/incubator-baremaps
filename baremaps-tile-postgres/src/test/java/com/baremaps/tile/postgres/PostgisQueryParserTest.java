@@ -108,7 +108,7 @@ class PostgisQueryParserTest {
   }
 
   void parse(Query query, String id, String tags, String geom, String from, Optional<String> where) {
-    PostgresQuery q1 = new PostgresQuery("layer", query.getMinZoom(), query.getMaxZoom(), query.getSql());
+    PostgresQuery q1 = new PostgresQuery("layer", query.getMinzoom(), query.getMaxzoom(), query.getSql());
     assertEquals(id, String.valueOf(q1.getAst().getSelectItems().get(0)));
     assertEquals(tags, String.valueOf(q1.getAst().getSelectItems().get(1)));
     assertEquals(geom, String.valueOf(q1.getAst().getSelectItems().get(2)));
