@@ -1,9 +1,16 @@
 package com.baremaps.osm;
 
+import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
+
+import com.baremaps.osm.cache.CacheBlockConsumer;
+import com.baremaps.osm.cache.CoordinateCache;
+import com.baremaps.osm.cache.ReferenceCache;
 import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.State;
+import com.baremaps.osm.geometry.CreateGeometryConsumer;
+import com.baremaps.osm.geometry.ReprojectGeometryConsumer;
 import com.baremaps.osm.handler.BlockEntityConsumer;
 import com.baremaps.osm.pbf.BlobIterator;
 import com.baremaps.osm.pbf.BlobUtils;
@@ -20,6 +27,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -56,13 +65,54 @@ public class OpenStreetMap {
   }
 
   /**
+   * Creates an ordered stream of OSM blocks from a PBF file with geometries.
+   *
+   * @param input
+   * @param coordinateCache
+   * @param referenceCache
+   * @param srid
+   * @return
+   */
+  public static Stream<Block> streamPbfBlocksWithGeometries(
+      InputStream input,
+      CoordinateCache coordinateCache,
+      ReferenceCache referenceCache,
+      int srid) {
+    Consumer<Block> cacheBlock = new CacheBlockConsumer(coordinateCache, referenceCache);
+    Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinateCache, referenceCache);
+    Consumer<Entity> reprojectGeometry = new ReprojectGeometryConsumer(4326, srid);
+    Consumer<Block> prepareGeometries = new BlockEntityConsumer(createGeometry.andThen(reprojectGeometry));
+    Function<Block, Block> prepareBlock = consumeThenReturn(cacheBlock.andThen(prepareGeometries));
+    return streamPbfBlocks(input).map(prepareBlock);
+  }
+
+  /**
    * Creates an ordered stream of OSM entities from a PBF file.
    *
    * @param input
    * @return
    */
   public static Stream<Entity> streamPbfEntities(InputStream input) {
-    return streamPbfBlocks(input).flatMap(OpenStreetMap::streamPbfBlockEntities);
+    return streamPbfBlocks(input)
+        .flatMap(OpenStreetMap::streamPbfBlockEntities);
+  }
+
+  /**
+   * Creates an ordered stream of OSM entities from a PBF file with geometries.
+   *
+   * @param input
+   * @param coordinateCache
+   * @param referenceCache
+   * @param srid
+   * @return
+   */
+  public static Stream<Entity> streamPbfEntitiesWithGeometries(
+      InputStream input,
+      CoordinateCache coordinateCache,
+      ReferenceCache referenceCache,
+      int srid) {
+    return streamPbfBlocksWithGeometries(input, coordinateCache, referenceCache, srid)
+        .flatMap(OpenStreetMap::streamPbfBlockEntities);
   }
 
   /**

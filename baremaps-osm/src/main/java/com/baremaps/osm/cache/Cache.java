@@ -22,13 +22,13 @@ public interface Cache<K, V> {
 
   List<V> get(List<K> keys) throws CacheException;
 
-  void add(K key, V value);
+  void add(K key, V value) throws CacheException;
 
-  void add(List<Entry<K, V>> entries);
+  void add(List<Entry<K, V>> entries) throws CacheException;
 
-  void delete(K key);
+  void delete(K key) throws CacheException;
 
-  void deleteAll(List<K> keys);
+  void deleteAll(List<K> keys) throws CacheException;
 
   class Entry<K, V> {
 

@@ -12,28 +12,33 @@
  * the License.
  */
 
-package com.baremaps.osm.lmdb;
+package com.baremaps.osm.rocksdb;
 
 import com.baremaps.osm.cache.CoordinateCache;
 import java.nio.ByteBuffer;
-import org.lmdbjava.DbiFlags;
-import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
+import org.rocksdb.RocksDB;
 
-public class LmdbCoordinateCache extends LmdbCache<Long, Coordinate> implements CoordinateCache {
+public class RocksdbCoordinateCache extends RocksdbCache<Long, Coordinate> implements CoordinateCache {
 
-  public LmdbCoordinateCache(Env<ByteBuffer> env) {
-    super(env, env.openDbi("coordinate", DbiFlags.MDB_CREATE));
+  public RocksdbCoordinateCache(RocksDB db) {
+    super(db);
   }
 
   @Override
-  public ByteBuffer buffer(Long key) {
-    return ByteBuffer.allocateDirect(Long.BYTES).putLong(key).flip();
+  public byte[] key(Long key) {
+    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+    buffer.putLong(key);
+    return buffer.array();
   }
 
   @Override
-  public Coordinate read(ByteBuffer buffer) {
-    if (buffer == null || buffer.get() == 0) {
+  public Coordinate read(byte[] array) {
+    if (array == null) {
+      return null;
+    }
+    ByteBuffer buffer = ByteBuffer.wrap(array);
+    if (array == null || buffer.get() == 0) {
       return null;
     }
     double lon = buffer.getDouble();
@@ -42,15 +47,15 @@ public class LmdbCoordinateCache extends LmdbCache<Long, Coordinate> implements 
   }
 
   @Override
-  public ByteBuffer write(Coordinate value) {
-    ByteBuffer buffer = ByteBuffer.allocateDirect(17);
+  public byte[] write(Coordinate value) {
+    ByteBuffer buffer = ByteBuffer.allocate(17);
     if (value != null) {
       buffer.put((byte) 1);
       buffer.putDouble(value.getX());
       buffer.putDouble(value.getY());
     }
     buffer.flip();
-    return buffer;
+    return buffer.array();
   }
 
 }

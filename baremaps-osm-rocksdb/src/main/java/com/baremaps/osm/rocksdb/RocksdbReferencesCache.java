@@ -12,28 +12,29 @@
  * the License.
  */
 
-package com.baremaps.osm.lmdb;
+package com.baremaps.osm.rocksdb;
 
 import com.baremaps.osm.cache.ReferenceCache;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import org.lmdbjava.DbiFlags;
-import org.lmdbjava.Env;
+import org.rocksdb.RocksDB;
 
-public class LmdbReferencesCache extends LmdbCache<Long, List<Long>> implements ReferenceCache {
+public class RocksdbReferencesCache extends RocksdbCache<Long, List<Long>> implements ReferenceCache {
 
-  public LmdbReferencesCache(Env<ByteBuffer> env) {
-    super(env, env.openDbi("references", DbiFlags.MDB_CREATE));
+  public RocksdbReferencesCache(RocksDB db) {
+    super(db);
   }
 
   @Override
-  public ByteBuffer buffer(Long key) {
-    ByteBuffer buffer = ByteBuffer.allocateDirect(20);
-    return buffer.putLong(key);
+  public byte[] key(Long key) {
+    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+    buffer.putLong(key);
+    return buffer.array();
   }
 
-  public List<Long> read(ByteBuffer buffer) {
+  public List<Long> read(byte[] array) {
+    ByteBuffer buffer = ByteBuffer.wrap(array);
     if (buffer == null) {
       return null;
     }
@@ -45,14 +46,14 @@ public class LmdbReferencesCache extends LmdbCache<Long, List<Long>> implements 
     return values;
   }
 
-  public ByteBuffer write(List<Long> value) {
-    ByteBuffer buffer = ByteBuffer.allocateDirect(4 + 8 * value.size());
+  public byte[] write(List<Long> value) {
+    ByteBuffer buffer = ByteBuffer.allocate(4 + 8 * value.size());
     buffer.putInt(value.size());
     for (Long v : value) {
       buffer.putLong(v);
     }
     buffer.flip();
-    return buffer;
+    return buffer.array();
   }
 
 }
