@@ -56,8 +56,8 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build with Maven
+      - name: Analize with Sonar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn --file pom.xml -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        run: mvn -P integration -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
