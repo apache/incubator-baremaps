@@ -26,9 +26,8 @@ public class RocksdbCoordinateCache extends RocksdbCache<Long, Coordinate> imple
   }
 
   @Override
-  public byte[] buffer(Long key) {
-    ByteBuffer buffer = ByteBuffer.allocate(20);
-    buffer.put(String.format("%020d", key).getBytes()).flip();
+  public byte[] key(Long key) {
+    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
     buffer.putLong(key);
     return buffer.array();
   }
@@ -39,7 +38,7 @@ public class RocksdbCoordinateCache extends RocksdbCache<Long, Coordinate> imple
       return null;
     }
     ByteBuffer buffer = ByteBuffer.wrap(array);
-    if (buffer.get() == 0) {
+    if (array == null || buffer.get() == 0) {
       return null;
     }
     double lon = buffer.getDouble();

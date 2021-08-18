@@ -27,10 +27,10 @@ public class RocksdbReferencesCache extends RocksdbCache<Long, List<Long>> imple
   }
 
   @Override
-  public byte[] buffer(Long key) {
-    ByteBuffer buffer = ByteBuffer.allocateDirect(20);
-    buffer.put(String.format("%020d", key).getBytes()).flip();
-    return buffer.putLong(key).array();
+  public byte[] key(Long key) {
+    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+    buffer.putLong(key);
+    return buffer.array();
   }
 
   public List<Long> read(byte[] array) {
@@ -47,7 +47,7 @@ public class RocksdbReferencesCache extends RocksdbCache<Long, List<Long>> imple
   }
 
   public byte[] write(List<Long> value) {
-    ByteBuffer buffer = ByteBuffer.allocateDirect(4 + 8 * value.size());
+    ByteBuffer buffer = ByteBuffer.allocate(4 + 8 * value.size());
     buffer.putInt(value.size());
     for (Long v : value) {
       buffer.putLong(v);

@@ -350,6 +350,11 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
+        <artifactId>baremaps-osm-rocksdb</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
         <artifactId>baremaps-osm-postgres</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>

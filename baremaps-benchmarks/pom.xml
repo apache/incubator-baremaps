@@ -45,6 +45,14 @@
       <artifactId>baremaps-osm</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-osm-lmdb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-osm-rocksdb</artifactId>
+    </dependency>
+    <dependency>
       <groupId>javax.annotation</groupId>
       <artifactId>javax.annotation-api</artifactId>
       <version>1.3.2</version>

@@ -30,7 +30,6 @@ public class LmdbReferencesCache extends LmdbCache<Long, List<Long>> implements 
   @Override
   public ByteBuffer buffer(Long key) {
     ByteBuffer buffer = ByteBuffer.allocateDirect(20);
-    buffer.put(String.format("%020d", key).getBytes()).flip();
     return buffer.putLong(key);
   }
 

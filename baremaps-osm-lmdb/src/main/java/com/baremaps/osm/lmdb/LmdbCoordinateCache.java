@@ -28,9 +28,7 @@ public class LmdbCoordinateCache extends LmdbCache<Long, Coordinate> implements 
 
   @Override
   public ByteBuffer buffer(Long key) {
-    ByteBuffer buffer = ByteBuffer.allocateDirect(20);
-    buffer.put(String.format("%020d", key).getBytes()).flip();
-    return buffer.putLong(key);
+    return ByteBuffer.allocateDirect(Long.BYTES).putLong(key).flip();
   }
 
   @Override

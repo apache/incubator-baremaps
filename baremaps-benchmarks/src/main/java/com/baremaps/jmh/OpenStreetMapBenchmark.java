@@ -25,11 +25,15 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.runner.Runner;
+import org.openjdk.jmh.runner.RunnerException;
+import org.openjdk.jmh.runner.options.Options;
+import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(1)
-public class EntityReaderBenchmark {
+public class OpenStreetMapBenchmark {
 
   private final Path path = Paths.get("./switzerland-latest.pbf");
 
@@ -70,6 +74,14 @@ public class EntityReaderBenchmark {
         }
       });
     }
+  }
+
+  public static void main(String[] args) throws RunnerException {
+    Options opt = new OptionsBuilder()
+        .include(OpenStreetMapBenchmark.class.getSimpleName())
+        .forks(1)
+        .build();
+    new Runner(opt).run();
   }
 
 }
