@@ -16,9 +16,7 @@ package com.baremaps.osm.domain;
 
 import java.time.LocalDateTime;
 
-/**
- * Represents the state of an OpenStreetMap dataset, enabling its replication.
- */
+/** Represents the state of an OpenStreetMap dataset, enabling its replication. */
 public class State {
 
   private final long sequenceNumber;
@@ -37,5 +35,4 @@ public class State {
   public LocalDateTime getTimestamp() {
     return timestamp;
   }
-
 }

@@ -11,6 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.baremaps.tile;
 
 import java.util.function.Consumer;
@@ -46,5 +47,4 @@ public class Tiler implements Consumer<Tile> {
       throw new RuntimeException("An error occurred while creating the tiles", ex);
     }
   }
-
 }

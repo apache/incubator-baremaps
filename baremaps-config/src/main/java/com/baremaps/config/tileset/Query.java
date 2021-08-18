@@ -11,6 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.baremaps.config.tileset;
 
 public class Query {
@@ -21,9 +22,7 @@ public class Query {
 
   private String sql;
 
-  public Query() {
-
-  }
+  public Query() {}
 
   public Query(int minzoom, int maxzoom, String sql) {
     this.minzoom = minzoom;
@@ -42,5 +41,4 @@ public class Query {
   public int getMaxzoom() {
     return maxzoom;
   }
-
 }

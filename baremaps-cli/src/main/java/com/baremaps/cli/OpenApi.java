@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
 package com.baremaps.cli;
 
@@ -10,6 +23,10 @@ import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
+import java.util.concurrent.Callable;
+import javax.sql.DataSource;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -21,11 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-
-import javax.sql.DataSource;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
-import java.util.concurrent.Callable;
 
 @Command(name = "openapi", description = "Serve the openapi API.")
 public class OpenApi implements Callable<Integer> {
@@ -49,7 +61,8 @@ public class OpenApi implements Callable<Integer> {
   public Integer call() throws Exception {
     DataSource datasource = PostgresUtils.datasource(this.database);
 
-    Jdbi jdbi = Jdbi.create(datasource)
+    Jdbi jdbi =
+        Jdbi.create(datasource)
             .installPlugin(new PostgresPlugin())
             .installPlugin(new Jackson2Plugin());
 
@@ -59,27 +72,30 @@ public class OpenApi implements Callable<Integer> {
     jdbi.getConfig(Jackson2Config.class).setMapper(mapper);
 
     // Initialize the application
-    ResourceConfig application = new ResourceConfig()
+    ResourceConfig application =
+        new ResourceConfig()
             .packages("org.glassfish.jersey.examples.jackson")
-            .registerClasses(MyObjectMapperProvider.class,
-                    JacksonFeature.class,
-                    RootService.class,
-                    CorsFilter.class,
-                    ConformanceService.class,
-                    CollectionsService.class,
-                    StylesService.class,
-                    TilesetsService.class)
-            .register(new AbstractBinder() {
-              @Override
-              protected void configure() {
-                bind(jdbi).to(Jdbi.class);
-              }
-            });
+            .registerClasses(
+                MyObjectMapperProvider.class,
+                JacksonFeature.class,
+                RootService.class,
+                CorsFilter.class,
+                ConformanceService.class,
+                CollectionsService.class,
+                StylesService.class,
+                TilesetsService.class)
+            .register(
+                new AbstractBinder() {
+                  @Override
+                  protected void configure() {
+                    bind(jdbi).to(Jdbi.class);
+                  }
+                });
 
-    BlockingStreamingHttpService httpService = new HttpJerseyRouterBuilder()
-        .buildBlockingStreaming(application);
-    ServerContext serverContext = HttpServers.forPort(port)
-        .listenBlockingStreamingAndAwait(httpService);
+    BlockingStreamingHttpService httpService =
+        new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
+    ServerContext serverContext =
+        HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
     logger.info("Listening on {}", serverContext.listenAddress());
 
@@ -109,5 +125,4 @@ public class OpenApi implements Callable<Integer> {
 
     return mapper;
   }
-
 }

@@ -52,5 +52,4 @@ public class LmdbCoordinateCache extends LmdbCache<Long, Coordinate> implements 
     buffer.flip();
     return buffer;
   }
-
 }

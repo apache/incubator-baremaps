@@ -30,5 +30,4 @@ class FileBlobStoreTest extends BlobStoreTest {
   public BlobStore createFileSystem() {
     return new FileBlobStore();
   }
-
 }

@@ -16,9 +16,7 @@ package com.baremaps.blob;
 
 import java.net.URI;
 
-/**
- * An abstraction to read and write blobs identified by URIs.
- */
+/** An abstraction to read and write blobs identified by URIs. */
 public interface BlobStore {
 
   Blob head(URI uri) throws BlobStoreException;
@@ -28,5 +26,4 @@ public interface BlobStore {
   void put(URI uri, Blob blob) throws BlobStoreException;
 
   void delete(URI uri) throws BlobStoreException;
-
 }

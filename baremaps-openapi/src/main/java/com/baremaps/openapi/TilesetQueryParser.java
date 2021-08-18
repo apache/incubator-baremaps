@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.openapi;
 
 import com.baremaps.model.Layer;
@@ -30,27 +44,26 @@ public class TilesetQueryParser {
 
   private static final String WITH_QUERY = "with %1$s %2$s";
 
-  private static final String SOURCE_QUERY = ""
-      + "%1$s as ("
-      + "select "
-      + "id, "
-      + "(tags || hstore('geometry', lower(replace(st_geometrytype(geom), 'ST_', '')))) as tags, "
-      + "st_asmvtgeom(geom, $envelope, 4096, 256, true) as geom "
-      + "from ("
-      + "select %2$s as id, %3$s as tags, %4$s as geom from %5$s%6$s"
-      + ") as source "
-      + "where %7$s st_intersects(geom, $envelope)"
-      + ")";
+  private static final String SOURCE_QUERY =
+      ""
+          + "%1$s as ("
+          + "select "
+          + "id, "
+          + "(tags || hstore('geometry', lower(replace(st_geometrytype(geom), 'ST_', '')))) as tags, "
+          + "st_asmvtgeom(geom, $envelope, 4096, 256, true) as geom "
+          + "from ("
+          + "select %2$s as id, %3$s as tags, %4$s as geom from %5$s%6$s"
+          + ") as source "
+          + "where %7$s st_intersects(geom, $envelope)"
+          + ")";
 
   private static final String SOURCE_WHERE = "(%s) and";
 
-  private static final String TARGET_QUERY = ""
-      + "select "
-      + "st_asmvt(target, '%1$s', 4096, 'geom', 'id') "
-      + "from (%2$s) as target";
+  private static final String TARGET_QUERY =
+      "" + "select " + "st_asmvt(target, '%1$s', 4096, 'geom', 'id') " + "from (%2$s) as target";
 
-  private static final String TARGET_LAYER_QUERY = ""
-      + "select id, hstore_to_jsonb_loose(tags) as tags, geom from %1$s %2$s";
+  private static final String TARGET_LAYER_QUERY =
+      "" + "select id, hstore_to_jsonb_loose(tags) as tags, geom from %1$s %2$s";
 
   private static final String TARGET_WHERE = "where %s";
 
@@ -65,15 +78,17 @@ public class TilesetQueryParser {
   public TilesetQueryParser() {}
 
   public String parse(TileSet tileset, Tile tile) {
-    List<ParsedQuery> queries = tileset.getVectorLayers().stream()
-        .flatMap(layer -> layer.getQueries().stream().map(query -> parseQuery(layer, query)))
-        .collect(Collectors.toList());
+    List<ParsedQuery> queries =
+        tileset.getVectorLayers().stream()
+            .flatMap(layer -> layer.getQueries().stream().map(query -> parseQuery(layer, query)))
+            .collect(Collectors.toList());
     String sourceQueries = sourceQueries(queries, tile);
     String targetQueries = targetQueries(queries, tile);
     String withQuery = String.format(WITH_QUERY, sourceQueries, targetQueries);
-    Map<String, String> variables = Map.of(
-        "envelope", tileEnvelope(tile),
-        "zoom", String.valueOf(tile.z()));
+    Map<String, String> variables =
+        Map.of(
+            "envelope", tileEnvelope(tile),
+            "zoom", String.valueOf(tile.z()));
     return interpolate(variables, withQuery);
   }
 
@@ -84,27 +99,33 @@ public class TilesetQueryParser {
       Select select = (Select) CCJSqlParserUtil.parse(query.getSql());
       plainSelect = (PlainSelect) select.getSelectBody();
     } catch (JSQLParserException e) {
-      String message = String.format("The layer '%s' contains a malformed query.\n"
-          + "\tQuery:\n\t\t%s", layer.getId(), query.getSql());
+      String message =
+          String.format(
+              "The layer '%s' contains a malformed query.\n" + "\tQuery:\n\t\t%s",
+              layer.getId(), query.getSql());
       throw new IllegalArgumentException(message, e);
     }
 
     // Check the number of columns
     if (plainSelect.getSelectItems().size() != 3) {
-      String message = String.format("The layer '%s' contains a malformed query.\n"
-          + "\tExpected format:\n\t\tSELECT c1::bigint, c2::hstore, c3::geometry FROM t WHERE c\n"
-          + "\tActual query:\n\t\t%s", layer.getId(), query.getSql());
+      String message =
+          String.format(
+              "The layer '%s' contains a malformed query.\n"
+                  + "\tExpected format:\n\t\tSELECT c1::bigint, c2::hstore, c3::geometry FROM t WHERE c\n"
+                  + "\tActual query:\n\t\t%s",
+              layer.getId(), query.getSql());
       throw new IllegalArgumentException(message);
     }
 
     // Remove all the aliases
     for (SelectItem selectItem : plainSelect.getSelectItems()) {
-      selectItem.accept(new SelectItemVisitorAdapter() {
-        @Override
-        public void visit(SelectExpressionItem selectExpressionItem) {
-          selectExpressionItem.setAlias(null);
-        }
-      });
+      selectItem.accept(
+          new SelectItemVisitorAdapter() {
+            @Override
+            public void visit(SelectExpressionItem selectExpressionItem) {
+              selectExpressionItem.setAlias(null);
+            }
+          });
     }
     return new ParsedQuery(layer, query, plainSelect);
   }
@@ -113,8 +134,10 @@ public class TilesetQueryParser {
     return queries.stream()
         .filter(query -> zoomFilter(tile, query.getQuery()))
         .collect(
-            Collectors.groupingBy(this::commonTableExpression, LinkedHashMap::new, Collectors.toList()))
-        .entrySet().stream()
+            Collectors.groupingBy(
+                this::commonTableExpression, LinkedHashMap::new, Collectors.toList()))
+        .entrySet()
+        .stream()
         .map(entry -> sourceQuery(entry.getKey(), entry.getValue()))
         .distinct()
         .collect(Collectors.joining(COMMA));
@@ -126,42 +149,48 @@ public class TilesetQueryParser {
     String tags = queryKey.getSelectItems().get(1).toString();
     String geom = queryKey.getSelectItems().get(2).toString();
     String from = queryKey.getFromItem().toString();
-    String joins = Optional.ofNullable(queryKey.getJoins())
-        .stream().flatMap(List::stream)
-        .map(Join::toString)
-        .collect(Collectors.joining(SPACE));
-    String where = queryValues.stream()
-        .map(query -> query.getValue().getWhere())
-        .map(Optional::ofNullable)
-        .flatMap(Optional::stream)
-        .map(Parenthesis::new)
-        .map(Expression.class::cast)
-        .reduce(OrExpression::new)
-        .map(expression -> String.format(SOURCE_WHERE, expression))
-        .orElse(EMPTY);
+    String joins =
+        Optional.ofNullable(queryKey.getJoins()).stream()
+            .flatMap(List::stream)
+            .map(Join::toString)
+            .collect(Collectors.joining(SPACE));
+    String where =
+        queryValues.stream()
+            .map(query -> query.getValue().getWhere())
+            .map(Optional::ofNullable)
+            .flatMap(Optional::stream)
+            .map(Parenthesis::new)
+            .map(Expression.class::cast)
+            .reduce(OrExpression::new)
+            .map(expression -> String.format(SOURCE_WHERE, expression))
+            .orElse(EMPTY);
     return String.format(SOURCE_QUERY, alias, id, tags, geom, from, joins, where);
   }
 
   private String targetQueries(List<ParsedQuery> queries, Tile tile) {
     return queries.stream()
         .filter(query -> zoomFilter(tile, query.getQuery()))
-        .collect(Collectors.groupingBy(ParsedQuery::getLayer, LinkedHashMap::new, Collectors.toList()))
-        .entrySet().stream()
+        .collect(
+            Collectors.groupingBy(ParsedQuery::getLayer, LinkedHashMap::new, Collectors.toList()))
+        .entrySet()
+        .stream()
         .map(entry -> targetQuery(entry.getKey(), entry.getValue()))
         .collect(Collectors.joining(UNION));
   }
 
   private String targetQuery(Layer layer, List<ParsedQuery> queryValues) {
-    return String.format(TARGET_QUERY, layer.getId(), queryValues.stream()
-        .map(this::targetLayerQuery)
-        .collect(Collectors.joining(UNION)));
+    return String.format(
+        TARGET_QUERY,
+        layer.getId(),
+        queryValues.stream().map(this::targetLayerQuery).collect(Collectors.joining(UNION)));
   }
 
   private String targetLayerQuery(ParsedQuery queryValue) {
     String alias = commonTableExpression(queryValue).getAlias();
-    String where = Optional.ofNullable(queryValue.getValue().getWhere())
-        .map(expression -> String.format(TARGET_WHERE, expression))
-        .orElse(EMPTY);
+    String where =
+        Optional.ofNullable(queryValue.getValue().getWhere())
+            .map(expression -> String.format(TARGET_WHERE, expression))
+            .orElse(EMPTY);
     return String.format(TARGET_LAYER_QUERY, alias, where);
   }
 
@@ -187,7 +216,6 @@ public class TilesetQueryParser {
     return string;
   }
 
-
   private class ParsedQuery {
 
     private final Layer layer;
@@ -211,9 +239,7 @@ public class TilesetQueryParser {
     private PlainSelect getValue() {
       return value;
     }
-
   }
-
 
   private class CommonTableExpression {
 
@@ -222,9 +248,7 @@ public class TilesetQueryParser {
     private final List<Join> joins;
 
     private CommonTableExpression(
-        List<SelectItem> selectItems,
-        FromItem fromItem,
-        List<Join> joins) {
+        List<SelectItem> selectItems, FromItem fromItem, List<Join> joins) {
       this.selectItems = selectItems;
       this.fromItem = fromItem;
       this.joins = joins;
@@ -261,13 +285,12 @@ public class TilesetQueryParser {
     public int hashCode() {
       String selectItemsString = selectItems.toString();
       String fromItemString = fromItem.toString();
-      String joinsString = Optional.ofNullable(joins).stream()
-          .flatMap(List::stream)
-          .map(Join::toString)
-          .collect(Collectors.joining());
+      String joinsString =
+          Optional.ofNullable(joins).stream()
+              .flatMap(List::stream)
+              .map(Join::toString)
+              .collect(Collectors.joining());
       return Objects.hash(selectItemsString, fromItemString, joinsString);
     }
-
   }
-
 }

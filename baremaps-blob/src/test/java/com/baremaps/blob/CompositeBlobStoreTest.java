@@ -25,10 +25,8 @@ import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 class CompositeBlobStoreTest extends BlobStoreTest {
 
   @RegisterExtension
-  static final S3MockExtension S3_MOCK = S3MockExtension.builder()
-      .silent()
-      .withSecureConnection(false)
-      .build();
+  static final S3MockExtension S3_MOCK =
+      S3MockExtension.builder().silent().withSecureConnection(false).build();
 
   final S3Client s3Client = S3_MOCK.createS3ClientV2();
 
@@ -48,5 +46,4 @@ class CompositeBlobStoreTest extends BlobStoreTest {
   public BlobStore createFileSystem() {
     return new CompositeBlobStore();
   }
-
 }

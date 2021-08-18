@@ -50,7 +50,8 @@ public class PostgresNodeTable implements NodeTable {
   private final String copy;
 
   public PostgresNodeTable(DataSource dataSource) {
-    this(dataSource,
+    this(
+        dataSource,
         "osm_nodes",
         "id",
         "version",
@@ -76,35 +77,69 @@ public class PostgresNodeTable implements NodeTable {
       String latitudeColumn,
       String geometryColumn) {
     this.dataSource = dataSource;
-    this.select = String.format(
-        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asbinary(%10$s) FROM %1$s WHERE %2$s = ?",
-        nodeTable, idColumn, versionColumn, uidColumn, timestampColumn,
-        changesetColumn, tagsColumn, longitudeColumn, latitudeColumn, geometryColumn);
-    this.selectIn = String.format(
-        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asbinary(%10$s) FROM %1$s WHERE %2$s = ANY (?)",
-        nodeTable, idColumn, versionColumn, uidColumn, timestampColumn,
-        changesetColumn, tagsColumn, longitudeColumn, latitudeColumn, geometryColumn);
-    this.insert = String.format(
-        "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s) "
-            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-            + "ON CONFLICT (%2$s) DO UPDATE SET "
-            + "%3$s = excluded.%3$s, "
-            + "%4$s = excluded.%4$s, "
-            + "%5$s = excluded.%5$s, "
-            + "%6$s = excluded.%6$s, "
-            + "%7$s = excluded.%7$s, "
-            + "%8$s = excluded.%8$s, "
-            + "%9$s = excluded.%9$s, "
-            + "%10$s = excluded.%10$s",
-        nodeTable, idColumn, versionColumn, uidColumn, timestampColumn,
-        changesetColumn, tagsColumn, longitudeColumn, latitudeColumn, geometryColumn);
-    this.delete = String.format(
-        "DELETE FROM %1$s WHERE %2$s = ?",
-        nodeTable, idColumn);
-    this.copy = String.format(
-        "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s) FROM STDIN BINARY",
-        nodeTable, idColumn, versionColumn, uidColumn, timestampColumn,
-        changesetColumn, tagsColumn, longitudeColumn, latitudeColumn, geometryColumn);
+    this.select =
+        String.format(
+            "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asbinary(%10$s) FROM %1$s WHERE %2$s = ?",
+            nodeTable,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            longitudeColumn,
+            latitudeColumn,
+            geometryColumn);
+    this.selectIn =
+        String.format(
+            "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asbinary(%10$s) FROM %1$s WHERE %2$s = ANY (?)",
+            nodeTable,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            longitudeColumn,
+            latitudeColumn,
+            geometryColumn);
+    this.insert =
+        String.format(
+            "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                + "ON CONFLICT (%2$s) DO UPDATE SET "
+                + "%3$s = excluded.%3$s, "
+                + "%4$s = excluded.%4$s, "
+                + "%5$s = excluded.%5$s, "
+                + "%6$s = excluded.%6$s, "
+                + "%7$s = excluded.%7$s, "
+                + "%8$s = excluded.%8$s, "
+                + "%9$s = excluded.%9$s, "
+                + "%10$s = excluded.%10$s",
+            nodeTable,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            longitudeColumn,
+            latitudeColumn,
+            geometryColumn);
+    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", nodeTable, idColumn);
+    this.copy =
+        String.format(
+            "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s) FROM STDIN BINARY",
+            nodeTable,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            longitudeColumn,
+            latitudeColumn,
+            geometryColumn);
   }
 
   public Node select(Long id) throws DatabaseException {
@@ -246,5 +281,4 @@ public class PostgresNodeTable implements NodeTable {
     statement.setObject(8, entity.getLat());
     statement.setBytes(9, GeometryUtils.serialize(entity.getGeometry()));
   }
-
 }

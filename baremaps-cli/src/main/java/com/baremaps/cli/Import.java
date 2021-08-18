@@ -19,8 +19,8 @@ import com.baremaps.osm.cache.CoordinateCache;
 import com.baremaps.osm.cache.InMemoryCoordinateCache;
 import com.baremaps.osm.cache.InMemoryReferenceCache;
 import com.baremaps.osm.cache.ReferenceCache;
-import com.baremaps.osm.database.ImportService;
 import com.baremaps.osm.database.HeaderTable;
+import com.baremaps.osm.database.ImportService;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
@@ -50,11 +50,11 @@ public class Import implements Callable<Integer> {
   private static final Logger logger = LoggerFactory.getLogger(Import.class);
 
   private enum CacheType {
-    LMDB, MEMORY
+    LMDB,
+    MEMORY
   }
 
-  @Mixin
-  private Options options;
+  @Mixin private Options options;
 
   @Option(
       names = {"--file"},
@@ -110,10 +110,8 @@ public class Import implements Callable<Integer> {
         } else {
           cacheDirectory = Files.createTempDirectory("baremaps_");
         }
-        Env<ByteBuffer> env = Env.create()
-            .setMapSize(1_000_000_000_000L)
-            .setMaxDbs(3)
-            .open(cacheDirectory.toFile());
+        Env<ByteBuffer> env =
+            Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(cacheDirectory.toFile());
         coordinateCache = new LmdbCoordinateCache(env);
         referenceCache = new LmdbReferencesCache(env);
         break;
@@ -121,23 +119,21 @@ public class Import implements Callable<Integer> {
         throw new UnsupportedOperationException("Unsupported cache type");
     }
 
-
     logger.info("Importing data");
     new ImportService(
-        file,
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerTable,
-        nodeTable,
-        wayTable,
-        relationTable,
-        srid
-    ).call();
+            file,
+            blobStore,
+            coordinateCache,
+            referenceCache,
+            headerTable,
+            nodeTable,
+            wayTable,
+            relationTable,
+            srid)
+        .call();
 
     logger.info("Done");
 
     return 0;
   }
-
 }

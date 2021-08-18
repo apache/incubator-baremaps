@@ -54,5 +54,4 @@ public class LmdbReferencesCache extends LmdbCache<Long, List<Long>> implements 
     buffer.flip();
     return buffer;
   }
-
 }

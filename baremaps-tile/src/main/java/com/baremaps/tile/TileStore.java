@@ -21,5 +21,4 @@ public interface TileStore {
   void write(Tile tile, byte[] bytes) throws TileStoreException;
 
   void delete(Tile tile) throws TileStoreException;
-
 }

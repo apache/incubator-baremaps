@@ -65,8 +65,8 @@ class PostgresWayTableTest {
   void insertAll() throws DatabaseException {
     List<Way> ways = Arrays.asList(WAY_0, WAY_1, WAY_2);
     wayTable.insert(ways);
-    assertIterableEquals(ways,
-        wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+    assertIterableEquals(
+        ways, wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
@@ -83,7 +83,8 @@ class PostgresWayTableTest {
     List<Way> ways = Arrays.asList(WAY_0, WAY_1, WAY_2);
     wayTable.insert(ways);
     wayTable.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
-    assertIterableEquals(Arrays.asList(null, null, null),
+    assertIterableEquals(
+        Arrays.asList(null, null, null),
         wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
@@ -92,7 +93,7 @@ class PostgresWayTableTest {
   void copy() throws DatabaseException {
     List<Way> ways = Arrays.asList(WAY_0, WAY_1, WAY_2);
     wayTable.copy(ways);
-    assertIterableEquals(ways,
-        wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+    assertIterableEquals(
+        ways, wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

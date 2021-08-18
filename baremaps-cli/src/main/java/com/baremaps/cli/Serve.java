@@ -1,3 +1,16 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
 package com.baremaps.cli;
 
@@ -36,8 +49,7 @@ public class Serve implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Serve.class);
 
-  @Mixin
-  private Options options;
+  @Mixin private Options options;
 
   @Option(
       names = {"--database"},
@@ -96,25 +108,27 @@ public class Serve implements Callable<Integer> {
     TileStore tileStore = new PostgresTileStore(datasource, queries);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
-    ResourceConfig config = new ResourceConfig()
-        .register(CorsFilter.class)
-        .register(ViewerResources.class)
-        .register(BlobResources.class)
-        .register(new AbstractBinder() {
-          @Override
-          protected void configure() {
-            bind(tilesetObject).to(Tileset.class);
-            bind(styleObject).to(Style.class);
-            bind(tileCache).to(TileStore.class);
-            bind(blobStore).to(BlobStore.class);
-            bind(assets).named("assets").to(URI.class);
-          }
-        });
+    ResourceConfig config =
+        new ResourceConfig()
+            .register(CorsFilter.class)
+            .register(ViewerResources.class)
+            .register(BlobResources.class)
+            .register(
+                new AbstractBinder() {
+                  @Override
+                  protected void configure() {
+                    bind(tilesetObject).to(Tileset.class);
+                    bind(styleObject).to(Style.class);
+                    bind(tileCache).to(TileStore.class);
+                    bind(blobStore).to(BlobStore.class);
+                    bind(assets).named("assets").to(URI.class);
+                  }
+                });
 
-    BlockingStreamingHttpService httpService = new HttpJerseyRouterBuilder()
-        .buildBlockingStreaming(config);
-    ServerContext serverContext = HttpServers.forPort(port)
-        .listenBlockingStreamingAndAwait(httpService);
+    BlockingStreamingHttpService httpService =
+        new HttpJerseyRouterBuilder().buildBlockingStreaming(config);
+    ServerContext serverContext =
+        HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
     logger.info("Listening on {}", serverContext.listenAddress());
 
@@ -122,5 +136,4 @@ public class Serve implements Callable<Integer> {
 
     return 0;
   }
-
 }

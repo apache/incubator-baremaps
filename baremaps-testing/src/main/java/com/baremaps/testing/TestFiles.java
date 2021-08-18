@@ -11,6 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.baremaps.testing;
 
 import com.google.common.io.Resources;
@@ -41,5 +42,4 @@ public class TestFiles {
   public static final URL MONACO_OSM_PBF = get("monaco/monaco.osm.pbf");
 
   public static final URL MONACO_STATE_TXT = get("monaco/monaco-state.txt");
-
 }

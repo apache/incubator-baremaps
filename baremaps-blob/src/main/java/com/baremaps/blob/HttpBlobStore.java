@@ -78,5 +78,4 @@ public class HttpBlobStore implements BlobStore {
       throw new BlobStoreException(e);
     }
   }
-
 }

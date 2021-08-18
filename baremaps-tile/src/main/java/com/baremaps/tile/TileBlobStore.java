@@ -43,11 +43,13 @@ public class TileBlobStore implements TileStore {
   @Override
   public void write(Tile tile, byte[] bytes) throws TileStoreException {
     try {
-      blobStore.put(getURI(tile), Blob.builder()
-          .withByteArray(bytes)
-          .withContentEncoding("gzip")
-          .withContentType("application/vnd.mapbox-vector-tile")
-          .build());
+      blobStore.put(
+          getURI(tile),
+          Blob.builder()
+              .withByteArray(bytes)
+              .withContentEncoding("gzip")
+              .withContentType("application/vnd.mapbox-vector-tile")
+              .build());
     } catch (BlobStoreException e) {
       throw new TileStoreException(e);
     }
@@ -65,5 +67,4 @@ public class TileBlobStore implements TileStore {
   public URI getURI(Tile tile) {
     return uri.resolve(String.format("%s/%s/%s.pbf", tile.z(), tile.x(), tile.y()));
   }
-
 }

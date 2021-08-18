@@ -41,28 +41,27 @@ class BatchedSpliteratorTest {
     for (int i = 0; i < spliteratorSize; i++) {
       ints.add(i);
     }
-    spliterator = new BatchedSpliterator<>(IntStream.range(0, spliteratorSize).spliterator(), batchSize) {
-      int i = 0;
+    spliterator =
+        new BatchedSpliterator<>(IntStream.range(0, spliteratorSize).spliterator(), batchSize) {
+          int i = 0;
 
-      @Override
-      public boolean tryAdvance(Consumer<? super Integer> consumer) {
-        if (i++ < spliteratorSize) {
-          consumer.accept(i);
-          return true;
-        }
-        return false;
-      }
-    };
+          @Override
+          public boolean tryAdvance(Consumer<? super Integer> consumer) {
+            if (i++ < spliteratorSize) {
+              consumer.accept(i);
+              return true;
+            }
+            return false;
+          }
+        };
   }
 
   @Test
   void tryAdvance() throws Exception {
     for (int i = 0; i < spliteratorSize; i++) {
-      assertTrue(spliterator.tryAdvance(block -> {
-      }));
+      assertTrue(spliterator.tryAdvance(block -> {}));
     }
-    assertFalse(spliterator.tryAdvance(block -> {
-    }));
+    assertFalse(spliterator.tryAdvance(block -> {}));
   }
 
   @Test
@@ -89,6 +88,4 @@ class BatchedSpliteratorTest {
   void estimateSize() {
     assertEquals(spliterator.estimateSize(), spliteratorSize);
   }
-
-
 }

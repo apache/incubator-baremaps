@@ -11,12 +11,13 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.baremaps.config.tileset;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.List;
 
-@JsonFormat(shape= JsonFormat.Shape.ARRAY)
+@JsonFormat(shape = JsonFormat.Shape.ARRAY)
 public class Bounds {
 
   private Double minLon = -180d;
@@ -62,5 +63,4 @@ public class Bounds {
   public List<Double> asList() {
     return List.of(minLon, minLat, maxLon, maxLat);
   }
-
 }

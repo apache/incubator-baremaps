@@ -65,8 +65,8 @@ class PostgresNodeTableTest {
   void insertAll() throws DatabaseException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeStore.insert(nodes);
-    assertIterableEquals(nodes,
-        nodeStore.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+    assertIterableEquals(
+        nodes, nodeStore.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
@@ -83,7 +83,8 @@ class PostgresNodeTableTest {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeStore.insert(nodes);
     nodeStore.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
-    assertIterableEquals(Arrays.asList(null, null, null),
+    assertIterableEquals(
+        Arrays.asList(null, null, null),
         nodeStore.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
@@ -92,7 +93,7 @@ class PostgresNodeTableTest {
   void copy() throws DatabaseException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
     nodeStore.copy(nodes);
-    assertIterableEquals(nodes,
-        nodeStore.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+    assertIterableEquals(
+        nodes, nodeStore.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

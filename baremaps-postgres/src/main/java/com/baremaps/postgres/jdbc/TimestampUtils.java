@@ -1,5 +1,16 @@
-// Copyright (c) Philipp Wagner. All rights reserved.
-// Licensed under the MIT license.
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
 package com.baremaps.postgres.jdbc;
 
@@ -12,15 +23,11 @@ import java.util.concurrent.TimeUnit;
 
 class TimestampUtils {
 
-  private TimestampUtils() {
+  private TimestampUtils() {}
 
-  }
+  public static final LocalDateTime JavaEpoch = LocalDateTime.of(1970, 1, 1, 0, 0, 0);
 
-  public static final LocalDateTime JavaEpoch =
-      LocalDateTime.of(1970, 1, 1, 0, 0, 0);
-
-  static final LocalDateTime PostgresEpoch =
-      LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+  static final LocalDateTime PostgresEpoch = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
 
   static final long DAYS_BETWEEN_JAVA_AND_POSTGRES_EPOCHS =
       ChronoUnit.DAYS.between(JavaEpoch, PostgresEpoch);
@@ -31,9 +38,7 @@ class TimestampUtils {
       throw new IllegalArgumentException("localDateTime");
     }
     // Extract the Time of the Day in Nanoseconds:
-    long timeInNanoseconds = localDateTime
-        .toLocalTime()
-        .toNanoOfDay();
+    long timeInNanoseconds = localDateTime.toLocalTime().toNanoOfDay();
 
     // Convert the Nanoseconds to Microseconds:
     long timeInMicroseconds = timeInNanoseconds / 1000;
@@ -41,11 +46,13 @@ class TimestampUtils {
     // Now Calculate the Postgres Timestamp:
     if (localDateTime.isBefore(PostgresEpoch)) {
       long dateInMicroseconds =
-          (localDateTime.toLocalDate().toEpochDay() - DAYS_BETWEEN_JAVA_AND_POSTGRES_EPOCHS) * 86400000000L;
+          (localDateTime.toLocalDate().toEpochDay() - DAYS_BETWEEN_JAVA_AND_POSTGRES_EPOCHS)
+              * 86400000000L;
       return dateInMicroseconds + timeInMicroseconds;
     } else {
       long dateInMicroseconds =
-          (DAYS_BETWEEN_JAVA_AND_POSTGRES_EPOCHS - localDateTime.toLocalDate().toEpochDay()) * 86400000000L;
+          (DAYS_BETWEEN_JAVA_AND_POSTGRES_EPOCHS - localDateTime.toLocalDate().toEpochDay())
+              * 86400000000L;
       return -(dateInMicroseconds - timeInMicroseconds);
     }
   }
@@ -76,9 +83,10 @@ class TimestampUtils {
   }
 
   /**
-   * Converts the given java seconds to postgresql seconds. The conversion is valid for any year 100 BC onwards.
-   * <p>
-   * from /org/postgresql/jdbc2/TimestampUtils.java
+   * Converts the given java seconds to postgresql seconds. The conversion is valid for any year 100
+   * BC onwards.
+   *
+   * <p>from /org/postgresql/jdbc2/TimestampUtils.java
    *
    * @param seconds Postgresql seconds.
    * @return Java seconds.
@@ -102,5 +110,4 @@ class TimestampUtils {
 
     return secs;
   }
-
 }

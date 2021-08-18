@@ -26,10 +26,8 @@ import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 class S3BlobStoreTest extends BlobStoreTest {
 
   @RegisterExtension
-  static final S3MockExtension S3_MOCK = S3MockExtension.builder()
-      .silent()
-      .withSecureConnection(false)
-      .build();
+  static final S3MockExtension S3_MOCK =
+      S3MockExtension.builder().silent().withSecureConnection(false).build();
 
   private final S3Client s3Client = S3_MOCK.createS3ClientV2();
 

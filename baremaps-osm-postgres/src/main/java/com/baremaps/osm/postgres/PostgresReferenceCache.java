@@ -31,8 +31,7 @@ import javax.sql.DataSource;
 
 public class PostgresReferenceCache implements ReferenceCache {
 
-  private static final String SELECT =
-      "SELECT nodes FROM osm_ways WHERE id = ?";
+  private static final String SELECT = "SELECT nodes FROM osm_ways WHERE id = ?";
 
   private static final String SELECT_IN =
       "SELECT id, nodes FROM osm_ways WHERE id WHERE id = ANY (?)";
@@ -104,5 +103,4 @@ public class PostgresReferenceCache implements ReferenceCache {
   public void deleteAll(List<Long> keys) {
     throw new UnsupportedOperationException();
   }
-
 }
