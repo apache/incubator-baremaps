@@ -39,7 +39,7 @@ public class RocksdbCoordinateCache extends RocksdbCache<Long, Coordinate>
       return null;
     }
     ByteBuffer buffer = ByteBuffer.wrap(array);
-    if (array == null || buffer.get() == 0) {
+    if (buffer.get() == 0) {
       return null;
     }
     double lon = buffer.getDouble();
