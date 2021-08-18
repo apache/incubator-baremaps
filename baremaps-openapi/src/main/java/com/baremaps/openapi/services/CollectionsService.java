@@ -2,32 +2,33 @@ package com.baremaps.openapi.services;
 
 import com.baremaps.api.CollectionsApi;
 import com.baremaps.model.Collection;
-import com.baremaps.model.Collections;
+import java.util.UUID;
+import javax.ws.rs.core.Response;
 
 public class CollectionsService implements CollectionsApi {
 
   @Override
-  public void addCollection(Collection collection) {
+  public Response addCollection(Collection collection) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void deleteCollection(String collectionId) {
+  public Response deleteCollection(UUID collectionId) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public Collection getCollection(String collectionId) {
+  public Response getCollection(UUID collectionId) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public Collections getCollections() {
+  public Response getCollections() {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void updateCollection(String collectionId, Collection collection) {
+  public Response updateCollection(UUID collectionId, Collection collection) {
     throw new UnsupportedOperationException();
   }
 

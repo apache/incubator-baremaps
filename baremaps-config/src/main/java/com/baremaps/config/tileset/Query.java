@@ -15,9 +15,9 @@ package com.baremaps.config.tileset;
 
 public class Query {
 
-  private int minZoom;
+  private int minzoom;
 
-  private int maxZoom;
+  private int maxzoom;
 
   private String sql;
 
@@ -25,9 +25,9 @@ public class Query {
 
   }
 
-  public Query(int minZoom, int maxZoom, String sql) {
-    this.minZoom = minZoom;
-    this.maxZoom = maxZoom;
+  public Query(int minzoom, int maxzoom, String sql) {
+    this.minzoom = minzoom;
+    this.maxzoom = maxzoom;
     this.sql = sql;
   }
 
@@ -35,12 +35,12 @@ public class Query {
     return sql;
   }
 
-  public int getMinZoom() {
-    return minZoom;
+  public int getMinzoom() {
+    return minzoom;
   }
 
-  public int getMaxZoom() {
-    return maxZoom;
+  public int getMaxzoom() {
+    return maxzoom;
   }
 
 }

@@ -40,26 +40,26 @@ public class Tileset {
 
   private Bounds bounds = new Bounds();
 
-  private Double minZoom;
+  private Double minzoom;
 
-  private Double maxZoom;
+  private Double maxzoom;
 
   private List<String> tiles = new ArrayList<>();
 
   @JsonProperty("vector_layers")
-  private List<Layer> layers = new ArrayList<>();
+  private List<Layer> vectorLayers = new ArrayList<>();
 
   public Tileset() {
 
   }
 
-  public Tileset(Layer... layers) {
-    this.layers = Arrays.asList(layers);
+  public Tileset(Layer... vectorLayers) {
+    this.vectorLayers = Arrays.asList(vectorLayers);
   }
 
-  public Tileset(String name, Layer... layers) {
+  public Tileset(String name, Layer... vectorLayers) {
     this.name = name;
-    this.layers = Arrays.asList(layers);
+    this.vectorLayers = Arrays.asList(vectorLayers);
   }
 
   public String getName() {
@@ -110,28 +110,28 @@ public class Tileset {
     this.bounds = bounds;
   }
 
-  public Double getMinZoom() {
-    return minZoom;
+  public Double getMinzoom() {
+    return minzoom;
   }
 
-  public void setMinZoom(Double minZoom) {
-    this.minZoom = minZoom;
+  public void setMinzoom(Double minzoom) {
+    this.minzoom = minzoom;
   }
 
-  public Double getMaxZoom() {
-    return maxZoom;
+  public Double getMaxzoom() {
+    return maxzoom;
   }
 
-  public void setMaxZoom(Double maxZoom) {
-    this.maxZoom = maxZoom;
+  public void setMaxzoom(Double maxzoom) {
+    this.maxzoom = maxzoom;
   }
 
-  public List<Layer> getLayers() {
-    return layers;
+  public List<Layer> getVectorLayers() {
+    return vectorLayers;
   }
 
-  public void setLayers(List<Layer> layers) {
-    this.layers = layers;
+  public void setVectorLayers(List<Layer> vectorLayers) {
+    this.vectorLayers = vectorLayers;
   }
 
   public String getTilejson() {
