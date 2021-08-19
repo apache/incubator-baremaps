@@ -18,11 +18,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
+import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
+@Singleton
 @Path("")
 public class ApiListingResource {
 
@@ -32,7 +36,6 @@ public class ApiListingResource {
     BeanConfig beanConfig = new BeanConfig();
     beanConfig.setVersion("1.0.0");
     beanConfig.setSchemes(new String[] {"http"});
-    beanConfig.setHost("localhost:9000");
     beanConfig.setBasePath("/");
     beanConfig.setResourcePackage("com.baremaps.openapi.services");
     beanConfig.setScan(true);
@@ -42,15 +45,42 @@ public class ApiListingResource {
   @GET
   @Produces({"application/json"})
   @Path("/swagger.json")
-  public Response getListingJson() {
-    return Response.ok(this.swagger).build();
+  public Response getListingJson(@Context UriInfo uriInfo) {
+    return Response.ok(swaggerWithUriInfo(uriInfo)).build();
   }
 
   @GET
   @Produces({"application/yaml"})
   @Path("/swagger.yaml")
-  public Response getListingYaml() throws JsonProcessingException {
-    String yaml = Yaml.mapper().writeValueAsString(this.swagger);
-    return Response.ok(yaml).build();
+  public Response getListingYaml(@Context UriInfo uriInfo) throws JsonProcessingException {
+    return Response.ok(Yaml.mapper().writeValueAsString(swaggerWithUriInfo(uriInfo))).build();
   }
+
+  private Swagger swaggerWithUriInfo(UriInfo uriInfo) {
+    Swagger copy = new Swagger();
+    copy.setInfo(swagger.getInfo());
+    copy.setHost(String.format("%s:%s",
+        uriInfo.getBaseUri().getHost(),
+        uriInfo.getBaseUri().getPort()));
+    copy.setBasePath(swagger.getBasePath());
+    copy.setTags(swagger.getTags());
+    copy.setSchemes(swagger.getSchemes());
+    copy.setConsumes(swagger.getConsumes());
+    copy.setProduces(swagger.getProduces());
+    copy.setSecurity(swagger.getSecurity());
+    copy.setPaths(swagger.getPaths());
+    copy.setSecurityDefinitions(swagger.getSecurityDefinitions());
+    copy.setDefinitions(swagger.getDefinitions());
+    copy.setParameters(swagger.getParameters());
+    copy.setResponses(swagger.getResponses());
+    copy.setExternalDocs(swagger.getExternalDocs());
+    copy.setVendorExtensions(swagger.getVendorExtensions());
+    return copy;
+  }
+
+
+
+
+
+
 }
