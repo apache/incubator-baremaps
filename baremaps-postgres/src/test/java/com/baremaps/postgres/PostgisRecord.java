@@ -27,6 +27,13 @@ public class PostgisRecord {
 
   public PostgisRecord() {}
 
+  public PostgisRecord(Integer id, Point point, LineString lineString, Polygon polygon) {
+    this.id = id;
+    this.point = point;
+    this.lineString = lineString;
+    this.polygon = polygon;
+  }
+
   public Integer getId() {
     return id;
   }

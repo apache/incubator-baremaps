@@ -16,11 +16,14 @@ package com.baremaps.postgres.jdbi;
 
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.spi.JdbiPlugin;
+import org.jdbi.v3.postgres.PostgresPlugin;
 
 public class PostgisPlugin extends JdbiPlugin.Singleton {
 
   @Override
   public void customizeJdbi(Jdbi jdbi) {
+    jdbi.installPlugin(new PostgresPlugin());
+
     // Register argument factories
     jdbi.registerArgument(new PointArgumentFactory());
     jdbi.registerArgument(new LineStringArgumentFactory());
@@ -42,5 +45,8 @@ public class PostgisPlugin extends JdbiPlugin.Singleton {
     jdbi.registerColumnMapper(new MultiPolygonColumnMapper());
     jdbi.registerColumnMapper(new GeometryCollectionColumnMapper());
     jdbi.registerColumnMapper(new GeometryColumnMapper());
+
+    // Register feature mapper
+    jdbi.registerRowMapper(new FeatureMapper());
   }
 }
