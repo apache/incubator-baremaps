@@ -17,7 +17,7 @@ package com.baremaps.config;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.blob.ResourceBlobStore;
-import com.baremaps.config.style.Style;
+import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileSet;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,15 +36,15 @@ class BlobMapperTest {
 
   @Test
   void loadJsonStyle() throws URISyntaxException, BlobMapperException {
-    Style style =
-        new BlobMapper(new ResourceBlobStore()).read(new URI("res://./style.json"), Style.class);
+    MbStyle style =
+        new BlobMapper(new ResourceBlobStore()).read(new URI("res://./style.json"), MbStyle.class);
     assertEquals("style", style.getName());
   }
 
   @Test
   void loadYamlStyle() throws URISyntaxException, BlobMapperException {
-    Style style =
-        new BlobMapper(new ResourceBlobStore()).read(new URI("res://./style.yaml"), Style.class);
+    MbStyle style =
+        new BlobMapper(new ResourceBlobStore()).read(new URI("res://./style.yaml"), MbStyle.class);
     assertEquals("style", style.getName());
   }
 }

@@ -19,6 +19,8 @@ import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.CorsFilter;
 import com.baremaps.server.EditorResources;
 import com.baremaps.server.MaputnikResources;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
@@ -26,7 +28,10 @@ import io.servicetalk.transport.api.ServerContext;
 import java.net.URI;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,9 +92,13 @@ public class Edit implements Callable<Integer> {
 
     ResourceConfig config =
         new ResourceConfig()
-            .register(CorsFilter.class)
-            .register(EditorResources.class)
-            .register(MaputnikResources.class)
+            .packages("org.glassfish.jersey.examples.jackson")
+            .registerClasses(
+                MyObjectMapperProvider.class,
+                JacksonFeature.class,
+                CorsFilter.class,
+                EditorResources.class,
+                MaputnikResources.class)
             .register(
                 new AbstractBinder() {
                   @Override
@@ -110,5 +119,27 @@ public class Edit implements Callable<Integer> {
     serverContext.awaitShutdown();
 
     return 0;
+  }
+
+  @Provider
+  private static class MyObjectMapperProvider implements ContextResolver<ObjectMapper> {
+
+    final ObjectMapper defaultObjectMapper;
+
+    public MyObjectMapperProvider() {
+      defaultObjectMapper = createDefaultMapper();
+    }
+
+    @Override
+    public ObjectMapper getContext(Class<?> type) {
+      return defaultObjectMapper;
+    }
+  }
+
+  private static ObjectMapper createDefaultMapper() {
+    final ObjectMapper mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+    return mapper;
   }
 }

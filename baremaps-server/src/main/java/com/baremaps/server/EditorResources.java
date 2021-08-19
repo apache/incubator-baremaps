@@ -21,7 +21,7 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.config.BlobMapper;
 import com.baremaps.config.BlobMapperException;
-import com.baremaps.config.style.Style;
+import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileSet;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
@@ -131,7 +131,7 @@ public class EditorResources {
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @javax.ws.rs.Path("style.json")
-  public void putStyle(Style json) throws BlobMapperException {
+  public void putStyle(MbStyle json) throws BlobMapperException {
     new BlobMapper(blobStore).write(style, json);
   }
 
@@ -144,8 +144,8 @@ public class EditorResources {
   @GET
   @javax.ws.rs.Path("style.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Style getStyle() throws BlobMapperException {
-    return new BlobMapper(blobStore).read(style, Style.class);
+  public MbStyle getStyle() throws BlobMapperException {
+    return new BlobMapper(blobStore).read(style, MbStyle.class);
   }
 
   @GET

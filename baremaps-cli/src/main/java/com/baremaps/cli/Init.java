@@ -17,7 +17,8 @@ package com.baremaps.cli;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.config.BlobMapper;
 import com.baremaps.config.BlobMapperException;
-import com.baremaps.config.style.Style;
+import com.baremaps.model.MbStyle;
+import com.baremaps.model.MbStyleSources;
 import com.baremaps.model.TileSet;
 import java.net.URI;
 import java.util.Arrays;
@@ -54,14 +55,14 @@ public class Init implements Callable<Integer> {
     BlobMapper mapper = new BlobMapper(blobStore);
 
     if (style != null && !mapper.exists(style)) {
-      Style styleObject = new Style();
+      MbStyle styleObject = new MbStyle();
       styleObject.setName("Baremaps");
-      styleObject.setSources(
-          Map.of(
-              "baremaps",
-              Map.of(
-                  "type", "vector",
-                  "url", "http://localhost:9000/tiles.json")));
+
+      MbStyleSources sources = new MbStyleSources();
+      sources.setType("vector");
+      sources.setUrl("http://localhost:9000/tiles.json");
+      styleObject.setSources(Map.of("baremaps", sources));
+
       mapper.write(style, styleObject);
       logger.info("Style initialized: {}", style);
     }

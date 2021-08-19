@@ -122,7 +122,7 @@ public class OpenApi implements Callable<Integer> {
   private static ObjectMapper createDefaultMapper() {
     final ObjectMapper mapper = new ObjectMapper();
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
     return mapper;
   }
 }
