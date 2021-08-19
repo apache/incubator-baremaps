@@ -78,10 +78,23 @@ public class OpenApi implements Callable<Integer> {
             .installPlugin(new Jackson2Plugin())
             .configure(Jackson2Config.class, config -> config.setMapper(mapper));
 
-    // Configure the application
+    // Configure swagger
+    BeanConfig beanConfig = new BeanConfig();
+    beanConfig.setVersion("1.0.0");
+    beanConfig.setSchemes(new String[]{"http"});
+    beanConfig.setHost("localhost:9000");
+    beanConfig.setBasePath("/");
+    beanConfig.setResourcePackage("com.baremaps.openapi.services");
+    beanConfig.setScan(true);
+
+    // Initialize the application
     ResourceConfig application =
         new ResourceConfig()
             .registerClasses(
+                ApiListingResource.class,
+                SwaggerSerializers.class,
+                RedocResource.class,
+                SwaggerResource.class,
                 RootService.class,
                 CorsFilter.class,
                 ConformanceService.class,

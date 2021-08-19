@@ -90,6 +90,7 @@
     <version.lib.junit-vintage>5.7.2</version.lib.junit-vintage>
     <version.lib.rocksdb>6.22.1.1</version.lib.rocksdb>
     <version.lib.mockito>1.10.19</version.lib.mockito>
+    <version.lib.servlet>3.1.0</version.lib.servlet>
   </properties>
 
   <modules>
@@ -523,8 +524,18 @@
         <version>${version.lib.servicetalk}</version>
       </dependency>
       <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>${version.lib.servlet}</version>
+      </dependency>
+      <dependency>
         <groupId>io.swagger</groupId>
         <artifactId>swagger-annotations</artifactId>
+        <version>${version.lib.swagger}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-jersey2-jaxrs</artifactId>
         <version>${version.lib.swagger}</version>
       </dependency>
       <dependency>
