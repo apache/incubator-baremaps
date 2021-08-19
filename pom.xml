@@ -91,6 +91,7 @@
     <version.lib.rocksdb>6.22.1.1</version.lib.rocksdb>
     <version.lib.mockito>1.10.19</version.lib.mockito>
     <version.lib.servlet>3.1.0</version.lib.servlet>
+    <version.lib.activation>1.1.1</version.lib.activation>
   </properties>
 
   <modules>
@@ -542,6 +543,11 @@
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
         <version>${version.lib.validation}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.activation</groupId>
+        <artifactId>activation</artifactId>
+        <version>${version.lib.activation}</version>
       </dependency>
       <dependency>
         <groupId>org.jdbi</groupId>
