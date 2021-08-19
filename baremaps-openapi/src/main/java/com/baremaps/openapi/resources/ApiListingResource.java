@@ -15,9 +15,12 @@
 package com.baremaps.openapi.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.io.Resources;
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
+import java.io.IOException;
+import java.util.Properties;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -34,12 +37,22 @@ public class ApiListingResource {
 
   public ApiListingResource() {
     BeanConfig beanConfig = new BeanConfig();
-    beanConfig.setVersion("1.0.0");
+    beanConfig.setVersion(getVersion());
     beanConfig.setSchemes(new String[] {"http"});
     beanConfig.setBasePath("/");
     beanConfig.setResourcePackage("com.baremaps.openapi.services");
     beanConfig.setScan(true);
     this.swagger = beanConfig.getSwagger();
+  }
+
+  public String getVersion() {
+    try {
+      Properties properties = new Properties();
+      properties.load(Resources.getResource("version.txt").openStream());
+      return properties.getProperty("version");
+    } catch (IOException e) {
+      throw new RuntimeException("Unable to read version number");
+    }
   }
 
   @GET
