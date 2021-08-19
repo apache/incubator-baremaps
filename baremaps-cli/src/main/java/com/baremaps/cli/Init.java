@@ -18,7 +18,7 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.config.BlobMapper;
 import com.baremaps.config.BlobMapperException;
 import com.baremaps.config.style.Style;
-import com.baremaps.config.tileset.Tileset;
+import com.baremaps.model.TileSet;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Map;
@@ -67,7 +67,7 @@ public class Init implements Callable<Integer> {
     }
 
     if (tileset != null && !mapper.exists(tileset)) {
-      Tileset tilesetObject = new Tileset();
+      TileSet tilesetObject = new TileSet();
       tilesetObject.setTilejson("2.2.0");
       tilesetObject.setName("Baremaps");
       tilesetObject.setTiles(Arrays.asList("http://localhost:9000/tiles.json"));

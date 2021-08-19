@@ -1068,6 +1068,7 @@ components:
           type: array
           items:
             type: number
+            format: double
         center:
           type: array
           items:

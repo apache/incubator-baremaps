@@ -17,7 +17,7 @@ package com.baremaps.cli;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.config.BlobMapper;
 import com.baremaps.config.style.Style;
-import com.baremaps.config.tileset.Tileset;
+import com.baremaps.model.TileSet;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.BlobResources;
 import com.baremaps.server.CorsFilter;
@@ -99,7 +99,7 @@ public class Serve implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
-    Tileset tilesetObject = new BlobMapper(blobStore).read(this.tileset, Tileset.class);
+    TileSet tilesetObject = new BlobMapper(blobStore).read(this.tileset, TileSet.class);
     Style styleObject = new BlobMapper(blobStore).read(this.style, Style.class);
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
     DataSource datasource = PostgresUtils.datasource(database);
@@ -117,7 +117,7 @@ public class Serve implements Callable<Integer> {
                 new AbstractBinder() {
                   @Override
                   protected void configure() {
-                    bind(tilesetObject).to(Tileset.class);
+                    bind(tilesetObject).to(TileSet.class);
                     bind(styleObject).to(Style.class);
                     bind(tileCache).to(TileStore.class);
                     bind(blobStore).to(BlobStore.class);

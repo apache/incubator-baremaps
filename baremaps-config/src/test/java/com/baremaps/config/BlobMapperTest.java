@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.config.style.Style;
-import com.baremaps.config.tileset.Tileset;
+import com.baremaps.model.TileSet;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.junit.jupiter.api.Test;
@@ -27,9 +27,9 @@ class BlobMapperTest {
 
   @Test
   void loadJsonTileset() throws URISyntaxException, BlobMapperException {
-    Tileset tileset =
+    TileSet tileset =
         new BlobMapper(new ResourceBlobStore())
-            .read(new URI("res://./tileset.json"), Tileset.class);
+            .read(new URI("res://./tileset.json"), TileSet.class);
     assertEquals(1, tileset.getVectorLayers().size());
     assertEquals("layer", tileset.getVectorLayers().get(0).getId());
   }
