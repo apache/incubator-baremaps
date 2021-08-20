@@ -41,8 +41,7 @@ corrected!
 
 ## Development Environment
 
-Baremaps is developed and tested with Java 8, Maven 3.6, Postgres 10 and Postgis 2.4.
-However, it should also work with more recent versions.
+Baremaps is developed and tested with Java 11, Maven 3.6, Postgres 13 and Postgis 3.
 
 The repository contains several sets of directories with code:
 The source code of Baremaps is organized in modules:
@@ -84,7 +83,7 @@ mvn test
 Given a local and properly configured install of Postgres, the following command can be used to run the integration tests.
 
 ```bash
-mvn test -P integration
+mvn verify -P integration
 ```
 
 ## Providing Patches
@@ -98,8 +97,9 @@ Try to be concise and relevant in your [commit messages](https://chris.beams.io/
 If you change multiple different things that aren't related at all, try to
 make several smaller commits. This is much easier to review.
 
-Before making a pull request, check that your source code is formatted according to the rules defined in the `codestyle.xml` file.
+Before making a pull request, check that your source code is formatted according to the rules defined in the `codestyle.xml` file. 
 This file can typically used to [configure](https://www.jetbrains.com/help/idea/settings-code-style.html) your favourite IDE.
+You can run `mvn spotless:apply` to format your code automatically.
 Finally, verify that your contribution passes all the tests (integration included).
 Once your everything looks good, we'll merge it.
 
