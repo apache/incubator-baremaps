@@ -1,23 +1,144 @@
 openapi: 3.0.2
 info:
-  title: "Building Blocks specified in OGC API - Features - Part 1: Core"
-  description: |-
-    Common components used in the
-    [OGC standard "OGC API - Features - Part 1: Core"](http://docs.opengeospatial.org/is/17-069r3/17-069r3.html).
-
-    OGC API - Features - Part 1: Core 1.0 is an OGC Standard.
-    Copyright (c) 2019 Open Geospatial Consortium.
-    To obtain additional rights of use, visit http://www.opengeospatial.org/legal/ .
-
-    This document is also available on
-    [OGC](http://schemas.opengis.net/ogcapi/features/part1/1.0/openapi/ogcapi-features-1.yaml).
+  title: "A sample API conforming to the draft standard OGC API - Features - Part 1: Core"
   version: '1.0.0'
+  description: |-
+    This is a sample OpenAPI definition that conforms to the conformance
+    classes "Core", "GeoJSON", "HTML" and "OpenAPI 3.0" of the draft
+    standard "OGC API - Features - Part 1: Core".
+
+    This example is a generic OGC API Features definition that uses path
+    parameters to describe all feature collections and all features.
+    The generic OpenAPI definition does not provide any details on the
+    collections or the feature content. This information is only available
+    from accessing the feature collection resources.
+
+    There is [another example](ogcapi-features-1-example2.yaml)
+    that specifies each collection explicitly.
   contact:
-    name: Clemens Portele
-    email: portele@interactive-instruments.de
+    name: Acme Corporation
+    email: info@example.org
+    url: 'http://example.org/'
   license:
-    name: OGC License
-    url: 'http://www.opengeospatial.org/legal/'
+    name: CC-BY 4.0 license
+    url: 'https://creativecommons.org/licenses/by/4.0/'
+servers:
+  - url: 'https://data.example.org/'
+    description: Production server
+  - url: 'https://dev.example.org/'
+    description: Development server
+tags:
+  - name: Capabilities
+    description: |-
+      essential characteristics of this API
+  - name: Data
+    description: |-
+      access to data (features)
+paths:
+  '/':
+    get:
+      tags:
+        - Capabilities
+      summary: landing page
+      description: |-
+        The landing page provides links to the API definition, the conformance
+        statements and to the feature collections in this dataset.
+      operationId: getLandingPage
+      responses:
+        '200':
+          $ref: '#/components/responses/LandingPage'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/conformance':
+    get:
+      tags:
+        - Capabilities
+      summary: information about specifications that this API conforms to
+      description: |-
+        A list of all conformance classes specified in a standard that the
+        server conforms to.
+      operationId: getConformanceDeclaration
+      responses:
+        '200':
+          $ref: '#/components/responses/ConformanceDeclaration'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections':
+    get:
+      tags:
+        - Capabilities
+      summary: the feature collections in the dataset
+      operationId: getCollections
+      responses:
+        '200':
+          $ref: '#/components/responses/Collections'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}':
+    get:
+      tags:
+        - Capabilities
+      summary: |-
+        describe the feature collection with id `collectionId`
+      operationId: describeCollection
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          $ref: '#/components/responses/Collection'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/items':
+    get:
+      tags:
+        - Data
+      summary: fetch features
+      description: |-
+        Fetch features of the feature collection with id `collectionId`.
+
+        Every feature in a dataset belongs to a collection. A dataset may
+        consist of multiple feature collections. A feature collection is often a
+        collection of features of a similar type, based on a common schema.
+
+        Use content negotiation to request HTML or GeoJSON.
+      operationId: getFeatures
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/bbox'
+        - $ref: '#/components/parameters/datetime'
+      responses:
+        '200':
+          $ref: '#/components/responses/Features'
+        '400':
+          $ref: '#/components/responses/InvalidParameter'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  '/collections/{collectionId}/items/{featureId}':
+    get:
+      tags:
+        - Data
+      summary: fetch a single feature
+      description: |-
+        Fetch the feature with id `featureId` in the feature collection
+        with id `collectionId`.
+
+        Use content negotiation to request HTML or GeoJSON.
+      operationId: getFeature
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+        - $ref: '#/components/parameters/featureId'
+      responses:
+        '200':
+          $ref: '#/components/responses/Feature'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
 components:
   parameters:
     bbox:
@@ -356,7 +477,14 @@ components:
           items:
             $ref: "#/components/schemas/link"
     geometryGeoJSON:
-      $ref: "#/components/schemas/geometryGeoJSON"
+      oneOf:
+        - $ref: '#/components/schemas/pointGeoJSON'
+        - $ref: '#/components/schemas/multipointGeoJSON'
+        - $ref: '#/components/schemas/linestringGeoJSON'
+        - $ref: '#/components/schemas/multilinestringGeoJSON'
+        - $ref: '#/components/schemas/polygonGeoJSON'
+        - $ref: '#/components/schemas/multipolygonGeoJSON'
+        - $ref: '#/components/schemas/geometrycollectionGeoJSON'
     geometrycollectionGeoJSON:
       type: object
       required:
