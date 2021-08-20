@@ -17,9 +17,11 @@ package com.baremaps.openapi.services;
 import com.baremaps.api.DefaultApi;
 import com.baremaps.model.LandingPage;
 import com.baremaps.model.Link;
+import com.baremaps.openapi.RequestWrapper;
+import java.net.URI;
 import javax.ws.rs.core.Response;
 
-public class RootService implements DefaultApi {
+public class RootService extends RequestWrapper implements DefaultApi {
 
   @Override
   public Response getLandingPage() {
@@ -28,18 +30,17 @@ public class RootService implements DefaultApi {
 
     landingPage.setTitle("Baremaps");
     landingPage.setDescription("Baremaps OGC API Landing Page");
-
-    String address = "localhost:8080";
+    URI address = this.getBaseUri();
 
     Link linkRoot = new Link();
     linkRoot.title("This document (landing page)");
-    linkRoot.setHref(String.format("http://%s/", address));
+    linkRoot.setHref(address.toString());
     linkRoot.setRel("application/json");
     landingPage.getLinks().add(linkRoot);
 
     Link linkConformance = new Link();
     linkConformance.title("Conformance declaration");
-    linkConformance.setHref(String.format("http://%s/conformance", address));
+    linkConformance.setHref(address.toString());
     linkConformance.setRel("application/json");
     landingPage.getLinks().add(linkConformance);
 

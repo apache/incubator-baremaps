@@ -16,10 +16,11 @@ package com.baremaps.openapi.services;
 
 import com.baremaps.api.CollectionsApi;
 import com.baremaps.model.Collection;
+import com.baremaps.openapi.RequestWrapper;
 import java.util.UUID;
 import javax.ws.rs.core.Response;
 
-public class CollectionsService implements CollectionsApi {
+public class CollectionsService extends RequestWrapper implements CollectionsApi {
 
   @Override
   public Response addCollection(Collection collection) {

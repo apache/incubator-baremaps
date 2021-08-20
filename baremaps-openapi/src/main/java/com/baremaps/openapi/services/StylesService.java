@@ -19,6 +19,7 @@ import com.baremaps.model.Link;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.StyleSet;
 import com.baremaps.model.StyleSetEntry;
+import com.baremaps.openapi.RequestWrapper;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.json.Json;
 
-public class StylesService implements StylesApi {
+public class StylesService extends RequestWrapper implements StylesApi {
 
   private static final QualifiedType<MbStyle> MBSTYLE =
       QualifiedType.of(MbStyle.class).with(Json.class);
