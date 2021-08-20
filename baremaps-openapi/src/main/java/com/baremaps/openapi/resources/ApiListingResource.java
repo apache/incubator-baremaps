@@ -20,6 +20,7 @@ import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
@@ -46,9 +47,9 @@ public class ApiListingResource {
   }
 
   public String getVersion() {
-    try {
+    try (InputStream input = Resources.getResource("version.txt").openStream()) {
       Properties properties = new Properties();
-      properties.load(Resources.getResource("version.txt").openStream());
+      properties.load(input);
       return properties.getProperty("version");
     } catch (IOException e) {
       throw new RuntimeException("Unable to read version number");
@@ -72,9 +73,8 @@ public class ApiListingResource {
   private Swagger swaggerWithUriInfo(UriInfo uriInfo) {
     Swagger copy = new Swagger();
     copy.setInfo(swagger.getInfo());
-    copy.setHost(String.format("%s:%s",
-        uriInfo.getBaseUri().getHost(),
-        uriInfo.getBaseUri().getPort()));
+    copy.setHost(
+        String.format("%s:%s", uriInfo.getBaseUri().getHost(), uriInfo.getBaseUri().getPort()));
     copy.setBasePath(swagger.getBasePath());
     copy.setTags(swagger.getTags());
     copy.setSchemes(swagger.getSchemes());
@@ -90,10 +90,4 @@ public class ApiListingResource {
     copy.setVendorExtensions(swagger.getVendorExtensions());
     return copy;
   }
-
-
-
-
-
-
 }

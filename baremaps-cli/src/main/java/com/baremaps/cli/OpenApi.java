@@ -81,7 +81,7 @@ public class OpenApi implements Callable<Integer> {
     // Configure swagger
     BeanConfig beanConfig = new BeanConfig();
     beanConfig.setVersion("1.0.0");
-    beanConfig.setSchemes(new String[]{"http"});
+    beanConfig.setSchemes(new String[] {"http"});
     beanConfig.setHost("localhost:9000");
     beanConfig.setBasePath("/");
     beanConfig.setResourcePackage("com.baremaps.openapi.services");
