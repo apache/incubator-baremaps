@@ -14,10 +14,10 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.blob.BlobMapper;
+import com.baremaps.blob.BlobMapperException;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreException;
-import com.baremaps.config.BlobMapper;
-import com.baremaps.config.BlobMapperException;
 import com.baremaps.model.Query;
 import com.baremaps.model.TileSet;
 import com.baremaps.osm.progress.StreamProgress;

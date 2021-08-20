@@ -8,5 +8,20 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>baremaps-testing</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-blob</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-openapi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
 
 </project>

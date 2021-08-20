@@ -12,15 +12,16 @@
  * the License.
  */
 
-package com.baremaps.config;
+package com.baremaps.testing;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import com.baremaps.blob.BlobMapper;
+import com.baremaps.blob.BlobMapperException;
 import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileSet;
 import java.net.URI;
 import java.net.URISyntaxException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class BlobMapperTest {
@@ -30,21 +31,21 @@ class BlobMapperTest {
     TileSet tileset =
         new BlobMapper(new ResourceBlobStore())
             .read(new URI("res://./tileset.json"), TileSet.class);
-    assertEquals(1, tileset.getVectorLayers().size());
-    assertEquals("layer", tileset.getVectorLayers().get(0).getId());
+    Assertions.assertEquals(1, tileset.getVectorLayers().size());
+    Assertions.assertEquals("layer", tileset.getVectorLayers().get(0).getId());
   }
 
   @Test
   void loadJsonStyle() throws URISyntaxException, BlobMapperException {
     MbStyle style =
         new BlobMapper(new ResourceBlobStore()).read(new URI("res://./style.json"), MbStyle.class);
-    assertEquals("style", style.getName());
+    Assertions.assertEquals("style", style.getName());
   }
 
   @Test
   void loadYamlStyle() throws URISyntaxException, BlobMapperException {
     MbStyle style =
         new BlobMapper(new ResourceBlobStore()).read(new URI("res://./style.yaml"), MbStyle.class);
-    assertEquals("style", style.getName());
+    Assertions.assertEquals("style", style.getName());
   }
 }

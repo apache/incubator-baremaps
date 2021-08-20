@@ -18,9 +18,9 @@ import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
+import com.baremaps.blob.BlobMapper;
+import com.baremaps.blob.BlobMapperException;
 import com.baremaps.blob.BlobStore;
-import com.baremaps.config.BlobMapper;
-import com.baremaps.config.BlobMapperException;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileSet;
 import com.baremaps.tile.Tile;

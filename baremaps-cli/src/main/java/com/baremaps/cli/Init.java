@@ -14,9 +14,9 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.blob.BlobMapper;
+import com.baremaps.blob.BlobMapperException;
 import com.baremaps.blob.BlobStore;
-import com.baremaps.config.BlobMapper;
-import com.baremaps.config.BlobMapperException;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.MbStyleSources;
 import com.baremaps.model.TileSet;

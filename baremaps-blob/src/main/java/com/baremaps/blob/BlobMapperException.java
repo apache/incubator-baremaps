@@ -12,20 +12,17 @@
  * the License.
  */
 
-package com.baremaps.config;
+package com.baremaps.blob;
 
-import java.util.Map;
-import java.util.Map.Entry;
+public class BlobMapperException extends Exception {
 
-/** A utility class to interpolate variables in strings. */
-public class VariableUtils {
+  public BlobMapperException() {}
 
-  private VariableUtils() {}
+  public BlobMapperException(String message) {
+    super(message);
+  }
 
-  public static String interpolate(Map<String, String> variables, String string) {
-    for (Entry<String, String> entry : variables.entrySet()) {
-      string = string.replace(String.format("$%s", entry.getKey()), entry.getValue());
-    }
-    return string;
+  public BlobMapperException(Throwable throwable) {
+    super(throwable);
   }
 }

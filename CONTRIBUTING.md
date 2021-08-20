@@ -51,7 +51,6 @@ The source code of Baremaps is organized in modules:
 - `baremaps-blob` contains a storage abstraction for blobs and some of its implementations (file, http, etc.).
 - `baremaps-blob-s3` contains an implementation of the storage abstraction for amazon s3.
 - `baremaps-cli` contains the command line interface of baremaps.
-- `baremaps-config` contains the classes required to used to serialize and deserialize configuration files.
 - `baremaps-editor` integrates the [maputnik](https://maputnik.github.io/) editor.
 - `baremaps-osm` contains parsers for various osm formats (xml, pbf) and a cache and a database abstraction to import these data.
 - `baremaps-osm-lmdb` contains an implementation of the cache abstraction for [LMDB](https://github.com/lmdbjava/lmdbjava).

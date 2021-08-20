@@ -14,8 +14,8 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.blob.BlobMapper;
 import com.baremaps.blob.BlobStore;
-import com.baremaps.config.BlobMapper;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileSet;
 import com.baremaps.postgres.jdbc.PostgresUtils;
