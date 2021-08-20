@@ -17,11 +17,11 @@ package com.baremaps.openapi.services;
 import com.baremaps.api.DefaultApi;
 import com.baremaps.model.LandingPage;
 import com.baremaps.model.Link;
-import com.baremaps.openapi.RequestWrapper;
+import com.baremaps.openapi.BaseService;
 import java.net.URI;
 import javax.ws.rs.core.Response;
 
-public class RootService extends RequestWrapper implements DefaultApi {
+public class RootService extends BaseService implements DefaultApi {
 
   @Override
   public Response getLandingPage() {

@@ -16,11 +16,11 @@ package com.baremaps.openapi.services;
 
 import com.baremaps.api.ConformanceApi;
 import com.baremaps.model.ConfClasses;
-import com.baremaps.openapi.RequestWrapper;
+import com.baremaps.openapi.BaseService;
 import java.util.Arrays;
 import javax.ws.rs.core.Response;
 
-public class ConformanceService extends RequestWrapper implements ConformanceApi {
+public class ConformanceService extends BaseService implements ConformanceApi {
 
   @Override
   public Response getConformanceDeclaration() {

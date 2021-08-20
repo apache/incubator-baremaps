@@ -16,7 +16,7 @@ package com.baremaps.openapi.services;
 
 import com.baremaps.api.TilesetsApi;
 import com.baremaps.model.TileSet;
-import com.baremaps.openapi.RequestWrapper;
+import com.baremaps.openapi.BaseService;
 import com.baremaps.openapi.TilesetQueryParser;
 import com.baremaps.tile.Tile;
 import java.io.ByteArrayOutputStream;
@@ -38,7 +38,7 @@ import org.jdbi.v3.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TilesetsService extends RequestWrapper implements TilesetsApi {
+public class TilesetsService extends BaseService implements TilesetsApi {
 
   private static final Logger logger = LoggerFactory.getLogger(TilesetsService.class);
 

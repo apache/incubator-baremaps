@@ -17,7 +17,7 @@ package com.baremaps.openapi;
 import java.net.URI;
 import javax.ws.rs.core.*;
 
-public class RequestWrapper {
+public abstract class BaseService {
   @Context HttpHeaders requestHeaders;
   @Context UriInfo uriInfo;
 
