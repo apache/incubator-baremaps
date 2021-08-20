@@ -26,6 +26,11 @@
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-yaml</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-testing</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

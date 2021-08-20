@@ -1,0 +1,11 @@
+description: |-
+  The number of features in the feature collection.
+
+  A server may omit this information in a response, if the information
+  about the number of features is not known or difficult to compute.
+
+  If the value is provided, the value shall be identical to the number
+  of items in the "features" array.
+type: integer
+minimum: 0
+example: 10

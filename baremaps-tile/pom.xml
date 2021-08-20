@@ -62,6 +62,11 @@
       <artifactId>caffeine</artifactId>
       <groupId>com.github.ben-manes.caffeine</groupId>
     </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-testing</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

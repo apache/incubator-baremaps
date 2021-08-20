@@ -9,4 +9,11 @@
 
   <artifactId>baremaps-stream</artifactId>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-testing</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

@@ -1,0 +1,13 @@
+type: object
+required:
+  - type
+  - geometries
+properties:
+  type:
+    type: string
+    enum:
+      - GeometryCollection
+  geometries:
+    type: array
+    items:
+      $ref: 'geometryGeoJSON.yaml'

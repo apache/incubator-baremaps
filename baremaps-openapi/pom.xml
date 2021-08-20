@@ -53,6 +53,27 @@
               </configOptions>
             </configuration>
           </execution>
+          <!--
+          <execution>
+            <id>ogcapi-features</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/src/main/resources/ogcapi/features/ogcapi-features-1-endpoint.yaml</inputSpec>
+              <generatorName>jaxrs-spec</generatorName>
+              <configOptions>
+                <sourceFolder>src/gen/java/main</sourceFolder>
+                <apiPackage>com.baremaps.ogcapi.features</apiPackage>
+                <modelPackage>com.baremaps.ogcapi.features.model</modelPackage>
+                <returnResponse>true</returnResponse>
+                <interfaceOnly>true</interfaceOnly>
+                <sortModelPropertiesByRequiredFlag>false</sortModelPropertiesByRequiredFlag>
+                <sortParamsByRequiredFlag>false</sortParamsByRequiredFlag>
+              </configOptions>
+            </configuration>
+          </execution>
+          -->
         </executions>
       </plugin>
     </plugins>
@@ -150,6 +171,11 @@
     <dependency>
       <groupId>com.github.jsqlparser</groupId>
       <artifactId>jsqlparser</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-testing</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
