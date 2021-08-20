@@ -28,6 +28,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
   private final String ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials";
   private final String ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods";
   private final String ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers";
+  private final String ACCESS_CONTROL_EXPOSE_HEADERS = "Access-Control-Expose-Headers";
   private final String ORIGIN = "Origin";
   private final String VARY = "Vary";
 
@@ -59,6 +60,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
         .getHeaders()
         .putSingle(ACCESS_CONTROL_ALLOW_HEADERS, "origin, content-type, accept, authorization");
     responseContext.getHeaders().putSingle(ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+    responseContext.getHeaders().putSingle(ACCESS_CONTROL_EXPOSE_HEADERS, "Location");
     responseContext.getHeaders().putSingle(VARY, ORIGIN);
   }
 
@@ -71,6 +73,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
     builder.header(ACCESS_CONTROL_ALLOW_METHODS, "GET, POST, PUT, DELETE, OPTIONS, HEAD");
     builder.header(ACCESS_CONTROL_ALLOW_HEADERS, "origin, content-type, accept, authorization");
     builder.header(ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
+    builder.header(ACCESS_CONTROL_EXPOSE_HEADERS, "Location");
     requestContext.abortWith(builder.build());
   }
 }
