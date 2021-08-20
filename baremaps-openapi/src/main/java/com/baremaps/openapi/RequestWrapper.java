@@ -18,8 +18,12 @@ import java.net.URI;
 import javax.ws.rs.core.*;
 
 public class RequestWrapper {
-  @Context public HttpHeaders requestHeaders;
-  @Context public UriInfo uriInfo;
+  @Context HttpHeaders requestHeaders;
+  @Context UriInfo uriInfo;
+
+  public HttpHeaders getRequestHeaders() {
+    return requestHeaders;
+  }
 
   public URI getBaseUri() {
     UriBuilder baseUri = UriBuilder.fromUri(uriInfo.getBaseUri());
