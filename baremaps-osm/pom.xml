@@ -25,11 +25,6 @@
       <artifactId>baremaps-tile</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-testing</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
     </dependency>

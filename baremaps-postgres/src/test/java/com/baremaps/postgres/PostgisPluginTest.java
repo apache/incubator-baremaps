@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.postgres.jdbi.Feature;
 import com.baremaps.postgres.jdbi.PostgisPlugin;
+import com.baremaps.testing.TestConstants;
 import java.util.List;
 import java.util.Map;
 import org.jdbi.v3.core.Jdbi;
@@ -82,7 +83,7 @@ class PostgisPluginTest {
     var properties = Map.of("k1", "v1", "k2", "v2");
     var feature = new Feature(id, type, geometry, properties);
 
-    Jdbi jdbi = Jdbi.create("jdbc:tc:postgis:13-3.1:///test").installPlugin(new PostgisPlugin());
+    Jdbi jdbi = Jdbi.create(TestConstants.DATABASE_URL).installPlugin(new PostgisPlugin());
     List<Feature> features =
         jdbi.withHandle(
             handle -> {

@@ -11,6 +11,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-osm</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.jdbi</groupId>
       <artifactId>jdbi3-core</artifactId>
     </dependency>
@@ -29,10 +33,6 @@
     <dependency>
       <artifactId>postgresql</artifactId>
       <groupId>org.postgresql</groupId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-osm</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
