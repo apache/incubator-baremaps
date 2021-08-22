@@ -46,17 +46,19 @@ public class PostgresReferenceCache implements ReferenceCache {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
-      ResultSet result = statement.executeQuery();
-      if (result.next()) {
-        List<Long> nodes = new ArrayList<>();
-        Array array = result.getArray(1);
-        if (array != null) {
-          nodes = Arrays.asList((Long[]) array.getArray());
+      try (ResultSet result = statement.executeQuery()) {
+        if (result.next()) {
+          List<Long> nodes = new ArrayList<>();
+          Array array = result.getArray(1);
+          if (array != null) {
+            nodes = Arrays.asList((Long[]) array.getArray());
+          }
+          return nodes;
+        } else {
+          throw new IllegalArgumentException();
         }
-        return nodes;
-      } else {
-        throw new IllegalArgumentException();
       }
+
     } catch (SQLException e) {
       throw new CacheException(e);
     }
@@ -67,18 +69,19 @@ public class PostgresReferenceCache implements ReferenceCache {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
-      ResultSet result = statement.executeQuery();
-      Map<Long, List<Long>> references = new HashMap<>();
-      while (result.next()) {
-        List<Long> nodes = new ArrayList<>();
-        long id = result.getLong(1);
-        Array array = result.getArray(2);
-        if (array != null) {
-          nodes = Arrays.asList((Long[]) array.getArray());
+      try (ResultSet result = statement.executeQuery()) {
+        Map<Long, List<Long>> references = new HashMap<>();
+        while (result.next()) {
+          List<Long> nodes = new ArrayList<>();
+          long id = result.getLong(1);
+          Array array = result.getArray(2);
+          if (array != null) {
+            nodes = Arrays.asList((Long[]) array.getArray());
+          }
+          references.put(id, nodes);
         }
-        references.put(id, nodes);
+        return keys.stream().map(references::get).collect(Collectors.toList());
       }
-      return keys.stream().map(references::get).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new CacheException(e);
     }

@@ -43,7 +43,7 @@ class PostgresNodeTableTest {
   PostgresNodeTable nodeStore;
 
   @BeforeEach
-  void createTable() throws SQLException, IOException {
+  void beforeEach() throws SQLException, IOException {
     dataSource = PostgresUtils.datasource(DATABASE_URL);
     nodeStore = new PostgresNodeTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {

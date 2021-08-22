@@ -43,13 +43,14 @@ public class PostgresCoordinateCache implements CoordinateCache {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, id);
-      ResultSet result = statement.executeQuery();
-      if (result.next()) {
-        double lon = result.getDouble(1);
-        double lat = result.getDouble(2);
-        return new Coordinate(lon, lat);
-      } else {
-        return null;
+      try (ResultSet result = statement.executeQuery()) {
+        if (result.next()) {
+          double lon = result.getDouble(1);
+          double lat = result.getDouble(2);
+          return new Coordinate(lon, lat);
+        } else {
+          return null;
+        }
       }
     } catch (SQLException e) {
       throw new CacheException(e);
@@ -61,15 +62,16 @@ public class PostgresCoordinateCache implements CoordinateCache {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
-      ResultSet result = statement.executeQuery();
-      Map<Long, Coordinate> nodes = new HashMap<>();
-      while (result.next()) {
-        long id = result.getLong(1);
-        double lon = result.getDouble(2);
-        double lat = result.getDouble(3);
-        nodes.put(id, new Coordinate(lon, lat));
+      try (ResultSet result = statement.executeQuery()) {
+        Map<Long, Coordinate> nodes = new HashMap<>();
+        while (result.next()) {
+          long id = result.getLong(1);
+          double lon = result.getDouble(2);
+          double lat = result.getDouble(3);
+          nodes.put(id, new Coordinate(lon, lat));
+        }
+        return keys.stream().map(nodes::get).collect(Collectors.toList());
       }
-      return keys.stream().map(nodes::get).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new CacheException(e);
     }
