@@ -15,6 +15,7 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
+import com.baremaps.openapi.ObjectMapperContextResolver;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.CorsFilter;
 import com.baremaps.server.EditorResources;
@@ -90,7 +91,7 @@ public class Edit implements Callable<Integer> {
         new ResourceConfig()
             .packages("org.glassfish.jersey.examples.jackson")
             .registerClasses(
-                ObjectMapperProvider.class,
+                ObjectMapperContextResolver.class,
                 JacksonFeature.class,
                 CorsFilter.class,
                 EditorResources.class,

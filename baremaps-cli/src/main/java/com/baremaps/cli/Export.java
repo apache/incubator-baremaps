@@ -119,8 +119,8 @@ public class Export implements Callable<Integer> {
     if (tiles == null) {
       Envelope envelope =
           new Envelope(
-              source.getBounds().get(0), source.getBounds().get(1),
-              source.getBounds().get(2), source.getBounds().get(3));
+              source.getBounds().get(0), source.getBounds().get(2),
+              source.getBounds().get(1), source.getBounds().get(3));
       long count =
           Tile.count(envelope, source.getMinzoom().intValue(), source.getMaxzoom().intValue());
       stream =

@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.cli;
+package com.baremaps.openapi;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,23 +20,22 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
+public class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
 
-  final ObjectMapper defaultObjectMapper;
+  final ObjectMapper mapper;
 
-  public ObjectMapperProvider() {
-    defaultObjectMapper = createDefaultMapper();
+  public ObjectMapperContextResolver() {
+    mapper = new ObjectMapper();
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+  }
+
+  public ObjectMapperContextResolver(ObjectMapper mapper) {
+    this.mapper = mapper;
   }
 
   @Override
   public ObjectMapper getContext(Class<?> type) {
-    return defaultObjectMapper;
-  }
-
-  private static ObjectMapper createDefaultMapper() {
-    final ObjectMapper mapper = new ObjectMapper();
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
     return mapper;
   }
 }

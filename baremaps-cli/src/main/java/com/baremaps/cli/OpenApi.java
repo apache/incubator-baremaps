@@ -14,6 +14,7 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.openapi.ObjectMapperContextResolver;
 import com.baremaps.openapi.services.*;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.CorsFilter;
@@ -59,29 +60,29 @@ public class OpenApi implements Callable<Integer> {
   public Integer call() throws Exception {
     DataSource datasource = PostgresUtils.datasource(this.database);
 
-    Jdbi jdbi =
-        Jdbi.create(datasource)
-            .installPlugin(new PostgresPlugin())
-            .installPlugin(new Jackson2Plugin());
-
     // Configure ObjectMapper to skip None/NULL
     ObjectMapper mapper = new ObjectMapper();
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    jdbi.getConfig(Jackson2Config.class).setMapper(mapper);
+
+    // Initialize jdbi and set the ObjectMapper
+    Jdbi jdbi =
+        Jdbi.create(datasource)
+            .installPlugin(new PostgresPlugin())
+            .installPlugin(new Jackson2Plugin())
+            .configure(Jackson2Config.class, config -> config.setMapper(mapper));
 
     // Initialize the application
     ResourceConfig application =
         new ResourceConfig()
             .packages("org.glassfish.jersey.examples.jackson")
             .registerClasses(
-                ObjectMapperProvider.class,
-                JacksonFeature.class,
                 RootService.class,
                 CorsFilter.class,
                 ConformanceService.class,
                 CollectionsService.class,
                 StylesService.class,
                 TilesetsService.class)
+            .register(new ObjectMapperContextResolver(mapper))
             .register(
                 new AbstractBinder() {
                   @Override
