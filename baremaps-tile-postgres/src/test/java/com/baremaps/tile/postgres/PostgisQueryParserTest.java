@@ -16,66 +16,70 @@ package com.baremaps.tile.postgres;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.baremaps.model.Query;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-class PostgisQueryParserTest {
+class PostgisPostgresQueryParserTest {
 
   @Test
   void parse1() {
-    Query query = new Query();
-    query.setMinzoom(0);
-    query.setMaxzoom(1);
-    query.setSql("SELECT id, tags, geom FROM table");
-    parse(query, "id", "tags", "geom", "table", Optional.empty());
+    parse(
+        "SELECT id, tags, geom FROM table",
+        "id",
+        "tags",
+        "geom",
+        "table",
+        Optional.empty());
   }
 
   @Test
   void parse2() {
-    Query query = new Query();
-    query.setMinzoom(0);
-    query.setMaxzoom(1);
-    query.setSql("select id, tags, geom from table");
-    parse(query, "id", "tags", "geom", "table", Optional.empty());
+    parse(
+        "select id, tags, geom from table",
+        "id",
+        "tags",
+        "geom",
+        "table",
+        Optional.empty());
   }
 
   @Test
   void parse3() {
-    Query query = new Query();
-    query.setMinzoom(0);
-    query.setMaxzoom(1);
-    query.setSql("SELECT id AS a, tags AS b, geom AS c FROM table");
-    parse(query, "id", "tags", "geom", "table", Optional.empty());
+    parse(
+        "SELECT id AS a, tags AS b, geom AS c FROM table",
+        "id",
+        "tags",
+        "geom",
+        "table",
+        Optional.empty());
   }
 
   @Test
   void parse4() {
-    Query query = new Query();
-    query.setMinzoom(0);
-    query.setMaxzoom(1);
-    query.setSql("select id as a, tags as b, geom as c from table");
-    parse(query, "id", "tags", "geom", "table", Optional.empty());
+    parse(
+        "select id as a, tags as b, geom as c from table",
+        "id",
+        "tags",
+        "geom",
+        "table",
+        Optional.empty());
   }
 
   @Test
   void parse5() {
-    Query query = new Query();
-    query.setMinzoom(0);
-    query.setMaxzoom(1);
-    query.setSql("SELECT id, tags, geom FROM table WHERE condition");
-    parse(query, "id", "tags", "geom", "table", Optional.of("condition"));
+    parse(
+        "SELECT id, tags, geom FROM table WHERE condition",
+        "id",
+        "tags",
+        "geom",
+        "table",
+        Optional.of("condition"));
   }
 
   @Test
   void parse6() {
-    Query query = new Query();
-    query.setMinzoom(0);
-    query.setMaxzoom(1);
-    query.setSql(
-        "SELECT id, tags, geom FROM table WHERE tags ? 'building' AND st_geometrytype(geom) LIKE 'ST_Polygon'");
     parse(
-        query,
+        "SELECT id, tags, geom FROM table WHERE tags ? 'building' AND st_geometrytype(geom) LIKE 'ST_Polygon'",
         "id",
         "tags",
         "geom",
@@ -85,21 +89,19 @@ class PostgisQueryParserTest {
 
   @Test
   void parse7() {
-    Query query = new Query();
-    query.setMinzoom(0);
-    query.setMaxzoom(1);
-    query.setSql("select id, tags, geom from table where condition");
-    parse(query, "id", "tags", "geom", "table", Optional.of("condition"));
+    parse(
+        "select id, tags, geom from table where condition",
+        "id",
+        "tags",
+        "geom",
+        "table",
+        Optional.of("condition"));
   }
 
   @Test
   void parse8() {
-    Query query = new Query();
-    query.setMinzoom(0);
-    query.setMaxzoom(1);
-    query.setSql("SELECT id, hstore(ARRAY['tag1', 'tag2'], ARRAY[tag1, tag2]), geom FROM table");
     parse(
-        query,
+        "SELECT id, hstore(ARRAY['tag1', 'tag2'], ARRAY[tag1, tag2]), geom FROM table",
         "id",
         "hstore(ARRAY['tag1', 'tag2'], ARRAY[tag1, tag2])",
         "geom",
@@ -109,48 +111,54 @@ class PostgisQueryParserTest {
 
   @Test
   void parse9() {
-    Query query = new Query();
-    query.setMinzoom(0);
-    query.setMaxzoom(1);
-    query.setSql("SELECT id, hstore('tag', tag), geom FROM table");
-    parse(query, "id", "hstore('tag', tag)", "geom", "table", Optional.empty());
+    parse(
+        "SELECT id, hstore('tag', tag), geom FROM table",
+        "id",
+        "hstore('tag', tag)",
+        "geom",
+        "table",
+        Optional.empty());
   }
 
   @Test
   void parse10() {
-    Query query = new Query();
-    query.setMinzoom(0);
-    query.setMaxzoom(1);
-    query.setSql("SELECT id, hstore('tag', tag) as tags, geom FROM table");
-    parse(query, "id", "hstore('tag', tag)", "geom", "table", Optional.empty());
+    parse(
+        "SELECT id, hstore('tag', tag) as tags, geom FROM table",
+        "id",
+        "hstore('tag', tag)",
+        "geom",
+        "table",
+        Optional.empty());
   }
 
   @Test
   void parse11() {
-    Query query = new Query();
-    query.setMinzoom(0);
-    query.setMaxzoom(1);
-    query.setSql("SELECT id, tags, st_transform(geom, '1234') as geom FROM table");
-    parse(query, "id", "tags", "st_transform(geom, '1234')", "table", Optional.empty());
+    parse(
+        "SELECT id, tags, st_transform(geom, '1234') as geom FROM table",
+        "id",
+        "tags",
+        "st_transform(geom, '1234')",
+        "table",
+        Optional.empty());
   }
 
   @Test
   void parse12() {
-    Query query = new Query();
-    query.setMinzoom(0);
-    query.setMaxzoom(1);
-    query.setSql("SELECT id, a(b(c), d(e)), geom FROM table");
-    parse(query, "id", "a(b(c), d(e))", "geom", "table", Optional.empty());
+    parse(
+        "SELECT id, a(b(c), d(e)), geom FROM table",
+        "id",
+        "a(b(c), d(e))",
+        "geom",
+        "table",
+        Optional.empty());
   }
 
-  void parse(
-      Query query, String id, String tags, String geom, String from, Optional<String> where) {
-    PostgresQuery q1 =
-        new PostgresQuery("layer", query.getMinzoom(), query.getMaxzoom(), query.getSql());
-    assertEquals(id, String.valueOf(q1.getAst().getSelectItems().get(0)));
-    assertEquals(tags, String.valueOf(q1.getAst().getSelectItems().get(1)));
-    assertEquals(geom, String.valueOf(q1.getAst().getSelectItems().get(2)));
-    assertEquals(from, String.valueOf(q1.getAst().getFromItem()));
-    assertEquals(where, Optional.ofNullable(q1.getAst().getWhere()).map(String::valueOf));
+  void parse(String sql, String id, String tags, String geom, String from, Optional<String> where) {
+    PostgresQuery query = new PostgresQuery("layer", 0, 1, sql);
+    assertEquals(id, String.valueOf(query.getAst().getSelectItems().get(0)));
+    assertEquals(tags, String.valueOf(query.getAst().getSelectItems().get(1)));
+    assertEquals(geom, String.valueOf(query.getAst().getSelectItems().get(2)));
+    assertEquals(from, String.valueOf(query.getAst().getFromItem()));
+    assertEquals(where, Optional.ofNullable(query.getAst().getWhere()).map(String::valueOf));
   }
 }
