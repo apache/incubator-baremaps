@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -121,12 +122,9 @@ public class Export implements Callable<Integer> {
           new Envelope(
               source.getBounds().get(0), source.getBounds().get(2),
               source.getBounds().get(1), source.getBounds().get(3));
-      long count =
-          Tile.count(envelope, source.getMinzoom().intValue(), source.getMaxzoom().intValue());
+      long count = Tile.count(envelope, source.getMinzoom(), source.getMaxzoom());
       stream =
-          StreamUtils.stream(
-                  Tile.iterator(
-                      envelope, source.getMinzoom().intValue(), source.getMaxzoom().intValue()))
+          StreamUtils.stream(Tile.iterator(envelope, source.getMinzoom(), source.getMaxzoom()))
               .peek(new StreamProgress<>(count, 5000));
     } else {
       try (BufferedReader reader =
@@ -142,10 +140,7 @@ public class Export implements Callable<Integer> {
                       int z = Integer.parseInt(array[2]);
                       Tile tile = new Tile(x, y, z);
                       return StreamUtils.stream(
-                          Tile.iterator(
-                              tile.envelope(),
-                              source.getMinzoom().intValue(),
-                              source.getMaxzoom().intValue()));
+                          Tile.iterator(tile.envelope(), source.getMinzoom(), source.getMaxzoom()));
                     });
       }
     }
@@ -188,10 +183,10 @@ public class Export implements Callable<Integer> {
     metadata.put("format", "pbf");
     metadata.put(
         "center",
-        tileset.getCenter().stream().map(n -> String.valueOf(n)).collect(Collectors.joining(", ")));
+        tileset.getCenter().stream().map(BigDecimal::toString).collect(Collectors.joining(", ")));
     metadata.put(
         "bounds",
-        tileset.getBounds().stream().map(n -> String.valueOf(n)).collect(Collectors.joining(", ")));
+        tileset.getBounds().stream().map(Object::toString).collect(Collectors.joining(", ")));
     metadata.put("minzoom", Double.toString(tileset.getMinzoom()));
     metadata.put("maxzoom", Double.toString(tileset.getMaxzoom()));
     List<Map<String, Object>> layers =
