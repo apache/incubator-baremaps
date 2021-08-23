@@ -14,12 +14,12 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.blob.BlobMapper;
+import com.baremaps.blob.BlobMapperException;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreException;
-import com.baremaps.config.BlobMapper;
-import com.baremaps.config.BlobMapperException;
-import com.baremaps.config.tileset.Query;
-import com.baremaps.config.tileset.Tileset;
+import com.baremaps.model.Query;
+import com.baremaps.model.TileSet;
 import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.Mappers;
@@ -38,6 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -111,7 +112,7 @@ public class Export implements Callable<Integer> {
       throws TileStoreException, BlobStoreException, BlobMapperException, IOException {
     DataSource datasource = PostgresUtils.datasource(database);
     BlobStore blobStore = options.blobStore();
-    Tileset source = new BlobMapper(blobStore).read(this.tileset, Tileset.class);
+    TileSet source = new BlobMapper(blobStore).read(this.tileset, TileSet.class);
     TileStore tileSource = sourceTileStore(source, datasource);
     TileStore tileTarget = targetTileStore(source, blobStore);
 
@@ -119,14 +120,11 @@ public class Export implements Callable<Integer> {
     if (tiles == null) {
       Envelope envelope =
           new Envelope(
-              source.getBounds().getMinLon(), source.getBounds().getMaxLon(),
-              source.getBounds().getMinLat(), source.getBounds().getMaxLat());
-      long count =
-          Tile.count(envelope, source.getMinzoom().intValue(), source.getMaxzoom().intValue());
+              source.getBounds().get(0), source.getBounds().get(2),
+              source.getBounds().get(1), source.getBounds().get(3));
+      long count = Tile.count(envelope, source.getMinzoom(), source.getMaxzoom());
       stream =
-          StreamUtils.stream(
-                  Tile.iterator(
-                      envelope, source.getMinzoom().intValue(), source.getMaxzoom().intValue()))
+          StreamUtils.stream(Tile.iterator(envelope, source.getMinzoom(), source.getMaxzoom()))
               .peek(new StreamProgress<>(count, 5000));
     } else {
       try (BufferedReader reader =
@@ -142,10 +140,7 @@ public class Export implements Callable<Integer> {
                       int z = Integer.parseInt(array[2]);
                       Tile tile = new Tile(x, y, z);
                       return StreamUtils.stream(
-                          Tile.iterator(
-                              tile.envelope(),
-                              source.getMinzoom().intValue(),
-                              source.getMaxzoom().intValue()));
+                          Tile.iterator(tile.envelope(), source.getMinzoom(), source.getMaxzoom()));
                     });
       }
     }
@@ -159,12 +154,12 @@ public class Export implements Callable<Integer> {
     return 0;
   }
 
-  private TileStore sourceTileStore(Tileset tileset, DataSource datasource) {
+  private TileStore sourceTileStore(TileSet tileset, DataSource datasource) {
     List<PostgresQuery> queries = Mappers.map(tileset);
     return new PostgresTileStore(datasource, queries);
   }
 
-  private TileStore targetTileStore(Tileset source, BlobStore blobStore)
+  private TileStore targetTileStore(TileSet source, BlobStore blobStore)
       throws TileStoreException, IOException {
     if (mbtiles) {
       SQLiteDataSource dataSource = new SQLiteDataSource();
@@ -178,7 +173,7 @@ public class Export implements Callable<Integer> {
     }
   }
 
-  private Map<String, String> metadata(Tileset tileset) throws JsonProcessingException {
+  private Map<String, String> metadata(TileSet tileset) throws JsonProcessingException {
     Map<String, String> metadata = new HashMap<>();
     metadata.put("name", tileset.getName());
     metadata.put("version", tileset.getVersion());
@@ -188,15 +183,10 @@ public class Export implements Callable<Integer> {
     metadata.put("format", "pbf");
     metadata.put(
         "center",
-        String.format("%f, %f", tileset.getCenter().getLon(), tileset.getCenter().getLat()));
+        tileset.getCenter().stream().map(BigDecimal::toString).collect(Collectors.joining(", ")));
     metadata.put(
         "bounds",
-        String.format(
-            "%f, %f, %f, %f",
-            tileset.getBounds().getMinLon(),
-            tileset.getBounds().getMinLat(),
-            tileset.getBounds().getMaxLon(),
-            tileset.getBounds().getMaxLat()));
+        tileset.getBounds().stream().map(Object::toString).collect(Collectors.joining(", ")));
     metadata.put("minzoom", Double.toString(tileset.getMinzoom()));
     metadata.put("maxzoom", Double.toString(tileset.getMaxzoom()));
     List<Map<String, Object>> layers =

@@ -15,6 +15,7 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
+import com.baremaps.openapi.ObjectMapperContextResolver;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.CorsFilter;
 import com.baremaps.server.EditorResources;
@@ -27,6 +28,7 @@ import java.net.URI;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,9 +89,13 @@ public class Edit implements Callable<Integer> {
 
     ResourceConfig config =
         new ResourceConfig()
-            .register(CorsFilter.class)
-            .register(EditorResources.class)
-            .register(MaputnikResources.class)
+            .packages("org.glassfish.jersey.examples.jackson")
+            .registerClasses(
+                ObjectMapperContextResolver.class,
+                JacksonFeature.class,
+                CorsFilter.class,
+                EditorResources.class,
+                MaputnikResources.class)
             .register(
                 new AbstractBinder() {
                   @Override

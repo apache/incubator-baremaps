@@ -12,11 +12,8 @@
  * the License.
  */
 
-package com.baremaps.config;
+package com.baremaps.blob;
 
-import com.baremaps.blob.Blob;
-import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.BlobStoreException;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;

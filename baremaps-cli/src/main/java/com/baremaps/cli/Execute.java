@@ -14,7 +14,7 @@
 
 package com.baremaps.cli;
 
-import static com.baremaps.config.VariableUtils.interpolate;
+import static com.baremaps.tile.VariableUtils.interpolate;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.postgres.jdbc.PostgresUtils;

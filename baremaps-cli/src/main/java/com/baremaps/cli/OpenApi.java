@@ -14,6 +14,7 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.openapi.ObjectMapperContextResolver;
 import com.baremaps.openapi.services.*;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.CorsFilter;
@@ -25,10 +26,7 @@ import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Config;
@@ -61,29 +59,29 @@ public class OpenApi implements Callable<Integer> {
   public Integer call() throws Exception {
     DataSource datasource = PostgresUtils.datasource(this.database);
 
-    Jdbi jdbi =
-        Jdbi.create(datasource)
-            .installPlugin(new PostgresPlugin())
-            .installPlugin(new Jackson2Plugin());
-
     // Configure ObjectMapper to skip None/NULL
     ObjectMapper mapper = new ObjectMapper();
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    jdbi.getConfig(Jackson2Config.class).setMapper(mapper);
+
+    // Initialize jdbi and set the ObjectMapper
+    Jdbi jdbi =
+        Jdbi.create(datasource)
+            .installPlugin(new PostgresPlugin())
+            .installPlugin(new Jackson2Plugin())
+            .configure(Jackson2Config.class, config -> config.setMapper(mapper));
 
     // Initialize the application
     ResourceConfig application =
         new ResourceConfig()
             .packages("org.glassfish.jersey.examples.jackson")
             .registerClasses(
-                MyObjectMapperProvider.class,
-                JacksonFeature.class,
                 RootService.class,
                 CorsFilter.class,
                 ConformanceService.class,
                 CollectionsService.class,
                 StylesService.class,
                 TilesetsService.class)
+            .register(new ObjectMapperContextResolver(mapper))
             .register(
                 new AbstractBinder() {
                   @Override
@@ -102,27 +100,5 @@ public class OpenApi implements Callable<Integer> {
     serverContext.awaitShutdown();
 
     return 0;
-  }
-
-  @Provider
-  private static class MyObjectMapperProvider implements ContextResolver<ObjectMapper> {
-
-    final ObjectMapper defaultObjectMapper;
-
-    public MyObjectMapperProvider() {
-      defaultObjectMapper = createDefaultMapper();
-    }
-
-    @Override
-    public ObjectMapper getContext(Class<?> type) {
-      return defaultObjectMapper;
-    }
-  }
-
-  private static ObjectMapper createDefaultMapper() {
-    final ObjectMapper mapper = new ObjectMapper();
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
-    return mapper;
   }
 }

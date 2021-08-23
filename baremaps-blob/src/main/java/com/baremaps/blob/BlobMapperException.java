@@ -12,33 +12,17 @@
  * the License.
  */
 
-package com.baremaps.config.tileset;
+package com.baremaps.blob;
 
-public class Query {
+public class BlobMapperException extends Exception {
 
-  private int minzoom;
+  public BlobMapperException() {}
 
-  private int maxzoom;
-
-  private String sql;
-
-  public Query() {}
-
-  public Query(int minzoom, int maxzoom, String sql) {
-    this.minzoom = minzoom;
-    this.maxzoom = maxzoom;
-    this.sql = sql;
+  public BlobMapperException(String message) {
+    super(message);
   }
 
-  public String getSql() {
-    return sql;
-  }
-
-  public int getMinzoom() {
-    return minzoom;
-  }
-
-  public int getMaxzoom() {
-    return maxzoom;
+  public BlobMapperException(Throwable throwable) {
+    super(throwable);
   }
 }

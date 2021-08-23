@@ -51,7 +51,6 @@ public class StylesService implements StylesApi {
                 .bindByType("json", mbStyle, MBSTYLE)
                 .bind("id", styleId)
                 .execute());
-
     return Response.created(URI.create("styles/" + styleId)).build();
   }
 

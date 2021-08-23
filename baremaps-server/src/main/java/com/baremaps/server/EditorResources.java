@@ -18,11 +18,11 @@ import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
+import com.baremaps.blob.BlobMapper;
+import com.baremaps.blob.BlobMapperException;
 import com.baremaps.blob.BlobStore;
-import com.baremaps.config.BlobMapper;
-import com.baremaps.config.BlobMapperException;
-import com.baremaps.config.style.Style;
-import com.baremaps.config.tileset.Tileset;
+import com.baremaps.model.MbStyle;
+import com.baremaps.model.TileSet;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgresQuery;
@@ -131,7 +131,7 @@ public class EditorResources {
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @javax.ws.rs.Path("style.json")
-  public void putStyle(Style json) throws BlobMapperException {
+  public void putStyle(MbStyle json) throws BlobMapperException {
     new BlobMapper(blobStore).write(style, json);
   }
 
@@ -144,15 +144,15 @@ public class EditorResources {
   @GET
   @javax.ws.rs.Path("style.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Style getStyle() throws BlobMapperException {
-    return new BlobMapper(blobStore).read(style, Style.class);
+  public MbStyle getStyle() throws BlobMapperException {
+    return new BlobMapper(blobStore).read(style, MbStyle.class);
   }
 
   @GET
   @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Tileset getTileset() throws BlobMapperException {
-    return new BlobMapper(blobStore).read(tileset, Tileset.class);
+  public TileSet getTileset() throws BlobMapperException {
+    return new BlobMapper(blobStore).read(tileset, TileSet.class);
   }
 
   @GET

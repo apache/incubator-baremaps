@@ -121,11 +121,11 @@ public final class Tile {
   }
 
   public Envelope envelope() {
-    double north = tile2lat(y, z);
-    double south = tile2lat(y + 1, z);
-    double west = tile2lon(x, z);
-    double east = tile2lon(x + 1, z);
-    return new Envelope(west, east, south, north);
+    double x1 = tile2lon(x, z);
+    double x2 = tile2lon(x + 1, z);
+    double y1 = tile2lat(y + 1, z);
+    double y2 = tile2lat(y, z);
+    return new Envelope(x1, x2, y1, y2);
   }
 
   /** {@inheritDoc} */
