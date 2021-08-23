@@ -23,24 +23,12 @@ class PostgisPostgresQueryParserTest {
 
   @Test
   void parse1() {
-    parse(
-        "SELECT id, tags, geom FROM table",
-        "id",
-        "tags",
-        "geom",
-        "table",
-        Optional.empty());
+    parse("SELECT id, tags, geom FROM table", "id", "tags", "geom", "table", Optional.empty());
   }
 
   @Test
   void parse2() {
-    parse(
-        "select id, tags, geom from table",
-        "id",
-        "tags",
-        "geom",
-        "table",
-        Optional.empty());
+    parse("select id, tags, geom from table", "id", "tags", "geom", "table", Optional.empty());
   }
 
   @Test
