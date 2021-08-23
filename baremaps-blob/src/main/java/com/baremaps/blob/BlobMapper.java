@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.net.URI;
 
-/** A base class for reading and writing configuration files in a BlobStore. */
+/** A mapper for reading and writing configuration files in a BlobStore. */
 public class BlobMapper {
 
   private final BlobStore blobStore;

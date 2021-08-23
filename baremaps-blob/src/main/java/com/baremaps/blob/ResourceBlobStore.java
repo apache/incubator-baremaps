@@ -19,10 +19,12 @@ import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URI;
 
+/** A {@code BlobStore} for reading blobs in the classpath. */
 public class ResourceBlobStore implements BlobStore {
 
   private static final String SCHEMA = "res://";
 
+  /** {@inheritdoc} */
   @Override
   public Blob head(URI uri) throws BlobStoreException {
     try {
@@ -33,6 +35,7 @@ public class ResourceBlobStore implements BlobStore {
     }
   }
 
+  /** {@inheritdoc} */
   @Override
   public Blob get(URI uri) throws BlobStoreException {
     try {
@@ -46,11 +49,13 @@ public class ResourceBlobStore implements BlobStore {
     }
   }
 
+  /** Not supported. */
   @Override
   public void put(URI uri, Blob blob) throws BlobStoreException {
     throw new UnsupportedOperationException();
   }
 
+  /** {Not supported. */
   @Override
   public void delete(URI uri) throws BlobStoreException {
     throw new UnsupportedOperationException();

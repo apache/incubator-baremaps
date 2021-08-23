@@ -23,14 +23,27 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+/** An object for downloading and saving blobs in the local file system. */
 public class DownloadManager {
 
   private final BlobStore blobStore;
 
+  /**
+   * Constructs a {@code DownloadManager} for the specified {@code BlobStore}.
+   *
+   * @param blobStore the blob store
+   */
   public DownloadManager(BlobStore blobStore) {
     this.blobStore = blobStore;
   }
 
+  /**
+   * Returns the path of the downloaded blob.
+   *
+   * @param uri the URI of the blob
+   * @return the path of the downloaded blob
+   * @throws BlobStoreException
+   */
   public Path download(URI uri) throws BlobStoreException {
     if (uri.getScheme() == null || uri.getScheme().equals("file")) {
       return Paths.get(uri.getPath());

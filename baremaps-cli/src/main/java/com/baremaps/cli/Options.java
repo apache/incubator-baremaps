@@ -15,7 +15,7 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.CompositeBlobStore;
+import com.baremaps.blob.BlobStoreRouter;
 import com.baremaps.blob.HttpBlobStore;
 import com.baremaps.blob.s3.S3BlobStore;
 import picocli.CommandLine.Option;
@@ -48,7 +48,7 @@ public class Options {
   public boolean enableS3 = false;
 
   public BlobStore blobStore() {
-    CompositeBlobStore blobStore = new CompositeBlobStore();
+    BlobStoreRouter blobStore = new BlobStoreRouter();
     if (enableHTTP) {
       blobStore.addScheme("http", new HttpBlobStore());
       blobStore.addScheme("https", new HttpBlobStore());

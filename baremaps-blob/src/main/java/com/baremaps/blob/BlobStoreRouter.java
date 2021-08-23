@@ -18,24 +18,36 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CompositeBlobStore implements BlobStore {
+/**
+ * A {@code BlobStore} that routes to the another {@code BlobStore} based on the scheme specified in
+ * the URI. By default, the router supports the file (file system) and res (class path) schemes. It
+ * can be extended with the {@code addScheme} method.
+ */
+public class BlobStoreRouter implements BlobStore {
 
   public static final String UNSUPPORTED_SCHEME = "Unsupported scheme: %s";
 
   private final Map<String, BlobStore> schemes;
 
-  public CompositeBlobStore() {
+  /** Constructs a */
+  public BlobStoreRouter() {
     schemes = new HashMap<>();
     schemes.put(null, new FileBlobStore());
     schemes.put("file", new FileBlobStore());
     schemes.put("res", new ResourceBlobStore());
   }
 
+  /**
+   * Adds a {@code BlobStore} implementation for the specified scheme.
+   *
+   * @param scheme the scheme (e.g. http, ftp, etc.)
+   * @param blobStore the blob store
+   */
   public void addScheme(String scheme, BlobStore blobStore) {
     schemes.put(scheme, blobStore);
   }
 
-  @Override
+  /** {@inheritdoc} */
   public Blob head(URI uri) throws BlobStoreException {
     if (schemes.containsKey(uri.getScheme())) {
       return schemes.get(uri.getScheme()).head(uri);
@@ -44,6 +56,7 @@ public class CompositeBlobStore implements BlobStore {
     }
   }
 
+  /** {@inheritdoc} */
   @Override
   public Blob get(URI uri) throws BlobStoreException {
     if (schemes.containsKey(uri.getScheme())) {
@@ -53,6 +66,7 @@ public class CompositeBlobStore implements BlobStore {
     }
   }
 
+  /** {@inheritdoc} */
   @Override
   public void put(URI uri, Blob blob) throws BlobStoreException {
     if (schemes.containsKey(uri.getScheme())) {
@@ -62,6 +76,7 @@ public class CompositeBlobStore implements BlobStore {
     }
   }
 
+  /** {@inheritdoc} */
   @Override
   public void delete(URI uri) throws BlobStoreException {
     if (schemes.containsKey(uri.getScheme())) {

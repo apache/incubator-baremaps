@@ -16,14 +16,44 @@ package com.baremaps.blob;
 
 import java.net.URI;
 
-/** An abstraction to read and write blobs identified by URIs. */
+/**
+ * Provides an interface to a blob store. Allows to read and write blobs identified by Uniform
+ * Resource Identifier (URI) reference.
+ */
 public interface BlobStore {
 
+  /**
+   * Returns a blob without its content (header information only).
+   *
+   * @param uri the URI
+   * @return the blob
+   * @throws BlobStoreException
+   */
   Blob head(URI uri) throws BlobStoreException;
 
+  /**
+   * Returns a blob.
+   *
+   * @param uri the URI
+   * @return the blob
+   * @throws BlobStoreException
+   */
   Blob get(URI uri) throws BlobStoreException;
 
+  /**
+   * Puts a blob at a specified URI.
+   *
+   * @param uri the URI
+   * @param blob the blob
+   * @throws BlobStoreException
+   */
   void put(URI uri, Blob blob) throws BlobStoreException;
 
+  /**
+   * Deletes a blob at a specified URI.
+   *
+   * @param uri the URI
+   * @throws BlobStoreException
+   */
   void delete(URI uri) throws BlobStoreException;
 }

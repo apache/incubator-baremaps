@@ -22,7 +22,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
-class CompositeBlobStoreTest extends BlobStoreTest {
+class BlobStoreRouterTest extends BlobStoreTest {
 
   @RegisterExtension
   static final S3MockExtension S3_MOCK =
@@ -44,6 +44,6 @@ class CompositeBlobStoreTest extends BlobStoreTest {
 
   @Override
   public BlobStore createFileSystem() {
-    return new CompositeBlobStore();
+    return new BlobStoreRouter();
   }
 }

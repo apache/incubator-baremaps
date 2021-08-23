@@ -14,15 +14,37 @@
 
 package com.baremaps.blob;
 
+/** Signals that an exception occurred in a {@BlobMapper}. */
 public class BlobMapperException extends Exception {
 
+  /** Constructs a {@code BlobMapperException} with {@code null} as its error detail message. */
   public BlobMapperException() {}
 
+  /**
+   * Constructs an {@code BlobMapperException} with the specified detail message.
+   *
+   * @param message the message
+   */
   public BlobMapperException(String message) {
     super(message);
   }
 
-  public BlobMapperException(Throwable throwable) {
-    super(throwable);
+  /**
+   * Constructs a {@code BlobMapperException} with the specified cause.
+   *
+   * @param cause the cause
+   */
+  public BlobMapperException(Throwable cause) {
+    super(cause);
+  }
+
+  /**
+   * Constructs a {@code BlobMapperException} with the specified detail message and cause.
+   *
+   * @param message the message
+   * @param cause the cause
+   */
+  public BlobMapperException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

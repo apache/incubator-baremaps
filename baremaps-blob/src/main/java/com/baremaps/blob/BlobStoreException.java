@@ -14,13 +14,36 @@
 
 package com.baremaps.blob;
 
+/** Signals that an exception occurred in a {@code BlobStore}. */
 public class BlobStoreException extends Exception {
+  /** Constructs a {@code BlobStoreException} with {@code null} as its error detail message. */
+  public BlobStoreException() {}
 
+  /**
+   * Constructs an {@code BlobStoreException} with the specified detail message.
+   *
+   * @param message the message
+   */
   public BlobStoreException(String message) {
     super(message);
   }
 
-  public BlobStoreException(Throwable throwable) {
-    super(throwable);
+  /**
+   * Constructs a {@code BlobStoreException} with the specified cause.
+   *
+   * @param cause the cause
+   */
+  public BlobStoreException(Throwable cause) {
+    super(cause);
+  }
+
+  /**
+   * Constructs a {@code BlobStoreException} with the specified detail message and cause.
+   *
+   * @param message the message
+   * @param cause the cause
+   */
+  public BlobStoreException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

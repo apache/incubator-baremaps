@@ -21,12 +21,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+/** A {@code BlobStore} for reading and writing blobs in the local file system. */
 public class FileBlobStore implements BlobStore {
 
   private Path file(URI uri) {
     return Paths.get(uri.getPath()).toAbsolutePath();
   }
 
+  /** {@inheritdoc} */
   @Override
   public Blob head(URI uri) throws BlobStoreException {
     try {
@@ -37,6 +39,7 @@ public class FileBlobStore implements BlobStore {
     }
   }
 
+  /** {@inheritdoc} */
   @Override
   public Blob get(URI uri) throws BlobStoreException {
     try {
@@ -50,6 +53,7 @@ public class FileBlobStore implements BlobStore {
     }
   }
 
+  /** {@inheritdoc} */
   @Override
   public void put(URI uri, Blob blob) throws BlobStoreException {
     try {
@@ -63,6 +67,7 @@ public class FileBlobStore implements BlobStore {
     }
   }
 
+  /** {@inheritdoc} */
   @Override
   public void delete(URI uri) throws BlobStoreException {
     try {
