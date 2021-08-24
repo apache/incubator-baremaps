@@ -402,11 +402,6 @@
         <version>${version.lib.guava}</version>
       </dependency>
       <dependency>
-        <groupId>io.projectreactor</groupId>
-        <artifactId>reactor-core</artifactId>
-        <version>3.4.6</version>
-      </dependency>
-      <dependency>
         <artifactId>picocli</artifactId>
         <groupId>info.picocli</groupId>
         <version>${version.lib.picocli}</version>
@@ -548,7 +543,6 @@
         <artifactId>jsqlparser</artifactId>
         <version>${version.lib.jsqlparser}</version>
       </dependency>
-
 
       <!-- Logging libraries -->
       <dependency>
@@ -697,10 +691,6 @@
     <dependency>
       <artifactId>jts-core</artifactId>
       <groupId>org.locationtech.jts</groupId>
-    </dependency>
-    <dependency>
-      <groupId>io.projectreactor</groupId>
-      <artifactId>reactor-core</artifactId>
     </dependency>
     <dependency>
       <artifactId>proj4j</artifactId>

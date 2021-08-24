@@ -59,32 +59,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.servicetalk</groupId>
-      <artifactId>servicetalk-data-jackson</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicetalk</groupId>
-      <artifactId>servicetalk-data-jackson-jersey</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicetalk</groupId>
-      <artifactId>servicetalk-http-netty</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicetalk</groupId>
-      <artifactId>servicetalk-transport-netty</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.servicetalk</groupId>
-      <artifactId>servicetalk-http-router-jersey</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-multipart</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.media</groupId>
-      <artifactId>jersey-media-json-jackson</artifactId>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.inject</groupId>
@@ -101,7 +77,6 @@
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

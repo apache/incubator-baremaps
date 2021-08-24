@@ -122,7 +122,7 @@ public class EditorResources {
   }
 
   @GET
-  @javax.ws.rs.Path("/changes")
+  @javax.ws.rs.Path("changes")
   @Produces("text/event-stream")
   public void changes(@Context SseEventSink sseEventSink) {
     sseBroadcaster.register(sseEventSink);

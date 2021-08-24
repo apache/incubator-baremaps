@@ -14,6 +14,8 @@
 
 package com.baremaps.cli;
 
+import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
+
 import com.baremaps.blob.BlobMapper;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.model.MbStyle;
@@ -27,6 +29,9 @@ import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgresQuery;
 import com.baremaps.tile.postgres.PostgresTileStore;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonGenerator.Feature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
@@ -108,11 +113,18 @@ public class Serve implements Callable<Integer> {
     TileStore tileStore = new PostgresTileStore(datasource, queries);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
-    ResourceConfig config =
+    // Configure serialization
+    ObjectMapper mapper =
+        new ObjectMapper()
+            .configure(Feature.IGNORE_UNKNOWN, true)
+            .setSerializationInclusion(Include.NON_NULL)
+            .setSerializationInclusion(Include.NON_EMPTY);
+
+    // Configure the application
+    ResourceConfig application =
         new ResourceConfig()
-            .register(CorsFilter.class)
-            .register(ViewerResources.class)
-            .register(BlobResources.class)
+            .registerClasses(CorsFilter.class, ViewerResources.class, BlobResources.class)
+            .register(contextResolverFor(mapper))
             .register(
                 new AbstractBinder() {
                   @Override
@@ -126,7 +138,7 @@ public class Serve implements Callable<Integer> {
                 });
 
     BlockingStreamingHttpService httpService =
-        new HttpJerseyRouterBuilder().buildBlockingStreaming(config);
+        new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
     ServerContext serverContext =
         HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
