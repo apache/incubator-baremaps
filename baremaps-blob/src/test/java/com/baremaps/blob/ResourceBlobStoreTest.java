@@ -23,39 +23,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.net.URISyntaxException;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-public abstract class BlobStoreTest {
+class ResourceBlobStoreTest {
 
   @Test
   @Tag("integration")
-  void readWriteDelete() throws IOException, URISyntaxException, BlobStoreException {
-    BlobStore blobStore = createFileSystem();
-    URI uri = new URI(createTestURI());
-    String content = "content";
-
-    // Write data
-    blobStore.put(uri, Blob.builder().withByteArray(content.getBytes(Charsets.UTF_8)).build());
+  void test() throws IOException, BlobStoreException {
+    BlobStore blobStore = new ResourceBlobStore();
 
     // Read the data
-    try (InputStream inputStream = blobStore.get(uri).getInputStream()) {
+    try (InputStream inputStream = blobStore.get(URI.create("res://blob.txt")).getInputStream()) {
       assertEquals(
-          content, CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8)));
+          "test", CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8)));
     }
 
-    // Delete the data
-    blobStore.delete(uri);
-
-    try (InputStream ignored = blobStore.get(uri).getInputStream()) {
+    // Get unexisting blob
+    try (InputStream ignored =
+        blobStore.get(URI.create("res://missing-blob.txt")).getInputStream()) {
       fail("Expected an IOException to be thrown");
     } catch (BlobStoreException e) {
       // Test exception message...
     }
   }
-
-  public abstract String createTestURI() throws IOException;
-
-  public abstract BlobStore createFileSystem();
 }

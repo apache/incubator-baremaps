@@ -29,18 +29,29 @@ import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
+/**
+ * A {@code BlobStore} for reading and writing blobs in Amazon S3. It assumes that the host has been
+ * configured and has access to the targeted S3 bucket.
+ */
 public class S3BlobStore implements BlobStore {
 
   private final S3Client client;
 
+  /** Constructs an {@code S3BlobStore} with the default {@code S3Client}. */
   public S3BlobStore() {
     this(S3Client.create());
   }
 
+  /**
+   * Constructs an {@code S3BlobStore} with the specified {@code S3Client}.
+   *
+   * @param client the S3 client
+   */
   public S3BlobStore(S3Client client) {
     this.client = client;
   }
 
+  /** {@inheritdoc} */
   @Override
   public Blob head(URI uri) throws BlobStoreException {
     try {
@@ -57,6 +68,7 @@ public class S3BlobStore implements BlobStore {
     }
   }
 
+  /** {@inheritdoc} */
   @Override
   public Blob get(URI uri) throws BlobStoreException {
     try {
@@ -75,6 +87,7 @@ public class S3BlobStore implements BlobStore {
     }
   }
 
+  /** {@inheritdoc} */
   @Override
   public void put(URI uri, Blob blob) throws BlobStoreException {
     try {
@@ -93,6 +106,7 @@ public class S3BlobStore implements BlobStore {
     }
   }
 
+  /** {@inheritdoc} */
   @Override
   public void delete(URI uri) throws BlobStoreException {
     try {

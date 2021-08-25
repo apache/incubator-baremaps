@@ -26,7 +26,7 @@ import java.net.URI;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class FileBlobStoreTest {
+class HttpBlobStoreTest {
 
   @Test
   @Tag("integration")

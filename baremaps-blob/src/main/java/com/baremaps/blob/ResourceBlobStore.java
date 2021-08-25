@@ -28,7 +28,7 @@ public class ResourceBlobStore implements BlobStore {
   @Override
   public Blob head(URI uri) throws BlobStoreException {
     try {
-      ByteSource byteSource = byteSource(uri);
+      var byteSource = byteSource(uri);
       return Blob.builder().withContentLength(byteSource.size()).build();
     } catch (IOException e) {
       throw new BlobStoreException(e);
@@ -39,7 +39,7 @@ public class ResourceBlobStore implements BlobStore {
   @Override
   public Blob get(URI uri) throws BlobStoreException {
     try {
-      ByteSource byteSource = byteSource(uri);
+      var byteSource = byteSource(uri);
       return Blob.builder()
           .withContentLength(byteSource.size())
           .withInputStream(byteSource.openBufferedStream())
@@ -61,7 +61,13 @@ public class ResourceBlobStore implements BlobStore {
     throw new UnsupportedOperationException();
   }
 
-  private ByteSource byteSource(URI uri) {
-    return Resources.asByteSource(Resources.getResource(uri.toString().replace(SCHEMA, "")));
+  private ByteSource byteSource(URI uri) throws BlobStoreException {
+    try {
+      var path = uri.toString().replace(SCHEMA, "");
+      var resource = Resources.getResource(path);
+      return Resources.asByteSource(resource);
+    } catch (IllegalArgumentException ex) {
+      throw new BlobStoreException(ex);
+    }
   }
 }

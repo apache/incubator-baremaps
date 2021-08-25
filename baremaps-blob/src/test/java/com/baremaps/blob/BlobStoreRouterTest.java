@@ -14,36 +14,63 @@
 
 package com.baremaps.blob;
 
-import com.adobe.testing.s3mock.junit5.S3MockExtension;
-import java.io.File;
-import java.io.IOException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
-class BlobStoreRouterTest extends BlobStoreTest {
+import java.net.URI;
+import org.junit.jupiter.api.Test;
 
-  @RegisterExtension
-  static final S3MockExtension S3_MOCK =
-      S3MockExtension.builder().silent().withSecureConnection(false).build();
+class BlobStoreRouterTest {
 
-  final S3Client s3Client = S3_MOCK.createS3ClientV2();
+  @Test
+  void addScheme() throws BlobStoreException {
+    BlobStore a = mock(BlobStore.class);
+    BlobStore b = mock(BlobStore.class);
 
-  @BeforeEach
-  void initAll() {
-    s3Client.createBucket(CreateBucketRequest.builder().bucket("test").build());
+    BlobStore router = new BlobStoreRouter().addScheme("a", a).addScheme("b", b);
+
+    URI uri1 = URI.create("a://test/test1.txt");
+    router.get(uri1);
+    verify(a).get(uri1);
+
+    URI uri2 = URI.create("b://test/test2.txt");
+    router.get(uri2);
+    verify(b).get(uri2);
   }
 
-  @Override
-  public String createTestURI() throws IOException {
-    File file = File.createTempFile("baremaps_", ".test");
-    file.delete();
-    return file.getPath();
+  @Test
+  void head() throws BlobStoreException {
+    BlobStore blobStore = mock(BlobStore.class);
+    BlobStore router = new BlobStoreRouter().addScheme("blob", blobStore);
+    URI uri = URI.create("blob://test/test.txt");
+    router.head(uri);
+    verify(blobStore).head(uri);
   }
 
-  @Override
-  public BlobStore createFileSystem() {
-    return new BlobStoreRouter();
+  @Test
+  void get() throws BlobStoreException {
+    BlobStore blobStore = mock(BlobStore.class);
+    BlobStore router = new BlobStoreRouter().addScheme("blob", blobStore);
+    URI uri = URI.create("blob://test/test.txt");
+    router.get(uri);
+    verify(blobStore).get(uri);
+  }
+
+  @Test
+  void put() throws BlobStoreException {
+    BlobStore blobStore = mock(BlobStore.class);
+    BlobStore router = new BlobStoreRouter().addScheme("blob", blobStore);
+    URI uri = URI.create("blob://test/test.txt");
+    router.put(uri, null);
+    verify(blobStore).put(uri, null);
+  }
+
+  @Test
+  void delete() throws BlobStoreException {
+    BlobStore blobStore = mock(BlobStore.class);
+    BlobStore router = new BlobStoreRouter().addScheme("blob", blobStore);
+    URI uri = URI.create("blob://test/test.txt");
+    router.delete(uri);
+    verify(blobStore).delete(uri);
   }
 }

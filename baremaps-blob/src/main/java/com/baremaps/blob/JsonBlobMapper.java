@@ -15,22 +15,33 @@
 package com.baremaps.blob;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.net.URI;
 
 /** A mapper for reading and writing configuration files in a BlobStore. */
-public class BlobMapper {
+public class JsonBlobMapper {
 
   private final BlobStore blobStore;
 
-  public BlobMapper(BlobStore blobStore) {
+  private final ObjectMapper objectMapper;
+
+  public JsonBlobMapper(BlobStore blobStore) {
+    this(
+        blobStore,
+        new ObjectMapper()
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .configure(Feature.IGNORE_UNKNOWN, true)
+            .setSerializationInclusion(Include.NON_NULL)
+            .setSerializationInclusion(Include.NON_EMPTY));
+  }
+
+  public JsonBlobMapper(BlobStore blobStore, ObjectMapper objectMapper) {
     this.blobStore = blobStore;
+    this.objectMapper = objectMapper;
   }
 
   public boolean exists(URI uri) {
@@ -63,14 +74,6 @@ public class BlobMapper {
   }
 
   private ObjectMapper objectMapper(URI uri) {
-    JsonFactory factory = uri.toString().endsWith(".json") ? new JsonFactory() : new YAMLFactory();
-    // TODO: find a way to provide an object mapper
-    ObjectMapper mapper =
-        new ObjectMapper(factory)
-            .enable(SerializationFeature.INDENT_OUTPUT)
-            .configure(Feature.IGNORE_UNKNOWN, true)
-            .setSerializationInclusion(Include.NON_NULL)
-            .setSerializationInclusion(Include.NON_EMPTY);
-    return mapper;
+    return objectMapper;
   }
 }

@@ -14,16 +14,27 @@
 
 package com.baremaps.blob.s3;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import com.adobe.testing.s3mock.junit5.S3MockExtension;
+import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.BlobStoreTest;
+import com.baremaps.blob.BlobStoreException;
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
-class S3BlobStoreTest extends BlobStoreTest {
+class S3BlobStoreTest {
 
   @RegisterExtension
   static final S3MockExtension S3_MOCK =
@@ -36,13 +47,30 @@ class S3BlobStoreTest extends BlobStoreTest {
     s3Client.createBucket(CreateBucketRequest.builder().bucket("test").build());
   }
 
-  @Override
-  public String createTestURI() throws IOException {
-    return "s3://test/test/test.txt";
-  }
+  @Test
+  @Tag("integration")
+  void readWriteDelete() throws IOException, BlobStoreException {
+    URI uri = URI.create("s3://test/test/test.txt");
+    String content = "content";
+    BlobStore blobStore = new S3BlobStore(s3Client);
 
-  @Override
-  public BlobStore createFileSystem() {
-    return new S3BlobStore(s3Client);
+    // Write data
+    blobStore.put(uri, Blob.builder().withByteArray(content.getBytes(Charsets.UTF_8)).build());
+
+    // Read the data
+    try (InputStream inputStream = blobStore.get(uri).getInputStream()) {
+      assertEquals(
+          content, CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8)));
+    }
+
+    // Delete the data
+    blobStore.delete(uri);
+
+    // Get unexisting blob
+    try (InputStream ignored = blobStore.get(uri).getInputStream()) {
+      fail("Expected an IOException to be thrown");
+    } catch (BlobStoreException e) {
+      // Test exception message...
+    }
   }
 }

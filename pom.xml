@@ -89,6 +89,7 @@
     <version.lib.testcontainers>1.15.3</version.lib.testcontainers>
     <version.lib.junit-vintage>5.7.2</version.lib.junit-vintage>
     <version.lib.rocksdb>6.22.1.1</version.lib.rocksdb>
+    <version.lib.mockito>1.10.19</version.lib.mockito>
   </properties>
 
   <modules>
@@ -573,7 +574,6 @@
         <scope>import</scope>
       </dependency>
 
-
       <!-- Testing libraries -->
       <dependency>
         <artifactId>junit-jupiter-api</artifactId>
@@ -593,7 +593,6 @@
         <scope>test</scope>
         <version>${version.lib.junit}</version>
       </dependency>
-
       <dependency>
         <groupId>org.testcontainers</groupId>
         <artifactId>testcontainers</artifactId>
@@ -676,6 +675,18 @@
         <version>${version.lib.jersey}</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.awaitility</groupId>
+        <artifactId>awaitility</artifactId>
+        <version>${version.lib.awaitability}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>${version.lib.mockito}</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -755,7 +766,11 @@
     <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
-      <version>${version.lib.awaitability}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

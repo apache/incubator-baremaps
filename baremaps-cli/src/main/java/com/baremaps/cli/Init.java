@@ -14,9 +14,9 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.blob.BlobMapper;
 import com.baremaps.blob.BlobMapperException;
 import com.baremaps.blob.BlobStore;
+import com.baremaps.blob.JsonBlobMapper;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.MbStyleSources;
 import com.baremaps.model.TileSet;
@@ -52,7 +52,7 @@ public class Init implements Callable<Integer> {
   @Override
   public Integer call() throws BlobMapperException {
     BlobStore blobStore = options.blobStore();
-    BlobMapper mapper = new BlobMapper(blobStore);
+    JsonBlobMapper mapper = new JsonBlobMapper(blobStore);
 
     if (style != null && !mapper.exists(style)) {
       MbStyle styleObject = new MbStyle();

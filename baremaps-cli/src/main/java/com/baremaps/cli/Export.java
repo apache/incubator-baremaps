@@ -14,10 +14,10 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.blob.BlobMapper;
 import com.baremaps.blob.BlobMapperException;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreException;
+import com.baremaps.blob.JsonBlobMapper;
 import com.baremaps.model.Query;
 import com.baremaps.model.TileSet;
 import com.baremaps.osm.progress.StreamProgress;
@@ -112,7 +112,7 @@ public class Export implements Callable<Integer> {
       throws TileStoreException, BlobStoreException, BlobMapperException, IOException {
     DataSource datasource = PostgresUtils.datasource(database);
     BlobStore blobStore = options.blobStore();
-    TileSet source = new BlobMapper(blobStore).read(this.tileset, TileSet.class);
+    TileSet source = new JsonBlobMapper(blobStore).read(this.tileset, TileSet.class);
     TileStore tileSource = sourceTileStore(source, datasource);
     TileStore tileTarget = targetTileStore(source, blobStore);
 

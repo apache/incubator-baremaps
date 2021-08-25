@@ -16,8 +16,8 @@ package com.baremaps.cli;
 
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
-import com.baremaps.blob.BlobMapper;
 import com.baremaps.blob.BlobStore;
+import com.baremaps.blob.JsonBlobMapper;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileSet;
 import com.baremaps.postgres.jdbc.PostgresUtils;
@@ -104,8 +104,8 @@ public class Serve implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
-    TileSet tilesetObject = new BlobMapper(blobStore).read(this.tileset, TileSet.class);
-    MbStyle styleObject = new BlobMapper(blobStore).read(this.style, MbStyle.class);
+    TileSet tilesetObject = new JsonBlobMapper(blobStore).read(this.tileset, TileSet.class);
+    MbStyle styleObject = new JsonBlobMapper(blobStore).read(this.style, MbStyle.class);
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
     DataSource datasource = PostgresUtils.datasource(database);
 
