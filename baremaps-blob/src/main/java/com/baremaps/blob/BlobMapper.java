@@ -14,7 +14,9 @@
 
 package com.baremaps.blob;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.core.util.DefaultIndenter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,8 +64,13 @@ public class BlobMapper {
 
   private ObjectMapper objectMapper(URI uri) {
     JsonFactory factory = uri.toString().endsWith(".json") ? new JsonFactory() : new YAMLFactory();
-    ObjectMapper mapper = new ObjectMapper(factory);
-    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    // TODO: find a way to provide an object mapper
+    ObjectMapper mapper =
+        new ObjectMapper(factory)
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .configure(Feature.IGNORE_UNKNOWN, true)
+            .setSerializationInclusion(Include.NON_NULL)
+            .setSerializationInclusion(Include.NON_EMPTY);
     return mapper;
   }
 }

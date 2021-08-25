@@ -22,7 +22,6 @@ import com.baremaps.osm.cache.CoordinateCache;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -34,7 +33,7 @@ class LmdbCoordinateCacheTest {
   @Test
   @Tag("integration")
   void test() throws Exception {
-    Path path = Files.createTempDirectory(Paths.get("."), "baremaps_").toAbsolutePath();
+    Path path = Files.createTempDirectory("baremaps_").toAbsolutePath();
     Env<ByteBuffer> env =
         Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(path.toFile());
     CoordinateCache cache = new LmdbCoordinateCache(env);

@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
@@ -72,7 +71,7 @@ public class CoordinateCacheBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void lmdb() throws IOException, RocksDBException, CacheException {
-    Path path = Files.createTempDirectory(Paths.get("."), "baremaps_").toAbsolutePath();
+    Path path = Files.createTempDirectory("baremaps_").toAbsolutePath();
     Env<ByteBuffer> env =
         Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(path.toFile());
     CoordinateCache cache = new LmdbCoordinateCache(env);
@@ -84,7 +83,7 @@ public class CoordinateCacheBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void rocksdb() throws IOException, RocksDBException, CacheException {
-    Path path = Files.createTempDirectory(Paths.get("."), "baremaps_").toAbsolutePath();
+    Path path = Files.createTempDirectory("baremaps_").toAbsolutePath();
     try (Options options = new Options().setCreateIfMissing(true);
         RocksDB db = RocksDB.open(options, path.toString())) {
       CoordinateCache cache = new RocksdbCoordinateCache(db);

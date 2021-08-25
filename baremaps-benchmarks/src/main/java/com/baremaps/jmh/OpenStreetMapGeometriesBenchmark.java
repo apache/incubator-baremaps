@@ -76,7 +76,7 @@ public class OpenStreetMapGeometriesBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void lmdb() throws IOException {
-    Path cacheDirectory = Files.createTempDirectory(Paths.get("."), "baremaps_").toAbsolutePath();
+    Path cacheDirectory = Files.createTempDirectory("baremaps_").toAbsolutePath();
     Env<ByteBuffer> env =
         Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(cacheDirectory.toFile());
     CoordinateCache coordinateCache = new LmdbCoordinateCache(env);
@@ -114,10 +114,8 @@ public class OpenStreetMapGeometriesBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void rocksdb() throws IOException, RocksDBException {
-    Path coordinatesDirectory =
-        Files.createTempDirectory(Paths.get("."), "baremaps_").toAbsolutePath();
-    Path referenceDirectory =
-        Files.createTempDirectory(Paths.get("."), "baremaps_").toAbsolutePath();
+    Path coordinatesDirectory = Files.createTempDirectory("baremaps_").toAbsolutePath();
+    Path referenceDirectory = Files.createTempDirectory("baremaps_").toAbsolutePath();
 
     try (org.rocksdb.Options options = new org.rocksdb.Options().setCreateIfMissing(true);
         RocksDB coordinatesDB = RocksDB.open(options, coordinatesDirectory.toString());

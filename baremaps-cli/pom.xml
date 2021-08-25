@@ -134,7 +134,6 @@
     <dependency>
       <groupId>io.servicetalk</groupId>
       <artifactId>servicetalk-data-jackson</artifactId>
-      <version>0.40.1</version>
     </dependency>
     <dependency>
       <groupId>io.servicetalk</groupId>

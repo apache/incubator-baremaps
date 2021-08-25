@@ -21,7 +21,6 @@ import com.baremaps.osm.cache.Cache.Entry;
 import com.baremaps.osm.cache.CoordinateCache;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,7 @@ class RocksdbCoordinateCacheTest {
   @Tag("integration")
   void test() throws Exception {
     RocksDB.loadLibrary();
-    Path path = Files.createTempDirectory(Paths.get("."), "baremaps_").toAbsolutePath();
+    Path path = Files.createTempDirectory("baremaps_").toAbsolutePath();
     Options options = new Options().setCreateIfMissing(true);
     RocksDB db = RocksDB.open(options, path.toString());
     CoordinateCache cache = new RocksdbCoordinateCache(db);

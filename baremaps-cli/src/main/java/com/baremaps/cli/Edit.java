@@ -14,12 +14,16 @@
 
 package com.baremaps.cli;
 
+import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
+
 import com.baremaps.blob.BlobStore;
-import com.baremaps.openapi.ObjectMapperContextResolver;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.CorsFilter;
 import com.baremaps.server.EditorResources;
 import com.baremaps.server.MaputnikResources;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonGenerator.Feature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
@@ -28,7 +32,6 @@ import java.net.URI;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
-import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,15 +90,18 @@ public class Edit implements Callable<Integer> {
     BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.datasource(database);
 
-    ResourceConfig config =
+    // Configure serialization
+    ObjectMapper mapper =
+        new ObjectMapper()
+            .configure(Feature.IGNORE_UNKNOWN, true)
+            .setSerializationInclusion(Include.NON_NULL)
+            .setSerializationInclusion(Include.NON_EMPTY);
+
+    // Configure the application
+    ResourceConfig application =
         new ResourceConfig()
-            .packages("org.glassfish.jersey.examples.jackson")
-            .registerClasses(
-                ObjectMapperContextResolver.class,
-                JacksonFeature.class,
-                CorsFilter.class,
-                EditorResources.class,
-                MaputnikResources.class)
+            .registerClasses(CorsFilter.class, EditorResources.class, MaputnikResources.class)
+            .register(contextResolverFor(mapper))
             .register(
                 new AbstractBinder() {
                   @Override
@@ -108,7 +114,7 @@ public class Edit implements Callable<Integer> {
                 });
 
     BlockingStreamingHttpService httpService =
-        new HttpJerseyRouterBuilder().buildBlockingStreaming(config);
+        new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
     ServerContext serverContext =
         HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
