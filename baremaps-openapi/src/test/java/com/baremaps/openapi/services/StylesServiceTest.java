@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.StyleSet;
+import com.baremaps.openapi.resources.StylesService;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
