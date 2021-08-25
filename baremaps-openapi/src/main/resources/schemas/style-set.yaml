@@ -1,0 +1,34 @@
+type: object
+required:
+  - styles
+properties:
+  styles:
+    type: array
+    nullable: true
+    items:
+      $ref: 'style-set-entry.yaml'
+    example:
+      - id: 'night'
+        title: 'Topographic night style'
+        links:
+          - href: 'https://example.com/api/1.0/styles/night?f=mapbox'
+            type: 'application/vnd.mapbox.style+json'
+            rel: 'stylesheet'
+          - href: 'https://example.com/api/1.0/styles/night?f=sld10'
+            type: 'application/vnd.ogc.sld+xml;version=1.0'
+            rel: 'stylesheet'
+          - href: 'https://example.com/api/1.0/styles/night/metadata?f=json'
+            type: 'application/json'
+            rel: 'describedBy'
+      - id: 'topographic'
+        title: 'Regular topographic style'
+        links:
+          - href: 'https://example.com/api/1.0/styles/topographic?f=mapbox'
+            type: 'application/vnd.mapbox.style+json'
+            rel: 'stylesheet'
+          - href: 'https://example.com/api/1.0/styles/topographic?f=sld10'
+            type: 'application/vnd.ogc.sld+xml;version=1.0'
+            rel: 'stylesheet'
+          - href: 'https://example.com/api/1.0/styles/topographic/metadata?f=json'
+            type: 'application/json'
+            rel: 'describedBy'

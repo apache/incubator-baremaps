@@ -1,0 +1,41 @@
+required:
+  - layers
+  - sources
+  - version
+type: object
+properties:
+  version:
+    type: number
+    example: 8
+  name:
+    type: string
+    example: night
+  sources:
+    type: object
+    additionalProperties:
+      type: object
+      properties:
+        type:
+          type: string
+          example: vector
+        url:
+          type: string
+          example: 'https://services.interactive-instruments.de/vtp/daraa/tiles/default/{z}/{y}/{x}?f=mvt'
+  sprite:
+    type: string
+    example: 'http://vtp2018.s3-eu-west-1.amazonaws.com/static/mapstorestyle/sprites/sprites'
+  glyphs:
+    type: string
+    example: 'http://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
+  layers:
+    type: array
+    items:
+      $ref: 'mb-layer.yaml'
+  center:
+    type: array
+    items:
+      type: number
+  metadata:
+    type: object
+  zoom:
+    type: number

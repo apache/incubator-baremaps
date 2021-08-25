@@ -1,0 +1,10 @@
+type: object
+properties:
+  id:
+    type: string
+  description:
+    type: string
+  queries:
+    type: array
+    items:
+      $ref: 'query.yaml'

@@ -1,0 +1,19 @@
+type: object
+nullable: true
+required:
+  - id
+  - links
+properties:
+  id:
+    type: string
+    format: uuid
+    nullable: true
+  title:
+    type: string
+    nullable: true
+  links:
+    type: array
+    nullable: true
+    minItems: 1
+    items:
+      $ref: 'link.yaml'

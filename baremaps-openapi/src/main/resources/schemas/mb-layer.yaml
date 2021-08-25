@@ -1,0 +1,38 @@
+required:
+  - id
+  - type
+type: object
+properties:
+  id:
+    type: string
+    example: '1'
+  type:
+    type: string
+    example: fill
+    enum:
+      - fill
+      - line
+      - symbol
+      - circle
+      - heatmap
+      - fill-extrusion
+      - raster
+      - hillshade
+      - background
+  filter:
+    type: array
+    items: { }
+  source:
+    type: string
+    example: daraa
+  source-layer:
+    type: string
+    example: vegetationsrf
+  layout:
+    type: object
+  minzoom:
+    type: number
+  maxzoom:
+    type: number
+  paint:
+    type: object

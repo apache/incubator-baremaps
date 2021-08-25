@@ -14,7 +14,7 @@
 
 package com.baremaps.server;
 
-import com.baremaps.model.TileSet;
+import com.baremaps.model.TileJSON;
 import com.baremaps.tile.postgres.PostgresQuery;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +23,7 @@ public class Mappers {
 
   private Mappers() {}
 
-  public static List<PostgresQuery> map(TileSet tileset) {
+  public static List<PostgresQuery> map(TileJSON tileset) {
     return tileset.getVectorLayers().stream()
         .flatMap(
             layer ->

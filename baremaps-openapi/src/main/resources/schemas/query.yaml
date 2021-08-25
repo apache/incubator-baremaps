@@ -1,0 +1,8 @@
+type: object
+properties:
+  minzoom:
+    type: integer
+  maxzoom:
+    type: integer
+  sql:
+    type: string

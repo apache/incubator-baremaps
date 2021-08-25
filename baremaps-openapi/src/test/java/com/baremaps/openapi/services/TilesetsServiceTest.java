@@ -16,7 +16,7 @@ package com.baremaps.openapi.services;
 
 import static org.junit.Assert.assertEquals;
 
-import com.baremaps.model.TileSet;
+import com.baremaps.model.TileJSON;
 import com.baremaps.openapi.resources.TilesetsService;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.util.List;
@@ -68,7 +68,7 @@ public class TilesetsServiceTest extends JerseyTest {
     assertEquals(0, ids.size());
 
     // Create a new tileset with the service
-    TileSet tileSet = new TileSet();
+    TileJSON tileSet = new TileJSON();
     tileSet.setName("test");
     target().path("/tilesets").request(MediaType.APPLICATION_JSON).post(Entity.json(tileSet));
 
@@ -78,7 +78,7 @@ public class TilesetsServiceTest extends JerseyTest {
 
     // Get the tileset
     UUID id = ids.get(0);
-    tileSet = target().path("/tilesets/" + id).request().get(TileSet.class);
+    tileSet = target().path("/tilesets/" + id).request().get(TileJSON.class);
     assertEquals("test", tileSet.getName());
 
     // Delete the tileset

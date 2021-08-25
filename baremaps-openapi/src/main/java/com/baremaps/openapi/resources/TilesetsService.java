@@ -15,7 +15,7 @@
 package com.baremaps.openapi.resources;
 
 import com.baremaps.api.TilesetsApi;
-import com.baremaps.model.TileSet;
+import com.baremaps.model.TileJSON;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
@@ -40,8 +40,8 @@ public class TilesetsService implements TilesetsApi {
 
   private static final Logger logger = LoggerFactory.getLogger(TilesetsService.class);
 
-  private static final QualifiedType<TileSet> TILESET =
-      QualifiedType.of(TileSet.class).with(Json.class);
+  private static final QualifiedType<TileJSON> TILESET =
+      QualifiedType.of(TileJSON.class).with(Json.class);
 
   private final DataSource dataSource;
 
@@ -57,7 +57,7 @@ public class TilesetsService implements TilesetsApi {
   }
 
   private TileStore loadTileStore(UUID tilesetId) {
-    TileSet tileset =
+    TileJSON tileset =
         Jdbi.create(dataSource)
             .withHandle(
                 handle ->
@@ -83,7 +83,7 @@ public class TilesetsService implements TilesetsApi {
   }
 
   @Override
-  public Response addTileset(TileSet tileSet) {
+  public Response addTileset(TileJSON tileSet) {
     UUID tilesetId;
     try {
       tilesetId = UUID.fromString(tileSet.getTiles().get(0).split("/")[4]);
@@ -111,7 +111,7 @@ public class TilesetsService implements TilesetsApi {
 
   @Override
   public Response getTileset(UUID tilesetId) {
-    TileSet tileset =
+    TileJSON tileset =
         jdbi.withHandle(
             handle ->
                 handle
@@ -131,7 +131,7 @@ public class TilesetsService implements TilesetsApi {
   }
 
   @Override
-  public Response updateTileset(UUID tilesetId, TileSet tileSet) {
+  public Response updateTileset(UUID tilesetId, TileJSON tileSet) {
     tileStores.invalidate(tilesetId);
     jdbi.useHandle(
         handle ->
