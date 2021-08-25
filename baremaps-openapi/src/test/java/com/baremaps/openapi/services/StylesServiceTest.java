@@ -41,7 +41,7 @@ public class StylesServiceTest extends JerseyTest {
     enable(TestProperties.LOG_TRAFFIC);
     enable(TestProperties.DUMP_ENTITY);
 
-    // Create a connection to a throwaway postgis database
+    // Create a connection to a throwaway postgres database
     Connection connection;
     try {
       connection = DriverManager.getConnection("jdbc:tc:postgresql:13:///test");
