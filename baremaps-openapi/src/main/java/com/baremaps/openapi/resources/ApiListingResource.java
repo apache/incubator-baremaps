@@ -39,7 +39,6 @@ public class ApiListingResource {
   public ApiListingResource() {
     BeanConfig beanConfig = new BeanConfig();
     beanConfig.setVersion(getVersion());
-    beanConfig.setSchemes(new String[] {"http"});
     beanConfig.setBasePath("/");
     beanConfig.setResourcePackage("com.baremaps.openapi.services");
     beanConfig.setScan(true);
