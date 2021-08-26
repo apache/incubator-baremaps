@@ -14,13 +14,16 @@
 
 package com.baremaps.openapi.services;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.io.Resources;
-import io.swagger.jaxrs.config.BeanConfig;
-import io.swagger.models.Swagger;
+import io.swagger.util.Json;
 import io.swagger.util.Yaml;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.parser.OpenAPIV3Parser;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Properties;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
@@ -34,16 +37,9 @@ import javax.ws.rs.core.UriInfo;
 @Path("")
 public class ApiListingResource {
 
-  private final Swagger swagger;
+  private static final String OPENAPI = "openapi.yaml";
 
-  public ApiListingResource() {
-    BeanConfig beanConfig = new BeanConfig();
-    beanConfig.setVersion(getVersion());
-    beanConfig.setBasePath("/");
-    beanConfig.setResourcePackage("com.baremaps.openapi.services");
-    beanConfig.setScan(true);
-    this.swagger = beanConfig.getSwagger();
-  }
+  public ApiListingResource() {}
 
   public String getVersion() {
     try (InputStream input = Resources.getResource("version.txt").openStream()) {
@@ -58,35 +54,31 @@ public class ApiListingResource {
   @GET
   @Produces({"application/json"})
   @Path("/api")
-  public Response getListingJson(@Context UriInfo uriInfo) {
-    return Response.ok(swaggerWithUriInfo(uriInfo)).build();
+  public Response getListingJson(@Context UriInfo uriInfo) throws IOException {
+    return Response.ok(Json.mapper().writeValueAsString(parseOpenapi(uriInfo))).build();
   }
 
   @GET
   @Produces({"application/yaml"})
   @Path("/api")
-  public Response getListingYaml(@Context UriInfo uriInfo) throws JsonProcessingException {
-    return Response.ok(Yaml.mapper().writeValueAsString(swaggerWithUriInfo(uriInfo))).build();
+  public Response getListingYaml(@Context UriInfo uriInfo) throws IOException {
+    return Response.ok(Yaml.mapper().writeValueAsString(parseOpenapi(uriInfo))).build();
   }
 
-  private Swagger swaggerWithUriInfo(UriInfo uriInfo) {
-    Swagger copy = new Swagger();
-    copy.setInfo(swagger.getInfo());
-    copy.setHost(
-        String.format("%s:%s", uriInfo.getBaseUri().getHost(), uriInfo.getBaseUri().getPort()));
-    copy.setBasePath(swagger.getBasePath());
-    copy.setTags(swagger.getTags());
-    copy.setSchemes(swagger.getSchemes());
-    copy.setConsumes(swagger.getConsumes());
-    copy.setProduces(swagger.getProduces());
-    copy.setSecurity(swagger.getSecurity());
-    copy.setPaths(swagger.getPaths());
-    copy.setSecurityDefinitions(swagger.getSecurityDefinitions());
-    copy.setDefinitions(swagger.getDefinitions());
-    copy.setParameters(swagger.getParameters());
-    copy.setResponses(swagger.getResponses());
-    copy.setExternalDocs(swagger.getExternalDocs());
-    copy.setVendorExtensions(swagger.getVendorExtensions());
-    return copy;
+  private OpenAPI parseOpenapi(UriInfo uriInfo) throws IOException {
+    try (InputStream inputStream = Resources.getResource(OPENAPI).openStream()) {
+      var openAPI =
+          new OpenAPIV3Parser()
+              .readContents(new String(inputStream.readAllBytes(), StandardCharsets.UTF_8))
+              .getOpenAPI();
+      openAPI.setServers(
+          List.of(
+              new Server()
+                  .url(
+                      String.format(
+                          "%s:%s",
+                          uriInfo.getBaseUri().getHost(), uriInfo.getBaseUri().getPort()))));
+      return openAPI;
+    }
   }
 }
