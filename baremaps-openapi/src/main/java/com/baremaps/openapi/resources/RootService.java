@@ -54,11 +54,6 @@ public class RootService implements DefaultApi {
                         .rel("service-desc"),
                     new Link()
                         .title("API documentation")
-                        .href(String.format("http://%s/redoc", address))
-                        .type("text/html")
-                        .rel("service-doc"),
-                    new Link()
-                        .title("API documentation")
                         .href(String.format("http://%s/swagger", address))
                         .type("text/html")
                         .rel("service-doc")));
