@@ -1,0 +1,6 @@
+type: object
+properties:
+  maps-metadata:
+    type: array
+    items:
+      $ref: 'map-metadata.yaml'

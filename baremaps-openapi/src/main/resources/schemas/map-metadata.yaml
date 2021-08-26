@@ -1,0 +1,27 @@
+type: object
+required:
+  - id
+properties:
+  id:
+    description: identifier of the map used, for example, in URIs
+    type: string
+    format: uuid
+  title:
+    description: human readable title of the map
+    type:
+      string
+  style:
+    description: id/reference to the style used in the map
+    type: string
+  tileset:
+    description: id/reference to the tileset used in the map
+    type: string
+  last-edit:
+    description: date of the last edit of the map
+    type: string
+  publication-scope:
+    description: indication if its a private or published map
+    type: string
+  views:
+    description: count of map views
+    type: integer
