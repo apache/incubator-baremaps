@@ -58,14 +58,14 @@ public class ApiListingResource {
 
   @GET
   @Produces({"application/json"})
-  @Path("/swagger.json")
+  @Path("/api")
   public Response getListingJson(@Context UriInfo uriInfo) {
     return Response.ok(swaggerWithUriInfo(uriInfo)).build();
   }
 
   @GET
   @Produces({"application/yaml"})
-  @Path("/swagger.yaml")
+  @Path("/api")
   public Response getListingYaml(@Context UriInfo uriInfo) throws JsonProcessingException {
     return Response.ok(Yaml.mapper().writeValueAsString(swaggerWithUriInfo(uriInfo))).build();
   }
