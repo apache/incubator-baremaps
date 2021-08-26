@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Baremaps API
   description: Draft for a Baremaps API.
-  version: 1.0.0
+  version: ${project.version}
 servers:
   - url: 'http://localhost:8080'
 tags:

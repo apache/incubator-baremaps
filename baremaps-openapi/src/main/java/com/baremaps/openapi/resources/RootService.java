@@ -17,32 +17,46 @@ package com.baremaps.openapi.resources;
 import com.baremaps.api.DefaultApi;
 import com.baremaps.model.LandingPage;
 import com.baremaps.model.Link;
+import java.util.Arrays;
 import javax.ws.rs.core.Response;
 
 public class RootService implements DefaultApi {
 
   @Override
   public Response getLandingPage() {
-
-    LandingPage landingPage = new LandingPage();
-
-    landingPage.setTitle("Baremaps");
-    landingPage.setDescription("Baremaps OGC API Landing Page");
-
     String address = "localhost:8080";
 
-    Link linkRoot = new Link();
-    linkRoot.title("This document (landing page)");
-    linkRoot.setHref(String.format("http://%s/", address));
-    linkRoot.setRel("application/json");
-    landingPage.getLinks().add(linkRoot);
-
-    Link linkConformance = new Link();
-    linkConformance.title("Conformance declaration");
-    linkConformance.setHref(String.format("http://%s/conformance", address));
-    linkConformance.setRel("application/json");
-    landingPage.getLinks().add(linkConformance);
-
+    LandingPage landingPage =
+        new LandingPage()
+            .title("Baremaps")
+            .description("Baremaps OGC API Landing Page")
+            .links(
+                Arrays.asList(
+                    new Link()
+                        .title("This document (landing page)")
+                        .href(String.format("http://%s/", address))
+                        .type("application/json")
+                        .rel("self"),
+                    new Link()
+                        .title("Conformance declaration")
+                        .href(String.format("http://%s/conformance", address))
+                        .type("application/json")
+                        .rel("conformance"),
+                    new Link()
+                        .title("API description")
+                        .href(String.format("http://%s/api", address))
+                        .type("application/json")
+                        .rel("service-desc"),
+                    new Link()
+                        .title("API description")
+                        .href(String.format("http://%s/api", address))
+                        .type("application/yaml")
+                        .rel("service-desc"),
+                    new Link()
+                        .title("API documentation")
+                        .href(String.format("http://%s/swagger", address))
+                        .type("text/html")
+                        .rel("service-doc")));
     return Response.ok().entity(landingPage).build();
   }
 }

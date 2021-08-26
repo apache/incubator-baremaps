@@ -16,10 +16,12 @@ package com.baremaps.cli;
 
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
+import com.baremaps.openapi.resources.ApiListingResource;
 import com.baremaps.openapi.resources.CollectionsService;
 import com.baremaps.openapi.resources.ConformanceService;
 import com.baremaps.openapi.resources.RootService;
 import com.baremaps.openapi.resources.StylesService;
+import com.baremaps.openapi.resources.SwaggerResource;
 import com.baremaps.openapi.resources.TilesetsService;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.CorsFilter;
@@ -78,10 +80,12 @@ public class OpenApi implements Callable<Integer> {
             .installPlugin(new Jackson2Plugin())
             .configure(Jackson2Config.class, config -> config.setMapper(mapper));
 
-    // Configure the application
+    // Initialize the application
     ResourceConfig application =
         new ResourceConfig()
             .registerClasses(
+                ApiListingResource.class,
+                SwaggerResource.class,
                 RootService.class,
                 CorsFilter.class,
                 ConformanceService.class,
