@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "openapi", description = "Serve the openapi API.")
+@Command(name = "openapi", description = "Serve an openapi endpoint (experimental).")
 public class OpenApi implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(OpenApi.class);

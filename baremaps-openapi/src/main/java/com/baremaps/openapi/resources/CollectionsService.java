@@ -41,8 +41,12 @@ import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.core.statement.StatementContext;
 import org.jdbi.v3.json.Json;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CollectionsService implements CollectionsApi {
+
+  private static final Logger logger = LoggerFactory.getLogger(CollectionsService.class);
 
   private static final QualifiedType<Extent> EXTENT =
       QualifiedType.of(Extent.class).with(Json.class);
@@ -161,7 +165,7 @@ public class CollectionsService implements CollectionsApi {
       try {
         return mapper.writeValueAsString(link);
       } catch (JsonProcessingException e) {
-        e.printStackTrace();
+        logger.error("An error occurred", e);
         return null;
       }
     }
@@ -181,9 +185,9 @@ public class CollectionsService implements CollectionsApi {
                     try {
                       return mapper.readValue(link, Link.class);
                     } catch (JsonProcessingException e) {
-                      e.printStackTrace();
+                      logger.error("An error occurred", e);
+                      return null;
                     }
-                    return null;
                   })
               .filter(Objects::nonNull)
               .collect(Collectors.toList()));
