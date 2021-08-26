@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.openapi.resources;
+package com.baremaps.studio.resources;
 
 import com.baremaps.api.MapsApi;
 import com.baremaps.model.MapMetadata;
@@ -26,7 +26,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.json.Json;
 
-public class MapsService implements MapsApi {
+public class StudioResource implements MapsApi {
 
   private static final QualifiedType<MapMetadata> MAP =
       QualifiedType.of(MapMetadata.class).with(Json.class);
@@ -34,7 +34,7 @@ public class MapsService implements MapsApi {
   private final Jdbi jdbi;
 
   @Inject
-  public MapsService(Jdbi jdbi) {
+  public StudioResource(Jdbi jdbi) {
     this.jdbi = jdbi;
   }
 

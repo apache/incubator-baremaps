@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.openapi.resources;
+package com.baremaps.ogcapi.resources;
 
 import com.baremaps.api.DefaultApi;
 import com.baremaps.model.LandingPage;
@@ -20,7 +20,7 @@ import com.baremaps.model.Link;
 import java.util.Arrays;
 import javax.ws.rs.core.Response;
 
-public class RootService implements DefaultApi {
+public class RootResource implements DefaultApi {
 
   @Override
   public Response getLandingPage() {

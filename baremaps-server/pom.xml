@@ -118,7 +118,7 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-openapi</artifactId>
+      <artifactId>baremaps-ogcapi</artifactId>
     </dependency>
   </dependencies>
 

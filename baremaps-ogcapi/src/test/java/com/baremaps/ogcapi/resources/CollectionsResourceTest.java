@@ -12,16 +12,17 @@
  * the License.
  */
 
-package com.baremaps.openapi.services;
+package com.baremaps.ogcapi.resources;
 
 import static org.junit.Assert.assertEquals;
 
-import com.baremaps.model.MapMetadata;
-import com.baremaps.model.MapsMetadata;
-import com.baremaps.openapi.resources.MapsService;
+import com.baremaps.model.Collection;
+import com.baremaps.model.Collections;
+import com.baremaps.model.Link;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -33,7 +34,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.junit.Test;
 
-public class MapsServiceTest extends JerseyTest {
+public class CollectionsResourceTest extends JerseyTest {
 
   Jdbi jdbi;
 
@@ -52,11 +53,14 @@ public class MapsServiceTest extends JerseyTest {
 
     // Initialize the database
     jdbi = Jdbi.create(connection).installPlugin(new Jackson2Plugin());
-    jdbi.useHandle(handle -> handle.execute("create table maps (id uuid primary key, map jsonb)"));
+    jdbi.useHandle(
+        handle ->
+            handle.execute(
+                "create table collections (id uuid primary key, title text, description text, links jsonb[] default '{}'::jsonb[], extent jsonb, item_type text default 'feature', crs text[])"));
 
     // Configure the service
     return new ResourceConfig()
-        .register(MapsService.class)
+        .register(CollectionsResource.class)
         .register(
             new AbstractBinder() {
               @Override
@@ -68,35 +72,53 @@ public class MapsServiceTest extends JerseyTest {
 
   @Test
   public void test() {
-    // List the maps
-    MapsMetadata maps = target().path("/maps").request().get(MapsMetadata.class);
-    assertEquals(0, maps.getMapsMetadata().size());
+    // Create a new collection
+    Collection collection = new Collection();
+    collection.setTitle("test");
+    collection.setLinks(List.of());
 
-    // Create a new map with the service
-    MapMetadata map = new MapMetadata().title("My Map");
+    Link link = new Link();
+    link.setHref("/link");
+    link.setRel("self");
+
+    collection.setLinks(List.of(link));
+
+    // List the collections
+    Collections collections = target().path("/collections").request().get(Collections.class);
+    assertEquals(0, collections.getCollections().size());
+
+    // Insert the collection
     Response response =
         target()
-            .path("/maps")
+            .path("/collections")
             .request(MediaType.APPLICATION_JSON)
-            .post(Entity.entity(map, MediaType.valueOf("application/json")));
+            .post(Entity.entity(collection, MediaType.valueOf("application/json")));
     assertEquals(201, response.getStatus());
 
-    // List the maps
-    maps = target().path("/maps").request().get(MapsMetadata.class);
-    assertEquals(1, maps.getMapsMetadata().size());
+    // List the collections
+    collections = target().path("/collections").request().get(Collections.class);
+    assertEquals(1, collections.getCollections().size());
 
-    // Get the map
-    String[] paths = response.getHeaderString("Location").split("/");
-    String id = paths[paths.length - 1];
-    map = target().path("/maps/" + id).request().get(MapMetadata.class);
-    assertEquals("My Map", map.getTitle());
+    // Get the collection
+    String id = response.getHeaderString("Location").split("/")[4];
+    collection = target().path("/collections/" + id).request().get(Collection.class);
+    assertEquals("test", collection.getTitle());
 
-    // Delete the map
-    response = target().path("/maps/" + id).request().delete();
+    // Update the collection
+    collection.setTitle("test_update");
+    response =
+        target()
+            .path("/collections/" + id)
+            .request()
+            .put(Entity.entity(collection, MediaType.valueOf("application/json")));
     assertEquals(204, response.getStatus());
 
-    // List the maps
-    maps = target().path("/maps").request().get(MapsMetadata.class);
-    assertEquals(0, maps.getMapsMetadata().size());
+    // Delete the collection
+    response = target().path("/collections/" + id).request().delete();
+    assertEquals(204, response.getStatus());
+
+    // List the collections
+    collections = target().path("/collections").request().get(Collections.class);
+    assertEquals(0, collections.getCollections().size());
   }
 }

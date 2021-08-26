@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.openapi.resources;
+package com.baremaps.ogcapi.resources;
 
 import com.baremaps.api.CollectionsApi;
 import com.baremaps.model.Collection;
@@ -44,9 +44,9 @@ import org.jdbi.v3.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CollectionsService implements CollectionsApi {
+public class CollectionsResource implements CollectionsApi {
 
-  private static final Logger logger = LoggerFactory.getLogger(CollectionsService.class);
+  private static final Logger logger = LoggerFactory.getLogger(CollectionsResource.class);
 
   private static final QualifiedType<Extent> EXTENT =
       QualifiedType.of(Extent.class).with(Json.class);
@@ -56,7 +56,7 @@ public class CollectionsService implements CollectionsApi {
   static ObjectMapper mapper = new ObjectMapper();
 
   @Inject
-  public CollectionsService(Jdbi jdbi) {
+  public CollectionsResource(Jdbi jdbi) {
     this.jdbi = jdbi;
     this.jdbi.registerArrayType(new LinkArrayType());
     this.jdbi.registerArgument(new LinkArgumentFactory());

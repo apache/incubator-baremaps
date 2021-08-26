@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.openapi.resources;
+package com.baremaps.ogcapi.resources;
 
 import com.baremaps.api.TilesetsApi;
 import com.baremaps.model.TileJSON;
@@ -36,9 +36,9 @@ import org.jdbi.v3.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TilesetsService implements TilesetsApi {
+public class TilesetsResource implements TilesetsApi {
 
-  private static final Logger logger = LoggerFactory.getLogger(TilesetsService.class);
+  private static final Logger logger = LoggerFactory.getLogger(TilesetsResource.class);
 
   private static final QualifiedType<TileJSON> TILESET =
       QualifiedType.of(TileJSON.class).with(Json.class);
@@ -51,7 +51,7 @@ public class TilesetsService implements TilesetsApi {
       Caffeine.newBuilder().build(this::loadTileStore);
 
   @Inject
-  public TilesetsService(DataSource dataSource, Jdbi jdbi) {
+  public TilesetsResource(DataSource dataSource, Jdbi jdbi) {
     this.dataSource = dataSource;
     this.jdbi = jdbi;
   }

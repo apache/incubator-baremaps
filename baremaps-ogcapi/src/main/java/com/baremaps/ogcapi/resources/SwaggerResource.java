@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.openapi.resources;
+package com.baremaps.ogcapi.resources;
 
 import com.google.common.io.Resources;
 import java.io.IOException;

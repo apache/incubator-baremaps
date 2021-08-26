@@ -12,14 +12,14 @@
  * the License.
  */
 
-package com.baremaps.openapi.resources;
+package com.baremaps.ogcapi.resources;
 
 import com.baremaps.api.ConformanceApi;
 import com.baremaps.model.ConfClasses;
 import java.util.Arrays;
 import javax.ws.rs.core.Response;
 
-public class ConformanceService implements ConformanceApi {
+public class ConformanceResource implements ConformanceApi {
 
   @Override
   public Response getConformanceDeclaration() {

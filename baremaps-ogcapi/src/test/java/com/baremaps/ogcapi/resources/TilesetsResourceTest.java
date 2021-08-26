@@ -12,12 +12,11 @@
  * the License.
  */
 
-package com.baremaps.openapi.services;
+package com.baremaps.ogcapi.resources;
 
 import static org.junit.Assert.assertEquals;
 
 import com.baremaps.model.TileJSON;
-import com.baremaps.openapi.resources.TilesetsService;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +32,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.junit.Test;
 
-public class TilesetsServiceTest extends JerseyTest {
+public class TilesetsResourceTest extends JerseyTest {
 
   Jdbi jdbi;
 
@@ -50,7 +49,7 @@ public class TilesetsServiceTest extends JerseyTest {
 
     // Configure the service
     return new ResourceConfig()
-        .register(TilesetsService.class)
+        .register(TilesetsResource.class)
         .register(
             new AbstractBinder() {
               @Override

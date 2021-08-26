@@ -12,19 +12,19 @@
  * the License.
  */
 
-package com.baremaps.openapi.services;
+package com.baremaps.studio.resources;
 
 import static org.junit.Assert.assertEquals;
 
-import com.baremaps.model.MbStyle;
-import com.baremaps.model.StyleSet;
-import com.baremaps.openapi.resources.StylesService;
+import com.baremaps.model.MapMetadata;
+import com.baremaps.model.MapsMetadata;
+import com.baremaps.openapi.resources.StudioResource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.UUID;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
@@ -33,7 +33,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.junit.Test;
 
-public class StylesServiceTest extends JerseyTest {
+public class StudioResourceTest extends JerseyTest {
 
   Jdbi jdbi;
 
@@ -52,12 +52,11 @@ public class StylesServiceTest extends JerseyTest {
 
     // Initialize the database
     jdbi = Jdbi.create(connection).installPlugin(new Jackson2Plugin());
-    jdbi.useHandle(
-        handle -> handle.execute("create table styles (id uuid primary key, style jsonb)"));
+    jdbi.useHandle(handle -> handle.execute("create table maps (id uuid primary key, map jsonb)"));
 
     // Configure the service
     return new ResourceConfig()
-        .register(StylesService.class)
+        .register(StudioResource.class)
         .register(
             new AbstractBinder() {
               @Override
@@ -69,32 +68,35 @@ public class StylesServiceTest extends JerseyTest {
 
   @Test
   public void test() {
-    // List the styles
-    StyleSet styles = target().path("/styles").request().get(StyleSet.class);
-    assertEquals(0, styles.getStyles().size());
+    // List the maps
+    MapsMetadata maps = target().path("/maps").request().get(MapsMetadata.class);
+    assertEquals(0, maps.getMapsMetadata().size());
 
-    // Create a new style with the service
-    MbStyle style = new MbStyle();
-    style.setName("test");
-    target()
-        .path("/styles")
-        .request(MediaType.APPLICATION_JSON)
-        .post(Entity.entity(style, MediaType.valueOf("application/vnd.mapbox.style+json")));
+    // Create a new map with the service
+    MapMetadata map = new MapMetadata().title("My Map");
+    Response response =
+        target()
+            .path("/maps")
+            .request(MediaType.APPLICATION_JSON)
+            .post(Entity.entity(map, MediaType.valueOf("application/json")));
+    assertEquals(201, response.getStatus());
 
-    // List the styles
-    styles = target().path("/styles").request().get(StyleSet.class);
-    assertEquals(1, styles.getStyles().size());
+    // List the maps
+    maps = target().path("/maps").request().get(MapsMetadata.class);
+    assertEquals(1, maps.getMapsMetadata().size());
 
-    // Get the style
-    UUID id = styles.getStyles().get(0).getId();
-    style = target().path("/styles/" + id).request().get(MbStyle.class);
-    assertEquals("test", style.getName());
+    // Get the map
+    String[] paths = response.getHeaderString("Location").split("/");
+    String id = paths[paths.length - 1];
+    map = target().path("/maps/" + id).request().get(MapMetadata.class);
+    assertEquals("My Map", map.getTitle());
 
-    // Delete the style
-    target().path("/styles/" + styles.getStyles().get(0).getId()).request().delete();
+    // Delete the map
+    response = target().path("/maps/" + id).request().delete();
+    assertEquals(204, response.getStatus());
 
-    // List the styles
-    styles = target().path("/styles").request().get(StyleSet.class);
-    assertEquals(0, styles.getStyles().size());
+    // List the maps
+    maps = target().path("/maps").request().get(MapsMetadata.class);
+    assertEquals(0, maps.getMapsMetadata().size());
   }
 }
