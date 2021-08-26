@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import com.baremaps.model.Collection;
 import com.baremaps.model.Collections;
 import com.baremaps.model.Link;
+import com.baremaps.openapi.resources.CollectionsService;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;

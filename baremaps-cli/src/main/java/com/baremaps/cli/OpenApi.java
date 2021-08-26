@@ -16,7 +16,11 @@ package com.baremaps.cli;
 
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
-import com.baremaps.openapi.services.*;
+import com.baremaps.openapi.resources.CollectionsService;
+import com.baremaps.openapi.resources.ConformanceService;
+import com.baremaps.openapi.resources.RootService;
+import com.baremaps.openapi.resources.StylesService;
+import com.baremaps.openapi.resources.TilesetsService;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.CorsFilter;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -39,7 +43,7 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "openapi", description = "Serve the openapi API.")
+@Command(name = "openapi", description = "Serve an openapi endpoint (experimental).")
 public class OpenApi implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(OpenApi.class);
@@ -59,8 +63,6 @@ public class OpenApi implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    DataSource datasource = PostgresUtils.datasource(this.database);
-
     // Configure serialization
     ObjectMapper mapper =
         new ObjectMapper()
@@ -69,6 +71,7 @@ public class OpenApi implements Callable<Integer> {
             .setSerializationInclusion(Include.NON_EMPTY);
 
     // Configure jdbi and set the ObjectMapper
+    DataSource datasource = PostgresUtils.datasource(this.database);
     Jdbi jdbi =
         Jdbi.create(datasource)
             .installPlugin(new PostgresPlugin())
@@ -90,6 +93,7 @@ public class OpenApi implements Callable<Integer> {
                 new AbstractBinder() {
                   @Override
                   protected void configure() {
+                    bind(datasource).to(DataSource.class);
                     bind(jdbi).to(Jdbi.class);
                   }
                 });

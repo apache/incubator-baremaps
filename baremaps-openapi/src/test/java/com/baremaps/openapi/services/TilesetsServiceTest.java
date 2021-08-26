@@ -17,11 +17,11 @@ package com.baremaps.openapi.services;
 import static org.junit.Assert.assertEquals;
 
 import com.baremaps.model.TileSet;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import com.baremaps.openapi.resources.TilesetsService;
+import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
@@ -42,16 +42,9 @@ public class TilesetsServiceTest extends JerseyTest {
     enable(TestProperties.LOG_TRAFFIC);
     enable(TestProperties.DUMP_ENTITY);
 
-    // Create a connection to a throwaway postgres database
-    Connection connection;
-    try {
-      connection = DriverManager.getConnection("jdbc:tc:postgresql:13:///test");
-    } catch (SQLException throwables) {
-      throw new RuntimeException("Unable to connect to the database");
-    }
-
-    // Initialize the database
-    jdbi = Jdbi.create(connection).installPlugin(new Jackson2Plugin());
+    // Create a data source with a throwaway postgres database
+    DataSource dataSource = PostgresUtils.datasource("jdbc:tc:postgresql:13:///test");
+    jdbi = Jdbi.create(dataSource).installPlugin(new Jackson2Plugin());
     jdbi.useHandle(
         handle -> handle.execute("create table tilesets (id uuid primary key, tileset jsonb)"));
 
@@ -62,6 +55,7 @@ public class TilesetsServiceTest extends JerseyTest {
             new AbstractBinder() {
               @Override
               protected void configure() {
+                bind(dataSource).to(DataSource.class);
                 bind(jdbi).to(Jdbi.class);
               }
             });

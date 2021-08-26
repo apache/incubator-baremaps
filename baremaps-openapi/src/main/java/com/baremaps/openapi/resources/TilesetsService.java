@@ -12,25 +12,24 @@
  * the License.
  */
 
-package com.baremaps.openapi.services;
+package com.baremaps.openapi.resources;
 
 import com.baremaps.api.TilesetsApi;
 import com.baremaps.model.TileSet;
-import com.baremaps.openapi.TilesetQueryParser;
 import com.baremaps.tile.Tile;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import com.baremaps.tile.TileStore;
+import com.baremaps.tile.TileStoreException;
+import com.baremaps.tile.postgres.PostgresQuery;
+import com.baremaps.tile.postgres.PostgresTileStore;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import java.net.URI;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
+import javax.sql.DataSource;
 import javax.ws.rs.core.Response;
-import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.json.Json;
@@ -44,13 +43,43 @@ public class TilesetsService implements TilesetsApi {
   private static final QualifiedType<TileSet> TILESET =
       QualifiedType.of(TileSet.class).with(Json.class);
 
+  private final DataSource dataSource;
+
   private final Jdbi jdbi;
 
-  private final HashMap<UUID, TileSet> tilesets = new HashMap<>();
+  private final LoadingCache<UUID, TileStore> tileStores =
+      Caffeine.newBuilder().build(this::loadTileStore);
 
   @Inject
-  public TilesetsService(Jdbi jdbi) {
+  public TilesetsService(DataSource dataSource, Jdbi jdbi) {
+    this.dataSource = dataSource;
     this.jdbi = jdbi;
+  }
+
+  private TileStore loadTileStore(UUID tilesetId) {
+    TileSet tileset =
+        Jdbi.create(dataSource)
+            .withHandle(
+                handle ->
+                    handle
+                        .createQuery("select tileset from tilesets where id = :id")
+                        .bind("id", tilesetId)
+                        .mapTo(TILESET)
+                        .one());
+    List<PostgresQuery> queries =
+        tileset.getVectorLayers().stream()
+            .flatMap(
+                layer ->
+                    layer.getQueries().stream()
+                        .map(
+                            query ->
+                                new PostgresQuery(
+                                    layer.getId(),
+                                    query.getMinzoom(),
+                                    query.getMaxzoom(),
+                                    query.getSql())))
+            .collect(Collectors.toList());
+    return new PostgresTileStore(dataSource, queries);
   }
 
   @Override
@@ -61,7 +90,6 @@ public class TilesetsService implements TilesetsApi {
     } catch (Exception e) {
       tilesetId = UUID.randomUUID();
     }
-
     UUID finalTilesetId = tilesetId;
     jdbi.useHandle(
         handle ->
@@ -71,15 +99,13 @@ public class TilesetsService implements TilesetsApi {
                 .bindByType("json", tileSet, TILESET)
                 .bind("id", finalTilesetId)
                 .execute());
-
     return Response.created(URI.create("tilesets/" + tilesetId)).build();
   }
 
   @Override
   public Response deleteTileset(UUID tilesetId) {
-    tilesets.remove(tilesetId);
+    tileStores.invalidate(tilesetId);
     jdbi.useHandle(handle -> handle.execute("delete from tilesets where id = (?)", tilesetId));
-
     return Response.noContent().build();
   }
 
@@ -93,7 +119,6 @@ public class TilesetsService implements TilesetsApi {
                     .bind("id", tilesetId)
                     .mapTo(TILESET)
                     .one());
-
     return Response.ok(tileset).build();
   }
 
@@ -102,13 +127,12 @@ public class TilesetsService implements TilesetsApi {
     List<UUID> ids =
         jdbi.withHandle(
             handle -> handle.createQuery("select id from tilesets").mapTo(UUID.class).list());
-
     return Response.ok(ids).build();
   }
 
   @Override
   public Response updateTileset(UUID tilesetId, TileSet tileSet) {
-    tilesets.remove(tilesetId);
+    tileStores.invalidate(tilesetId);
     jdbi.useHandle(
         handle ->
             handle
@@ -116,7 +140,6 @@ public class TilesetsService implements TilesetsApi {
                 .bindByType("json", tileSet, TILESET)
                 .bind("id", tilesetId)
                 .execute());
-
     return Response.noContent().build();
   }
 
@@ -127,53 +150,12 @@ public class TilesetsService implements TilesetsApi {
       Integer tileMatrix,
       Integer tileRow,
       Integer tileCol) {
-    TileSet tileset;
-    if (tilesets.containsKey(tilesetId)) {
-      tileset = tilesets.get(tilesetId);
-    } else {
-      tileset =
-          jdbi.withHandle(
-              handle ->
-                  handle
-                      .createQuery("select tileset from tilesets where id = :id")
-                      .bind("id", tilesetId)
-                      .mapTo(TILESET)
-                      .one());
-      tileset.setTiles(
-          List.of(
-              String.format(
-                  "http://localhost:8080/tilesets/%s/tiles/matrix-set-id/{z}/{y}/{x}", tilesetId)));
-      tilesets.put(tilesetId, tileset);
-    }
-
     Tile tile = new Tile(tileCol, tileRow, tileMatrix);
-
-    TilesetQueryParser parser = new TilesetQueryParser();
-    String sql = parser.parse(tileset, tile);
-    logger.debug("Executing query: {}", sql);
-
-    try (Handle handle = jdbi.open();
-        Connection connection = handle.getConnection();
-        Statement statement = connection.createStatement();
-        ByteArrayOutputStream data = new ByteArrayOutputStream()) {
-
-      int length = 0;
-      ResultSet resultSet = statement.executeQuery(sql);
-      while (resultSet.next()) {
-        byte[] bytes = resultSet.getBytes(1);
-        length += bytes.length;
-        data.write(bytes);
-      }
-      handle.close();
-
-      if (length > 0) {
-        return Response.ok(data.toByteArray()).build();
-      }
-    } catch (IOException | SQLException e) {
-      //      TODO: proper error handling
+    TileStore tileStore = tileStores.get(tilesetId);
+    try {
+      return Response.ok(tileStore.read(tile)).build();
+    } catch (TileStoreException e) {
       return Response.serverError().build();
     }
-
-    return null;
   }
 }
