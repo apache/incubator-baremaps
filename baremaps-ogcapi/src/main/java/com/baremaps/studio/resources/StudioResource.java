@@ -14,22 +14,32 @@
 
 package com.baremaps.studio.resources;
 
-import com.baremaps.api.MapsApi;
-import com.baremaps.model.MapMetadata;
-import com.baremaps.model.MapsMetadata;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.json.Json;
 
-public class StudioResource implements MapsApi {
+@Singleton
+@Path("")
+public class StudioResource {
 
-  private static final QualifiedType<MapMetadata> MAP =
-      QualifiedType.of(MapMetadata.class).with(Json.class);
+  private static final QualifiedType<ObjectNode> ENTITY =
+      QualifiedType.of(ObjectNode.class).with(Json.class);
 
   private final Jdbi jdbi;
 
@@ -38,54 +48,86 @@ public class StudioResource implements MapsApi {
     this.jdbi = jdbi;
   }
 
-  @Override
-  public Response addMap(MapMetadata map) {
-    UUID mapId = UUID.randomUUID(); // TODO: Read from body
-    jdbi.useHandle(
-        handle ->
-            handle
-                .createUpdate("insert into maps (id, map) values (:id, CAST(:json AS jsonb))")
-                .bindByType("json", map, MAP)
-                .bind("id", mapId)
-                .execute());
-    return Response.created(URI.create("maps/" + mapId)).build();
-  }
-
-  @Override
-  public Response deleteMap(UUID mapId) {
-    jdbi.useHandle(handle -> handle.execute("delete from maps where id = (?)", mapId));
-    return Response.noContent().build();
-  }
-
-  @Override
-  public Response getMap(UUID mapId) {
-    MapMetadata map =
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("studio/{kind}")
+  public Response getEntities(@PathParam("kind") String kind) {
+    List<ObjectNode> entityList =
         jdbi.withHandle(
             handle ->
                 handle
-                    .createQuery("select map from maps where id = :id")
-                    .bind("id", mapId)
-                    .mapTo(MAP)
-                    .one());
-    return Response.ok(map).build();
+                    .createQuery("select entity from studio.entities where kind = :kind")
+                    .bind("kind", kind)
+                    .mapTo(ENTITY)
+                    .list());
+    return Response.ok(entityList).build();
   }
 
-  @Override
-  public Response getMaps() {
-    List<MapMetadata> maps =
-        jdbi.withHandle(handle -> handle.createQuery("select map from maps").mapTo(MAP).list());
-    return Response.ok(new MapsMetadata().mapsMetadata(maps)).build();
-  }
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Path("studio/{kind}")
+  public Response addEntity(ObjectNode entity, @PathParam("kind") String kind) {
+    UUID id;
+    try {
+      id = UUID.fromString(entity.get("id").asText());
+    } catch (Exception e) {
+      id = UUID.randomUUID();
+    }
 
-  @Override
-  public Response updateMap(UUID mapId, MapMetadata map) {
+    UUID finalId = id;
     jdbi.useHandle(
         handle ->
             handle
-                .createUpdate("update maps set map = :json where id = :id")
-                .bindByType("json", map, MAP)
-                .bind("id", mapId)
+                .createUpdate(
+                    "insert into studio.entities (id, entity, kind) values (:id, CAST(:entity AS jsonb), :kind)")
+                .bind("id", finalId)
+                .bindByType("entity", entity, ENTITY)
+                .bind("kind", kind)
                 .execute());
+    return Response.created(URI.create("studio/" + kind + "/" + id)).build();
+  }
+
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("studio/{kind}/{id}")
+  public Response getEntity(@PathParam("id") UUID id, @PathParam("kind") String kind) {
+    ObjectNode entity =
+        jdbi.withHandle(
+            handle ->
+                handle
+                    .createQuery(
+                        "select entity from studio.entities where id = :id and kind = :kind")
+                    .bind("id", id)
+                    .bind("kind", kind)
+                    .mapTo(ENTITY)
+                    .one());
+    return Response.ok(entity).build();
+  }
+
+  @PUT
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Path("studio/{kind}/{id}")
+  public Response updateEntity(
+      ObjectNode entity, @PathParam("id") UUID id, @PathParam("kind") String kind) {
+    jdbi.useHandle(
+        handle ->
+            handle
+                .createUpdate(
+                    "update studio.entities set map = CAST(:entity AS jsonb) where id = :id and kind = :kind")
+                .bind("id", id)
+                .bindByType("entity", entity, ENTITY)
+                .bind("kind", kind)
+                .execute());
+    return Response.noContent().build();
+  }
+
+  @DELETE
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("studio/{kind}/{id}")
+  public Response deleteEntity(@PathParam("id") UUID id, @PathParam("kind") String kind) {
+    jdbi.useHandle(
+        handle ->
+            handle.execute("delete from studio.entities where id = (?) and kind = (?)", id, kind));
     return Response.noContent().build();
   }
 }

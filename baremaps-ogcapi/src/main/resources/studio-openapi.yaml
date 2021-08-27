@@ -1,0 +1,1270 @@
+openapi: 3.0.3
+info:
+  title: Baremaps API
+  description: Draft for a Baremaps API.
+  version: ${project.version}
+servers:
+  - url: 'http://localhost:8080'
+tags:
+  - name: Capabilities
+    description: Information about this API
+  - name: Collections
+    description: Discover, create, update and delete collections
+  - name: Styles
+    description: Discover, create, fetch, update and delete styles
+  - name: Tilesets
+    description: Discover, create, fetch, update and delete tilesets
+  - name: Entities
+    description: Discover, create, fetch, update and delete studio entities
+paths:
+  '/':
+    get:
+      tags:
+        - Capabilities
+      summary: landing page
+      description: |-
+        The landing page provides links to the API definition,
+        the Conformance statements and the available styles.
+      operationId: getLandingPage
+      responses:
+        '200':
+          description: |-
+            Links to the API capabilities and the style set
+            shared by this API.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/landingPage'
+              example:
+                title: Styles API example
+                links:
+                  - href: 'https://example.org/catalog/1.0/?f=json'
+                    rel: self
+                    type: application/json
+                    title: this document
+                  - href: 'https://example.org/catalog/1.0/?f=html'
+                    rel: alternate
+                    type: text/html
+                    title: this document
+                  - href: 'https://example.org/catalog/1.0/api?f=json'
+                    rel: service
+                    type: application/vnd.oai.openapi+json;version=3.0
+                    title: the API definition in JSON
+                  - href: 'https://example.org/catalog/1.0/api?f=html'
+                    rel: service
+                    type: text/html
+                    title: the API definition in HTML
+                  - href: 'https://example.org/catalog/1.0/conformance'
+                    rel: conformance
+                    type: application/json
+                    title: list of conformance classes implemented by this API
+                  - href: 'https://example.org/catalog/1.0/styles'
+                    rel: data
+                    type: application/json
+                    title: the set of styles shared via this API
+        '400':
+          description: |-
+            invalid or unknown query parameters
+        '406':
+          description: |-
+            The media types accepted by the client are not
+            supported for this resource
+  '/conformance':
+    get:
+      tags:
+        - Capabilities
+      summary: |-
+        information about conformance classes that this API
+        conforms to
+      description: |-
+        List of all conformance classes specified in a specification
+        that the server conforms to.
+      operationId: getConformanceDeclaration
+      responses:
+        '200':
+          description: |-
+            the URIs of all conformance classes supported by
+            this API
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/confClasses'
+              example:
+                conformsTo:
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/core'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/json'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/manage-styles'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/style-validation'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/resources'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/manage-resources'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/mapbox-styles'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/sld-10'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/sld-11'
+        '400':
+          description: |-
+            invalid or unknown query parameters
+        '406':
+          description: |-
+            The media types accepted by the client are not
+            supported for this resource
+  /collections:
+    get:
+      tags:
+        - Collections
+      summary: the collections in the dataset
+      description: A list of all collections available in this dataset.
+      operationId: getCollections
+      responses:
+        "200":
+          description: |-
+            The collections (geospatial data resources) shared by this API.
+            This response can be references directly for every service that wants only essential information at the collections level. /collections/collectionId might return more information.
+            The dataset is organized as one or more collections. This resource provides information about and how to access the collections.
+            The response contains the list of collections. For each collection, a link
+            to other resources present (e.g. the items in the collection, path `/collections/{collectionId}/items`,
+            link relation `items`, a map created with data from  collection, path `/collections/{collectionId}/map`,
+            link relation `map`) as well as key information about the collection.
+            This information includes, but is not limited to:
+            * A local identifier for the collection that is unique for the dataset;
+            * A list of coordinate reference systems (CRS) in which geometries may be returned by the server. The first CRS is the default coordinate reference system (the default is always WGS84 with axis order longitude/latitude);
+            * An optional title and description for the collection;
+            * An optional extent that can be used to provide an indication of the spatial and temporal extent of the collection - typically derived from the data;
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collections'
+        "500":
+          description: A server error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+    post:
+      tags:
+        - Collections
+      summary: |-
+        adds a new collection
+      operationId: addCollection
+      description: |-
+        Adds a collection to the collection repository.
+
+        In case, a new collection is created, the following rules
+        apply.
+
+        If the collection submitted in the request body includes an
+        identifier, that identifier will be used. If a collection with that identifier
+        already exists, an error is returned.
+
+        If no identifier can be determined from the submitted
+        collection, the server will assign a new identifier to the
+        collection.
+
+        The URI of the new collection is returned in the header
+        `Location`.
+      responses:
+        '201':
+          description: |-
+            collection created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: |-
+                URI of the new collection
+        '409':
+          description: |-
+            a collection with that id already exists
+      requestBody:
+        description: |-
+          Stylesheet to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/collection'
+  '/collections/{collectionId}':
+    get:
+      tags:
+        - Collections
+      summary: |-
+        fetch a collection by id
+      description: |-
+        Fetches the collection with identifier `collectionId`. The set of
+        available collections can be retrieved at `/collections`.
+      operationId: getCollection
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          description: |-
+            The style
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/collection'
+        '404':
+          description: |-
+            collection not found
+    put:
+      tags:
+        - Collections
+      summary: |-
+        replace a collection or add a new collection
+      description: |-
+        Replace an existing collection with the id `collectionId`. If no
+        such collection exists, a new collection with that id is added.
+      operationId: updateCollection
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      requestBody:
+        description: |-
+          A single collection.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/collection'
+      responses:
+        '204':
+          description: |-
+            collection updated or created successfully
+    delete:
+      tags:
+        - Collections
+      summary: |-
+        delete a collection
+      description: |-
+        Delete an existing collection with the id `collectionId`. If no
+        such style exists, an error is returned.
+
+        Deletes any data/itmes associated to this collection.
+      operationId: deleteCollection
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '204':
+          description: |-
+            collection deleted
+        '404':
+          description: |-
+            collection not found
+  '/styles':
+    summary: ddd
+    description: xxx
+    get:
+      tags:
+        - Styles
+      summary: |-
+        information about the available styles
+      operationId: getStyleSet
+      description: |-
+        This operation fetches the set of styles available. For
+        each style the id, a title, links to the stylesheet of
+        the style in each supported encoding, and the link to the
+        metadata is provided.
+
+        For a small number of the styles the currently simple approach is sufficient,
+        but in general the operation should support paging (using a
+        parameter `limit` and links to the `next` page in responses).
+      responses:
+        '200':
+          description: the set of available styles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/style-set'
+        '406':
+          description: |-
+            The media types accepted by the client are not
+            supported for this resource
+    post:
+      tags:
+        - Styles
+      summary: |-
+        adds a new style
+      operationId: addStyle
+      description: |-
+        Adds a style to the style repository.
+
+        In case, a new style is created, the following rules
+        apply.
+
+        If the style submitted in the request body includes an
+        identifier (this depends on the style encoding), that
+        identifier will be used. If a style with that identifier
+        already exists, an error is returned.
+
+        If no identifier can be determined from the submitted
+        style, the server will assign a new identifier to the
+        style.
+
+        The URI of the new style is returned in the header
+        `Location`.
+      responses:
+        '201':
+          description: |-
+            style created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: |-
+                URI of the new style
+        '409':
+          description: |-
+            a style with that id already exists
+      requestBody:
+        description: |-
+          Stylesheet to be added
+        content:
+          application/vnd.mapbox.style+json:
+            schema:
+              $ref: '#/components/schemas/mb-style'
+  '/styles/{styleId}':
+    get:
+      tags:
+        - Styles
+      summary: |-
+        fetch a style by id
+      description: |-
+        Fetches the style with identifier `styleId`. The set of
+        available styles can be retrieved at `/styles`.
+
+        Not all styles are available in all style encodings.
+      operationId: getStyle
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+      responses:
+        '200':
+          description: |-
+            The style
+          content:
+            application/vnd.mapbox.style+json:
+              schema:
+                $ref: '#/components/schemas/mb-style'
+        '404':
+          description: |-
+            style not found
+    put:
+      tags:
+        - Styles
+      summary: |-
+        replace a style or add a new style
+      description: |-
+        Replace an existing style with the id `styleId`. If no
+        such style exists, a new style with that id is added.
+      operationId: updateStyle
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+      requestBody:
+        description: |-
+          A single style in one of the supported style encodings.
+        content:
+          application/vnd.mapbox.style+json:
+            schema:
+              $ref: '#/components/schemas/mb-style'
+      responses:
+        '204':
+          description: |-
+            style updated or created successfully
+    delete:
+      tags:
+        - Styles
+      summary: |-
+        delete a style
+      description: |-
+        Delete an existing style with the id `styleId`. If no
+        such style exists, an error is returned.
+      operationId: deleteStyle
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+      responses:
+        '204':
+          description: |-
+            style deleted
+        '404':
+          description: |-
+            style not found
+  '/tilesets':
+    summary: ddd
+    description: xxx
+    get:
+      tags:
+        - Tilesets
+      summary: |-
+        information about the available tilesets
+      operationId: getTilesets
+      description: |-
+        This operation fetches the set of tilesets available. For
+        each tileset the id, a title, links to the tileset is provided.
+
+        For a small number of the tilesets the currently simple approach is sufficient,
+        but in general the operation should support paging (using a
+        parameter `limit` and links to the `next` page in responses).
+      responses:
+        '200':
+          description: the set of available tilesets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+        '406':
+          description: |-
+            The media types accepted by the client are not
+            supported for this resource
+    post:
+      tags:
+        - Tilesets
+      summary: |-
+        adds a new tileset
+      operationId: addTileset
+      description: |-
+        Adds a tileset to the tileset repository.
+
+        If no identifier can be determined from the submitted
+        tileset, the server will assign a new identifier to the
+        style.
+
+        The URI of the new tileset is returned in the header
+        `Location`.
+      responses:
+        '201':
+          description: |-
+            tileset created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: |-
+                URI of the new tileset
+        '409':
+          description: |-
+            a tileset with that id already exists
+      requestBody:
+        description: |-
+          Tileset to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tileSet'
+  '/tilesets/{tilesetId}':
+    get:
+      tags:
+        - Tilesets
+      summary: |-
+        fetch a tileset by id
+      description: |-
+        Fetches the tileset with identifier `tilesetId`. The set of
+        available tilesets can be retrieved at `/tilesets`.
+      operationId: getTileset
+      parameters:
+        - $ref: '#/components/parameters/tilesetId'
+      responses:
+        '200':
+          description: |-
+            The tileset
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tileSet'
+        '404':
+          description: |-
+            tileset not found
+    put:
+      tags:
+        - Tilesets
+      summary: |-
+        replace a tileset or add a new tileset
+      description: |-
+        Replace an existing tileset with the id `tilesetId`. If no
+        such style exists, a new style with that id is added.
+      operationId: updateTileset
+      parameters:
+        - $ref: '#/components/parameters/tilesetId'
+      requestBody:
+        description: |-
+          A single tileset in one of the supported tileset encodings.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tileSet'
+      responses:
+        '204':
+          description: |-
+            tileset updated or created successfully
+    delete:
+      tags:
+        - Tilesets
+      summary: |-
+        delete a tileset
+      description: |-
+        Delete an existing tileset with the id `tilesetId`. If no
+        such tileset exists, an error is returned.
+      operationId: deleteTileset
+      parameters:
+        - $ref: '#/components/parameters/tilesetId'
+      responses:
+        '204':
+          description: |-
+            tileset deleted
+        '404':
+          description: |-
+            tileset not found
+  /tilesets/{tilesetId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}:
+    get:
+      tags:
+        - Tilesets
+      summary: fetch a tile from one or more geospatial data resources
+      description: Retrieves a tile in the requested tileMatrixSet, on the requested
+        tileMatrix in the TileMatrixSet, with the requested tile indices (tileRow,
+        tileCol). The tile has multiple collections (formerly refered as layers) with
+        all selected features in the bounding box of the tile.
+      operationId: getTile
+      parameters:
+        - $ref: '#/components/parameters/tilesetId'
+        - name: tileMatrixSetId
+          in: path
+          description: Identifier of a specific tiling scheme. It can be one of those
+            specified in Annex D.1 of the OGC 17-083r2 standard or one defined in this
+            service.
+          required: true
+          schema:
+            type: string
+          example: WebMercatorQuad
+        - name: tileMatrix
+          in: path
+          description: |-
+            Identifier selecting one of the scales (z) defined in the TileMatrixSet and
+            representing the scaleDenominator the tile.
+          required: true
+          schema:
+            type: integer
+          example: "11"
+        - name: tileRow
+          in: path
+          description: Row index (y) of the tile on the selected TileMatrix. It cannot exceed
+            the MatrixWidth-1 for the selected TileMatrix.
+          required: true
+          schema:
+            minimum: 0
+            type: integer
+          example: "827"
+        - name: tileCol
+          in: path
+          description: Column index (x) of the tile on the selected TileMatrix. It cannot
+            exceed the MatrixHeight-1 for the selected TileMatrix.
+          required: true
+          schema:
+            minimum: 0
+            type: integer
+          example: 1231
+      responses:
+        "200":
+          description: A Mapbox Vector Tile of the collection.
+          content:
+            application/vnd.mapbox-vector-tile:
+              schema:
+                type: string
+                format: byte
+        "404":
+          description: The requested URI was not found
+        "500":
+          description: A server error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+  /studio/{entitiesKind}:
+    get:
+      tags:
+        - Entities
+      summary: the entities
+      description: A list of all maps metadata available.
+      operationId: getEntities
+      parameters:
+        - $ref: '#/components/parameters/entitiesKind'
+      responses:
+        "200":
+          description: |-
+            The entities of a certain kind shared by this API.
+            This response can be references directly for every service that wants only essential information at the maps level. /{entitiesType}/entityId might return more information.
+            This resource provides information about and how to access the entities.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/entities'
+        "500":
+          description: A server error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/exception'
+    post:
+      tags:
+        - Entities
+      summary: |-
+        adds a new entity
+      operationId: addEntity
+      parameters:
+        - $ref: '#/components/parameters/entitiesKind'
+      description: |-
+        Adds a entity to the entity repository.
+
+        In case, a new entity is created, the following rules
+        apply.
+
+        If the entity submitted in the request body includes an
+        identifier, that identifier will be used. If an entity with that identifier
+        already exists, an error is returned.
+
+        If no identifier can be determined from the submitted
+        entity, the server will assign a new identifier to the
+        entity.
+
+        The URI of the new entity is returned in the header
+        `Location`.
+      responses:
+        '201':
+          description: |-
+            entity created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: |-
+                URI of the new entity
+        '409':
+          description: |-
+            an entity with that id already exists
+      requestBody:
+        description: |-
+          Entity to be added
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/entity'
+  /studio/{entitiesKind}/{entityId}:
+    get:
+      tags:
+        - Entities
+      summary: |-
+        fetch an entity by id
+      description: |-
+        Fetches the entity with identifier `entityId`. The set of
+        available entities can be retrieved at `/{entitiesKind}`.
+      operationId: getEntity
+      parameters:
+        - $ref: '#/components/parameters/entityId'
+        - $ref: '#/components/parameters/entitiesKind'
+      responses:
+        '200':
+          description: |-
+            The entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/entity'
+        '404':
+          description: |-
+            entity not found
+    put:
+      tags:
+        - Entities
+      summary: |-
+        replace an entity
+      description: |-
+        Replace an existing entity with the id `entityId`.
+      operationId: updateEntity
+      parameters:
+        - $ref: '#/components/parameters/entityId'
+        - $ref: '#/components/parameters/entitiesKind'
+      requestBody:
+        description: |-
+          A single entity.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/entity'
+      responses:
+        '204':
+          description: |-
+            entity updated or created successfully
+    delete:
+      tags:
+        - Entities
+      summary: |-
+        delete an entity
+      description: |-
+        Delete an existing entity with the id `entityId`. If no
+        such entity exists, an error is returned.
+      operationId: deleteMap
+      parameters:
+        - $ref: '#/components/parameters/entityId'
+        - $ref: '#/components/parameters/entitiesKind'
+      responses:
+        '204':
+          description: |-
+            entity deleted
+        '404':
+          description: |-
+            entity not found
+components:
+  parameters:
+    collectionId:
+      name: collectionId
+      in: path
+      description: local identifier of a collection
+      required: true
+      schema:
+        type: string
+        format: uuid
+    styleId:
+      name: styleId
+      in: path
+      description: |-
+        Local identifier of a style. \
+        A list of all available styles can be found
+        under the /styles path.
+      required: true
+      schema:
+        type: string
+        format: uuid
+    tilesetId:
+      name: tilesetId
+      in: path
+      description: |-
+        Local identifier of a tileset. \
+        A list of all available tilesets can be found
+        under the /styles path.
+      required: true
+      schema:
+        type: string
+        format: uuid
+    entityId:
+      name: entityId
+      in: path
+      description: |-
+        Local identifier of an entity. \
+        A list of all available entities can be found
+        under the /{entitiesType} path.
+      required: true
+      schema:
+        type: string
+        format: uuid
+    entitiesKind:
+      name: entitiesKind
+      in: path
+      description: |-
+        Local identifier of an entity kind. \
+        A list of all available entities can be found
+        under the /{entitiesKind} path.
+      required: true
+      schema:
+        type: string
+  schemas:
+    collection:
+      type: object
+      required:
+        - id
+        - links
+      properties:
+        id:
+          description: identifier of the collection used, for example, in URIs
+          type: string
+          format: uuid
+          example: address
+        title:
+          description: human readable title of the collection
+          type: string
+          example: address
+        description:
+          description: a description of the features in the collection
+          type: string
+          example: An address.
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+          example:
+            - href: http://data.example.com/buildings
+              rel: item
+            - href: http://example.com/concepts/buildings.html
+              rel: describedby
+              type: text/html
+        extent:
+          $ref: "#/components/schemas/extent"
+        itemType:
+          description: indicator about the type of the items in the collection (the default value is 'feature').
+          type: string
+          default: feature
+        crs:
+          description: the list of coordinate reference systems supported by the service
+          type: array
+          items:
+            type: string
+          default:
+            - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+          example:
+            - http://www.opengis.net/def/crs/OGC/1.3/CRS84
+            - http://www.opengis.net/def/crs/EPSG/0/4326
+    collections:
+      type: object
+      required:
+        - links
+        - collections
+      properties:
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+        collections:
+          type: array
+          items:
+            $ref: "#/components/schemas/collection"
+    confClasses:
+      type: object
+      required:
+        - conformsTo
+      properties:
+        conformsTo:
+          type: array
+          items:
+            type: string
+    entity:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          description: identifier of the entity used, for example, in URIs
+          type: string
+          format: uuid
+      additionalProperties: { }
+    entities:
+      type: array
+      items:
+        $ref: '#/components/schemas/entity'
+    exception:
+      type: object
+      required:
+        - code
+      properties:
+        code:
+          type: string
+        description:
+          type: string
+    extent:
+      type: object
+      description: |-
+        The extent of the features in the collection. In the Core only spatial and temporal
+        extents are specified. Extensions may add additional members to represent other
+        extents, for example, thermal or pressure ranges.
+      properties:
+        spatial:
+          description: |-
+            The spatial extent of the features in the collection.
+          type: object
+          properties:
+            bbox:
+              description: |-
+                One or more bounding boxes that describe the spatial extent of the dataset.
+                In the Core only a single bounding box is supported. Extensions may support
+                additional areas. If multiple areas are provided, the union of the bounding
+                boxes describes the spatial extent.
+              type: array
+              minItems: 1
+              items:
+                description: |-
+                  Each bounding box is provided as four or six numbers, depending on
+                  whether the coordinate reference system includes a vertical axis
+                  (height or depth):
+
+                  * Lower left corner, coordinate axis 1
+                  * Lower left corner, coordinate axis 2
+                  * Minimum value, coordinate axis 3 (optional)
+                  * Upper right corner, coordinate axis 1
+                  * Upper right corner, coordinate axis 2
+                  * Maximum value, coordinate axis 3 (optional)
+
+                  The coordinate reference system of the values is WGS 84 longitude/latitude
+                  (http://www.opengis.net/def/crs/OGC/1.3/CRS84) unless a different coordinate
+                  reference system is specified in `crs`.
+
+                  For WGS 84 longitude/latitude the values are in most cases the sequence of
+                  minimum longitude, minimum latitude, maximum longitude and maximum latitude.
+                  However, in cases where the box spans the antimeridian the first value
+                  (west-most box edge) is larger than the third value (east-most box edge).
+
+                  If the vertical axis is included, the third and the sixth number are
+                  the bottom and the top of the 3-dimensional bounding box.
+
+                  If a feature has multiple spatial geometry properties, it is the decision of the
+                  server whether only a single spatial geometry property is used to determine
+                  the extent or all relevant geometries.
+                type: array
+                oneOf:
+                  - minItems: 4
+                    maxItems: 4
+                  - minItems: 6
+                    maxItems: 6
+                items:
+                  type: number
+                example:
+                  - -180
+                  - -90
+                  - 180
+                  - 90
+            crs:
+              description: |-
+                Coordinate reference system of the coordinates in the spatial extent
+                (property `bbox`). The default reference system is WGS 84 longitude/latitude.
+                In the Core this is the only supported coordinate reference system.
+                Extensions may support additional coordinate reference systems and add
+                additional enum values.
+              type: string
+              enum:
+                - 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'
+              default: 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'
+        temporal:
+          description: |-
+            The temporal extent of the features in the collection.
+          type: object
+          properties:
+            interval:
+              description: |-
+                One or more time intervals that describe the temporal extent of the dataset.
+                The value `null` is supported and indicates an open time interval.
+                In the Core only a single time interval is supported. Extensions may support
+                multiple intervals. If multiple intervals are provided, the union of the
+                intervals describes the temporal extent.
+              type: array
+              minItems: 1
+              items:
+                description: |-
+                  Begin and end times of the time interval. The timestamps are in the
+                  temporal coordinate reference system specified in `trs`. By default
+                  this is the Gregorian calendar.
+                type: array
+                minItems: 2
+                maxItems: 2
+                items:
+                  type: string
+                  format: date-time
+                  nullable: true
+                example:
+                  - '2011-11-11T12:22:11Z'
+                  - null
+            trs:
+              description: |-
+                Coordinate reference system of the coordinates in the temporal extent
+                (property `interval`). The default reference system is the Gregorian calendar.
+                In the Core this is the only supported temporal coordinate reference system.
+                Extensions may support additional temporal coordinate reference systems and add
+                additional enum values.
+              type: string
+              enum:
+                - 'http://www.opengis.net/def/uom/ISO-8601/0/Gregorian'
+              default: 'http://www.opengis.net/def/uom/ISO-8601/0/Gregorian'
+    landingPage:
+      type: object
+      required:
+        - links
+      properties:
+        title:
+          type: string
+          example: Buildings in Bonn
+        description:
+          type: string
+          example: Access to data about buildings in the city of Bonn via a Web API that conforms to the OGC API Features specification.
+        links:
+          type: array
+          items:
+            $ref: "#/components/schemas/link"
+    link:
+      type: object
+      required:
+        - href
+      properties:
+        href:
+          type: string
+          example: http://data.example.com/buildings/123
+        rel:
+          type: string
+          example: alternate
+        type:
+          type: string
+          example: application/geo+json
+        hreflang:
+          type: string
+          example: en
+        title:
+          type: string
+          example: Trierer Strasse 70, 53115 Bonn
+        length:
+          type: integer
+    mb-style:
+      required:
+        - layers
+        - sources
+        - version
+      type: object
+      properties:
+        version:
+          type: number
+          example: 8
+        name:
+          type: string
+          example: night
+        sources:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              type:
+                type: string
+                example: vector
+              url:
+                type: string
+                example: 'https://services.interactive-instruments.de/vtp/daraa/tiles/default/{z}/{y}/{x}?f=mvt'
+        sprite:
+          type: string
+          example: 'http://vtp2018.s3-eu-west-1.amazonaws.com/static/{entitiesType}torestyle/sprites/sprites'
+        glyphs:
+          type: string
+          example: 'http://fonts.openmaptiles.org/{fontstack}/{range}.pbf'
+        layers:
+          type: array
+          items:
+            $ref: '#/components/schemas/layers-array'
+        center:
+          type: array
+          items:
+            type: number
+        metadata:
+          type: object
+        zoom:
+          type: number
+    layers-array:
+      required:
+        - id
+        - type
+      type: object
+      properties:
+        id:
+          type: string
+          example: '1'
+        type:
+          type: string
+          example: fill
+          enum:
+            - fill
+            - line
+            - symbol
+            - circle
+            - heatmap
+            - fill-extrusion
+            - raster
+            - hillshade
+            - background
+        filter:
+          type: array
+          items: {}
+        source:
+          type: string
+          example: daraa
+        source-layer:
+          type: string
+          example: vegetationsrf
+        layout:
+          type: object
+        minzoom:
+          type: number
+        maxzoom:
+          type: number
+        paint:
+          type: object
+    mb-sprite-index:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/mb-sprite-index-symbol'
+    mb-sprite-index-symbol:
+      type: object
+      required:
+        - width
+        - height
+        - x
+        - 'y'
+        - pixelRatio
+      properties:
+        width:
+          type: integer
+          example: 32
+        height:
+          type: integer
+          example: 32
+        x:
+          type: integer
+          example: 0
+        y:
+          type: integer
+          example: 0
+        pixelRatio:
+          type: number
+          example: 1
+    style-set:
+      type: object
+      required:
+        - styles
+      properties:
+        styles:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/style-set-entry'
+          example:
+            - id: 'night'
+              title: 'Topographic night style'
+              links:
+                - href: 'https://example.com/api/1.0/styles/night?f=mapbox'
+                  type: 'application/vnd.mapbox.style+json'
+                  rel: 'stylesheet'
+                - href: 'https://example.com/api/1.0/styles/night?f=sld10'
+                  type: 'application/vnd.ogc.sld+xml;version=1.0'
+                  rel: 'stylesheet'
+                - href: 'https://example.com/api/1.0/styles/night/metadata?f=json'
+                  type: 'application/json'
+                  rel: 'describedBy'
+            - id: 'topographic'
+              title: 'Regular topographic style'
+              links:
+                - href: 'https://example.com/api/1.0/styles/topographic?f=mapbox'
+                  type: 'application/vnd.mapbox.style+json'
+                  rel: 'stylesheet'
+                - href: 'https://example.com/api/1.0/styles/topographic?f=sld10'
+                  type: 'application/vnd.ogc.sld+xml;version=1.0'
+                  rel: 'stylesheet'
+                - href: 'https://example.com/api/1.0/styles/topographic/metadata?f=json'
+                  type: 'application/json'
+                  rel: 'describedBy'
+    style-set-entry:
+      type: object
+      nullable: true
+      required:
+        - id
+        - links
+      properties:
+        id:
+          type: string
+          format: uuid
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        links:
+          type: array
+          nullable: true
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/link'
+    stylesheet:
+      type: object
+      nullable: true
+      required:
+        - link
+      properties:
+        title:
+          type: string
+          nullable: true
+        version:
+          type: string
+          nullable: true
+        specification:
+          type: string
+          format: url
+          nullable: true
+        native:
+          type: boolean
+          nullable: true
+        tilingScheme:
+          type: string
+          nullable: true
+        link:
+          $ref: '#/components/schemas/link'
+    tileSet:
+      type: object
+      required:
+        - tilejson
+        - tiles
+      properties:
+        tilejson:
+          type: string
+          pattern: "\\d+\\.\\d+\\.\\d+\\w?[\\w\\d]*"
+        name:
+          type: string
+        description:
+          type: string
+        version:
+          type: string
+          pattern: "\\d+\\.\\d+\\.\\d+\\w?[\\w\\d]*"
+        attribution:
+          type: string
+        template:
+          type: string
+        legend:
+          type: string
+        scheme:
+          type: string
+        tiles:
+          type: array
+          items:
+            type: string
+        grids:
+          type: array
+          items:
+            type: string
+        data:
+          type: array
+          items:
+            type: string
+        minzoom:
+          minimum: 0
+          maximum: 30
+          type: integer
+        maxzoom:
+          minimum: 0
+          maximum: 30
+          type: integer
+        bounds:
+          type: array
+          items:
+            type: number
+            format: double
+        center:
+          type: array
+          items:
+            type: number
+        vector_layers:
+          type: array
+          items:
+            $ref: '#/components/schemas/layer'
+    layer:
+      type: object
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        queries:
+          type: array
+          items:
+            $ref: '#/components/schemas/query'
+    query:
+      type: object
+      properties:
+        minzoom:
+          type: integer
+        maxzoom:
+          type: integer
+        sql:
+          type: string

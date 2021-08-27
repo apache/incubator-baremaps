@@ -41,16 +41,36 @@
         <version>5.1.0</version>
         <executions>
           <execution>
+            <id>ogcapi</id>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/openapi.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/ogcapi-openapi.yaml</inputSpec>
               <generatorName>jaxrs-spec</generatorName>
               <configOptions>
                 <apiPackage>com.baremaps.api</apiPackage>
                 <interfaceOnly>true</interfaceOnly>
                 <modelPackage>com.baremaps.model</modelPackage>
+                <returnResponse>true</returnResponse>
+                <sortModelPropertiesByRequiredFlag>false</sortModelPropertiesByRequiredFlag>
+                <sortParamsByRequiredFlag>false</sortParamsByRequiredFlag>
+                <sourceFolder>src/gen/java/main</sourceFolder>
+              </configOptions>
+            </configuration>
+          </execution>
+          <execution>
+            <id>studio</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/src/main/resources/studio-openapi.yaml</inputSpec>
+              <generatorName>jaxrs-spec</generatorName>
+              <configOptions>
+                <apiPackage>com.baremaps.studio.api</apiPackage>
+                <interfaceOnly>true</interfaceOnly>
+                <modelPackage>com.baremaps.studio.model</modelPackage>
                 <returnResponse>true</returnResponse>
                 <sortModelPropertiesByRequiredFlag>false</sortModelPropertiesByRequiredFlag>
                 <sortParamsByRequiredFlag>false</sortParamsByRequiredFlag>

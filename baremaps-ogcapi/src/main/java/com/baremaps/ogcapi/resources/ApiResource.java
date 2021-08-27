@@ -37,7 +37,7 @@ import javax.ws.rs.core.UriInfo;
 @Path("")
 public class ApiResource {
 
-  private static final String OPENAPI = "openapi.yaml";
+  private static final String OPENAPI = "ogcapi-openapi.yaml";
 
   public ApiResource() {}
 

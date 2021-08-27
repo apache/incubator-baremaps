@@ -14,8 +14,6 @@ tags:
     description: Discover, create, fetch, update and delete styles
   - name: Tilesets
     description: Discover, create, fetch, update and delete tilesets
-  - name: Maps
-    description: Discover, create, update and delete maps
 paths:
   '/':
     get:
@@ -575,136 +573,6 @@ paths:
             application/json:
               schema:
                 $ref: 'schemas/exception.yaml'
-  /maps:
-    get:
-      tags:
-        - Maps
-      summary: the maps metadata
-      description: A list of all maps metadata available.
-      operationId: getMaps
-      responses:
-        "200":
-          description: |-
-            The maps shared by this API.
-            This response can be references directly for every service that wants only essential information at the maps level. /maps/mapId might return more information.
-            This resource provides information about and how to access the maps.
-          content:
-            application/json:
-              schema:
-                $ref: 'schemas/maps-metadata.yaml'
-        "500":
-          description: A server error occurred
-          content:
-            application/json:
-              schema:
-                $ref: 'schemas/exception.yaml'
-    post:
-      tags:
-        - Maps
-      summary: |-
-        adds a new map
-      operationId: addMap
-      description: |-
-        Adds a map to the map repository.
-
-        In case, a new map is created, the following rules
-        apply.
-
-        If the map submitted in the request body includes an
-        identifier, that identifier will be used. If a map with that identifier
-        already exists, an error is returned.
-
-        If no identifier can be determined from the submitted
-        map, the server will assign a new identifier to the
-        map.
-
-        The URI of the new map is returned in the header
-        `Location`.
-      responses:
-        '201':
-          description: |-
-            map created
-          headers:
-            Location:
-              schema:
-                type: string
-              description: |-
-                URI of the new map
-        '409':
-          description: |-
-            a map with that id already exists
-      requestBody:
-        description: |-
-          Map to be added
-        content:
-          application/json:
-            schema:
-              $ref: 'schemas/map-metadata.yaml'
-  /maps/{mapId}:
-    get:
-      tags:
-        - Maps
-      summary: |-
-        fetch a map by id
-      description: |-
-        Fetches the map with identifier `mapId`. The set of
-        available maps can be retrieved at `/maps`.
-      operationId: getMap
-      parameters:
-        - $ref: '#/components/parameters/mapId'
-      responses:
-        '200':
-          description: |-
-            The map
-          content:
-            application/json:
-              schema:
-                $ref: 'schemas/map-metadata.yaml'
-        '404':
-          description: |-
-            map not found
-    put:
-      tags:
-        - Maps
-      summary: |-
-        replace a map or add a new map
-      description: |-
-        Replace an existing map with the id `mapId`. If no
-        such map exists, a new map with that id is added.
-      operationId: updateMap
-      parameters:
-        - $ref: '#/components/parameters/mapId'
-      requestBody:
-        description: |-
-          A single map.
-        content:
-          application/json:
-            schema:
-              $ref: 'schemas/map-metadata.yaml'
-      responses:
-        '204':
-          description: |-
-            map updated or created successfully
-    delete:
-      tags:
-        - Maps
-      summary: |-
-        delete a map
-      description: |-
-        Delete an existing map with the id `mapId`. If no
-        such map exists, an error is returned.
-
-        Deletes any data/itmes associated to this map.
-      operationId: deleteMap
-      parameters:
-        - $ref: '#/components/parameters/mapId'
-      responses:
-        '204':
-          description: |-
-            map deleted
-        '404':
-          description: |-
-            map not found
 components:
   parameters:
     collectionId:
@@ -733,17 +601,6 @@ components:
         Local identifier of a tileset. \
         A list of all available tilesets can be found
         under the /tilesets path.
-      required: true
-      schema:
-        type: string
-        format: uuid
-    mapId:
-      name: mapId
-      in: path
-      description: |-
-        Local identifier of a map. \
-        A list of all available maps can be found
-        under the /maps path.
       required: true
       schema:
         type: string
