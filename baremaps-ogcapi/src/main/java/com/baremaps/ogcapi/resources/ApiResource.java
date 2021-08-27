@@ -37,9 +37,11 @@ import javax.ws.rs.core.UriInfo;
 @Path("")
 public class ApiResource {
 
-  private static final String OPENAPI = "ogcapi-openapi.yaml";
+  private static String openapiPath;
 
-  public ApiResource() {}
+  public ApiResource(String openapiPath) {
+    ApiResource.openapiPath = openapiPath;
+  }
 
   public String getVersion() {
     try (InputStream input = Resources.getResource("version.txt").openStream()) {
@@ -66,7 +68,7 @@ public class ApiResource {
   }
 
   private OpenAPI parseOpenapi(UriInfo uriInfo) throws IOException {
-    try (InputStream inputStream = Resources.getResource(OPENAPI).openStream()) {
+    try (InputStream inputStream = Resources.getResource(openapiPath).openStream()) {
       var openAPI =
           new OpenAPIV3Parser()
               .readContents(new String(inputStream.readAllBytes(), StandardCharsets.UTF_8))

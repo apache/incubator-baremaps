@@ -72,6 +72,7 @@ public class StudioResource {
       id = UUID.fromString(entity.get("id").asText());
     } catch (Exception e) {
       id = UUID.randomUUID();
+      entity.put("id", id.toString());
     }
 
     UUID finalId = id;

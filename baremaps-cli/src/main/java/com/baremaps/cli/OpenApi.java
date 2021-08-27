@@ -85,7 +85,6 @@ public class OpenApi implements Callable<Integer> {
     ResourceConfig application =
         new ResourceConfig()
             .registerClasses(
-                ApiResource.class,
                 SwaggerResource.class,
                 RootResource.class,
                 CorsFilter.class,
@@ -94,6 +93,7 @@ public class OpenApi implements Callable<Integer> {
                 StylesResource.class,
                 TilesetsResource.class,
                 StudioResource.class)
+            .register(new ApiResource("studio-openapi.yaml"))
             .register(contextResolverFor(mapper))
             .register(
                 new AbstractBinder() {
