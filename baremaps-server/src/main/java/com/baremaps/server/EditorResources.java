@@ -22,7 +22,7 @@ import com.baremaps.blob.BlobMapperException;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.JsonBlobMapper;
 import com.baremaps.model.MbStyle;
-import com.baremaps.model.TileSet;
+import com.baremaps.model.TileJSON;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgresQuery;
@@ -152,8 +152,8 @@ public class EditorResources {
   @GET
   @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public TileSet getTileset() throws BlobMapperException {
-    return new JsonBlobMapper(blobStore).read(tileset, TileSet.class);
+  public TileJSON getTileset() throws BlobMapperException {
+    return new JsonBlobMapper(blobStore).read(tileset, TileJSON.class);
   }
 
   @GET

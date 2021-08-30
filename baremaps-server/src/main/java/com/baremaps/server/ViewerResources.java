@@ -19,7 +19,7 @@ import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
 import com.baremaps.model.MbStyle;
-import com.baremaps.model.TileSet;
+import com.baremaps.model.TileJSON;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
@@ -36,12 +36,12 @@ public class ViewerResources {
 
   private final MbStyle style;
 
-  private final TileSet tileset;
+  private final TileJSON tileset;
 
   private final TileStore tileStore;
 
   @Inject
-  public ViewerResources(MbStyle style, TileSet tileset, TileStore tileStore) {
+  public ViewerResources(MbStyle style, TileJSON tileset, TileStore tileStore) {
     this.style = style;
     this.tileset = tileset;
     this.tileStore = tileStore;
@@ -57,7 +57,7 @@ public class ViewerResources {
   @GET
   @Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public TileSet getTileset() {
+  public TileJSON getTileset() {
     return tileset;
   }
 

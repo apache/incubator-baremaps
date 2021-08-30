@@ -19,7 +19,7 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreException;
 import com.baremaps.blob.JsonBlobMapper;
 import com.baremaps.model.Query;
-import com.baremaps.model.TileSet;
+import com.baremaps.model.TileJSON;
 import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.Mappers;
@@ -112,7 +112,7 @@ public class Export implements Callable<Integer> {
       throws TileStoreException, BlobStoreException, BlobMapperException, IOException {
     DataSource datasource = PostgresUtils.datasource(database);
     BlobStore blobStore = options.blobStore();
-    TileSet source = new JsonBlobMapper(blobStore).read(this.tileset, TileSet.class);
+    TileJSON source = new JsonBlobMapper(blobStore).read(this.tileset, TileJSON.class);
     TileStore tileSource = sourceTileStore(source, datasource);
     TileStore tileTarget = targetTileStore(source, blobStore);
 
@@ -154,12 +154,12 @@ public class Export implements Callable<Integer> {
     return 0;
   }
 
-  private TileStore sourceTileStore(TileSet tileset, DataSource datasource) {
+  private TileStore sourceTileStore(TileJSON tileset, DataSource datasource) {
     List<PostgresQuery> queries = Mappers.map(tileset);
     return new PostgresTileStore(datasource, queries);
   }
 
-  private TileStore targetTileStore(TileSet source, BlobStore blobStore)
+  private TileStore targetTileStore(TileJSON source, BlobStore blobStore)
       throws TileStoreException, IOException {
     if (mbtiles) {
       SQLiteDataSource dataSource = new SQLiteDataSource();
@@ -173,7 +173,7 @@ public class Export implements Callable<Integer> {
     }
   }
 
-  private Map<String, String> metadata(TileSet tileset) throws JsonProcessingException {
+  private Map<String, String> metadata(TileJSON tileset) throws JsonProcessingException {
     Map<String, String> metadata = new HashMap<>();
     metadata.put("name", tileset.getName());
     metadata.put("version", tileset.getVersion());

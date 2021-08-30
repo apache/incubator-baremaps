@@ -1,0 +1,13 @@
+type: object
+required:
+  - links
+  - collections
+properties:
+  links:
+    type: array
+    items:
+      $ref: "link.yaml"
+  collections:
+    type: array
+    items:
+      $ref: "collection.yaml"

@@ -1,0 +1,14 @@
+type: object
+required:
+  - links
+properties:
+  title:
+    type: string
+    example: Buildings in Bonn
+  description:
+    type: string
+    example: Access to data about buildings in the city of Bonn via a Web API that conforms to the OGC API Features specification.
+  links:
+    type: array
+    items:
+      $ref: "link.yaml"

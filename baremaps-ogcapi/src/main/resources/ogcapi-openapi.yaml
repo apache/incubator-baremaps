@@ -1,0 +1,607 @@
+openapi: 3.0.3
+info:
+  title: Baremaps API
+  description: Draft for a Baremaps API.
+  version: ${project.version}
+servers:
+  - url: 'http://localhost:8080'
+tags:
+  - name: Capabilities
+    description: Information about this API
+  - name: Collections
+    description: Discover, create, update and delete collections
+  - name: Styles
+    description: Discover, create, fetch, update and delete styles
+  - name: Tilesets
+    description: Discover, create, fetch, update and delete tilesets
+paths:
+  '/':
+    get:
+      tags:
+        - Capabilities
+      summary: landing page
+      description: |-
+        The landing page provides links to the API definition,
+        the Conformance statements and the available styles.
+      operationId: getLandingPage
+      responses:
+        '200':
+          description: |-
+            Links to the API capabilities and the style set
+            shared by this API.
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/landingPage.yaml'
+              example:
+                title: Styles API example
+                links:
+                  - href: 'https://example.org/catalog/1.0/?f=json'
+                    rel: self
+                    type: application/json
+                    title: this document
+                  - href: 'https://example.org/catalog/1.0/?f=html'
+                    rel: alternate
+                    type: text/html
+                    title: this document
+                  - href: 'https://example.org/catalog/1.0/api?f=json'
+                    rel: service
+                    type: application/vnd.oai.openapi+json;version=3.0
+                    title: the API definition in JSON
+                  - href: 'https://example.org/catalog/1.0/api?f=html'
+                    rel: service
+                    type: text/html
+                    title: the API definition in HTML
+                  - href: 'https://example.org/catalog/1.0/conformance'
+                    rel: conformance
+                    type: application/json
+                    title: list of conformance classes implemented by this API
+                  - href: 'https://example.org/catalog/1.0/styles'
+                    rel: data
+                    type: application/json
+                    title: the set of styles shared via this API
+        '400':
+          description: |-
+            invalid or unknown query parameters
+        '406':
+          description: |-
+            The media types accepted by the client are not
+            supported for this resource
+  /conformance:
+    get:
+      tags:
+        - Capabilities
+      summary: |-
+        information about conformance classes that this API
+        conforms to
+      description: |-
+        List of all conformance classes specified in a specification
+        that the server conforms to.
+      operationId: getConformanceDeclaration
+      responses:
+        '200':
+          description: |-
+            the URIs of all conformance classes supported by
+            this API
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/confClasses.yaml'
+              example:
+                conformsTo:
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/core'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/json'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/manage-styles'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/style-validation'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/resources'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/manage-resources'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/mapbox-styles'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/sld-10'
+                  - 'http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/sld-11'
+        '400':
+          description: |-
+            invalid or unknown query parameters
+        '406':
+          description: |-
+            The media types accepted by the client are not
+            supported for this resource
+  /collections:
+    get:
+      tags:
+        - Collections
+      summary: the collections in the dataset
+      description: A list of all collections available in this dataset.
+      operationId: getCollections
+      responses:
+        "200":
+          description: |-
+            The collections (geospatial data resources) shared by this API.
+            This response can be references directly for every service that wants only essential information at the collections level. /collections/collectionId might return more information.
+            The dataset is organized as one or more collections. This resource provides information about and how to access the collections.
+            The response contains the list of collections. For each collection, a link
+            to other resources present (e.g. the items in the collection, path `/collections/{collectionId}/items`,
+            link relation `items`, a map created with data from  collection, path `/collections/{collectionId}/map`,
+            link relation `map`) as well as key information about the collection.
+            This information includes, but is not limited to:
+            * A local identifier for the collection that is unique for the dataset;
+            * A list of coordinate reference systems (CRS) in which geometries may be returned by the server. The first CRS is the default coordinate reference system (the default is always WGS84 with axis order longitude/latitude);
+            * An optional title and description for the collection;
+            * An optional extent that can be used to provide an indication of the spatial and temporal extent of the collection - typically derived from the data;
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/collections.yaml'
+        "500":
+          description: A server error occurred
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/exception.yaml'
+    post:
+      tags:
+        - Collections
+      summary: |-
+        adds a new collection
+      operationId: addCollection
+      description: |-
+        Adds a collection to the collection repository.
+
+        In case, a new collection is created, the following rules
+        apply.
+
+        If the collection submitted in the request body includes an
+        identifier, that identifier will be used. If a collection with that identifier
+        already exists, an error is returned.
+
+        If no identifier can be determined from the submitted
+        collection, the server will assign a new identifier to the
+        collection.
+
+        The URI of the new collection is returned in the header
+        `Location`.
+      responses:
+        '201':
+          description: |-
+            collection created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: |-
+                URI of the new collection
+        '409':
+          description: |-
+            a collection with that id already exists
+      requestBody:
+        description: |-
+          Stylesheet to be added
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas/collection.yaml'
+  /collections/{collectionId}:
+    get:
+      tags:
+        - Collections
+      summary: |-
+        fetch a collection by id
+      description: |-
+        Fetches the collection with identifier `collectionId`. The set of
+        available collections can be retrieved at `/collections`.
+      operationId: getCollection
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '200':
+          description: |-
+            The style
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/collection.yaml'
+        '404':
+          description: |-
+            collection not found
+    put:
+      tags:
+        - Collections
+      summary: |-
+        replace a collection or add a new collection
+      description: |-
+        Replace an existing collection with the id `collectionId`. If no
+        such collection exists, a new collection with that id is added.
+      operationId: updateCollection
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      requestBody:
+        description: |-
+          A single collection.
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas/collection.yaml'
+      responses:
+        '204':
+          description: |-
+            collection updated or created successfully
+    delete:
+      tags:
+        - Collections
+      summary: |-
+        delete a collection
+      description: |-
+        Delete an existing collection with the id `collectionId`. If no
+        such style exists, an error is returned.
+
+        Deletes any data/itmes associated to this collection.
+      operationId: deleteCollection
+      parameters:
+        - $ref: '#/components/parameters/collectionId'
+      responses:
+        '204':
+          description: |-
+            collection deleted
+        '404':
+          description: |-
+            collection not found
+  /styles:
+    summary: ddd
+    description: xxx
+    get:
+      tags:
+        - Styles
+      summary: |-
+        information about the available styles
+      operationId: getStyleSet
+      description: |-
+        This operation fetches the set of styles available. For
+        each style the id, a title, links to the stylesheet of
+        the style in each supported encoding, and the link to the
+        metadata is provided.
+
+        For a small number of the styles the currently simple approach is sufficient,
+        but in general the operation should support paging (using a
+        parameter `limit` and links to the `next` page in responses).
+      responses:
+        '200':
+          description: the set of available styles
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/style-set.yaml'
+        '406':
+          description: |-
+            The media types accepted by the client are not
+            supported for this resource
+    post:
+      tags:
+        - Styles
+      summary: |-
+        adds a new style
+      operationId: addStyle
+      description: |-
+        Adds a style to the style repository.
+
+        In case, a new style is created, the following rules
+        apply.
+
+        If the style submitted in the request body includes an
+        identifier (this depends on the style encoding), that
+        identifier will be used. If a style with that identifier
+        already exists, an error is returned.
+
+        If no identifier can be determined from the submitted
+        style, the server will assign a new identifier to the
+        style.
+
+        The URI of the new style is returned in the header
+        `Location`.
+      responses:
+        '201':
+          description: |-
+            style created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: |-
+                URI of the new style
+        '409':
+          description: |-
+            a style with that id already exists
+      requestBody:
+        description: |-
+          Stylesheet to be added
+        content:
+          application/vnd.mapbox.style+json:
+            schema:
+              $ref: 'schemas/mb-style.yaml'
+  /styles/{styleId}:
+    get:
+      tags:
+        - Styles
+      summary: |-
+        fetch a style by id
+      description: |-
+        Fetches the style with identifier `styleId`. The set of
+        available styles can be retrieved at `/styles`.
+
+        Not all styles are available in all style encodings.
+      operationId: getStyle
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+      responses:
+        '200':
+          description: |-
+            The style
+          content:
+            application/vnd.mapbox.style+json:
+              schema:
+                $ref: 'schemas/mb-style.yaml'
+        '404':
+          description: |-
+            style not found
+    put:
+      tags:
+        - Styles
+      summary: |-
+        replace a style or add a new style
+      description: |-
+        Replace an existing style with the id `styleId`. If no
+        such style exists, a new style with that id is added.
+      operationId: updateStyle
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+      requestBody:
+        description: |-
+          A single style in one of the supported style encodings.
+        content:
+          application/vnd.mapbox.style+json:
+            schema:
+              $ref: 'schemas/mb-style.yaml'
+      responses:
+        '204':
+          description: |-
+            style updated or created successfully
+    delete:
+      tags:
+        - Styles
+      summary: |-
+        delete a style
+      description: |-
+        Delete an existing style with the id `styleId`. If no
+        such style exists, an error is returned.
+      operationId: deleteStyle
+      parameters:
+        - $ref: '#/components/parameters/styleId'
+      responses:
+        '204':
+          description: |-
+            style deleted
+        '404':
+          description: |-
+            style not found
+  /tilesets:
+    summary: ddd
+    description: xxx
+    get:
+      tags:
+        - Tilesets
+      summary: |-
+        information about the available tilesets
+      operationId: getTilesets
+      description: |-
+        This operation fetches the set of tilesets available. For
+        each tileset the id, a title, links to the tileset is provided.
+
+        For a small number of the tilesets the currently simple approach is sufficient,
+        but in general the operation should support paging (using a
+        parameter `limit` and links to the `next` page in responses).
+      responses:
+        '200':
+          description: the set of available tilesets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: uuid
+        '406':
+          description: |-
+            The media types accepted by the client are not
+            supported for this resource
+    post:
+      tags:
+        - Tilesets
+      summary: |-
+        adds a new tileset
+      operationId: addTileset
+      description: |-
+        Adds a tileset to the tileset repository.
+
+        If no identifier can be determined from the submitted
+        tileset, the server will assign a new identifier to the
+        style.
+
+        The URI of the new tileset is returned in the header
+        `Location`.
+      responses:
+        '201':
+          description: |-
+            tileset created
+          headers:
+            Location:
+              schema:
+                type: string
+              description: |-
+                URI of the new tileset
+        '409':
+          description: |-
+            a tileset with that id already exists
+      requestBody:
+        description: |-
+          Tileset to be added
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas/TileJSON.yaml'
+  /tilesets/{tilesetId}:
+    get:
+      tags:
+        - Tilesets
+      summary: |-
+        fetch a tileset by id
+      description: |-
+        Fetches the tileset with identifier `tilesetId`. The set of
+        available tilesets can be retrieved at `/tilesets`.
+      operationId: getTileset
+      parameters:
+        - $ref: '#/components/parameters/tilesetId'
+      responses:
+        '200':
+          description: |-
+            The tileset
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/TileJSON.yaml'
+        '404':
+          description: |-
+            tileset not found
+    put:
+      tags:
+        - Tilesets
+      summary: |-
+        replace a tileset or add a new tileset
+      description: |-
+        Replace an existing tileset with the id `tilesetId`. If no
+        such style exists, a new style with that id is added.
+      operationId: updateTileset
+      parameters:
+        - $ref: '#/components/parameters/tilesetId'
+      requestBody:
+        description: |-
+          A single tileset in one of the supported tileset encodings.
+        content:
+          application/json:
+            schema:
+              $ref: 'schemas/TileJSON.yaml'
+      responses:
+        '204':
+          description: |-
+            tileset updated or created successfully
+    delete:
+      tags:
+        - Tilesets
+      summary: |-
+        delete a tileset
+      description: |-
+        Delete an existing tileset with the id `tilesetId`. If no
+        such tileset exists, an error is returned.
+      operationId: deleteTileset
+      parameters:
+        - $ref: '#/components/parameters/tilesetId'
+      responses:
+        '204':
+          description: |-
+            tileset deleted
+        '404':
+          description: |-
+            tileset not found
+  /tilesets/{tilesetId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}:
+    get:
+      tags:
+        - Tilesets
+      summary: fetch a tile from one or more geospatial data resources
+      description: Retrieves a tile in the requested tileMatrixSet, on the requested
+        tileMatrix in the TileMatrixSet, with the requested tile indices (tileRow,
+        tileCol). The tile has multiple collections (formerly refered as layers) with
+        all selected features in the bounding box of the tile.
+      operationId: getTile
+      parameters:
+        - $ref: '#/components/parameters/tilesetId'
+        - name: tileMatrixSetId
+          in: path
+          description: Identifier of a specific tiling scheme. It can be one of those
+            specified in Annex D.1 of the OGC 17-083r2 standard or one defined in this
+            service.
+          required: true
+          schema:
+            type: string
+          example: WebMercatorQuad
+        - name: tileMatrix
+          in: path
+          description: |-
+            Identifier selecting one of the scales (z) defined in the TileMatrixSet and
+            representing the scaleDenominator the tile.
+          required: true
+          schema:
+            type: integer
+          example: "11"
+        - name: tileRow
+          in: path
+          description: Row index (y) of the tile on the selected TileMatrix. It cannot exceed
+            the MatrixWidth-1 for the selected TileMatrix.
+          required: true
+          schema:
+            minimum: 0
+            type: integer
+          example: "827"
+        - name: tileCol
+          in: path
+          description: Column index (x) of the tile on the selected TileMatrix. It cannot
+            exceed the MatrixHeight-1 for the selected TileMatrix.
+          required: true
+          schema:
+            minimum: 0
+            type: integer
+          example: 1231
+      responses:
+        "200":
+          description: A Mapbox Vector Tile of the collection.
+          content:
+            application/vnd.mapbox-vector-tile:
+              schema:
+                type: string
+                format: byte
+        "404":
+          description: The requested URI was not found
+        "500":
+          description: A server error occurred
+          content:
+            application/json:
+              schema:
+                $ref: 'schemas/exception.yaml'
+components:
+  parameters:
+    collectionId:
+      name: collectionId
+      in: path
+      description: local identifier of a collection
+      required: true
+      schema:
+        type: string
+        format: uuid
+    styleId:
+      name: styleId
+      in: path
+      description: |-
+        Local identifier of a style. \
+        A list of all available styles can be found
+        under the /styles path.
+      required: true
+      schema:
+        type: string
+        format: uuid
+    tilesetId:
+      name: tilesetId
+      in: path
+      description: |-
+        Local identifier of a tileset. \
+        A list of all available tilesets can be found
+        under the /tilesets path.
+      required: true
+      schema:
+        type: string
+        format: uuid
