@@ -32,7 +32,7 @@ public final class PostgresUtils {
   public static DataSource datasource(String url) {
     return datasource(url, Runtime.getRuntime().availableProcessors());
   }
-  
+
   public static DataSource datasource(String url, int poolSize) {
     if (poolSize < 1) {
       throw new IllegalArgumentException("PoolSize cannot be inferior to 1");
