@@ -16,7 +16,6 @@ package com.baremaps.ogcapi;
 
 import static org.junit.Assert.assertEquals;
 
-import com.baremaps.ogcapi.BaseUriRequestFilter;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
@@ -26,6 +25,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 
 public class BaseUriRequestFilterTest extends JerseyTest {
+
   @Path("")
   public static class BaseUriService {
     @GET
@@ -38,12 +38,11 @@ public class BaseUriRequestFilterTest extends JerseyTest {
   protected ResourceConfig configure() {
     enable(TestProperties.LOG_TRAFFIC);
     enable(TestProperties.DUMP_ENTITY);
-    return new ResourceConfig(BaseUriRequestFilter.class, BaseUriService.class);
+    return new ResourceConfig().registerClasses(BaseUriRequestFilter.class, BaseUriService.class);
   }
 
   @org.junit.Test
   public void testBaseUri() {
-
     String baseUriStr =
         target()
             .path("")

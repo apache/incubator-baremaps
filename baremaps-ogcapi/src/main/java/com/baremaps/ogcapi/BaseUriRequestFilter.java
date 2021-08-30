@@ -15,13 +15,12 @@
 package com.baremaps.ogcapi;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import javax.inject.Singleton;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.Provider;
 
 @Provider
@@ -32,22 +31,16 @@ public class BaseUriRequestFilter implements ContainerRequestFilter {
   @Override
   public void filter(ContainerRequestContext requestContext) throws IOException {
     UriBuilder baseUri = UriBuilder.fromUri(requestContext.getUriInfo().getBaseUri());
-
-    MultivaluedMap headers = requestContext.getHeaders();
-
+    MultivaluedMap<String, String> headers = requestContext.getHeaders();
     if (headers.get("X-Forwarded-Proto") != null) {
-      baseUri.scheme(headers.getFirst("X-Forwarded-Proto").toString());
+      baseUri.scheme(headers.getFirst("X-Forwarded-Proto"));
     }
     if (headers.get("X-Forwarded-Host") != null) {
-      baseUri.host(headers.getFirst("X-Forwarded-Host").toString());
+      baseUri.host(headers.getFirst("X-Forwarded-Host"));
     }
     if (headers.get("X-Forwarded-Port") != null) {
-      baseUri.port(Integer.parseInt((String) headers.getFirst("X-Forwarded-Port")));
+      baseUri.port(Integer.parseInt(headers.getFirst("X-Forwarded-Port")));
     }
-    try {
-      requestContext.setRequestUri(baseUri.build(), new URI("https://dsdfasf.ch/"));
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-    }
+    requestContext.setRequestUri(baseUri.build(), requestContext.getUriInfo().getRequestUri());
   }
 }

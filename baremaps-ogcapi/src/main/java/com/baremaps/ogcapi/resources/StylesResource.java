@@ -24,7 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.json.Json;
@@ -35,6 +37,8 @@ public class StylesResource implements StylesApi {
       QualifiedType.of(MbStyle.class).with(Json.class);
 
   private final Jdbi jdbi;
+
+  @Context UriInfo uriInfo;
 
   @Inject
   public StylesResource(Jdbi jdbi) {
@@ -84,11 +88,10 @@ public class StylesResource implements StylesApi {
     StyleSet styleSet = new StyleSet();
     List<StyleSetEntry> entries = new ArrayList<>();
 
+    String address = uriInfo.getRequestUri().toString();
     for (UUID id : ids) {
       Link link = new Link();
-      link.setHref(
-          "http://localhost:8080/styles/"
-              + id); // TODO: set dynamically from server or where the server gets it from
+      link.setHref(address + id);
       link.setType("application/vnd.mapbox.style+json");
       link.setRel("stylesheet");
 

@@ -51,6 +51,11 @@ public class RootResource implements DefaultApi {
                         .type("application/json")
                         .rel("service-desc"),
                     new Link()
+                        .title("API description")
+                        .href(address + "api")
+                        .type("application/yaml")
+                        .rel("service-desc"),
+                    new Link()
                         .title("API documentation")
                         .href(address + "swagger")
                         .type("text/html")
