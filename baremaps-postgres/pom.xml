@@ -23,10 +23,6 @@
       <artifactId>jdbi3-jpa</artifactId>
     </dependency>
     <dependency>
-      <artifactId>jts-core</artifactId>
-      <groupId>org.locationtech.jts</groupId>
-    </dependency>
-    <dependency>
       <artifactId>postgresql</artifactId>
       <groupId>org.postgresql</groupId>
     </dependency>
@@ -35,8 +31,9 @@
       <artifactId>baremaps-osm</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-dbcp2</artifactId>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>5.0.0</version>
     </dependency>
   </dependencies>
 

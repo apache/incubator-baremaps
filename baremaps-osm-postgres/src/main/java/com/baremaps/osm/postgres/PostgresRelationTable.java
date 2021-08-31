@@ -156,11 +156,12 @@ public class PostgresRelationTable implements RelationTable {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(select)) {
       statement.setObject(1, id);
-      ResultSet result = statement.executeQuery();
-      if (result.next()) {
-        return getEntity(result);
-      } else {
-        return null;
+      try (ResultSet result = statement.executeQuery()) {
+        if (result.next()) {
+          return getEntity(result);
+        } else {
+          return null;
+        }
       }
     } catch (SQLException e) {
       throw new DatabaseException(e);
@@ -175,13 +176,14 @@ public class PostgresRelationTable implements RelationTable {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(selectIn)) {
       statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
-      ResultSet result = statement.executeQuery();
-      Map<Long, Relation> entities = new HashMap<>();
-      while (result.next()) {
-        Relation entity = getEntity(result);
-        entities.put(entity.getId(), entity);
+      try (ResultSet result = statement.executeQuery()) {
+        Map<Long, Relation> entities = new HashMap<>();
+        while (result.next()) {
+          Relation entity = getEntity(result);
+          entities.put(entity.getId(), entity);
+        }
+        return ids.stream().map(entities::get).collect(Collectors.toList());
       }
-      return ids.stream().map(entities::get).collect(Collectors.toList());
     } catch (SQLException e) {
       throw new DatabaseException(e);
     }
