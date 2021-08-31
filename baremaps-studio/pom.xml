@@ -3,8 +3,8 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>baremaps-ogcapi</artifactId>
-  <name>baremaps-ogcapi</name>
+  <artifactId>baremaps-studio</artifactId>
+  <name>baremaps-studio</name>
 
   <parent>
     <artifactId>baremaps</artifactId>
@@ -41,21 +41,20 @@
         <version>5.1.0</version>
         <executions>
           <execution>
-            <id>ogcapi</id>
+            <id>studio</id>
             <goals>
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/ogcapi-openapi.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/studio-openapi.yaml</inputSpec>
               <generatorName>jaxrs-spec</generatorName>
               <configOptions>
-                <apiPackage>com.baremaps.api</apiPackage>
+                <apiPackage>com.baremaps.studio.api</apiPackage>
                 <interfaceOnly>true</interfaceOnly>
-                <modelPackage>com.baremaps.model</modelPackage>
+                <modelPackage>com.baremaps.studio.model</modelPackage>
                 <returnResponse>true</returnResponse>
                 <sortModelPropertiesByRequiredFlag>false</sortModelPropertiesByRequiredFlag>
                 <sortParamsByRequiredFlag>false</sortParamsByRequiredFlag>
-                <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
                 <sourceFolder>src/gen/java/main</sourceFolder>
               </configOptions>
             </configuration>
@@ -67,8 +66,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-tile-postgres</artifactId>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-multipart</artifactId>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
@@ -85,10 +84,6 @@
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.swagger.parser.v3</groupId>
-      <artifactId>swagger-parser</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -129,6 +124,47 @@
       <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-main</artifactId>
+      <version>25.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-geojson</artifactId>
+      <version>25.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.geotools.jdbc</groupId>
+      <artifactId>gt-jdbc-postgis</artifactId>
+      <version>25.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-testing</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-ogcapi</artifactId>
+    </dependency>
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>osgeo</id>
+      <name>OSGeo Release Repository</name>
+      <url>https://repo.osgeo.org/repository/release/</url>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+    </repository>
+    <repository>
+      <id>osgeo-snapshot</id>
+      <name>OSGeo Snapshot Repository</name>
+      <url>https://repo.osgeo.org/repository/snapshot/</url>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+    </repository>
+  </repositories>
 
 </project>

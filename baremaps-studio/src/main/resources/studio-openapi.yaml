@@ -16,6 +16,8 @@ tags:
     description: Discover, create, fetch, update and delete tilesets
   - name: Entities
     description: Discover, create, fetch, update and delete studio entities
+  - name: Import
+    description: Import data
 paths:
   '/':
     get:
@@ -709,6 +711,33 @@ paths:
         '404':
           description: |-
             entity not found
+  /studio/import:
+    post:
+      tags:
+        - Import
+      summary: load data
+      description: Import data from a file
+      operationId: importFile
+      requestBody:
+        description: A geojson collection
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fileName:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: |-
+            data uploaded
+          headers:
+            Location:
+              schema:
+                type: string
+              description: |-
+                URI of the new collection
 components:
   parameters:
     collectionId:
