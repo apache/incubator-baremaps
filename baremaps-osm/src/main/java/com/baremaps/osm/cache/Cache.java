@@ -16,20 +16,71 @@ package com.baremaps.osm.cache;
 
 import java.util.List;
 
+/**
+ * Provides an interface to a cache.
+ *
+ * @param <K> the type of the key
+ * @param <V> the type of the value
+ */
 public interface Cache<K, V> {
 
+  /**
+   * Returns the cached value for the specified key.
+   *
+   * @param key the key
+   * @return the value
+   * @throws CacheException
+   */
   V get(K key) throws CacheException;
 
+  /**
+   * Returns the cached values for the specified keys.
+   *
+   * @param keys the keys
+   * @return the values
+   * @throws CacheException
+   */
   List<V> get(List<K> keys) throws CacheException;
 
+  /**
+   * Adds the specified key-value pair to the cache.
+   *
+   * @param key the key
+   * @param value the value
+   * @throws CacheException
+   */
   void add(K key, V value) throws CacheException;
 
+  /**
+   * Adds the specified key-value pairs to the cache.
+   *
+   * @param entries the key-value pairs
+   * @throws CacheException
+   */
   void add(List<Entry<K, V>> entries) throws CacheException;
 
+  /**
+   * Deletes the cached value for the specified key.
+   *
+   * @param key the key
+   * @throws CacheException
+   */
   void delete(K key) throws CacheException;
 
-  void deleteAll(List<K> keys) throws CacheException;
+  /**
+   * Deletes the cached values for the specified keys.
+   *
+   * @param keys the keys
+   * @throws CacheException
+   */
+  void delete(List<K> keys) throws CacheException;
 
+  /**
+   * A cache entry.
+   *
+   * @param <K> the type of the key
+   * @param <V> the type of the value
+   */
   class Entry<K, V> {
 
     private final K key;
@@ -40,10 +91,20 @@ public interface Cache<K, V> {
       this.value = value;
     }
 
+    /**
+     * Returns the key.
+     *
+     * @return the key
+     */
     public K key() {
       return key;
     }
 
+    /**
+     * Returns the value.
+     *
+     * @return the value
+     */
     public V value() {
       return value;
     }

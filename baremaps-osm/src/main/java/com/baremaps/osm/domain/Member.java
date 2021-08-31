@@ -47,6 +47,13 @@ public final class Member {
 
   private final String role;
 
+  /**
+   * Constructs a {@code Member} of an OpenStreetMap relation.
+   *
+   * @param ref the relation id
+   * @param type the member type
+   * @param role the member role
+   */
   public Member(long ref, MemberType type, String role) {
     checkNotNull(type);
     checkNotNull(role);
@@ -55,18 +62,34 @@ public final class Member {
     this.role = role;
   }
 
+  /**
+   * Returns the relation id.
+   *
+   * @return the relation id
+   */
   public long getRef() {
     return ref;
   }
 
+  /**
+   * Returns the member type.
+   *
+   * @return the member type
+   */
   public MemberType getType() {
     return type;
   }
 
+  /**
+   * Returns the member role.
+   *
+   * @return the member role
+   */
   public String getRole() {
     return role;
   }
 
+  /** {@inheritdoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -81,11 +104,13 @@ public final class Member {
         && Objects.equal(role, member.role);
   }
 
+  /** {@inheritdoc} */
   @Override
   public int hashCode() {
     return Objects.hashCode(ref, type, role);
   }
 
+  /** {@inheritdoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Member.class.getSimpleName() + "[", "]")

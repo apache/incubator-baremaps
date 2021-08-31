@@ -56,7 +56,7 @@ public class MockCache<T> implements Cache<Long, T> {
   }
 
   @Override
-  public void deleteAll(List<Long> keys) {
+  public void delete(List<Long> keys) {
     throw new UnsupportedOperationException();
   }
 }

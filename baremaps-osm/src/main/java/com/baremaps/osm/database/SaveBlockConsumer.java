@@ -20,7 +20,7 @@ import com.baremaps.osm.domain.HeaderBlock;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.handler.BlockConsumerAdapter;
+import com.baremaps.osm.function.BlockConsumerAdapter;
 
 public class SaveBlockConsumer implements BlockConsumerAdapter {
 

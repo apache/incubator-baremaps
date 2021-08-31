@@ -14,21 +14,13 @@
 
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.ChangeConsumer;
-import com.baremaps.osm.handler.ChangeFunction;
+import com.baremaps.osm.function.ChangeConsumer;
+import com.baremaps.osm.function.ChangeFunction;
 import java.util.List;
 import java.util.StringJoiner;
 
 /** Represents a change in an OpenStreetMap dataset. */
 public final class Change {
-
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Change.class.getSimpleName() + "[", "]")
-        .add("type=" + type)
-        .add("elements=" + elements)
-        .toString();
-  }
 
   public enum ChangeType {
     DELETE,
@@ -38,19 +30,35 @@ public final class Change {
 
   private final ChangeType type;
 
-  private final List<Entity> elements;
+  private final List<Entity> entities;
 
-  public Change(ChangeType type, List<Entity> elements) {
+  /**
+   * Constructs an OpenStreetMap change.
+   *
+   * @param type the type of the change
+   * @param entities the entities affected by the change
+   */
+  public Change(ChangeType type, List<Entity> entities) {
     this.type = type;
-    this.elements = elements;
+    this.entities = entities;
   }
 
+  /**
+   * Returns the type of the change.
+   *
+   * @return the type of the change
+   */
   public ChangeType getType() {
     return type;
   }
 
+  /**
+   * Returns the entities affected by the change.
+   *
+   * @return the entities affected by the change
+   */
   public List<Entity> getEntities() {
-    return elements;
+    return entities;
   }
 
   /** Visits the entity with the provided entity consumer. */
@@ -61,5 +69,14 @@ public final class Change {
   /** Visits the entity with the provided entity function. */
   public <T> T visit(ChangeFunction<T> function) throws Exception {
     return function.match(this);
+  }
+
+  /** {@inheritdoc} */
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Change.class.getSimpleName() + "[", "]")
+        .add("type=" + type)
+        .add("elements=" + entities)
+        .toString();
   }
 }

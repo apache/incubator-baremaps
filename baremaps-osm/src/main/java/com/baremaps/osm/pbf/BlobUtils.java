@@ -22,14 +22,27 @@ import com.baremaps.stream.StreamException;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.zip.DataFormatException;
 
+/** Utility methods for reading OpenStreetMap blocks. */
 public class BlobUtils {
 
   private BlobUtils() {}
 
+  /**
+   * Reads the provided {@code Blob} and returns the corresponding {@code Block}.
+   *
+   * @param blob the blob
+   * @return the block
+   */
   public static Block readBlock(Blob blob) {
     return new BlockReader(blob).readBlock();
   }
 
+  /**
+   * Reads the provided header {@code Blob} and returns the corresponding {@code HeaderBlock}.
+   *
+   * @param blob the header blob
+   * @return the header block
+   */
   public static HeaderBlock readHeaderBlock(Blob blob) {
     try {
       return new HeaderBlockReader(blob).readHeaderBlock();
@@ -38,6 +51,12 @@ public class BlobUtils {
     }
   }
 
+  /**
+   * Reads the provided data {@code Blob} and returns the corresponding {@code DataBlock}.
+   *
+   * @param blob the data blob
+   * @return the data block
+   */
   public static DataBlock readDataBlock(Blob blob) {
     try {
       return new DataBlockReader(blob).readDataBlock();

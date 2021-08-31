@@ -20,7 +20,7 @@ import com.baremaps.osm.cache.ReferenceCache;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.handler.EntityConsumerAdapter;
+import com.baremaps.osm.function.EntityConsumerAdapter;
 import com.baremaps.osm.lmdb.LmdbCoordinateCache;
 import com.baremaps.osm.lmdb.LmdbReferencesCache;
 import com.baremaps.osm.rocksdb.RocksdbCoordinateCache;

@@ -16,5 +16,5 @@ package com.baremaps.osm.cache;
 
 import org.locationtech.jts.geom.Coordinate;
 
-public class InMemoryCoordinateCache extends InMemoryCache<Long, Coordinate>
-    implements CoordinateCache {}
+/** A {@code CoordinateCache} baked by an a {@code Map}. */
+public class MapCoordinateCache extends MapCache<Long, Coordinate> implements CoordinateCache {}

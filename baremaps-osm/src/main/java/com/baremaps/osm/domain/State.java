@@ -23,15 +23,31 @@ public class State {
 
   private final LocalDateTime timestamp;
 
+  /**
+   * Constructs an OpenStreetMap {@code State} with the specified parameters.
+   *
+   * @param sequenceNumber the sequence number
+   * @param timestamp the timestamp
+   */
   public State(long sequenceNumber, LocalDateTime timestamp) {
     this.sequenceNumber = sequenceNumber;
     this.timestamp = timestamp;
   }
 
+  /**
+   * Returns the sequence number.
+   *
+   * @return the sequence number
+   */
   public long getSequenceNumber() {
     return sequenceNumber;
   }
 
+  /**
+   * Returns the timestamp.
+   *
+   * @return the timestamp
+   */
   public LocalDateTime getTimestamp() {
     return timestamp;
   }

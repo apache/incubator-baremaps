@@ -25,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
+/** A reader that extract state information from an OpenStreetMap state file. */
 public class StateReader {
 
   private static final DateTimeFormatter format =
@@ -32,10 +33,21 @@ public class StateReader {
 
   private final InputStreamReader reader;
 
+  /**
+   * Constructs the state reader.
+   *
+   * @param inputStream the OpenStreetMap state file
+   */
   public StateReader(InputStream inputStream) {
     this.reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
   }
 
+  /**
+   * Returns the state information.
+   *
+   * @return the state information
+   * @throws IOException
+   */
   public State read() throws IOException {
     Map<String, String> map = new HashMap<>();
     for (String line : CharStreams.readLines(reader)) {

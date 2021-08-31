@@ -16,4 +16,8 @@ package com.baremaps.osm.cache;
 
 import java.util.List;
 
+/**
+ * Provides an interface to a cache where keys are {@code Long} and values are {@code List<Long>}.
+ * This cache is intended at storing the references stored in OpenStreetMap ways.
+ */
 public interface ReferenceCache extends Cache<Long, List<Long>> {}

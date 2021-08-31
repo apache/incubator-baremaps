@@ -48,6 +48,10 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+/**
+ * An object for traversing an OpenStreetMap XML file describing entities (osm.xml) and creating a
+ * stream.
+ */
 public class XmlEntitySpliterator implements Spliterator<Entity> {
 
   private static final String ELEMENT_NAME_OSM = "osm";

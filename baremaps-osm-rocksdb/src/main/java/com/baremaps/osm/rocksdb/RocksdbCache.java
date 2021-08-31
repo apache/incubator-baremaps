@@ -63,7 +63,7 @@ public abstract class RocksdbCache<K, V> implements Cache<K, V> {
   }
 
   @Override
-  public void deleteAll(List<K> keys) throws CacheException {
+  public void delete(List<K> keys) throws CacheException {
     try (WriteBatch writeBatch = new WriteBatch()) {
       for (K key : keys) {
         writeBatch.delete(key(key));

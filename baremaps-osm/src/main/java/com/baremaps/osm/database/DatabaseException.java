@@ -14,13 +14,37 @@
 
 package com.baremaps.osm.database;
 
+/** Signals that an exception occurred in a {@code BlobMapper}. */
 public class DatabaseException extends Exception {
 
-  public DatabaseException() {
-    super();
+  /** Constructs a {@code DatabaseException} with {@code null} as its error detail message. */
+  public DatabaseException() {}
+
+  /**
+   * Constructs an {@code DatabaseException} with the specified detail message.
+   *
+   * @param message the message
+   */
+  public DatabaseException(String message) {
+    super(message);
   }
 
-  public DatabaseException(Exception e) {
-    super(e);
+  /**
+   * Constructs a {@code DatabaseException} with the specified cause.
+   *
+   * @param cause the cause
+   */
+  public DatabaseException(Throwable cause) {
+    super(cause);
+  }
+
+  /**
+   * Constructs a {@code DatabaseException} with the specified detail message and cause.
+   *
+   * @param message the message
+   * @param cause the cause
+   */
+  public DatabaseException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

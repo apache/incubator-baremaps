@@ -17,6 +17,7 @@ package com.baremaps.osm.pbf;
 import com.baremaps.osm.domain.Blob;
 import com.baremaps.osm.domain.Block;
 
+/** A reader that extracts blocks from OpenStreetMap blobs. */
 public class BlockReader {
 
   private final Blob blob;

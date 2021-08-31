@@ -26,7 +26,7 @@ class InMemoryCoordinateCacheTest {
 
   @Test
   void test() throws Exception {
-    CoordinateCache cache = new InMemoryCoordinateCache();
+    CoordinateCache cache = new MapCoordinateCache();
     Coordinate c1 = new Coordinate(1, 0);
     Coordinate c2 = new Coordinate(2, 0);
     Coordinate c3 = new Coordinate(3, 0);
@@ -37,7 +37,7 @@ class InMemoryCoordinateCacheTest {
     assertEquals(Arrays.asList(c1, c2), cache.get(Arrays.asList(1l, 2l)));
     cache.delete(1l);
     assertNull(cache.get(1l));
-    cache.deleteAll(Arrays.asList(1l, 2l));
+    cache.delete(Arrays.asList(1l, 2l));
     assertEquals(Arrays.asList(null, null), cache.get(Arrays.asList(1l, 2l)));
   }
 }

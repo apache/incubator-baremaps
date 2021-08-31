@@ -14,8 +14,8 @@
 
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.EntityConsumer;
-import com.baremaps.osm.handler.EntityFunction;
+import com.baremaps.osm.function.EntityConsumer;
+import com.baremaps.osm.function.EntityFunction;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -30,6 +30,14 @@ public class Bound implements Entity {
 
   private final double minLon;
 
+  /**
+   * Consturcts a {@code Bound} with the specified limits.
+   *
+   * @param maxLat the max latitude
+   * @param maxLon the max longitude
+   * @param minLat the min latitude
+   * @param minLon the max longitude
+   */
   public Bound(double maxLat, double maxLon, double minLat, double minLon) {
     this.maxLat = maxLat;
     this.maxLon = maxLon;
@@ -37,32 +45,55 @@ public class Bound implements Entity {
     this.minLon = minLon;
   }
 
+  /**
+   * Returns the max latitude.
+   *
+   * @return the max latitude
+   */
   public double getMaxLat() {
     return maxLat;
   }
 
+  /**
+   * Returns the max longitude.
+   *
+   * @return the max longitude
+   */
   public double getMaxLon() {
     return maxLon;
   }
 
+  /**
+   * Returns the min latitude.
+   *
+   * @return the min latitude
+   */
   public double getMinLat() {
     return minLat;
   }
 
+  /**
+   * Returns the min longitude.
+   *
+   * @return the min longitude
+   */
   public double getMinLon() {
     return minLon;
   }
 
+  /** {@inheritdoc} */
   @Override
   public void visit(EntityConsumer consumer) throws Exception {
     consumer.match(this);
   }
 
+  /** {@inheritdoc} */
   @Override
   public <T> T visit(EntityFunction<T> function) throws Exception {
     return function.match(this);
   }
 
+  /** {@inheritdoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -78,11 +109,13 @@ public class Bound implements Entity {
         && Double.compare(bound.minLon, minLon) == 0;
   }
 
+  /** {@inheritdoc} */
   @Override
   public int hashCode() {
     return Objects.hash(maxLat, maxLon, minLat, minLon);
   }
 
+  /** {@inheritdoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Bound.class.getSimpleName() + "[", "]")

@@ -19,32 +19,38 @@ import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.handler.EntityFunction;
+import com.baremaps.osm.function.EntityFunction;
 import java.util.Optional;
 import org.locationtech.jts.geom.Geometry;
 
+/** A function that maps an {@code Entity} to its {@code Geometry}. */
 public class ExtractGeometryFunction implements EntityFunction<Optional<Geometry>> {
 
+  /** {@inheritDoc} */
   @Override
   public Optional<Geometry> match(Header header) throws Exception {
     return Optional.empty();
   }
 
+  /** {@inheritDoc} */
   @Override
   public Optional<Geometry> match(Bound bound) throws Exception {
     return Optional.empty();
   }
 
+  /** {@inheritDoc} */
   @Override
   public Optional<Geometry> match(Node node) throws Exception {
     return Optional.ofNullable(node.getGeometry());
   }
 
+  /** {@inheritDoc} */
   @Override
   public Optional<Geometry> match(Way way) throws Exception {
     return Optional.ofNullable(way.getGeometry());
   }
 
+  /** {@inheritDoc} */
   @Override
   public Optional<Geometry> match(Relation relation) throws Exception {
     return Optional.ofNullable(relation.getGeometry());

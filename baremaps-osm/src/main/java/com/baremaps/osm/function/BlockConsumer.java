@@ -12,20 +12,22 @@
  * the License.
  */
 
-package com.baremaps.osm.handler;
+package com.baremaps.osm.function;
 
 import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.domain.DataBlock;
 import com.baremaps.osm.domain.HeaderBlock;
 import com.baremaps.stream.StreamException;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
-public interface BlockFunction<T> extends Function<Block, T> {
+/** Represents an operation on blocks of different types. */
+public interface BlockConsumer extends Consumer<Block> {
 
+  /** {@inheritDoc} */
   @Override
-  default T apply(Block block) {
+  default void accept(Block block) {
     try {
-      return block.visit(this);
+      block.visit(this);
     } catch (StreamException e) {
       throw e;
     } catch (Exception e) {
@@ -33,7 +35,19 @@ public interface BlockFunction<T> extends Function<Block, T> {
     }
   }
 
-  T match(HeaderBlock headerBlock) throws Exception;
+  /**
+   * Matches an operation on a {@code HeaderBlock}.
+   *
+   * @param headerBlock the header block
+   * @throws Exception
+   */
+  void match(HeaderBlock headerBlock) throws Exception;
 
-  T match(DataBlock dataBlock) throws Exception;
+  /**
+   * Matches an operation on a {@code DataBlock}.
+   *
+   * @param dataBlock the data block
+   * @throws Exception
+   */
+  void match(DataBlock dataBlock) throws Exception;
 }

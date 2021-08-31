@@ -19,37 +19,54 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-public abstract class InMemoryCache<K, V> implements Cache<K, V> {
+/** A {@code Cache} baked by an a {@code Map}. */
+public abstract class MapCache<K, V> implements Cache<K, V> {
 
-  private final Map<K, V> map = new ConcurrentHashMap<>();
+  private final Map<K, V> map;
 
+  /** Constructs a {@code MapCache} baked by a {@code ConcurrentHashMap}. */
+  public MapCache() {
+    this(new ConcurrentHashMap<>());
+  }
+
+  /** Constructs a {@code MapCache} baked by a user specified {@code Map}. */
+  public MapCache(Map<K, V> map) {
+    this.map = map;
+  }
+
+  /** {@inheritdoc} */
   @Override
   public V get(K key) {
     return map.get(key);
   }
 
+  /** {@inheritdoc} */
   @Override
   public List<V> get(List<K> keys) {
     return keys.stream().map(map::get).collect(Collectors.toList());
   }
 
+  /** {@inheritdoc} */
   @Override
   public void add(K key, V value) {
     map.put(key, value);
   }
 
+  /** {@inheritdoc} */
   @Override
   public void add(List<Entry<K, V>> entries) {
     map.putAll(entries.stream().collect(Collectors.toMap(Entry::key, Entry::value)));
   }
 
+  /** {@inheritdoc} */
   @Override
   public void delete(K key) {
     map.remove(key);
   }
 
+  /** {@inheritdoc} */
   @Override
-  public void deleteAll(List<K> keys) {
+  public void delete(List<K> keys) {
     keys.forEach(map::remove);
   }
 }

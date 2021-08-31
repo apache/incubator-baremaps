@@ -14,8 +14,8 @@
 
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.BlockConsumer;
-import com.baremaps.osm.handler.BlockFunction;
+import com.baremaps.osm.function.BlockConsumer;
+import com.baremaps.osm.function.BlockFunction;
 
 /** Represents a header block in an OpenStreetMap dataset. */
 public class HeaderBlock extends Block {
@@ -24,25 +24,44 @@ public class HeaderBlock extends Block {
 
   private final Bound bound;
 
+  /**
+   * Constructs an OpenStreetMap {@code HeaderBlock} with the specified parameters.
+   *
+   * @param blob the blob
+   * @param header the header
+   * @param bound the bound
+   */
   public HeaderBlock(Blob blob, Header header, Bound bound) {
     super(blob);
     this.header = header;
     this.bound = bound;
   }
 
+  /**
+   * Returns the header.
+   *
+   * @return the header
+   */
   public Header getHeader() {
     return header;
   }
 
+  /**
+   * Returns the bounds.
+   *
+   * @return the bounds
+   */
   public Bound getBound() {
     return bound;
   }
 
+  /** {@inheritdoc} */
   @Override
   public void visit(BlockConsumer consumer) throws Exception {
     consumer.match(this);
   }
 
+  /** {@inheritdoc} */
   @Override
   public <T> T visit(BlockFunction<T> function) throws Exception {
     return function.match(this);

@@ -37,6 +37,14 @@ public abstract class Element implements Entity {
     this(id, info, tags, null);
   }
 
+  /**
+   * Constructs an OpenStreetMap {@code Element} with the specified parameters.
+   *
+   * @param id the id
+   * @param info the {@code Info}
+   * @param tags the tags
+   * @param geometry the geometry
+   */
   public Element(long id, Info info, Map<String, String> tags, Geometry geometry) {
     this.id = id;
     this.info = info;
@@ -44,26 +52,52 @@ public abstract class Element implements Entity {
     this.geometry = geometry;
   }
 
+  /**
+   * Returns the id.
+   *
+   * @return the id
+   */
   public long getId() {
     return id;
   }
 
+  /**
+   * Returns the info.
+   *
+   * @return the info
+   */
   public Info getInfo() {
     return info;
   }
 
+  /**
+   * Returns the tags.
+   *
+   * @return the tags
+   */
   public Map<String, String> getTags() {
     return tags;
   }
 
+  /**
+   * Returns the geometry.
+   *
+   * @return the geometry
+   */
   public Geometry getGeometry() {
     return this.geometry;
   }
 
+  /**
+   * Sets the geometry.
+   *
+   * @param geometry the geometry
+   */
   public void setGeometry(Geometry geometry) {
     this.geometry = geometry;
   }
 
+  /** {@inheritdoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -79,11 +113,13 @@ public abstract class Element implements Entity {
         && Objects.equals(geometry, element.geometry);
   }
 
+  /** {@inheritdoc} */
   @Override
   public int hashCode() {
     return Objects.hash(id, info, tags, geometry);
   }
 
+  /** {@inheritdoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Element.class.getSimpleName() + "[", "]")

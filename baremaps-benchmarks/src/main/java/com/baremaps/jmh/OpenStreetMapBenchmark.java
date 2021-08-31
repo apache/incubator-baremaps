@@ -18,7 +18,7 @@ import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.handler.EntityConsumerAdapter;
+import com.baremaps.osm.function.EntityConsumerAdapter;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;

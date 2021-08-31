@@ -22,12 +22,18 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/** An iterator over the blobs of an OpenStreetMap PBF {@code InputStream}. */
 public class BlobIterator implements Iterator<Blob> {
 
   private final DataInputStream dis;
 
   private Blob next;
 
+  /**
+   * Constructs a {@code BlobIterator} with the specified {@code InputStream}.
+   *
+   * @param input
+   */
   public BlobIterator(InputStream input) {
     this.dis = new DataInputStream(input);
   }
@@ -47,6 +53,11 @@ public class BlobIterator implements Iterator<Blob> {
     return new Blob(header, data, 8 + headerSize + dataSize);
   }
 
+  /**
+   * Returns true if the iteration has more blobs.
+   *
+   * @return true if the iteration has more elements
+   */
   @Override
   public boolean hasNext() {
     try {
@@ -59,6 +70,11 @@ public class BlobIterator implements Iterator<Blob> {
     }
   }
 
+  /**
+   * Returns the next blob in the iteration.
+   *
+   * @return the next blob in the iteration
+   */
   @Override
   public Blob next() {
     try {

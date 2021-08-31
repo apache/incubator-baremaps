@@ -14,8 +14,8 @@
 
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.EntityConsumer;
-import com.baremaps.osm.handler.EntityFunction;
+import com.baremaps.osm.function.EntityConsumer;
+import com.baremaps.osm.function.EntityFunction;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -29,6 +29,15 @@ public class Header implements Entity {
   private final String source;
   private final String writingProgram;
 
+  /**
+   * Constructs an OpenStreetMap {@code Header} based on the specified parameters.
+   *
+   * @param replicationSequenceNumber the replication sequence number
+   * @param replicationTimestamp the replication timestamp
+   * @param replicationUrl the replication url
+   * @param source the source
+   * @param writingProgram the writing program
+   */
   public Header(
       Long replicationSequenceNumber,
       LocalDateTime replicationTimestamp,
@@ -42,22 +51,47 @@ public class Header implements Entity {
     this.writingProgram = writingProgram;
   }
 
+  /**
+   * Returns the replication timestamp.
+   *
+   * @return the replication timestamp
+   */
   public LocalDateTime getReplicationTimestamp() {
     return replicationTimestamp;
   }
 
+  /**
+   * Returns the replication sequence number.
+   *
+   * @return the replication sequence number
+   */
   public Long getReplicationSequenceNumber() {
     return replicationSequenceNumber;
   }
 
+  /**
+   * Returns the replication url.
+   *
+   * @return the replication url
+   */
   public String getReplicationUrl() {
     return replicationUrl;
   }
 
+  /**
+   * Returns the source.
+   *
+   * @return the source
+   */
   public String getSource() {
     return source;
   }
 
+  /**
+   * Returns the writing program.
+   *
+   * @return the writing program
+   */
   public String getWritingProgram() {
     return writingProgram;
   }
@@ -88,12 +122,14 @@ public class Header implements Entity {
         && Objects.equals(writingProgram, header.writingProgram);
   }
 
+  /** {@inheritdoc} */
   @Override
   public int hashCode() {
     return Objects.hash(
         replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram);
   }
 
+  /** {@inheritdoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Header.class.getSimpleName() + "[", "]")

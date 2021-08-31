@@ -19,8 +19,8 @@ import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.handler.ChangeConsumer;
-import com.baremaps.osm.handler.EntityConsumerAdapter;
+import com.baremaps.osm.function.ChangeConsumer;
+import com.baremaps.osm.function.EntityConsumerAdapter;
 
 public class SaveChangeConsumer implements ChangeConsumer {
 

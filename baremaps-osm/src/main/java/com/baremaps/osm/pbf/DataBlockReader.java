@@ -37,6 +37,7 @@ import java.util.TimeZone;
 import java.util.function.Consumer;
 import java.util.zip.DataFormatException;
 
+/** A reader that extracts data blocks and entities from OpenStreetMap data blobs. */
 public class DataBlockReader {
 
   private final Blob blob;
@@ -48,6 +49,13 @@ public class DataBlockReader {
   private final long lonOffset;
   private final String[] stringTable;
 
+  /**
+   * Constructs a reader with the granularity, offsets and string table of the specified blob.
+   *
+   * @param blob the blob
+   * @throws DataFormatException
+   * @throws InvalidProtocolBufferException
+   */
   public DataBlockReader(Blob blob) throws DataFormatException, InvalidProtocolBufferException {
     this.blob = blob;
     this.primitiveBlock = Osmformat.PrimitiveBlock.parseFrom(blob.data());
@@ -61,6 +69,11 @@ public class DataBlockReader {
     }
   }
 
+  /**
+   * Returns the {@code DataBlock}.
+   *
+   * @return the data block
+   */
   public DataBlock readDataBlock() {
     List<Node> denseNodes = new ArrayList<>();
     readDenseNodes(denseNodes::add);
@@ -73,6 +86,11 @@ public class DataBlockReader {
     return new DataBlock(blob, denseNodes, nodes, ways, relations);
   }
 
+  /**
+   * Read the entities with the provided consumer.
+   *
+   * @param consumer the consumer
+   */
   public void readEntities(Consumer<Entity> consumer) {
     readDenseNodes(consumer::accept);
     readNodes(consumer::accept);
@@ -80,6 +98,11 @@ public class DataBlockReader {
     readRelations(consumer::accept);
   }
 
+  /**
+   * Read the dense nodes with the provided consumer.
+   *
+   * @param consumer the consumer
+   */
   public void readDenseNodes(Consumer<Node> consumer) {
     for (PrimitiveGroup group : primitiveBlock.getPrimitivegroupList()) {
       DenseNodes denseNodes = group.getDense();
@@ -123,6 +146,11 @@ public class DataBlockReader {
     }
   }
 
+  /**
+   * Read the nodes with the provided consumer.
+   *
+   * @param consumer the consumer
+   */
   public void readNodes(Consumer<Node> consumer) {
     for (PrimitiveGroup group : primitiveBlock.getPrimitivegroupList()) {
       for (Osmformat.Node node : group.getNodesList()) {
@@ -144,6 +172,11 @@ public class DataBlockReader {
     }
   }
 
+  /**
+   * Read the ways with the provided consumer.
+   *
+   * @param consumer the consumer
+   */
   public void readWays(Consumer<Way> consumer) {
     for (PrimitiveGroup group : primitiveBlock.getPrimitivegroupList()) {
       for (Osmformat.Way way : group.getWaysList()) {
@@ -166,6 +199,11 @@ public class DataBlockReader {
     }
   }
 
+  /**
+   * Read the relations with the provided consumer.
+   *
+   * @param consumer the consumer
+   */
   public void readRelations(Consumer<Relation> consumer) {
     for (PrimitiveGroup group : primitiveBlock.getPrimitivegroupList()) {
       for (Osmformat.Relation relation : group.getRelationsList()) {

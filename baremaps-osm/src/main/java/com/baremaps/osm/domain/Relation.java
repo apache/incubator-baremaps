@@ -14,8 +14,8 @@
 
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.EntityConsumer;
-import com.baremaps.osm.handler.EntityFunction;
+import com.baremaps.osm.function.EntityConsumer;
+import com.baremaps.osm.function.EntityFunction;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,31 +27,56 @@ public final class Relation extends Element {
 
   private final List<Member> members;
 
+  /**
+   * Constructs an OpenStreetMap {@code Relation} with the specified parameters.
+   *
+   * @param id the id
+   * @param info the information
+   * @param tags the tags
+   * @param members the members
+   */
   public Relation(long id, Info info, Map<String, String> tags, List<Member> members) {
     super(id, info, tags);
     this.members = members;
   }
 
+  /**
+   * Constructs an OpenStreetMap {@code Relation} with the specified parameters.
+   *
+   * @param id the id
+   * @param info the information
+   * @param tags the tags
+   * @param members the members
+   * @param geometry the geometry
+   */
   public Relation(
       long id, Info info, Map<String, String> tags, List<Member> members, Geometry geometry) {
     super(id, info, tags, geometry);
     this.members = members;
   }
 
+  /**
+   * Returns the members.
+   *
+   * @return the members
+   */
   public List<Member> getMembers() {
     return members;
   }
 
+  /** {@inheritdoc} */
   @Override
   public void visit(EntityConsumer consumer) throws Exception {
     consumer.match(this);
   }
 
+  /** {@inheritdoc} */
   @Override
   public <T> T visit(EntityFunction<T> function) throws Exception {
     return function.match(this);
   }
 
+  /** {@inheritdoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -67,11 +92,13 @@ public final class Relation extends Element {
     return Objects.equals(members, relation.members);
   }
 
+  /** {@inheritdoc} */
   @Override
   public int hashCode() {
     return Objects.hash(super.hashCode(), members);
   }
 
+  /** {@inheritdoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Relation.class.getSimpleName() + "[", "]")

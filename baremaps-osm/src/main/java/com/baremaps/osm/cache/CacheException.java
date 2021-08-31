@@ -14,13 +14,37 @@
 
 package com.baremaps.osm.cache;
 
+/** Signals that an exception occurred in a {@code BlobMapper}. */
 public class CacheException extends Exception {
 
-  public CacheException() {
-    super();
+  /** Constructs a {@code CacheException} with {@code null} as its error detail message. */
+  public CacheException() {}
+
+  /**
+   * Constructs an {@code CacheException} with the specified detail message.
+   *
+   * @param message the message
+   */
+  public CacheException(String message) {
+    super(message);
   }
 
-  public CacheException(Exception e) {
-    super(e);
+  /**
+   * Constructs a {@code CacheException} with the specified cause.
+   *
+   * @param cause the cause
+   */
+  public CacheException(Throwable cause) {
+    super(cause);
+  }
+
+  /**
+   * Constructs a {@code CacheException} with the specified detail message and cause.
+   *
+   * @param message the message
+   * @param cause the cause
+   */
+  public CacheException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

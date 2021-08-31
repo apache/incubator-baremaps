@@ -47,7 +47,7 @@ class LmdbCoordinateCacheTest {
     assertEquals(cache.get(Arrays.asList(1l, 2l)), Arrays.asList(c1, c2));
     cache.delete(1l);
     assertNull(cache.get(1l));
-    cache.deleteAll(Arrays.asList(1l, 2l));
+    cache.delete(Arrays.asList(1l, 2l));
     assertEquals(Arrays.asList(null, null), cache.get(Arrays.asList(1l, 2l)));
   }
 }
