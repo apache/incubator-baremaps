@@ -92,6 +92,7 @@
     <version.lib.mockito>1.10.19</version.lib.mockito>
     <version.lib.servlet>3.1.0</version.lib.servlet>
     <version.lib.activation>1.1.1</version.lib.activation>
+    <version.lib.swagger-parser>2.0.24</version.lib.swagger-parser>
   </properties>
 
   <modules>
@@ -540,6 +541,11 @@
         <version>${version.lib.swagger}</version>
       </dependency>
       <dependency>
+        <groupId>io.swagger.parser.v3</groupId>
+        <artifactId>swagger-parser</artifactId>
+        <version>${version.lib.swagger-parser}</version>
+      </dependency>
+      <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
         <version>${version.lib.validation}</version>
@@ -703,6 +709,12 @@
         <artifactId>mockito-all</artifactId>
         <version>${version.lib.mockito}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.vintage</groupId>
+        <artifactId>junit-vintage-engine</artifactId>
+        <scope>test</scope>
+        <version>${version.lib.junit-vintage}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

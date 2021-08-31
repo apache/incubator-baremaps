@@ -18,14 +18,17 @@ import com.baremaps.api.DefaultApi;
 import com.baremaps.model.LandingPage;
 import com.baremaps.model.Link;
 import java.util.Arrays;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 public class RootResource implements DefaultApi {
 
+  @Context UriInfo uriInfo;
+
   @Override
   public Response getLandingPage() {
-    String address = "localhost:8080";
-
+    String address = uriInfo.getBaseUri().toString();
     LandingPage landingPage =
         new LandingPage()
             .title("Baremaps")
@@ -34,27 +37,27 @@ public class RootResource implements DefaultApi {
                 Arrays.asList(
                     new Link()
                         .title("This document (landing page)")
-                        .href(String.format("http://%s/", address))
+                        .href(address)
                         .type("application/json")
                         .rel("self"),
                     new Link()
                         .title("Conformance declaration")
-                        .href(String.format("http://%s/conformance", address))
+                        .href(address + "conformance")
                         .type("application/json")
                         .rel("conformance"),
                     new Link()
                         .title("API description")
-                        .href(String.format("http://%s/api", address))
+                        .href(address + "api")
                         .type("application/json")
                         .rel("service-desc"),
                     new Link()
                         .title("API description")
-                        .href(String.format("http://%s/api", address))
+                        .href(address + "api")
                         .type("application/yaml")
                         .rel("service-desc"),
                     new Link()
                         .title("API documentation")
-                        .href(String.format("http://%s/swagger", address))
+                        .href(address + "swagger")
                         .type("text/html")
                         .rel("service-doc")));
     return Response.ok().entity(landingPage).build();
