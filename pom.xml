@@ -68,7 +68,7 @@
     <version.lib.protobuf>3.16.0</version.lib.protobuf>
     <version.lib.s3mock>2.1.28</version.lib.s3mock>
     <version.lib.selenium>3.141.59</version.lib.selenium>
-    <version.lib.servicetalk>0.40.1</version.lib.servicetalk>
+    <version.lib.servicetalk>0.41.4</version.lib.servicetalk>
     <version.lib.slf4j>1.7.30</version.lib.slf4j>
     <version.lib.sqlite>3.34.0</version.lib.sqlite>
     <version.lib.swagger>1.6.2</version.lib.swagger>
