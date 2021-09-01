@@ -56,7 +56,7 @@
     <version.lib.commons-compress>1.19</version.lib.commons-compress>
     <version.lib.dbcp2>2.8.0</version.lib.dbcp2>
     <version.lib.guava>30.1.1-jre</version.lib.guava>
-    <version.lib.jersey>2.32</version.lib.jersey>
+    <version.lib.jersey>3.0.2</version.lib.jersey>
     <version.lib.jts>1.18.1</version.lib.jts>
     <version.lib.junit>5.7.1</version.lib.junit>
     <version.lib.lmdb>0.8.1</version.lib.lmdb>
