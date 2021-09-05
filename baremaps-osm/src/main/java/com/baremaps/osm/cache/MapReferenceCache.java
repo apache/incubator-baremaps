@@ -12,15 +12,9 @@
  * the License.
  */
 
-package com.baremaps.osm.handler;
+package com.baremaps.osm.cache;
 
-import com.baremaps.osm.domain.DataBlock;
-import com.baremaps.osm.domain.HeaderBlock;
+import java.util.List;
 
-/** {@inheritDoc} */
-public interface BlockConsumerAdapter extends BlockConsumer {
-
-  default void match(HeaderBlock headerBlock) throws Exception {}
-
-  default void match(DataBlock dataBlock) throws Exception {}
-}
+/** A {@code ReferenceCache} baked by an a {@code Map}. */
+public class MapReferenceCache extends MapCache<Long, List<Long>> implements ReferenceCache {}

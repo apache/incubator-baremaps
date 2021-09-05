@@ -16,8 +16,8 @@ package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.cache.CoordinateCache;
-import com.baremaps.osm.cache.InMemoryCoordinateCache;
-import com.baremaps.osm.cache.InMemoryReferenceCache;
+import com.baremaps.osm.cache.MapCoordinateCache;
+import com.baremaps.osm.cache.MapReferenceCache;
 import com.baremaps.osm.cache.ReferenceCache;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.ImportService;
@@ -101,8 +101,8 @@ public class Import implements Callable<Integer> {
     final ReferenceCache referenceCache;
     switch (cacheType) {
       case MEMORY:
-        coordinateCache = new InMemoryCoordinateCache();
-        referenceCache = new InMemoryReferenceCache();
+        coordinateCache = new MapCoordinateCache();
+        referenceCache = new MapReferenceCache();
         break;
       case LMDB:
         if (cacheDirectory != null) {

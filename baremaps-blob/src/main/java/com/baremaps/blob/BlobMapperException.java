@@ -14,7 +14,7 @@
 
 package com.baremaps.blob;
 
-/** Signals that an exception occurred in a {@BlobMapper}. */
+/** Signals that an exception occurred in a {@code BlobMapper}. */
 public class BlobMapperException extends Exception {
 
   /** Constructs a {@code BlobMapperException} with {@code null} as its error detail message. */

@@ -22,8 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.osm.cache.CoordinateCache;
-import com.baremaps.osm.cache.InMemoryCoordinateCache;
-import com.baremaps.osm.cache.InMemoryReferenceCache;
+import com.baremaps.osm.cache.MapCoordinateCache;
+import com.baremaps.osm.cache.MapReferenceCache;
 import com.baremaps.osm.cache.ReferenceCache;
 import com.baremaps.osm.database.DiffService;
 import com.baremaps.osm.database.ImportService;
@@ -78,8 +78,8 @@ class ImportUpdateTest {
     new ImportService(
             new URI("res://simple/data.osm.pbf"),
             blobStore,
-            new InMemoryCoordinateCache(),
-            new InMemoryReferenceCache(),
+            new MapCoordinateCache(),
+            new MapReferenceCache(),
             headerTable,
             nodeTable,
             wayTable,
@@ -146,8 +146,8 @@ class ImportUpdateTest {
     new ImportService(
             new URI("res://liechtenstein/liechtenstein.osm.pbf"),
             blobStore,
-            new InMemoryCoordinateCache(),
-            new InMemoryReferenceCache(),
+            new MapCoordinateCache(),
+            new MapReferenceCache(),
             headerTable,
             nodeTable,
             wayTable,

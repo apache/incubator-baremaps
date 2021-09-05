@@ -16,4 +16,8 @@ package com.baremaps.osm.cache;
 
 import org.locationtech.jts.geom.Coordinate;
 
+/**
+ * Provides an interface to a cache where keys are {@code Long} and values are {@code Coordinate}.
+ * This cache is intended at storing the coordinates of OpenStreetMap nodes.
+ */
 public interface CoordinateCache extends Cache<Long, Coordinate> {}

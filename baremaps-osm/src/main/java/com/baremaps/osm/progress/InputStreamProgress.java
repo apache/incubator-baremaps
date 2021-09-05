@@ -19,17 +19,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Consumer;
 
+/** A utility class for monitoring progress when reading an {@code InputStream}. */
 public class InputStreamProgress extends FilterInputStream {
 
   private final Consumer<Long> listener;
 
   private long position = 0;
 
+  /**
+   * Constructs a {@code InputStreamProgress} with the provided parameters.
+   *
+   * @param inputStream the input stream
+   * @param listener the progress listener
+   */
   public InputStreamProgress(InputStream inputStream, Consumer<Long> listener) {
     super(inputStream);
     this.listener = listener;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int read() throws IOException {
     int b = super.read();
@@ -40,6 +48,7 @@ public class InputStreamProgress extends FilterInputStream {
     return b;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int read(byte[] b) throws IOException {
     int n = super.read(b);
@@ -50,6 +59,7 @@ public class InputStreamProgress extends FilterInputStream {
     return n;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int read(byte[] b, int off, int len) throws IOException {
     int n = super.read(b, off, len);
@@ -60,6 +70,7 @@ public class InputStreamProgress extends FilterInputStream {
     return n;
   }
 
+  /** {@inheritDoc} */
   @Override
   public long skip(long n) throws IOException {
     long s = super.skip(n);

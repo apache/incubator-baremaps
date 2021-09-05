@@ -14,8 +14,8 @@
 
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.EntityConsumer;
-import com.baremaps.osm.handler.EntityFunction;
+import com.baremaps.osm.function.EntityConsumer;
+import com.baremaps.osm.function.EntityFunction;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -28,12 +28,31 @@ public final class Node extends Element {
 
   private final double lat;
 
+  /**
+   * Constructs an OpenStreetMap {@code Node} with the specified parameters.
+   *
+   * @param id the id
+   * @param info the information
+   * @param tags the tags
+   * @param lon the longitude
+   * @param lat the latitude
+   */
   public Node(long id, Info info, Map<String, String> tags, double lon, double lat) {
     super(id, info, tags);
     this.lon = lon;
     this.lat = lat;
   }
 
+  /**
+   * Constructs an OpenStreetMap {@code Node} with the specified parameters.
+   *
+   * @param id the id
+   * @param info the information
+   * @param tags the tags
+   * @param lon the longitude
+   * @param lat the latitude
+   * @param geometry the geometry
+   */
   public Node(
       long id, Info info, Map<String, String> tags, double lon, double lat, Geometry geometry) {
     super(id, info, tags, geometry);
@@ -41,24 +60,37 @@ public final class Node extends Element {
     this.lat = lat;
   }
 
+  /**
+   * Returns the longitude.
+   *
+   * @return the longitude
+   */
   public double getLon() {
     return lon;
   }
 
+  /**
+   * Returns the latitude.
+   *
+   * @return the latitude
+   */
   public double getLat() {
     return lat;
   }
 
+  /** {@inheritdoc} */
   @Override
   public void visit(EntityConsumer consumer) throws Exception {
     consumer.match(this);
   }
 
+  /** {@inheritdoc} */
   @Override
   public <T> T visit(EntityFunction<T> function) throws Exception {
     return function.match(this);
   }
 
+  /** {@inheritdoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -74,11 +106,13 @@ public final class Node extends Element {
     return Double.compare(node.lon, lon) == 0 && Double.compare(node.lat, lat) == 0;
   }
 
+  /** {@inheritdoc} */
   @Override
   public int hashCode() {
     return Objects.hash(super.hashCode(), lon, lat);
   }
 
+  /** {@inheritdoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Node.class.getSimpleName() + "[", "]")

@@ -29,16 +29,35 @@ public class Blob {
   private final byte[] rawData;
   private final int size;
 
+  /**
+   * Constructs a OpenStreetMap {@code Blob}.
+   *
+   * @param header the header
+   * @param rawData the raw data
+   * @param size the size
+   */
   public Blob(BlobHeader header, byte[] rawData, int size) {
     this.header = header;
     this.rawData = rawData;
     this.size = size;
   }
 
+  /**
+   * Returns the header.
+   *
+   * @return the header
+   */
   public BlobHeader header() {
     return header;
   }
 
+  /**
+   * Returns the data.
+   *
+   * @return the data
+   * @throws DataFormatException
+   * @throws InvalidProtocolBufferException
+   */
   public ByteString data() throws DataFormatException, InvalidProtocolBufferException {
     Fileformat.Blob blob = Fileformat.Blob.parseFrom(rawData);
     if (blob.hasRaw()) {
@@ -55,10 +74,16 @@ public class Blob {
     }
   }
 
+  /**
+   * Returns the size.
+   *
+   * @return the size
+   */
   public long size() {
     return size;
   }
 
+  /** {@inheritdoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Blob.class.getSimpleName() + "[", "]")

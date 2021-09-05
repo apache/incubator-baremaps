@@ -26,6 +26,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.zip.DataFormatException;
 
+/** A reader that extracts header blocks and entities from OpenStreetMap header blobs. */
 public class HeaderBlockReader {
 
   public static final DateTimeFormatter format =
@@ -35,11 +36,23 @@ public class HeaderBlockReader {
 
   private final Osmformat.HeaderBlock headerBlock;
 
+  /**
+   * Constructs a reader with the specified blob.
+   *
+   * @param blob the blob
+   * @throws DataFormatException
+   * @throws InvalidProtocolBufferException
+   */
   public HeaderBlockReader(Blob blob) throws DataFormatException, InvalidProtocolBufferException {
     this.blob = blob;
     this.headerBlock = Osmformat.HeaderBlock.parseFrom(blob.data());
   }
 
+  /**
+   * Returns the {@code HeaderBlock}.
+   *
+   * @return the header block
+   */
   public HeaderBlock readHeaderBlock() {
     LocalDateTime timestamp =
         LocalDateTime.ofEpochSecond(

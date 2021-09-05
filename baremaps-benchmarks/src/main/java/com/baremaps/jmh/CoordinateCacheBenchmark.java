@@ -16,7 +16,7 @@ package com.baremaps.jmh;
 
 import com.baremaps.osm.cache.CacheException;
 import com.baremaps.osm.cache.CoordinateCache;
-import com.baremaps.osm.cache.InMemoryCoordinateCache;
+import com.baremaps.osm.cache.MapCoordinateCache;
 import com.baremaps.osm.lmdb.LmdbCoordinateCache;
 import com.baremaps.osm.rocksdb.RocksdbCoordinateCache;
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class CoordinateCacheBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void inmemory() throws CacheException {
-    benchmark(new InMemoryCoordinateCache(), N);
+    benchmark(new MapCoordinateCache(), N);
   }
 
   @Benchmark

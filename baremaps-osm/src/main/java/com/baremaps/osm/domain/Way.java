@@ -14,8 +14,8 @@
 
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.EntityConsumer;
-import com.baremaps.osm.handler.EntityFunction;
+import com.baremaps.osm.function.EntityConsumer;
+import com.baremaps.osm.function.EntityFunction;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,30 +27,55 @@ public final class Way extends Element {
 
   private final List<Long> nodes;
 
+  /**
+   * Constructs an OpenStreetMap {@code Node} with the specified parameters.
+   *
+   * @param id the id
+   * @param info the information
+   * @param tags the tags
+   * @param nodes the nodes
+   */
   public Way(long id, Info info, Map<String, String> tags, List<Long> nodes) {
     super(id, info, tags);
     this.nodes = nodes;
   }
 
+  /**
+   * Constructs an OpenStreetMap {@code Node} with the specified parameters.
+   *
+   * @param id the id
+   * @param info the information
+   * @param tags the tags
+   * @param nodes the nodes
+   * @param geometry the geometry
+   */
   public Way(long id, Info info, Map<String, String> tags, List<Long> nodes, Geometry geometry) {
     super(id, info, tags, geometry);
     this.nodes = nodes;
   }
 
+  /**
+   * Returns the nodes.
+   *
+   * @return the nodes
+   */
   public List<Long> getNodes() {
     return nodes;
   }
 
+  /** {@inheritdoc} */
   @Override
   public void visit(EntityConsumer consumer) throws Exception {
     consumer.match(this);
   }
 
+  /** {@inheritdoc} */
   @Override
   public <T> T visit(EntityFunction<T> function) throws Exception {
     return function.match(this);
   }
 
+  /** {@inheritdoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -66,11 +91,13 @@ public final class Way extends Element {
     return Objects.equals(nodes, way.nodes);
   }
 
+  /** {@inheritdoc} */
   @Override
   public int hashCode() {
     return Objects.hash(super.hashCode(), nodes);
   }
 
+  /** {@inheritdoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Way.class.getSimpleName() + "[", "]")

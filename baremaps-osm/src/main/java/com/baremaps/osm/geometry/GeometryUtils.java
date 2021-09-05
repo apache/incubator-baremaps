@@ -22,6 +22,7 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
 
+/** Utility methods for serializing and deserializing geometries. */
 public class GeometryUtils {
 
   private GeometryUtils() {}

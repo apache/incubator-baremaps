@@ -24,19 +24,36 @@ public final class User {
   private final int id;
   private final String name;
 
+  /**
+   * Constructs an OpenStreetMap {@code User} with the specified parameters.
+   *
+   * @param id the id
+   * @param name the name
+   */
   public User(int id, String name) {
     this.id = id;
     this.name = name;
   }
 
+  /**
+   * Returns the id.
+   *
+   * @return the id
+   */
   public int getId() {
     return id;
   }
 
+  /**
+   * Returns the name.
+   *
+   * @return the name
+   */
   public String getName() {
     return name;
   }
 
+  /** {@inheritdoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -49,6 +66,7 @@ public final class User {
     return id == user.id && Objects.equal(name, user.name);
   }
 
+  /** {@inheritdoc} */
   @Override
   public int hashCode() {
     return Objects.hashCode(id, name);

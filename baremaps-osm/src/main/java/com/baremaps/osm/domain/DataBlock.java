@@ -14,8 +14,8 @@
 
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.BlockConsumer;
-import com.baremaps.osm.handler.BlockFunction;
+import com.baremaps.osm.function.BlockConsumer;
+import com.baremaps.osm.function.BlockFunction;
 import java.util.List;
 
 /** Represents a data block in an OpenStreetMap dataset. */
@@ -26,6 +26,15 @@ public class DataBlock extends Block {
   private final List<Way> ways;
   private final List<Relation> relations;
 
+  /**
+   * Constructs an OpenStreetMap {@code DataBlock} with the specified parameters.
+   *
+   * @param blob the blob
+   * @param denseNodes the dense nodes
+   * @param nodes the nodes
+   * @param ways the ways
+   * @param relations the relations
+   */
   public DataBlock(
       Blob blob,
       List<Node> denseNodes,
@@ -39,27 +48,49 @@ public class DataBlock extends Block {
     this.relations = relations;
   }
 
+  /**
+   * Returns the dense nodes.
+   *
+   * @return the dense nodes
+   */
   public List<Node> getDenseNodes() {
     return denseNodes;
   }
 
+  /**
+   * Returns the nodes.
+   *
+   * @return the nodes
+   */
   public List<Node> getNodes() {
     return nodes;
   }
 
+  /**
+   * Returns the ways.
+   *
+   * @return the ways
+   */
   public List<Way> getWays() {
     return ways;
   }
 
+  /**
+   * Returns the relations.
+   *
+   * @return the relations
+   */
   public List<Relation> getRelations() {
     return relations;
   }
 
+  /** {@inheritdoc} */
   @Override
   public void visit(BlockConsumer consumer) throws Exception {
     consumer.match(this);
   }
 
+  /** {@inheritdoc} */
   @Override
   public <T> T visit(BlockFunction<T> function) throws Exception {
     return function.match(this);

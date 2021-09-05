@@ -62,7 +62,7 @@ public abstract class LmdbCache<K, V> implements Cache<K, V> {
   }
 
   @Override
-  public void deleteAll(List<K> keys) {
+  public void delete(List<K> keys) {
     try (Txn<ByteBuffer> txn = env.txnWrite()) {
       for (K key : keys) {
         database.delete(txn, buffer(key));

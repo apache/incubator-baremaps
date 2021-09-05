@@ -47,6 +47,10 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+/**
+ * An object for traversing an OpenStreetMap XML file describing changes (osc.xml) and creating a
+ * stream.
+ */
 public class XmlChangeSpliterator implements Spliterator<Change> {
 
   private static final String ELEMENT_NAME_OSMCHANGE = "osmChange";

@@ -14,23 +14,47 @@
 
 package com.baremaps.osm.domain;
 
-import com.baremaps.osm.handler.BlockConsumer;
-import com.baremaps.osm.handler.BlockFunction;
+import com.baremaps.osm.function.BlockConsumer;
+import com.baremaps.osm.function.BlockFunction;
 
 /** Represents a block of data in an OpenStreetMap dataset. */
 public abstract class Block {
 
   private final Blob blob;
 
+  /**
+   * Constructs an OpenStreetMap {@code Block} with the specified {@code Blob}.
+   *
+   * @param blob the blob
+   */
   protected Block(Blob blob) {
     this.blob = blob;
   }
 
+  /**
+   * Returns the blob.
+   *
+   * @return the blob
+   */
   public Blob getBlob() {
     return blob;
   }
 
+  /**
+   * Accepts the specified block consumer.
+   *
+   * @param consumer the consumer
+   * @throws Exception
+   */
   public abstract void visit(BlockConsumer consumer) throws Exception;
 
+  /**
+   * Applies the specified block function.
+   *
+   * @param function the function
+   * @param <T> the return type of the function
+   * @return the function result
+   * @throws Exception
+   */
   public abstract <T> T visit(BlockFunction<T> function) throws Exception;
 }

@@ -18,7 +18,7 @@ import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.handler.EntityConsumerAdapter;
+import com.baremaps.osm.function.EntityConsumerAdapter;
 import java.util.stream.Stream;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
@@ -50,6 +50,7 @@ public class ReprojectGeometryConsumer extends GeometryTransformer
     coordinateTransform = coordinateTransformFactory.createTransform(sourceCRS, targetCRS);
   }
 
+  /** {@inheritDoc} */
   @Override
   protected CoordinateSequence transformCoordinates(
       CoordinateSequence coordinateSequence, Geometry parent) {
@@ -66,21 +67,25 @@ public class ReprojectGeometryConsumer extends GeometryTransformer
     return new Coordinate(c2.x, c2.y);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void match(Node node) {
     handleElement(node);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void match(Way way) {
     handleElement(way);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void match(Relation relation) {
     handleElement(relation);
   }
 
+  /** {@inheritDoc} */
   private void handleElement(Element element) {
     if (element.getGeometry() != null) {
       Geometry geometry = transform(element.getGeometry());

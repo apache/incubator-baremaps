@@ -12,19 +12,24 @@
  * the License.
  */
 
-package com.baremaps.osm.handler;
+package com.baremaps.osm.function;
 
 import com.baremaps.osm.domain.Change;
 import com.baremaps.stream.StreamException;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
-/** Represents an operation on changes of different types. */
-public interface ChangeConsumer extends Consumer<Change> {
+/**
+ * Represents a function that transforms entities of different types.
+ *
+ * @param <T>
+ */
+public interface ChangeFunction<T> extends Function<Change, T> {
 
+  /** {@inheritDoc} */
   @Override
-  default void accept(Change change) {
+  default T apply(Change change) {
     try {
-      change.visit(this);
+      return change.visit(this);
     } catch (StreamException e) {
       throw e;
     } catch (Exception e) {
@@ -32,5 +37,12 @@ public interface ChangeConsumer extends Consumer<Change> {
     }
   }
 
-  void match(Change change) throws Exception;
+  /**
+   * Applies a function on a {@code Change}.
+   *
+   * @param change the change
+   * @return the function result
+   * @throws Exception
+   */
+  T match(Change change) throws Exception;
 }

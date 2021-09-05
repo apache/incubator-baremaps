@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.handler;
+package com.baremaps.osm.function;
 
 import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Entity;
@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 /** Represents an operation on entities of different types. */
 public interface EntityConsumer extends Consumer<Entity> {
 
+  /** {@inheritDoc} */
   @Override
   default void accept(Entity entity) {
     try {
@@ -37,13 +38,43 @@ public interface EntityConsumer extends Consumer<Entity> {
     }
   }
 
+  /**
+   * Matches an operation on a {@code Header}.
+   *
+   * @param header the header
+   * @throws Exception
+   */
   void match(Header header) throws Exception;
 
+  /**
+   * Matches an operation on a {@code Bound}.
+   *
+   * @param bound the bound
+   * @throws Exception
+   */
   void match(Bound bound) throws Exception;
 
+  /**
+   * Matches an operation on a {@code Node}.
+   *
+   * @param node the node
+   * @throws Exception
+   */
   void match(Node node) throws Exception;
 
+  /**
+   * Matches an operation on a {@code Way}.
+   *
+   * @param way the way
+   * @throws Exception
+   */
   void match(Way way) throws Exception;
 
+  /**
+   * Matches an operation on a {@code Relation}.
+   *
+   * @param relation the relation
+   * @throws Exception
+   */
   void match(Relation relation) throws Exception;
 }

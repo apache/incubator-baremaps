@@ -103,7 +103,7 @@ public class PostgresReferenceCache implements ReferenceCache {
   }
 
   @Override
-  public void deleteAll(List<Long> keys) {
+  public void delete(List<Long> keys) {
     throw new UnsupportedOperationException();
   }
 }

@@ -12,24 +12,17 @@
  * the License.
  */
 
-package com.baremaps.osm.handler;
+package com.baremaps.osm.function;
 
-import com.baremaps.osm.domain.Bound;
-import com.baremaps.osm.domain.Header;
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.domain.DataBlock;
+import com.baremaps.osm.domain.HeaderBlock;
 
 /** {@inheritDoc} */
-public interface EntityConsumerAdapter extends EntityConsumer {
+public interface BlockConsumerAdapter extends BlockConsumer {
 
-  default void match(Header header) throws Exception {}
+  /** {@inheritDoc} */
+  default void match(HeaderBlock headerBlock) throws Exception {}
 
-  default void match(Bound bound) throws Exception {}
-
-  default void match(Node node) throws Exception {}
-
-  default void match(Way way) throws Exception {}
-
-  default void match(Relation relation) throws Exception {}
+  /** {@inheritDoc} */
+  default void match(DataBlock dataBlock) throws Exception {}
 }

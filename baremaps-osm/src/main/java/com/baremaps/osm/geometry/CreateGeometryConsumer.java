@@ -20,7 +20,7 @@ import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.handler.EntityConsumerAdapter;
+import com.baremaps.osm.function.EntityConsumerAdapter;
 import com.baremaps.stream.StreamException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,7 +45,7 @@ import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Sets the geometry of an element via side-effects. */
+/** A consumer that creates and sets the geometry of OpenStreetMap entities via side-effects. */
 public class CreateGeometryConsumer implements EntityConsumerAdapter {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateGeometryConsumer.class);
@@ -54,6 +54,12 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
   private final Cache<Long, Coordinate> coordinateCache;
   private final Cache<Long, List<Long>> referenceCache;
 
+  /**
+   * Constructs a consumer that uses the provided caches to create and set geometries.
+   *
+   * @param coordinateCache the coordinate cache
+   * @param referenceCache the reference cache
+   */
   public CreateGeometryConsumer(
       Cache<Long, Coordinate> coordinateCache, Cache<Long, List<Long>> referenceCache) {
     this.geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
@@ -61,12 +67,14 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
     this.referenceCache = referenceCache;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void match(Node node) {
     Point point = geometryFactory.createPoint(new Coordinate(node.getLon(), node.getLat()));
     node.setGeometry(point);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void match(Way way) {
     try {
@@ -86,6 +94,7 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void match(Relation relation) {
     try {
