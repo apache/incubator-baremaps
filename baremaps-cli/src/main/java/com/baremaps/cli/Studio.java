@@ -25,6 +25,7 @@ import com.baremaps.ogcapi.resources.SwaggerResource;
 import com.baremaps.ogcapi.resources.TilesetsResource;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.CorsFilter;
+import com.baremaps.studio.resources.ImportResource;
 import com.baremaps.studio.resources.StudioResource;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
@@ -36,6 +37,7 @@ import io.servicetalk.transport.api.ServerContext;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Config;
@@ -46,10 +48,10 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "openapi", description = "Serve an openapi endpoint (experimental).")
-public class OpenApi implements Callable<Integer> {
+@Command(name = "studio", description = "Serve studio endpoints (experimental).")
+public class Studio implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(OpenApi.class);
+  private static final Logger logger = LoggerFactory.getLogger(Studio.class);
 
   @Option(
       names = {"--database"},
@@ -92,7 +94,9 @@ public class OpenApi implements Callable<Integer> {
                 CollectionsResource.class,
                 StylesResource.class,
                 TilesetsResource.class,
-                StudioResource.class)
+                StudioResource.class,
+                ImportResource.class,
+                MultiPartFeature.class)
             .register(new ApiResource("studio-openapi.yaml"))
             .register(contextResolverFor(mapper))
             .register(

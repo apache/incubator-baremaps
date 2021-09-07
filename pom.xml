@@ -107,6 +107,7 @@
     <module>baremaps-osm-postgres</module>
     <module>baremaps-stream</module>
     <module>baremaps-server</module>
+    <module>baremaps-studio</module>
     <module>baremaps-testing</module>
     <module>baremaps-tile</module>
     <module>baremaps-tile-mbtiles</module>
@@ -364,6 +365,11 @@
       </dependency>
       <dependency>
         <artifactId>baremaps-osm-postgres</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-studio</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
