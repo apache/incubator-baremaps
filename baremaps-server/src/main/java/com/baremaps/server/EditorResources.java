@@ -18,18 +18,21 @@ import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
-import com.baremaps.blob.BlobMapperException;
+import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.JsonBlobMapper;
+import com.baremaps.blob.BlobStoreException;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileJSON;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgresQuery;
 import com.baremaps.tile.postgres.PostgresTileStore;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -72,6 +75,8 @@ public class EditorResources {
   private SseBroadcaster sseBroadcaster;
   private Thread fileWatcher;
 
+  @Context private ObjectMapper objectMapper;
+
   @Inject
   public EditorResources(
       @Named("style") URI style,
@@ -105,8 +110,8 @@ public class EditorResources {
                   Path dir = (Path) key.watchable();
                   for (WatchEvent<?> event : key.pollEvents()) {
                     Path path = dir.resolve((Path) event.context());
-                    ObjectNode jsonNode =
-                        new JsonBlobMapper(blobStore).read(style, ObjectNode.class);
+                    InputStream inputStream = blobStore.get(style).getInputStream();
+                    ObjectNode jsonNode = objectMapper.readValue(inputStream, ObjectNode.class);
                     jsonNode.put("reload", path.endsWith(tilesetFile.getFileName()));
                     sseBroadcaster.broadcast(sseEventBuilder.data(jsonNode.toString()).build());
                   }
@@ -115,7 +120,7 @@ public class EditorResources {
               } catch (InterruptedException e) {
                 logger.error(e.getMessage());
                 Thread.currentThread().interrupt();
-              } catch (BlobMapperException | IOException e) {
+              } catch (BlobStoreException | IOException e) {
                 logger.error(e.getMessage());
               }
             });
@@ -132,28 +137,32 @@ public class EditorResources {
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @javax.ws.rs.Path("style.json")
-  public void putStyle(MbStyle json) throws BlobMapperException {
-    new JsonBlobMapper(blobStore).write(style, json);
+  public void putStyle(MbStyle json) throws JsonProcessingException, BlobStoreException {
+    byte[] value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(json);
+    blobStore.put(style, Blob.builder().withByteArray(value).build());
   }
 
   @PUT
   @javax.ws.rs.Path("tiles.json")
-  public void putTiles(JsonNode json) throws BlobMapperException {
-    new JsonBlobMapper(blobStore).write(style, json);
+  public void putTiles(JsonNode json) throws JsonProcessingException, BlobStoreException {
+    byte[] value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(json);
+    blobStore.put(tileset, Blob.builder().withByteArray(value).build());
   }
 
   @GET
   @javax.ws.rs.Path("style.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public MbStyle getStyle() throws BlobMapperException {
-    return new JsonBlobMapper(blobStore).read(style, MbStyle.class);
+  public MbStyle getStyle() throws BlobStoreException, IOException {
+    Blob blob = blobStore.get(style);
+    return objectMapper.readValue(blob.getInputStream(), MbStyle.class);
   }
 
   @GET
   @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public TileJSON getTileset() throws BlobMapperException {
-    return new JsonBlobMapper(blobStore).read(tileset, TileJSON.class);
+  public TileJSON getTileset() throws BlobStoreException, IOException {
+    Blob blob = blobStore.get(tileset);
+    return objectMapper.readValue(blob.getInputStream(), TileJSON.class);
   }
 
   @GET

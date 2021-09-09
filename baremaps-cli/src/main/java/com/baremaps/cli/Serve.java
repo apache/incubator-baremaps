@@ -17,7 +17,6 @@ package com.baremaps.cli;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.JsonBlobMapper;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileJSON;
 import com.baremaps.postgres.jdbc.PostgresUtils;
@@ -103,22 +102,21 @@ public class Serve implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    BlobStore blobStore = options.blobStore();
-    TileJSON tilesetObject = new JsonBlobMapper(blobStore).read(this.tileset, TileJSON.class);
-    MbStyle styleObject = new JsonBlobMapper(blobStore).read(this.style, MbStyle.class);
-    CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
-    DataSource datasource = PostgresUtils.datasource(database);
-
-    List<PostgresQuery> queries = Mappers.map(tilesetObject);
-    TileStore tileStore = new PostgresTileStore(datasource, queries);
-    TileStore tileCache = new TileCache(tileStore, caffeineSpec);
-
-    // Configure serialization
     ObjectMapper mapper =
         new ObjectMapper()
             .configure(Feature.IGNORE_UNKNOWN, true)
             .setSerializationInclusion(Include.NON_NULL)
             .setSerializationInclusion(Include.NON_EMPTY);
+    BlobStore blobStore = options.blobStore();
+    TileJSON tileJSON =
+        mapper.readValue(blobStore.get(this.tileset).getInputStream(), TileJSON.class);
+    MbStyle mbStyle = mapper.readValue(blobStore.get(this.style).getInputStream(), MbStyle.class);
+    CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
+    DataSource datasource = PostgresUtils.datasource(database);
+
+    List<PostgresQuery> queries = Mappers.map(tileJSON);
+    TileStore tileStore = new PostgresTileStore(datasource, queries);
+    TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
     // Configure the application
     ResourceConfig application =
@@ -129,8 +127,8 @@ public class Serve implements Callable<Integer> {
                 new AbstractBinder() {
                   @Override
                   protected void configure() {
-                    bind(tilesetObject).to(TileJSON.class);
-                    bind(styleObject).to(MbStyle.class);
+                    bind(tileJSON).to(TileJSON.class);
+                    bind(mbStyle).to(MbStyle.class);
                     bind(tileCache).to(TileStore.class);
                     bind(blobStore).to(BlobStore.class);
                     bind(assets).named("assets").to(URI.class);
