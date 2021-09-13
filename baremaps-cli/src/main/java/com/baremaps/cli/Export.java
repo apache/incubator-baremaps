@@ -14,10 +14,8 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.blob.BlobMapperException;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreException;
-import com.baremaps.blob.JsonBlobMapper;
 import com.baremaps.model.Query;
 import com.baremaps.model.TileJSON;
 import com.baremaps.osm.progress.StreamProgress;
@@ -33,6 +31,8 @@ import com.baremaps.tile.Tiler;
 import com.baremaps.tile.mbtiles.MBTiles;
 import com.baremaps.tile.postgres.PostgresQuery;
 import com.baremaps.tile.postgres.PostgresTileStore;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
@@ -108,11 +108,18 @@ public class Export implements Callable<Integer> {
   private boolean mbtiles = false;
 
   @Override
-  public Integer call()
-      throws TileStoreException, BlobStoreException, BlobMapperException, IOException {
+  public Integer call() throws TileStoreException, BlobStoreException, IOException {
+    ObjectMapper mapper =
+        new ObjectMapper()
+            .configure(Feature.IGNORE_UNKNOWN, true)
+            .setSerializationInclusion(Include.NON_NULL)
+            .setSerializationInclusion(Include.NON_EMPTY);
+
     DataSource datasource = PostgresUtils.datasource(database);
     BlobStore blobStore = options.blobStore();
-    TileJSON source = new JsonBlobMapper(blobStore).read(this.tileset, TileJSON.class);
+
+    TileJSON source =
+        mapper.readValue(blobStore.get(this.tileset).getInputStream(), TileJSON.class);
     TileStore tileSource = sourceTileStore(source, datasource);
     TileStore tileTarget = targetTileStore(source, blobStore);
 
