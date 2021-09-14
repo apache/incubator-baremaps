@@ -22,6 +22,7 @@ import com.baremaps.model.Link;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -116,10 +117,7 @@ public class CollectionsResource implements CollectionsApi {
                     .map(new CollectionMapper())
                     .list());
 
-    Collections collections = new Collections();
-    collections.setCollections(collectionList);
-
-    return Response.ok(collections).build();
+    return Response.ok(new Collections().collections(collectionList)).build();
   }
 
   @Override
@@ -178,23 +176,28 @@ public class CollectionsResource implements CollectionsApi {
       collection.setId(UUID.fromString(rs.getString("id")));
       collection.setTitle(rs.getString("title"));
       collection.setDescription(rs.getString("description"));
-      collection.setLinks(
-          Arrays.stream((String[]) rs.getArray("links").getArray())
-              .map(
-                  link -> {
-                    try {
-                      return mapper.readValue(link, Link.class);
-                    } catch (JsonProcessingException e) {
-                      logger.error("An error occurred", e);
-                      return null;
-                    }
-                  })
-              .filter(Objects::nonNull)
-              .collect(Collectors.toList()));
+      Array links = rs.getArray("links");
+      if (links != null) {
+        collection.setLinks(
+            Arrays.stream((String[]) links.getArray())
+                .map(
+                    link -> {
+                      try {
+                        return mapper.readValue(link, Link.class);
+                      } catch (JsonProcessingException e) {
+                        logger.error("An error occurred", e);
+                        return null;
+                      }
+                    })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
+      }
       collection.setExtent((Extent) rs.getObject("extent"));
       collection.setItemType(rs.getString("item_type"));
-      collection.setCrs(Arrays.asList((String[]) rs.getArray("crs").getArray()));
-
+      Array crs = rs.getArray("crs");
+      if (links != null) {
+        collection.setCrs(Arrays.asList((String[]) crs.getArray()));
+      }
       return collection;
     }
   }
