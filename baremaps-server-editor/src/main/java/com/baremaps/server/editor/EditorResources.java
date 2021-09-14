@@ -23,7 +23,6 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreException;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileJSON;
-import com.baremaps.server.ogcapi.Mappers;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgresQuery;
@@ -42,14 +41,15 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.sql.DataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -73,30 +73,28 @@ public class EditorResources {
 
   private final DataSource dataSource;
 
-  private SseBroadcaster sseBroadcaster;
-  private Thread fileWatcher;
+  private final ObjectMapper objectMapper;
 
-  @Context private ObjectMapper objectMapper;
+  private final SseBroadcaster sseBroadcaster;
+
+  private final Thread fileWatcher;
 
   @Inject
   public EditorResources(
-      @Named("style") URI style,
-      @Named("tileset") URI tileset,
+      Configuration configuration,
       BlobStore blobStore,
-      DataSource dataSource) {
-    this.tileset = tileset;
-    this.style = style;
+      DataSource dataSource,
+      ObjectMapper objectMapper,
+      Sse sse) {
+    this.tileset = URI.create(configuration.getProperty("baremaps.tileset").toString());
+    this.style = URI.create(configuration.getProperty("baremaps.style").toString());
     this.blobStore = blobStore;
     this.dataSource = dataSource;
-  }
+    this.objectMapper = objectMapper;
 
-  @Context
-  public void setSse(Sse sse) {
+    // Observe the file system for changes
     OutboundSseEvent.Builder sseEventBuilder = sse.newEventBuilder();
     this.sseBroadcaster = sse.newBroadcaster();
-    if (fileWatcher != null) {
-      fileWatcher.interrupt();
-    }
     fileWatcher =
         new Thread(
             () -> {
@@ -154,23 +152,37 @@ public class EditorResources {
   @javax.ws.rs.Path("style.json")
   @Produces(MediaType.APPLICATION_JSON)
   public MbStyle getStyle() throws BlobStoreException, IOException {
-    Blob blob = blobStore.get(style);
-    return objectMapper.readValue(blob.getInputStream(), MbStyle.class);
+    try (InputStream inputStream = blobStore.get(style).getInputStream()) {
+      return objectMapper.readValue(inputStream, MbStyle.class);
+    }
   }
 
   @GET
   @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
   public TileJSON getTileset() throws BlobStoreException, IOException {
-    Blob blob = blobStore.get(tileset);
-    return objectMapper.readValue(blob.getInputStream(), TileJSON.class);
+    try (InputStream inputStream = blobStore.get(tileset).getInputStream()) {
+      return objectMapper.readValue(inputStream, TileJSON.class);
+    }
   }
 
   @GET
   @javax.ws.rs.Path("/tiles/{z}/{x}/{y}.mvt")
   public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
     try {
-      List<PostgresQuery> queries = Mappers.map(getTileset());
+      List<PostgresQuery> queries =
+          getTileset().getVectorLayers().stream()
+              .flatMap(
+                  layer ->
+                      layer.getQueries().stream()
+                          .map(
+                              query ->
+                                  new PostgresQuery(
+                                      layer.getId(),
+                                      query.getMinzoom(),
+                                      query.getMaxzoom(),
+                                      query.getSql())))
+              .collect(Collectors.toList());
       TileStore tileStore = new PostgresTileStore(dataSource, queries);
       Tile tile = new Tile(x, y, z);
       byte[] bytes = tileStore.read(tile);
@@ -187,5 +199,16 @@ public class EditorResources {
       logger.error("Tile error", ex);
       return Response.status(404).build();
     }
+  }
+
+  @GET
+  @javax.ws.rs.Path("{path:.*}")
+  public Response get(@PathParam("path") String path) throws IOException {
+    if (path.equals("") || path.endsWith("/")) {
+      path += "index.html";
+    }
+    path = String.format("maputnik/%s", path);
+    var bytes = ClassLoader.getSystemClassLoader().getResourceAsStream(path).readAllBytes();
+    return Response.ok().entity(bytes).build();
   }
 }

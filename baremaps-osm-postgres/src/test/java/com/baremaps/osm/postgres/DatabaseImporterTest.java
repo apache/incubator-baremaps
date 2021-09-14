@@ -45,7 +45,7 @@ class DatabaseImporterTest {
 
   @BeforeEach
   void createTable() throws SQLException, IOException {
-    dataSource = PostgresUtils.datasource(DATABASE_URL);
+    dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
     headerTable = new PostgresHeaderTable(dataSource);
     nodeTable = new PostgresNodeTable(dataSource);
     wayTable = new PostgresWayTable(dataSource);

@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.server.editor;
+package com.baremaps.server.common;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;

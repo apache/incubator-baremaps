@@ -20,9 +20,7 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileJSON;
 import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.server.editor.CorsFilter;
-import com.baremaps.server.ogcapi.BlobResources;
-import com.baremaps.server.ogcapi.Mappers;
+import com.baremaps.server.common.CorsFilter;
 import com.baremaps.server.viewer.ViewerResources;
 import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
@@ -39,6 +37,7 @@ import io.servicetalk.transport.api.ServerContext;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -114,14 +113,27 @@ public class Serve implements Callable<Integer> {
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
     DataSource datasource = PostgresUtils.datasource(database);
 
-    List<PostgresQuery> queries = Mappers.map(tileJSON);
+    List<PostgresQuery> queries =
+        tileJSON.getVectorLayers().stream()
+            .flatMap(
+                layer ->
+                    layer.getQueries().stream()
+                        .map(
+                            query ->
+                                new PostgresQuery(
+                                    layer.getId(),
+                                    query.getMinzoom(),
+                                    query.getMaxzoom(),
+                                    query.getSql())))
+            .collect(Collectors.toList());
     TileStore tileStore = new PostgresTileStore(datasource, queries);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
     // Configure the application
     ResourceConfig application =
         new ResourceConfig()
-            .registerClasses(CorsFilter.class, ViewerResources.class, BlobResources.class)
+            .register(CorsFilter.class)
+            .register(ViewerResources.class)
             .register(contextResolverFor(mapper))
             .register(
                 new AbstractBinder() {

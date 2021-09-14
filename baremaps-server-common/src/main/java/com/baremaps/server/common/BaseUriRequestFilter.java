@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.server.editor;
+package com.baremaps.server.common;
 
 import java.io.IOException;
 import javax.inject.Singleton;

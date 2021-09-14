@@ -56,7 +56,7 @@ class PostgresHeaderTableTest {
 
   @BeforeEach
   void createTable() throws SQLException, IOException {
-    dataSource = PostgresUtils.datasource(DATABASE_URL);
+    dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
     headerStore = new PostgresHeaderTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgresUtils.executeResource(connection, "osm_create_extensions.sql");

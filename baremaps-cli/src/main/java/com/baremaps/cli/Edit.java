@@ -18,9 +18,8 @@ import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFea
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.server.editor.CorsFilter;
+import com.baremaps.server.common.CorsFilter;
 import com.baremaps.server.editor.EditorResources;
-import com.baremaps.server.editor.MaputnikResources;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -88,10 +87,10 @@ public class Edit implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
-    DataSource datasource = PostgresUtils.datasource(database);
+    DataSource dataSource = PostgresUtils.datasource(database);
 
     // Configure serialization
-    ObjectMapper mapper =
+    ObjectMapper objectMapper =
         new ObjectMapper()
             .configure(Feature.IGNORE_UNKNOWN, true)
             .setSerializationInclusion(Include.NON_NULL)
@@ -100,16 +99,19 @@ public class Edit implements Callable<Integer> {
     // Configure the application
     ResourceConfig application =
         new ResourceConfig()
-            .registerClasses(CorsFilter.class, EditorResources.class, MaputnikResources.class)
-            .register(contextResolverFor(mapper))
+            .property("baremaps.database", database)
+            .property("baremaps.tileset", tileset)
+            .property("baremaps.style", style)
+            .register(CorsFilter.class)
+            .register(EditorResources.class)
+            .register(contextResolverFor(objectMapper))
             .register(
                 new AbstractBinder() {
                   @Override
                   protected void configure() {
-                    bind(style).named("style").to(URI.class);
-                    bind(tileset).named("tileset").to(URI.class);
                     bind(blobStore).to(BlobStore.class);
-                    bind(datasource).to(DataSource.class);
+                    bind(dataSource).to(DataSource.class);
+                    bind(objectMapper).to(ObjectMapper.class);
                   }
                 });
 

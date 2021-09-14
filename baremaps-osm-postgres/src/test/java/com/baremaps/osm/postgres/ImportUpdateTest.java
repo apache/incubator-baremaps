@@ -55,7 +55,7 @@ class ImportUpdateTest {
 
   @BeforeEach
   void createTable() throws SQLException, IOException, URISyntaxException {
-    dataSource = PostgresUtils.datasource(DATABASE_URL);
+    dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
 
     blobStore = new ResourceBlobStore();
     headerTable = new PostgresHeaderTable(dataSource);
