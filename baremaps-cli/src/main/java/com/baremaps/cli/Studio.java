@@ -16,17 +16,17 @@ package com.baremaps.cli;
 
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
-import com.baremaps.ogcapi.resources.ApiResource;
-import com.baremaps.ogcapi.resources.CollectionsResource;
-import com.baremaps.ogcapi.resources.ConformanceResource;
-import com.baremaps.ogcapi.resources.RootResource;
-import com.baremaps.ogcapi.resources.StylesResource;
-import com.baremaps.ogcapi.resources.SwaggerResource;
-import com.baremaps.ogcapi.resources.TilesetsResource;
+import com.baremaps.server.editor.CorsFilter;
+import com.baremaps.server.ogcapi.ApiResource;
+import com.baremaps.server.ogcapi.CollectionsResource;
+import com.baremaps.server.ogcapi.ConformanceResource;
+import com.baremaps.server.ogcapi.RootResource;
+import com.baremaps.server.ogcapi.StylesResource;
+import com.baremaps.server.ogcapi.SwaggerResource;
+import com.baremaps.server.ogcapi.TilesetsResource;
 import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.server.CorsFilter;
-import com.baremaps.studio.resources.ImportResource;
-import com.baremaps.studio.resources.StudioResource;
+import com.baremaps.server.studio.ImportResource;
+import com.baremaps.server.studio.StudioResource;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -18,9 +18,9 @@ import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFea
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.server.CorsFilter;
-import com.baremaps.server.EditorResources;
-import com.baremaps.server.MaputnikResources;
+import com.baremaps.server.editor.CorsFilter;
+import com.baremaps.server.editor.EditorResources;
+import com.baremaps.server.editor.MaputnikResources;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
