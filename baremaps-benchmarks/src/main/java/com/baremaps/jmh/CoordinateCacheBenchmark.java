@@ -21,7 +21,6 @@ import com.baremaps.osm.cache.StoreCache;
 import com.baremaps.store.LongFixedSizeDataDenseMap;
 import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.type.CoordinateDataType;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.locationtech.jts.geom.Coordinate;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -66,9 +65,10 @@ public class CoordinateCacheBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void store() throws CacheException {
-      Cache<Long, Coordinate> cache = new StoreCache<>(
-          new LongFixedSizeDataDenseMap<>(new CoordinateDataType(), new OffHeapMemory()));
-      benchmark(cache, N);
+    Cache<Long, Coordinate> cache =
+        new StoreCache<>(
+            new LongFixedSizeDataDenseMap<>(new CoordinateDataType(), new OffHeapMemory()));
+    benchmark(cache, N);
   }
 
   public static void main(String[] args) throws RunnerException {

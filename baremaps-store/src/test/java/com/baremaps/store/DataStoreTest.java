@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.store;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,7 +42,7 @@ class DataStoreTest {
     var random = new Random(0);
     var positions = new ArrayList<Long>();
     var values = new ArrayList<ArrayList<Integer>>();
-    for (int i = 0; i < 1 <<20; i++) {
+    for (int i = 0; i < 1 << 20; i++) {
       var size = random.nextInt(10);
       var value = new ArrayList<Integer>();
       for (int j = 0; j < size; j++) {
@@ -42,5 +56,4 @@ class DataStoreTest {
       assertEquals(values.get(i), value);
     }
   }
-
 }

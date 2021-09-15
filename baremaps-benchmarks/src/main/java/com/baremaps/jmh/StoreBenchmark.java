@@ -14,14 +14,10 @@
 
 package com.baremaps.jmh;
 
-import com.baremaps.store.DataStore;
 import com.baremaps.store.FixedSizeDataList;
-import com.baremaps.store.memory.DirectoryMemory;
-import com.baremaps.store.memory.FileMemory;
 import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.memory.OnHeapMemory;
 import com.baremaps.store.type.LongDataType;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -56,7 +52,7 @@ public class StoreBenchmark {
   @BenchmarkMode(Mode.SingleShotTime)
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
-  public void onHeap()  {
+  public void onHeap() {
     benchmark(new FixedSizeDataList<>(new LongDataType(), new OnHeapMemory()), N);
   }
 
@@ -88,10 +84,7 @@ public class StoreBenchmark {
 
   public static void main(String[] args) throws RunnerException {
     org.openjdk.jmh.runner.options.Options opt =
-        new OptionsBuilder()
-            .include(StoreBenchmark.class.getSimpleName())
-            .forks(1)
-            .build();
+        new OptionsBuilder().include(StoreBenchmark.class.getSimpleName()).forks(1).build();
     new Runner(opt).run();
   }
 }

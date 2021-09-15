@@ -87,12 +87,12 @@ public class Import implements Callable<Integer> {
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
     Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
 
-    Cache<Long, Coordinate> coordinateCache = new StoreCache<>(
-        new LongDataOpenHashMap<>(
-            new DataStore<>(new CoordinateDataType(), new FileMemory())));
-    Cache<Long, List<Long>> referenceCache = new StoreCache<>(
-        new LongDataOpenHashMap<>(
-            new DataStore<>(new LongListDataType(), new FileMemory())));
+    Cache<Long, Coordinate> coordinateCache =
+        new StoreCache<>(
+            new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new FileMemory())));
+    Cache<Long, List<Long>> referenceCache =
+        new StoreCache<>(
+            new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new FileMemory())));
 
     logger.info("Importing data");
     new ImportService(

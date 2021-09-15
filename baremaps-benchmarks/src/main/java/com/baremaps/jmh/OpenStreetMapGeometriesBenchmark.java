@@ -76,12 +76,12 @@ public class OpenStreetMapGeometriesBenchmark {
   @Warmup(iterations = 0)
   @Measurement(iterations = 1)
   public void store() throws IOException {
-    Cache<Long, Coordinate> coordinateCache = new StoreCache<>(
-        new LongDataOpenHashMap<>(
-            new DataStore<>(new CoordinateDataType(), new FileMemory())));
-    Cache<Long, List<Long>> referenceCache = new StoreCache<>(
-        new LongDataOpenHashMap<>(
-            new DataStore<>(new LongListDataType(), new OnHeapMemory())));
+    Cache<Long, Coordinate> coordinateCache =
+        new StoreCache<>(
+            new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new FileMemory())));
+    Cache<Long, List<Long>> referenceCache =
+        new StoreCache<>(
+            new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory())));
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
