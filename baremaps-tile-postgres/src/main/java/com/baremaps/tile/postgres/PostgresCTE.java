@@ -47,7 +47,7 @@ class PostgresCTE {
   }
 
   public String getAlias() {
-    return String.format("h%x", hashCode()).substring(0, 9);
+    return String.format("h%x", hashCode());
   }
 
   @Override
