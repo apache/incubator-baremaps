@@ -124,6 +124,15 @@ public class ImportResource {
         return Response.serverError().build();
       } finally {
         transaction.close();
+        // make schema compatible for tile query
+        String sql =
+            String.format(
+                "alter table \"%1$s\" rename fid to id;"
+                    + "alter table \"%1$s\" add column tags hstore, add column geom geometry;"
+                    + "update \"%1$s\" set geom = ST_Transform(ST_SetSRID(geometry, 4326), 3857);"
+                    + "alter table \"%1$s\" drop column geometry;",
+                collection.getId());
+        jdbi.useHandle(handle -> handle.execute(sql));
       }
     } else {
       logger.error(SCHEMA.getName().getLocalPart() + " does not support read/write access");
