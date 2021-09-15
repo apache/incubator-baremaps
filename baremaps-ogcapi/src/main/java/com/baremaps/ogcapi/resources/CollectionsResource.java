@@ -32,7 +32,9 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.argument.AbstractArgumentFactory;
 import org.jdbi.v3.core.argument.Argument;
@@ -46,6 +48,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CollectionsResource implements CollectionsApi {
+
+  @Context UriInfo uriInfo;
 
   private static final Logger logger = LoggerFactory.getLogger(CollectionsResource.class);
 
@@ -102,7 +106,7 @@ public class CollectionsResource implements CollectionsApi {
                     .bind("id", collectionId)
                     .map(new CollectionMapper())
                     .one());
-
+    collection.getLinks().add(new Link().href(uriInfo.getRequestUri().toString()).rel("self"));
     return Response.ok(collection).build();
   }
 
@@ -116,8 +120,17 @@ public class CollectionsResource implements CollectionsApi {
                         "select id, title, description, links, extent, item_type, crs from collections")
                     .map(new CollectionMapper())
                     .list());
-
-    return Response.ok(new Collections().collections(collectionList)).build();
+    collectionList.forEach(
+        collection ->
+            collection
+                .getLinks()
+                .add(
+                    new Link()
+                        .href(uriInfo.getRequestUri().toString() + "/" + collection.getId())
+                        .rel("self")));
+    Collections collections = new Collections().collections(collectionList);
+    collections.getLinks().add(new Link().href(uriInfo.getRequestUri().toString()).rel("self"));
+    return Response.ok(collections).build();
   }
 
   @Override
