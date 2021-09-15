@@ -14,6 +14,7 @@
 
 package com.baremaps.server.editor;
 
+import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
@@ -41,15 +42,14 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.sql.DataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -81,13 +81,14 @@ public class EditorResources {
 
   @Inject
   public EditorResources(
-      Configuration configuration,
+      @Named("tileset") URI tileset,
+      @Named("style") URI style,
       BlobStore blobStore,
       DataSource dataSource,
       ObjectMapper objectMapper,
       Sse sse) {
-    this.tileset = URI.create(configuration.getProperty("baremaps.tileset").toString());
-    this.style = URI.create(configuration.getProperty("baremaps.style").toString());
+    this.tileset = tileset;
+    this.style = style;
     this.blobStore = blobStore;
     this.dataSource = dataSource;
     this.objectMapper = objectMapper;
@@ -170,19 +171,7 @@ public class EditorResources {
   @javax.ws.rs.Path("/tiles/{z}/{x}/{y}.mvt")
   public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
     try {
-      List<PostgresQuery> queries =
-          getTileset().getVectorLayers().stream()
-              .flatMap(
-                  layer ->
-                      layer.getQueries().stream()
-                          .map(
-                              query ->
-                                  new PostgresQuery(
-                                      layer.getId(),
-                                      query.getMinzoom(),
-                                      query.getMaxzoom(),
-                                      query.getSql())))
-              .collect(Collectors.toList());
+      List<PostgresQuery> queries = asPostgresQuery(getTileset());
       TileStore tileStore = new PostgresTileStore(dataSource, queries);
       Tile tile = new Tile(x, y, z);
       byte[] bytes = tileStore.read(tile);

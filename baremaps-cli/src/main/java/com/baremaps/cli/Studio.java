@@ -14,6 +14,7 @@
 
 package com.baremaps.cli;
 
+import static com.baremaps.server.common.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
 import com.baremaps.postgres.jdbc.PostgresUtils;
@@ -27,8 +28,6 @@ import com.baremaps.server.ogcapi.SwaggerResource;
 import com.baremaps.server.ogcapi.TilesetsResource;
 import com.baremaps.server.studio.ImportResource;
 import com.baremaps.server.studio.StudioResource;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
@@ -69,11 +68,7 @@ public class Studio implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     // Configure serialization
-    ObjectMapper mapper =
-        new ObjectMapper()
-            .configure(Feature.IGNORE_UNKNOWN, true)
-            .setSerializationInclusion(Include.NON_NULL)
-            .setSerializationInclusion(Include.NON_EMPTY);
+    ObjectMapper mapper = defaultObjectMapper();
 
     // Configure jdbi and set the ObjectMapper
     DataSource datasource = PostgresUtils.datasource(this.database);

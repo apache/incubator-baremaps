@@ -18,19 +18,20 @@ import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
+import com.baremaps.blob.BlobStore;
+import com.baremaps.blob.BlobStoreException;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.net.URI;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -44,11 +45,14 @@ public class ViewerResources {
   private final TileStore tileStore;
 
   @Inject
-  public ViewerResources(Configuration configuration, TileStore tileStore) throws IOException {
-    this.style =
-        Files.readAllBytes(Paths.get(configuration.getProperty("baremaps.style").toString()));
-    this.tileset =
-        Files.readAllBytes(Paths.get(configuration.getProperty("baremaps.tileset").toString()));
+  public ViewerResources(
+      @Named("tileset") URI tileset,
+      @Named("style") URI style,
+      BlobStore blobStore,
+      TileStore tileStore)
+      throws BlobStoreException, IOException {
+    this.tileset = blobStore.get(tileset).getInputStream().readAllBytes();
+    this.style = blobStore.get(style).getInputStream().readAllBytes();
     this.tileStore = tileStore;
   }
 

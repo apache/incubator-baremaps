@@ -14,6 +14,8 @@
 
 package com.baremaps.cli;
 
+import static com.baremaps.server.common.DefaultObjectMapper.defaultObjectMapper;
+import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
 import com.baremaps.blob.BlobStore;
@@ -25,8 +27,6 @@ import com.baremaps.tile.TileCache;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.postgres.PostgresQuery;
 import com.baremaps.tile.postgres.PostgresTileStore;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
@@ -36,7 +36,6 @@ import io.servicetalk.transport.api.ServerContext;
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -94,47 +93,30 @@ public class View implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    ObjectMapper mapper =
-        new ObjectMapper()
-            .configure(Feature.IGNORE_UNKNOWN, true)
-            .setSerializationInclusion(Include.NON_NULL)
-            .setSerializationInclusion(Include.NON_EMPTY);
-
+    ObjectMapper objectMapper = defaultObjectMapper();
     BlobStore blobStore = options.blobStore();
     TileJSON tileJSON =
-        mapper.readValue(blobStore.get(this.tileset).getInputStream(), TileJSON.class);
+        objectMapper.readValue(blobStore.get(this.tileset).getInputStream(), TileJSON.class);
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
     DataSource datasource = PostgresUtils.datasource(database);
 
-    List<PostgresQuery> queries =
-        tileJSON.getVectorLayers().stream()
-            .flatMap(
-                layer ->
-                    layer.getQueries().stream()
-                        .map(
-                            query ->
-                                new PostgresQuery(
-                                    layer.getId(),
-                                    query.getMinzoom(),
-                                    query.getMaxzoom(),
-                                    query.getSql())))
-            .collect(Collectors.toList());
+    List<PostgresQuery> queries = asPostgresQuery(tileJSON);
     TileStore tileStore = new PostgresTileStore(datasource, queries);
     TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
     // Configure the application
     ResourceConfig application =
         new ResourceConfig()
-            .property("baremaps.database", database)
-            .property("baremaps.tileset", tileset)
-            .property("baremaps.style", style)
             .register(CorsFilter.class)
             .register(ViewerResources.class)
-            .register(contextResolverFor(mapper))
+            .register(contextResolverFor(objectMapper))
             .register(
                 new AbstractBinder() {
                   @Override
                   protected void configure() {
+                    bind(tileset).to(URI.class).named("tileset");
+                    bind(style).to(URI.class).named("style");
+                    bind(blobStore).to(BlobStore.class);
                     bind(tileCache).to(TileStore.class);
                   }
                 });

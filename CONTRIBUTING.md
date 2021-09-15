@@ -54,7 +54,12 @@ The source code of Baremaps is organized in modules:
 - `baremaps-osm` contains parsers for various osm formats (xml, pbf) and a cache and a database abstraction to import these data.
 - `baremaps-osm-lmdb` contains an implementation of the cache abstraction for [LMDB](https://github.com/lmdbjava/lmdbjava).
 - `baremaps-osm-postgres` contains an implementation of the database abstraction for [Postgresql](https://www.postgresql.org).
-- `baremaps-server` contains a tile server based on [Armeria](https://armeria.dev).
+- `baremaps-server` contains the parent sever module with the main dependencies.
+- `baremaps-server-common` contains filters and components used by all the other server modules.
+- `baremaps-server-editor` contains the maputnik editor and a backend for editing a style and tileset.
+- `baremaps-server-ogcapi` contains an implementation ogcapi generated with openapi.
+- `baremaps-server-studio` contains services for importing and exporting spatial data in postgres.
+- `baremaps-server-viewer` contains a a tile server and a minimal map.
 - `baremaps-stream` contains utilities for the Stream API introduced in Java 8.
 - `baremaps-testing` contains common utilities (data, etc.) used for testing in different module.
 - `baremaps-tile` contains simple abstractions for tiles and tile storage, transfer and computation.

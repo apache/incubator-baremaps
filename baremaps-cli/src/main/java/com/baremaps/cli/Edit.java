@@ -14,15 +14,13 @@
 
 package com.baremaps.cli;
 
+import static com.baremaps.server.common.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.common.CorsFilter;
 import com.baremaps.server.editor.EditorResources;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerator.Feature;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
@@ -79,31 +77,17 @@ public class Edit implements Callable<Integer> {
       description = "The port of the server.")
   private int port = 9000;
 
-  @Option(
-      names = {"--open"},
-      paramLabel = "OPEN",
-      description = "Open the browser.")
-  private boolean open = false;
-
   @Override
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
     DataSource dataSource = PostgresUtils.datasource(database);
 
     // Configure serialization
-    ObjectMapper objectMapper =
-        new ObjectMapper()
-            .configure(Feature.IGNORE_UNKNOWN, true)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .setSerializationInclusion(Include.NON_NULL)
-            .setSerializationInclusion(Include.NON_EMPTY);
+    ObjectMapper objectMapper = defaultObjectMapper();
 
     // Configure the application
     ResourceConfig application =
         new ResourceConfig()
-            .property("baremaps.database", database)
-            .property("baremaps.tileset", tileset)
-            .property("baremaps.style", style)
             .register(CorsFilter.class)
             .register(EditorResources.class)
             .register(contextResolverFor(objectMapper))
@@ -111,6 +95,8 @@ public class Edit implements Callable<Integer> {
                 new AbstractBinder() {
                   @Override
                   protected void configure() {
+                    bind(tileset).to(URI.class).named("tileset");
+                    bind(style).to(URI.class).named("style");
                     bind(blobStore).to(BlobStore.class);
                     bind(dataSource).to(DataSource.class);
                     bind(objectMapper).to(ObjectMapper.class);
