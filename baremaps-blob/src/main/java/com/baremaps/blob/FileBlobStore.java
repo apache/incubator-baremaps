@@ -14,12 +14,14 @@
 
 package com.baremaps.blob;
 
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
 /** A {@code BlobStore} for reading and writing blobs in the local file system. */
 public class FileBlobStore implements BlobStore {
@@ -61,7 +63,7 @@ public class FileBlobStore implements BlobStore {
       if (!Files.exists(file.getParent())) {
         Files.createDirectories(file.getParent());
       }
-      Files.copy(blob.getInputStream(), file, StandardCopyOption.REPLACE_EXISTING);
+      Files.write(file, blob.getInputStream().readAllBytes(), CREATE, TRUNCATE_EXISTING);
     } catch (IOException e) {
       throw new BlobStoreException(e);
     }

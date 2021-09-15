@@ -106,11 +106,6 @@
     <module>baremaps-osm-postgres</module>
     <module>baremaps-stream</module>
     <module>baremaps-server</module>
-    <module>baremaps-server-common</module>
-    <module>baremaps-server-editor</module>
-    <module>baremaps-server-ogcapi</module>
-    <module>baremaps-server-studio</module>
-    <module>baremaps-server-viewer</module>
     <module>baremaps-testing</module>
     <module>baremaps-tile</module>
     <module>baremaps-tile-mbtiles</module>
@@ -390,25 +385,21 @@
         <artifactId>baremaps-server-editor</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
-        <classifier>classes</classifier>
       </dependency>
       <dependency>
         <artifactId>baremaps-server-ogcapi</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
-        <classifier>classes</classifier>
       </dependency>
       <dependency>
         <artifactId>baremaps-server-studio</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
-        <classifier>classes</classifier>
       </dependency>
       <dependency>
         <artifactId>baremaps-server-viewer</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
-        <classifier>classes</classifier>
       </dependency>
       <dependency>
         <artifactId>baremaps-stream</artifactId>
@@ -572,6 +563,12 @@
         <groupId>io.swagger.parser.v3</groupId>
         <artifactId>swagger-parser</artifactId>
         <version>${version.lib.swagger-parser}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>

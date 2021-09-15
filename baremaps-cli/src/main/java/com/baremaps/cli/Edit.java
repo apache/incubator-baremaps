@@ -22,6 +22,7 @@ import com.baremaps.server.common.CorsFilter;
 import com.baremaps.server.editor.EditorResources;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
@@ -93,6 +94,7 @@ public class Edit implements Callable<Integer> {
     ObjectMapper objectMapper =
         new ObjectMapper()
             .configure(Feature.IGNORE_UNKNOWN, true)
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setSerializationInclusion(Include.NON_NULL)
             .setSerializationInclusion(Include.NON_EMPTY);
 

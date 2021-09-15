@@ -17,7 +17,6 @@ package com.baremaps.cli;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileJSON;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.common.CorsFilter;
@@ -47,10 +46,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "serve", description = "Serve the vector tiles.")
-public class Serve implements Callable<Integer> {
+@Command(name = "view", description = "View the vector tiles.")
+public class View implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(Serve.class);
+  private static final Logger logger = LoggerFactory.getLogger(View.class);
 
   @Mixin private Options options;
 
@@ -82,12 +81,6 @@ public class Serve implements Callable<Integer> {
   private URI style;
 
   @Option(
-      names = {"--assets"},
-      paramLabel = "ASSETS",
-      description = "A directory of static assets.")
-  private URI assets = URI.create("res://server/");
-
-  @Option(
       names = {"--host"},
       paramLabel = "HOST",
       description = "The host of the server.")
@@ -106,10 +99,10 @@ public class Serve implements Callable<Integer> {
             .configure(Feature.IGNORE_UNKNOWN, true)
             .setSerializationInclusion(Include.NON_NULL)
             .setSerializationInclusion(Include.NON_EMPTY);
+
     BlobStore blobStore = options.blobStore();
     TileJSON tileJSON =
         mapper.readValue(blobStore.get(this.tileset).getInputStream(), TileJSON.class);
-    MbStyle mbStyle = mapper.readValue(blobStore.get(this.style).getInputStream(), MbStyle.class);
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
     DataSource datasource = PostgresUtils.datasource(database);
 
@@ -132,6 +125,9 @@ public class Serve implements Callable<Integer> {
     // Configure the application
     ResourceConfig application =
         new ResourceConfig()
+            .property("baremaps.database", database)
+            .property("baremaps.tileset", tileset)
+            .property("baremaps.style", style)
             .register(CorsFilter.class)
             .register(ViewerResources.class)
             .register(contextResolverFor(mapper))
@@ -139,11 +135,7 @@ public class Serve implements Callable<Integer> {
                 new AbstractBinder() {
                   @Override
                   protected void configure() {
-                    bind(tileJSON).to(TileJSON.class);
-                    bind(mbStyle).to(MbStyle.class);
                     bind(tileCache).to(TileStore.class);
-                    bind(blobStore).to(BlobStore.class);
-                    bind(assets).named("assets").to(URI.class);
                   }
                 });
 

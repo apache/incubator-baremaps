@@ -12,8 +12,15 @@
   <name>baremaps-server</name>
   <packaging>pom</packaging>
 
-  <build>
+  <modules>
+    <module>../baremaps-server-common</module>
+    <module>../baremaps-server-editor</module>
+    <module>../baremaps-server-ogcapi</module>
+    <module>../baremaps-server-studio</module>
+    <module>../baremaps-server-viewer</module>
+  </modules>
 
+  <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -62,14 +69,6 @@
     </dependency>
 
     <!-- jersey -->
-    <dependency>
-      <groupId>org.glassfish.jersey.core</groupId>
-      <artifactId>jersey-server</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish.jersey.inject</groupId>
-      <artifactId>jersey-hk2</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.inject</groupId>
       <artifactId>jersey-hk2</artifactId>

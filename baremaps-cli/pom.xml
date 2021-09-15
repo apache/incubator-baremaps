@@ -108,22 +108,18 @@
     <dependency>
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-server-editor</artifactId>
-      <classifier>classes</classifier>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-server-ogcapi</artifactId>
-      <classifier>classes</classifier>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-server-studio</artifactId>
-      <classifier>classes</classifier>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-server-viewer</artifactId>
-      <classifier>classes</classifier>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>

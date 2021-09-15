@@ -18,48 +18,52 @@ import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
-import com.baremaps.model.MbStyle;
-import com.baremaps.model.TileJSON;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Path("/")
 public class ViewerResources {
 
-  private final MbStyle style;
+  private final byte[] style;
 
-  private final TileJSON tileset;
+  private final byte[] tileset;
 
   private final TileStore tileStore;
 
   @Inject
-  public ViewerResources(MbStyle style, TileJSON tileset, TileStore tileStore) {
-    this.style = style;
-    this.tileset = tileset;
+  public ViewerResources(Configuration configuration, TileStore tileStore) throws IOException {
+    this.style =
+        Files.readAllBytes(Paths.get(configuration.getProperty("baremaps.style").toString()));
+    this.tileset =
+        Files.readAllBytes(Paths.get(configuration.getProperty("baremaps.tileset").toString()));
     this.tileStore = tileStore;
   }
 
   @GET
   @Path("style.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public MbStyle getStyle() {
-    return style;
+  public Response getStyle() {
+    return Response.ok(style).build();
   }
 
   @GET
   @Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public TileJSON getTileset() {
-    return tileset;
+  public Response getTileset() {
+    return Response.ok(tileset).build();
   }
 
   @GET
@@ -90,7 +94,11 @@ public class ViewerResources {
       path += "index.html";
     }
     path = String.format("viewer/%s", path);
-    var bytes = ClassLoader.getSystemClassLoader().getResourceAsStream(path).readAllBytes();
-    return Response.ok().entity(bytes).build();
+    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
+      var bytes = inputStream.readAllBytes();
+      return Response.ok().entity(bytes).build();
+    } catch (IOException e) {
+      return Response.status(404).build();
+    }
   }
 }

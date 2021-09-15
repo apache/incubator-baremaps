@@ -43,7 +43,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "diff", description = "List the tiles affected by changes.")
+@Command(name = "diff", description = "List the tiles affected by changes (experimental).")
 public class Diff implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Diff.class);

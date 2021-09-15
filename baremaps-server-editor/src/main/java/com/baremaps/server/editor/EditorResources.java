@@ -208,7 +208,11 @@ public class EditorResources {
       path += "index.html";
     }
     path = String.format("maputnik/%s", path);
-    var bytes = ClassLoader.getSystemClassLoader().getResourceAsStream(path).readAllBytes();
-    return Response.ok().entity(bytes).build();
+    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
+      var bytes = inputStream.readAllBytes();
+      return Response.ok().entity(bytes).build();
+    } catch (IOException e) {
+      return Response.status(404).build();
+    }
   }
 }
