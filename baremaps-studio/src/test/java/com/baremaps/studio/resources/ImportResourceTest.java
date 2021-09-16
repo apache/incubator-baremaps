@@ -98,6 +98,7 @@ public class ImportResourceTest extends JerseyTest {
             .header(
                 "Content-Disposition", "form-data; name=\"file\"; fileName=\"features.geojson\"")
             .post(Entity.entity(entity, MediaType.MULTIPART_FORM_DATA_TYPE));
+    //    TODO: fix test
     assertEquals(201, response.getStatus());
   }
 }

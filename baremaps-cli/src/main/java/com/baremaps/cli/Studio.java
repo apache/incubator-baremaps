@@ -46,12 +46,15 @@ import org.jdbi.v3.postgres.PostgresPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
 @Command(name = "studio", description = "Serve studio endpoints (experimental).")
 public class Studio implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Studio.class);
+
+  @Mixin private Options options;
 
   @Option(
       names = {"--database"},

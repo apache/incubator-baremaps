@@ -14,6 +14,8 @@
 
 package com.baremaps.ogcapi.resources;
 
+import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
+
 import com.baremaps.api.TilesetsApi;
 import com.baremaps.model.TileJSON;
 import com.baremaps.tile.Tile;
@@ -58,14 +60,13 @@ public class TilesetsResource implements TilesetsApi {
 
   private TileStore loadTileStore(UUID tilesetId) {
     TileJSON tileset =
-        Jdbi.create(dataSource)
-            .withHandle(
-                handle ->
-                    handle
-                        .createQuery("select tileset from tilesets where id = :id")
-                        .bind("id", tilesetId)
-                        .mapTo(TILESET)
-                        .one());
+        jdbi.withHandle(
+            handle ->
+                handle
+                    .createQuery("select tileset from tilesets where id = :id")
+                    .bind("id", tilesetId)
+                    .mapTo(TILESET)
+                    .one());
     List<PostgresQuery> queries =
         tileset.getVectorLayers().stream()
             .flatMap(
@@ -153,7 +154,7 @@ public class TilesetsResource implements TilesetsApi {
     Tile tile = new Tile(tileCol, tileRow, tileMatrix);
     TileStore tileStore = tileStores.get(tilesetId);
     try {
-      return Response.ok(tileStore.read(tile)).build();
+      return Response.ok(tileStore.read(tile)).header(CONTENT_ENCODING, "gzip").build();
     } catch (TileStoreException e) {
       return Response.serverError().build();
     }

@@ -15,13 +15,13 @@
 package com.baremaps.studio.resources;
 
 import com.baremaps.model.Collection;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -29,20 +29,19 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.DefaultTransaction;
 import org.geotools.data.Transaction;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.simple.SimpleFeatureStore;
-import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.qualifier.QualifiedType;
-import org.jdbi.v3.json.Json;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,9 +51,6 @@ import org.slf4j.LoggerFactory;
 public class ImportResource {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportResource.class);
-
-  private static final QualifiedType<ObjectNode> ENTITY =
-      QualifiedType.of(ObjectNode.class).with(Json.class);
 
   private final Jdbi jdbi;
 
@@ -79,7 +75,7 @@ public class ImportResource {
 
     // Read FeatureCollection
     FeatureJSON fjson = new FeatureJSON();
-    FeatureCollection fc = fjson.readFeatureCollection(fileInputStream);
+    var fc = fjson.readFeatureCollection(fileInputStream);
     SimpleFeatureType schema = (SimpleFeatureType) fc.getSchema();
 
     // Build FeatureType
@@ -90,15 +86,25 @@ public class ImportResource {
     SimpleFeatureType SCHEMA = builder.buildFeatureType();
 
     // Setup DataStore
+    URI uri =
+        jdbi.withHandle(
+            haandle -> {
+              String url = haandle.getConnection().getMetaData().getURL();
+              logger.debug(url);
+              return URI.create(url.substring(5));
+            });
+    Map<String, String> query =
+        URLEncodedUtils.parse(uri, StandardCharsets.UTF_8).stream()
+            .collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
     Map<String, Object> params = new HashMap<>();
-    Properties properties = jdbi.withHandle(handle -> handle.getConnection().getClientInfo());
     params.put("dbtype", "postgis");
-    params.put("host", properties.getProperty("host", "localhost"));
-    params.put("port", Integer.parseInt(properties.getProperty("port", "5432")));
-    params.put("schema", properties.getProperty("schema", "public"));
-    params.put("database", properties.getProperty("database", "baremaps"));
-    params.put("user", properties.getProperty("user", "baremaps"));
-    params.put("passwd", properties.getProperty("host", "baremaps"));
+    params.put("host", uri.getHost());
+    params.put("port", uri.getPort());
+    params.put("schema", query.getOrDefault("currentSchema", "public"));
+    params.put("database", uri.getPath().substring(1));
+    params.put("user", query.getOrDefault("user", "postgres"));
+    params.put("passwd", query.getOrDefault("password", "postgres"));
+    params.forEach((key, value) -> logger.debug("Params: " + key + " -> " + value));
     DataStore dataStore = DataStoreFinder.getDataStore(params);
     dataStore.createSchema(SCHEMA);
 
@@ -118,6 +124,15 @@ public class ImportResource {
         return Response.serverError().build();
       } finally {
         transaction.close();
+        // make schema compatible for tile query
+        String sql =
+            String.format(
+                "alter table \"%1$s\" rename fid to id;"
+                    + "alter table \"%1$s\" add column tags hstore, add column geom geometry;"
+                    + "update \"%1$s\" set geom = ST_Transform(ST_SetSRID(geometry, 4326), 3857);"
+                    + "alter table \"%1$s\" drop column geometry;",
+                collection.getId());
+        jdbi.useHandle(handle -> handle.execute(sql));
       }
     } else {
       logger.error(SCHEMA.getName().getLocalPart() + " does not support read/write access");
@@ -126,13 +141,12 @@ public class ImportResource {
 
     // Register collection
     jdbi.useHandle(
-        handle -> {
-          handle
-              .createUpdate("insert into collections (id, title) values (:id, :title)")
-              .bind("id", collection.getId())
-              .bind("title", collection.getTitle())
-              .execute();
-        });
+        handle ->
+            handle
+                .createUpdate("insert into collections (id, title) values (:id, :title)")
+                .bind("id", collection.getId())
+                .bind("title", collection.getTitle())
+                .execute());
 
     return Response.created(URI.create("collections/" + collection.getId())).build();
   }
