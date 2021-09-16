@@ -18,6 +18,7 @@ import static com.baremaps.testing.TestConstants.DATABASE_URL;
 import static org.junit.Assert.assertEquals;
 
 import com.baremaps.postgres.jdbi.PostgisPlugin;
+import com.baremaps.testing.IntegrationTest;
 import com.google.common.io.Resources;
 import java.io.File;
 import java.net.URL;
@@ -39,6 +40,7 @@ import org.glassfish.jersey.test.TestProperties;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 public class ImportResourceTest extends JerseyTest {
 
@@ -84,6 +86,7 @@ public class ImportResourceTest extends JerseyTest {
   }
 
   @Test
+  @Category(IntegrationTest.class)
   public void test() {
     String FILE = "features.geojson";
     URL url = Resources.getResource(FILE);

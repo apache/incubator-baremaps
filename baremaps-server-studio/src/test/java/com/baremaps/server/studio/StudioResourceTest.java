@@ -16,6 +16,7 @@ package com.baremaps.server.studio;
 
 import static org.junit.Assert.assertEquals;
 
+import com.baremaps.testing.IntegrationTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -32,6 +33,7 @@ import org.glassfish.jersey.test.TestProperties;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 public class StudioResourceTest extends JerseyTest {
 
@@ -71,6 +73,7 @@ public class StudioResourceTest extends JerseyTest {
   }
 
   @Test
+  @Category(IntegrationTest.class)
   public void test() {
     // List the maps
     ArrayNode entities = target().path("studio/maps").request().get(ArrayNode.class);

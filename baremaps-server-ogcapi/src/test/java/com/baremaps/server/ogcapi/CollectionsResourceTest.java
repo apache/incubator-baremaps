@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 import com.baremaps.model.Collection;
 import com.baremaps.model.Collections;
 import com.baremaps.model.Link;
+import com.baremaps.testing.IntegrationTest;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -33,6 +34,7 @@ import org.glassfish.jersey.test.TestProperties;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 public class CollectionsResourceTest extends JerseyTest {
 
@@ -71,6 +73,7 @@ public class CollectionsResourceTest extends JerseyTest {
   }
 
   @Test
+  @Category(IntegrationTest.class)
   public void test() {
     // Create a new collection
     Collection collection = new Collection();

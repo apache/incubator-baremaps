@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.StyleSet;
+import com.baremaps.testing.IntegrationTest;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -31,6 +32,7 @@ import org.glassfish.jersey.test.TestProperties;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 public class StylesResourceTest extends JerseyTest {
 
@@ -67,6 +69,7 @@ public class StylesResourceTest extends JerseyTest {
   }
 
   @Test
+  @Category(IntegrationTest.class)
   public void test() {
     // List the styles
     StyleSet styles = target().path("/styles").request().get(StyleSet.class);

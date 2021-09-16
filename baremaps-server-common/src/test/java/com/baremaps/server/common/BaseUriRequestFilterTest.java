@@ -16,6 +16,7 @@ package com.baremaps.server.common;
 
 import static org.junit.Assert.assertEquals;
 
+import com.baremaps.testing.IntegrationTest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
@@ -23,6 +24,8 @@ import javax.ws.rs.core.UriInfo;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
+import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 
 public class BaseUriRequestFilterTest extends JerseyTest {
 
@@ -42,6 +45,7 @@ public class BaseUriRequestFilterTest extends JerseyTest {
   }
 
   @org.junit.Test
+  @Category(IntegrationTest.class)
   public void testBaseUri() {
     String baseUriStr =
         target()

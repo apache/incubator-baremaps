@@ -27,7 +27,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <version>${version.plugin.surefire}</version>
         <configuration>
-          <excludedGroups>integration</excludedGroups>
+          <excludedGroups>com.baremaps.testing.IntegrationTest</excludedGroups>
         </configuration>
         <dependencies>
           <dependency>
@@ -105,6 +105,11 @@
       <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    <groupId>com.baremaps</groupId>
+    <artifactId>baremaps-testing</artifactId>
+    <scope>test</scope>
+  </dependency>
   </dependencies>
 
 </project>
