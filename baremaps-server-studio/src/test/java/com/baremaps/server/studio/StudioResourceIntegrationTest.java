@@ -12,18 +12,16 @@
  * the License.
  */
 
-package com.baremaps.server.ogcapi;
+package com.baremaps.server.studio;
 
 import static org.junit.Assert.assertEquals;
 
-import com.baremaps.model.Collection;
-import com.baremaps.model.Collections;
-import com.baremaps.model.Link;
-import com.baremaps.testing.IntegrationTest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -34,9 +32,8 @@ import org.glassfish.jersey.test.TestProperties;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
-public class CollectionsResourceTest extends JerseyTest {
+public class StudioResourceIntegrationTest extends JerseyTest {
 
   Jdbi jdbi;
 
@@ -55,14 +52,15 @@ public class CollectionsResourceTest extends JerseyTest {
 
     // Initialize the database
     jdbi = Jdbi.create(connection).installPlugin(new Jackson2Plugin());
+    jdbi.useHandle(handle -> handle.execute("create schema studio"));
     jdbi.useHandle(
         handle ->
             handle.execute(
-                "create table collections (id uuid primary key, title text, description text, links jsonb[] default '{}'::jsonb[], extent jsonb, item_type text default 'feature', crs text[])"));
+                "create table studio.entities (id uuid primary key, entity jsonb, kind text)"));
 
     // Configure the service
     return new ResourceConfig()
-        .register(CollectionsResource.class)
+        .register(StudioResource.class)
         .register(
             new AbstractBinder() {
               @Override
@@ -73,55 +71,37 @@ public class CollectionsResourceTest extends JerseyTest {
   }
 
   @Test
-  @Category(IntegrationTest.class)
   public void test() {
-    // Create a new collection
-    Collection collection = new Collection();
-    collection.setTitle("test");
-    collection.setLinks(List.of());
+    // List the maps
+    ArrayNode entities = target().path("studio/maps").request().get(ArrayNode.class);
+    assertEquals(0, entities.size());
 
-    Link link = new Link();
-    link.setHref("/link");
-    link.setRel("self");
-
-    collection.setLinks(List.of(link));
-
-    // List the collections
-    Collections collections = target().path("/collections").request().get(Collections.class);
-    assertEquals(0, collections.getCollections().size());
-
-    // Insert the collection
+    // Create a new map with the service
+    ObjectMapper mapper = new ObjectMapper();
+    ObjectNode entity = mapper.createObjectNode().put("title", "My Map").put("views", 3);
     Response response =
         target()
-            .path("/collections")
+            .path("studio/maps")
             .request(MediaType.APPLICATION_JSON)
-            .post(Entity.entity(collection, MediaType.valueOf("application/json")));
+            .post(Entity.entity(entity, MediaType.valueOf("application/json")));
     assertEquals(201, response.getStatus());
 
-    // List the collections
-    collections = target().path("/collections").request().get(Collections.class);
-    assertEquals(1, collections.getCollections().size());
+    // List the maps
+    entities = target().path("studio/maps").request().get(ArrayNode.class);
+    assertEquals(1, entities.size());
 
-    // Get the collection
-    String id = response.getHeaderString("Location").split("/")[4];
-    collection = target().path("/collections/" + id).request().get(Collection.class);
-    assertEquals("test", collection.getTitle());
+    // Get the map
+    String[] paths = response.getHeaderString("Location").split("/");
+    String id = paths[paths.length - 1];
+    entity = target().path("studio/maps/" + id).request().get(ObjectNode.class);
+    assertEquals("My Map", entity.get("title").textValue());
 
-    // Update the collection
-    collection.setTitle("test_update");
-    response =
-        target()
-            .path("/collections/" + id)
-            .request()
-            .put(Entity.entity(collection, MediaType.valueOf("application/json")));
+    // Delete the map
+    response = target().path("studio/maps/" + id).request().delete();
     assertEquals(204, response.getStatus());
 
-    // Delete the collection
-    response = target().path("/collections/" + id).request().delete();
-    assertEquals(204, response.getStatus());
-
-    // List the collections
-    collections = target().path("/collections").request().get(Collections.class);
-    assertEquals(0, collections.getCollections().size());
+    // List the maps
+    entities = target().path("studio/maps").request().get(ArrayNode.class);
+    assertEquals(0, entities.size());
   }
 }

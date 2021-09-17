@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 import com.baremaps.model.TileJSON;
 import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.testing.IntegrationTest;
+import com.fasterxml.jackson.core.util.JacksonFeature;
 import java.util.List;
 import java.util.UUID;
 import javax.sql.DataSource;
@@ -32,9 +32,8 @@ import org.glassfish.jersey.test.TestProperties;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
-public class TilesetsResourceTest extends JerseyTest {
+public class TilesetsResourceIntegrationTest extends JerseyTest {
 
   Jdbi jdbi;
 
@@ -51,7 +50,7 @@ public class TilesetsResourceTest extends JerseyTest {
 
     // Configure the service
     return new ResourceConfig()
-        .register(TilesetsResource.class)
+        .registerClasses(JacksonFeature.class, TilesetsResource.class)
         .register(
             new AbstractBinder() {
               @Override
@@ -63,7 +62,6 @@ public class TilesetsResourceTest extends JerseyTest {
   }
 
   @Test
-  @Category(IntegrationTest.class)
   public void test() {
     // List the tilesets
     List<UUID> ids = target().path("/tilesets").request().get(new GenericType<>() {});
