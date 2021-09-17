@@ -94,7 +94,7 @@ public class ImportResource {
               return URI.create(url.substring(5));
             });
     Map<String, String> query =
-        URLEncodedUtils.parse(uri, StandardCharsets.UTF_8).stream()
+        URLEncodedUtils.parse(uri, StandardCharsets.UTF_8.toString()).stream()
             .collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
     Map<String, Object> params = new HashMap<>();
     params.put("dbtype", "postgis");
