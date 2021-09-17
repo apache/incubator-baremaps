@@ -37,7 +37,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "update", description = "Update OpenStreetMap data in the database.")
+@Command(name = "update", description = "Update OpenStreetMap data in the database (experimental).")
 public class Update implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Update.class);

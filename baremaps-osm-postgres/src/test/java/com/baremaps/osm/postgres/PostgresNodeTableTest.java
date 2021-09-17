@@ -44,7 +44,7 @@ class PostgresNodeTableTest {
 
   @BeforeEach
   void beforeEach() throws SQLException, IOException {
-    dataSource = PostgresUtils.datasource(DATABASE_URL);
+    dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
     nodeStore = new PostgresNodeTable(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgresUtils.executeResource(connection, "osm_create_extensions.sql");

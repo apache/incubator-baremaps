@@ -100,14 +100,12 @@
     <module>baremaps-cli</module>
     <module>baremaps-blob</module>
     <module>baremaps-blob-s3</module>
-    <module>baremaps-ogcapi</module>
     <module>baremaps-osm</module>
     <module>baremaps-osm-lmdb</module>
     <module>baremaps-osm-rocksdb</module>
     <module>baremaps-osm-postgres</module>
     <module>baremaps-stream</module>
     <module>baremaps-server</module>
-    <module>baremaps-studio</module>
     <module>baremaps-testing</module>
     <module>baremaps-tile</module>
     <module>baremaps-tile-mbtiles</module>
@@ -339,16 +337,6 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-server</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-ogcapi</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
         <artifactId>baremaps-osm</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
@@ -369,11 +357,6 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-studio</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
         <artifactId>baremaps-tile</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
@@ -385,6 +368,36 @@
       </dependency>
       <dependency>
         <artifactId>baremaps-tile-postgres</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-server</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-server-common</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-server-editor</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-server-ogcapi</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-server-studio</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-server-viewer</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -550,6 +563,12 @@
         <groupId>io.swagger.parser.v3</groupId>
         <artifactId>swagger-parser</artifactId>
         <version>${version.lib.swagger-parser}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>

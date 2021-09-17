@@ -14,15 +14,13 @@
 
 package com.baremaps.cli;
 
+import static com.baremaps.server.common.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.server.CorsFilter;
-import com.baremaps.server.EditorResources;
-import com.baremaps.server.MaputnikResources;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerator.Feature;
+import com.baremaps.server.common.CorsFilter;
+import com.baremaps.server.editor.EditorResources;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
@@ -79,37 +77,29 @@ public class Edit implements Callable<Integer> {
       description = "The port of the server.")
   private int port = 9000;
 
-  @Option(
-      names = {"--open"},
-      paramLabel = "OPEN",
-      description = "Open the browser.")
-  private boolean open = false;
-
   @Override
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
-    DataSource datasource = PostgresUtils.datasource(database);
+    DataSource dataSource = PostgresUtils.datasource(database);
 
     // Configure serialization
-    ObjectMapper mapper =
-        new ObjectMapper()
-            .configure(Feature.IGNORE_UNKNOWN, true)
-            .setSerializationInclusion(Include.NON_NULL)
-            .setSerializationInclusion(Include.NON_EMPTY);
+    ObjectMapper objectMapper = defaultObjectMapper();
 
     // Configure the application
     ResourceConfig application =
         new ResourceConfig()
-            .registerClasses(CorsFilter.class, EditorResources.class, MaputnikResources.class)
-            .register(contextResolverFor(mapper))
+            .register(CorsFilter.class)
+            .register(EditorResources.class)
+            .register(contextResolverFor(objectMapper))
             .register(
                 new AbstractBinder() {
                   @Override
                   protected void configure() {
-                    bind(style).named("style").to(URI.class);
-                    bind(tileset).named("tileset").to(URI.class);
+                    bind(tileset).to(URI.class).named("tileset");
+                    bind(style).to(URI.class).named("style");
                     bind(blobStore).to(BlobStore.class);
-                    bind(datasource).to(DataSource.class);
+                    bind(dataSource).to(DataSource.class);
+                    bind(objectMapper).to(ObjectMapper.class);
                   }
                 });
 

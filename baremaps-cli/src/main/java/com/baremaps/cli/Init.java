@@ -14,14 +14,14 @@
 
 package com.baremaps.cli;
 
+import static com.baremaps.server.common.DefaultObjectMapper.defaultObjectMapper;
+
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreException;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.MbStyleSources;
 import com.baremaps.model.TileJSON;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URI;
@@ -56,11 +56,7 @@ public class Init implements Callable<Integer> {
   @Override
   public Integer call() throws BlobStoreException, IOException {
     BlobStore blobStore = options.blobStore();
-    ObjectMapper mapper =
-        new ObjectMapper()
-            .configure(Feature.IGNORE_UNKNOWN, true)
-            .setSerializationInclusion(Include.NON_NULL)
-            .setSerializationInclusion(Include.NON_EMPTY);
+    ObjectMapper mapper = defaultObjectMapper();
 
     if (style != null) {
       MbStyle styleObject = new MbStyle();

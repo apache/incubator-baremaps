@@ -14,21 +14,20 @@
 
 package com.baremaps.cli;
 
+import static com.baremaps.server.common.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
-import com.baremaps.ogcapi.resources.ApiResource;
-import com.baremaps.ogcapi.resources.CollectionsResource;
-import com.baremaps.ogcapi.resources.ConformanceResource;
-import com.baremaps.ogcapi.resources.RootResource;
-import com.baremaps.ogcapi.resources.StylesResource;
-import com.baremaps.ogcapi.resources.SwaggerResource;
-import com.baremaps.ogcapi.resources.TilesetsResource;
 import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.server.CorsFilter;
-import com.baremaps.studio.resources.ImportResource;
-import com.baremaps.studio.resources.StudioResource;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerator.Feature;
+import com.baremaps.server.common.CorsFilter;
+import com.baremaps.server.ogcapi.ApiResource;
+import com.baremaps.server.ogcapi.CollectionsResource;
+import com.baremaps.server.ogcapi.ConformanceResource;
+import com.baremaps.server.ogcapi.RootResource;
+import com.baremaps.server.ogcapi.StylesResource;
+import com.baremaps.server.ogcapi.SwaggerResource;
+import com.baremaps.server.ogcapi.TilesetsResource;
+import com.baremaps.server.studio.ImportResource;
+import com.baremaps.server.studio.StudioResource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
@@ -72,11 +71,7 @@ public class Studio implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     // Configure serialization
-    ObjectMapper mapper =
-        new ObjectMapper()
-            .configure(Feature.IGNORE_UNKNOWN, true)
-            .setSerializationInclusion(Include.NON_NULL)
-            .setSerializationInclusion(Include.NON_EMPTY);
+    ObjectMapper mapper = defaultObjectMapper();
 
     // Configure jdbi and set the ObjectMapper
     DataSource datasource = PostgresUtils.datasource(this.database);

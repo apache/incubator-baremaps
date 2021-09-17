@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="init" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.baremaps.cli.Baremaps" />
+    <module name="baremaps-cli" />
+    <option name="PROGRAM_PARAMETERS" value="init --tileset tileset-test.json --style style-test.json --log-level DEBUG" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/docs/examples/openstreetmap" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.baremaps.server.ogcapi.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

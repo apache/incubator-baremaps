@@ -14,13 +14,15 @@
 
 package com.baremaps.cli;
 
+import static com.baremaps.server.common.DefaultObjectMapper.defaultObjectMapper;
+import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
+
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreException;
 import com.baremaps.model.Query;
 import com.baremaps.model.TileJSON;
 import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.server.Mappers;
 import com.baremaps.stream.StreamUtils;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileBatcher;
@@ -31,8 +33,6 @@ import com.baremaps.tile.Tiler;
 import com.baremaps.tile.mbtiles.MBTiles;
 import com.baremaps.tile.postgres.PostgresQuery;
 import com.baremaps.tile.postgres.PostgresTileStore;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
@@ -109,12 +109,7 @@ public class Export implements Callable<Integer> {
 
   @Override
   public Integer call() throws TileStoreException, BlobStoreException, IOException {
-    ObjectMapper mapper =
-        new ObjectMapper()
-            .configure(Feature.IGNORE_UNKNOWN, true)
-            .setSerializationInclusion(Include.NON_NULL)
-            .setSerializationInclusion(Include.NON_EMPTY);
-
+    ObjectMapper mapper = defaultObjectMapper();
     DataSource datasource = PostgresUtils.datasource(database);
     BlobStore blobStore = options.blobStore();
 
@@ -162,7 +157,7 @@ public class Export implements Callable<Integer> {
   }
 
   private TileStore sourceTileStore(TileJSON tileset, DataSource datasource) {
-    List<PostgresQuery> queries = Mappers.map(tileset);
+    List<PostgresQuery> queries = asPostgresQuery(tileset);
     return new PostgresTileStore(datasource, queries);
   }
 

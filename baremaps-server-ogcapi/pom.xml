@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <parent>
+    <artifactId>baremaps-server</artifactId>
+    <groupId>com.baremaps</groupId>
+    <version>0.5.16-SNAPSHOT</version>
+    <relativePath>../baremaps-server</relativePath>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>baremaps-server-ogcapi</artifactId>
+  <name>baremaps-server-ogcapi</name>
+  <packaging>jar</packaging>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>5.1.0</version>
+        <executions>
+          <execution>
+            <id>ogcapi</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.basedir}/src/main/resources/ogcapi-openapi.yaml</inputSpec>
+              <generatorName>jaxrs-spec</generatorName>
+              <configOptions>
+                <apiPackage>com.baremaps.api</apiPackage>
+                <interfaceOnly>true</interfaceOnly>
+                <modelPackage>com.baremaps.model</modelPackage>
+                <returnResponse>true</returnResponse>
+                <sortModelPropertiesByRequiredFlag>false</sortModelPropertiesByRequiredFlag>
+                <sortParamsByRequiredFlag>false</sortParamsByRequiredFlag>
+                <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
+                <sourceFolder>src/gen/java/main</sourceFolder>
+              </configOptions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-tile-postgres</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-server-common</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>
