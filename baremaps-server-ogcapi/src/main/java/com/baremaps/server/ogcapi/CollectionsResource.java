@@ -22,6 +22,7 @@ import com.baremaps.model.Link;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -31,7 +32,9 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.argument.AbstractArgumentFactory;
 import org.jdbi.v3.core.argument.Argument;
@@ -45,6 +48,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CollectionsResource implements CollectionsApi {
+
+  @Context UriInfo uriInfo;
 
   private static final Logger logger = LoggerFactory.getLogger(CollectionsResource.class);
 
@@ -101,7 +106,7 @@ public class CollectionsResource implements CollectionsApi {
                     .bind("id", collectionId)
                     .map(new CollectionMapper())
                     .one());
-
+    collection.getLinks().add(new Link().href(uriInfo.getRequestUri().toString()).rel("self"));
     return Response.ok(collection).build();
   }
 
@@ -115,10 +120,16 @@ public class CollectionsResource implements CollectionsApi {
                         "select id, title, description, links, extent, item_type, crs from collections")
                     .map(new CollectionMapper())
                     .list());
-
-    Collections collections = new Collections();
-    collections.setCollections(collectionList);
-
+    collectionList.forEach(
+        collection ->
+            collection
+                .getLinks()
+                .add(
+                    new Link()
+                        .href(uriInfo.getRequestUri().toString() + "/" + collection.getId())
+                        .rel("self")));
+    Collections collections = new Collections().collections(collectionList);
+    collections.getLinks().add(new Link().href(uriInfo.getRequestUri().toString()).rel("self"));
     return Response.ok(collections).build();
   }
 
@@ -178,23 +189,28 @@ public class CollectionsResource implements CollectionsApi {
       collection.setId(UUID.fromString(rs.getString("id")));
       collection.setTitle(rs.getString("title"));
       collection.setDescription(rs.getString("description"));
-      collection.setLinks(
-          Arrays.stream((String[]) rs.getArray("links").getArray())
-              .map(
-                  link -> {
-                    try {
-                      return mapper.readValue(link, Link.class);
-                    } catch (JsonProcessingException e) {
-                      logger.error("An error occurred", e);
-                      return null;
-                    }
-                  })
-              .filter(Objects::nonNull)
-              .collect(Collectors.toList()));
+      Array links = rs.getArray("links");
+      if (links != null) {
+        collection.setLinks(
+            Arrays.stream((String[]) links.getArray())
+                .map(
+                    link -> {
+                      try {
+                        return mapper.readValue(link, Link.class);
+                      } catch (JsonProcessingException e) {
+                        logger.error("An error occurred", e);
+                        return null;
+                      }
+                    })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList()));
+      }
       collection.setExtent((Extent) rs.getObject("extent"));
       collection.setItemType(rs.getString("item_type"));
-      collection.setCrs(Arrays.asList((String[]) rs.getArray("crs").getArray()));
-
+      Array crs = rs.getArray("crs");
+      if (links != null) {
+        collection.setCrs(Arrays.asList((String[]) crs.getArray()));
+      }
       return collection;
     }
   }

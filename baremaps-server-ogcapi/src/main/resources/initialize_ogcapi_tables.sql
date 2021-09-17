@@ -4,7 +4,7 @@ create table if not exists collections (
     description text,
     links jsonb[],
     extent jsonb,
-    itme_type text default 'feature',
+    item_type text default 'feature',
     crs text[]
 );
 
