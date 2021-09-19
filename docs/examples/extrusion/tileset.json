@@ -1,0 +1,31 @@
+{
+  "tilejson": "2.2.0",
+  "center": [
+    0.1278,
+    51.5074,
+    14.0
+  ],
+  "bounds": [
+    -0.511482,
+    51.28554,
+    0.335437,
+    51.69344
+  ],
+  "minzoom": 12.0,
+  "maxzoom": 14.0,
+  "tiles": [
+    "http://localhost:9000/tiles/{z}/{x}/{y}.mvt"
+  ],
+  "vector_layers": [
+    {
+      "id": "building",
+      "queries": [
+        {
+          "minzoom": 12,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags || hstore('building:height'::text, ((CASE WHEN tags -> 'building:levels' ~ '^[0-9\\.]+$' THEN tags -> 'building:levels' ELSE '1' END)::real * 3)::text), geom FROM osm_ways WHERE tags ? 'building'"
+        }
+      ]
+    }
+  ]
+}

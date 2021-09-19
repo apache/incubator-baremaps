@@ -5,7 +5,7 @@ title: Contour Lines in Vector Tiles
 
 # Contour Lines in Vector Tiles
 
-This example shows how to produce contours from a digital elevation model (DEM) and how to display them with vector tiles.
+This example demonstrates how to produce contours from a digital elevation model (DEM) and how to display them with vector tiles.
 
 The approach consists in using the [`gdal_contour`](https://gdal.org/programs/gdal_contour.html) command.
 Therefore, start by installing `gdal`:
@@ -15,7 +15,7 @@ sudo apt-get install gdal-bin
 ```
 
 The geotiff present in this directory comes from the [ASTER](https://asterweb.jpl.nasa.gov/gdem.asp) dataset.
-If needed, you can now reproject the geotiff in the desired projection before importing it in the database.
+If needed, you can now reproject the geotiff in the desired projection (e.g. WebMercator) before importing it in the database.
 
 ```
 gdalwarp -rc \

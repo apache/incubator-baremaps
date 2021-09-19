@@ -38,6 +38,7 @@ public final class PostgresUtils {
       throw new IllegalArgumentException("PoolSize cannot be inferior to 1");
     }
     HikariConfig config = new HikariConfig();
+    config.setPoolName("BaremapsDataSource");
     config.setJdbcUrl(url);
     config.setMaximumPoolSize(poolSize);
     return new HikariDataSource(config);

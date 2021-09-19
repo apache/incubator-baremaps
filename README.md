@@ -35,7 +35,6 @@ Baremaps is inspired by [Osmosis](https://github.com/openstreetmap/osmosis), but
 
 On the longer run, the aim of the project is to work with a variety of data sources in order to create highly specialized and customized maps.
 
-
 ## Start Hacking
 
 * To contribute to this repo see [CONTRIBUTING](CONTRIBUTING.md) and [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md).

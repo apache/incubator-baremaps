@@ -11,11 +11,13 @@
     "type" : "fill",
     "source" : "baremaps",
     "source-layer" : "building",
-    "minzoom" : 1,
     "paint" : {
       "fill-color" : "rgba(255, 0, 0, 1)"
     }
   } ],
   "center" : [ 9.5554, 47.166 ],
+  "metadata" : {
+    "maputnik:renderer" : "mbgljs"
+  },
   "zoom" : 14
 }

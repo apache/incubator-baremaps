@@ -78,8 +78,6 @@ public class ImportService implements Callable<Void> {
 
   @Override
   public Void call() throws Exception {
-    logger.info("Importing data");
-
     Consumer<Block> cacheBlock = new CacheBlockConsumer(coordinateCache, referenceCache);
     Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinateCache, referenceCache);
     Consumer<Entity> reprojectGeometry = new ReprojectGeometryConsumer(4326, srid);
