@@ -71,7 +71,7 @@ public final class Change {
     return function.match(this);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Change.class.getSimpleName() + "[", "]")

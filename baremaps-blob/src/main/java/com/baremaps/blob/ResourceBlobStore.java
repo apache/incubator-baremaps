@@ -24,7 +24,7 @@ public class ResourceBlobStore implements BlobStore {
 
   private static final String SCHEMA = "res://";
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public Blob head(URI uri) throws BlobStoreException {
     try {
@@ -35,7 +35,7 @@ public class ResourceBlobStore implements BlobStore {
     }
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public Blob get(URI uri) throws BlobStoreException {
     try {

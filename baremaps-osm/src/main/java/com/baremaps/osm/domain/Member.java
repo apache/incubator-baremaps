@@ -89,7 +89,7 @@ public final class Member {
     return role;
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -104,13 +104,13 @@ public final class Member {
         && Objects.equal(role, member.role);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public int hashCode() {
     return Objects.hashCode(ref, type, role);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Member.class.getSimpleName() + "[", "]")

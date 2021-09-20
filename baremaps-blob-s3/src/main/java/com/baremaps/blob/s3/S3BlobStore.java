@@ -51,7 +51,7 @@ public class S3BlobStore implements BlobStore {
     this.client = client;
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public Blob head(URI uri) throws BlobStoreException {
     try {
@@ -68,7 +68,7 @@ public class S3BlobStore implements BlobStore {
     }
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public Blob get(URI uri) throws BlobStoreException {
     try {
@@ -87,7 +87,7 @@ public class S3BlobStore implements BlobStore {
     }
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public void put(URI uri, Blob blob) throws BlobStoreException {
     try {
@@ -106,7 +106,7 @@ public class S3BlobStore implements BlobStore {
     }
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public void delete(URI uri) throws BlobStoreException {
     try {

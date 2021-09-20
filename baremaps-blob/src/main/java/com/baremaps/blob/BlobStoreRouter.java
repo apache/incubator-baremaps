@@ -48,7 +48,7 @@ public class BlobStoreRouter implements BlobStore {
     return this;
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   public Blob head(URI uri) throws BlobStoreException {
     if (schemes.containsKey(uri.getScheme())) {
       return schemes.get(uri.getScheme()).head(uri);
@@ -57,7 +57,7 @@ public class BlobStoreRouter implements BlobStore {
     }
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public Blob get(URI uri) throws BlobStoreException {
     if (schemes.containsKey(uri.getScheme())) {
@@ -67,7 +67,7 @@ public class BlobStoreRouter implements BlobStore {
     }
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public void put(URI uri, Blob blob) throws BlobStoreException {
     if (schemes.containsKey(uri.getScheme())) {
@@ -77,7 +77,7 @@ public class BlobStoreRouter implements BlobStore {
     }
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public void delete(URI uri) throws BlobStoreException {
     if (schemes.containsKey(uri.getScheme())) {

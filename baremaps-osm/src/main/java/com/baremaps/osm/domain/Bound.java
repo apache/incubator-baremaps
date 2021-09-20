@@ -81,19 +81,19 @@ public class Bound implements Entity {
     return minLon;
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public void visit(EntityConsumer consumer) throws Exception {
     consumer.match(this);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public <T> T visit(EntityFunction<T> function) throws Exception {
     return function.match(this);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -109,13 +109,13 @@ public class Bound implements Entity {
         && Double.compare(bound.minLon, minLon) == 0;
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public int hashCode() {
     return Objects.hash(maxLat, maxLon, minLat, minLon);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Bound.class.getSimpleName() + "[", "]")

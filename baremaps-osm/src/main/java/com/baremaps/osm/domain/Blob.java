@@ -83,7 +83,7 @@ public class Blob {
     return size;
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Blob.class.getSimpleName() + "[", "]")

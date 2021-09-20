@@ -63,19 +63,19 @@ public final class Way extends Element {
     return nodes;
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public void visit(EntityConsumer consumer) throws Exception {
     consumer.match(this);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public <T> T visit(EntityFunction<T> function) throws Exception {
     return function.match(this);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -91,13 +91,13 @@ public final class Way extends Element {
     return Objects.equals(nodes, way.nodes);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public int hashCode() {
     return Objects.hash(super.hashCode(), nodes);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Way.class.getSimpleName() + "[", "]")

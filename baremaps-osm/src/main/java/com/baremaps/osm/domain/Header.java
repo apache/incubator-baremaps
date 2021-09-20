@@ -122,14 +122,14 @@ public class Header implements Entity {
         && Objects.equals(writingProgram, header.writingProgram);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public int hashCode() {
     return Objects.hash(
         replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Header.class.getSimpleName() + "[", "]")

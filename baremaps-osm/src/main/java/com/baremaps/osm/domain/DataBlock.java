@@ -84,13 +84,13 @@ public class DataBlock extends Block {
     return relations;
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public void visit(BlockConsumer consumer) throws Exception {
     consumer.match(this);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public <T> T visit(BlockFunction<T> function) throws Exception {
     return function.match(this);

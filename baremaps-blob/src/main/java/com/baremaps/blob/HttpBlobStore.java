@@ -24,7 +24,7 @@ import java.net.URI;
 /** A {@code BlobStore} for reading and writing blobs over HTTP. */
 public class HttpBlobStore implements BlobStore {
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public Blob head(URI uri) throws BlobStoreException {
     try {
@@ -39,7 +39,7 @@ public class HttpBlobStore implements BlobStore {
     }
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public Blob get(URI uri) throws BlobStoreException {
     try {
@@ -55,7 +55,7 @@ public class HttpBlobStore implements BlobStore {
     }
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public void put(URI uri, Blob blob) throws BlobStoreException {
     try {
@@ -72,7 +72,7 @@ public class HttpBlobStore implements BlobStore {
     }
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public void delete(URI uri) throws BlobStoreException {
     try {

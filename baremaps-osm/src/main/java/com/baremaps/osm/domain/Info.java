@@ -80,7 +80,7 @@ public class Info {
     return uid;
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -96,13 +96,13 @@ public class Info {
         && Objects.equals(timestamp, info.timestamp);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public int hashCode() {
     return Objects.hash(version, timestamp, changeset, uid);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Info.class.getSimpleName() + "[", "]")

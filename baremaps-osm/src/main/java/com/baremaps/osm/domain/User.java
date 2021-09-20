@@ -53,7 +53,7 @@ public final class User {
     return name;
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -66,7 +66,7 @@ public final class User {
     return id == user.id && Objects.equal(name, user.name);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public int hashCode() {
     return Objects.hashCode(id, name);

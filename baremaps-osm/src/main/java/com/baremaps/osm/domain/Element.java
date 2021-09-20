@@ -97,7 +97,7 @@ public abstract class Element implements Entity {
     this.geometry = geometry;
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -113,13 +113,13 @@ public abstract class Element implements Entity {
         && Objects.equals(geometry, element.geometry);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public int hashCode() {
     return Objects.hash(id, info, tags, geometry);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Element.class.getSimpleName() + "[", "]")

@@ -78,19 +78,19 @@ public final class Node extends Element {
     return lat;
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public void visit(EntityConsumer consumer) throws Exception {
     consumer.match(this);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public <T> T visit(EntityFunction<T> function) throws Exception {
     return function.match(this);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -106,13 +106,13 @@ public final class Node extends Element {
     return Double.compare(node.lon, lon) == 0 && Double.compare(node.lat, lat) == 0;
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public int hashCode() {
     return Objects.hash(super.hashCode(), lon, lat);
   }
 
-  /** {@inheritdoc} */
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Node.class.getSimpleName() + "[", "]")
