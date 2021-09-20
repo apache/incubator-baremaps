@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <parent>
     <artifactId>baremaps</artifactId>
@@ -27,13 +28,14 @@
         <groupId>org.apache.maven.plugins</groupId>
         <version>${version.plugin.surefire}</version>
         <configuration>
-          <excludedGroups>com.baremaps.testing.IntegrationTest</excludedGroups>
+          <excludes>**/*IntegrationTest.java</excludes>
+          <excludedGroups>integration</excludedGroups>
         </configuration>
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.surefire</groupId>
             <artifactId>surefire-junit4</artifactId>
-            <version>2.16</version>
+            <version>${version.plugin.surefire}</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -58,6 +60,10 @@
       <groupId>org.jdbi</groupId>
       <artifactId>jdbi3-jackson2</artifactId>
     </dependency>
+    <dependency>
+      <artifactId>baremaps-postgres</artifactId>
+      <groupId>com.baremaps</groupId>
+    </dependency>
 
     <!-- jersey -->
     <dependency>
@@ -71,6 +77,10 @@
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-sse</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
     </dependency>
 
     <!-- openapi -->
@@ -91,6 +101,11 @@
 
     <!-- testing -->
     <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-json-jackson</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.glassfish.jersey.test-framework</groupId>
       <artifactId>jersey-test-framework-util</artifactId>
       <scope>test</scope>
@@ -106,10 +121,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-    <groupId>com.baremaps</groupId>
-    <artifactId>baremaps-testing</artifactId>
-    <scope>test</scope>
-  </dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-testing</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

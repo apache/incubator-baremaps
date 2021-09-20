@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <groupId>com.baremaps</groupId>
   <artifactId>baremaps</artifactId>
@@ -49,9 +50,12 @@
   </distributionManagement>
 
   <properties>
+    <!-- project -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
+
+    <!-- libraries -->
     <version.lib.caffeine>3.0.2</version.lib.caffeine>
     <version.lib.commons-compress>1.19</version.lib.commons-compress>
     <version.lib.dbcp2>2.8.0</version.lib.dbcp2>
@@ -78,21 +82,28 @@
     <version.lib.jdbi>3.21.0</version.lib.jdbi>
     <version.lib.awaitability>3.0.0</version.lib.awaitability>
     <version.lib.jsqlparser>4.1</version.lib.jsqlparser>
-    <version.plugin.compiler>3.8.1</version.plugin.compiler>
-    <version.plugin.jacoco>0.8.7</version.plugin.jacoco>
-    <version.plugin.surefire>2.22.2</version.plugin.surefire>
-    <version.plugin.surefire.provider.junit>1.3.2</version.plugin.surefire.provider.junit>
-    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-    <sonar.organization>baremaps</sonar.organization>
-    <sonar.projectKey>baremaps_baremaps</sonar.projectKey>
-    <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
-    <version.lib.testcontainers>1.15.3</version.lib.testcontainers>
+
+    <!-- testing -->
+    <version.lib.testcontainers>1.16.0</version.lib.testcontainers>
     <version.lib.junit-vintage>5.7.2</version.lib.junit-vintage>
     <version.lib.rocksdb>6.22.1.1</version.lib.rocksdb>
     <version.lib.mockito>1.10.19</version.lib.mockito>
     <version.lib.servlet>3.1.0</version.lib.servlet>
     <version.lib.activation>1.1.1</version.lib.activation>
     <version.lib.swagger-parser>2.0.24</version.lib.swagger-parser>
+    <version.lib.jaxb-runtime>2.3.5</version.lib.jaxb-runtime>
+
+    <!-- plugins -->
+    <version.plugin.compiler>3.8.1</version.plugin.compiler>
+    <version.plugin.jacoco>0.8.7</version.plugin.jacoco>
+    <version.plugin.surefire>2.22.2</version.plugin.surefire>
+    <version.plugin.surefire.provider.junit>1.3.2</version.plugin.surefire.provider.junit>
+
+    <!-- sonar -->
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.organization>baremaps</sonar.organization>
+    <sonar.projectKey>baremaps_baremaps</sonar.projectKey>
+    <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
   </properties>
 
   <modules>
@@ -123,6 +134,7 @@
             <groupId>org.apache.maven.plugins</groupId>
             <version>${version.plugin.surefire}</version>
             <configuration>
+              <excludes>none</excludes>
               <excludedGroups>none</excludedGroups>
             </configuration>
           </plugin>
@@ -274,6 +286,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <version>${version.plugin.surefire}</version>
         <configuration>
+          <excludes>**/*IntegrationTest.java</excludes>
           <excludedGroups>integration</excludedGroups>
         </configuration>
       </plugin>
@@ -293,7 +306,7 @@
               <version>1.8</version>
               <style>GOOGLE</style>
             </googleJavaFormat>
-            <removeUnusedImports />
+            <removeUnusedImports/>
             <licenseHeader>
               <file>${maven.multiModuleProjectDirectory}/LICENSE.header</file>
             </licenseHeader>
@@ -305,6 +318,11 @@
 
   <reporting>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>${version.plugin.surefire}</version>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
@@ -558,6 +576,11 @@
         <groupId>io.swagger</groupId>
         <artifactId>swagger-jersey2-jaxrs</artifactId>
         <version>${version.lib.swagger}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>${version.lib.jaxb-runtime}</version>
       </dependency>
       <dependency>
         <groupId>io.swagger.parser.v3</groupId>

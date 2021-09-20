@@ -66,6 +66,7 @@ public class ImportResource {
       @FormDataParam("file") InputStream fileInputStream,
       @FormDataParam("file") FormDataContentDisposition fileMetaData)
       throws Exception {
+
     // Setup Collection
     String fileName = fileMetaData.getFileName();
     Collection collection =

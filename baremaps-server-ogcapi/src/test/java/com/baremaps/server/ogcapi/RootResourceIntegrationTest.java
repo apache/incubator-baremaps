@@ -17,14 +17,12 @@ package com.baremaps.server.ogcapi;
 import static org.junit.Assert.assertEquals;
 
 import com.baremaps.model.LandingPage;
-import com.baremaps.testing.IntegrationTest;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
-public class RootResourceTest extends JerseyTest {
+public class RootResourceIntegrationTest extends JerseyTest {
 
   @Override
   protected ResourceConfig configure() {
@@ -34,7 +32,6 @@ public class RootResourceTest extends JerseyTest {
   }
 
   @Test
-  @Category(IntegrationTest.class)
   public void testRoot() {
     LandingPage landingPage = target().path("").request().get(LandingPage.class);
     assertEquals("Baremaps", landingPage.getTitle());
