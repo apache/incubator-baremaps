@@ -11,7 +11,7 @@ This example shows how to create vector tiles from the Natural Earth dataset.
 The first step consists in downloading and decompressing the Natural Earth data:
 
 ```bash
-wget http://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip
+wget https://naturalearth.s3.amazonaws.com/packages/natural_earth_vector.sqlite.zip
 unzip -d data natural_earth_vector.sqlite.zip
 ```
 
