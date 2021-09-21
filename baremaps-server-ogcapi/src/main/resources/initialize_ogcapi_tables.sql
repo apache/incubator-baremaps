@@ -1,11 +1,6 @@
 create table if not exists collections (
     id uuid primary key,
-    title text,
-    description text,
-    links jsonb[],
-    extent jsonb,
-    item_type text default 'feature',
-    crs text[]
+    collection jsonb
 );
 
 create table if not exists styles (
