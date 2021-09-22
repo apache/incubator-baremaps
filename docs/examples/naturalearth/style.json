@@ -1,12 +1,20 @@
 {
   "version" : 8,
-  "metadata" : { },
+  "center" : [ 0, 0 ],
+  "zoom" : 4,
   "sources" : {
     "baremaps" : {
       "type" : "vector",
       "url" : "http://localhost:9000/tiles.json"
     }
   },
-  "layers" : [ ],
-  "reload" : false
+  "layers" : [ {
+    "id" : "building",
+    "type" : "fill",
+    "source" : "baremaps",
+    "source-layer" : "building",
+    "paint" : {
+      "fill-color" : "rgba(255, 0, 0, 1)"
+    }
+  } ] 
 }
