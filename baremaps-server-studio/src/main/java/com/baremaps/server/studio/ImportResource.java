@@ -20,9 +20,9 @@ import com.baremaps.model.ExtentSpatial;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -104,23 +104,20 @@ public class ImportResource {
           var features = fc.features();
           while (features.hasNext()) {
             SimpleFeature feature = (SimpleFeature) features.next();
-            String tags =
-                feature.getProperties().stream()
-                    .filter(property -> !property.getName().getLocalPart().equals("geometry"))
-                    .map(
-                        property ->
-                            String.format(
-                                "\"%s\" => \"%s\"",
-                                property.getName().getLocalPart(), property.getValue().toString()))
-                    .collect(Collectors.joining(", "));
-
+            HashMap<String, String> properties = new HashMap<>();
+            feature.getProperties().stream()
+                .filter(property -> !property.getName().getLocalPart().equals("geometry"))
+                .forEach(
+                    property ->
+                        properties.put(
+                            property.getName().getLocalPart(), property.getValue().toString()));
             Object geom = feature.getDefaultGeometryProperty().getValue();
             handle
                 .createUpdate(
                     String.format(
-                        "insert into \"%s\" (tags, geom) values (CAST(:tags as hstore), ST_Transform(ST_SetSRID(CAST(:geom as geometry), 4326), 3857))",
+                        "insert into \"%s\" (tags, geom) values (:tags, ST_Transform(ST_SetSRID(CAST(:geom as geometry), 4326), 3857))",
                         collection.getId()))
-                .bind("tags", tags)
+                .bind("tags", properties)
                 .bind("geom", geom.toString())
                 .execute();
           }

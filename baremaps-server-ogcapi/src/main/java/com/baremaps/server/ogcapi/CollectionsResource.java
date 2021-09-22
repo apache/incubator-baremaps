@@ -49,8 +49,7 @@ public class CollectionsResource implements CollectionsApi {
     jdbi.useHandle(
         handle ->
             handle
-                .createUpdate(
-                    "insert into collections (id, collection) values (:id, CAST(:collection AS jsonb))")
+                .createUpdate("insert into collections (id, collection) values (:id, :collection)")
                 .bind("id", collection.getId())
                 .bindByType("collection", collection, COLLECTION)
                 .execute());
@@ -107,8 +106,7 @@ public class CollectionsResource implements CollectionsApi {
     jdbi.useHandle(
         handle ->
             handle
-                .createUpdate(
-                    "update collections set collection = cast(:collection as jsonb) where id = :id")
+                .createUpdate("update collections set collection = :collection where id = :id")
                 .bind("id", collectionId)
                 .bindByType("collection", collection, COLLECTION)
                 .execute());
