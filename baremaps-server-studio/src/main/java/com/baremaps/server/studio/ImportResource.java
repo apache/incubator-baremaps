@@ -15,13 +15,14 @@
 package com.baremaps.server.studio;
 
 import com.baremaps.model.Collection;
+import com.baremaps.model.Extent;
+import com.baremaps.model.ExtentSpatial;
 import java.io.InputStream;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -29,28 +30,20 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.geotools.data.DataStore;
-import org.geotools.data.DataStoreFinder;
-import org.geotools.data.DefaultTransaction;
-import org.geotools.data.Transaction;
-import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.data.simple.SimpleFeatureStore;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdbi.v3.core.Jdbi;
-import org.opengis.feature.simple.SimpleFeatureType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jdbi.v3.core.qualifier.QualifiedType;
+import org.jdbi.v3.json.Json;
+import org.opengis.feature.simple.SimpleFeature;
 
 @Singleton
 @Path("")
 public class ImportResource {
 
-  private static final Logger logger = LoggerFactory.getLogger(ImportResource.class);
+  private static final QualifiedType<Collection> COLLECTION =
+      QualifiedType.of(Collection.class).with(Json.class);
 
   private final Jdbi jdbi;
 
@@ -66,93 +59,70 @@ public class ImportResource {
       @FormDataParam("file") InputStream fileInputStream,
       @FormDataParam("file") FormDataContentDisposition fileMetaData)
       throws Exception {
+    // Read FeatureCollection
+    FeatureJSON fjson = new FeatureJSON();
+    var fc = fjson.readFeatureCollection(fileInputStream);
 
     // Setup Collection
     String fileName = fileMetaData.getFileName();
     Collection collection =
         new Collection()
             .id(UUID.randomUUID())
-            .title(fileName.substring(0, fileName.lastIndexOf(".") - 1));
+            .title(fileName.substring(0, fileName.lastIndexOf(".") - 1))
+            .extent(
+                new Extent()
+                    .spatial(
+                        new ExtentSpatial()
+                            .bbox(
+                                List.of(
+                                    List.of(
+                                        fc.getBounds().getMinX(),
+                                        fc.getBounds().getMinY(),
+                                        fc.getBounds().getMaxX(),
+                                        fc.getBounds().getMaxY())))))
+            .count(fc.size())
+            .created(new Date())
+            .geometryType(
+                fc.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName());
 
-    // Read FeatureCollection
-    FeatureJSON fjson = new FeatureJSON();
-    var fc = fjson.readFeatureCollection(fileInputStream);
-    SimpleFeatureType schema = (SimpleFeatureType) fc.getSchema();
-
-    // Build FeatureType
-    SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-    builder.setName(collection.getId().toString());
-    builder.setCRS(schema.getCoordinateReferenceSystem()); // <- Coordinate reference system
-    builder.addAll(schema.getAttributeDescriptors());
-    SimpleFeatureType SCHEMA = builder.buildFeatureType();
-
-    // Setup DataStore
-    URI uri =
-        jdbi.withHandle(
-            haandle -> {
-              String url = haandle.getConnection().getMetaData().getURL();
-              logger.debug(url);
-              return URI.create(url.substring(5));
-            });
-    Map<String, String> query =
-        URLEncodedUtils.parse(uri, StandardCharsets.UTF_8.toString()).stream()
-            .collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
-    Map<String, Object> params = new HashMap<>();
-    params.put("dbtype", "postgis");
-    params.put("host", uri.getHost());
-    params.put("port", uri.getPort());
-    params.put("schema", query.getOrDefault("currentSchema", "public"));
-    params.put("database", uri.getPath().substring(1));
-    params.put("user", query.getOrDefault("user", "postgres"));
-    params.put("passwd", query.getOrDefault("password", "postgres"));
-    params.forEach((key, value) -> logger.debug("Params: " + key + " -> " + value));
-    DataStore dataStore = DataStoreFinder.getDataStore(params);
-    dataStore.createSchema(SCHEMA);
-
-    // Load features
-    Transaction transaction = new DefaultTransaction("create");
-    SimpleFeatureSource featureSource = dataStore.getFeatureSource(SCHEMA.getName().getLocalPart());
-    if (featureSource instanceof SimpleFeatureStore) {
-      SimpleFeatureStore featureStore = (SimpleFeatureStore) featureSource;
-      featureStore.setTransaction(transaction);
-      try {
-        featureStore.addFeatures(fc);
-        transaction.commit();
-      } catch (Exception e) {
-        logger.error("Failed to load data", e);
-        transaction.rollback();
-        dataStore.removeSchema(SCHEMA.getName().getLocalPart());
-        return Response.serverError().build();
-      } finally {
-        transaction.close();
-        // make schema compatible for tile query
-        String sql =
-            String.format(
-                "alter table \"%1$s\" rename fid to id;"
-                    + "alter table \"%1$s\" add column tags hstore, add column geom geometry;"
-                    + "update \"%1$s\" set geom = ST_Transform(ST_SetSRID(geometry, 4326), 3857);"
-                    + "alter table \"%1$s\" drop column geometry;",
-                collection.getId());
-        jdbi.useHandle(handle -> handle.execute(sql));
-      }
-    } else {
-      logger.error(SCHEMA.getName().getLocalPart() + " does not support read/write access");
-      return Response.serverError().build();
-    }
-
-    // Register collection
-    jdbi.useHandle(
-        handle ->
+    // Load data
+    jdbi.useTransaction(
+        handle -> {
+          // Create collection
+          handle
+              .createUpdate(
+                  "insert into collections (id, collection) values (:id, CAST(:collection AS jsonb))")
+              .bind("id", collection.getId())
+              .bindByType("collection", collection, COLLECTION)
+              .execute();
+          // Create table
+          handle.execute(
+              String.format(
+                  "create table \"%s\" (id serial, tags hstore, geom geometry)",
+                  collection.getId()));
+          // Insert features
+          var features = fc.features();
+          while (features.hasNext()) {
+            SimpleFeature feature = (SimpleFeature) features.next();
+            HashMap<String, String> properties = new HashMap<>();
+            feature.getProperties().stream()
+                .filter(property -> !property.getName().getLocalPart().equals("geometry"))
+                .forEach(
+                    property ->
+                        properties.put(
+                            property.getName().getLocalPart(), property.getValue().toString()));
+            Object geom = feature.getDefaultGeometryProperty().getValue();
             handle
-                .createUpdate("insert into collections (id, title) values (:id, :title)")
-                .bind("id", collection.getId())
-                .bind("title", collection.getTitle())
-                .execute());
+                .createUpdate(
+                    String.format(
+                        "insert into \"%s\" (tags, geom) values (:tags, ST_Transform(ST_SetSRID(CAST(:geom as geometry), 4326), 3857))",
+                        collection.getId()))
+                .bind("tags", properties)
+                .bind("geom", geom.toString())
+                .execute();
+          }
+        });
 
     return Response.created(URI.create("collections/" + collection.getId())).build();
   }
-
-  //  Stream<SimpleFeature>
-  //  Stream<Geodata>
-  //  org.geoapi.feature.simple.SimpleFeature
 }

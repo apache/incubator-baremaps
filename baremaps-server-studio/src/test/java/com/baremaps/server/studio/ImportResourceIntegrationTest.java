@@ -15,18 +15,29 @@
 package com.baremaps.server.studio;
 
 import static com.baremaps.testing.TestConstants.DATABASE_URL;
+import static org.junit.Assert.assertEquals;
 
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.postgres.jdbi.PostgisPlugin;
+import com.google.common.io.Resources;
+import java.io.File;
+import java.net.URL;
 import javax.sql.DataSource;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.MultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
+import org.glassfish.jersey.media.multipart.file.FileDataBodyPart;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
+import org.junit.Test;
 
 public class ImportResourceIntegrationTest extends JerseyTest {
 
@@ -48,7 +59,8 @@ public class ImportResourceIntegrationTest extends JerseyTest {
     jdbi.useHandle(
         handle ->
             handle.execute(
-                "create table collections (id uuid primary key, title text, description text, links jsonb[] default '{}'::jsonb[], extent jsonb, item_type text default 'feature', crs text[])"));
+                "create extension if not exists hstore;"
+                    + "create table collections (id uuid primary key, collection jsonb)"));
 
     // Configure the service
     return new ResourceConfig()
@@ -67,24 +79,21 @@ public class ImportResourceIntegrationTest extends JerseyTest {
     clientConfig.register(MultiPartFeature.class);
   }
 
-  //  @Test
-  //  public void test() {
-  //    String FILE = "features.geojson";
-  //    URL url = Resources.getResource(FILE);
-  //    File data = new File(url.getFile());
-  //    FileDataBodyPart fileDataBodyPart =
-  //        new FileDataBodyPart("file", data, MediaType.APPLICATION_JSON_TYPE);
-  //    MultiPart entity = new FormDataMultiPart().bodyPart(fileDataBodyPart);
-  //    Response response =
-  //        target()
-  //            .path("studio/import")
-  //            .request()
-  //            .header(
-  //                "Content-Disposition", "form-data; name=\"file\";
-  // fileName=\"features.geojson\"")
-  //            .post(Entity.entity(entity, MediaType.MULTIPART_FORM_DATA_TYPE));
-  //    // TODO: fix test
-  //    assertEquals(201, response.getStatus());
-  //  }
-
+  @Test
+  public void test() {
+    String FILE = "features.geojson";
+    URL url = Resources.getResource(FILE);
+    File data = new File(url.getFile());
+    FileDataBodyPart fileDataBodyPart =
+        new FileDataBodyPart("file", data, MediaType.APPLICATION_JSON_TYPE);
+    MultiPart entity = new FormDataMultiPart().bodyPart(fileDataBodyPart);
+    Response response =
+        target()
+            .path("studio/import")
+            .request()
+            .header(
+                "Content-Disposition", "form-data; name=\"file\"; fileName=\"features.geojson\"")
+            .post(Entity.entity(entity, MediaType.MULTIPART_FORM_DATA_TYPE));
+    assertEquals(201, response.getStatus());
+  }
 }

@@ -55,8 +55,7 @@ public class CollectionsResourceIntegrationTest extends JerseyTest {
     jdbi = Jdbi.create(connection).installPlugin(new Jackson2Plugin());
     jdbi.useHandle(
         handle ->
-            handle.execute(
-                "create table collections (id uuid primary key, title text, description text, links jsonb[] default '{}'::jsonb[], extent jsonb, item_type text default 'feature', crs text[])"));
+            handle.execute("create table collections (id uuid primary key, collection jsonb)"));
 
     // Configure the service
     return new ResourceConfig()
@@ -73,15 +72,8 @@ public class CollectionsResourceIntegrationTest extends JerseyTest {
   @Test
   public void test() {
     // Create a new collection
-    Collection collection = new Collection();
-    collection.setTitle("test");
-    collection.setLinks(List.of());
-
-    Link link = new Link();
-    link.setHref("/link");
-    link.setRel("self");
-
-    collection.setLinks(List.of(link));
+    Collection collection =
+        new Collection().title("test").links(List.of(new Link().href("/link").rel("self")));
 
     // List the collections
     Collections collections = target().path("/collections").request().get(Collections.class);

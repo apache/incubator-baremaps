@@ -17,81 +17,54 @@ package com.baremaps.server.ogcapi;
 import com.baremaps.api.CollectionsApi;
 import com.baremaps.model.Collection;
 import com.baremaps.model.Collections;
-import com.baremaps.model.Extent;
 import com.baremaps.model.Link;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
-import java.sql.Array;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.argument.AbstractArgumentFactory;
-import org.jdbi.v3.core.argument.Argument;
-import org.jdbi.v3.core.array.SqlArrayType;
-import org.jdbi.v3.core.config.ConfigRegistry;
-import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.qualifier.QualifiedType;
-import org.jdbi.v3.core.statement.StatementContext;
 import org.jdbi.v3.json.Json;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CollectionsResource implements CollectionsApi {
 
   @Context UriInfo uriInfo;
 
-  private static final Logger logger = LoggerFactory.getLogger(CollectionsResource.class);
-
-  private static final QualifiedType<Extent> EXTENT =
-      QualifiedType.of(Extent.class).with(Json.class);
+  private static final QualifiedType<Collection> COLLECTION =
+      QualifiedType.of(Collection.class).with(Json.class);
 
   private final Jdbi jdbi;
-
-  static ObjectMapper mapper = new ObjectMapper();
 
   @Inject
   public CollectionsResource(Jdbi jdbi) {
     this.jdbi = jdbi;
-    this.jdbi.registerArrayType(new LinkArrayType());
-    this.jdbi.registerArgument(new LinkArgumentFactory());
-    this.jdbi.registerRowMapper(new CollectionMapper());
   }
 
   @Override
   public Response addCollection(Collection collection) {
-    UUID collectionId = UUID.randomUUID();
+    collection.setId(UUID.randomUUID());
     jdbi.useHandle(
         handle ->
             handle
-                .createUpdate(
-                    "insert into collections (id, title, description, links, extent, item_type, crs) values (:id, :title, :description, CAST(:links AS jsonb[]), CAST(:extent AS jsonb), :item_type, :crs)") //
-                .bind("id", collectionId)
-                .bind("title", collection.getTitle())
-                .bind("description", collection.getDescription())
-                .bindArray("links", Link.class, collection.getLinks())
-                .bindByType("extent", collection.getExtent(), EXTENT)
-                .bind("item_type", collection.getItemType())
-                .bindArray("crs", String.class, collection.getCrs())
+                .createUpdate("insert into collections (id, collection) values (:id, :collection)")
+                .bind("id", collection.getId())
+                .bindByType("collection", collection, COLLECTION)
                 .execute());
-    return Response.created(URI.create("collections/" + collectionId)).build();
+    return Response.created(URI.create("collections/" + collection.getId())).build();
   }
 
   @Override
   public Response deleteCollection(UUID collectionId) {
     jdbi.useHandle(
-        handle -> handle.execute("delete from collections where id = (?)", collectionId));
-
+        handle ->
+            handle.execute(
+                String.format(
+                    "drop table if exists \"%s\"; delete from collections where id = (?)",
+                    collectionId),
+                collectionId));
     return Response.noContent().build();
   }
 
@@ -101,10 +74,9 @@ public class CollectionsResource implements CollectionsApi {
         jdbi.withHandle(
             handle ->
                 handle
-                    .createQuery(
-                        "select id, title, description, links, extent, item_type, crs from collections where id = :id")
+                    .createQuery("select collection from collections where id = :id")
                     .bind("id", collectionId)
-                    .map(new CollectionMapper())
+                    .mapTo(COLLECTION)
                     .one());
     collection.getLinks().add(new Link().href(uriInfo.getRequestUri().toString()).rel("self"));
     return Response.ok(collection).build();
@@ -115,11 +87,7 @@ public class CollectionsResource implements CollectionsApi {
     List<Collection> collectionList =
         jdbi.withHandle(
             handle ->
-                handle
-                    .createQuery(
-                        "select id, title, description, links, extent, item_type, crs from collections")
-                    .map(new CollectionMapper())
-                    .list());
+                handle.createQuery("select collection from collections").mapTo(COLLECTION).list());
     collectionList.forEach(
         collection ->
             collection
@@ -138,80 +106,10 @@ public class CollectionsResource implements CollectionsApi {
     jdbi.useHandle(
         handle ->
             handle
-                .createUpdate(
-                    "update collections set title = :title, description = :description, links = cast(:links as jsonb[]), extent = cast(:extent as jsonb), item_type = :item_type, crs = :crs where id = :id")
-                .bind("title", collection.getTitle())
-                .bind("description", collection.getDescription())
-                .bindArray("links", Link.class, collection.getLinks())
-                .bindByType("extent", collection.getExtent(), EXTENT)
-                .bind("item_type", collection.getItemType())
-                .bindArray("crs", String.class, collection.getCrs())
+                .createUpdate("update collections set collection = :collection where id = :id")
                 .bind("id", collectionId)
+                .bindByType("collection", collection, COLLECTION)
                 .execute());
-
     return Response.noContent().build();
-  }
-
-  static class LinkArgumentFactory extends AbstractArgumentFactory<Link> {
-
-    LinkArgumentFactory() {
-      super(Types.VARCHAR);
-    }
-
-    @Override
-    protected Argument build(Link value, ConfigRegistry config) {
-      return (position, statement, ctx) -> statement.setString(position, value.toString());
-    }
-  }
-
-  static class LinkArrayType implements SqlArrayType<Link> {
-
-    @Override
-    public String getTypeName() {
-      return "text";
-    }
-
-    @Override
-    public Object convertArrayElement(Link link) {
-      try {
-        return mapper.writeValueAsString(link);
-      } catch (JsonProcessingException e) {
-        logger.error("An error occurred", e);
-        return null;
-      }
-    }
-  }
-
-  static class CollectionMapper implements RowMapper<Collection> {
-    @Override
-    public Collection map(ResultSet rs, StatementContext ctx) throws SQLException {
-      Collection collection = new Collection();
-      collection.setId(UUID.fromString(rs.getString("id")));
-      collection.setTitle(rs.getString("title"));
-      collection.setDescription(rs.getString("description"));
-      Array links = rs.getArray("links");
-      if (links != null) {
-        collection.setLinks(
-            Arrays.stream((String[]) links.getArray())
-                .map(
-                    link -> {
-                      try {
-                        return mapper.readValue(link, Link.class);
-                      } catch (JsonProcessingException e) {
-                        logger.error("An error occurred", e);
-                        return null;
-                      }
-                    })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
-      }
-      collection.setExtent((Extent) rs.getObject("extent"));
-      collection.setItemType(rs.getString("item_type"));
-      Array crs = rs.getArray("crs");
-      if (links != null) {
-        collection.setCrs(Arrays.asList((String[]) crs.getArray()));
-      }
-      return collection;
-    }
   }
 }
