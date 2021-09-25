@@ -35,6 +35,7 @@ import javax.sql.DataSource;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
+import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.Join;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,25 +49,19 @@ public class PostgresTileStore implements TileStore {
   private static final String WITH_QUERY = "with %1$s %2$s";
 
   private static final String SOURCE_QUERY =
-      ""
-          + "%1$s as ("
-          + "select "
-          + "id, "
-          + "(tags || hstore('geometry', lower(replace(st_geometrytype(geom), 'ST_', '')))) as tags, "
-          + "st_asmvtgeom(geom, $envelope, 4096, 256, true) as geom "
-          + "from ("
-          + "select %2$s as id, %3$s as tags, %4$s as geom from %5$s%6$s"
-          + ") as source "
-          + "where %7$s st_intersects(geom, $envelope)"
-          + ")";
+      "%1$s as (select * from %3$s%4$s where %5$s st_intersects(%2$s, $envelope))";
 
   private static final String SOURCE_WHERE = "(%s) and";
 
   private static final String TARGET_QUERY =
-      "" + "select " + "st_asmvt(target, '%1$s', 4096, 'geom', 'id') " + "from (%2$s) as target";
+      "select st_asmvt(target, '%1$s', 4096, 'geom', 'id') from (%2$s) as target";
 
   private static final String TARGET_LAYER_QUERY =
-      "" + "select id, hstore_to_jsonb_loose(tags) as tags, geom from %1$s %2$s";
+      "select "
+          + "%1$s as id, "
+          + "hstore_to_jsonb_loose(%2$s || hstore('geometry', lower(replace(st_geometrytype(%3$s), 'ST_', '')))) as tags, "
+          + "st_asmvtgeom(%3$s, $envelope, 4096, 256, true) as geom "
+          + "from %4$s %5$s";
 
   private static final String TARGET_WHERE = "where %s";
 
@@ -141,8 +136,6 @@ public class PostgresTileStore implements TileStore {
 
   protected String sourceQuery(PostgresCTE queryKey, List<PostgresQuery> queryValues) {
     String alias = queryKey.getAlias();
-    String id = queryKey.getSelectItems().get(0).toString();
-    String tags = queryKey.getSelectItems().get(1).toString();
     String geom = queryKey.getSelectItems().get(2).toString();
     String from = queryKey.getFromItem().toString();
     String joins =
@@ -154,13 +147,13 @@ public class PostgresTileStore implements TileStore {
         queryValues.stream()
             .map(query -> query.getAst().getWhere())
             .map(Optional::ofNullable)
-            .flatMap(Optional::stream)
+            .map(o -> o.orElse(new Column("true")))
             .map(Parenthesis::new)
             .map(Expression.class::cast)
             .reduce(OrExpression::new)
             .map(expression -> String.format(SOURCE_WHERE, expression))
             .orElse(EMPTY);
-    return String.format(SOURCE_QUERY, alias, id, tags, geom, from, joins, where);
+    return String.format(SOURCE_QUERY, alias, geom, from, joins, where);
   }
 
   protected String targetQueries(List<PostgresQuery> queries, Tile tile) {
@@ -185,11 +178,15 @@ public class PostgresTileStore implements TileStore {
 
   protected String targetLayerQuery(PostgresQuery queryValue) {
     String alias = commonTableExpression(queryValue).getAlias();
+    var ast = queryValue.getAst();
+    String id = ast.getSelectItems().get(0).toString();
+    String tags = ast.getSelectItems().get(1).toString();
+    String geom = ast.getSelectItems().get(2).toString();
     String where =
         Optional.ofNullable(queryValue.getAst().getWhere())
             .map(expression -> String.format(TARGET_WHERE, expression))
             .orElse(EMPTY);
-    return String.format(TARGET_LAYER_QUERY, alias, where);
+    return String.format(TARGET_LAYER_QUERY, id, tags, geom, alias, where);
   }
 
   protected boolean zoomFilter(Tile tile, PostgresQuery query) {
