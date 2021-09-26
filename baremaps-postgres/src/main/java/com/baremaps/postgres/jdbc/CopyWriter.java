@@ -32,9 +32,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKBWriter;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/**
- * A helper for writing in a {@code PGCopyOutputStream}.
- */
+/** A helper for writing in a {@code PGCopyOutputStream}. */
 public class CopyWriter implements AutoCloseable {
 
   private static final Charset UTF8 = StandardCharsets.UTF_8;
@@ -312,6 +310,7 @@ public class CopyWriter implements AutoCloseable {
 
   /**
    * Writes a jsonb array
+   *
    * @param value
    * @throws IOException
    */
@@ -329,9 +328,7 @@ public class CopyWriter implements AutoCloseable {
     nullableWriter(CopyWriter::geometryWriter).write(data, value);
   }
 
-  /**
-   * Close the writer.
-   */
+  /** Close the writer. */
   @Override
   public void close() throws IOException {
     data.writeShort(-1);
@@ -495,8 +492,8 @@ public class CopyWriter implements AutoCloseable {
     data.write(value.getBytes(UTF8));
   }
 
-
-  private static void jsonbWriter(DataOutputStream data, Map<String, String> value) throws IOException {
+  private static void jsonbWriter(DataOutputStream data, Map<String, String> value)
+      throws IOException {
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
 
@@ -523,7 +520,6 @@ public class CopyWriter implements AutoCloseable {
 
     data.write(byteArrayOutputStream.toByteArray());
   }
-
 
   @FunctionalInterface
   private interface ValueWriter<T> {

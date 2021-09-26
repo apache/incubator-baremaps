@@ -20,6 +20,9 @@ import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.geometry.GeometryUtils;
 import com.baremaps.postgres.jdbc.CopyWriter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,6 +51,8 @@ public class PostgresNodeTable implements NodeTable {
   private final String delete;
 
   private final String copy;
+
+  private static final ObjectMapper mapper = new ObjectMapper();
 
   public PostgresNodeTable(DataSource dataSource) {
     this(
@@ -153,7 +158,7 @@ public class PostgresNodeTable implements NodeTable {
           return null;
         }
       }
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -173,7 +178,7 @@ public class PostgresNodeTable implements NodeTable {
         }
         return ids.stream().map(entities::get).collect(Collectors.toList());
       }
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -258,13 +263,15 @@ public class PostgresNodeTable implements NodeTable {
     }
   }
 
-  private Node getEntity(ResultSet result) throws SQLException {
+  private Node getEntity(ResultSet result) throws SQLException, JsonProcessingException {
     long id = result.getLong(1);
     int version = result.getInt(2);
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    Map<String, String> tags = (Map<String, String>) result.getObject(6);
+    Map<String, String> tags =
+        mapper.readValue(
+            (String) result.getObject(6), new TypeReference<HashMap<String, String>>() {});
     double lon = result.getDouble(7);
     double lat = result.getDouble(8);
     Geometry point = GeometryUtils.deserialize(result.getBytes(9));
