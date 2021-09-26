@@ -265,7 +265,7 @@ public class PostgresNodeTable implements NodeTable {
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    Map<String, String> tags = PostgresJsonbMapper.convert((String) result.getObject(6));
+    Map<String, String> tags = PostgresJsonbMapper.convert(result.getString(6));
     double lon = result.getDouble(7);
     double lat = result.getDouble(8);
     Geometry point = GeometryUtils.deserialize(result.getBytes(9));

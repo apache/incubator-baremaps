@@ -263,7 +263,7 @@ public class PostgresWayTable implements WayTable {
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    Map<String, String> tags = PostgresJsonbMapper.convert((String) result.getObject(6));
+    Map<String, String> tags = PostgresJsonbMapper.convert(result.getString(6));
     List<Long> nodes = new ArrayList<>();
     Array array = result.getArray(7);
     if (array != null) {

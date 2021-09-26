@@ -285,7 +285,7 @@ public class PostgresRelationTable implements RelationTable {
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    Map<String, String> tags = PostgresJsonbMapper.convert((String) result.getObject(6));
+    Map<String, String> tags = PostgresJsonbMapper.convert(result.getString(6));
     Long[] refs = (Long[]) result.getArray(7).getArray();
     Integer[] types = (Integer[]) result.getArray(8).getArray();
     String[] roles = (String[]) result.getArray(9).getArray();
