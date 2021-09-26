@@ -21,8 +21,6 @@ import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.geometry.GeometryUtils;
 import com.baremaps.postgres.jdbc.CopyWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.sql.Array;
 import java.sql.Connection;
@@ -54,8 +52,6 @@ public class PostgresWayTable implements WayTable {
   private final String delete;
 
   private final String copy;
-
-  private static final ObjectMapper mapper = new ObjectMapper();
 
   public PostgresWayTable(DataSource dataSource) {
     this(
@@ -267,9 +263,7 @@ public class PostgresWayTable implements WayTable {
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    Map<String, String> tags =
-        mapper.readValue(
-            (String) result.getObject(6), new TypeReference<HashMap<String, String>>() {});
+    Map<String, String> tags = PostgresJsonbMapper.convert((String) result.getObject(6));
     List<Long> nodes = new ArrayList<>();
     Array array = result.getArray(7);
     if (array != null) {

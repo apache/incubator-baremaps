@@ -23,8 +23,6 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.geometry.GeometryUtils;
 import com.baremaps.postgres.jdbc.CopyWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,8 +52,6 @@ public class PostgresRelationTable implements RelationTable {
   private final String copy;
 
   private final DataSource dataSource;
-
-  private static final ObjectMapper mapper = new ObjectMapper();
 
   public PostgresRelationTable(DataSource dataSource) {
     this(
@@ -289,9 +285,7 @@ public class PostgresRelationTable implements RelationTable {
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    Map<String, String> tags =
-        mapper.readValue(
-            (String) result.getObject(6), new TypeReference<HashMap<String, String>>() {});
+    Map<String, String> tags = PostgresJsonbMapper.convert((String) result.getObject(6));
     Long[] refs = (Long[]) result.getArray(7).getArray();
     Integer[] types = (Integer[]) result.getArray(8).getArray();
     String[] roles = (String[]) result.getArray(9).getArray();
