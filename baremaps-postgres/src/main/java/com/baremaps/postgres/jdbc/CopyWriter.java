@@ -505,9 +505,9 @@ public class CopyWriter implements AutoCloseable {
     int size = 0;
     for (Map.Entry<String, String> entry : value.entrySet()) {
       stringWriterJsonb(dataOutputStream, "{\"");
-      stringWriterJsonb(dataOutputStream, entry.getKey());
+      stringWriterJsonb(dataOutputStream, entry.getKey().replace("\"", "\\\"").replace("\n", ""));
       stringWriterJsonb(dataOutputStream, "\":\"");
-      stringWriterJsonb(dataOutputStream, entry.getValue());
+      stringWriterJsonb(dataOutputStream, entry.getValue().replace("\"", "\\\"").replace("\n", ""));
       stringWriterJsonb(dataOutputStream, "\"}");
       if (size < value.size() - 1) {
         stringWriterJsonb(dataOutputStream, ",");
