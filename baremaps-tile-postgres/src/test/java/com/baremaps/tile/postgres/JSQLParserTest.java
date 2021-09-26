@@ -37,12 +37,6 @@ class JSQLParserTest {
     String sql = "WITH a AS (SELECT c FROM t) SELECT c FROM a";
     Select select = (Select) CCJSqlParserUtil.parse(sql);
     assertNotNull(select);
-    System.out.println(select.getWithItemsList());
-    System.out.println(select.getWithItemsList().get(0).getItemsList());
-    System.out.println(select.getWithItemsList().get(0).getName());
-    System.out.println(select.getWithItemsList().get(0).getSubSelect());
-    System.out.println(select.getWithItemsList().get(0).getWithItemList());
-    System.out.println(select.getSelectBody());
   }
 
   @Test
@@ -55,6 +49,13 @@ class JSQLParserTest {
   @Test
   void parseVariable() throws JSQLParserException {
     String sql = "SELECT $variable FROM table";
+    Select select = (Select) CCJSqlParserUtil.parse(sql);
+    assertNotNull(select);
+  }
+
+  @Test
+  void parseBoolean() throws JSQLParserException {
+    String sql = "SELECT true";
     Select select = (Select) CCJSqlParserUtil.parse(sql);
     assertNotNull(select);
   }
