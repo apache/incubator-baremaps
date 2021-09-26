@@ -32,7 +32,9 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKBWriter;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/** A helper for writing in a {@code PGCopyOutputStream}. */
+/**
+ * A helper for writing in a {@code PGCopyOutputStream}.
+ */
 public class CopyWriter implements AutoCloseable {
 
   private static final Charset UTF8 = StandardCharsets.UTF_8;
@@ -44,6 +46,8 @@ public class CopyWriter implements AutoCloseable {
   private static final byte IPV6 = 3;
   private static final int IPV6_MASK = 128;
   private static final byte IPV6_IS_CIDR = 0;
+
+  private static final byte JSONB_VERSION = 1;
 
   private final DataOutputStream data;
 
@@ -307,6 +311,15 @@ public class CopyWriter implements AutoCloseable {
   }
 
   /**
+   * Writes a jsonb array
+   * @param value
+   * @throws IOException
+   */
+  public void writeJsonb(Map<String, String> value) throws IOException {
+    nullableWriter(CopyWriter::jsonbWriter).write(data, value);
+  }
+
+  /**
    * Writes a geometry value.
    *
    * @param value
@@ -316,7 +329,9 @@ public class CopyWriter implements AutoCloseable {
     nullableWriter(CopyWriter::geometryWriter).write(data, value);
   }
 
-  /** Close the writer. */
+  /**
+   * Close the writer.
+   */
   @Override
   public void close() throws IOException {
     data.writeShort(-1);
@@ -475,6 +490,40 @@ public class CopyWriter implements AutoCloseable {
     data.writeInt(byteArrayOutputStream.size());
     data.write(byteArrayOutputStream.toByteArray());
   }
+
+  private static void stringWriterJsonb(DataOutputStream data, String value) throws IOException {
+    data.write(value.getBytes(UTF8));
+  }
+
+
+  private static void jsonbWriter(DataOutputStream data, Map<String, String> value) throws IOException {
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+
+    // Convert the map into a json Array
+    stringWriterJsonb(dataOutputStream, "[");
+    int size = 0;
+    for (Map.Entry<String, String> entry : value.entrySet()) {
+      stringWriterJsonb(dataOutputStream, "{\"");
+      stringWriterJsonb(dataOutputStream, entry.getKey());
+      stringWriterJsonb(dataOutputStream, "\":\"");
+      stringWriterJsonb(dataOutputStream, entry.getValue());
+      stringWriterJsonb(dataOutputStream, "\"}");
+      if (size < value.size() - 1) {
+        stringWriterJsonb(dataOutputStream, ",");
+        size++;
+      }
+    }
+    stringWriterJsonb(dataOutputStream, "]");
+
+    // Write array size + 1 byte for jsonb version
+    data.writeInt(byteArrayOutputStream.size() + 1);
+
+    data.writeByte(JSONB_VERSION);
+
+    data.write(byteArrayOutputStream.toByteArray());
+  }
+
 
   @FunctionalInterface
   private interface ValueWriter<T> {

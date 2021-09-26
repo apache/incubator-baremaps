@@ -246,7 +246,7 @@ public class PostgresWayTable implements WayTable {
           writer.writeInteger(entity.getInfo().getUid());
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
-          writer.writeHstore(entity.getTags());
+          writer.writeJsonb(entity.getTags());
           writer.writeLongList(entity.getNodes());
           writer.writeGeometry(entity.getGeometry());
         }

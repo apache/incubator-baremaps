@@ -260,7 +260,7 @@ public class PostgresRelationTable implements RelationTable {
           writer.writeInteger(entity.getInfo().getUid());
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
-          writer.writeHstore(entity.getTags());
+          writer.writeJsonb(entity.getTags());
           writer.writeLongList(
               entity.getMembers().stream().map(Member::getRef).collect(Collectors.toList()));
           writer.writeIntegerList(

@@ -247,7 +247,7 @@ public class PostgresNodeTable implements NodeTable {
           writer.writeInteger(entity.getInfo().getUid());
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
-          writer.writeHstore(entity.getTags());
+          writer.writeJsonb(entity.getTags());
           writer.writeDouble(entity.getLon());
           writer.writeDouble(entity.getLat());
           writer.writeGeometry(entity.getGeometry());
