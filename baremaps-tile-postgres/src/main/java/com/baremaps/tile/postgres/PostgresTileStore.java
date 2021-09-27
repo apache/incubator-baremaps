@@ -59,7 +59,7 @@ public class PostgresTileStore implements TileStore {
   private static final String TARGET_LAYER_QUERY =
       "select "
           + "%1$s as id, "
-          + "(tags || ('{\"geometry\":\"' || lower(replace(st_geometrytype(geom), 'ST_', '')) ||'\"}')::jsonb) as tags, "
+          + "(tags || ('{\"%2$s\":\"' || lower(replace(st_geometrytype(geom), 'ST_', '')) ||'\"}')::jsonb) as tags, "
           + "st_asmvtgeom(%3$s, $envelope, 4096, 256, true) as geom "
           + "from %4$s %5$s";
 
