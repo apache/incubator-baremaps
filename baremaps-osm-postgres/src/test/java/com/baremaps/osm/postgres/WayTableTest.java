@@ -77,6 +77,7 @@ class WayTableTest {
     assertNull(wayTable.select(WAY_1.getId()));
   }
 
+
   @Test
   @Tag("integration")
   void deleteAll() throws DatabaseException {
