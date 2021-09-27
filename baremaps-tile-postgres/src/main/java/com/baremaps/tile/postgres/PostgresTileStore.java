@@ -52,7 +52,7 @@ public class PostgresTileStore implements TileStore {
           + "%1$s as ("
           + "select "
           + "id, "
-          + "(tags || hstore('geometry', lower(replace(st_geometrytype(geom), 'ST_', '')))) as tags, "
+          + "(tags || '{\"geometry\", lower(replace(st_geometrytype(geom), 'ST_', ''))}') as tags, "
           + "st_asmvtgeom(geom, $envelope, 4096, 256, true) as geom "
           + "from ("
           + "select %2$s as id, %3$s as tags, %4$s as geom from %5$s%6$s"
@@ -66,7 +66,7 @@ public class PostgresTileStore implements TileStore {
       "" + "select " + "st_asmvt(target, '%1$s', 4096, 'geom', 'id') " + "from (%2$s) as target";
 
   private static final String TARGET_LAYER_QUERY =
-      "" + "select id, hstore_to_jsonb_loose(tags) as tags, geom from %1$s %2$s";
+      "" + "select id, tags as tags, geom from %1$s %2$s";
 
   private static final String TARGET_WHERE = "where %s";
 
