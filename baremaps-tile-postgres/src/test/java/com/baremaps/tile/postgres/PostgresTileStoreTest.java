@@ -33,7 +33,7 @@ class PostgresTileStoreTest {
     String query = tileStore.withQuery(new Tile(0, 0, 10));
     assertEquals(
         "with ha14cb45b as (select * from table where ((true) OR (true)) and st_intersects(geom, st_tileenvelope(10, 0, 0))) select st_asmvt(target, 'a', 4096, 'geom', 'id') from (select id as id, (tags || ('{\"geometry\":\"' || lower(replace(st_geometrytype(geom), 'ST_', '')) ||'\"}')::jsonb) as tags, st_asmvtgeom(geom, st_tileenvelope(10, 0, 0), 4096, 256, true) as geom from ha14cb45b ) as target union all select st_asmvt(target, 'b', 4096, 'geom', 'id') from (select id as id, (tags || ('{\"geometry\":\"' || lower(replace(st_geometrytype(geom), 'ST_', '')) ||'\"}')::jsonb) as tags, st_asmvtgeom(geom, st_tileenvelope(10, 0, 0), 4096, 256, true) as geom from ha14cb45b ) as target",
-        query);<
+        query);
   }
 
   @Test
