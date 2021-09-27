@@ -26,13 +26,14 @@ import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 import java.util.zip.DataFormatException;
@@ -48,6 +49,8 @@ public class DataBlockReader {
   private final long latOffset;
   private final long lonOffset;
   private final String[] stringTable;
+
+  private static final ObjectMapper mapper = new ObjectMapper();
 
   /**
    * Constructs a reader with the granularity, offsets and string table of the specified blob.
@@ -130,7 +133,7 @@ public class DataBlockReader {
         lon = denseNodes.getLon(i) + lon;
 
         // If empty, assume that nothing here has keys or vals.
-        Map<String, String> tags = new HashMap<>();
+        ObjectNode tags = mapper.createObjectNode();
         if (denseNodes.getKeysValsCount() > 0) {
           while (denseNodes.getKeysVals(j) != 0) {
             int keyid = denseNodes.getKeysVals(j++);
@@ -159,7 +162,7 @@ public class DataBlockReader {
         LocalDateTime timestamp = getTimestamp(node.getInfo().getTimestamp());
         long changeset = node.getInfo().getChangeset();
         int uid = node.getInfo().getUid();
-        Map<String, String> tags = new HashMap<>();
+        ObjectNode tags = mapper.createObjectNode();
         for (int t = 0; t < node.getKeysList().size(); t++) {
           tags.put(getString(node.getKeysList().get(t)), getString(node.getKeysList().get(t)));
         }
@@ -185,7 +188,7 @@ public class DataBlockReader {
         LocalDateTime timestamp = getTimestamp(way.getInfo().getTimestamp());
         long changeset = way.getInfo().getChangeset();
         int uid = way.getInfo().getUid();
-        Map<String, String> tags = getTags(way.getKeysList(), way.getValsList());
+        JsonNode tags = getTags(way.getKeysList(), way.getValsList());
         long nid = 0;
         List<Long> nodes = new ArrayList<>();
         for (int index = 0; index < way.getRefsCount(); index++) {
@@ -212,7 +215,7 @@ public class DataBlockReader {
         LocalDateTime timestamp = getTimestamp(relation.getInfo().getTimestamp());
         long changeset = relation.getInfo().getChangeset();
         int uid = relation.getInfo().getUid();
-        Map<String, String> tags = getTags(relation.getKeysList(), relation.getValsList());
+        JsonNode tags = getTags(relation.getKeysList(), relation.getValsList());
 
         long mid = 0;
         List<Member> members = new ArrayList<>();
@@ -224,6 +227,7 @@ public class DataBlockReader {
         }
 
         Info info = new Info(version, timestamp, changeset, uid);
+        ;
         consumer.accept(new Relation(id, info, tags, members));
       }
     }
@@ -255,8 +259,8 @@ public class DataBlockReader {
         Instant.ofEpochMilli(dateGranularity * timestamp), TimeZone.getDefault().toZoneId());
   }
 
-  private Map<String, String> getTags(List<Integer> keys, List<Integer> vals) {
-    Map<String, String> tags = new HashMap<>();
+  private JsonNode getTags(List<Integer> keys, List<Integer> vals) {
+    ObjectNode tags = mapper.createObjectNode();
     for (int t = 0; t < keys.size(); t++) {
       tags.put(getString(keys.get(t)), getString(vals.get(t)));
     }

@@ -16,8 +16,8 @@ package com.baremaps.osm.domain;
 
 import com.baremaps.osm.function.EntityConsumer;
 import com.baremaps.osm.function.EntityFunction;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
@@ -35,7 +35,7 @@ public final class Relation extends Element {
    * @param tags the tags
    * @param members the members
    */
-  public Relation(long id, Info info, Map<String, String> tags, List<Member> members) {
+  public Relation(long id, Info info, JsonNode tags, List<Member> members) {
     super(id, info, tags);
     this.members = members;
   }
@@ -49,8 +49,7 @@ public final class Relation extends Element {
    * @param members the members
    * @param geometry the geometry
    */
-  public Relation(
-      long id, Info info, Map<String, String> tags, List<Member> members, Geometry geometry) {
+  public Relation(long id, Info info, JsonNode tags, List<Member> members, Geometry geometry) {
     super(id, info, tags, geometry);
     this.members = members;
   }

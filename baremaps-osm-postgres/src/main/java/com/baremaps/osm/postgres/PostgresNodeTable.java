@@ -21,6 +21,7 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.geometry.GeometryUtils;
 import com.baremaps.postgres.jdbc.CopyWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -184,7 +185,7 @@ public class PostgresNodeTable implements NodeTable {
         PreparedStatement statement = connection.prepareStatement(insert)) {
       setEntity(statement, entity);
       statement.execute();
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -201,7 +202,7 @@ public class PostgresNodeTable implements NodeTable {
         statement.addBatch();
       }
       statement.executeBatch();
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -248,7 +249,7 @@ public class PostgresNodeTable implements NodeTable {
           writer.writeInteger(entity.getInfo().getUid());
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
-          writer.writeJsonb(entity.getTags());
+          writer.writeJsonb(entity.getTags().toString());
           writer.writeDouble(entity.getLon());
           writer.writeDouble(entity.getLat());
           writer.writeGeometry(entity.getGeometry());
@@ -265,7 +266,7 @@ public class PostgresNodeTable implements NodeTable {
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    Map<String, String> tags = PostgresJsonbMapper.convert(result.getString(6));
+    ObjectNode tags = (ObjectNode) PostgresJsonbMapper.convert(result.getString(6));
     double lon = result.getDouble(7);
     double lat = result.getDouble(8);
     Geometry point = GeometryUtils.deserialize(result.getBytes(9));
@@ -273,7 +274,8 @@ public class PostgresNodeTable implements NodeTable {
     return new Node(id, info, tags, lon, lat, point);
   }
 
-  private void setEntity(PreparedStatement statement, Node entity) throws SQLException {
+  private void setEntity(PreparedStatement statement, Node entity)
+      throws SQLException, JsonProcessingException {
     statement.setObject(1, entity.getId());
     statement.setObject(2, entity.getInfo().getVersion());
     statement.setObject(3, entity.getInfo().getUid());

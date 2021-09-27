@@ -23,6 +23,7 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.geometry.GeometryUtils;
 import com.baremaps.postgres.jdbc.CopyWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -195,7 +196,7 @@ public class PostgresRelationTable implements RelationTable {
         PreparedStatement statement = connection.prepareStatement(insert)) {
       setEntity(statement, entity);
       statement.execute();
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -213,7 +214,7 @@ public class PostgresRelationTable implements RelationTable {
         statement.addBatch();
       }
       statement.executeBatch();
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -261,7 +262,7 @@ public class PostgresRelationTable implements RelationTable {
           writer.writeInteger(entity.getInfo().getUid());
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
-          writer.writeJsonb(entity.getTags());
+          writer.writeJsonb(entity.getTags().toString());
           writer.writeLongList(
               entity.getMembers().stream().map(Member::getRef).collect(Collectors.toList()));
           writer.writeIntegerList(
@@ -285,7 +286,7 @@ public class PostgresRelationTable implements RelationTable {
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    Map<String, String> tags = PostgresJsonbMapper.convert(result.getString(6));
+    ObjectNode tags = (ObjectNode) PostgresJsonbMapper.convert(result.getString(6));
     Long[] refs = (Long[]) result.getArray(7).getArray();
     Integer[] types = (Integer[]) result.getArray(8).getArray();
     String[] roles = (String[]) result.getArray(9).getArray();
@@ -298,13 +299,14 @@ public class PostgresRelationTable implements RelationTable {
     return new Relation(id, info, tags, members, geometry);
   }
 
-  private void setEntity(PreparedStatement statement, Relation entity) throws SQLException {
+  private void setEntity(PreparedStatement statement, Relation entity)
+      throws SQLException, JsonProcessingException {
     statement.setObject(1, entity.getId());
     statement.setObject(2, entity.getInfo().getVersion());
     statement.setObject(3, entity.getInfo().getUid());
     statement.setObject(4, entity.getInfo().getTimestamp());
     statement.setObject(5, entity.getInfo().getChangeset());
-    statement.setObject(6, entity.getTags());
+    statement.setObject(6, entity.getTags().toString());
     Object[] refs = entity.getMembers().stream().map(Member::getRef).toArray();
     statement.setObject(7, statement.getConnection().createArrayOf("bigint", refs));
     Object[] types =

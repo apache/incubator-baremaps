@@ -314,7 +314,7 @@ public class CopyWriter implements AutoCloseable {
    * @param value
    * @throws IOException
    */
-  public void writeJsonb(Map<String, String> value) throws IOException {
+  public void writeJsonb(String value) throws IOException {
     nullableWriter(CopyWriter::jsonbWriter).write(data, value);
   }
 
@@ -488,30 +488,11 @@ public class CopyWriter implements AutoCloseable {
     data.write(byteArrayOutputStream.toByteArray());
   }
 
-  private static void stringWriterJsonb(DataOutputStream data, String value) throws IOException {
-    data.write(value.getBytes(UTF8));
-  }
-
-  private static void jsonbWriter(DataOutputStream data, Map<String, String> value)
-      throws IOException {
+  private static void jsonbWriter(DataOutputStream data, String value) throws IOException {
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
 
-    // Convert the map into a json Array
-    stringWriterJsonb(dataOutputStream, "[");
-    int size = 0;
-    for (Map.Entry<String, String> entry : value.entrySet()) {
-      stringWriterJsonb(dataOutputStream, "{\"");
-      stringWriterJsonb(dataOutputStream, entry.getKey().replace("\"", "\\\"").replace("\n", ""));
-      stringWriterJsonb(dataOutputStream, "\":\"");
-      stringWriterJsonb(dataOutputStream, entry.getValue().replace("\"", "\\\"").replace("\n", ""));
-      stringWriterJsonb(dataOutputStream, "\"}");
-      if (size < value.size() - 1) {
-        stringWriterJsonb(dataOutputStream, ",");
-        size++;
-      }
-    }
-    stringWriterJsonb(dataOutputStream, "]");
+    dataOutputStream.write(value.getBytes(UTF8));
 
     // Write array size + 1 byte for jsonb version
     data.writeInt(byteArrayOutputStream.size() + 1);

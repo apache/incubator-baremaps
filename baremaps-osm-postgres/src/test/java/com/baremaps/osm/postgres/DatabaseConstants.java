@@ -33,8 +33,8 @@ import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import java.time.LocalDateTime;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -59,77 +59,159 @@ public class DatabaseConstants {
 
   public static final Node NODE_0 =
       new Node(
-          0, INFO, ImmutableMap.of(), 0, 0, GEOMETRY_FACTORY.createPoint(new Coordinate(0, 0)));
+          0,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          0,
+          0,
+          GEOMETRY_FACTORY.createPoint(new Coordinate(0, 0)));
 
   public static final Node NODE_1 =
       new Node(
-          1, INFO, ImmutableMap.of(), 0, 0, GEOMETRY_FACTORY.createPoint(new Coordinate(0, 3)));
+          1,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          0,
+          0,
+          GEOMETRY_FACTORY.createPoint(new Coordinate(0, 3)));
 
   public static final Node NODE_2 =
       new Node(
-          2, INFO, ImmutableMap.of(), 0, 0, GEOMETRY_FACTORY.createPoint(new Coordinate(3, 3)));
+          2,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          0,
+          0,
+          GEOMETRY_FACTORY.createPoint(new Coordinate(3, 3)));
 
   public static final Node NODE_3 =
       new Node(
-          3, INFO, ImmutableMap.of(), 0, 0, GEOMETRY_FACTORY.createPoint(new Coordinate(3, 0)));
+          3,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          0,
+          0,
+          GEOMETRY_FACTORY.createPoint(new Coordinate(3, 0)));
 
   public static final Node NODE_4 =
       new Node(
-          4, INFO, ImmutableMap.of(), 0, 0, GEOMETRY_FACTORY.createPoint(new Coordinate(1, 1)));
+          4,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          0,
+          0,
+          GEOMETRY_FACTORY.createPoint(new Coordinate(1, 1)));
 
   public static final Node NODE_5 =
       new Node(
-          5, INFO, ImmutableMap.of(), 0, 0, GEOMETRY_FACTORY.createPoint(new Coordinate(1, 2)));
+          5,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          0,
+          0,
+          GEOMETRY_FACTORY.createPoint(new Coordinate(1, 2)));
 
   public static final Node NODE_6 =
       new Node(
-          6, INFO, ImmutableMap.of(), 0, 0, GEOMETRY_FACTORY.createPoint(new Coordinate(2, 2)));
+          6,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          0,
+          0,
+          GEOMETRY_FACTORY.createPoint(new Coordinate(2, 2)));
 
   public static final Node NODE_7 =
       new Node(
-          7, INFO, ImmutableMap.of(), 0, 0, GEOMETRY_FACTORY.createPoint(new Coordinate(2, 1)));
+          7,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          0,
+          0,
+          GEOMETRY_FACTORY.createPoint(new Coordinate(2, 1)));
 
   public static final Node NODE_8 =
       new Node(
-          8, INFO, ImmutableMap.of(), 0, 0, GEOMETRY_FACTORY.createPoint(new Coordinate(4, 1)));
+          8,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          0,
+          0,
+          GEOMETRY_FACTORY.createPoint(new Coordinate(4, 1)));
 
   public static final Node NODE_9 =
       new Node(
-          9, INFO, ImmutableMap.of(), 0, 0, GEOMETRY_FACTORY.createPoint(new Coordinate(4, 2)));
+          9,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          0,
+          0,
+          GEOMETRY_FACTORY.createPoint(new Coordinate(4, 2)));
 
   public static final Node NODE_10 =
       new Node(
-          10, INFO, ImmutableMap.of(), 0, 0, GEOMETRY_FACTORY.createPoint(new Coordinate(5, 2)));
+          10,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          0,
+          0,
+          GEOMETRY_FACTORY.createPoint(new Coordinate(5, 2)));
 
   public static final Node NODE_11 =
       new Node(
-          11, INFO, ImmutableMap.of(), 0, 0, GEOMETRY_FACTORY.createPoint(new Coordinate(5, 1)));
+          11,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          0,
+          0,
+          GEOMETRY_FACTORY.createPoint(new Coordinate(5, 1)));
 
-  public static final Way WAY_0 = new Way(0, INFO, ImmutableMap.of(), ImmutableList.of(), null);
+  public static final Way WAY_0 =
+      new Way(0, INFO, JsonNodeFactory.instance.objectNode(), ImmutableList.of(), null);
 
   public static final Way WAY_1 =
-      new Way(1, INFO, ImmutableMap.of(), ImmutableList.of(0l, 1l, 2l, 3l), null);
+      new Way(
+          1, INFO, JsonNodeFactory.instance.objectNode(), ImmutableList.of(0l, 1l, 2l, 3l), null);
 
   public static final Way WAY_2 =
-      new Way(2, INFO, ImmutableMap.of(), ImmutableList.of(0l, 1l, 2l, 3l, 0l), null);
+      new Way(
+          2,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          ImmutableList.of(0l, 1l, 2l, 3l, 0l),
+          null);
 
   public static final Way WAY_3 =
-      new Way(3, INFO, ImmutableMap.of(), ImmutableList.of(8l, 9l, 10l, 11l, 8l), null);
+      new Way(
+          3,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          ImmutableList.of(8l, 9l, 10l, 11l, 8l),
+          null);
 
   public static final Way WAY_4 =
-      new Way(4, INFO, ImmutableMap.of(), ImmutableList.of(4l, 5l, 6l, 7l, 4l), null);
+      new Way(
+          4,
+          INFO,
+          JsonNodeFactory.instance.objectNode(),
+          ImmutableList.of(4l, 5l, 6l, 7l, 4l),
+          null);
 
   public static final Relation RELATION_0 =
-      new Relation(0, INFO, ImmutableMap.of(), ImmutableList.of(), null);
+      new Relation(0, INFO, JsonNodeFactory.instance.objectNode(), ImmutableList.of(), null);
 
   public static final Relation RELATION_1 =
-      new Relation(1, INFO, ImmutableMap.of("type", "multipolygon"), ImmutableList.of(), null);
+      new Relation(
+          1,
+          INFO,
+          JsonNodeFactory.instance.objectNode().put("type", "multipolygon"),
+          ImmutableList.of(),
+          null);
 
   public static final Relation RELATION_2 =
       new Relation(
           2,
           INFO,
-          ImmutableMap.of("type", "multipolygon"),
+          JsonNodeFactory.instance.objectNode().put("type", "multipolygon"),
           ImmutableList.of(new Member(2, MemberType.WAY, "outer")),
           null);
 
@@ -137,7 +219,7 @@ public class DatabaseConstants {
       new Relation(
           3,
           INFO,
-          ImmutableMap.of("type", "multipolygon"),
+          JsonNodeFactory.instance.objectNode().put("type", "multipolygon"),
           ImmutableList.of(
               new Member(2, MemberType.WAY, "outer"), new Member(3, MemberType.WAY, "inner")),
           null);
@@ -146,7 +228,7 @@ public class DatabaseConstants {
       new Relation(
           4,
           INFO,
-          ImmutableMap.of("type", "multipolygon"),
+          JsonNodeFactory.instance.objectNode().put("type", "multipolygon"),
           ImmutableList.of(
               new Member(2, MemberType.WAY, "outer"),
               new Member(3, MemberType.WAY, "inner"),

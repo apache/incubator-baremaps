@@ -14,7 +14,7 @@
 
 package com.baremaps.osm.domain;
 
-import java.util.Map;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Objects;
 import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
@@ -29,11 +29,11 @@ public abstract class Element implements Entity {
 
   protected final Info info;
 
-  protected final Map<String, String> tags;
+  protected final JsonNode tags;
 
   protected Geometry geometry;
 
-  protected Element(long id, Info info, Map<String, String> tags) {
+  protected Element(long id, Info info, JsonNode tags) {
     this(id, info, tags, null);
   }
 
@@ -45,7 +45,7 @@ public abstract class Element implements Entity {
    * @param tags the tags
    * @param geometry the geometry
    */
-  public Element(long id, Info info, Map<String, String> tags, Geometry geometry) {
+  protected Element(long id, Info info, JsonNode tags, Geometry geometry) {
     this.id = id;
     this.info = info;
     this.tags = tags;
@@ -75,7 +75,7 @@ public abstract class Element implements Entity {
    *
    * @return the tags
    */
-  public Map<String, String> getTags() {
+  public JsonNode getTags() {
     return tags;
   }
 
