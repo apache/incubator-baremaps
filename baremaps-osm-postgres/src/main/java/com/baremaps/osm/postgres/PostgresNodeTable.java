@@ -281,7 +281,7 @@ public class PostgresNodeTable implements NodeTable {
     statement.setObject(3, entity.getInfo().getUid());
     statement.setObject(4, entity.getInfo().getTimestamp());
     statement.setObject(5, entity.getInfo().getChangeset());
-    statement.setObject(6, entity.getTags());
+    statement.setObject(6, entity.getTags().toString());
     statement.setObject(7, entity.getLon());
     statement.setObject(8, entity.getLat());
     statement.setBytes(9, GeometryUtils.serialize(entity.getGeometry()));
