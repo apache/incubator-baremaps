@@ -114,7 +114,7 @@ public class PostgresRelationTable implements RelationTable {
             geometryColumn);
     this.insert =
         String.format(
-            "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s) "
+            "INSERT INTO %1$s (%2$s, %3$s::jsonb, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
                 + "ON CONFLICT (%2$s) DO UPDATE SET "
                 + "%3$s = excluded.%3$s, "
