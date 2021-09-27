@@ -52,7 +52,7 @@ public class PostgresTileStore implements TileStore {
           + "%1$s as ("
           + "select "
           + "id, "
-          + "(tags || '{\"geometry\", lower(replace(st_geometrytype(geom), 'ST_', ''))}') as tags, "
+          + "(tags || ('{\"geometry\":\"' || lower(replace(st_geometrytype(geom), 'ST_', '')) ||'\"}')::jsonb) as tags, "
           + "st_asmvtgeom(geom, $envelope, 4096, 256, true) as geom "
           + "from ("
           + "select %2$s as id, %3$s as tags, %4$s as geom from %5$s%6$s"
