@@ -316,4 +316,5 @@ public class PostgresRelationTable implements RelationTable {
     statement.setObject(9, statement.getConnection().createArrayOf("varchar", roles));
     statement.setBytes(10, GeometryUtils.serialize(entity.getGeometry()));
   }
+
 }
