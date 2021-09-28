@@ -21,7 +21,6 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.geometry.GeometryUtils;
 import com.baremaps.postgres.jdbc.CopyWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -249,7 +248,7 @@ public class PostgresNodeTable implements NodeTable {
           writer.writeInteger(entity.getInfo().getUid());
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
-          writer.writeJsonb(entity.getTags().toString());
+          writer.writeJsonb(PostgresJsonbMapper.convert(entity.getTags()));
           writer.writeDouble(entity.getLon());
           writer.writeDouble(entity.getLat());
           writer.writeGeometry(entity.getGeometry());
@@ -266,7 +265,7 @@ public class PostgresNodeTable implements NodeTable {
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    ObjectNode tags = (ObjectNode) PostgresJsonbMapper.convert(result.getString(6));
+    Map<String, String> tags = PostgresJsonbMapper.parseResult(result.getString(6));
     double lon = result.getDouble(7);
     double lat = result.getDouble(8);
     Geometry point = GeometryUtils.deserialize(result.getBytes(9));
@@ -281,7 +280,7 @@ public class PostgresNodeTable implements NodeTable {
     statement.setObject(3, entity.getInfo().getUid());
     statement.setObject(4, entity.getInfo().getTimestamp());
     statement.setObject(5, entity.getInfo().getChangeset());
-    statement.setObject(6, entity.getTags().toString());
+    statement.setObject(6, PostgresJsonbMapper.convert(entity.getTags()));
     statement.setObject(7, entity.getLon());
     statement.setObject(8, entity.getLat());
     statement.setBytes(9, GeometryUtils.serialize(entity.getGeometry()));

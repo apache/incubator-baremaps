@@ -21,7 +21,6 @@ import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.geometry.GeometryUtils;
 import com.baremaps.postgres.jdbc.CopyWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import java.io.IOException;
 import java.sql.Array;
 import java.sql.Connection;
@@ -182,7 +181,7 @@ public class PostgresWayTable implements WayTable {
         PreparedStatement statement = connection.prepareStatement(insert)) {
       setEntity(statement, entity);
       statement.execute();
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -200,7 +199,7 @@ public class PostgresWayTable implements WayTable {
         statement.addBatch();
       }
       statement.executeBatch();
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -248,7 +247,7 @@ public class PostgresWayTable implements WayTable {
           writer.writeInteger(entity.getInfo().getUid());
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
-          writer.writeJsonb(entity.getTags().toString());
+          writer.writeJsonb(PostgresJsonbMapper.convert(entity.getTags()));
           writer.writeLongList(entity.getNodes());
           writer.writeGeometry(entity.getGeometry());
         }
@@ -264,7 +263,7 @@ public class PostgresWayTable implements WayTable {
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    JsonNode tags = PostgresJsonbMapper.convert(result.getString(6));
+    Map<String, String> tags = PostgresJsonbMapper.parseResult(result.getString(6));
     List<Long> nodes = new ArrayList<>();
     Array array = result.getArray(7);
     if (array != null) {
@@ -275,13 +274,14 @@ public class PostgresWayTable implements WayTable {
     return new Way(id, info, tags, nodes, geometry);
   }
 
-  private void setEntity(PreparedStatement statement, Way entity) throws SQLException {
+  private void setEntity(PreparedStatement statement, Way entity)
+      throws SQLException, JsonProcessingException {
     statement.setObject(1, entity.getId());
     statement.setObject(2, entity.getInfo().getVersion());
     statement.setObject(3, entity.getInfo().getUid());
     statement.setObject(4, entity.getInfo().getTimestamp());
     statement.setObject(5, entity.getInfo().getChangeset());
-    statement.setObject(6, entity.getTags().toString());
+    statement.setObject(6, PostgresJsonbMapper.convert(entity.getTags()));
     statement.setObject(7, entity.getNodes().stream().mapToLong(Long::longValue).toArray());
     statement.setBytes(8, GeometryUtils.serialize(entity.getGeometry()));
   }

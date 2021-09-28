@@ -33,13 +33,13 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.stream.StreamException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import javax.xml.stream.XMLInputFactory;
@@ -79,8 +79,6 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
       DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   private final XMLStreamReader reader;
-
-  private static final ObjectMapper mapper = new ObjectMapper();
 
   public XmlChangeSpliterator(InputStream input) {
     XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -160,7 +158,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
     double longitude = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_LONGITUDE));
 
     // read the content of the node
-    ObjectNode tags = mapper.createObjectNode();
+    Map<String, String> tags = new HashMap<>();
     reader.nextTag();
     while (reader.getEventType() == XMLStreamConstants.START_ELEMENT) {
       switch (reader.getLocalName()) {
@@ -181,7 +179,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
     Info info = readInfo();
 
     // read the content of the node
-    ObjectNode tags = mapper.createObjectNode();
+    Map<String, String> tags = new HashMap<>();
     List<Long> members = new ArrayList<>();
     reader.nextTag();
     while (reader.getEventType() == XMLStreamConstants.START_ELEMENT) {
@@ -213,7 +211,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
     Info info = readInfo();
 
     // read the content of the node
-    ObjectNode tags = mapper.createObjectNode();
+    Map<String, String> tags = new HashMap<>();
     List<Member> members = new ArrayList<>();
     reader.nextTag();
     while (reader.getEventType() == XMLStreamConstants.START_ELEMENT) {
@@ -255,7 +253,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
     return new Info(version, timestamp, changeset, uid);
   }
 
-  private void readTag(ObjectNode tags) throws XMLStreamException {
+  private void readTag(Map<String, String> tags) throws XMLStreamException {
     String name = reader.getAttributeValue(null, ATTRIBUTE_NAME_KEY);
     String value = reader.getAttributeValue(null, ATTRIBUTE_NAME_VALUE);
     tags.put(name, value);

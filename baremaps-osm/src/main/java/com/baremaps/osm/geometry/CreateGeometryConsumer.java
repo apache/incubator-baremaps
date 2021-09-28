@@ -22,11 +22,11 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
 import com.baremaps.stream.StreamException;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -98,14 +98,15 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
   @Override
   public void match(Relation relation) {
     try {
-      ObjectNode tags = (ObjectNode) relation.getTags();
+      Map<String, String> tags = relation.getTags();
 
       // Filter multipolygon geometries
-      if (tags.has("type") && !"multipolygon".equals(tags.get("type").asText())) {
+      if (!"multipolygon".equals(tags.get("type"))) {
         return;
       }
+
       // Filter coastline geometries
-      if (tags.has("natural") && "coastline".equals(tags.get("natural").asText())) {
+      if ("coastline".equals(tags.get("natural"))) {
         return;
       }
 

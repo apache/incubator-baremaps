@@ -15,8 +15,10 @@
 package com.baremaps.osm.postgres;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PostgresJsonbMapper {
 
@@ -31,7 +33,12 @@ public class PostgresJsonbMapper {
    * @return a map with the entry of the objects
    * @throws JsonProcessingException
    */
-  public static JsonNode convert(String input) throws JsonProcessingException {
-    return mapper.readTree(input);
+  public static String convert(Map<String, String> input) throws JsonProcessingException {
+    return mapper.writeValueAsString(input);
+  }
+
+  public static Map<String, String> parseResult(String input) throws JsonProcessingException {
+    TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {};
+    return mapper.readValue(input, typeRef);
   }
 }
