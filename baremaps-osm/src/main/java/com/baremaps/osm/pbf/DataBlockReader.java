@@ -224,7 +224,6 @@ public class DataBlockReader {
         }
 
         Info info = new Info(version, timestamp, changeset, uid);
-        ;
         consumer.accept(new Relation(id, info, tags, members));
       }
     }
