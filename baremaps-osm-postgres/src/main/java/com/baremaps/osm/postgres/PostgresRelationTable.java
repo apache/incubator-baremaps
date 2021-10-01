@@ -39,6 +39,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
+/** JDBC handler for the {@code Relation} table */
 public class PostgresRelationTable implements RelationTable {
 
   private final String select;
@@ -53,6 +54,11 @@ public class PostgresRelationTable implements RelationTable {
 
   private final DataSource dataSource;
 
+  /**
+   * Create handler with predefined fields
+   *
+   * @param dataSource
+   */
   public PostgresRelationTable(DataSource dataSource) {
     this(
         dataSource,
@@ -69,6 +75,22 @@ public class PostgresRelationTable implements RelationTable {
         "geom");
   }
 
+  /**
+   * Create handler with custom fields name
+   *
+   * @param dataSource
+   * @param nodeTable
+   * @param idColumn
+   * @param versionColumn
+   * @param uidColumn
+   * @param timestampColumn
+   * @param changesetColumn
+   * @param tagsColumn
+   * @param memberRefs
+   * @param memberTypes
+   * @param memberRoles
+   * @param geometryColumn
+   */
   public PostgresRelationTable(
       DataSource dataSource,
       String nodeTable,
@@ -246,6 +268,12 @@ public class PostgresRelationTable implements RelationTable {
     }
   }
 
+  /**
+   * Add the given entities to the database using the copy interface
+   *
+   * @param entities a list of the entities to add
+   * @throws DatabaseException If an exception occurs while copying
+   */
   public void copy(List<Relation> entities) throws DatabaseException {
     if (entities.isEmpty()) {
       return;
@@ -261,7 +289,7 @@ public class PostgresRelationTable implements RelationTable {
           writer.writeInteger(entity.getInfo().getUid());
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
-          writer.writeJsonb(PostgresJsonbMapper.convert(entity.getTags()));
+          writer.writeJsonb(PostgresJsonbMapper.toJson(entity.getTags()));
           writer.writeLongList(
               entity.getMembers().stream().map(Member::getRef).collect(Collectors.toList()));
           writer.writeIntegerList(
@@ -285,7 +313,7 @@ public class PostgresRelationTable implements RelationTable {
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    Map<String, String> tags = PostgresJsonbMapper.parseResult(result.getString(6));
+    Map<String, String> tags = PostgresJsonbMapper.toMap(result.getString(6));
     Long[] refs = (Long[]) result.getArray(7).getArray();
     Integer[] types = (Integer[]) result.getArray(8).getArray();
     String[] roles = (String[]) result.getArray(9).getArray();
@@ -305,7 +333,7 @@ public class PostgresRelationTable implements RelationTable {
     statement.setObject(3, entity.getInfo().getUid());
     statement.setObject(4, entity.getInfo().getTimestamp());
     statement.setObject(5, entity.getInfo().getChangeset());
-    statement.setObject(6, PostgresJsonbMapper.convert(entity.getTags()));
+    statement.setObject(6, PostgresJsonbMapper.toJson(entity.getTags()));
     Object[] refs = entity.getMembers().stream().map(Member::getRef).toArray();
     statement.setObject(7, statement.getConnection().createArrayOf("bigint", refs));
     Object[] types =

@@ -36,6 +36,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
+/** JDBC handler for the {@code Node} table */
 public class PostgresNodeTable implements NodeTable {
 
   private final DataSource dataSource;
@@ -50,6 +51,11 @@ public class PostgresNodeTable implements NodeTable {
 
   private final String copy;
 
+  /**
+   * Create handler with predefined fields
+   *
+   * @param dataSource
+   */
   public PostgresNodeTable(DataSource dataSource) {
     this(
         dataSource,
@@ -65,6 +71,21 @@ public class PostgresNodeTable implements NodeTable {
         "geom");
   }
 
+  /**
+   * Create handler with custom fields name
+   *
+   * @param dataSource
+   * @param nodeTable
+   * @param idColumn
+   * @param versionColumn
+   * @param uidColumn
+   * @param timestampColumn
+   * @param changesetColumn
+   * @param tagsColumn
+   * @param longitudeColumn
+   * @param latitudeColumn
+   * @param geometryColumn
+   */
   public PostgresNodeTable(
       DataSource dataSource,
       String nodeTable,
@@ -248,7 +269,7 @@ public class PostgresNodeTable implements NodeTable {
           writer.writeInteger(entity.getInfo().getUid());
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
-          writer.writeJsonb(PostgresJsonbMapper.convert(entity.getTags()));
+          writer.writeJsonb(PostgresJsonbMapper.toJson(entity.getTags()));
           writer.writeDouble(entity.getLon());
           writer.writeDouble(entity.getLat());
           writer.writeGeometry(entity.getGeometry());
@@ -265,7 +286,7 @@ public class PostgresNodeTable implements NodeTable {
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    Map<String, String> tags = PostgresJsonbMapper.parseResult(result.getString(6));
+    Map<String, String> tags = PostgresJsonbMapper.toMap(result.getString(6));
     double lon = result.getDouble(7);
     double lat = result.getDouble(8);
     Geometry point = GeometryUtils.deserialize(result.getBytes(9));
@@ -280,7 +301,7 @@ public class PostgresNodeTable implements NodeTable {
     statement.setObject(3, entity.getInfo().getUid());
     statement.setObject(4, entity.getInfo().getTimestamp());
     statement.setObject(5, entity.getInfo().getChangeset());
-    statement.setObject(6, PostgresJsonbMapper.convert(entity.getTags()));
+    statement.setObject(6, PostgresJsonbMapper.toJson(entity.getTags()));
     statement.setObject(7, entity.getLon());
     statement.setObject(8, entity.getLat());
     statement.setBytes(9, GeometryUtils.serialize(entity.getGeometry()));

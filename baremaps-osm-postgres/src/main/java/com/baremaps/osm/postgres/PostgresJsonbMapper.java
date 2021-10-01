@@ -27,17 +27,24 @@ public class PostgresJsonbMapper {
   private PostgresJsonbMapper() {}
 
   /**
-   * Convert a Json array into a map
+   * Convert a map into a json object
    *
-   * @param input a valid json array
-   * @return a map with the entry of the objects
+   * @param input a map with the entry of the object
+   * @return a Json string representing the object
    * @throws JsonProcessingException
    */
-  public static String convert(Map<String, String> input) throws JsonProcessingException {
+  public static String toJson(Map<String, String> input) throws JsonProcessingException {
     return mapper.writeValueAsString(input);
   }
 
-  public static Map<String, String> parseResult(String input) throws JsonProcessingException {
+  /**
+   * Convert a Json array into a map
+   *
+   * @param input a valid json object
+   * @return a map with the entry of the objects
+   * @throws JsonProcessingException
+   */
+  public static Map<String, String> toMap(String input) throws JsonProcessingException {
     TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {};
     return mapper.readValue(input, typeRef);
   }
