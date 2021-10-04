@@ -16,4 +16,4 @@ layers:
     queries:
       - minZoom: 12
         maxZoom: 20
-        sql: SELECT ogc_fid, hstore('level', dn::text) as tags, wkb_geometry as geom FROM geoadmin_traffic_noise_day
+        sql: SELECT ogc_fid, ('{level:' || dn::text || '}') as tags, wkb_geometry as geom FROM geoadmin_traffic_noise_day
