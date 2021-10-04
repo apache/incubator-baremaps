@@ -33,15 +33,13 @@ In the [tileset.json](https://raw.githubusercontent.com/baremaps/baremaps/main/d
 Here, the number of levels stored in OSM is multiplied by 3, which rawly corresponds to the height of a level in meters.
 
 ```sql
-SELECT 
-    id, 
-    tags || hstore(
-        'building:height'::text, 
-        ((CASE WHEN tags -> 'building:levels' ~ '^[0-9\.]+$' 
-            THEN tags -> 'building:levels' 
-            ELSE '1' END)::real * 3)::text), 
-    geom 
-FROM osm_ways 
+SELECT id,
+       tags || ('{building:height'::text || ':' || ((CASE
+                                                         WHEN tags ->> 'building:levels' ~ '^[0-9\\.]+$'
+                                                             THEN tags ->> 'building:levels'
+                                                         ELSE '1' END)::real * 3)::text || '}'),
+       geom
+FROM osm_ways
 WHERE tags ? 'building'
 ```
 
@@ -80,5 +78,4 @@ baremaps view \
 Well done, a map of London with extruded buildings should now appear in your [browser](http://localhost:9000/)!
 
 ![Tile viewer](screenshot.png)
-
 
