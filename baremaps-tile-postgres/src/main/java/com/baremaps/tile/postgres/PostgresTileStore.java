@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
 public class PostgresTileStore implements TileStore {
 
-  private static Logger logger = LoggerFactory.getLogger(PostgresTileStore.class);
+  private static final Logger logger = LoggerFactory.getLogger(PostgresTileStore.class);
 
   private static final String TILE_ENVELOPE = "st_tileenvelope(%1$s, %2$s, %3$s)";
 
@@ -89,6 +89,7 @@ public class PostgresTileStore implements TileStore {
 
       String sql = withQuery(tile);
       logger.debug("Executing query: {}", sql);
+      logger.info("Executing query: {}", sql);
 
       int length = 0;
       GZIPOutputStream gzip = new GZIPOutputStream(data);
@@ -99,7 +100,7 @@ public class PostgresTileStore implements TileStore {
         gzip.write(bytes);
       }
       gzip.close();
-
+l
       if (length > 0) {
         return data.toByteArray();
       } else {

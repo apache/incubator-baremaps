@@ -109,6 +109,7 @@ public class Edit implements Callable<Integer> {
         HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
     logger.info("Listening on {}", serverContext.listenAddress());
+    logger.info(System.getProperty("logLevel"));
     serverContext.awaitShutdown();
 
     return 0;
