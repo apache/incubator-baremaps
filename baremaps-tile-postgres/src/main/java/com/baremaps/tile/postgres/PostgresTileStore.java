@@ -100,7 +100,6 @@ public class PostgresTileStore implements TileStore {
         gzip.write(bytes);
       }
       gzip.close();
-l
       if (length > 0) {
         return data.toByteArray();
       } else {
