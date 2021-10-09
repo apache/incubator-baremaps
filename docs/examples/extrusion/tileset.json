@@ -23,7 +23,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags || ('{building:height'::text || ':' || ((CASE WHEN tags ->> 'building:levels' ~ '^[0-9\\.]+$' THEN tags ->>'building:levels' ELSE '1' END)::real * 3)::text ||'}'), geom FROM osm_ways WHERE tags ? 'building'"
+          "sql": "SELECT id, tags || jsonb_build_object('building:height', (CASE WHEN tags ->> 'building:levels' ~ '^[0-9\\\\.]+$' THEN tags ->> 'building:levels' ELSE '1' END)::real * 3), geom FROM osm_ways WHERE tags ? 'building'"
         }
       ]
     }
