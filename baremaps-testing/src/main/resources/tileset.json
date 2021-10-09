@@ -33,7 +33,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'aeroway' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'aeroway' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -53,7 +53,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'waterway' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'waterway' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -73,7 +73,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -93,7 +93,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'railway' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'railway' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -113,7 +113,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'highway' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'highway' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -133,7 +133,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'public_transport' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'public_transport' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -153,7 +153,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'aerialway' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'aerialway' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -173,7 +173,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'geological' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'geological' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -193,7 +193,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'building' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'building' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -213,7 +213,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'amenity' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'amenity' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -233,7 +233,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'craft' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'craft' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -253,7 +253,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'emergency' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'emergency' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -273,7 +273,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'historic' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'historic' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -293,7 +293,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'leisure' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'leisure' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -313,7 +313,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'man_made' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'man_made' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -333,7 +333,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'military' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'military' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -353,7 +353,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'natural' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'natural' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -373,7 +373,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'office' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'office' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -393,7 +393,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'place' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'place' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -413,7 +413,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'power' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'power' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -433,7 +433,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'route' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'route' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -453,7 +453,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'shop' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'shop' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -473,7 +473,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'sport' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'sport' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -493,7 +493,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'telecom' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'telecom' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     },
@@ -513,7 +513,7 @@
         {
           "minzoom": 12,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'tourism' AND tags -> 'type' = 'multipolygon'"
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'tourism' AND tags ->> 'type' = 'multipolygon'"
         }
       ]
     }

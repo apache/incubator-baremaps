@@ -20,6 +20,7 @@ import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.geometry.GeometryUtils;
 import com.baremaps.postgres.jdbc.CopyWriter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,6 +36,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
+/** JDBC handler for the {@code Node} table */
 public class PostgresNodeTable implements NodeTable {
 
   private final DataSource dataSource;
@@ -49,6 +51,11 @@ public class PostgresNodeTable implements NodeTable {
 
   private final String copy;
 
+  /**
+   * Create handler with predefined fields
+   *
+   * @param dataSource
+   */
   public PostgresNodeTable(DataSource dataSource) {
     this(
         dataSource,
@@ -64,6 +71,21 @@ public class PostgresNodeTable implements NodeTable {
         "geom");
   }
 
+  /**
+   * Create handler with custom fields name
+   *
+   * @param dataSource
+   * @param nodeTable
+   * @param idColumn
+   * @param versionColumn
+   * @param uidColumn
+   * @param timestampColumn
+   * @param changesetColumn
+   * @param tagsColumn
+   * @param longitudeColumn
+   * @param latitudeColumn
+   * @param geometryColumn
+   */
   public PostgresNodeTable(
       DataSource dataSource,
       String nodeTable,
@@ -106,7 +128,7 @@ public class PostgresNodeTable implements NodeTable {
     this.insert =
         String.format(
             "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                + "VALUES (?, ? ,? , ?, ?, cast (? AS jsonb), ?, ?, ?)"
                 + "ON CONFLICT (%2$s) DO UPDATE SET "
                 + "%3$s = excluded.%3$s, "
                 + "%4$s = excluded.%4$s, "
@@ -153,7 +175,7 @@ public class PostgresNodeTable implements NodeTable {
           return null;
         }
       }
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -173,7 +195,7 @@ public class PostgresNodeTable implements NodeTable {
         }
         return ids.stream().map(entities::get).collect(Collectors.toList());
       }
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -183,7 +205,7 @@ public class PostgresNodeTable implements NodeTable {
         PreparedStatement statement = connection.prepareStatement(insert)) {
       setEntity(statement, entity);
       statement.execute();
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -200,7 +222,7 @@ public class PostgresNodeTable implements NodeTable {
         statement.addBatch();
       }
       statement.executeBatch();
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -247,7 +269,7 @@ public class PostgresNodeTable implements NodeTable {
           writer.writeInteger(entity.getInfo().getUid());
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
-          writer.writeHstore(entity.getTags());
+          writer.writeJsonb(PostgresJsonbMapper.toJson(entity.getTags()));
           writer.writeDouble(entity.getLon());
           writer.writeDouble(entity.getLat());
           writer.writeGeometry(entity.getGeometry());
@@ -258,13 +280,13 @@ public class PostgresNodeTable implements NodeTable {
     }
   }
 
-  private Node getEntity(ResultSet result) throws SQLException {
+  private Node getEntity(ResultSet result) throws SQLException, JsonProcessingException {
     long id = result.getLong(1);
     int version = result.getInt(2);
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    Map<String, String> tags = (Map<String, String>) result.getObject(6);
+    Map<String, String> tags = PostgresJsonbMapper.toMap(result.getString(6));
     double lon = result.getDouble(7);
     double lat = result.getDouble(8);
     Geometry point = GeometryUtils.deserialize(result.getBytes(9));
@@ -272,13 +294,14 @@ public class PostgresNodeTable implements NodeTable {
     return new Node(id, info, tags, lon, lat, point);
   }
 
-  private void setEntity(PreparedStatement statement, Node entity) throws SQLException {
+  private void setEntity(PreparedStatement statement, Node entity)
+      throws SQLException, JsonProcessingException {
     statement.setObject(1, entity.getId());
     statement.setObject(2, entity.getInfo().getVersion());
     statement.setObject(3, entity.getInfo().getUid());
     statement.setObject(4, entity.getInfo().getTimestamp());
     statement.setObject(5, entity.getInfo().getChangeset());
-    statement.setObject(6, entity.getTags());
+    statement.setObject(6, PostgresJsonbMapper.toJson(entity.getTags()));
     statement.setObject(7, entity.getLon());
     statement.setObject(8, entity.getLat());
     statement.setBytes(9, GeometryUtils.serialize(entity.getGeometry()));

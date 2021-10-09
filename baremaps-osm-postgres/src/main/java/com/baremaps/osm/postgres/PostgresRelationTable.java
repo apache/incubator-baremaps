@@ -22,6 +22,7 @@ import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.geometry.GeometryUtils;
 import com.baremaps.postgres.jdbc.CopyWriter;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,6 +39,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
+/** JDBC handler for the {@code Relation} table */
 public class PostgresRelationTable implements RelationTable {
 
   private final String select;
@@ -52,6 +54,11 @@ public class PostgresRelationTable implements RelationTable {
 
   private final DataSource dataSource;
 
+  /**
+   * Create handler with predefined fields
+   *
+   * @param dataSource
+   */
   public PostgresRelationTable(DataSource dataSource) {
     this(
         dataSource,
@@ -68,6 +75,22 @@ public class PostgresRelationTable implements RelationTable {
         "geom");
   }
 
+  /**
+   * Create handler with custom fields name
+   *
+   * @param dataSource
+   * @param nodeTable
+   * @param idColumn
+   * @param versionColumn
+   * @param uidColumn
+   * @param timestampColumn
+   * @param changesetColumn
+   * @param tagsColumn
+   * @param memberRefs
+   * @param memberTypes
+   * @param memberRoles
+   * @param geometryColumn
+   */
   public PostgresRelationTable(
       DataSource dataSource,
       String nodeTable,
@@ -113,7 +136,7 @@ public class PostgresRelationTable implements RelationTable {
     this.insert =
         String.format(
             "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                + "VALUES (?, ?, ?, ?, ?, cast (? AS jsonb), ?, ?, ?, ?) "
                 + "ON CONFLICT (%2$s) DO UPDATE SET "
                 + "%3$s = excluded.%3$s, "
                 + "%4$s = excluded.%4$s, "
@@ -163,7 +186,7 @@ public class PostgresRelationTable implements RelationTable {
           return null;
         }
       }
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -184,7 +207,7 @@ public class PostgresRelationTable implements RelationTable {
         }
         return ids.stream().map(entities::get).collect(Collectors.toList());
       }
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -194,7 +217,7 @@ public class PostgresRelationTable implements RelationTable {
         PreparedStatement statement = connection.prepareStatement(insert)) {
       setEntity(statement, entity);
       statement.execute();
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -212,7 +235,7 @@ public class PostgresRelationTable implements RelationTable {
         statement.addBatch();
       }
       statement.executeBatch();
-    } catch (SQLException e) {
+    } catch (SQLException | JsonProcessingException e) {
       throw new DatabaseException(e);
     }
   }
@@ -245,6 +268,12 @@ public class PostgresRelationTable implements RelationTable {
     }
   }
 
+  /**
+   * Add the given entities to the database using the copy interface
+   *
+   * @param entities a list of the entities to add
+   * @throws DatabaseException If an exception occurs while copying
+   */
   public void copy(List<Relation> entities) throws DatabaseException {
     if (entities.isEmpty()) {
       return;
@@ -260,7 +289,7 @@ public class PostgresRelationTable implements RelationTable {
           writer.writeInteger(entity.getInfo().getUid());
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
-          writer.writeHstore(entity.getTags());
+          writer.writeJsonb(PostgresJsonbMapper.toJson(entity.getTags()));
           writer.writeLongList(
               entity.getMembers().stream().map(Member::getRef).collect(Collectors.toList()));
           writer.writeIntegerList(
@@ -278,13 +307,13 @@ public class PostgresRelationTable implements RelationTable {
     }
   }
 
-  private Relation getEntity(ResultSet result) throws SQLException {
+  private Relation getEntity(ResultSet result) throws SQLException, JsonProcessingException {
     long id = result.getLong(1);
     int version = result.getInt(2);
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    Map<String, String> tags = (Map<String, String>) result.getObject(6);
+    Map<String, String> tags = PostgresJsonbMapper.toMap(result.getString(6));
     Long[] refs = (Long[]) result.getArray(7).getArray();
     Integer[] types = (Integer[]) result.getArray(8).getArray();
     String[] roles = (String[]) result.getArray(9).getArray();
@@ -297,13 +326,14 @@ public class PostgresRelationTable implements RelationTable {
     return new Relation(id, info, tags, members, geometry);
   }
 
-  private void setEntity(PreparedStatement statement, Relation entity) throws SQLException {
+  private void setEntity(PreparedStatement statement, Relation entity)
+      throws SQLException, JsonProcessingException {
     statement.setObject(1, entity.getId());
     statement.setObject(2, entity.getInfo().getVersion());
     statement.setObject(3, entity.getInfo().getUid());
     statement.setObject(4, entity.getInfo().getTimestamp());
     statement.setObject(5, entity.getInfo().getChangeset());
-    statement.setObject(6, entity.getTags());
+    statement.setObject(6, PostgresJsonbMapper.toJson(entity.getTags()));
     Object[] refs = entity.getMembers().stream().map(Member::getRef).toArray();
     statement.setObject(7, statement.getConnection().createArrayOf("bigint", refs));
     Object[] types =

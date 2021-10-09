@@ -22,6 +22,11 @@
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-testing</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

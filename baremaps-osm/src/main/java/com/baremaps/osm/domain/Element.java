@@ -45,7 +45,7 @@ public abstract class Element implements Entity {
    * @param tags the tags
    * @param geometry the geometry
    */
-  public Element(long id, Info info, Map<String, String> tags, Geometry geometry) {
+  protected Element(long id, Info info, Map<String, String> tags, Geometry geometry) {
     this.id = id;
     this.info = info;
     this.tags = tags;

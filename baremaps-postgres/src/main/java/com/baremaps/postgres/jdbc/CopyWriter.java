@@ -45,6 +45,8 @@ public class CopyWriter implements AutoCloseable {
   private static final int IPV6_MASK = 128;
   private static final byte IPV6_IS_CIDR = 0;
 
+  private static final byte JSONB_VERSION = 1;
+
   private final DataOutputStream data;
 
   /**
@@ -307,6 +309,16 @@ public class CopyWriter implements AutoCloseable {
   }
 
   /**
+   * Writes a jsonb array
+   *
+   * @param value
+   * @throws IOException
+   */
+  public void writeJsonb(String value) throws IOException {
+    nullableWriter(CopyWriter::jsonbWriter).write(data, value);
+  }
+
+  /**
    * Writes a geometry value.
    *
    * @param value
@@ -473,6 +485,20 @@ public class CopyWriter implements AutoCloseable {
 
     // Write the entire array to the COPY data
     data.writeInt(byteArrayOutputStream.size());
+    data.write(byteArrayOutputStream.toByteArray());
+  }
+
+  private static void jsonbWriter(DataOutputStream data, String value) throws IOException {
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+
+    dataOutputStream.write(value.getBytes(UTF8));
+
+    // Write array size + 1 byte for jsonb version
+    data.writeInt(byteArrayOutputStream.size() + 1);
+
+    data.writeByte(JSONB_VERSION);
+
     data.write(byteArrayOutputStream.toByteArray());
   }
 

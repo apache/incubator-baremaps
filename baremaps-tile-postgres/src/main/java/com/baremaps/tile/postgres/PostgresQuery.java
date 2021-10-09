@@ -74,7 +74,7 @@ public class PostgresQuery {
       String message =
           String.format(
               "The query is malformed.\n"
-                  + "\tExpected format:\n\t\tSELECT c1::bigint, c2::hstore, c3::geometry FROM t WHERE c\n"
+                  + "\tExpected format:\n\t\tSELECT c1::bigint, c2::jsonb, c3::geometry FROM t WHERE c\n"
                   + "\tActual query:\n\t\t%s",
               query);
       throw new IllegalArgumentException(message);

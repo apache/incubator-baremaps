@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
 public class PostgresTileStore implements TileStore {
 
-  private static Logger logger = LoggerFactory.getLogger(PostgresTileStore.class);
+  private static final Logger logger = LoggerFactory.getLogger(PostgresTileStore.class);
 
   private static final String TILE_ENVELOPE = "st_tileenvelope(%1$s, %2$s, %3$s)";
 
@@ -59,7 +59,7 @@ public class PostgresTileStore implements TileStore {
   private static final String TARGET_LAYER_QUERY =
       "select "
           + "%1$s as id, "
-          + "hstore_to_jsonb_loose(%2$s || hstore('geometry', lower(replace(st_geometrytype(%3$s), 'ST_', '')))) as tags, "
+          + "(%2$s ||  jsonb_build_object('geometry', lower(replace(st_geometrytype(%3$s), 'ST_', '')))) as tags, "
           + "st_asmvtgeom(%3$s, $envelope, 4096, 256, true) as geom "
           + "from %4$s %5$s";
 
@@ -99,7 +99,6 @@ public class PostgresTileStore implements TileStore {
         gzip.write(bytes);
       }
       gzip.close();
-
       if (length > 0) {
         return data.toByteArray();
       } else {
