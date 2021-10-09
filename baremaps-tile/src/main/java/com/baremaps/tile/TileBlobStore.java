@@ -20,17 +20,25 @@ import com.baremaps.blob.BlobStoreException;
 import java.io.IOException;
 import java.net.URI;
 
+/** Represents a {@code TileStore} baked by a {@code BlobStore}. */
 public class TileBlobStore implements TileStore {
 
   private final BlobStore blobStore;
 
   private final URI uri;
 
+  /**
+   * Constructs a {@code TileBlobStore}.
+   *
+   * @param blobStore the underlying blobstore
+   * @param baseURI the base URI
+   */
   public TileBlobStore(BlobStore blobStore, URI baseURI) {
     this.blobStore = blobStore;
     this.uri = baseURI;
   }
 
+  /** {@inheritDoc} */
   @Override
   public byte[] read(Tile tile) throws TileStoreException {
     try {
@@ -40,6 +48,7 @@ public class TileBlobStore implements TileStore {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(Tile tile, byte[] bytes) throws TileStoreException {
     try {
@@ -55,6 +64,7 @@ public class TileBlobStore implements TileStore {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void delete(Tile tile) throws TileStoreException {
     try {

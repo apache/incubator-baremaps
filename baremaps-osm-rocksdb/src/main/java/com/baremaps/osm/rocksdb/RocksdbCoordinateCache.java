@@ -19,22 +19,24 @@ import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
 import org.rocksdb.RocksDB;
 
+/** A {@code Cache} for coordinates baked by RocksDB. */
 public class RocksdbCoordinateCache extends RocksdbCache<Long, Coordinate>
     implements CoordinateCache {
 
+  /** Constructs a {@code RocksdbCoordinateCache}. */
   public RocksdbCoordinateCache(RocksDB db) {
     super(db);
   }
 
   @Override
-  public byte[] key(Long key) {
+  protected byte[] key(Long key) {
     ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
     buffer.putLong(key);
     return buffer.array();
   }
 
   @Override
-  public Coordinate read(byte[] array) {
+  protected Coordinate read(byte[] array) {
     if (array == null) {
       return null;
     }
@@ -48,7 +50,7 @@ public class RocksdbCoordinateCache extends RocksdbCache<Long, Coordinate>
   }
 
   @Override
-  public byte[] write(Coordinate value) {
+  protected byte[] write(Coordinate value) {
     ByteBuffer buffer = ByteBuffer.allocate(17);
     if (value != null) {
       buffer.put((byte) 1);

@@ -14,6 +14,9 @@
 
 package com.baremaps.osm.postgres;
 
+import static com.baremaps.osm.postgres.PostgresJsonbMapper.toJson;
+import static com.baremaps.osm.postgres.PostgresJsonbMapper.toMap;
+
 import com.baremaps.osm.database.DatabaseException;
 import com.baremaps.osm.database.WayTable;
 import com.baremaps.osm.domain.Info;
@@ -39,7 +42,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/** JDBC handler for the {@code Way} table */
+/** Provides an implementation of the {@code WayTable} baked by PostgreSQL. */
 public class PostgresWayTable implements WayTable {
 
   private final DataSource dataSource;
@@ -55,9 +58,9 @@ public class PostgresWayTable implements WayTable {
   private final String copy;
 
   /**
-   * Create handler with predefined fields
+   * Constructs a {@code PostgresWayTable}.
    *
-   * @param dataSource
+   * @param dataSource the datasource
    */
   public PostgresWayTable(DataSource dataSource) {
     this(
@@ -74,7 +77,7 @@ public class PostgresWayTable implements WayTable {
   }
 
   /**
-   * Create handler with custom fields name
+   * Constructs a {@code PostgresWayTable} with custom parameters.
    *
    * @param dataSource
    * @param wayTable
@@ -273,7 +276,7 @@ public class PostgresWayTable implements WayTable {
           writer.writeInteger(entity.getInfo().getUid());
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
-          writer.writeJsonb(PostgresJsonbMapper.toJson(entity.getTags()));
+          writer.writeJsonb(toJson(entity.getTags()));
           writer.writeLongList(entity.getNodes());
           writer.writeGeometry(entity.getGeometry());
         }
@@ -289,7 +292,7 @@ public class PostgresWayTable implements WayTable {
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    Map<String, String> tags = PostgresJsonbMapper.toMap(result.getString(6));
+    Map<String, String> tags = toMap(result.getString(6));
     List<Long> nodes = new ArrayList<>();
     Array array = result.getArray(7);
     if (array != null) {
@@ -307,7 +310,7 @@ public class PostgresWayTable implements WayTable {
     statement.setObject(3, entity.getInfo().getUid());
     statement.setObject(4, entity.getInfo().getTimestamp());
     statement.setObject(5, entity.getInfo().getChangeset());
-    statement.setObject(6, PostgresJsonbMapper.toJson(entity.getTags()));
+    statement.setObject(6, toJson(entity.getTags()));
     statement.setObject(7, entity.getNodes().stream().mapToLong(Long::longValue).toArray());
     statement.setBytes(8, GeometryUtils.serialize(entity.getGeometry()));
   }

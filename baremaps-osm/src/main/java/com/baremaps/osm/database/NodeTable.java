@@ -16,4 +16,5 @@ package com.baremaps.osm.database;
 
 import com.baremaps.osm.domain.Node;
 
+/** Provides an interface to a table storing OpenStreetMap nodes. */
 public interface NodeTable extends EntityTable<Node> {}

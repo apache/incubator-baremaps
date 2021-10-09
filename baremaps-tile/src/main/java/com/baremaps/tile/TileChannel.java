@@ -16,32 +16,47 @@ package com.baremaps.tile;
 
 import java.util.function.Consumer;
 
-public class Tiler implements Consumer<Tile> {
+/** A channel that conveys tiles from a source to a target. */
+public class TileChannel implements Consumer<Tile> {
 
-  public final TileStore tileSource;
+  public final TileStore source;
 
-  public final TileStore tileTarget;
+  public final TileStore target;
 
   public final boolean deleteEmptyTiles;
 
-  public Tiler(TileStore tileSource, TileStore tileTarget) {
-    this(tileSource, tileTarget, false);
+  /**
+   * Constructs a {@code TileChannel}.
+   *
+   * @param source the source
+   * @param target the target
+   */
+  public TileChannel(TileStore source, TileStore target) {
+    this(source, target, false);
   }
 
-  public Tiler(TileStore tileSource, TileStore tileTarget, boolean deleteEmptyTiles) {
-    this.tileSource = tileSource;
-    this.tileTarget = tileTarget;
+  /**
+   * Constructs a {@code TileChannel}.
+   *
+   * @param source the source
+   * @param target the target
+   * @param deleteEmptyTiles deletes empty tiles
+   */
+  public TileChannel(TileStore source, TileStore target, boolean deleteEmptyTiles) {
+    this.source = source;
+    this.target = target;
     this.deleteEmptyTiles = deleteEmptyTiles;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void accept(Tile tile) {
     try {
-      byte[] bytes = tileSource.read(tile);
+      byte[] bytes = source.read(tile);
       if (bytes != null) {
-        tileTarget.write(tile, bytes);
+        target.write(tile, bytes);
       } else if (deleteEmptyTiles) {
-        tileTarget.delete(tile);
+        target.delete(tile);
       }
     } catch (TileStoreException ex) {
       throw new RuntimeException("An error occurred while creating the tiles", ex);

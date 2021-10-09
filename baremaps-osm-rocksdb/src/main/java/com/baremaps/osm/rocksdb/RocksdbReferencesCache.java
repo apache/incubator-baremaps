@@ -20,21 +20,24 @@ import java.util.ArrayList;
 import java.util.List;
 import org.rocksdb.RocksDB;
 
+/** A {@code Cache} for references baked by RocksDB. */
 public class RocksdbReferencesCache extends RocksdbCache<Long, List<Long>>
     implements ReferenceCache {
 
+  /** Constructs a {@code RocksdbReferencesCache}. */
   public RocksdbReferencesCache(RocksDB db) {
     super(db);
   }
 
   @Override
-  public byte[] key(Long key) {
+  protected byte[] key(Long key) {
     ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
     buffer.putLong(key);
     return buffer.array();
   }
 
-  public List<Long> read(byte[] array) {
+  @Override
+  protected List<Long> read(byte[] array) {
     ByteBuffer buffer = ByteBuffer.wrap(array);
     if (buffer == null) {
       return null;
@@ -47,7 +50,8 @@ public class RocksdbReferencesCache extends RocksdbCache<Long, List<Long>>
     return values;
   }
 
-  public byte[] write(List<Long> value) {
+  @Override
+  protected byte[] write(List<Long> value) {
     ByteBuffer buffer = ByteBuffer.allocate(4 + 8 * value.size());
     buffer.putInt(value.size());
     for (Long v : value) {

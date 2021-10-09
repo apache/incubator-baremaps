@@ -22,10 +22,17 @@ public class VariableUtils {
 
   private VariableUtils() {}
 
-  public static String interpolate(Map<String, String> variables, String string) {
+  /**
+   * Interpolates variables prefixed with '$' in a template string.
+   *
+   * @param variables the variables
+   * @param template the template
+   * @return the result
+   */
+  public static String interpolate(Map<String, String> variables, String template) {
     for (Entry<String, String> entry : variables.entrySet()) {
-      string = string.replace(String.format("$%s", entry.getKey()), entry.getValue());
+      template = template.replace(String.format("$%s", entry.getKey()), entry.getValue());
     }
-    return string;
+    return template;
   }
 }

@@ -14,13 +14,24 @@
 
 package com.baremaps.tile;
 
+/** Signals that an exception occurred in a {@code TileStore}. */
 public class TileStoreException extends Exception {
 
-  public TileStoreException(String e) {
-    super(e);
+  /**
+   * Constructs an {@code BlobStoreException} with the specified detail message.
+   *
+   * @param message the message
+   */
+  public TileStoreException(String message) {
+    super(message);
   }
 
-  public TileStoreException(Throwable e) {
-    super(e);
+  /**
+   * Constructs a {@code BlobStoreException} with the specified cause.
+   *
+   * @param cause the cause
+   */
+  public TileStoreException(Throwable cause) {
+    super(cause);
   }
 }

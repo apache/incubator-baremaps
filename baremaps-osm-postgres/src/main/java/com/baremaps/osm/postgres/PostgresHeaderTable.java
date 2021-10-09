@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
+/** Provides an implementation of the {@code HeaderTable} baked by PostgreSQL. */
 public class PostgresHeaderTable implements HeaderTable {
 
   private final DataSource dataSource;
@@ -49,6 +50,11 @@ public class PostgresHeaderTable implements HeaderTable {
 
   private final String copy;
 
+  /**
+   * Constructs a {@code PostgresHeaderTable}.
+   *
+   * @param dataSource
+   */
   public PostgresHeaderTable(DataSource dataSource) {
     this(
         dataSource,
@@ -60,6 +66,17 @@ public class PostgresHeaderTable implements HeaderTable {
         "writing_program");
   }
 
+  /**
+   * Constructs a {@code PostgresHeaderTable} with custom parameters.
+   *
+   * @param dataSource
+   * @param headerTable
+   * @param replicationSequenceNumberColumn
+   * @param replicationTimestampColumn
+   * @param replicationUrlColumn
+   * @param sourceColumn
+   * @param writingProgramColumn
+   */
   public PostgresHeaderTable(
       DataSource dataSource,
       String headerTable,
@@ -125,6 +142,7 @@ public class PostgresHeaderTable implements HeaderTable {
             writingProgramColumn);
   }
 
+  /** {@inheritDoc} */
   @Override
   public List<Header> selectAll() throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
@@ -142,11 +160,13 @@ public class PostgresHeaderTable implements HeaderTable {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public Header selectLatest() throws DatabaseException {
     return selectAll().get(0);
   }
 
+  /** {@inheritDoc} */
   @Override
   public Header select(Long id) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
@@ -164,6 +184,7 @@ public class PostgresHeaderTable implements HeaderTable {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public List<Header> select(List<Long> ids) throws DatabaseException {
     if (ids.isEmpty()) {
@@ -185,6 +206,7 @@ public class PostgresHeaderTable implements HeaderTable {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void insert(Header entity) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
@@ -196,6 +218,7 @@ public class PostgresHeaderTable implements HeaderTable {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void insert(List<Header> entities) throws DatabaseException {
     if (entities.isEmpty()) {
@@ -214,6 +237,7 @@ public class PostgresHeaderTable implements HeaderTable {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void delete(Long id) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
@@ -225,6 +249,7 @@ public class PostgresHeaderTable implements HeaderTable {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void delete(List<Long> ids) throws DatabaseException {
     if (ids.isEmpty()) {
@@ -243,6 +268,7 @@ public class PostgresHeaderTable implements HeaderTable {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void copy(List<Header> entities) throws DatabaseException {
     if (entities.isEmpty()) {

@@ -22,45 +22,79 @@ import net.sf.jsqlparser.statement.select.FromItem;
 import net.sf.jsqlparser.statement.select.Join;
 import net.sf.jsqlparser.statement.select.SelectItem;
 
-class PostgresCTE {
+/**
+ * Models the groups identified in the input queries of a {@code PostgresTileStore}. These groups
+ * are used to form common table expressions (CTE).
+ */
+class PostgresGroup {
 
   private final List<SelectItem> selectItems;
   private final FromItem fromItem;
   private final List<Join> joins;
 
-  public PostgresCTE(List<SelectItem> selectItems, FromItem fromItem, List<Join> joins) {
+  /**
+   * Constructs a {@code PostgresGroup} with objects extracted from an AST obtained by parsing a SQL
+   * query with JSQLParser.
+   *
+   * @param selectItems the selected columns.
+   * @param fromItem the from clause
+   * @param joins the join clauses
+   */
+  public PostgresGroup(List<SelectItem> selectItems, FromItem fromItem, List<Join> joins) {
     this.selectItems = selectItems;
     this.fromItem = fromItem;
     this.joins = joins;
   }
 
+  /**
+   * Returns the selected columns.
+   *
+   * @return the selected columns
+   */
   public List<SelectItem> getSelectItems() {
     return selectItems;
   }
 
+  /**
+   * Returns the from clause.
+   *
+   * @return the from clause
+   */
   public FromItem getFromItem() {
     return fromItem;
   }
 
+  /**
+   * Returns the join clauses.
+   *
+   * @return the join clauses
+   */
   public List<Join> getJoins() {
     return joins;
   }
 
+  /**
+   * Returns the unique alias of this group.
+   *
+   * @return the alias
+   */
   public String getAlias() {
     return String.format("h%x", hashCode());
   }
 
+  /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof PostgresCTE)) {
+    if (!(o instanceof PostgresGroup)) {
       return false;
     }
     return hashCode() == o.hashCode();
   }
 
+  /** {@inheritDoc} */
   @Override
   public int hashCode() {
     String selectItemsString = selectItems.toString();

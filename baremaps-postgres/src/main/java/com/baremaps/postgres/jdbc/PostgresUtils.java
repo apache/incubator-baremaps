@@ -25,14 +25,29 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.sql.DataSource;
 
+/** A helper class for creating data sources and executing queries. */
 public final class PostgresUtils {
 
   private PostgresUtils() {}
 
+  /**
+   * Creates a data source from a JDBC url with a pool size corresponding to the number of available
+   * processors.
+   *
+   * @param url the JDBC url
+   * @return the data source
+   */
   public static DataSource datasource(String url) {
     return datasource(url, Runtime.getRuntime().availableProcessors());
   }
 
+  /**
+   * Creates a data source from a JDBC url with a pool size defined by the user.
+   *
+   * @param url the JDBC url
+   * @param poolSize the pool size
+   * @return the data source
+   */
   public static DataSource datasource(String url, int poolSize) {
     if (poolSize < 1) {
       throw new IllegalArgumentException("PoolSize cannot be inferior to 1");
@@ -44,6 +59,14 @@ public final class PostgresUtils {
     return new HikariDataSource(config);
   }
 
+  /**
+   * Executes the queries contained in a resource file.
+   *
+   * @param connection the JDBC connection
+   * @param resource the path of the resource file
+   * @throws IOException
+   * @throws SQLException
+   */
   public static void executeResource(Connection connection, String resource)
       throws IOException, SQLException {
     URL resourceURL = Resources.getResource(resource);

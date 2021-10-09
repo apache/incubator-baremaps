@@ -14,6 +14,13 @@
 
 package com.baremaps.postgres.jdbc;
 
+/**
+ * This code has been adapted from {@link <a
+ * href="https://github.com/PgBulkInsert/PgBulkInsert">PgBulkInsert</a>} licensed under the MIT
+ * license.
+ *
+ * <p>Copyright (c) The PgBulkInsert Team.
+ */
 class ObjectIdentifier {
 
   private ObjectIdentifier() {}

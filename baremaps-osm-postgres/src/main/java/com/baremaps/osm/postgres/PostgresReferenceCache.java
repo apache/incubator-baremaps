@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
+/** A read-only {@code Cache} for references baked by an OpenStreetMap ways stored in Postgres. */
 public class PostgresReferenceCache implements ReferenceCache {
 
   private static final String SELECT = "SELECT nodes FROM osm_ways WHERE id = ?";
@@ -38,10 +39,12 @@ public class PostgresReferenceCache implements ReferenceCache {
 
   private final DataSource dataSource;
 
+  /** Constructs a {@code PostgresCoordinateCache}. */
   public PostgresReferenceCache(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
+  /** {@inheritDoc} */
   public List<Long> get(Long id) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
@@ -64,6 +67,7 @@ public class PostgresReferenceCache implements ReferenceCache {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public List<List<Long>> get(List<Long> keys) throws CacheException {
     try (Connection connection = dataSource.getConnection();
@@ -87,21 +91,25 @@ public class PostgresReferenceCache implements ReferenceCache {
     }
   }
 
+  /** This operation is not supported. */
   @Override
   public void add(Long key, List<Long> values) {
     throw new UnsupportedOperationException();
   }
 
+  /** This operation is not supported. */
   @Override
   public void add(List<Entry<Long, List<Long>>> storeEntries) {
     throw new UnsupportedOperationException();
   }
 
+  /** This operation is not supported. */
   @Override
   public void delete(Long key) {
     throw new UnsupportedOperationException();
   }
 
+  /** This operation is not supported. */
   @Override
   public void delete(List<Long> keys) {
     throw new UnsupportedOperationException();

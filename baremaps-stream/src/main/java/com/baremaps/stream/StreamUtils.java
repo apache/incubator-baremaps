@@ -14,7 +14,7 @@
 
 package com.baremaps.stream;
 
-import com.baremaps.stream.BufferedSpliterator.CompletionStrategy;
+import com.baremaps.stream.BufferedSpliterator.CompletionOrder;
 import com.baremaps.stream.BufferedSpliterator.InCompletionOrder;
 import com.baremaps.stream.BufferedSpliterator.InSourceOrder;
 import java.util.Iterator;
@@ -69,13 +69,13 @@ public class StreamUtils {
    * and a buffer size.
    *
    * @param asyncStream
-   * @param completionStrategy
+   * @param completionOrder
    * @param <T>
    * @return a buffered stream
    */
   private static <T> Stream<CompletableFuture<T>> buffer(
-      Stream<CompletableFuture<T>> asyncStream, CompletionStrategy completionStrategy) {
-    return buffer(asyncStream, completionStrategy, Runtime.getRuntime().availableProcessors());
+      Stream<CompletableFuture<T>> asyncStream, CompletionOrder completionOrder) {
+    return buffer(asyncStream, completionOrder, Runtime.getRuntime().availableProcessors());
   }
 
   /**
@@ -83,17 +83,15 @@ public class StreamUtils {
    * and a buffer size.
    *
    * @param asyncStream
-   * @param completionStrategy
+   * @param completionOrder
    * @param bufferSize
    * @param <T>
    * @return a buffered stream
    */
   private static <T> Stream<CompletableFuture<T>> buffer(
-      Stream<CompletableFuture<T>> asyncStream,
-      CompletionStrategy completionStrategy,
-      int bufferSize) {
+      Stream<CompletableFuture<T>> asyncStream, CompletionOrder completionOrder, int bufferSize) {
     return StreamSupport.stream(
-        new BufferedSpliterator<>(asyncStream.spliterator(), bufferSize, completionStrategy),
+        new BufferedSpliterator<>(asyncStream.spliterator(), bufferSize, completionOrder),
         asyncStream.isParallel());
   }
 
@@ -135,11 +133,11 @@ public class StreamUtils {
   private static <T, U> Stream<U> buffer(
       Stream<T> stream,
       Function<T, U> asyncMapper,
-      CompletionStrategy completionStrategy,
+      CompletionOrder completionOrder,
       int bufferSize) {
     Stream<CompletableFuture<U>> asyncStream =
         stream.map(t -> CompletableFuture.supplyAsync(() -> asyncMapper.apply(t)));
-    return buffer(asyncStream, completionStrategy, bufferSize)
+    return buffer(asyncStream, completionOrder, bufferSize)
         .map(
             f -> {
               try {

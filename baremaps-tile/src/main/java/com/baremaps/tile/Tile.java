@@ -25,6 +25,7 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import org.locationtech.jts.geom.Envelope;
 
+/** A {@code Tile} represents data based on a square extent within a projection. */
 public final class Tile {
 
   private static final double EPSILON = 0.0000001;
@@ -45,38 +46,74 @@ public final class Tile {
 
   private final int z;
 
-  public Tile(int value) {
+  /**
+   * Constructs a tile from its index.
+   *
+   * @param index the index
+   */
+  public Tile(int index) {
     int zoom = 0;
     long offset = 0;
     long count = 1;
-    while (value >= offset + count) {
+    while (index >= offset + count) {
       zoom += 1;
       offset += count;
       count = squares[zoom];
     }
-    long position = value - offset;
+    long position = index - offset;
     x = (int) position % sides[zoom];
     y = (int) position / sides[zoom];
     z = zoom;
   }
 
+  /**
+   * Constructs a tile from its coordinates.
+   *
+   * @param x the x coordinate
+   * @param y the y coordinate
+   * @param z the zoom level
+   */
   public Tile(int x, int y, int z) {
     this.x = x;
     this.y = y;
     this.z = z;
   }
 
-  public static Iterator<Tile> iterator(Envelope envelope, int zoomMin, int zoomMax) {
-    return new TileIterator(envelope, zoomMin, zoomMax);
+  /**
+   * Return an iterator for the tiles that overlap with an envelope.
+   *
+   * @param envelope the envelope
+   * @param minzoom the minimum zoom level
+   * @param maxzoom the maximum zoom level
+   * @return the iterator
+   */
+  public static Iterator<Tile> iterator(Envelope envelope, int minzoom, int maxzoom) {
+    return new TileIterator(envelope, minzoom, maxzoom);
   }
 
-  public static List<Tile> list(Envelope envelope, int zoomMin, int zoomMax) {
-    return ImmutableList.copyOf(iterator(envelope, zoomMin, zoomMax));
+  /**
+   * Return a list for the tiles that overlap with an envelope.
+   *
+   * @param envelope the envelope
+   * @param minzoom the minimum zoom level
+   * @param maxzoom the maximum zoom level
+   * @return the iterator
+   */
+  public static List<Tile> list(Envelope envelope, int minzoom, int maxzoom) {
+    return ImmutableList.copyOf(iterator(envelope, minzoom, maxzoom));
   }
 
-  public static long count(Envelope envelope, int zoomMin, int zoomMax) {
+  /**
+   * Counts the tiles that overlap with an envelope.
+   *
+   * @param envelope the envelope
+   * @param minzoom the minimum zoom level
+   * @param maxzoom the maximum zoom level
+   * @return the count
+   */
+  public static long count(Envelope envelope, int minzoom, int maxzoom) {
     int count = 0;
-    for (int zoom = zoomMin; zoom <= zoomMax; zoom++) {
+    for (int zoom = minzoom; zoom <= maxzoom; zoom++) {
       Tile min = min(envelope, zoom);
       Tile max = max(envelope, zoom);
       count += (max.x() - min.x() + 1) * (max.y() - min.y() + 1);
@@ -84,6 +121,14 @@ public final class Tile {
     return count;
   }
 
+  /**
+   * Returns the tile at a given coordinate.
+   *
+   * @param lon the longitude
+   * @param lat the latitude
+   * @param z the zoom level
+   * @return the tile
+   */
   public static Tile fromLonLat(double lon, double lat, int z) {
     int x = (int) ((lon + 180.0) / 360.0 * (1 << z));
     int y =
@@ -96,6 +141,11 @@ public final class Tile {
     return new Tile(x, y, z);
   }
 
+  /**
+   * Returns the index of the tile.
+   *
+   * @return the index
+   */
   public long index() {
     long x = this.x;
     long y = this.y;
@@ -104,22 +154,47 @@ public final class Tile {
     return offset + position;
   }
 
+  /**
+   * Returns the x coordinate of the tile.
+   *
+   * @return the x coordinate
+   */
   public int x() {
     return x;
   }
 
+  /**
+   * Returns the y coordinate of the tile.
+   *
+   * @return the y coordinate
+   */
   public int y() {
     return y;
   }
 
+  /**
+   * Returns the zoom level of the tile.
+   *
+   * @return the zoom level
+   */
   public int z() {
     return z;
   }
 
+  /**
+   * Returns the parent tile in the hierarchy.
+   *
+   * @return the parent tile
+   */
   public Tile parent() {
     return new Tile(x / 2, y / 2, z - 1);
   }
 
+  /**
+   * Returns the envelope of the tile.
+   *
+   * @return the envelope
+   */
   public Envelope envelope() {
     double x1 = tile2lon(x, z);
     double x2 = tile2lon(x + 1, z);

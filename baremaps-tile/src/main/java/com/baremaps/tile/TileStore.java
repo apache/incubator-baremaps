@@ -14,11 +14,32 @@
 
 package com.baremaps.tile;
 
+/** Represents a store for tiles. */
 public interface TileStore {
 
+  /**
+   * Reads the content of a tile.
+   *
+   * @param tile the tile
+   * @return the content of the tile
+   * @throws TileStoreException
+   */
   byte[] read(Tile tile) throws TileStoreException;
 
-  void write(Tile tile, byte[] bytes) throws TileStoreException;
+  /**
+   * Writes the content of a tile.
+   *
+   * @param tile the tile
+   * @param data the content of the tile
+   * @throws TileStoreException
+   */
+  void write(Tile tile, byte[] data) throws TileStoreException;
 
+  /**
+   * Deletes the content of a tile.
+   *
+   * @param tile the tile
+   * @throws TileStoreException
+   */
   void delete(Tile tile) throws TileStoreException;
 }
