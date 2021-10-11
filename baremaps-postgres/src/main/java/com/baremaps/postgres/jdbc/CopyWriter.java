@@ -52,6 +52,12 @@ public class CopyWriter implements AutoCloseable {
   /**
    * Creates a new writer with the specified {@code PGCopyOutputStream}.
    *
+   * <p>This code has been adapted from {@link <a
+   * href="https://github.com/PgBulkInsert/PgBulkInsert">PgBulkInsert</a>} licensed under the MIT
+   * license.
+   *
+   * <p>Copyright (c) The PgBulkInsert Team.
+   *
    * @param data
    */
   public CopyWriter(PGCopyOutputStream data) {
@@ -504,7 +510,6 @@ public class CopyWriter implements AutoCloseable {
 
   @FunctionalInterface
   private interface ValueWriter<T> {
-
     void write(DataOutputStream data, T value) throws IOException;
   }
 }

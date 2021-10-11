@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
 
+/** A read-only {@code Cache} for coordinates baked by OpenStreetMap nodes stored in PostgreSQL. */
 public class PostgresCoordinateCache implements CoordinateCache {
 
   private static final String SELECT = "SELECT lon, lat FROM osm_nodes WHERE id = ?";
@@ -35,10 +36,13 @@ public class PostgresCoordinateCache implements CoordinateCache {
 
   private final DataSource dataSource;
 
+  /** Constructs a {@code PostgresCoordinateCache}. */
   public PostgresCoordinateCache(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
+  /** {@inheritDoc} */
+  @Override
   public Coordinate get(Long id) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
@@ -57,6 +61,7 @@ public class PostgresCoordinateCache implements CoordinateCache {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public List<Coordinate> get(List<Long> keys) throws CacheException {
     try (Connection connection = dataSource.getConnection();
@@ -77,21 +82,25 @@ public class PostgresCoordinateCache implements CoordinateCache {
     }
   }
 
+  /** This operation is not supported. */
   @Override
   public void add(Long key, Coordinate values) {
     throw new UnsupportedOperationException();
   }
 
+  /** This operation is not supported. */
   @Override
   public void add(List<Entry<Long, Coordinate>> storeEntries) {
     throw new UnsupportedOperationException();
   }
 
+  /** This operation is not supported. */
   @Override
   public void delete(Long key) {
     throw new UnsupportedOperationException();
   }
 
+  /** This operation is not supported. */
   @Override
   public void delete(List<Long> keys) {
     throw new UnsupportedOperationException();

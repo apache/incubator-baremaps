@@ -17,9 +17,20 @@ package com.baremaps.osm.database;
 import com.baremaps.osm.domain.Header;
 import java.util.List;
 
+/** Provides an interface to a table storing OpenStreetMap headers. */
 public interface HeaderTable extends EntityTable<Header> {
 
+  /**
+   * Selects all the headers.
+   *
+   * @throws DatabaseException
+   */
   List<Header> selectAll() throws DatabaseException;
 
+  /**
+   * Selects the latest header.
+   *
+   * @throws DatabaseException
+   */
   Header selectLatest() throws DatabaseException;
 }

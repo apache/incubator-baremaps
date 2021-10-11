@@ -17,14 +17,33 @@ package com.baremaps.stream;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/** Utility methods for dealing with suppliers. */
 public class SupplierUtils {
 
+  private SupplierUtils() {}
+
+  /**
+   * Returns a supplier that memoizes the result returned by another supplier.
+   *
+   * @param supplier the original supplier
+   * @param <T> the type of element returned by the supplier
+   * @return the memoized supplier
+   */
   public static <T> Supplier<T> memoize(Supplier<T> supplier) {
     T value = supplier.get();
     return () -> value;
   }
 
-  public static <T> Supplier<T> memoize(Supplier<T> supplier, int ttlMs) {
+  /**
+   * Returns a supplier that memoizes the result returned by another supplier for a user defined
+   * time to live.
+   *
+   * @param supplier the original supplier
+   * @param timeToLiveMillis the time to live in milliseconds
+   * @param <T> the type of element returned by the supplier
+   * @return the memoized supplier
+   */
+  public static <T> Supplier<T> memoize(Supplier<T> supplier, int timeToLiveMillis) {
     return new Supplier() {
       long t1 = System.currentTimeMillis();
       T value = supplier.get();
@@ -32,7 +51,7 @@ public class SupplierUtils {
       @Override
       public Object get() {
         long t2 = System.currentTimeMillis();
-        if (t2 - t1 > ttlMs) {
+        if (t2 - t1 > timeToLiveMillis) {
           t1 = t2;
           value = supplier.get();
         }
@@ -41,6 +60,15 @@ public class SupplierUtils {
     };
   }
 
+  /**
+   * Converts a supplier to another supplier by applying a function.
+   *
+   * @param supplier the original supplier
+   * @param function the function to apply
+   * @param <T> the type of elements returned by the original supplier
+   * @param <R> the type of elements returned by the function
+   * @return the resulting supplier
+   */
   public static <T, R> Supplier<R> convert(Supplier<T> supplier, Function<T, R> function) {
     return () -> function.apply(supplier.get());
   }

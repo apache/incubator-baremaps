@@ -23,7 +23,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** A TileStore decorator that uses caffeine to cache the content of tiles. */
+/** A {@code TileStore} decorator that uses caffeine to cache the content of tiles. */
 public class TileCache implements TileStore {
 
   private static final Logger logger = LoggerFactory.getLogger(TileCache.class);
@@ -52,6 +52,7 @@ public class TileCache implements TileStore {
             .build();
   }
 
+  /** {@inheritDoc} */
   @Override
   public byte[] read(Tile tile) throws TileStoreException {
     return cache.get(
@@ -66,12 +67,14 @@ public class TileCache implements TileStore {
         });
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(Tile tile, byte[] bytes) throws TileStoreException {
     tileStore.write(tile, bytes);
     cache.invalidate(tile);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void delete(Tile tile) throws TileStoreException {
     tileStore.delete(tile);

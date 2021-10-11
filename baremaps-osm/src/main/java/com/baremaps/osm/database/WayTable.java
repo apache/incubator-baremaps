@@ -16,4 +16,5 @@ package com.baremaps.osm.database;
 
 import com.baremaps.osm.domain.Way;
 
+/** Provides an interface to a table storing OpenStreetMap ways. */
 public interface WayTable extends EntityTable<Way> {}

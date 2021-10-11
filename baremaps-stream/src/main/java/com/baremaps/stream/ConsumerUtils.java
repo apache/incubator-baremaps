@@ -17,10 +17,18 @@ package com.baremaps.stream;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/** Utility methods for dealing with consumers. */
 public class ConsumerUtils {
 
   private ConsumerUtils() {}
 
+  /**
+   * Transforms a consumer into a function.
+   *
+   * @param consumer the consumer
+   * @param <T> the type
+   * @return the function
+   */
   public static <T> Function<T, T> consumeThenReturn(Consumer<T> consumer) {
     return t -> {
       consumer.accept(t);

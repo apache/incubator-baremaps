@@ -26,6 +26,10 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A {@code TileStore} implementation that uses the {@link <a
+ * href="https://docs.mapbox.com/help/glossary/mbtiles/">MBTiles</a>} file format for storing tiles.
+ */
 public class MBTiles implements TileStore {
 
   private static final String CREATE_TABLE_METADATA =
@@ -54,10 +58,16 @@ public class MBTiles implements TileStore {
 
   private final org.sqlite.SQLiteDataSource dataSource;
 
+  /**
+   * Constructs an {@code MBTiles} with the provided SQLite datasource.
+   *
+   * @param dataSource the SQLite datasource
+   */
   public MBTiles(org.sqlite.SQLiteDataSource dataSource) {
     this.dataSource = dataSource;
   }
 
+  /** {@inheritDoc} */
   @Override
   public byte[] read(Tile tile) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
@@ -77,6 +87,7 @@ public class MBTiles implements TileStore {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(Tile tile, byte[] bytes) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
@@ -91,6 +102,7 @@ public class MBTiles implements TileStore {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void delete(Tile tile) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
@@ -104,6 +116,11 @@ public class MBTiles implements TileStore {
     }
   }
 
+  /**
+   * Initializes the SQLite database.
+   *
+   * @throws TileStoreException
+   */
   public void initializeDatabase() throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         Statement statement = connection.createStatement()) {
@@ -115,6 +132,12 @@ public class MBTiles implements TileStore {
     }
   }
 
+  /**
+   * Reads the MBTiles metadata.
+   *
+   * @return the metadata
+   * @throws IOException
+   */
   public Map<String, String> readMetadata() throws IOException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_METADATA);
@@ -131,6 +154,12 @@ public class MBTiles implements TileStore {
     }
   }
 
+  /**
+   * Writes the MBTiles metadata.
+   *
+   * @param metadata the metadata
+   * @throws IOException
+   */
   public void writeMetadata(Map<String, String> metadata) throws IOException {
     try (Connection connection = dataSource.getConnection()) {
       try (Statement statement = connection.createStatement()) {

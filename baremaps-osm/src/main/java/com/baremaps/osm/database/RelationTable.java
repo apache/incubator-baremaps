@@ -16,4 +16,5 @@ package com.baremaps.osm.database;
 
 import com.baremaps.osm.domain.Relation;
 
+/** Provides an interface to a table storing OpenStreetMap relations. */
 public interface RelationTable extends EntityTable<Relation> {}

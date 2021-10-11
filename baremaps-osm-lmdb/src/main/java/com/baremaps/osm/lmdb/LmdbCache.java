@@ -24,6 +24,7 @@ import org.lmdbjava.Dbi;
 import org.lmdbjava.Env;
 import org.lmdbjava.Txn;
 
+/** A {@code Cache} baked by LMDB. */
 public abstract class LmdbCache<K, V> implements Cache<K, V> {
 
   private final Env<ByteBuffer> env;
@@ -37,6 +38,8 @@ public abstract class LmdbCache<K, V> implements Cache<K, V> {
     this.database = database;
   }
 
+  /** {@inheritDoc} */
+  @Override
   public void add(K key, V value) {
     try (Txn<ByteBuffer> txn = env.txnWrite()) {
       database.put(txn, buffer(key), write(value));
@@ -44,6 +47,8 @@ public abstract class LmdbCache<K, V> implements Cache<K, V> {
     }
   }
 
+  /** {@inheritDoc} */
+  @Override
   public void add(List<Entry<K, V>> entries) {
     try (Txn<ByteBuffer> txn = env.txnWrite()) {
       for (Entry<K, V> entry : entries) {
@@ -53,6 +58,7 @@ public abstract class LmdbCache<K, V> implements Cache<K, V> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void delete(K key) {
     try (Txn<ByteBuffer> txn = env.txnWrite()) {
@@ -61,6 +67,7 @@ public abstract class LmdbCache<K, V> implements Cache<K, V> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void delete(List<K> keys) {
     try (Txn<ByteBuffer> txn = env.txnWrite()) {
@@ -71,6 +78,8 @@ public abstract class LmdbCache<K, V> implements Cache<K, V> {
     }
   }
 
+  /** {@inheritDoc} */
+  @Override
   public V get(K key) {
     try (Txn<ByteBuffer> txn = env.txnRead()) {
       ByteBuffer buffer = database.get(txn, buffer(key));
@@ -78,6 +87,8 @@ public abstract class LmdbCache<K, V> implements Cache<K, V> {
     }
   }
 
+  /** {@inheritDoc} */
+  @Override
   public List<V> get(List<K> keys) {
     List<V> list = new ArrayList<>();
     try (Txn<ByteBuffer> txn = env.txnRead()) {
@@ -89,9 +100,9 @@ public abstract class LmdbCache<K, V> implements Cache<K, V> {
     return list;
   }
 
-  public abstract ByteBuffer buffer(K key);
+  protected abstract ByteBuffer buffer(K key);
 
-  public abstract V read(ByteBuffer buffer);
+  protected abstract V read(ByteBuffer buffer);
 
-  public abstract ByteBuffer write(V t);
+  protected abstract ByteBuffer write(V t);
 }

@@ -25,6 +25,7 @@ import org.rocksdb.RocksDBException;
 import org.rocksdb.WriteBatch;
 import org.rocksdb.WriteOptions;
 
+/** A {@code Cache} baked by RocksDB. */
 public abstract class RocksdbCache<K, V> implements Cache<K, V> {
 
   private final RocksDB db;
@@ -34,6 +35,8 @@ public abstract class RocksdbCache<K, V> implements Cache<K, V> {
     this.db = db;
   }
 
+  /** {@inheritDoc} */
+  @Override
   public void add(K key, V value) throws CacheException {
     try {
       db.put(key(key), write(value));
@@ -42,6 +45,8 @@ public abstract class RocksdbCache<K, V> implements Cache<K, V> {
     }
   }
 
+  /** {@inheritDoc} */
+  @Override
   public void add(List<Entry<K, V>> entries) throws CacheException {
     try (WriteBatch writeBatch = new WriteBatch()) {
       for (Entry<K, V> entry : entries) {
@@ -53,6 +58,7 @@ public abstract class RocksdbCache<K, V> implements Cache<K, V> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void delete(K key) throws CacheException {
     try {
@@ -62,6 +68,7 @@ public abstract class RocksdbCache<K, V> implements Cache<K, V> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void delete(List<K> keys) throws CacheException {
     try (WriteBatch writeBatch = new WriteBatch()) {
@@ -74,6 +81,8 @@ public abstract class RocksdbCache<K, V> implements Cache<K, V> {
     }
   }
 
+  /** {@inheritDoc} */
+  @Override
   public V get(K key) throws CacheException {
     try {
       return read(db.get(key(key)));
@@ -82,6 +91,8 @@ public abstract class RocksdbCache<K, V> implements Cache<K, V> {
     }
   }
 
+  /** {@inheritDoc} */
+  @Override
   public List<V> get(List<K> keys) throws CacheException {
     try {
       List<byte[]> values =
@@ -92,9 +103,9 @@ public abstract class RocksdbCache<K, V> implements Cache<K, V> {
     }
   }
 
-  public abstract byte[] key(K key);
+  protected abstract byte[] key(K key);
 
-  public abstract byte[] write(V t);
+  protected abstract byte[] write(V t);
 
-  public abstract V read(byte[] buffer);
+  protected abstract V read(byte[] buffer);
 }

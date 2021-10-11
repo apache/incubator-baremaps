@@ -18,17 +18,29 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+/**
+ * A spliterator that partition another spliterator.
+ *
+ * @param <T> the type of elements returned by this {@code Spliterator}
+ */
 public class PartitionedSpliterator<T> implements Spliterator<Stream<T>> {
 
   private final Spliterator<T> spliterator;
 
   private final int partitionSize;
 
+  /**
+   * Constructs a {@code PartitionedSpliterator} from another spliterator
+   *
+   * @param spliterator the spliterator to partition
+   * @param partitionSize the partition size
+   */
   public PartitionedSpliterator(Spliterator<T> spliterator, int partitionSize) {
     this.spliterator = spliterator;
     this.partitionSize = partitionSize;
   }
 
+  /** {@inheritDoc} */
   @Override
   public boolean tryAdvance(Consumer<? super Stream<T>> action) {
     Stream.Builder<T> partition = Stream.builder();
@@ -43,6 +55,7 @@ public class PartitionedSpliterator<T> implements Spliterator<Stream<T>> {
     return true;
   }
 
+  /** {@inheritDoc} */
   @Override
   public Spliterator<Stream<T>> trySplit() {
     HoldingConsumer<Stream<T>> consumer = new HoldingConsumer<>();
@@ -50,11 +63,13 @@ public class PartitionedSpliterator<T> implements Spliterator<Stream<T>> {
     return Stream.ofNullable(consumer.value()).spliterator();
   }
 
+  /** {@inheritDoc} */
   @Override
   public long estimateSize() {
     return spliterator.estimateSize() / partitionSize;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int characteristics() {
     return spliterator.characteristics();

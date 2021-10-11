@@ -20,9 +20,20 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+/**
+ * A spliterator that buffers the completion of a spliterator of future elements and returns them
+ * according to a user defined order.
+ *
+ * <p>This code has been adapted from {@link <a
+ * href="https://github.com/palantir/streams/">streams</a>} licensed under the Apache License 2.0.
+ *
+ * <p>Copyright 2017 Palantir Technologies, Inc. All rights reserved.
+ *
+ * @param <T> the type of elements returned by this {@code Spliterator}
+ */
 class BufferedSpliterator<T> implements Spliterator<CompletableFuture<T>> {
 
-  private final CompletionStrategy completionStrategy;
+  private final CompletionOrder completionOrder;
 
   private final Spliterator<CompletableFuture<T>> spliterator;
 
@@ -32,16 +43,24 @@ class BufferedSpliterator<T> implements Spliterator<CompletableFuture<T>> {
 
   private int pending = 0;
 
+  /**
+   * Constructs a {@code BufferedSpliterator} from a spliterator of futures elements.
+   *
+   * @param spliterator the spliterator to buffer
+   * @param bufferSize the buffer size
+   * @param completionOrder the completion order
+   */
   public BufferedSpliterator(
       Spliterator<CompletableFuture<T>> spliterator,
       int bufferSize,
-      CompletionStrategy completionStrategy) {
+      CompletionOrder completionOrder) {
     this.spliterator = spliterator;
     this.bufferSize = bufferSize;
     this.buffer = new ArrayBlockingQueue<>(bufferSize);
-    this.completionStrategy = completionStrategy;
+    this.completionOrder = completionOrder;
   }
 
+  /** {@inheritDoc} */
   @Override
   public boolean tryAdvance(Consumer<? super CompletableFuture<T>> action) {
     fillBuffer();
@@ -59,11 +78,13 @@ class BufferedSpliterator<T> implements Spliterator<CompletableFuture<T>> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public Spliterator<CompletableFuture<T>> trySplit() {
     return null;
   }
 
+  /** {@inheritDoc} */
   @Override
   public long estimateSize() {
     long estimate = pending + spliterator.estimateSize();
@@ -73,6 +94,7 @@ class BufferedSpliterator<T> implements Spliterator<CompletableFuture<T>> {
     return estimate;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int characteristics() {
     return spliterator.characteristics();
@@ -81,17 +103,20 @@ class BufferedSpliterator<T> implements Spliterator<CompletableFuture<T>> {
   private void fillBuffer() {
     while (pending < bufferSize
         && spliterator.tryAdvance(
-            future -> completionStrategy.registerCompletion(future, buffer::add))) {
+            future -> completionOrder.registerCompletion(future, buffer::add))) {
       pending++;
     }
   }
 
-  public interface CompletionStrategy {
+  /** Represents the completion order applied to a {@code BufferedSpliterator}. */
+  public interface CompletionOrder {
+
     <T> void registerCompletion(
         CompletableFuture<T> future, Consumer<CompletableFuture<T>> resultConsumer);
   }
 
-  enum InCompletionOrder implements CompletionStrategy {
+  /** An order that registers completions when futures are completed. */
+  enum InCompletionOrder implements CompletionOrder {
     INSTANCE;
 
     @Override
@@ -101,7 +126,8 @@ class BufferedSpliterator<T> implements Spliterator<CompletableFuture<T>> {
     }
   }
 
-  enum InSourceOrder implements CompletionStrategy {
+  /** An order that registers completion according to the order of the source. */
+  enum InSourceOrder implements CompletionOrder {
     INSTANCE;
 
     @Override

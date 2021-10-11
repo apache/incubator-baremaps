@@ -22,12 +22,20 @@ import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.ChangeConsumer;
 import com.baremaps.osm.function.EntityConsumerAdapter;
 
+/** A consumer for saving OpenStreetMap changes in a database. */
 public class SaveChangeConsumer implements ChangeConsumer {
 
   private final EntityTable<Node> nodeTable;
   private final EntityTable<Way> wayTable;
   private final EntityTable<Relation> relationTable;
 
+  /**
+   * Constructs a {@code SaveChangeConsumer}.
+   *
+   * @param nodeTable the node table
+   * @param wayTable the way table
+   * @param relationTable the relation table
+   */
   public SaveChangeConsumer(
       EntityTable<Node> nodeTable, EntityTable<Way> wayTable, EntityTable<Relation> relationTable) {
     this.nodeTable = nodeTable;
@@ -35,6 +43,7 @@ public class SaveChangeConsumer implements ChangeConsumer {
     this.relationTable = relationTable;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void match(Change change) throws Exception {
     for (Entity entity : change.getEntities()) {

@@ -22,6 +22,7 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.BlockConsumerAdapter;
 
+/** A consumer for saving OpenStreetMap blocks in a database. */
 public class SaveBlockConsumer implements BlockConsumerAdapter {
 
   private final EntityTable<Header> headerTable;
@@ -29,6 +30,14 @@ public class SaveBlockConsumer implements BlockConsumerAdapter {
   private final EntityTable<Way> wayTable;
   private final EntityTable<Relation> relationTable;
 
+  /**
+   * Constructs a {@code SaveBlockConsumer}.
+   *
+   * @param headerTable the header table
+   * @param nodeTable the node table
+   * @param wayTable the way table
+   * @param relationTable the relation table
+   */
   public SaveBlockConsumer(
       EntityTable<Header> headerTable,
       EntityTable<Node> nodeTable,
@@ -40,11 +49,13 @@ public class SaveBlockConsumer implements BlockConsumerAdapter {
     this.relationTable = relationTable;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void match(HeaderBlock headerBlock) throws Exception {
     headerTable.insert(headerBlock.getHeader());
   }
 
+  /** {@inheritDoc} */
   @Override
   public void match(DataBlock dataBlock) throws Exception {
     nodeTable.copy(dataBlock.getDenseNodes());

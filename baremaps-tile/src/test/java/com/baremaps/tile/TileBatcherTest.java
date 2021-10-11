@@ -44,7 +44,7 @@ class TileBatcherTest {
     for (int batchArrayIndex = 0; batchArrayIndex < batchArraySize; batchArrayIndex++) {
       List<Tile> batch =
           tiles.stream()
-              .filter(new TileBatcher(batchArraySize, batchArrayIndex))
+              .filter(new TileBatchPredicate(batchArraySize, batchArrayIndex))
               .sorted(Comparator.comparingLong(Tile::index))
               .collect(Collectors.toList());
       assertEquals(streamSize / batchArraySize, batch.size());

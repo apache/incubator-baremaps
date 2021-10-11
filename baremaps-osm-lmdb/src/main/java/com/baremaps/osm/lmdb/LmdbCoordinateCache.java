@@ -20,19 +20,21 @@ import org.lmdbjava.DbiFlags;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 
+/** A {@code Cache} for coordinates baked by LMDB. */
 public class LmdbCoordinateCache extends LmdbCache<Long, Coordinate> implements CoordinateCache {
 
+  /** Constructs a {@code LmdbCoordinateCache}. */
   public LmdbCoordinateCache(Env<ByteBuffer> env) {
     super(env, env.openDbi("coordinate", DbiFlags.MDB_CREATE));
   }
 
   @Override
-  public ByteBuffer buffer(Long key) {
+  protected ByteBuffer buffer(Long key) {
     return ByteBuffer.allocateDirect(Long.BYTES).putLong(key).flip();
   }
 
   @Override
-  public Coordinate read(ByteBuffer buffer) {
+  protected Coordinate read(ByteBuffer buffer) {
     if (buffer == null || buffer.get() == 0) {
       return null;
     }
@@ -42,7 +44,7 @@ public class LmdbCoordinateCache extends LmdbCache<Long, Coordinate> implements 
   }
 
   @Override
-  public ByteBuffer write(Coordinate value) {
+  protected ByteBuffer write(Coordinate value) {
     ByteBuffer buffer = ByteBuffer.allocateDirect(17);
     if (value != null) {
       buffer.put((byte) 1);

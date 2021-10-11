@@ -16,17 +16,30 @@ package com.baremaps.tile;
 
 import java.util.function.Predicate;
 
-public class TileBatcher implements Predicate<Tile> {
+/** A predicate that filters tiles according to the index of a batch. */
+public class TileBatchPredicate implements Predicate<Tile> {
 
   private final int batchArraySize;
 
   private final int batchArrayIndex;
 
-  public TileBatcher(int batchArraySize, int batchArrayIndex) {
+  /**
+   * Constructs a {@code TileBatchPredicate}.
+   *
+   * @param batchArraySize the size of the batch array
+   * @param batchArrayIndex the index of the batch in the array
+   */
+  public TileBatchPredicate(int batchArraySize, int batchArrayIndex) {
     this.batchArraySize = batchArraySize;
     this.batchArrayIndex = batchArrayIndex;
   }
 
+  /**
+   * Returns true if the tile belongs to the current batch.
+   *
+   * @param tile the tile
+   * @return the result
+   */
   @Override
   public boolean test(Tile tile) {
     return batchArraySize <= 1 || tile.index() % batchArraySize == batchArrayIndex;

@@ -26,6 +26,18 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.result.ResultBearing;
 import org.jdbi.v3.jpa.JpaPlugin;
 
+/**
+ * A generator that uses PostgreSQL metadata to generate input queries for a {@code
+ * PostgresTileStore}. It can be used to accelerate the creation of a tile set.
+ *
+ * <p>As in {@link <a
+ * href="https://docs.oracle.com/javase/7/docs/api/java/sql/DatabaseMetaData.html">JDBC</a>}, some
+ * methods take arguments that are String patterns. These arguments all have names such as *
+ * fooPattern. Within a pattern String, "%" means match any substring of 0 or more characters, and
+ * "_" means match any * one character. Only metadata entries matching the search pattern are
+ * returned. If a search pattern argument is set * to null, that argument's criterion will be
+ * dropped from the search.
+ */
 public class PostgresQueryGenerator {
 
   private final String catalog;
@@ -36,10 +48,25 @@ public class PostgresQueryGenerator {
 
   private final Jdbi jdbi;
 
+  /**
+   * Constructs a {@code PostgresQueryGenerator}.
+   *
+   * @param dataSource the data source
+   */
   public PostgresQueryGenerator(DataSource dataSource) {
     this(dataSource, null, null, null, null, null);
   }
 
+  /**
+   * Constructs a {@code PostgresQueryGenerator}.
+   *
+   * @param dataSource the data source
+   * @param catalog the catalog
+   * @param schemaPattern the schema pattern
+   * @param typeNamePattern the type name pattern
+   * @param columnNamePattern the column name pattern
+   * @param types the types
+   */
   public PostgresQueryGenerator(
       DataSource dataSource,
       String catalog,
@@ -55,6 +82,11 @@ public class PostgresQueryGenerator {
     this.types = types;
   }
 
+  /**
+   * Generates the queries.
+   *
+   * @return the queries
+   */
   public List<PostgresQuery> generate() {
     return listTables().stream()
         .filter(table -> table.getPrimaryKeyColumns().size() == 1)

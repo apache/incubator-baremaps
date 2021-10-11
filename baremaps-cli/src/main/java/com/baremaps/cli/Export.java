@@ -25,11 +25,11 @@ import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.stream.StreamUtils;
 import com.baremaps.tile.Tile;
-import com.baremaps.tile.TileBatcher;
+import com.baremaps.tile.TileBatchPredicate;
 import com.baremaps.tile.TileBlobStore;
+import com.baremaps.tile.TileChannel;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
-import com.baremaps.tile.Tiler;
 import com.baremaps.tile.mbtiles.MBTiles;
 import com.baremaps.tile.postgres.PostgresQuery;
 import com.baremaps.tile.postgres.PostgresTileStore;
@@ -149,8 +149,8 @@ public class Export implements Callable<Integer> {
 
     logger.info("Exporting tiles");
     StreamUtils.batch(stream, 10)
-        .filter(new TileBatcher(batchArraySize, batchArrayIndex))
-        .forEach(new Tiler(tileSource, tileTarget));
+        .filter(new TileBatchPredicate(batchArraySize, batchArrayIndex))
+        .forEach(new TileChannel(tileSource, tileTarget));
     logger.info("Done");
 
     return 0;

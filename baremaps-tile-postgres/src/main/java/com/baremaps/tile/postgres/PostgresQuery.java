@@ -22,40 +22,72 @@ import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.statement.select.SelectItemVisitorAdapter;
 
+/** Models the input queries of a {@code PostgresTileStore}. */
 public class PostgresQuery {
 
   private final String layer;
   private final Integer minzoom;
   private final Integer maxzoom;
   private final String sql;
-  private final PlainSelect ast;
 
+  /**
+   * Constructs a {@code PostgresQuery}.
+   *
+   * @param layer the layer name
+   * @param minzoom the min zoom
+   * @param maxzoom the max zoom
+   * @param sql the sql query
+   */
   public PostgresQuery(String layer, Integer minzoom, Integer maxzoom, String sql) {
     this.layer = layer;
     this.minzoom = minzoom;
     this.maxzoom = maxzoom;
     this.sql = sql;
-    this.ast = parse(sql);
   }
 
+  /**
+   * Returns the layer name.
+   *
+   * @return the layer name
+   */
   public String getLayer() {
     return layer;
   }
 
+  /**
+   * Returns the min zoom.
+   *
+   * @return the min zoom
+   */
   public Integer getMinzoom() {
     return minzoom;
   }
 
+  /**
+   * Returns the max zoom.
+   *
+   * @return the max zoom
+   */
   public Integer getMaxzoom() {
     return maxzoom;
   }
 
+  /**
+   * Returns the SQL query.
+   *
+   * @return the SQL query
+   */
   public String getSql() {
     return sql;
   }
 
+  /**
+   * Returns the abstract syntax tree (AST) obtained by parsing the query with JSQLParser.
+   *
+   * @return the AST
+   */
   public PlainSelect getAst() {
-    return ast;
+    return parse(sql);
   }
 
   private PlainSelect parse(String query) {

@@ -14,6 +14,9 @@
 
 package com.baremaps.osm.postgres;
 
+import static com.baremaps.osm.postgres.PostgresJsonbMapper.toJson;
+import static com.baremaps.osm.postgres.PostgresJsonbMapper.toMap;
+
 import com.baremaps.osm.database.DatabaseException;
 import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.domain.Info;
@@ -39,7 +42,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/** JDBC handler for the {@code Relation} table */
+/** Provides an implementation of the {@code RelationTable} baked by PostgreSQL. */
 public class PostgresRelationTable implements RelationTable {
 
   private final String select;
@@ -55,7 +58,7 @@ public class PostgresRelationTable implements RelationTable {
   private final DataSource dataSource;
 
   /**
-   * Create handler with predefined fields
+   * Constructs a {@code PostgresRelationTable}.
    *
    * @param dataSource
    */
@@ -76,7 +79,7 @@ public class PostgresRelationTable implements RelationTable {
   }
 
   /**
-   * Create handler with custom fields name
+   * Constructs a {@code PostgresRelationTable} with custom parameters.
    *
    * @param dataSource
    * @param nodeTable
@@ -175,6 +178,8 @@ public class PostgresRelationTable implements RelationTable {
             geometryColumn);
   }
 
+  /** {@inheritDoc} */
+  @Override
   public Relation select(Long id) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(select)) {
@@ -191,6 +196,7 @@ public class PostgresRelationTable implements RelationTable {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public List<Relation> select(List<Long> ids) throws DatabaseException {
     if (ids.isEmpty()) {
@@ -212,6 +218,8 @@ public class PostgresRelationTable implements RelationTable {
     }
   }
 
+  /** {@inheritDoc} */
+  @Override
   public void insert(Relation entity) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
@@ -222,6 +230,7 @@ public class PostgresRelationTable implements RelationTable {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void insert(List<Relation> entities) throws DatabaseException {
     if (entities.isEmpty()) {
@@ -240,6 +249,8 @@ public class PostgresRelationTable implements RelationTable {
     }
   }
 
+  /** {@inheritDoc} */
+  @Override
   public void delete(Long id) throws DatabaseException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(delete)) {
@@ -250,6 +261,7 @@ public class PostgresRelationTable implements RelationTable {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void delete(List<Long> ids) throws DatabaseException {
     if (ids.isEmpty()) {
@@ -268,12 +280,8 @@ public class PostgresRelationTable implements RelationTable {
     }
   }
 
-  /**
-   * Add the given entities to the database using the copy interface
-   *
-   * @param entities a list of the entities to add
-   * @throws DatabaseException If an exception occurs while copying
-   */
+  /** {@inheritDoc} */
+  @Override
   public void copy(List<Relation> entities) throws DatabaseException {
     if (entities.isEmpty()) {
       return;
@@ -289,7 +297,7 @@ public class PostgresRelationTable implements RelationTable {
           writer.writeInteger(entity.getInfo().getUid());
           writer.writeLocalDateTime(entity.getInfo().getTimestamp());
           writer.writeLong(entity.getInfo().getChangeset());
-          writer.writeJsonb(PostgresJsonbMapper.toJson(entity.getTags()));
+          writer.writeJsonb(toJson(entity.getTags()));
           writer.writeLongList(
               entity.getMembers().stream().map(Member::getRef).collect(Collectors.toList()));
           writer.writeIntegerList(
@@ -313,7 +321,7 @@ public class PostgresRelationTable implements RelationTable {
     int uid = result.getInt(3);
     LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
     long changeset = result.getLong(5);
-    Map<String, String> tags = PostgresJsonbMapper.toMap(result.getString(6));
+    Map<String, String> tags = toMap(result.getString(6));
     Long[] refs = (Long[]) result.getArray(7).getArray();
     Integer[] types = (Integer[]) result.getArray(8).getArray();
     String[] roles = (String[]) result.getArray(9).getArray();
@@ -333,7 +341,7 @@ public class PostgresRelationTable implements RelationTable {
     statement.setObject(3, entity.getInfo().getUid());
     statement.setObject(4, entity.getInfo().getTimestamp());
     statement.setObject(5, entity.getInfo().getChangeset());
-    statement.setObject(6, PostgresJsonbMapper.toJson(entity.getTags()));
+    statement.setObject(6, toJson(entity.getTags()));
     Object[] refs = entity.getMembers().stream().map(Member::getRef).toArray();
     statement.setObject(7, statement.getConnection().createArrayOf("bigint", refs));
     Object[] types =

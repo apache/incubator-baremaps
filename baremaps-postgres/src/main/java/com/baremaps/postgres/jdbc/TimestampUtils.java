@@ -21,6 +21,13 @@ import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This code has been adapted from {@link <a
+ * href="https://github.com/PgBulkInsert/PgBulkInsert">PgBulkInsert</a>} licensed under the MIT
+ * license.
+ *
+ * <p>Copyright (c) The PgBulkInsert Team.
+ */
 class TimestampUtils {
 
   private TimestampUtils() {}

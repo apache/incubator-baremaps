@@ -33,21 +33,30 @@ class TileIterator implements Iterator<Tile> {
 
   private int y;
 
-  public TileIterator(Envelope envelope, int zoomMin, int zoomMax) {
+  /**
+   * Constructs a {@code TileIterator}.
+   *
+   * @param envelope the envelope
+   * @param minzoom the min zoom
+   * @param maxzoom the max zoom
+   */
+  public TileIterator(Envelope envelope, int minzoom, int maxzoom) {
     this.envelope = envelope;
-    this.zoomMax = zoomMax;
-    this.z = zoomMin;
+    this.zoomMax = maxzoom;
+    this.z = minzoom;
     Tile min = min(envelope, this.z);
     this.x = min.x();
     this.y = min.y();
   }
 
+  /** {@inheritDoc} */
   @Override
   public boolean hasNext() {
     Tile max = max(envelope, this.z);
     return x <= max.x() && y <= max.y() && z <= zoomMax;
   }
 
+  /** {@inheritDoc} */
   @Override
   public Tile next() {
     Tile tile = new Tile(x, y, z);
