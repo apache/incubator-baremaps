@@ -246,4 +246,52 @@ class ImportUpdateTest {
         .call();
     assertEquals(2437l, headerTable.selectLatest().getReplicationSequenceNumber());
   }
+
+  @Test
+  @Tag("integration")
+  void monaco() throws Exception {
+
+    // Import data
+    new ImportService(
+            new URI("res://monaco/monaco-210801.osm.pbf"),
+            blobStore,
+            new MapCoordinateCache(),
+            new MapReferenceCache(),
+            headerTable,
+            nodeTable,
+            wayTable,
+            relationTable,
+            3857)
+        .call();
+
+    assertEquals(3047l, headerTable.selectLatest().getReplicationSequenceNumber());
+
+    // Fix the replicationUrl so that we can update the database with local files
+    headerTable.delete(3047l);
+    headerTable.insert(
+        new Header(
+            3047l,
+            LocalDateTime.of(2021, 8, 01, 20, 21, 41, 0),
+            "res://monaco/monaco-updates",
+            "",
+            ""));
+
+    CoordinateCache coordinateCache = new PostgresCoordinateCache(dataSource);
+    ReferenceCache referenceCache = new PostgresReferenceCache(dataSource);
+
+    long replicationSequenceNumber = headerTable.selectLatest().getReplicationSequenceNumber();
+    while (replicationSequenceNumber < 3075) {
+      new UpdateService(
+              blobStore,
+              coordinateCache,
+              referenceCache,
+              headerTable,
+              nodeTable,
+              wayTable,
+              relationTable,
+              3857)
+          .call();
+      replicationSequenceNumber = headerTable.selectLatest().getReplicationSequenceNumber();
+    }
+  }
 }
