@@ -30,7 +30,7 @@ import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityFunction;
 import com.baremaps.osm.geometry.CreateGeometryConsumer;
 import com.baremaps.osm.geometry.ExtractGeometryFunction;
-import com.baremaps.osm.geometry.ReprojectGeometryConsumer;
+import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
 import com.baremaps.tile.Tile;
@@ -94,7 +94,7 @@ public class DiffService implements Callable<List<Tile>> {
 
     Blob blob = blobStore.get(changeUri);
     ProgressLogger progressLogger = new ProgressLogger(blob.getContentLength(), 5000);
-    ReprojectGeometryConsumer reprojectGeometryConsumer = new ReprojectGeometryConsumer(srid, 4326);
+    ProjectionTransformer reprojectGeometryConsumer = new ProjectionTransformer(srid, 4326);
     try (InputStream changesInputStream =
         new GZIPInputStream(new InputStreamProgress(blob.getInputStream(), progressLogger))) {
       return OpenStreetMap.streamXmlChanges(changesInputStream)

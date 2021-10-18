@@ -21,11 +21,18 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKBWriter;
+import org.locationtech.proj4j.CRSFactory;
+import org.locationtech.proj4j.CoordinateReferenceSystem;
+import org.locationtech.proj4j.CoordinateTransform;
+import org.locationtech.proj4j.CoordinateTransformFactory;
 
-/** Utility methods for serializing and deserializing geometries. */
+/**
+ * Utility methods for serializing and deserializing geometries.
+ */
 public class GeometryUtils {
 
-  private GeometryUtils() {}
+  private GeometryUtils() {
+  }
 
   /**
    * Serializes a geometry in the WKB format.
@@ -57,5 +64,32 @@ public class GeometryUtils {
     } catch (ParseException e) {
       throw new IllegalArgumentException(e);
     }
+  }
+
+  /**
+   * Creates a coordinate transform with the provided SRIDs.
+   *
+   * @param inputSRID  the input SRID
+   * @param outputSRID the output SRID
+   * @return the coordinate transform
+   */
+  public static CoordinateTransform coordinateTransform(int inputSRID, int outputSRID) {
+    CRSFactory crsFactory = new CRSFactory();
+    CoordinateReferenceSystem sourceCRS =
+        crsFactory.createFromName(String.format("EPSG:%d", inputSRID));
+    CoordinateReferenceSystem targetCRS =
+        crsFactory.createFromName(String.format("EPSG:%d", outputSRID));
+    CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
+    return coordinateTransformFactory.createTransform(sourceCRS, targetCRS);
+  }
+
+  /**
+   * Creates a projection transformer with the provided SRIDs.
+   * @param inputSRID the input SRID
+   * @param outputSRID the output SRID
+   * @return the projection transformer
+   */
+  public static ProjectionTransformer projectionTransformer(int inputSRID, int outputSRID) {
+    return new ProjectionTransformer(inputSRID, outputSRID);
   }
 }
