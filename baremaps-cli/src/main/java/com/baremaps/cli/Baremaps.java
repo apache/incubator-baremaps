@@ -19,6 +19,11 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 import java.util.concurrent.Callable;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.IVersionProvider;
@@ -57,10 +62,18 @@ public class Baremaps implements Callable<Integer> {
     // Set the log level
     for (int i = 0; i < args.length; i++) {
       String arg = args[i];
+      String level = "";
       if (arg.equals("--log-level") && i + 1 < args.length) {
-        System.setProperty("logLevel", args[i + 1].strip());
+        level = args[i + 1].strip();
       } else if (arg.startsWith("--log-level=")) {
-        System.setProperty("logLevel", arg.substring(12).strip());
+        level = arg.substring(12).strip();
+      }
+      if (!"".equals(level)) {
+        LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
+        Configuration config = ctx.getConfiguration();
+        LoggerConfig loggerConfig = config.getLoggerConfig(LogManager.ROOT_LOGGER_NAME);
+        loggerConfig.setLevel(Level.getLevel(level));
+        ctx.updateLoggers();
       }
     }
 

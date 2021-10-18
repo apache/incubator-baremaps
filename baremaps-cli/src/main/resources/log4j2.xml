@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="INFO">
-  <Properties>
-    <Property name="logLevel">INFO</Property>
-  </Properties>
   <Appenders>
     <console name="console" target="SYSTEM_OUT">
       <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"/>
     </console>
   </Appenders>
   <Loggers>
-    <Root level="${sys:logLevel}">
+    <Root level="INFO">
       <AppenderRef ref="console"/>
     </Root>
-    <logger name="org.apache.http" level="${sys:logLevel}"/>
-    <logger name="org.apache.http.wire" level="${sys:logLevel}"/>
+    <logger name="org.apache.http" level="INFO"/>
+    <logger name="org.apache.http.wire" level="INFO"/>
   </Loggers>
 </Configuration>
