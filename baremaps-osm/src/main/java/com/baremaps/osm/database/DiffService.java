@@ -94,12 +94,12 @@ public class DiffService implements Callable<List<Tile>> {
 
     Blob blob = blobStore.get(changeUri);
     ProgressLogger progressLogger = new ProgressLogger(blob.getContentLength(), 5000);
-    ProjectionTransformer reprojectGeometryConsumer = new ProjectionTransformer(srid, 4326);
+    ProjectionTransformer projectionTransformer = new ProjectionTransformer(srid, 4326);
     try (InputStream changesInputStream =
         new GZIPInputStream(new InputStreamProgress(blob.getInputStream(), progressLogger))) {
       return OpenStreetMap.streamXmlChanges(changesInputStream)
           .flatMap(this::geometriesForChange)
-          .map(consumeThenReturn(reprojectGeometryConsumer::transform))
+          .map(projectionTransformer::transform)
           .flatMap(this::tilesForGeometry)
           .distinct()
           .collect(Collectors.toList());

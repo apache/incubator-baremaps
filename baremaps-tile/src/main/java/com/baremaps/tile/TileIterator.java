@@ -21,11 +21,14 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.locationtech.jts.geom.Envelope;
 
+/** An iterator over the tiles that overlaps with an envelope. */
 class TileIterator implements Iterator<Tile> {
 
   private final Envelope envelope;
 
-  private final int zoomMax;
+  private final int minZoom;
+
+  private final int maxZoom;
 
   private int z;
 
@@ -34,16 +37,18 @@ class TileIterator implements Iterator<Tile> {
   private int y;
 
   /**
-   * Constructs a {@code TileIterator}.
+   * Constructs a {@code TileGeometryIterator}.
    *
    * @param envelope the envelope
-   * @param minzoom the min zoom
-   * @param maxzoom the max zoom
+   * @param minZoom the min zoom
+   * @param maxZoom the max zoom
    */
-  public TileIterator(Envelope envelope, int minzoom, int maxzoom) {
+  public TileIterator(Envelope envelope, int minZoom, int maxZoom) {
     this.envelope = envelope;
-    this.zoomMax = maxzoom;
-    this.z = minzoom;
+    this.minZoom = minZoom;
+    this.maxZoom = maxZoom;
+
+    this.z = this.minZoom;
     Tile min = min(envelope, this.z);
     this.x = min.x();
     this.y = min.y();
@@ -53,7 +58,7 @@ class TileIterator implements Iterator<Tile> {
   @Override
   public boolean hasNext() {
     Tile max = max(envelope, this.z);
-    return x <= max.x() && y <= max.y() && z <= zoomMax;
+    return x <= max.x() && y <= max.y() && z <= maxZoom;
   }
 
   /** {@inheritDoc} */

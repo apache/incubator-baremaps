@@ -193,7 +193,7 @@ class ImportUpdateTest {
     assertEquals(2435l, headerTable.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(
-        7,
+        2,
         new DiffService(
                 blobStore,
                 coordinateCache,
@@ -281,6 +281,19 @@ class ImportUpdateTest {
 
     long replicationSequenceNumber = headerTable.selectLatest().getReplicationSequenceNumber();
     while (replicationSequenceNumber < 3075) {
+
+      new DiffService(
+              blobStore,
+              coordinateCache,
+              referenceCache,
+              headerTable,
+              nodeTable,
+              wayTable,
+              relationTable,
+              3857,
+              14)
+          .call();
+
       new UpdateService(
               blobStore,
               coordinateCache,

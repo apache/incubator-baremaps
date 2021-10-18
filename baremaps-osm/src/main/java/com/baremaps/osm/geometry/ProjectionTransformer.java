@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.osm.geometry;
 
 import java.util.stream.Stream;
@@ -17,10 +31,12 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
 import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.ProjCoordinate;
 
-/**
- * A transformer that reprojects geometries and sets the correct output SRIDs.
- */
+/** A transformer that reprojects geometries and sets the correct output SRIDs. */
 public class ProjectionTransformer extends GeometryTransformer {
+
+  private final int inputSRID;
+
+  private final int outputSRID;
 
   private final CoordinateTransform coordinateTransform;
 
@@ -31,20 +47,14 @@ public class ProjectionTransformer extends GeometryTransformer {
    * @param outputSRID the output SRID
    */
   public ProjectionTransformer(int inputSRID, int outputSRID) {
-    this(GeometryUtils.coordinateTransform(inputSRID, outputSRID));
-  }
-
-  /**
-   * Creates a transformer that reproject geometries with the provided coordinate transform.
-   *
-   * @param coordinateTransform the coordinateTransform
-   */
-  public ProjectionTransformer(CoordinateTransform coordinateTransform) {
-    this.coordinateTransform = coordinateTransform;
+    this.inputSRID = inputSRID;
+    this.outputSRID = outputSRID;
+    this.coordinateTransform = GeometryUtils.coordinateTransform(inputSRID, outputSRID);
   }
 
   @Override
-  protected CoordinateSequence transformCoordinates(CoordinateSequence coordinateSequence, Geometry parent) {
+  protected CoordinateSequence transformCoordinates(
+      CoordinateSequence coordinateSequence, Geometry parent) {
     Coordinate[] coordinateArray =
         Stream.of(coordinateSequence.toCoordinateArray())
             .map(this::transformCoordinate)
@@ -83,16 +93,15 @@ public class ProjectionTransformer extends GeometryTransformer {
   }
 
   protected Geometry transformMultiPolygon(MultiPolygon geom, Geometry parent) {
-    return withTargetSRID(transformMultiPolygon(geom, parent));
+    return withTargetSRID(super.transformMultiPolygon(geom, parent));
   }
 
   protected Geometry transformGeometryCollection(GeometryCollection geom, Geometry parent) {
-    return withTargetSRID(transformGeometryCollection(geom, parent));
+    return withTargetSRID(super.transformGeometryCollection(geom, parent));
   }
 
   private Geometry withTargetSRID(Geometry outputGeom) {
-    outputGeom.setSRID(coordinateTransform.getTargetCRS().getProjection().getEPSGCode());
+    outputGeom.setSRID(outputSRID);
     return outputGeom;
   }
-
 }

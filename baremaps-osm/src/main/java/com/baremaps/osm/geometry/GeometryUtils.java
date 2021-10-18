@@ -26,13 +26,10 @@ import org.locationtech.proj4j.CoordinateReferenceSystem;
 import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.CoordinateTransformFactory;
 
-/**
- * Utility methods for serializing and deserializing geometries.
- */
+/** Utility methods for serializing and deserializing geometries. */
 public class GeometryUtils {
 
-  private GeometryUtils() {
-  }
+  private GeometryUtils() {}
 
   /**
    * Serializes a geometry in the WKB format.
@@ -69,7 +66,7 @@ public class GeometryUtils {
   /**
    * Creates a coordinate transform with the provided SRIDs.
    *
-   * @param inputSRID  the input SRID
+   * @param inputSRID the input SRID
    * @param outputSRID the output SRID
    * @return the coordinate transform
    */
@@ -85,6 +82,7 @@ public class GeometryUtils {
 
   /**
    * Creates a projection transformer with the provided SRIDs.
+   *
    * @param inputSRID the input SRID
    * @param outputSRID the output SRID
    * @return the projection transformer

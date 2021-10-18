@@ -20,11 +20,8 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.proj4j.CoordinateTransform;
 
-/**
- * Changes the projection of the geometry of an entity via side-effects.
- */
+/** Changes the projection of the geometry of an entity via side-effects. */
 public class ReprojectEntityConsumer implements EntityConsumerAdapter {
 
   private final ProjectionTransformer projectionTransformer;
@@ -36,45 +33,28 @@ public class ReprojectEntityConsumer implements EntityConsumerAdapter {
    * @param outputSRID the output SRID
    */
   public ReprojectEntityConsumer(int inputSRID, int outputSRID) {
-    this(GeometryUtils.coordinateTransform(inputSRID, outputSRID));
+    this.projectionTransformer = new ProjectionTransformer(inputSRID, outputSRID);
   }
 
-  /**
-   * Creates a consumer that reproject geometries with the provided coordinate transform.
-   *
-   * @param geometryProjectionTransformer the coordinateTransform
-   */
-  public ReprojectEntityConsumer(CoordinateTransform geometryProjectionTransformer) {
-    this.projectionTransformer = new ProjectionTransformer(geometryProjectionTransformer);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void match(Node node) {
     handleElement(node);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void match(Way way) {
     handleElement(way);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void match(Relation relation) {
     handleElement(relation);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   private void handleElement(Element element) {
     if (element.getGeometry() != null) {
       Geometry geometry = projectionTransformer.transform(element.getGeometry());
