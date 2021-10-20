@@ -27,7 +27,7 @@ import java.sql.SQLException;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class SchemaTest {
+class PostgresSchemaTest {
 
   @Test
   @Tag("integration")
