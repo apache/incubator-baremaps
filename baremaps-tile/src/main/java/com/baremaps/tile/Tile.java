@@ -26,7 +26,7 @@ import java.util.stream.LongStream;
 import org.locationtech.jts.geom.Envelope;
 
 /** A {@code Tile} represents data based on a square extent within a projection. */
-public final class Tile {
+public final class Tile implements Comparable<Tile> {
 
   private static final double EPSILON = 0.0000001;
 
@@ -203,6 +203,23 @@ public final class Tile {
     return new Envelope(x1, x2, y1, y2);
   }
 
+  protected static double tile2lon(int x, int z) {
+    return x / Math.pow(2.0, z) * 360.0 - 180;
+  }
+
+  protected static double tile2lat(int y, int z) {
+    double n = Math.PI - (2.0 * Math.PI * y) / Math.pow(2.0, z);
+    return Math.toDegrees(Math.atan(Math.sinh(n)));
+  }
+
+  protected static Tile min(Envelope envelope, int zoom) {
+    return Tile.fromLonLat(envelope.getMinX(), envelope.getMaxY(), zoom);
+  }
+
+  protected static Tile max(Envelope envelope, int zoom) {
+    return Tile.fromLonLat(envelope.getMaxX() - EPSILON, envelope.getMinY() + EPSILON, zoom);
+  }
+
   /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
@@ -222,25 +239,15 @@ public final class Tile {
     return Objects.hashCode(x, y, z);
   }
 
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this).add("x", x).add("y", y).add("z", z).toString();
   }
 
-  protected static double tile2lon(int x, int z) {
-    return x / Math.pow(2.0, z) * 360.0 - 180;
-  }
-
-  protected static double tile2lat(int y, int z) {
-    double n = Math.PI - (2.0 * Math.PI * y) / Math.pow(2.0, z);
-    return Math.toDegrees(Math.atan(Math.sinh(n)));
-  }
-
-  protected static Tile min(Envelope envelope, int zoom) {
-    return Tile.fromLonLat(envelope.getMinX(), envelope.getMaxY(), zoom);
-  }
-
-  protected static Tile max(Envelope envelope, int zoom) {
-    return Tile.fromLonLat(envelope.getMaxX() - EPSILON, envelope.getMinY() + EPSILON, zoom);
+  /** {@inheritDoc} */
+  @Override
+  public int compareTo(Tile that) {
+    return Long.compare(this.index(), that.index());
   }
 }

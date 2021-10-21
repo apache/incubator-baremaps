@@ -14,19 +14,16 @@
 
 package com.baremaps.osm.postgres;
 
-import static com.baremaps.osm.postgres.DatabaseConstants.NODE_0;
-import static com.baremaps.osm.postgres.DatabaseConstants.NODE_1;
-import static com.baremaps.osm.postgres.DatabaseConstants.NODE_2;
-import static com.baremaps.testing.TestConstants.DATABASE_URL;
+import static com.baremaps.osm.postgres.Constants.NODE_0;
+import static com.baremaps.osm.postgres.Constants.NODE_1;
+import static com.baremaps.osm.postgres.Constants.NODE_2;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.osm.database.DatabaseException;
 import com.baremaps.osm.domain.Node;
-import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgresNodeTableTest {
+class PostgresNodeTableTest extends PostgresBaseTest {
 
   DataSource dataSource;
 
@@ -44,13 +41,8 @@ class PostgresNodeTableTest {
 
   @BeforeEach
   void beforeEach() throws SQLException, IOException {
-    dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
+    dataSource = initDataSource();
     nodeStore = new PostgresNodeTable(dataSource);
-    try (Connection connection = dataSource.getConnection()) {
-      PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
-      PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
-      PostgresUtils.executeResource(connection, "osm_create_tables.sql");
-    }
   }
 
   @Test

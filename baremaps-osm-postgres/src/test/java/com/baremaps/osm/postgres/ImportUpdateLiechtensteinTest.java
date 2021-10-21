@@ -14,10 +14,7 @@
 
 package com.baremaps.osm.postgres;
 
-import static com.baremaps.testing.TestConstants.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.ResourceBlobStore;
@@ -29,22 +26,16 @@ import com.baremaps.osm.database.DiffService;
 import com.baremaps.osm.database.ImportService;
 import com.baremaps.osm.database.UpdateService;
 import com.baremaps.osm.domain.Header;
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Way;
-import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import javax.sql.DataSource;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class ImportUpdateTest {
+class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
 
   public BlobStore blobStore;
   public DataSource dataSource;
@@ -54,88 +45,13 @@ class ImportUpdateTest {
   public PostgresRelationTable relationTable;
 
   @BeforeEach
-  void createTable() throws SQLException, IOException, URISyntaxException {
-    dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
-
+  void createTable() throws SQLException, IOException {
+    dataSource = initDataSource();
     blobStore = new ResourceBlobStore();
     headerTable = new PostgresHeaderTable(dataSource);
     nodeTable = new PostgresNodeTable(dataSource);
     wayTable = new PostgresWayTable(dataSource);
     relationTable = new PostgresRelationTable(dataSource);
-
-    try (Connection connection = dataSource.getConnection()) {
-      PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
-      PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
-      PostgresUtils.executeResource(connection, "osm_create_tables.sql");
-    }
-  }
-
-  @Test
-  @Tag("integration")
-  void simple() throws Exception {
-
-    // Import data
-    new ImportService(
-            new URI("res://simple/data.osm.pbf"),
-            blobStore,
-            new MapCoordinateCache(),
-            new MapReferenceCache(),
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
-            3857)
-        .call();
-
-    headerTable.insert(
-        new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), "res://simple", "", ""));
-
-    // Check node importation
-    assertNull(nodeTable.select(0l));
-    assertNotNull(nodeTable.select(1l));
-    assertNotNull(nodeTable.select(2l));
-    assertNotNull(nodeTable.select(3l));
-    assertNull(nodeTable.select(4l));
-
-    // Check way importation
-    assertNull(wayTable.select(0l));
-    assertNotNull(wayTable.select(1l));
-    assertNull(wayTable.select(2l));
-
-    // Check relation importation
-    assertNull(relationTable.select(0l));
-    assertNotNull(relationTable.select(1l));
-    assertNull(relationTable.select(2l));
-
-    // Check node properties
-    Node node = nodeTable.select(1l);
-    Assertions.assertEquals(1, node.getLon());
-    Assertions.assertEquals(1, node.getLat());
-
-    // Check way properties
-    Way way = wayTable.select(1l);
-    assertNotNull(way);
-
-    // Update the database
-    new UpdateService(
-            blobStore,
-            new PostgresCoordinateCache(dataSource),
-            new PostgresReferenceCache(dataSource),
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
-            3857)
-        .call();
-
-    // Check deletions
-    assertNull(nodeTable.select(0l));
-    assertNull(nodeTable.select(1l));
-
-    // Check insertions
-    assertNotNull(nodeTable.select(2l));
-    assertNotNull(nodeTable.select(3l));
-    assertNotNull(nodeTable.select(4l));
   }
 
   @Test
@@ -193,7 +109,7 @@ class ImportUpdateTest {
     assertEquals(2435l, headerTable.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(
-        7,
+        2,
         new DiffService(
                 blobStore,
                 coordinateCache,
