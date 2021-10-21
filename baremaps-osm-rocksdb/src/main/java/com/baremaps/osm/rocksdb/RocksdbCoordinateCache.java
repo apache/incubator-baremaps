@@ -14,14 +14,12 @@
 
 package com.baremaps.osm.rocksdb;
 
-import com.baremaps.osm.cache.CoordinateCache;
 import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
 import org.rocksdb.RocksDB;
 
 /** A {@code Cache} for coordinates baked by RocksDB. */
-public class RocksdbCoordinateCache extends RocksdbCache<Long, Coordinate>
-    implements CoordinateCache {
+public class RocksdbCoordinateCache extends RocksdbCache<Long, Coordinate> {
 
   /** Constructs a {@code RocksdbCoordinateCache}. */
   public RocksdbCoordinateCache(RocksDB db) {

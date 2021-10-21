@@ -15,10 +15,8 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.cache.CoordinateCache;
-import com.baremaps.osm.cache.MapCoordinateCache;
-import com.baremaps.osm.cache.MapReferenceCache;
-import com.baremaps.osm.cache.ReferenceCache;
+import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.cache.SimpleCache;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.ImportService;
 import com.baremaps.osm.database.NodeTable;
@@ -35,9 +33,11 @@ import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.lmdbjava.Env;
+import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -97,12 +97,12 @@ public class Import implements Callable<Integer> {
     WayTable wayTable = new PostgresWayTable(datasource);
     RelationTable relationTable = new PostgresRelationTable(datasource);
 
-    final CoordinateCache coordinateCache;
-    final ReferenceCache referenceCache;
+    final Cache<Long, Coordinate> coordinateCache;
+    final Cache<Long, List<Long>> referenceCache;
     switch (cacheType) {
       case MEMORY:
-        coordinateCache = new MapCoordinateCache();
-        referenceCache = new MapReferenceCache();
+        coordinateCache = new SimpleCache<>();
+        referenceCache = new SimpleCache<>();
         break;
       case LMDB:
         if (cacheDirectory != null) {

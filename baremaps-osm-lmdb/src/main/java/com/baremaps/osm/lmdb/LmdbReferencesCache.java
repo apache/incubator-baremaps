@@ -14,7 +14,6 @@
 
 package com.baremaps.osm.lmdb;
 
-import com.baremaps.osm.cache.ReferenceCache;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,7 @@ import org.lmdbjava.DbiFlags;
 import org.lmdbjava.Env;
 
 /** A {@code Cache} for references baked by LMDB. */
-public class LmdbReferencesCache extends LmdbCache<Long, List<Long>> implements ReferenceCache {
+public class LmdbReferencesCache extends LmdbCache<Long, List<Long>> {
 
   /** Constructs a {@code LmdbReferencesCache}. */
   public LmdbReferencesCache(Env<ByteBuffer> env) {

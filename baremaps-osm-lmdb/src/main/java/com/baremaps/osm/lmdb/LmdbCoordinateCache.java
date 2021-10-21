@@ -14,14 +14,13 @@
 
 package com.baremaps.osm.lmdb;
 
-import com.baremaps.osm.cache.CoordinateCache;
 import java.nio.ByteBuffer;
 import org.lmdbjava.DbiFlags;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A {@code Cache} for coordinates baked by LMDB. */
-public class LmdbCoordinateCache extends LmdbCache<Long, Coordinate> implements CoordinateCache {
+public class LmdbCoordinateCache extends LmdbCache<Long, Coordinate> {
 
   /** Constructs a {@code LmdbCoordinateCache}. */
   public LmdbCoordinateCache(Env<ByteBuffer> env) {

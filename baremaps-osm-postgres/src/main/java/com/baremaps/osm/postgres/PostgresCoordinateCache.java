@@ -14,8 +14,8 @@
 
 package com.baremaps.osm.postgres;
 
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheException;
-import com.baremaps.osm.cache.CoordinateCache;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,7 +28,7 @@ import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A read-only {@code Cache} for coordinates baked by OpenStreetMap nodes stored in PostgreSQL. */
-public class PostgresCoordinateCache implements CoordinateCache {
+public class PostgresCoordinateCache implements Cache<Long, Coordinate> {
 
   private static final String SELECT = "SELECT lon, lat FROM osm_nodes WHERE id = ?";
 

@@ -16,8 +16,7 @@ package com.baremaps.cli;
 
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.cache.CoordinateCache;
-import com.baremaps.osm.cache.ReferenceCache;
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.database.DiffService;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.NodeTable;
@@ -35,8 +34,10 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
+import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -80,8 +81,8 @@ public class Diff implements Callable<Integer> {
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.datasource(database);
-    CoordinateCache coordinateCache = new PostgresCoordinateCache(datasource);
-    ReferenceCache referenceCache = new PostgresReferenceCache(datasource);
+    Cache<Long, Coordinate> coordinateCache = new PostgresCoordinateCache(datasource);
+    Cache<Long, List<Long>> referenceCache = new PostgresReferenceCache(datasource);
     HeaderTable headerTable = new PostgresHeaderTable(datasource);
     NodeTable nodeTable = new PostgresNodeTable(datasource);
     WayTable wayTable = new PostgresWayTable(datasource);

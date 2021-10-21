@@ -20,17 +20,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /** A {@code Cache} baked by an a {@code Map}. */
-public abstract class MapCache<K, V> implements Cache<K, V> {
+public class SimpleCache<K, V> implements Cache<K, V> {
 
   private final Map<K, V> map;
 
   /** Constructs a {@code MapCache} baked by a {@code ConcurrentHashMap}. */
-  public MapCache() {
+  public SimpleCache() {
     this(new ConcurrentHashMap<>());
   }
 
   /** Constructs a {@code MapCache} baked by a user specified {@code Map}. */
-  public MapCache(Map<K, V> map) {
+  public SimpleCache(Map<K, V> map) {
     this.map = map;
   }
 

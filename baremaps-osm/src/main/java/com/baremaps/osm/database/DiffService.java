@@ -19,8 +19,7 @@ import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.OpenStreetMap;
-import com.baremaps.osm.cache.CoordinateCache;
-import com.baremaps.osm.cache.ReferenceCache;
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Header;
@@ -46,6 +45,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,8 +65,8 @@ public class DiffService implements Callable<List<Tile>> {
 
   public DiffService(
       BlobStore blobStore,
-      CoordinateCache coordinateCache,
-      ReferenceCache referenceCache,
+      Cache<Long, Coordinate> coordinateCache,
+      Cache<Long, List<Long>> referenceCache,
       HeaderTable headerTable,
       NodeTable nodeTable,
       WayTable wayTable,

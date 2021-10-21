@@ -14,8 +14,8 @@
 
 package com.baremaps.osm.postgres;
 
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheException;
-import com.baremaps.osm.cache.ReferenceCache;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 /** A read-only {@code Cache} for references baked by an OpenStreetMap ways stored in Postgres. */
-public class PostgresReferenceCache implements ReferenceCache {
+public class PostgresReferenceCache implements Cache<Long, List<Long>> {
 
   private static final String SELECT = "SELECT nodes FROM osm_ways WHERE id = ?";
 

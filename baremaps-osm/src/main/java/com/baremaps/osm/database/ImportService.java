@@ -22,8 +22,6 @@ import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheBlockConsumer;
-import com.baremaps.osm.cache.CoordinateCache;
-import com.baremaps.osm.cache.ReferenceCache;
 import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.function.BlockEntityConsumer;
@@ -58,8 +56,8 @@ public class ImportService implements Callable<Void> {
   public ImportService(
       URI uri,
       BlobStore blobStore,
-      CoordinateCache coordinateCache,
-      ReferenceCache referenceCache,
+      Cache<Long, Coordinate> coordinateCache,
+      Cache<Long, List<Long>> referenceCache,
       HeaderTable headerTable,
       NodeTable nodeTable,
       WayTable wayTable,

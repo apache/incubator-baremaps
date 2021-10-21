@@ -16,9 +16,8 @@ package com.baremaps.osm;
 
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheBlockConsumer;
-import com.baremaps.osm.cache.CoordinateCache;
-import com.baremaps.osm.cache.ReferenceCache;
 import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
@@ -40,11 +39,13 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import org.locationtech.jts.geom.Coordinate;
 
 /** Utility methods for creating readers and streams from OpenStreetMap files. */
 public class OpenStreetMap {
@@ -84,7 +85,10 @@ public class OpenStreetMap {
    * @return
    */
   public static Stream<Block> streamPbfBlocksWithGeometries(
-      InputStream input, CoordinateCache coordinateCache, ReferenceCache referenceCache, int srid) {
+      InputStream input,
+      Cache<Long, Coordinate> coordinateCache,
+      Cache<Long, List<Long>> referenceCache,
+      int srid) {
     Consumer<Block> cacheBlock = new CacheBlockConsumer(coordinateCache, referenceCache);
     Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinateCache, referenceCache);
     Consumer<Entity> reprojectGeometry = new ReprojectGeometryConsumer(4326, srid);
@@ -114,7 +118,10 @@ public class OpenStreetMap {
    * @return
    */
   public static Stream<Entity> streamPbfEntitiesWithGeometries(
-      InputStream input, CoordinateCache coordinateCache, ReferenceCache referenceCache, int srid) {
+      InputStream input,
+      Cache<Long, Coordinate> coordinateCache,
+      Cache<Long, List<Long>> referenceCache,
+      int srid) {
     return streamPbfBlocksWithGeometries(input, coordinateCache, referenceCache, srid)
         .flatMap(OpenStreetMap::streamPbfBlockEntities);
   }

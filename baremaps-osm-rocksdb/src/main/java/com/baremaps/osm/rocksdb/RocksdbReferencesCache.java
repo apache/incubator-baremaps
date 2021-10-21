@@ -14,15 +14,13 @@
 
 package com.baremaps.osm.rocksdb;
 
-import com.baremaps.osm.cache.ReferenceCache;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import org.rocksdb.RocksDB;
 
 /** A {@code Cache} for references baked by RocksDB. */
-public class RocksdbReferencesCache extends RocksdbCache<Long, List<Long>>
-    implements ReferenceCache {
+public class RocksdbReferencesCache extends RocksdbCache<Long, List<Long>> {
 
   /** Constructs a {@code RocksdbReferencesCache}. */
   public RocksdbReferencesCache(RocksDB db) {
