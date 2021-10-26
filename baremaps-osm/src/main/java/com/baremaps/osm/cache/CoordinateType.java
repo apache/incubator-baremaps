@@ -12,50 +12,40 @@
  * the License.
  */
 
-package com.baremaps.osm.rocksdb;
+package com.baremaps.osm.cache;
 
 import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
-import org.rocksdb.RocksDB;
 
-/** A {@code Cache} for coordinates baked by RocksDB. */
-public class RocksdbCoordinateCache extends RocksdbCache<Long, Coordinate> {
+public class CoordinateType implements DataType<Coordinate> {
 
-  /** Constructs a {@code RocksdbCoordinateCache}. */
-  public RocksdbCoordinateCache(RocksDB db) {
-    super(db);
+  @Override
+  public int size(Coordinate value) {
+    return 17;
   }
 
   @Override
-  protected byte[] key(Long key) {
-    ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-    buffer.putLong(key);
-    return buffer.array();
-  }
-
-  @Override
-  protected Coordinate read(byte[] array) {
-    if (array == null) {
+  public Coordinate read(ByteBuffer buffer) {
+    if (buffer == null) {
       return null;
     }
-    ByteBuffer buffer = ByteBuffer.wrap(array);
     if (buffer.get() == 0) {
+      buffer.flip();
       return null;
     }
     double lon = buffer.getDouble();
     double lat = buffer.getDouble();
+    buffer.flip();
     return new Coordinate(lon, lat);
   }
 
   @Override
-  protected byte[] write(Coordinate value) {
-    ByteBuffer buffer = ByteBuffer.allocate(17);
+  public void write(ByteBuffer buffer, Coordinate value) {
     if (value != null) {
       buffer.put((byte) 1);
       buffer.putDouble(value.getX());
       buffer.putDouble(value.getY());
     }
     buffer.flip();
-    return buffer.array();
   }
 }

@@ -17,8 +17,10 @@ package com.baremaps.osm.rocksdb;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.Cache.Entry;
-import com.baremaps.osm.cache.CoordinateCache;
+import com.baremaps.osm.cache.CoordinateType;
+import com.baremaps.osm.cache.LongType;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -28,7 +30,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 
-class RocksdbCoordinateCacheTest {
+class RocksdbCacheTest {
 
   @Test
   @Tag("integration")
@@ -37,7 +39,7 @@ class RocksdbCoordinateCacheTest {
     Path path = Files.createTempDirectory("baremaps_").toAbsolutePath();
     Options options = new Options().setCreateIfMissing(true);
     RocksDB db = RocksDB.open(options, path.toString());
-    CoordinateCache cache = new RocksdbCoordinateCache(db);
+    Cache<Long, Coordinate> cache = new RocksdbCache(db, new LongType(), new CoordinateType());
     Coordinate c1 = new Coordinate(1, 0);
     Coordinate c2 = new Coordinate(2, 0);
     Coordinate c3 = new Coordinate(3, 0);

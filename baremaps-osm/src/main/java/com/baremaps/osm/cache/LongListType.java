@@ -12,30 +12,21 @@
  * the License.
  */
 
-package com.baremaps.osm.lmdb;
+package com.baremaps.osm.cache;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import org.lmdbjava.DbiFlags;
-import org.lmdbjava.Env;
 
-/** A {@code Cache} for references baked by LMDB. */
-public class LmdbReferencesCache extends LmdbCache<Long, List<Long>> {
+public class LongListType implements DataType<List<Long>> {
 
-  /** Constructs a {@code LmdbReferencesCache}. */
-  public LmdbReferencesCache(Env<ByteBuffer> env) {
-    super(env, env.openDbi("references", DbiFlags.MDB_CREATE));
+  @Override
+  public int size(List<Long> value) {
+    return 4 + 8 * value.size();
   }
 
   @Override
-  protected ByteBuffer buffer(Long key) {
-    ByteBuffer buffer = ByteBuffer.allocateDirect(20);
-    return buffer.putLong(key);
-  }
-
-  @Override
-  protected List<Long> read(ByteBuffer buffer) {
+  public List<Long> read(ByteBuffer buffer) {
     if (buffer == null) {
       return null;
     }
@@ -44,17 +35,16 @@ public class LmdbReferencesCache extends LmdbCache<Long, List<Long>> {
     for (int i = 0; i < size; i++) {
       values.add(buffer.getLong());
     }
+    buffer.flip();
     return values;
   }
 
   @Override
-  protected ByteBuffer write(List<Long> value) {
-    ByteBuffer buffer = ByteBuffer.allocateDirect(4 + 8 * value.size());
+  public void write(ByteBuffer buffer, List<Long> value) {
     buffer.putInt(value.size());
     for (Long v : value) {
       buffer.putLong(v);
     }
     buffer.flip();
-    return buffer;
   }
 }

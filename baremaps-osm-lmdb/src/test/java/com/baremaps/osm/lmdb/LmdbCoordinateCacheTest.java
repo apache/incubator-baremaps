@@ -17,14 +17,17 @@ package com.baremaps.osm.lmdb;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.Cache.Entry;
-import com.baremaps.osm.cache.CoordinateCache;
+import com.baremaps.osm.cache.CoordinateType;
+import com.baremaps.osm.cache.LongType;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.lmdbjava.DbiFlags;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 
@@ -36,7 +39,12 @@ class LmdbCoordinateCacheTest {
     Path path = Files.createTempDirectory("baremaps_").toAbsolutePath();
     Env<ByteBuffer> env =
         Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(path.toFile());
-    CoordinateCache cache = new LmdbCoordinateCache(env);
+    Cache<Long, Coordinate> cache =
+        new LmdbCache(
+            env,
+            env.openDbi("coordinate", DbiFlags.MDB_CREATE),
+            new LongType(),
+            new CoordinateType());
     Coordinate c1 = new Coordinate(1, 0);
     Coordinate c2 = new Coordinate(2, 0);
     Coordinate c3 = new Coordinate(3, 0);

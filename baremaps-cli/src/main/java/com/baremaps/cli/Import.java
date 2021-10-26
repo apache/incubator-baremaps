@@ -16,14 +16,16 @@ package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.cache.CoordinateType;
+import com.baremaps.osm.cache.LongListType;
+import com.baremaps.osm.cache.LongType;
 import com.baremaps.osm.cache.SimpleCache;
 import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.database.ImportService;
 import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.database.RelationTable;
 import com.baremaps.osm.database.WayTable;
-import com.baremaps.osm.lmdb.LmdbCoordinateCache;
-import com.baremaps.osm.lmdb.LmdbReferencesCache;
+import com.baremaps.osm.lmdb.LmdbCache;
 import com.baremaps.osm.postgres.PostgresHeaderTable;
 import com.baremaps.osm.postgres.PostgresNodeTable;
 import com.baremaps.osm.postgres.PostgresRelationTable;
@@ -36,6 +38,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
+import org.lmdbjava.DbiFlags;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
@@ -112,8 +115,18 @@ public class Import implements Callable<Integer> {
         }
         Env<ByteBuffer> env =
             Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(cacheDirectory.toFile());
-        coordinateCache = new LmdbCoordinateCache(env);
-        referenceCache = new LmdbReferencesCache(env);
+        coordinateCache =
+            new LmdbCache(
+                env,
+                env.openDbi("coordinate", DbiFlags.MDB_CREATE),
+                new LongType(),
+                new CoordinateType());
+        referenceCache =
+            new LmdbCache(
+                env,
+                env.openDbi("reference", DbiFlags.MDB_CREATE),
+                new LongType(),
+                new LongListType());
         break;
       default:
         throw new UnsupportedOperationException("Unsupported cache type");

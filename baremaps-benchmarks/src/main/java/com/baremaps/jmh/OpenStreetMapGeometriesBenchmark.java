@@ -16,14 +16,15 @@ package com.baremaps.jmh;
 
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.cache.CoordinateType;
+import com.baremaps.osm.cache.LongListType;
+import com.baremaps.osm.cache.LongType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
-import com.baremaps.osm.lmdb.LmdbCoordinateCache;
-import com.baremaps.osm.lmdb.LmdbReferencesCache;
-import com.baremaps.osm.rocksdb.RocksdbCoordinateCache;
-import com.baremaps.osm.rocksdb.RocksdbReferencesCache;
+import com.baremaps.osm.lmdb.LmdbCache;
+import com.baremaps.osm.rocksdb.RocksdbCache;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +37,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import org.lmdbjava.DbiFlags;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -80,8 +82,15 @@ public class OpenStreetMapGeometriesBenchmark {
     Path cacheDirectory = Files.createTempDirectory("baremaps_").toAbsolutePath();
     Env<ByteBuffer> env =
         Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(cacheDirectory.toFile());
-    Cache<Long, Coordinate> coordinateCache = new LmdbCoordinateCache(env);
-    Cache<Long, List<Long>> referenceCache = new LmdbReferencesCache(env);
+    Cache<Long, Coordinate> coordinateCache =
+        new LmdbCache(
+            env,
+            env.openDbi("coordinate", DbiFlags.MDB_CREATE),
+            new LongType(),
+            new CoordinateType());
+    Cache<Long, List<Long>> referenceCache =
+        new LmdbCache(
+            env, env.openDbi("reference", DbiFlags.MDB_CREATE), new LongType(), new LongListType());
 
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
@@ -121,8 +130,10 @@ public class OpenStreetMapGeometriesBenchmark {
     try (org.rocksdb.Options options = new org.rocksdb.Options().setCreateIfMissing(true);
         RocksDB coordinatesDB = RocksDB.open(options, coordinatesDirectory.toString());
         RocksDB referenceDB = RocksDB.open(options, referenceDirectory.toString())) {
-      Cache<Long, Coordinate> coordinateCache = new RocksdbCoordinateCache(coordinatesDB);
-      Cache<Long, List<Long>> referenceCache = new RocksdbReferencesCache(referenceDB);
+      Cache<Long, Coordinate> coordinateCache =
+          new RocksdbCache(coordinatesDB, new LongType(), new CoordinateType());
+      Cache<Long, List<Long>> referenceCache =
+          new RocksdbCache(referenceDB, new LongType(), new LongListType());
 
       AtomicLong nodes = new AtomicLong(0);
       AtomicLong ways = new AtomicLong(0);

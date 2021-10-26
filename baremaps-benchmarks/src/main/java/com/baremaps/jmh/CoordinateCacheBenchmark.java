@@ -16,14 +16,17 @@ package com.baremaps.jmh;
 
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheException;
+import com.baremaps.osm.cache.CoordinateType;
+import com.baremaps.osm.cache.LongType;
 import com.baremaps.osm.cache.SimpleCache;
-import com.baremaps.osm.lmdb.LmdbCoordinateCache;
-import com.baremaps.osm.rocksdb.RocksdbCoordinateCache;
+import com.baremaps.osm.lmdb.LmdbCache;
+import com.baremaps.osm.rocksdb.RocksdbCache;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
+import org.lmdbjava.DbiFlags;
 import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -74,7 +77,12 @@ public class CoordinateCacheBenchmark {
     Path path = Files.createTempDirectory("baremaps_").toAbsolutePath();
     Env<ByteBuffer> env =
         Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(path.toFile());
-    Cache<Long, Coordinate> cache = new LmdbCoordinateCache(env);
+    Cache<Long, Coordinate> cache =
+        new LmdbCache(
+            env,
+            env.openDbi("coordinate", DbiFlags.MDB_CREATE),
+            new LongType(),
+            new CoordinateType());
     benchmark(cache, N);
   }
 
@@ -86,7 +94,7 @@ public class CoordinateCacheBenchmark {
     Path path = Files.createTempDirectory("baremaps_").toAbsolutePath();
     try (Options options = new Options().setCreateIfMissing(true);
         RocksDB db = RocksDB.open(options, path.toString())) {
-      Cache<Long, Coordinate> cache = new RocksdbCoordinateCache(db);
+      Cache<Long, Coordinate> cache = new RocksdbCache(db, new LongType(), new CoordinateType());
       benchmark(cache, N);
     }
   }
