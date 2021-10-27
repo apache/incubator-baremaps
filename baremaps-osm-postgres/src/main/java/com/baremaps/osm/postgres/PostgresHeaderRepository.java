@@ -14,9 +14,9 @@
 
 package com.baremaps.osm.postgres;
 
-import com.baremaps.osm.database.DatabaseException;
-import com.baremaps.osm.database.HeaderTable;
 import com.baremaps.osm.domain.Header;
+import com.baremaps.osm.repository.HeaderRepository;
+import com.baremaps.osm.repository.RepositoryException;
 import com.baremaps.postgres.jdbc.CopyWriter;
 import java.io.IOException;
 import java.sql.Connection;
@@ -33,8 +33,8 @@ import javax.sql.DataSource;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/** Provides an implementation of the {@code HeaderTable} baked by PostgreSQL. */
-public class PostgresHeaderTable implements HeaderTable {
+/** Provides an implementation of the {@code HeaderRepository} baked by a PostgreSQL table. */
+public class PostgresHeaderRepository implements HeaderRepository {
 
   private final DataSource dataSource;
 
@@ -51,11 +51,11 @@ public class PostgresHeaderTable implements HeaderTable {
   private final String copy;
 
   /**
-   * Constructs a {@code PostgresHeaderTable}.
+   * Constructs a {@code PostgresHeaderRepository}.
    *
    * @param dataSource
    */
-  public PostgresHeaderTable(DataSource dataSource) {
+  public PostgresHeaderRepository(DataSource dataSource) {
     this(
         dataSource,
         "osm_headers",
@@ -67,19 +67,19 @@ public class PostgresHeaderTable implements HeaderTable {
   }
 
   /**
-   * Constructs a {@code PostgresHeaderTable} with custom parameters.
+   * Constructs a {@code PostgresHeaderRepository} with custom parameters.
    *
    * @param dataSource
-   * @param headerTable
+   * @param headerRepository
    * @param replicationSequenceNumberColumn
    * @param replicationTimestampColumn
    * @param replicationUrlColumn
    * @param sourceColumn
    * @param writingProgramColumn
    */
-  public PostgresHeaderTable(
+  public PostgresHeaderRepository(
       DataSource dataSource,
-      String headerTable,
+      String headerRepository,
       String replicationSequenceNumberColumn,
       String replicationTimestampColumn,
       String replicationUrlColumn,
@@ -89,7 +89,7 @@ public class PostgresHeaderTable implements HeaderTable {
     this.selectLatest =
         String.format(
             "SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s ORDER BY %2$s DESC",
-            headerTable,
+            headerRepository,
             replicationSequenceNumberColumn,
             replicationTimestampColumn,
             replicationUrlColumn,
@@ -98,7 +98,7 @@ public class PostgresHeaderTable implements HeaderTable {
     this.select =
         String.format(
             "SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s WHERE %2$s = ?",
-            headerTable,
+            headerRepository,
             replicationSequenceNumberColumn,
             replicationTimestampColumn,
             replicationUrlColumn,
@@ -107,7 +107,7 @@ public class PostgresHeaderTable implements HeaderTable {
     this.selectIn =
         String.format(
             "SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s WHERE %2$s = ANY (?)",
-            headerTable,
+            headerRepository,
             replicationSequenceNumberColumn,
             replicationTimestampColumn,
             replicationUrlColumn,
@@ -122,7 +122,7 @@ public class PostgresHeaderTable implements HeaderTable {
                 + "%4$s = excluded.%4$s, "
                 + "%5$s = excluded.%5$s, "
                 + "%6$s = excluded.%6$s",
-            headerTable,
+            headerRepository,
             replicationSequenceNumberColumn,
             replicationTimestampColumn,
             replicationUrlColumn,
@@ -130,11 +130,11 @@ public class PostgresHeaderTable implements HeaderTable {
             writingProgramColumn);
     this.delete =
         String.format(
-            "DELETE FROM %1$s WHERE %2$s = ?", headerTable, replicationSequenceNumberColumn);
+            "DELETE FROM %1$s WHERE %2$s = ?", headerRepository, replicationSequenceNumberColumn);
     this.copy =
         String.format(
             "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s) FROM STDIN BINARY",
-            headerTable,
+            headerRepository,
             replicationSequenceNumberColumn,
             replicationTimestampColumn,
             replicationUrlColumn,
@@ -144,169 +144,169 @@ public class PostgresHeaderTable implements HeaderTable {
 
   /** {@inheritDoc} */
   @Override
-  public List<Header> selectAll() throws DatabaseException {
+  public List<Header> selectAll() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(selectLatest)) {
       try (ResultSet result = statement.executeQuery()) {
-        List<Header> entities = new ArrayList<>();
+        List<Header> values = new ArrayList<>();
         while (result.next()) {
-          Header entity = getEntity(result);
-          entities.add(entity);
+          Header value = getValue(result);
+          values.add(value);
         }
-        return entities;
+        return values;
       }
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public Header selectLatest() throws DatabaseException {
+  public Header selectLatest() throws RepositoryException {
     return selectAll().get(0);
   }
 
   /** {@inheritDoc} */
   @Override
-  public Header select(Long id) throws DatabaseException {
+  public Header get(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(select)) {
-      statement.setObject(1, id);
+      statement.setObject(1, key);
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
-          return getEntity(result);
+          return getValue(result);
         } else {
           return null;
         }
       }
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public List<Header> select(List<Long> ids) throws DatabaseException {
-    if (ids.isEmpty()) {
+  public List<Header> get(List<Long> keys) throws RepositoryException {
+    if (keys.isEmpty()) {
       return List.of();
     }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(selectIn)) {
-      statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
+      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       try (ResultSet result = statement.executeQuery()) {
-        Map<Long, Header> entities = new HashMap<>();
+        Map<Long, Header> values = new HashMap<>();
         while (result.next()) {
-          Header entity = getEntity(result);
-          entities.put(entity.getReplicationSequenceNumber(), entity);
+          Header value = getValue(result);
+          values.put(value.getReplicationSequenceNumber(), value);
         }
-        return ids.stream().map(entities::get).collect(Collectors.toList());
+        return keys.stream().map(values::get).collect(Collectors.toList());
       }
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public void insert(Header entity) throws DatabaseException {
+  public void puts(Header value) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      setEntity(statement, entity);
+      setValue(statement, value);
       statement.execute();
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public void insert(List<Header> entities) throws DatabaseException {
-    if (entities.isEmpty()) {
+  public void puts(List<Header> values) throws RepositoryException {
+    if (values.isEmpty()) {
       return;
     }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      for (Header entity : entities) {
+      for (Header value : values) {
         statement.clearParameters();
-        setEntity(statement, entity);
+        setValue(statement, value);
         statement.addBatch();
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public void delete(Long id) throws DatabaseException {
+  public void delete(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(delete)) {
-      statement.setObject(1, id);
+      statement.setObject(1, key);
       statement.execute();
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public void delete(List<Long> ids) throws DatabaseException {
-    if (ids.isEmpty()) {
+  public void delete(List<Long> keys) throws RepositoryException {
+    if (keys.isEmpty()) {
       return;
     }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(delete)) {
-      for (Long id : ids) {
+      for (Long key : keys) {
         statement.clearParameters();
-        statement.setObject(1, id);
+        statement.setObject(1, key);
         statement.addBatch();
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public void copy(List<Header> entities) throws DatabaseException {
-    if (entities.isEmpty()) {
+  public void copy(List<Header> values) throws RepositoryException {
+    if (values.isEmpty()) {
       return;
     }
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copy))) {
         writer.writeHeader();
-        for (Header entity : entities) {
+        for (Header value : values) {
           writer.startRow(5);
-          writer.writeLong(entity.getReplicationSequenceNumber());
-          writer.writeLocalDateTime(entity.getReplicationTimestamp());
-          writer.writeString(entity.getReplicationUrl());
-          writer.writeString(entity.getSource());
-          writer.writeString(entity.getWritingProgram());
+          writer.writeLong(value.getReplicationSequenceNumber());
+          writer.writeLocalDateTime(value.getReplicationTimestamp());
+          writer.writeString(value.getReplicationUrl());
+          writer.writeString(value.getSource());
+          writer.writeString(value.getWritingProgram());
         }
       }
     } catch (IOException | SQLException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
-  private Header getEntity(ResultSet result) throws SQLException {
-    long replicationSequenceNumber = result.getLong(1);
-    LocalDateTime replicationTimestamp = result.getObject(2, LocalDateTime.class);
-    String replicationUrl = result.getString(3);
-    String source = result.getString(4);
-    String writingProgram = result.getString(5);
+  private Header getValue(ResultSet resultSet) throws SQLException {
+    long replicationSequenceNumber = resultSet.getLong(1);
+    LocalDateTime replicationTimestamp = resultSet.getObject(2, LocalDateTime.class);
+    String replicationUrl = resultSet.getString(3);
+    String source = resultSet.getString(4);
+    String writingProgram = resultSet.getString(5);
     return new Header(
         replicationSequenceNumber, replicationTimestamp, replicationUrl, source, writingProgram);
   }
 
-  private void setEntity(PreparedStatement statement, Header entity) throws SQLException {
-    statement.setObject(1, entity.getReplicationSequenceNumber());
-    statement.setObject(2, entity.getReplicationTimestamp());
-    statement.setObject(3, entity.getReplicationUrl());
-    statement.setObject(4, entity.getSource());
-    statement.setObject(5, entity.getWritingProgram());
+  private void setValue(PreparedStatement statement, Header value) throws SQLException {
+    statement.setObject(1, value.getReplicationSequenceNumber());
+    statement.setObject(2, value.getReplicationTimestamp());
+    statement.setObject(3, value.getReplicationUrl());
+    statement.setObject(4, value.getSource());
+    statement.setObject(5, value.getWritingProgram());
   }
 }

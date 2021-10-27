@@ -14,16 +14,16 @@
 
 package com.baremaps.osm.postgres;
 
-import static com.baremaps.osm.postgres.DatabaseConstants.WAY_1;
-import static com.baremaps.osm.postgres.DatabaseConstants.WAY_2;
-import static com.baremaps.osm.postgres.DatabaseConstants.WAY_3;
+import static com.baremaps.osm.postgres.DatabaseConstants.NODE_0;
+import static com.baremaps.osm.postgres.DatabaseConstants.NODE_1;
+import static com.baremaps.osm.postgres.DatabaseConstants.NODE_2;
 import static com.baremaps.testing.TestConstants.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.baremaps.osm.database.DatabaseException;
-import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.repository.RepositoryException;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.IOException;
 import java.sql.Connection;
@@ -36,16 +36,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class WayTableTest {
+class PostgresNodeRepositoryTest {
 
   DataSource dataSource;
 
-  PostgresWayTable wayTable;
+  PostgresNodeRepository nodeRepository;
 
   @BeforeEach
-  void createTable() throws SQLException, IOException {
+  void beforeEach() throws SQLException, IOException {
     dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
-    wayTable = new PostgresWayTable(dataSource);
+    nodeRepository = new PostgresNodeRepository(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
       PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
@@ -55,45 +55,45 @@ class WayTableTest {
 
   @Test
   @Tag("integration")
-  void insert() throws DatabaseException {
-    wayTable.insert(WAY_1);
-    assertEquals(WAY_1, wayTable.select(WAY_1.getId()));
+  void insert() throws RepositoryException {
+    nodeRepository.puts(NODE_0);
+    assertEquals(NODE_0, nodeRepository.get(NODE_0.getId()));
   }
 
   @Test
   @Tag("integration")
-  void insertAll() throws DatabaseException {
-    List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
-    wayTable.insert(ways);
+  void insertAll() throws RepositoryException {
+    List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
+    nodeRepository.puts(nodes);
     assertIterableEquals(
-        ways, wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodes, nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
-  void delete() throws DatabaseException {
-    wayTable.insert(WAY_1);
-    wayTable.delete(WAY_1.getId());
-    assertNull(wayTable.select(WAY_1.getId()));
+  void delete() throws RepositoryException {
+    nodeRepository.puts(NODE_0);
+    nodeRepository.delete(NODE_0.getId());
+    assertNull(nodeRepository.get(NODE_0.getId()));
   }
 
   @Test
   @Tag("integration")
-  void deleteAll() throws DatabaseException {
-    List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
-    wayTable.insert(ways);
-    wayTable.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
+  void deleteAll() throws RepositoryException {
+    List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
+    nodeRepository.puts(nodes);
+    nodeRepository.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
         Arrays.asList(null, null, null),
-        wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
-  void copy() throws DatabaseException {
-    List<Way> ways = Arrays.asList(WAY_1, WAY_2, WAY_3);
-    wayTable.copy(ways);
+  void copy() throws RepositoryException {
+    List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
+    nodeRepository.copy(nodes);
     assertIterableEquals(
-        ways, wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodes, nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

@@ -17,7 +17,7 @@ package com.baremaps.osm.lmdb;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.DataType;
+import com.baremaps.osm.cache.CacheMapper;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +32,15 @@ public class LmdbCache<K, V> implements Cache<K, V> {
 
   private final Dbi<ByteBuffer> database;
 
-  private final DataType<K> keyType;
+  private final CacheMapper<K> keyType;
 
-  private final DataType<V> valueType;
+  private final CacheMapper<V> valueType;
 
   public LmdbCache(
-      Env<ByteBuffer> env, Dbi<ByteBuffer> database, DataType<K> keyType, DataType<V> valueType) {
+      Env<ByteBuffer> env,
+      Dbi<ByteBuffer> database,
+      CacheMapper<K> keyType,
+      CacheMapper<V> valueType) {
     checkNotNull(env);
     checkNotNull(database);
     this.env = env;
@@ -48,7 +51,7 @@ public class LmdbCache<K, V> implements Cache<K, V> {
 
   /** {@inheritDoc} */
   @Override
-  public void add(K key, V value) {
+  public void put(K key, V value) {
     try (Txn<ByteBuffer> txn = env.txnWrite()) {
       database.put(txn, buffer(keyType, key), buffer(valueType, value));
       txn.commit();
@@ -57,7 +60,7 @@ public class LmdbCache<K, V> implements Cache<K, V> {
 
   /** {@inheritDoc} */
   @Override
-  public void add(List<Entry<K, V>> entries) {
+  public void put(List<Entry<K, V>> entries) {
     try (Txn<ByteBuffer> txn = env.txnWrite()) {
       for (Entry<K, V> entry : entries) {
         K key = entry.key();
@@ -110,9 +113,9 @@ public class LmdbCache<K, V> implements Cache<K, V> {
     return list;
   }
 
-  private <T> ByteBuffer buffer(DataType<T> dataType, T value) {
-    ByteBuffer buffer = ByteBuffer.allocateDirect(dataType.size(value));
-    dataType.write(buffer, value);
+  private <T> ByteBuffer buffer(CacheMapper<T> cacheMapper, T value) {
+    ByteBuffer buffer = ByteBuffer.allocateDirect(cacheMapper.size(value));
+    cacheMapper.write(buffer, value);
     return buffer;
   }
 }

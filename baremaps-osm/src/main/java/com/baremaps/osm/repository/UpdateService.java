@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.repository;
 
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
@@ -23,7 +23,10 @@ import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Header;
+import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.State;
+import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.ChangeEntityConsumer;
 import com.baremaps.osm.geometry.CreateGeometryConsumer;
 import com.baremaps.osm.geometry.ReprojectGeometryConsumer;
@@ -44,34 +47,34 @@ public class UpdateService implements Callable<Void> {
   private final BlobStore blobStore;
   private final Cache<Long, Coordinate> coordinateCache;
   private final Cache<Long, List<Long>> referenceCache;
-  private final HeaderTable headerTable;
-  private final NodeTable nodeTable;
-  private final WayTable wayTable;
-  private final RelationTable relationTable;
+  private final HeaderRepository headerRepository;
+  private final Repository<Long, Node> nodeRepository;
+  private final Repository<Long, Way> wayRepository;
+  private final Repository<Long, Relation> relationRepository;
   private final int srid;
 
   public UpdateService(
       BlobStore blobStore,
       Cache<Long, Coordinate> coordinateCache,
       Cache<Long, List<Long>> referenceCache,
-      HeaderTable headerTable,
-      NodeTable nodeTable,
-      WayTable wayTable,
-      RelationTable relationTable,
+      HeaderRepository headerRepository,
+      Repository<Long, Node> nodeRepository,
+      Repository<Long, Way> wayRepository,
+      Repository<Long, Relation> relationRepository,
       int srid) {
     this.blobStore = blobStore;
     this.coordinateCache = coordinateCache;
     this.referenceCache = referenceCache;
-    this.headerTable = headerTable;
-    this.nodeTable = nodeTable;
-    this.wayTable = wayTable;
-    this.relationTable = relationTable;
+    this.headerRepository = headerRepository;
+    this.nodeRepository = nodeRepository;
+    this.wayRepository = wayRepository;
+    this.relationRepository = relationRepository;
     this.srid = srid;
   }
 
   @Override
   public Void call() throws Exception {
-    Header header = headerTable.selectLatest();
+    Header header = headerRepository.selectLatest();
     String replicationUrl = header.getReplicationUrl();
     Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
 
@@ -80,7 +83,8 @@ public class UpdateService implements Callable<Void> {
     Consumer<Change> prepareGeometries =
         new ChangeEntityConsumer(createGeometry.andThen(reprojectGeometry));
     Function<Change, Change> prepareChange = consumeThenReturn(prepareGeometries);
-    Consumer<Change> saveChange = new SaveChangeConsumer(nodeTable, wayTable, relationTable);
+    Consumer<Change> saveChange =
+        new SaveChangeConsumer(nodeRepository, wayRepository, relationRepository);
 
     URI changeUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
     Blob changeBlob = blobStore.get(changeUri);
@@ -95,7 +99,7 @@ public class UpdateService implements Callable<Void> {
     Blob stateBlob = blobStore.get(stateUri);
     try (InputStream stateInputStream = stateBlob.getInputStream()) {
       State state = OpenStreetMap.readState(stateInputStream);
-      headerTable.insert(
+      headerRepository.puts(
           new Header(
               state.getSequenceNumber(),
               state.getTimestamp(),

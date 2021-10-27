@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LongListType implements DataType<List<Long>> {
+public class LongListMapper implements CacheMapper<List<Long>> {
 
   @Override
   public int size(List<Long> value) {

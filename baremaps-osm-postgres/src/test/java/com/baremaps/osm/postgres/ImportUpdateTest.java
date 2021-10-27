@@ -23,12 +23,12 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.SimpleCache;
-import com.baremaps.osm.database.DiffService;
-import com.baremaps.osm.database.ImportService;
-import com.baremaps.osm.database.UpdateService;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.repository.DiffService;
+import com.baremaps.osm.repository.ImportService;
+import com.baremaps.osm.repository.UpdateService;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.IOException;
 import java.net.URI;
@@ -48,21 +48,19 @@ class ImportUpdateTest {
 
   public BlobStore blobStore;
   public DataSource dataSource;
-  public PostgresHeaderTable headerTable;
-  public PostgresNodeTable nodeTable;
-  public PostgresWayTable wayTable;
-  public PostgresRelationTable relationTable;
+  public PostgresHeaderRepository headerRepository;
+  public PostgresNodeRepository nodeRepository;
+  public PostgresWayRepository wayRepository;
+  public PostgresRelationRepository relationRepository;
 
   @BeforeEach
-  void createTable() throws SQLException, IOException, URISyntaxException {
+  void init() throws SQLException, IOException, URISyntaxException {
     dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
-
     blobStore = new ResourceBlobStore();
-    headerTable = new PostgresHeaderTable(dataSource);
-    nodeTable = new PostgresNodeTable(dataSource);
-    wayTable = new PostgresWayTable(dataSource);
-    relationTable = new PostgresRelationTable(dataSource);
-
+    headerRepository = new PostgresHeaderRepository(dataSource);
+    nodeRepository = new PostgresNodeRepository(dataSource);
+    wayRepository = new PostgresWayRepository(dataSource);
+    relationRepository = new PostgresRelationRepository(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
       PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
@@ -80,40 +78,40 @@ class ImportUpdateTest {
             blobStore,
             new SimpleCache<>(),
             new SimpleCache<>(),
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
             3857)
         .call();
 
-    headerTable.insert(
+    headerRepository.puts(
         new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), "res://simple", "", ""));
 
     // Check node importation
-    assertNull(nodeTable.select(0l));
-    assertNotNull(nodeTable.select(1l));
-    assertNotNull(nodeTable.select(2l));
-    assertNotNull(nodeTable.select(3l));
-    assertNull(nodeTable.select(4l));
+    assertNull(nodeRepository.get(0l));
+    assertNotNull(nodeRepository.get(1l));
+    assertNotNull(nodeRepository.get(2l));
+    assertNotNull(nodeRepository.get(3l));
+    assertNull(nodeRepository.get(4l));
 
     // Check way importation
-    assertNull(wayTable.select(0l));
-    assertNotNull(wayTable.select(1l));
-    assertNull(wayTable.select(2l));
+    assertNull(wayRepository.get(0l));
+    assertNotNull(wayRepository.get(1l));
+    assertNull(wayRepository.get(2l));
 
     // Check relation importation
-    assertNull(relationTable.select(0l));
-    assertNotNull(relationTable.select(1l));
-    assertNull(relationTable.select(2l));
+    assertNull(relationRepository.get(0l));
+    assertNotNull(relationRepository.get(1l));
+    assertNull(relationRepository.get(2l));
 
     // Check node properties
-    Node node = nodeTable.select(1l);
+    Node node = nodeRepository.get(1l);
     Assertions.assertEquals(1, node.getLon());
     Assertions.assertEquals(1, node.getLat());
 
     // Check way properties
-    Way way = wayTable.select(1l);
+    Way way = wayRepository.get(1l);
     assertNotNull(way);
 
     // Update the database
@@ -121,21 +119,21 @@ class ImportUpdateTest {
             blobStore,
             new PostgresCoordinateCache(dataSource),
             new PostgresReferenceCache(dataSource),
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
             3857)
         .call();
 
     // Check deletions
-    assertNull(nodeTable.select(0l));
-    assertNull(nodeTable.select(1l));
+    assertNull(nodeRepository.get(0l));
+    assertNull(nodeRepository.get(1l));
 
     // Check insertions
-    assertNotNull(nodeTable.select(2l));
-    assertNotNull(nodeTable.select(3l));
-    assertNotNull(nodeTable.select(4l));
+    assertNotNull(nodeRepository.get(2l));
+    assertNotNull(nodeRepository.get(3l));
+    assertNotNull(nodeRepository.get(4l));
   }
 
   @Test
@@ -148,16 +146,16 @@ class ImportUpdateTest {
             blobStore,
             new SimpleCache<>(),
             new SimpleCache<>(),
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
             3857)
         .call();
-    assertEquals(2434l, headerTable.selectLatest().getReplicationSequenceNumber());
+    assertEquals(2434l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     // Fix the replicationUrl so that we can update the database with local files
-    headerTable.insert(
+    headerRepository.puts(
         new Header(
             2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), "res://liechtenstein", "", ""));
 
@@ -170,10 +168,10 @@ class ImportUpdateTest {
                 blobStore,
                 coordinateCache,
                 referenceCache,
-                headerTable,
-                nodeTable,
-                wayTable,
-                relationTable,
+                headerRepository,
+                nodeRepository,
+                wayRepository,
+                relationRepository,
                 3857,
                 14)
             .call()
@@ -184,13 +182,13 @@ class ImportUpdateTest {
             blobStore,
             coordinateCache,
             referenceCache,
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
             3857)
         .call();
-    assertEquals(2435l, headerTable.selectLatest().getReplicationSequenceNumber());
+    assertEquals(2435l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(
         7,
@@ -198,10 +196,10 @@ class ImportUpdateTest {
                 blobStore,
                 coordinateCache,
                 referenceCache,
-                headerTable,
-                nodeTable,
-                wayTable,
-                relationTable,
+                headerRepository,
+                nodeRepository,
+                wayRepository,
+                relationRepository,
                 3857,
                 14)
             .call()
@@ -211,13 +209,13 @@ class ImportUpdateTest {
             blobStore,
             coordinateCache,
             referenceCache,
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
             3857)
         .call();
-    assertEquals(2436l, headerTable.selectLatest().getReplicationSequenceNumber());
+    assertEquals(2436l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(
         0,
@@ -225,10 +223,10 @@ class ImportUpdateTest {
                 blobStore,
                 coordinateCache,
                 referenceCache,
-                headerTable,
-                nodeTable,
-                wayTable,
-                relationTable,
+                headerRepository,
+                nodeRepository,
+                wayRepository,
+                relationRepository,
                 3857,
                 14)
             .call()
@@ -238,12 +236,12 @@ class ImportUpdateTest {
             blobStore,
             coordinateCache,
             referenceCache,
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
             3857)
         .call();
-    assertEquals(2437l, headerTable.selectLatest().getReplicationSequenceNumber());
+    assertEquals(2437l, headerRepository.selectLatest().getReplicationSequenceNumber());
   }
 }

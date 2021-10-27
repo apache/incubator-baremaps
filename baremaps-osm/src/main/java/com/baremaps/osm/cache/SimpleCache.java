@@ -48,13 +48,13 @@ public class SimpleCache<K, V> implements Cache<K, V> {
 
   /** {@inheritDoc} */
   @Override
-  public void add(K key, V value) {
+  public void put(K key, V value) {
     map.put(key, value);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void add(List<Entry<K, V>> entries) {
+  public void put(List<Entry<K, V>> entries) {
     map.putAll(entries.stream().collect(Collectors.toMap(Entry::key, Entry::value)));
   }
 

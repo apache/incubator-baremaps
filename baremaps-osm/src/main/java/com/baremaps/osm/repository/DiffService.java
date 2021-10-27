@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.repository;
 
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
@@ -56,10 +56,10 @@ public class DiffService implements Callable<List<Tile>> {
 
   private final BlobStore blobStore;
   private final CreateGeometryConsumer createGeometryConsumer;
-  private final HeaderTable headerTable;
-  private final NodeTable nodeTable;
-  private final WayTable wayTable;
-  private final RelationTable relationTable;
+  private final HeaderRepository headerRepository;
+  private final Repository<Long, Node> nodeRepository;
+  private final Repository<Long, Way> wayRepository;
+  private final Repository<Long, Relation> relationRepository;
   private final int srid;
   private final int zoom;
 
@@ -67,17 +67,17 @@ public class DiffService implements Callable<List<Tile>> {
       BlobStore blobStore,
       Cache<Long, Coordinate> coordinateCache,
       Cache<Long, List<Long>> referenceCache,
-      HeaderTable headerTable,
-      NodeTable nodeTable,
-      WayTable wayTable,
-      RelationTable relationTable,
+      HeaderRepository headerRepository,
+      Repository<Long, Node> nodeRepository,
+      Repository<Long, Way> wayRepository,
+      Repository<Long, Relation> relationRepository,
       int srid,
       int zoom) {
     this.blobStore = blobStore;
-    this.headerTable = headerTable;
-    this.nodeTable = nodeTable;
-    this.wayTable = wayTable;
-    this.relationTable = relationTable;
+    this.headerRepository = headerRepository;
+    this.nodeRepository = nodeRepository;
+    this.wayRepository = wayRepository;
+    this.relationRepository = relationRepository;
     this.srid = srid;
     this.zoom = zoom;
     this.createGeometryConsumer = new CreateGeometryConsumer(coordinateCache, referenceCache);
@@ -87,7 +87,7 @@ public class DiffService implements Callable<List<Tile>> {
   public List<Tile> call() throws Exception {
     logger.info("Importing changes");
 
-    Header header = headerTable.selectLatest();
+    Header header = headerRepository.selectLatest();
     String replicationUrl = header.getReplicationUrl();
     Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
     URI changeUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
@@ -143,19 +143,19 @@ public class DiffService implements Callable<List<Tile>> {
 
               @Override
               public Optional<Geometry> match(Node node) throws Exception {
-                Node previousNode = nodeTable.select(node.getId());
+                Node previousNode = nodeRepository.get(node.getId());
                 return Optional.ofNullable(previousNode).map(Node::getGeometry);
               }
 
               @Override
               public Optional<Geometry> match(Way way) throws Exception {
-                Way previousWay = wayTable.select(way.getId());
+                Way previousWay = wayRepository.get(way.getId());
                 return Optional.ofNullable(previousWay).map(Way::getGeometry);
               }
 
               @Override
               public Optional<Geometry> match(Relation relation) throws Exception {
-                Relation previousRelation = relationTable.select(relation.getId());
+                Relation previousRelation = relationRepository.get(relation.getId());
                 return Optional.ofNullable(previousRelation).map(Relation::getGeometry);
               }
             })

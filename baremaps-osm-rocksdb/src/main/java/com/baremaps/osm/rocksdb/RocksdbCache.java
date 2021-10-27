@@ -18,7 +18,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheException;
-import com.baremaps.osm.cache.DataType;
+import com.baremaps.osm.cache.CacheMapper;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,11 +32,11 @@ public class RocksdbCache<K, V> implements Cache<K, V> {
 
   private final RocksDB db;
 
-  private final DataType<K> keyType;
+  private final CacheMapper<K> keyType;
 
-  private final DataType<V> valueType;
+  private final CacheMapper<V> valueType;
 
-  public RocksdbCache(RocksDB db, DataType<K> keyType, DataType<V> valueType) {
+  public RocksdbCache(RocksDB db, CacheMapper<K> keyType, CacheMapper<V> valueType) {
     checkNotNull(db);
     this.db = db;
     this.keyType = keyType;
@@ -45,7 +45,7 @@ public class RocksdbCache<K, V> implements Cache<K, V> {
 
   /** {@inheritDoc} */
   @Override
-  public void add(K key, V value) throws CacheException {
+  public void put(K key, V value) throws CacheException {
     try {
       db.put(buffer(keyType, key), buffer(valueType, value));
     } catch (RocksDBException e) {
@@ -55,7 +55,7 @@ public class RocksdbCache<K, V> implements Cache<K, V> {
 
   /** {@inheritDoc} */
   @Override
-  public void add(List<Entry<K, V>> entries) throws CacheException {
+  public void put(List<Entry<K, V>> entries) throws CacheException {
     try (WriteBatch writeBatch = new WriteBatch()) {
       for (Entry<K, V> entry : entries) {
         K key = entry.key();
@@ -126,9 +126,9 @@ public class RocksdbCache<K, V> implements Cache<K, V> {
     }
   }
 
-  private <T> byte[] buffer(DataType<T> dataType, T value) {
-    ByteBuffer buffer = ByteBuffer.allocate(dataType.size(value));
-    dataType.write(buffer, value);
+  private <T> byte[] buffer(CacheMapper<T> cacheMapper, T value) {
+    ByteBuffer buffer = ByteBuffer.allocate(cacheMapper.size(value));
+    cacheMapper.write(buffer, value);
     return buffer.array();
   }
 }

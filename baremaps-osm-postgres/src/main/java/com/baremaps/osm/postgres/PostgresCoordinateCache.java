@@ -43,10 +43,10 @@ public class PostgresCoordinateCache implements Cache<Long, Coordinate> {
 
   /** {@inheritDoc} */
   @Override
-  public Coordinate get(Long id) throws CacheException {
+  public Coordinate get(Long key) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
-      statement.setLong(1, id);
+      statement.setLong(1, key);
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
           double lon = result.getDouble(1);
@@ -70,10 +70,10 @@ public class PostgresCoordinateCache implements Cache<Long, Coordinate> {
       try (ResultSet result = statement.executeQuery()) {
         Map<Long, Coordinate> nodes = new HashMap<>();
         while (result.next()) {
-          long id = result.getLong(1);
+          long key = result.getLong(1);
           double lon = result.getDouble(2);
           double lat = result.getDouble(3);
-          nodes.put(id, new Coordinate(lon, lat));
+          nodes.put(key, new Coordinate(lon, lat));
         }
         return keys.stream().map(nodes::get).collect(Collectors.toList());
       }
@@ -84,13 +84,13 @@ public class PostgresCoordinateCache implements Cache<Long, Coordinate> {
 
   /** This operation is not supported. */
   @Override
-  public void add(Long key, Coordinate values) {
+  public void put(Long key, Coordinate values) {
     throw new UnsupportedOperationException();
   }
 
   /** This operation is not supported. */
   @Override
-  public void add(List<Entry<Long, Coordinate>> storeEntries) {
+  public void put(List<Entry<Long, Coordinate>> storeEntries) {
     throw new UnsupportedOperationException();
   }
 

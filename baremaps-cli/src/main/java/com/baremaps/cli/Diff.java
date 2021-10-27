@@ -17,17 +17,18 @@ package com.baremaps.cli;
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.database.DiffService;
-import com.baremaps.osm.database.HeaderTable;
-import com.baremaps.osm.database.NodeTable;
-import com.baremaps.osm.database.RelationTable;
-import com.baremaps.osm.database.WayTable;
+import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.postgres.PostgresCoordinateCache;
-import com.baremaps.osm.postgres.PostgresHeaderTable;
-import com.baremaps.osm.postgres.PostgresNodeTable;
+import com.baremaps.osm.postgres.PostgresHeaderRepository;
+import com.baremaps.osm.postgres.PostgresNodeRepository;
 import com.baremaps.osm.postgres.PostgresReferenceCache;
-import com.baremaps.osm.postgres.PostgresRelationTable;
-import com.baremaps.osm.postgres.PostgresWayTable;
+import com.baremaps.osm.postgres.PostgresRelationRepository;
+import com.baremaps.osm.postgres.PostgresWayRepository;
+import com.baremaps.osm.repository.DiffService;
+import com.baremaps.osm.repository.HeaderRepository;
+import com.baremaps.osm.repository.Repository;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -83,10 +84,10 @@ public class Diff implements Callable<Integer> {
     DataSource datasource = PostgresUtils.datasource(database);
     Cache<Long, Coordinate> coordinateCache = new PostgresCoordinateCache(datasource);
     Cache<Long, List<Long>> referenceCache = new PostgresReferenceCache(datasource);
-    HeaderTable headerTable = new PostgresHeaderTable(datasource);
-    NodeTable nodeTable = new PostgresNodeTable(datasource);
-    WayTable wayTable = new PostgresWayTable(datasource);
-    RelationTable relationTable = new PostgresRelationTable(datasource);
+    HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
+    Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
+    Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
+    Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
 
     logger.info("Saving diff");
     Path tmpTiles = Files.createFile(Paths.get("diff.tmp"));
@@ -95,10 +96,10 @@ public class Diff implements Callable<Integer> {
               blobStore,
               coordinateCache,
               referenceCache,
-              headerTable,
-              nodeTable,
-              wayTable,
-              relationTable,
+              headerRepository,
+              nodeRepository,
+              wayRepository,
+              relationRepository,
               srid,
               zoom)
           .call();

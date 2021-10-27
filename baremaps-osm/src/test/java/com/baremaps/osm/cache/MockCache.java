@@ -41,12 +41,12 @@ public class MockCache<T> implements Cache<Long, T> {
   }
 
   @Override
-  public void add(Long key, T values) {
+  public void put(Long key, T values) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void add(List<Entry<Long, T>> storeEntries) {
+  public void put(List<Entry<Long, T>> storeEntries) {
     throw new UnsupportedOperationException();
   }
 

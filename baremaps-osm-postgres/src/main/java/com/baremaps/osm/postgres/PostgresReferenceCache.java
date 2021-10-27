@@ -45,10 +45,10 @@ public class PostgresReferenceCache implements Cache<Long, List<Long>> {
   }
 
   /** {@inheritDoc} */
-  public List<Long> get(Long id) throws CacheException {
+  public List<Long> get(Long key) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
-      statement.setLong(1, id);
+      statement.setLong(1, key);
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
           List<Long> nodes = new ArrayList<>();
@@ -77,12 +77,12 @@ public class PostgresReferenceCache implements Cache<Long, List<Long>> {
         Map<Long, List<Long>> references = new HashMap<>();
         while (result.next()) {
           List<Long> nodes = new ArrayList<>();
-          long id = result.getLong(1);
+          long key = result.getLong(1);
           Array array = result.getArray(2);
           if (array != null) {
             nodes = Arrays.asList((Long[]) array.getArray());
           }
-          references.put(id, nodes);
+          references.put(key, nodes);
         }
         return keys.stream().map(references::get).collect(Collectors.toList());
       }
@@ -93,13 +93,13 @@ public class PostgresReferenceCache implements Cache<Long, List<Long>> {
 
   /** This operation is not supported. */
   @Override
-  public void add(Long key, List<Long> values) {
+  public void put(Long key, List<Long> values) {
     throw new UnsupportedOperationException();
   }
 
   /** This operation is not supported. */
   @Override
-  public void add(List<Entry<Long, List<Long>>> storeEntries) {
+  public void put(List<Entry<Long, List<Long>>> storeEntries) {
     throw new UnsupportedOperationException();
   }
 

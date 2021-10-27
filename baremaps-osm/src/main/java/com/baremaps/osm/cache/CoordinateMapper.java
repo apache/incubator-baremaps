@@ -15,23 +15,37 @@
 package com.baremaps.osm.cache;
 
 import java.nio.ByteBuffer;
+import org.locationtech.jts.geom.Coordinate;
 
-public class LongType implements DataType<Long> {
+public class CoordinateMapper implements CacheMapper<Coordinate> {
 
   @Override
-  public int size(Long value) {
-    return Long.BYTES;
+  public int size(Coordinate value) {
+    return 17;
   }
 
   @Override
-  public Long read(ByteBuffer buffer) {
-    Long value = buffer.getLong();
+  public Coordinate read(ByteBuffer buffer) {
+    if (buffer == null) {
+      return null;
+    }
+    if (buffer.get() == 0) {
+      buffer.flip();
+      return null;
+    }
+    double lon = buffer.getDouble();
+    double lat = buffer.getDouble();
     buffer.flip();
-    return value;
+    return new Coordinate(lon, lat);
   }
 
   @Override
-  public void write(ByteBuffer buffer, Long value) {
-    buffer.putLong(value).flip();
+  public void write(ByteBuffer buffer, Coordinate value) {
+    if (value != null) {
+      buffer.put((byte) 1);
+      buffer.putDouble(value.getX());
+      buffer.putDouble(value.getY());
+    }
+    buffer.flip();
   }
 }

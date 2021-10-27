@@ -17,11 +17,11 @@ package com.baremaps.osm.postgres;
 import static com.baremaps.osm.postgres.PostgresJsonbMapper.toJson;
 import static com.baremaps.osm.postgres.PostgresJsonbMapper.toMap;
 
-import com.baremaps.osm.database.DatabaseException;
-import com.baremaps.osm.database.NodeTable;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.geometry.GeometryUtils;
+import com.baremaps.osm.repository.Repository;
+import com.baremaps.osm.repository.RepositoryException;
 import com.baremaps.postgres.jdbc.CopyWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
@@ -39,8 +39,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/** Provides an implementation of the {@code NodeTable} baked by PostgreSQL. */
-public class PostgresNodeTable implements NodeTable {
+/** Provides an implementation of the {@code Repository<Node>} baked by PostgreSQL. */
+public class PostgresNodeRepository implements Repository<Long, Node> {
 
   private final DataSource dataSource;
 
@@ -55,11 +55,11 @@ public class PostgresNodeTable implements NodeTable {
   private final String copy;
 
   /**
-   * Constructs a {@code PostgresNodeTable}.
+   * Constructs a {@code PostgresNodeRepository}.
    *
    * @param dataSource
    */
-  public PostgresNodeTable(DataSource dataSource) {
+  public PostgresNodeRepository(DataSource dataSource) {
     this(
         dataSource,
         "osm_nodes",
@@ -75,10 +75,10 @@ public class PostgresNodeTable implements NodeTable {
   }
 
   /**
-   * Constructs a {@code PostgresNodeTable} with custom parameters.
+   * Constructs a {@code PostgresNodeRepository} with custom parameters.
    *
    * @param dataSource
-   * @param nodeTable
+   * @param nodeRepository
    * @param idColumn
    * @param versionColumn
    * @param uidColumn
@@ -89,9 +89,9 @@ public class PostgresNodeTable implements NodeTable {
    * @param latitudeColumn
    * @param geometryColumn
    */
-  public PostgresNodeTable(
+  public PostgresNodeRepository(
       DataSource dataSource,
-      String nodeTable,
+      String nodeRepository,
       String idColumn,
       String versionColumn,
       String uidColumn,
@@ -105,7 +105,7 @@ public class PostgresNodeTable implements NodeTable {
     this.select =
         String.format(
             "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asbinary(%10$s) FROM %1$s WHERE %2$s = ?",
-            nodeTable,
+            nodeRepository,
             idColumn,
             versionColumn,
             uidColumn,
@@ -118,7 +118,7 @@ public class PostgresNodeTable implements NodeTable {
     this.selectIn =
         String.format(
             "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asbinary(%10$s) FROM %1$s WHERE %2$s = ANY (?)",
-            nodeTable,
+            nodeRepository,
             idColumn,
             versionColumn,
             uidColumn,
@@ -141,7 +141,7 @@ public class PostgresNodeTable implements NodeTable {
                 + "%8$s = excluded.%8$s, "
                 + "%9$s = excluded.%9$s, "
                 + "%10$s = excluded.%10$s",
-            nodeTable,
+            nodeRepository,
             idColumn,
             versionColumn,
             uidColumn,
@@ -151,11 +151,11 @@ public class PostgresNodeTable implements NodeTable {
             longitudeColumn,
             latitudeColumn,
             geometryColumn);
-    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", nodeTable, idColumn);
+    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", nodeRepository, idColumn);
     this.copy =
         String.format(
             "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s) FROM STDIN BINARY",
-            nodeTable,
+            nodeRepository,
             idColumn,
             versionColumn,
             uidColumn,
@@ -169,158 +169,158 @@ public class PostgresNodeTable implements NodeTable {
 
   /** {@inheritDoc} */
   @Override
-  public Node select(Long id) throws DatabaseException {
+  public Node get(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(select)) {
-      statement.setObject(1, id);
+      statement.setObject(1, key);
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
-          return getEntity(result);
+          return getValue(result);
         } else {
           return null;
         }
       }
     } catch (SQLException | JsonProcessingException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public List<Node> select(List<Long> ids) throws DatabaseException {
-    if (ids.isEmpty()) {
+  public List<Node> get(List<Long> keys) throws RepositoryException {
+    if (keys.isEmpty()) {
       return List.of();
     }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(selectIn)) {
-      statement.setArray(1, connection.createArrayOf("int8", ids.toArray()));
+      statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       try (ResultSet result = statement.executeQuery()) {
-        Map<Long, Node> entities = new HashMap<>();
+        Map<Long, Node> values = new HashMap<>();
         while (result.next()) {
-          Node entity = getEntity(result);
-          entities.put(entity.getId(), entity);
+          Node value = getValue(result);
+          values.put(value.getId(), value);
         }
-        return ids.stream().map(entities::get).collect(Collectors.toList());
+        return keys.stream().map(values::get).collect(Collectors.toList());
       }
     } catch (SQLException | JsonProcessingException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public void insert(Node entity) throws DatabaseException {
+  public void puts(Node value) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      setEntity(statement, entity);
+      setValue(statement, value);
       statement.execute();
     } catch (SQLException | JsonProcessingException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public void insert(List<Node> entities) throws DatabaseException {
-    if (entities.isEmpty()) {
+  public void puts(List<Node> values) throws RepositoryException {
+    if (values.isEmpty()) {
       return;
     }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
-      for (Node entity : entities) {
+      for (Node value : values) {
         statement.clearParameters();
-        setEntity(statement, entity);
+        setValue(statement, value);
         statement.addBatch();
       }
       statement.executeBatch();
     } catch (SQLException | JsonProcessingException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public void delete(Long id) throws DatabaseException {
+  public void delete(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(delete)) {
-      statement.setObject(1, id);
+      statement.setObject(1, key);
       statement.execute();
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public void delete(List<Long> ids) throws DatabaseException {
-    if (ids.isEmpty()) {
+  public void delete(List<Long> keys) throws RepositoryException {
+    if (keys.isEmpty()) {
       return;
     }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(delete)) {
-      for (Long id : ids) {
+      for (Long key : keys) {
         statement.clearParameters();
-        statement.setObject(1, id);
+        statement.setObject(1, key);
         statement.addBatch();
       }
       statement.executeBatch();
     } catch (SQLException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public void copy(List<Node> entities) throws DatabaseException {
-    if (entities.isEmpty()) {
+  public void copy(List<Node> values) throws RepositoryException {
+    if (values.isEmpty()) {
       return;
     }
     try (Connection connection = dataSource.getConnection()) {
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       try (CopyWriter writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copy))) {
         writer.writeHeader();
-        for (Node entity : entities) {
+        for (Node value : values) {
           writer.startRow(9);
-          writer.writeLong(entity.getId());
-          writer.writeInteger(entity.getInfo().getVersion());
-          writer.writeInteger(entity.getInfo().getUid());
-          writer.writeLocalDateTime(entity.getInfo().getTimestamp());
-          writer.writeLong(entity.getInfo().getChangeset());
-          writer.writeJsonb(toJson(entity.getTags()));
-          writer.writeDouble(entity.getLon());
-          writer.writeDouble(entity.getLat());
-          writer.writeGeometry(entity.getGeometry());
+          writer.writeLong(value.getId());
+          writer.writeInteger(value.getInfo().getVersion());
+          writer.writeInteger(value.getInfo().getUid());
+          writer.writeLocalDateTime(value.getInfo().getTimestamp());
+          writer.writeLong(value.getInfo().getChangeset());
+          writer.writeJsonb(toJson(value.getTags()));
+          writer.writeDouble(value.getLon());
+          writer.writeDouble(value.getLat());
+          writer.writeGeometry(value.getGeometry());
         }
       }
     } catch (IOException | SQLException e) {
-      throw new DatabaseException(e);
+      throw new RepositoryException(e);
     }
   }
 
-  private Node getEntity(ResultSet result) throws SQLException, JsonProcessingException {
-    long id = result.getLong(1);
-    int version = result.getInt(2);
-    int uid = result.getInt(3);
-    LocalDateTime timestamp = result.getObject(4, LocalDateTime.class);
-    long changeset = result.getLong(5);
-    Map<String, String> tags = toMap(result.getString(6));
-    double lon = result.getDouble(7);
-    double lat = result.getDouble(8);
-    Geometry point = GeometryUtils.deserialize(result.getBytes(9));
+  private Node getValue(ResultSet resultSet) throws SQLException, JsonProcessingException {
+    long id = resultSet.getLong(1);
+    int version = resultSet.getInt(2);
+    int uid = resultSet.getInt(3);
+    LocalDateTime timestamp = resultSet.getObject(4, LocalDateTime.class);
+    long changeset = resultSet.getLong(5);
+    Map<String, String> tags = toMap(resultSet.getString(6));
+    double lon = resultSet.getDouble(7);
+    double lat = resultSet.getDouble(8);
+    Geometry point = GeometryUtils.deserialize(resultSet.getBytes(9));
     Info info = new Info(version, timestamp, changeset, uid);
     return new Node(id, info, tags, lon, lat, point);
   }
 
-  private void setEntity(PreparedStatement statement, Node entity)
+  private void setValue(PreparedStatement statement, Node value)
       throws SQLException, JsonProcessingException {
-    statement.setObject(1, entity.getId());
-    statement.setObject(2, entity.getInfo().getVersion());
-    statement.setObject(3, entity.getInfo().getUid());
-    statement.setObject(4, entity.getInfo().getTimestamp());
-    statement.setObject(5, entity.getInfo().getChangeset());
-    statement.setObject(6, toJson(entity.getTags()));
-    statement.setObject(7, entity.getLon());
-    statement.setObject(8, entity.getLat());
-    statement.setBytes(9, GeometryUtils.serialize(entity.getGeometry()));
+    statement.setObject(1, value.getId());
+    statement.setObject(2, value.getInfo().getVersion());
+    statement.setObject(3, value.getInfo().getUid());
+    statement.setObject(4, value.getInfo().getTimestamp());
+    statement.setObject(5, value.getInfo().getChangeset());
+    statement.setObject(6, toJson(value.getTags()));
+    statement.setObject(7, value.getLon());
+    statement.setObject(8, value.getLat());
+    statement.setBytes(9, GeometryUtils.serialize(value.getGeometry()));
   }
 }

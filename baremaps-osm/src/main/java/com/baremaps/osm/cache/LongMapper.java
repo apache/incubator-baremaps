@@ -12,9 +12,26 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.cache;
 
-import com.baremaps.osm.domain.Node;
+import java.nio.ByteBuffer;
 
-/** Provides an interface to a table storing OpenStreetMap nodes. */
-public interface NodeTable extends EntityTable<Node> {}
+public class LongMapper implements CacheMapper<Long> {
+
+  @Override
+  public int size(Long value) {
+    return Long.BYTES;
+  }
+
+  @Override
+  public Long read(ByteBuffer buffer) {
+    Long value = buffer.getLong();
+    buffer.flip();
+    return value;
+  }
+
+  @Override
+  public void write(ByteBuffer buffer, Long value) {
+    buffer.putLong(value).flip();
+  }
+}

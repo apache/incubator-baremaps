@@ -16,20 +16,21 @@ package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.CoordinateType;
-import com.baremaps.osm.cache.LongListType;
-import com.baremaps.osm.cache.LongType;
+import com.baremaps.osm.cache.CoordinateMapper;
+import com.baremaps.osm.cache.LongListMapper;
+import com.baremaps.osm.cache.LongMapper;
 import com.baremaps.osm.cache.SimpleCache;
-import com.baremaps.osm.database.HeaderTable;
-import com.baremaps.osm.database.ImportService;
-import com.baremaps.osm.database.NodeTable;
-import com.baremaps.osm.database.RelationTable;
-import com.baremaps.osm.database.WayTable;
+import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.lmdb.LmdbCache;
-import com.baremaps.osm.postgres.PostgresHeaderTable;
-import com.baremaps.osm.postgres.PostgresNodeTable;
-import com.baremaps.osm.postgres.PostgresRelationTable;
-import com.baremaps.osm.postgres.PostgresWayTable;
+import com.baremaps.osm.postgres.PostgresHeaderRepository;
+import com.baremaps.osm.postgres.PostgresNodeRepository;
+import com.baremaps.osm.postgres.PostgresRelationRepository;
+import com.baremaps.osm.postgres.PostgresWayRepository;
+import com.baremaps.osm.repository.HeaderRepository;
+import com.baremaps.osm.repository.ImportService;
+import com.baremaps.osm.repository.Repository;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.net.URI;
 import java.nio.ByteBuffer;
@@ -95,10 +96,10 @@ public class Import implements Callable<Integer> {
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.datasource(database);
-    HeaderTable headerTable = new PostgresHeaderTable(datasource);
-    NodeTable nodeTable = new PostgresNodeTable(datasource);
-    WayTable wayTable = new PostgresWayTable(datasource);
-    RelationTable relationTable = new PostgresRelationTable(datasource);
+    HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
+    Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
+    Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
+    Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
 
     final Cache<Long, Coordinate> coordinateCache;
     final Cache<Long, List<Long>> referenceCache;
@@ -119,14 +120,14 @@ public class Import implements Callable<Integer> {
             new LmdbCache(
                 env,
                 env.openDbi("coordinate", DbiFlags.MDB_CREATE),
-                new LongType(),
-                new CoordinateType());
+                new LongMapper(),
+                new CoordinateMapper());
         referenceCache =
             new LmdbCache(
                 env,
                 env.openDbi("reference", DbiFlags.MDB_CREATE),
-                new LongType(),
-                new LongListType());
+                new LongMapper(),
+                new LongListMapper());
         break;
       default:
         throw new UnsupportedOperationException("Unsupported cache type");
@@ -138,10 +139,10 @@ public class Import implements Callable<Integer> {
             blobStore,
             coordinateCache,
             referenceCache,
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
             srid)
         .call();
 

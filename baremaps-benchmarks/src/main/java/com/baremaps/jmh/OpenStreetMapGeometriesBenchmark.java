@@ -16,9 +16,9 @@ package com.baremaps.jmh;
 
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.CoordinateType;
-import com.baremaps.osm.cache.LongListType;
-import com.baremaps.osm.cache.LongType;
+import com.baremaps.osm.cache.CoordinateMapper;
+import com.baremaps.osm.cache.LongListMapper;
+import com.baremaps.osm.cache.LongMapper;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
@@ -86,11 +86,14 @@ public class OpenStreetMapGeometriesBenchmark {
         new LmdbCache(
             env,
             env.openDbi("coordinate", DbiFlags.MDB_CREATE),
-            new LongType(),
-            new CoordinateType());
+            new LongMapper(),
+            new CoordinateMapper());
     Cache<Long, List<Long>> referenceCache =
         new LmdbCache(
-            env, env.openDbi("reference", DbiFlags.MDB_CREATE), new LongType(), new LongListType());
+            env,
+            env.openDbi("reference", DbiFlags.MDB_CREATE),
+            new LongMapper(),
+            new LongListMapper());
 
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
@@ -131,9 +134,9 @@ public class OpenStreetMapGeometriesBenchmark {
         RocksDB coordinatesDB = RocksDB.open(options, coordinatesDirectory.toString());
         RocksDB referenceDB = RocksDB.open(options, referenceDirectory.toString())) {
       Cache<Long, Coordinate> coordinateCache =
-          new RocksdbCache(coordinatesDB, new LongType(), new CoordinateType());
+          new RocksdbCache(coordinatesDB, new LongMapper(), new CoordinateMapper());
       Cache<Long, List<Long>> referenceCache =
-          new RocksdbCache(referenceDB, new LongType(), new LongListType());
+          new RocksdbCache(referenceDB, new LongMapper(), new LongListMapper());
 
       AtomicLong nodes = new AtomicLong(0);
       AtomicLong ways = new AtomicLong(0);
