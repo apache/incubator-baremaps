@@ -15,16 +15,16 @@
 package com.baremaps.jmh;
 
 import com.baremaps.osm.OpenStreetMap;
-import com.baremaps.osm.cache.CoordinateCache;
-import com.baremaps.osm.cache.ReferenceCache;
+import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.cache.CoordinateMapper;
+import com.baremaps.osm.cache.LongListMapper;
+import com.baremaps.osm.cache.LongMapper;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
-import com.baremaps.osm.lmdb.LmdbCoordinateCache;
-import com.baremaps.osm.lmdb.LmdbReferencesCache;
-import com.baremaps.osm.rocksdb.RocksdbCoordinateCache;
-import com.baremaps.osm.rocksdb.RocksdbReferencesCache;
+import com.baremaps.osm.lmdb.LmdbCache;
+import com.baremaps.osm.rocksdb.RocksdbCache;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,9 +34,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import org.lmdbjava.DbiFlags;
 import org.lmdbjava.Env;
+import org.locationtech.jts.geom.Coordinate;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -79,8 +82,18 @@ public class OpenStreetMapGeometriesBenchmark {
     Path cacheDirectory = Files.createTempDirectory("baremaps_").toAbsolutePath();
     Env<ByteBuffer> env =
         Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(cacheDirectory.toFile());
-    CoordinateCache coordinateCache = new LmdbCoordinateCache(env);
-    ReferenceCache referenceCache = new LmdbReferencesCache(env);
+    Cache<Long, Coordinate> coordinateCache =
+        new LmdbCache(
+            env,
+            env.openDbi("coordinate", DbiFlags.MDB_CREATE),
+            new LongMapper(),
+            new CoordinateMapper());
+    Cache<Long, List<Long>> referenceCache =
+        new LmdbCache(
+            env,
+            env.openDbi("reference", DbiFlags.MDB_CREATE),
+            new LongMapper(),
+            new LongListMapper());
 
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
@@ -120,8 +133,10 @@ public class OpenStreetMapGeometriesBenchmark {
     try (org.rocksdb.Options options = new org.rocksdb.Options().setCreateIfMissing(true);
         RocksDB coordinatesDB = RocksDB.open(options, coordinatesDirectory.toString());
         RocksDB referenceDB = RocksDB.open(options, referenceDirectory.toString())) {
-      CoordinateCache coordinateCache = new RocksdbCoordinateCache(coordinatesDB);
-      ReferenceCache referenceCache = new RocksdbReferencesCache(referenceDB);
+      Cache<Long, Coordinate> coordinateCache =
+          new RocksdbCache(coordinatesDB, new LongMapper(), new CoordinateMapper());
+      Cache<Long, List<Long>> referenceCache =
+          new RocksdbCache(referenceDB, new LongMapper(), new LongListMapper());
 
       AtomicLong nodes = new AtomicLong(0);
       AtomicLong ways = new AtomicLong(0);

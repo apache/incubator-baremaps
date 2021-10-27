@@ -15,22 +15,24 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.cache.CoordinateCache;
-import com.baremaps.osm.cache.ReferenceCache;
-import com.baremaps.osm.database.HeaderTable;
-import com.baremaps.osm.database.NodeTable;
-import com.baremaps.osm.database.RelationTable;
-import com.baremaps.osm.database.UpdateService;
-import com.baremaps.osm.database.WayTable;
+import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.postgres.PostgresCoordinateCache;
-import com.baremaps.osm.postgres.PostgresHeaderTable;
-import com.baremaps.osm.postgres.PostgresNodeTable;
+import com.baremaps.osm.postgres.PostgresHeaderRepository;
+import com.baremaps.osm.postgres.PostgresNodeRepository;
 import com.baremaps.osm.postgres.PostgresReferenceCache;
-import com.baremaps.osm.postgres.PostgresRelationTable;
-import com.baremaps.osm.postgres.PostgresWayTable;
+import com.baremaps.osm.postgres.PostgresRelationRepository;
+import com.baremaps.osm.postgres.PostgresWayRepository;
+import com.baremaps.osm.repository.HeaderRepository;
+import com.baremaps.osm.repository.Repository;
+import com.baremaps.osm.repository.UpdateService;
 import com.baremaps.postgres.jdbc.PostgresUtils;
+import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
+import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -61,22 +63,22 @@ public class Update implements Callable<Integer> {
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.datasource(database);
-    CoordinateCache coordinateCache = new PostgresCoordinateCache(datasource);
-    ReferenceCache referenceCache = new PostgresReferenceCache(datasource);
-    HeaderTable headerTable = new PostgresHeaderTable(datasource);
-    NodeTable nodeTable = new PostgresNodeTable(datasource);
-    WayTable wayTable = new PostgresWayTable(datasource);
-    RelationTable relationTable = new PostgresRelationTable(datasource);
+    Cache<Long, Coordinate> coordinateCache = new PostgresCoordinateCache(datasource);
+    Cache<Long, List<Long>> referenceCache = new PostgresReferenceCache(datasource);
+    HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
+    Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
+    Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
+    Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
 
     logger.info("Importing changes");
     new UpdateService(
             blobStore,
             coordinateCache,
             referenceCache,
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
             srid)
         .call();
     logger.info("Done");

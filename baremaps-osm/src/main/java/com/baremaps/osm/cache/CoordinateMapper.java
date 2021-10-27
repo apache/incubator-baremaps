@@ -12,46 +12,40 @@
  * the License.
  */
 
-package com.baremaps.osm.lmdb;
+package com.baremaps.osm.cache;
 
-import com.baremaps.osm.cache.CoordinateCache;
 import java.nio.ByteBuffer;
-import org.lmdbjava.DbiFlags;
-import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 
-/** A {@code Cache} for coordinates baked by LMDB. */
-public class LmdbCoordinateCache extends LmdbCache<Long, Coordinate> implements CoordinateCache {
+public class CoordinateMapper implements CacheMapper<Coordinate> {
 
-  /** Constructs a {@code LmdbCoordinateCache}. */
-  public LmdbCoordinateCache(Env<ByteBuffer> env) {
-    super(env, env.openDbi("coordinate", DbiFlags.MDB_CREATE));
+  @Override
+  public int size(Coordinate value) {
+    return 17;
   }
 
   @Override
-  protected ByteBuffer buffer(Long key) {
-    return ByteBuffer.allocateDirect(Long.BYTES).putLong(key).flip();
-  }
-
-  @Override
-  protected Coordinate read(ByteBuffer buffer) {
-    if (buffer == null || buffer.get() == 0) {
+  public Coordinate read(ByteBuffer buffer) {
+    if (buffer == null) {
+      return null;
+    }
+    if (buffer.get() == 0) {
+      buffer.flip();
       return null;
     }
     double lon = buffer.getDouble();
     double lat = buffer.getDouble();
+    buffer.flip();
     return new Coordinate(lon, lat);
   }
 
   @Override
-  protected ByteBuffer write(Coordinate value) {
-    ByteBuffer buffer = ByteBuffer.allocateDirect(17);
+  public void write(ByteBuffer buffer, Coordinate value) {
     if (value != null) {
       buffer.put((byte) 1);
       buffer.putDouble(value.getX());
       buffer.putDouble(value.getY());
     }
     buffer.flip();
-    return buffer;
   }
 }

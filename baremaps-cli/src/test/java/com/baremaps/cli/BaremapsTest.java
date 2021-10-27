@@ -47,7 +47,7 @@ import picocli.CommandLine;
 class BaremapsTest {
 
   @BeforeEach
-  void createTable() throws SQLException, IOException {
+  void init() throws SQLException, IOException {
     DataSource dataSource = PostgresUtils.datasource(DATABASE_URL);
     try (Connection connection = dataSource.getConnection()) {
       PostgresUtils.executeResource(connection, "osm_create_extensions.sql");

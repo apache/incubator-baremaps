@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.repository;
 
 import static com.baremaps.osm.OpenStreetMap.streamPbfBlocks;
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
@@ -22,10 +22,11 @@ import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheBlockConsumer;
-import com.baremaps.osm.cache.CoordinateCache;
-import com.baremaps.osm.cache.ReferenceCache;
 import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.domain.Entity;
+import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.BlockEntityConsumer;
 import com.baremaps.osm.geometry.CreateGeometryConsumer;
 import com.baremaps.osm.geometry.ReprojectEntityConsumer;
@@ -49,30 +50,30 @@ public class ImportService implements Callable<Void> {
   private final BlobStore blobStore;
   private final Cache<Long, Coordinate> coordinateCache;
   private final Cache<Long, List<Long>> referenceCache;
-  private final HeaderTable headerTable;
-  private final NodeTable nodeTable;
-  private final WayTable wayTable;
-  private final RelationTable relationTable;
+  private final HeaderRepository headerRepository;
+  private final Repository<Long, Node> nodeRepository;
+  private final Repository<Long, Way> wayRepository;
+  private final Repository<Long, Relation> relationRepository;
   private final int srid;
 
   public ImportService(
       URI uri,
       BlobStore blobStore,
-      CoordinateCache coordinateCache,
-      ReferenceCache referenceCache,
-      HeaderTable headerTable,
-      NodeTable nodeTable,
-      WayTable wayTable,
-      RelationTable relationTable,
+      Cache<Long, Coordinate> coordinateCache,
+      Cache<Long, List<Long>> referenceCache,
+      HeaderRepository headerRepository,
+      Repository<Long, Node> nodeRepository,
+      Repository<Long, Way> wayRepository,
+      Repository<Long, Relation> relationRepository,
       int srid) {
     this.uri = uri;
     this.blobStore = blobStore;
     this.coordinateCache = coordinateCache;
     this.referenceCache = referenceCache;
-    this.headerTable = headerTable;
-    this.nodeTable = nodeTable;
-    this.wayTable = wayTable;
-    this.relationTable = relationTable;
+    this.headerRepository = headerRepository;
+    this.nodeRepository = nodeRepository;
+    this.wayRepository = wayRepository;
+    this.relationRepository = relationRepository;
     this.srid = srid;
   }
 
@@ -85,7 +86,7 @@ public class ImportService implements Callable<Void> {
         new BlockEntityConsumer(createGeometry.andThen(reprojectGeometry));
     Function<Block, Block> prepareBlock = consumeThenReturn(cacheBlock.andThen(prepareGeometries));
     Consumer<Block> saveBlock =
-        new SaveBlockConsumer(headerTable, nodeTable, wayTable, relationTable);
+        new SaveBlockConsumer(headerRepository, nodeRepository, wayRepository, relationRepository);
 
     Blob blob = blobStore.get(uri);
     ProgressLogger progressLogger = new ProgressLogger(blob.getContentLength(), 5000);

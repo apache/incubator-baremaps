@@ -14,8 +14,8 @@
 
 package com.baremaps.osm.postgres;
 
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.CacheException;
-import com.baremaps.osm.cache.ReferenceCache;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 /** A read-only {@code Cache} for references baked by an OpenStreetMap ways stored in Postgres. */
-public class PostgresReferenceCache implements ReferenceCache {
+public class PostgresReferenceCache implements Cache<Long, List<Long>> {
 
   private static final String SELECT = "SELECT nodes FROM osm_ways WHERE id = ?";
 
@@ -45,10 +45,10 @@ public class PostgresReferenceCache implements ReferenceCache {
   }
 
   /** {@inheritDoc} */
-  public List<Long> get(Long id) throws CacheException {
+  public List<Long> get(Long key) throws CacheException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
-      statement.setLong(1, id);
+      statement.setLong(1, key);
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
           List<Long> nodes = new ArrayList<>();
@@ -77,12 +77,12 @@ public class PostgresReferenceCache implements ReferenceCache {
         Map<Long, List<Long>> references = new HashMap<>();
         while (result.next()) {
           List<Long> nodes = new ArrayList<>();
-          long id = result.getLong(1);
+          long key = result.getLong(1);
           Array array = result.getArray(2);
           if (array != null) {
             nodes = Arrays.asList((Long[]) array.getArray());
           }
-          references.put(id, nodes);
+          references.put(key, nodes);
         }
         return keys.stream().map(references::get).collect(Collectors.toList());
       }
@@ -93,13 +93,13 @@ public class PostgresReferenceCache implements ReferenceCache {
 
   /** This operation is not supported. */
   @Override
-  public void add(Long key, List<Long> values) {
+  public void put(Long key, List<Long> values) {
     throw new UnsupportedOperationException();
   }
 
   /** This operation is not supported. */
   @Override
-  public void add(List<Entry<Long, List<Long>>> storeEntries) {
+  public void put(List<Entry<Long, List<Long>>> storeEntries) {
     throw new UnsupportedOperationException();
   }
 

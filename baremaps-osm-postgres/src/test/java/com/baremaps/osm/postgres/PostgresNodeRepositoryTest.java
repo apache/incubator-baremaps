@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.baremaps.osm.database.DatabaseException;
 import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.repository.RepositoryException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -33,59 +33,59 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgresNodeTableTest extends PostgresBaseTest {
+class PostgresNodeRepositoryTest extends PostgresBaseTest {
 
   DataSource dataSource;
 
-  PostgresNodeTable nodeStore;
+  PostgresNodeRepository nodeRepository;
 
   @BeforeEach
   void beforeEach() throws SQLException, IOException {
     dataSource = initDataSource();
-    nodeStore = new PostgresNodeTable(dataSource);
+    nodeRepository = new PostgresNodeRepository(dataSource);
   }
 
   @Test
   @Tag("integration")
-  void insert() throws DatabaseException {
-    nodeStore.insert(NODE_0);
-    assertEquals(NODE_0, nodeStore.select(NODE_0.getId()));
+  void insert() throws RepositoryException {
+    nodeRepository.put(NODE_0);
+    assertEquals(NODE_0, nodeRepository.get(NODE_0.getId()));
   }
 
   @Test
   @Tag("integration")
-  void insertAll() throws DatabaseException {
+  void insertAll() throws RepositoryException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
-    nodeStore.insert(nodes);
+    nodeRepository.put(nodes);
     assertIterableEquals(
-        nodes, nodeStore.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodes, nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
-  void delete() throws DatabaseException {
-    nodeStore.insert(NODE_0);
-    nodeStore.delete(NODE_0.getId());
-    assertNull(nodeStore.select(NODE_0.getId()));
+  void delete() throws RepositoryException {
+    nodeRepository.put(NODE_0);
+    nodeRepository.delete(NODE_0.getId());
+    assertNull(nodeRepository.get(NODE_0.getId()));
   }
 
   @Test
   @Tag("integration")
-  void deleteAll() throws DatabaseException {
+  void deleteAll() throws RepositoryException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
-    nodeStore.insert(nodes);
-    nodeStore.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
+    nodeRepository.put(nodes);
+    nodeRepository.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
         Arrays.asList(null, null, null),
-        nodeStore.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
-  void copy() throws DatabaseException {
+  void copy() throws RepositoryException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
-    nodeStore.copy(nodes);
+    nodeRepository.copy(nodes);
     assertIterableEquals(
-        nodes, nodeStore.select(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodes, nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

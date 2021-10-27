@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import com.baremaps.blob.BlobStoreException;
 import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.osm.OpenStreetMap;
-import com.baremaps.osm.database.DatabaseException;
-import com.baremaps.osm.database.SaveBlockConsumer;
+import com.baremaps.osm.repository.RepositoryException;
+import com.baremaps.osm.repository.SaveBlockConsumer;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,18 +38,18 @@ import org.junit.jupiter.api.Test;
 class SaveBlockConsumerTest {
 
   public DataSource dataSource;
-  public PostgresHeaderTable headerTable;
-  public PostgresNodeTable nodeTable;
-  public PostgresWayTable wayTable;
-  public PostgresRelationTable relationTable;
+  public PostgresHeaderRepository headerRepository;
+  public PostgresNodeRepository nodeRepository;
+  public PostgresWayRepository tableRepository;
+  public PostgresRelationRepository relationRepository;
 
   @BeforeEach
-  void createTable() throws SQLException, IOException {
+  void init() throws SQLException, IOException {
     dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
-    headerTable = new PostgresHeaderTable(dataSource);
-    nodeTable = new PostgresNodeTable(dataSource);
-    wayTable = new PostgresWayTable(dataSource);
-    relationTable = new PostgresRelationTable(dataSource);
+    headerRepository = new PostgresHeaderRepository(dataSource);
+    nodeRepository = new PostgresNodeRepository(dataSource);
+    tableRepository = new PostgresWayRepository(dataSource);
+    relationRepository = new PostgresRelationRepository(dataSource);
     try (Connection connection = dataSource.getConnection()) {
       PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
       PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
@@ -59,29 +59,30 @@ class SaveBlockConsumerTest {
 
   @Test
   @Tag("integration")
-  void test() throws BlobStoreException, DatabaseException, URISyntaxException {
+  void test() throws BlobStoreException, RepositoryException, URISyntaxException {
     // Import data
     SaveBlockConsumer dataImporter =
-        new SaveBlockConsumer(headerTable, nodeTable, wayTable, relationTable);
+        new SaveBlockConsumer(
+            headerRepository, nodeRepository, tableRepository, relationRepository);
     InputStream inputStream =
         new ResourceBlobStore().get(new URI("res://simple/data.osm.pbf")).getInputStream();
     OpenStreetMap.streamPbfBlocks(inputStream).forEach(dataImporter);
 
     // Check node importation
-    assertNull(nodeTable.select(0l));
-    assertNotNull(nodeTable.select(1l));
-    assertNotNull(nodeTable.select(2l));
-    assertNotNull(nodeTable.select(3l));
-    assertNull(nodeTable.select(4l));
+    assertNull(nodeRepository.get(0l));
+    assertNotNull(nodeRepository.get(1l));
+    assertNotNull(nodeRepository.get(2l));
+    assertNotNull(nodeRepository.get(3l));
+    assertNull(nodeRepository.get(4l));
 
     // Check way importation
-    assertNull(wayTable.select(0l));
-    assertNotNull(wayTable.select(1l));
-    assertNull(wayTable.select(2l));
+    assertNull(tableRepository.get(0l));
+    assertNotNull(tableRepository.get(1l));
+    assertNull(tableRepository.get(2l));
 
     // Check relation importation
-    assertNull(relationTable.select(0l));
-    assertNotNull(relationTable.select(1l));
-    assertNull(relationTable.select(2l));
+    assertNull(relationRepository.get(0l));
+    assertNotNull(relationRepository.get(1l));
+    assertNull(relationRepository.get(2l));
   }
 }

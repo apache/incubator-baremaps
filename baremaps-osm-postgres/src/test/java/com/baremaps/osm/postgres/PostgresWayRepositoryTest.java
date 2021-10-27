@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.baremaps.osm.database.DatabaseException;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.repository.RepositoryException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -33,59 +33,59 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgresWayTableTest extends PostgresBaseTest {
+class PostgresWayRepositoryTest extends PostgresBaseTest {
 
   DataSource dataSource;
 
-  PostgresWayTable wayTable;
+  PostgresWayRepository wayRepository;
 
   @BeforeEach
-  void createTable() throws SQLException, IOException {
+  void init() throws SQLException, IOException {
     dataSource = initDataSource();
-    wayTable = new PostgresWayTable(dataSource);
+    wayRepository = new PostgresWayRepository(dataSource);
   }
 
   @Test
   @Tag("integration")
-  void insert() throws DatabaseException {
-    wayTable.insert(WAY_0);
-    assertEquals(WAY_0, wayTable.select(WAY_0.getId()));
+  void insert() throws RepositoryException {
+    wayRepository.put(WAY_0);
+    assertEquals(WAY_0, wayRepository.get(WAY_0.getId()));
   }
 
   @Test
   @Tag("integration")
-  void insertAll() throws DatabaseException {
+  void insertAll() throws RepositoryException {
     List<Way> ways = Arrays.asList(WAY_0, WAY_1, WAY_2);
-    wayTable.insert(ways);
+    wayRepository.put(ways);
     assertIterableEquals(
-        ways, wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        ways, wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
-  void delete() throws DatabaseException {
-    wayTable.insert(WAY_0);
-    wayTable.delete(WAY_0.getId());
-    assertNull(wayTable.select(WAY_0.getId()));
+  void delete() throws RepositoryException {
+    wayRepository.put(WAY_0);
+    wayRepository.delete(WAY_0.getId());
+    assertNull(wayRepository.get(WAY_0.getId()));
   }
 
   @Test
   @Tag("integration")
-  void deleteAll() throws DatabaseException {
+  void deleteAll() throws RepositoryException {
     List<Way> ways = Arrays.asList(WAY_0, WAY_1, WAY_2);
-    wayTable.insert(ways);
-    wayTable.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
+    wayRepository.put(ways);
+    wayRepository.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
         Arrays.asList(null, null, null),
-        wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
-  void copy() throws DatabaseException {
+  void copy() throws RepositoryException {
     List<Way> ways = Arrays.asList(WAY_0, WAY_1, WAY_2);
-    wayTable.copy(ways);
+    wayRepository.copy(ways);
     assertIterableEquals(
-        ways, wayTable.select(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        ways, wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

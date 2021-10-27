@@ -19,13 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.ResourceBlobStore;
-import com.baremaps.osm.cache.MapCoordinateCache;
-import com.baremaps.osm.cache.MapReferenceCache;
-import com.baremaps.osm.database.ImportService;
-import com.baremaps.osm.database.UpdateService;
+import com.baremaps.osm.cache.SimpleCache;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.repository.ImportService;
+import com.baremaps.osm.repository.UpdateService;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
@@ -40,19 +39,19 @@ class ImportUpdateDataTest extends PostgresBaseTest {
 
   public BlobStore blobStore;
   public DataSource dataSource;
-  public PostgresHeaderTable headerTable;
-  public PostgresNodeTable nodeTable;
-  public PostgresWayTable wayTable;
-  public PostgresRelationTable relationTable;
+  public PostgresHeaderRepository headerRepository;
+  public PostgresNodeRepository nodeRepository;
+  public PostgresWayRepository wayRepository;
+  public PostgresRelationRepository relationRepository;
 
   @BeforeEach
-  void createTable() throws SQLException, IOException {
+  void createRepository() throws SQLException, IOException {
     dataSource = initDataSource();
     blobStore = new ResourceBlobStore();
-    headerTable = new PostgresHeaderTable(dataSource);
-    nodeTable = new PostgresNodeTable(dataSource);
-    wayTable = new PostgresWayTable(dataSource);
-    relationTable = new PostgresRelationTable(dataSource);
+    headerRepository = new PostgresHeaderRepository(dataSource);
+    nodeRepository = new PostgresNodeRepository(dataSource);
+    wayRepository = new PostgresWayRepository(dataSource);
+    relationRepository = new PostgresRelationRepository(dataSource);
   }
 
   @Test
@@ -63,42 +62,42 @@ class ImportUpdateDataTest extends PostgresBaseTest {
     new ImportService(
             new URI("res://simple/data.osm.pbf"),
             blobStore,
-            new MapCoordinateCache(),
-            new MapReferenceCache(),
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
+            new SimpleCache<>(),
+            new SimpleCache<>(),
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
             3857)
         .call();
 
-    headerTable.insert(
+    headerRepository.put(
         new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), "res://simple", "", ""));
 
     // Check node importation
-    assertNull(nodeTable.select(0l));
-    assertNotNull(nodeTable.select(1l));
-    assertNotNull(nodeTable.select(2l));
-    assertNotNull(nodeTable.select(3l));
-    assertNull(nodeTable.select(4l));
+    assertNull(nodeRepository.get(0l));
+    assertNotNull(nodeRepository.get(1l));
+    assertNotNull(nodeRepository.get(2l));
+    assertNotNull(nodeRepository.get(3l));
+    assertNull(nodeRepository.get(4l));
 
     // Check way importation
-    assertNull(wayTable.select(0l));
-    assertNotNull(wayTable.select(1l));
-    assertNull(wayTable.select(2l));
+    assertNull(wayRepository.get(0l));
+    assertNotNull(wayRepository.get(1l));
+    assertNull(wayRepository.get(2l));
 
     // Check relation importation
-    assertNull(relationTable.select(0l));
-    assertNotNull(relationTable.select(1l));
-    assertNull(relationTable.select(2l));
+    assertNull(relationRepository.get(0l));
+    assertNotNull(relationRepository.get(1l));
+    assertNull(relationRepository.get(2l));
 
     // Check node properties
-    Node node = nodeTable.select(1l);
+    Node node = nodeRepository.get(1l);
     Assertions.assertEquals(1, node.getLon());
     Assertions.assertEquals(1, node.getLat());
 
     // Check way properties
-    Way way = wayTable.select(1l);
+    Way way = wayRepository.get(1l);
     assertNotNull(way);
 
     // Update the database
@@ -106,20 +105,20 @@ class ImportUpdateDataTest extends PostgresBaseTest {
             blobStore,
             new PostgresCoordinateCache(dataSource),
             new PostgresReferenceCache(dataSource),
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
             3857)
         .call();
 
     // Check deletions
-    assertNull(nodeTable.select(0l));
-    assertNull(nodeTable.select(1l));
+    assertNull(nodeRepository.get(0l));
+    assertNull(nodeRepository.get(1l));
 
     // Check insertions
-    assertNotNull(nodeTable.select(2l));
-    assertNotNull(nodeTable.select(3l));
-    assertNotNull(nodeTable.select(4l));
+    assertNotNull(nodeRepository.get(2l));
+    assertNotNull(nodeRepository.get(3l));
+    assertNotNull(nodeRepository.get(4l));
   }
 }

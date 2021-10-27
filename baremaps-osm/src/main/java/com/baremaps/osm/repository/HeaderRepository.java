@@ -12,9 +12,25 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.repository;
 
-import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.domain.Header;
+import java.util.List;
 
-/** Provides an interface to a table storing OpenStreetMap relations. */
-public interface RelationTable extends EntityTable<Relation> {}
+/** Provides an interface to a repository storing OpenStreetMap headers. */
+public interface HeaderRepository extends Repository<Long, Header> {
+
+  /**
+   * Selects all the headers.
+   *
+   * @throws RepositoryException
+   */
+  List<Header> selectAll() throws RepositoryException;
+
+  /**
+   * Selects the latest header.
+   *
+   * @throws RepositoryException
+   */
+  Header selectLatest() throws RepositoryException;
+}

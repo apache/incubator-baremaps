@@ -18,40 +18,41 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.ResourceBlobStore;
-import com.baremaps.osm.cache.CoordinateCache;
-import com.baremaps.osm.cache.MapCoordinateCache;
-import com.baremaps.osm.cache.MapReferenceCache;
-import com.baremaps.osm.cache.ReferenceCache;
-import com.baremaps.osm.database.DiffService;
-import com.baremaps.osm.database.ImportService;
-import com.baremaps.osm.database.UpdateService;
+import com.baremaps.osm.cache.Cache;
+import com.baremaps.osm.cache.SimpleCache;
 import com.baremaps.osm.domain.Header;
+import com.baremaps.osm.repository.DiffService;
+import com.baremaps.osm.repository.ImportService;
+import com.baremaps.osm.repository.UpdateService;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
 
 class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
 
   public BlobStore blobStore;
   public DataSource dataSource;
-  public PostgresHeaderTable headerTable;
-  public PostgresNodeTable nodeTable;
-  public PostgresWayTable wayTable;
-  public PostgresRelationTable relationTable;
+  public PostgresHeaderRepository headerRepository;
+  public PostgresNodeRepository nodeRepository;
+  public PostgresWayRepository wayRepository;
+  public PostgresRelationRepository relationRepository;
 
   @BeforeEach
-  void createTable() throws SQLException, IOException {
+  void init() throws SQLException, IOException, URISyntaxException {
     dataSource = initDataSource();
     blobStore = new ResourceBlobStore();
-    headerTable = new PostgresHeaderTable(dataSource);
-    nodeTable = new PostgresNodeTable(dataSource);
-    wayTable = new PostgresWayTable(dataSource);
-    relationTable = new PostgresRelationTable(dataSource);
+    headerRepository = new PostgresHeaderRepository(dataSource);
+    nodeRepository = new PostgresNodeRepository(dataSource);
+    wayRepository = new PostgresWayRepository(dataSource);
+    relationRepository = new PostgresRelationRepository(dataSource);
   }
 
   @Test
@@ -62,23 +63,23 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
     new ImportService(
             new URI("res://liechtenstein/liechtenstein.osm.pbf"),
             blobStore,
-            new MapCoordinateCache(),
-            new MapReferenceCache(),
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
+            new SimpleCache<>(),
+            new SimpleCache<>(),
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
             3857)
         .call();
-    assertEquals(2434l, headerTable.selectLatest().getReplicationSequenceNumber());
+    assertEquals(2434l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     // Fix the replicationUrl so that we can update the database with local files
-    headerTable.insert(
+    headerRepository.put(
         new Header(
             2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), "res://liechtenstein", "", ""));
 
-    CoordinateCache coordinateCache = new PostgresCoordinateCache(dataSource);
-    ReferenceCache referenceCache = new PostgresReferenceCache(dataSource);
+    Cache<Long, Coordinate> coordinateCache = new PostgresCoordinateCache(dataSource);
+    Cache<Long, List<Long>> referenceCache = new PostgresReferenceCache(dataSource);
 
     assertEquals(
         0,
@@ -86,10 +87,10 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
                 blobStore,
                 coordinateCache,
                 referenceCache,
-                headerTable,
-                nodeTable,
-                wayTable,
-                relationTable,
+                headerRepository,
+                nodeRepository,
+                wayRepository,
+                relationRepository,
                 3857,
                 14)
             .call()
@@ -100,13 +101,13 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
             blobStore,
             coordinateCache,
             referenceCache,
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
             3857)
         .call();
-    assertEquals(2435l, headerTable.selectLatest().getReplicationSequenceNumber());
+    assertEquals(2435l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(
         2,
@@ -114,10 +115,10 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
                 blobStore,
                 coordinateCache,
                 referenceCache,
-                headerTable,
-                nodeTable,
-                wayTable,
-                relationTable,
+                headerRepository,
+                nodeRepository,
+                wayRepository,
+                relationRepository,
                 3857,
                 14)
             .call()
@@ -127,13 +128,13 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
             blobStore,
             coordinateCache,
             referenceCache,
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
             3857)
         .call();
-    assertEquals(2436l, headerTable.selectLatest().getReplicationSequenceNumber());
+    assertEquals(2436l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(
         0,
@@ -141,10 +142,10 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
                 blobStore,
                 coordinateCache,
                 referenceCache,
-                headerTable,
-                nodeTable,
-                wayTable,
-                relationTable,
+                headerRepository,
+                nodeRepository,
+                wayRepository,
+                relationRepository,
                 3857,
                 14)
             .call()
@@ -154,12 +155,12 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
             blobStore,
             coordinateCache,
             referenceCache,
-            headerTable,
-            nodeTable,
-            wayTable,
-            relationTable,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
             3857)
         .call();
-    assertEquals(2437l, headerTable.selectLatest().getReplicationSequenceNumber());
+    assertEquals(2437l, headerRepository.selectLatest().getReplicationSequenceNumber());
   }
 }

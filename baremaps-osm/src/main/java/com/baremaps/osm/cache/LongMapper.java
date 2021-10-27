@@ -14,7 +14,24 @@
 
 package com.baremaps.osm.cache;
 
-import java.util.List;
+import java.nio.ByteBuffer;
 
-/** A {@code ReferenceCache} baked by an a {@code Map}. */
-public class MapReferenceCache extends MapCache<Long, List<Long>> implements ReferenceCache {}
+public class LongMapper implements CacheMapper<Long> {
+
+  @Override
+  public int size(Long value) {
+    return Long.BYTES;
+  }
+
+  @Override
+  public Long read(ByteBuffer buffer) {
+    Long value = buffer.getLong();
+    buffer.flip();
+    return value;
+  }
+
+  @Override
+  public void write(ByteBuffer buffer, Long value) {
+    buffer.putLong(value).flip();
+  }
+}

@@ -25,7 +25,7 @@ import java.util.List;
 public interface Cache<K, V> {
 
   /**
-   * Returns the cached value for the specified key.
+   * Gets the cached value for the specified key.
    *
    * @param key the key
    * @return the value
@@ -34,7 +34,7 @@ public interface Cache<K, V> {
   V get(K key) throws CacheException;
 
   /**
-   * Returns the cached values for the specified keys.
+   * Gets the cached values for the specified keys.
    *
    * @param keys the keys
    * @return the values
@@ -43,21 +43,21 @@ public interface Cache<K, V> {
   List<V> get(List<K> keys) throws CacheException;
 
   /**
-   * Adds the specified key-value pair to the cache.
+   * Puts the specified key-value pair to the cache.
    *
    * @param key the key
    * @param value the value
    * @throws CacheException
    */
-  void add(K key, V value) throws CacheException;
+  void put(K key, V value) throws CacheException;
 
   /**
-   * Adds the specified key-value pairs to the cache.
+   * Puts the specified key-value pairs to the cache.
    *
    * @param entries the key-value pairs
    * @throws CacheException
    */
-  void add(List<Entry<K, V>> entries) throws CacheException;
+  void put(List<Entry<K, V>> entries) throws CacheException;
 
   /**
    * Deletes the cached value for the specified key.

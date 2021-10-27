@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.repository;
 
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
@@ -25,22 +25,24 @@ import com.baremaps.osm.function.EntityConsumerAdapter;
 /** A consumer for saving OpenStreetMap changes in a database. */
 public class SaveChangeConsumer implements ChangeConsumer {
 
-  private final EntityTable<Node> nodeTable;
-  private final EntityTable<Way> wayTable;
-  private final EntityTable<Relation> relationTable;
+  private final Repository<Long, Node> nodeRepository;
+  private final Repository<Long, Way> wayRepository;
+  private final Repository<Long, Relation> relationRepository;
 
   /**
    * Constructs a {@code SaveChangeConsumer}.
    *
-   * @param nodeTable the node table
-   * @param wayTable the way table
-   * @param relationTable the relation table
+   * @param nodeRepository the node table
+   * @param wayRepository the way table
+   * @param relationRepository the relation table
    */
   public SaveChangeConsumer(
-      EntityTable<Node> nodeTable, EntityTable<Way> wayTable, EntityTable<Relation> relationTable) {
-    this.nodeTable = nodeTable;
-    this.wayTable = wayTable;
-    this.relationTable = relationTable;
+      Repository<Long, Node> nodeRepository,
+      Repository<Long, Way> wayRepository,
+      Repository<Long, Relation> relationRepository) {
+    this.nodeRepository = nodeRepository;
+    this.wayRepository = wayRepository;
+    this.relationRepository = relationRepository;
   }
 
   /** {@inheritDoc} */
@@ -54,10 +56,10 @@ public class SaveChangeConsumer implements ChangeConsumer {
               switch (change.getType()) {
                 case CREATE:
                 case MODIFY:
-                  nodeTable.insert(node);
+                  nodeRepository.put(node);
                   break;
                 case DELETE:
-                  nodeTable.delete(node.getId());
+                  nodeRepository.delete(node.getId());
                   break;
               }
             }
@@ -67,10 +69,10 @@ public class SaveChangeConsumer implements ChangeConsumer {
               switch (change.getType()) {
                 case CREATE:
                 case MODIFY:
-                  wayTable.insert(way);
+                  wayRepository.put(way);
                   break;
                 case DELETE:
-                  wayTable.delete(way.getId());
+                  wayRepository.delete(way.getId());
                   break;
               }
             }
@@ -80,10 +82,10 @@ public class SaveChangeConsumer implements ChangeConsumer {
               switch (change.getType()) {
                 case CREATE:
                 case MODIFY:
-                  relationTable.insert(relation);
+                  relationRepository.put(relation);
                   break;
                 case DELETE:
-                  relationTable.delete(relation.getId());
+                  relationRepository.delete(relation.getId());
                   break;
               }
             }

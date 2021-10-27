@@ -17,8 +17,10 @@ package com.baremaps.osm.rocksdb;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.cache.Cache.Entry;
-import com.baremaps.osm.cache.CoordinateCache;
+import com.baremaps.osm.cache.CoordinateMapper;
+import com.baremaps.osm.cache.LongMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -28,7 +30,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 
-class RocksdbCoordinateCacheTest {
+class RocksdbCacheTest {
 
   @Test
   @Tag("integration")
@@ -37,13 +39,13 @@ class RocksdbCoordinateCacheTest {
     Path path = Files.createTempDirectory("baremaps_").toAbsolutePath();
     Options options = new Options().setCreateIfMissing(true);
     RocksDB db = RocksDB.open(options, path.toString());
-    CoordinateCache cache = new RocksdbCoordinateCache(db);
+    Cache<Long, Coordinate> cache = new RocksdbCache(db, new LongMapper(), new CoordinateMapper());
     Coordinate c1 = new Coordinate(1, 0);
     Coordinate c2 = new Coordinate(2, 0);
     Coordinate c3 = new Coordinate(3, 0);
     Coordinate c4 = new Coordinate(4, 0);
-    cache.add(1l, c1);
-    cache.add(Arrays.asList(new Entry(2l, c2), new Entry(3l, c3), new Entry(4l, c4)));
+    cache.put(1l, c1);
+    cache.put(Arrays.asList(new Entry(2l, c2), new Entry(3l, c3), new Entry(4l, c4)));
     assertEquals(cache.get(1l), c1);
     assertEquals(cache.get(Arrays.asList(1l, 2l)), Arrays.asList(c1, c2));
     cache.delete(1l);

@@ -12,20 +12,20 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.repository;
 
-/** Signals that an exception occurred in a {@code BlobMapper}. */
-public class DatabaseException extends Exception {
+/** Signals that an exception occurred in a {@code Repository}. */
+public class RepositoryException extends Exception {
 
   /** Constructs a {@code DatabaseException} with {@code null} as its error detail message. */
-  public DatabaseException() {}
+  public RepositoryException() {}
 
   /**
    * Constructs an {@code DatabaseException} with the specified detail message.
    *
    * @param message the message
    */
-  public DatabaseException(String message) {
+  public RepositoryException(String message) {
     super(message);
   }
 
@@ -34,7 +34,7 @@ public class DatabaseException extends Exception {
    *
    * @param cause the cause
    */
-  public DatabaseException(Throwable cause) {
+  public RepositoryException(Throwable cause) {
     super(cause);
   }
 
@@ -44,7 +44,7 @@ public class DatabaseException extends Exception {
    * @param message the message
    * @param cause the cause
    */
-  public DatabaseException(String message, Throwable cause) {
+  public RepositoryException(String message, Throwable cause) {
     super(message, cause);
   }
 }

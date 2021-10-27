@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.repository;
 
 import com.baremaps.osm.domain.DataBlock;
 import com.baremaps.osm.domain.Header;
@@ -25,42 +25,42 @@ import com.baremaps.osm.function.BlockConsumerAdapter;
 /** A consumer for saving OpenStreetMap blocks in a database. */
 public class SaveBlockConsumer implements BlockConsumerAdapter {
 
-  private final EntityTable<Header> headerTable;
-  private final EntityTable<Node> nodeTable;
-  private final EntityTable<Way> wayTable;
-  private final EntityTable<Relation> relationTable;
+  private final Repository<Long, Header> headerRepository;
+  private final Repository<Long, Node> nodeRepository;
+  private final Repository<Long, Way> wayRepository;
+  private final Repository<Long, Relation> relationRepository;
 
   /**
    * Constructs a {@code SaveBlockConsumer}.
    *
-   * @param headerTable the header table
-   * @param nodeTable the node table
-   * @param wayTable the way table
-   * @param relationTable the relation table
+   * @param headerRepository the header table
+   * @param nodeRepository the node table
+   * @param wayRepository the way table
+   * @param relationRepository the relation table
    */
   public SaveBlockConsumer(
-      EntityTable<Header> headerTable,
-      EntityTable<Node> nodeTable,
-      EntityTable<Way> wayTable,
-      EntityTable<Relation> relationTable) {
-    this.headerTable = headerTable;
-    this.nodeTable = nodeTable;
-    this.wayTable = wayTable;
-    this.relationTable = relationTable;
+      Repository<Long, Header> headerRepository,
+      Repository<Long, Node> nodeRepository,
+      Repository<Long, Way> wayRepository,
+      Repository<Long, Relation> relationRepository) {
+    this.headerRepository = headerRepository;
+    this.nodeRepository = nodeRepository;
+    this.wayRepository = wayRepository;
+    this.relationRepository = relationRepository;
   }
 
   /** {@inheritDoc} */
   @Override
   public void match(HeaderBlock headerBlock) throws Exception {
-    headerTable.insert(headerBlock.getHeader());
+    headerRepository.put(headerBlock.getHeader());
   }
 
   /** {@inheritDoc} */
   @Override
   public void match(DataBlock dataBlock) throws Exception {
-    nodeTable.copy(dataBlock.getDenseNodes());
-    nodeTable.copy(dataBlock.getNodes());
-    wayTable.copy(dataBlock.getWays());
-    relationTable.copy(dataBlock.getRelations());
+    nodeRepository.copy(dataBlock.getDenseNodes());
+    nodeRepository.copy(dataBlock.getNodes());
+    wayRepository.copy(dataBlock.getWays());
+    relationRepository.copy(dataBlock.getRelations());
   }
 }

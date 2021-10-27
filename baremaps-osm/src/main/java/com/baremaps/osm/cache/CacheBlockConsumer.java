@@ -42,15 +42,15 @@ public class CacheBlockConsumer implements BlockConsumerAdapter {
   /** {@inheritDoc} */
   @Override
   public void match(DataBlock dataBlock) throws Exception {
-    coordiateCache.add(
+    coordiateCache.put(
         dataBlock.getDenseNodes().stream()
             .map(node -> new Entry<>(node.getId(), new Coordinate(node.getLon(), node.getLat())))
             .collect(Collectors.toList()));
-    coordiateCache.add(
+    coordiateCache.put(
         dataBlock.getNodes().stream()
             .map(node -> new Entry<>(node.getId(), new Coordinate(node.getLon(), node.getLat())))
             .collect(Collectors.toList()));
-    referenceCache.add(
+    referenceCache.put(
         dataBlock.getWays().stream()
             .map(way -> new Entry<>(way.getId(), way.getNodes()))
             .collect(Collectors.toList()));

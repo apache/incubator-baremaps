@@ -12,25 +12,15 @@
  * the License.
  */
 
-package com.baremaps.osm.database;
+package com.baremaps.osm.cache;
 
-import com.baremaps.osm.domain.Header;
-import java.util.List;
+import java.nio.ByteBuffer;
 
-/** Provides an interface to a table storing OpenStreetMap headers. */
-public interface HeaderTable extends EntityTable<Header> {
+public interface CacheMapper<T> {
 
-  /**
-   * Selects all the headers.
-   *
-   * @throws DatabaseException
-   */
-  List<Header> selectAll() throws DatabaseException;
+  int size(T value);
 
-  /**
-   * Selects the latest header.
-   *
-   * @throws DatabaseException
-   */
-  Header selectLatest() throws DatabaseException;
+  T read(ByteBuffer buffer);
+
+  void write(ByteBuffer buffer, T value);
 }
