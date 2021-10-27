@@ -48,7 +48,7 @@ public interface Repository<K, V> {
    * @param value the value to put
    * @throws RepositoryException
    */
-  void puts(V value) throws RepositoryException;
+  void put(V value) throws RepositoryException;
 
   /**
    * Puts a list of values into the repository.
@@ -56,7 +56,7 @@ public interface Repository<K, V> {
    * @param values a list of the values to put
    * @throws RepositoryException
    */
-  void puts(List<V> values) throws RepositoryException;
+  void put(List<V> values) throws RepositoryException;
 
   /**
    * Deletes a value by key.

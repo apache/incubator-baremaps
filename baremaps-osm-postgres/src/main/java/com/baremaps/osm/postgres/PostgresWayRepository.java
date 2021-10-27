@@ -204,7 +204,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
 
   /** {@inheritDoc} */
   @Override
-  public void puts(Way value) throws RepositoryException {
+  public void put(Way value) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
       setValue(statement, value);
@@ -216,7 +216,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
 
   /** {@inheritDoc} */
   @Override
-  public void puts(List<Way> values) throws RepositoryException {
+  public void put(List<Way> values) throws RepositoryException {
     if (values.isEmpty()) {
       return;
     }

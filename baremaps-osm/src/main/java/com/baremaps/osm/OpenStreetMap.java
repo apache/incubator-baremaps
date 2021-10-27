@@ -24,7 +24,7 @@ import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.State;
 import com.baremaps.osm.function.BlockEntityConsumer;
 import com.baremaps.osm.geometry.CreateGeometryConsumer;
-import com.baremaps.osm.geometry.ReprojectGeometryConsumer;
+import com.baremaps.osm.geometry.ReprojectEntityConsumer;
 import com.baremaps.osm.pbf.BlobIterator;
 import com.baremaps.osm.pbf.BlobUtils;
 import com.baremaps.osm.xml.XmlChangeSpliterator;
@@ -91,7 +91,7 @@ public class OpenStreetMap {
       int srid) {
     Consumer<Block> cacheBlock = new CacheBlockConsumer(coordinateCache, referenceCache);
     Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinateCache, referenceCache);
-    Consumer<Entity> reprojectGeometry = new ReprojectGeometryConsumer(4326, srid);
+    Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, srid);
     Consumer<Block> prepareGeometries =
         new BlockEntityConsumer(createGeometry.andThen(reprojectGeometry));
     Function<Block, Block> prepareBlock = consumeThenReturn(cacheBlock.andThen(prepareGeometries));

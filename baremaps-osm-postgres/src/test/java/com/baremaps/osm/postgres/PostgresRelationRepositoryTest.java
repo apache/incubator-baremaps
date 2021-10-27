@@ -14,19 +14,16 @@
 
 package com.baremaps.osm.postgres;
 
-import static com.baremaps.osm.postgres.DatabaseConstants.RELATION_2;
-import static com.baremaps.osm.postgres.DatabaseConstants.RELATION_3;
-import static com.baremaps.osm.postgres.DatabaseConstants.RELATION_4;
-import static com.baremaps.testing.TestConstants.DATABASE_URL;
+import static com.baremaps.osm.postgres.Constants.RELATION_2;
+import static com.baremaps.osm.postgres.Constants.RELATION_3;
+import static com.baremaps.osm.postgres.Constants.RELATION_4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.repository.RepositoryException;
-import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgresRelationRepositoryTest {
+class PostgresRelationRepositoryTest extends PostgresBaseTest {
 
   DataSource dataSource;
 
@@ -44,19 +41,14 @@ class PostgresRelationRepositoryTest {
 
   @BeforeEach
   void init() throws SQLException, IOException {
-    dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
+    dataSource = initDataSource();
     relationRepository = new PostgresRelationRepository(dataSource);
-    try (Connection connection = dataSource.getConnection()) {
-      PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
-      PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
-      PostgresUtils.executeResource(connection, "osm_create_tables.sql");
-    }
   }
 
   @Test
   @Tag("integration")
   void insert() throws RepositoryException {
-    relationRepository.puts(RELATION_2);
+    relationRepository.put(RELATION_2);
     assertEquals(RELATION_2, relationRepository.get(RELATION_2.getId()));
   }
 
@@ -64,7 +56,7 @@ class PostgresRelationRepositoryTest {
   @Tag("integration")
   void insertAll() throws RepositoryException {
     List<Relation> relations = Arrays.asList(RELATION_2, RELATION_3, RELATION_4);
-    relationRepository.puts(relations);
+    relationRepository.put(relations);
     assertIterableEquals(
         relations,
         relationRepository.get(
@@ -74,7 +66,7 @@ class PostgresRelationRepositoryTest {
   @Test
   @Tag("integration")
   void delete() throws RepositoryException {
-    relationRepository.puts(RELATION_2);
+    relationRepository.put(RELATION_2);
     relationRepository.delete(RELATION_2.getId());
     assertNull(relationRepository.get(RELATION_2.getId()));
   }
@@ -83,7 +75,7 @@ class PostgresRelationRepositoryTest {
   @Tag("integration")
   void deleteAll() throws RepositoryException {
     List<Relation> relations = Arrays.asList(RELATION_2, RELATION_3, RELATION_4);
-    relationRepository.puts(relations);
+    relationRepository.put(relations);
     relationRepository.delete(relations.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
         Arrays.asList(null, null, null),

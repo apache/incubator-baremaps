@@ -56,7 +56,7 @@ public class SaveChangeConsumer implements ChangeConsumer {
               switch (change.getType()) {
                 case CREATE:
                 case MODIFY:
-                  nodeRepository.puts(node);
+                  nodeRepository.put(node);
                   break;
                 case DELETE:
                   nodeRepository.delete(node.getId());
@@ -69,7 +69,7 @@ public class SaveChangeConsumer implements ChangeConsumer {
               switch (change.getType()) {
                 case CREATE:
                 case MODIFY:
-                  wayRepository.puts(way);
+                  wayRepository.put(way);
                   break;
                 case DELETE:
                   wayRepository.delete(way.getId());
@@ -82,7 +82,7 @@ public class SaveChangeConsumer implements ChangeConsumer {
               switch (change.getType()) {
                 case CREATE:
                 case MODIFY:
-                  relationRepository.puts(relation);
+                  relationRepository.put(relation);
                   break;
                 case DELETE:
                   relationRepository.delete(relation.getId());

@@ -52,7 +52,7 @@ public class SaveBlockConsumer implements BlockConsumerAdapter {
   /** {@inheritDoc} */
   @Override
   public void match(HeaderBlock headerBlock) throws Exception {
-    headerRepository.puts(headerBlock.getHeader());
+    headerRepository.put(headerBlock.getHeader());
   }
 
   /** {@inheritDoc} */

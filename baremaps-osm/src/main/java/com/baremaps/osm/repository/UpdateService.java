@@ -29,7 +29,7 @@ import com.baremaps.osm.domain.State;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.ChangeEntityConsumer;
 import com.baremaps.osm.geometry.CreateGeometryConsumer;
-import com.baremaps.osm.geometry.ReprojectGeometryConsumer;
+import com.baremaps.osm.geometry.ReprojectEntityConsumer;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
 import java.io.InputStream;
@@ -79,7 +79,7 @@ public class UpdateService implements Callable<Void> {
     Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
 
     Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinateCache, referenceCache);
-    Consumer<Entity> reprojectGeometry = new ReprojectGeometryConsumer(4326, srid);
+    Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, srid);
     Consumer<Change> prepareGeometries =
         new ChangeEntityConsumer(createGeometry.andThen(reprojectGeometry));
     Function<Change, Change> prepareChange = consumeThenReturn(prepareGeometries);
@@ -99,7 +99,7 @@ public class UpdateService implements Callable<Void> {
     Blob stateBlob = blobStore.get(stateUri);
     try (InputStream stateInputStream = stateBlob.getInputStream()) {
       State state = OpenStreetMap.readState(stateInputStream);
-      headerRepository.puts(
+      headerRepository.put(
           new Header(
               state.getSequenceNumber(),
               state.getTimestamp(),

@@ -208,7 +208,7 @@ public class PostgresHeaderRepository implements HeaderRepository {
 
   /** {@inheritDoc} */
   @Override
-  public void puts(Header value) throws RepositoryException {
+  public void put(Header value) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
       setValue(statement, value);
@@ -220,7 +220,7 @@ public class PostgresHeaderRepository implements HeaderRepository {
 
   /** {@inheritDoc} */
   @Override
-  public void puts(List<Header> values) throws RepositoryException {
+  public void put(List<Header> values) throws RepositoryException {
     if (values.isEmpty()) {
       return;
     }

@@ -209,7 +209,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
 
   /** {@inheritDoc} */
   @Override
-  public void puts(Node value) throws RepositoryException {
+  public void put(Node value) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
       setValue(statement, value);
@@ -221,7 +221,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
 
   /** {@inheritDoc} */
   @Override
-  public void puts(List<Node> values) throws RepositoryException {
+  public void put(List<Node> values) throws RepositoryException {
     if (values.isEmpty()) {
       return;
     }

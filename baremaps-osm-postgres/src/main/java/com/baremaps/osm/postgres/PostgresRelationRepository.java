@@ -220,7 +220,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
 
   /** {@inheritDoc} */
   @Override
-  public void puts(Relation value) throws RepositoryException {
+  public void put(Relation value) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
       setValue(statement, value);
@@ -232,7 +232,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
 
   /** {@inheritDoc} */
   @Override
-  public void puts(List<Relation> values) throws RepositoryException {
+  public void put(List<Relation> values) throws RepositoryException {
     if (values.isEmpty()) {
       return;
     }

@@ -14,19 +14,16 @@
 
 package com.baremaps.osm.postgres;
 
-import static com.baremaps.osm.postgres.DatabaseConstants.NODE_0;
-import static com.baremaps.osm.postgres.DatabaseConstants.NODE_1;
-import static com.baremaps.osm.postgres.DatabaseConstants.NODE_2;
-import static com.baremaps.testing.TestConstants.DATABASE_URL;
+import static com.baremaps.osm.postgres.Constants.NODE_0;
+import static com.baremaps.osm.postgres.Constants.NODE_1;
+import static com.baremaps.osm.postgres.Constants.NODE_2;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.repository.RepositoryException;
-import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.io.IOException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgresNodeRepositoryTest {
+class PostgresNodeRepositoryTest extends PostgresBaseTest {
 
   DataSource dataSource;
 
@@ -44,19 +41,14 @@ class PostgresNodeRepositoryTest {
 
   @BeforeEach
   void beforeEach() throws SQLException, IOException {
-    dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
+    dataSource = initDataSource();
     nodeRepository = new PostgresNodeRepository(dataSource);
-    try (Connection connection = dataSource.getConnection()) {
-      PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
-      PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
-      PostgresUtils.executeResource(connection, "osm_create_tables.sql");
-    }
   }
 
   @Test
   @Tag("integration")
   void insert() throws RepositoryException {
-    nodeRepository.puts(NODE_0);
+    nodeRepository.put(NODE_0);
     assertEquals(NODE_0, nodeRepository.get(NODE_0.getId()));
   }
 
@@ -64,7 +56,7 @@ class PostgresNodeRepositoryTest {
   @Tag("integration")
   void insertAll() throws RepositoryException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
-    nodeRepository.puts(nodes);
+    nodeRepository.put(nodes);
     assertIterableEquals(
         nodes, nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
@@ -72,7 +64,7 @@ class PostgresNodeRepositoryTest {
   @Test
   @Tag("integration")
   void delete() throws RepositoryException {
-    nodeRepository.puts(NODE_0);
+    nodeRepository.put(NODE_0);
     nodeRepository.delete(NODE_0.getId());
     assertNull(nodeRepository.get(NODE_0.getId()));
   }
@@ -81,7 +73,7 @@ class PostgresNodeRepositoryTest {
   @Tag("integration")
   void deleteAll() throws RepositoryException {
     List<Node> nodes = Arrays.asList(NODE_0, NODE_1, NODE_2);
-    nodeRepository.puts(nodes);
+    nodeRepository.put(nodes);
     nodeRepository.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
         Arrays.asList(null, null, null),
