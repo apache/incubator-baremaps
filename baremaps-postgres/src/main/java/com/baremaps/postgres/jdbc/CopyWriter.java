@@ -52,8 +52,8 @@ public class CopyWriter implements AutoCloseable {
   /**
    * Creates a new writer with the specified {@code PGCopyOutputStream}.
    *
-   * <p>This code has been adapted from {@link <a
-   * href="https://github.com/PgBulkInsert/PgBulkInsert">PgBulkInsert</a>} licensed under the MIT
+   * <p>This code has been adapted from <a
+   * href="https://github.com/PgBulkInsert/PgBulkInsert">PgBulkInsert</a> licensed under the MIT
    * license.
    *
    * <p>Copyright (c) The PgBulkInsert Team.

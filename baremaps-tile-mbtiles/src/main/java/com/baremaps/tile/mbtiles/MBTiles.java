@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A {@code TileStore} implementation that uses the {@link <a
- * href="https://docs.mapbox.com/help/glossary/mbtiles/">MBTiles</a>} file format for storing tiles.
+ * A {@code TileStore} implementation that uses the <a
+ * href="https://docs.mapbox.com/help/glossary/mbtiles/">MBTiles</a> file format for storing tiles.
  */
 public class MBTiles implements TileStore {
 

@@ -30,8 +30,8 @@ import org.jdbi.v3.jpa.JpaPlugin;
  * A generator that uses PostgreSQL metadata to generate input queries for a {@code
  * PostgresTileStore}. It can be used to accelerate the creation of a tile set.
  *
- * <p>As in {@link <a
- * href="https://docs.oracle.com/javase/7/docs/api/java/sql/DatabaseMetaData.html">JDBC</a>}, some
+ * <p>As in <a
+ * href="https://docs.oracle.com/javase/7/docs/api/java/sql/DatabaseMetaData.html">JDBC</a>, some
  * methods take arguments that are String patterns. These arguments all have names such as *
  * fooPattern. Within a pattern String, "%" means match any substring of 0 or more characters, and
  * "_" means match any * one character. Only metadata entries matching the search pattern are
