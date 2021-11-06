@@ -110,10 +110,11 @@ public class EditorResources {
                   Path dir = (Path) key.watchable();
                   for (WatchEvent<?> event : key.pollEvents()) {
                     Path path = dir.resolve((Path) event.context());
-                    InputStream inputStream = blobStore.get(style).getInputStream();
-                    ObjectNode jsonNode = objectMapper.readValue(inputStream, ObjectNode.class);
-                    jsonNode.put("reload", path.endsWith(tilesetFile.getFileName()));
-                    sseBroadcaster.broadcast(sseEventBuilder.data(jsonNode.toString()).build());
+                    try (InputStream inputStream = blobStore.get(style).getInputStream()) {
+                      ObjectNode jsonNode = objectMapper.readValue(inputStream, ObjectNode.class);
+                      jsonNode.put("reload", path.endsWith(tilesetFile.getFileName()));
+                      sseBroadcaster.broadcast(sseEventBuilder.data(jsonNode.toString()).build());
+                    }
                   }
                   key.reset();
                 }
