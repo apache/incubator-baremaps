@@ -1,6 +1,6 @@
 ---
 layout: default
-title: NaturalEarth Example
+title: OpenStreetMap Example
 ---
 
 # OpenStreetMap Example
