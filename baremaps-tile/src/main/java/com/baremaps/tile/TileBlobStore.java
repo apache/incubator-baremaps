@@ -17,7 +17,6 @@ package com.baremaps.tile;
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreException;
-import java.io.IOException;
 import java.net.URI;
 
 /** Represents a {@code TileStore} baked by a {@code BlobStore}. */
@@ -40,25 +39,19 @@ public class TileBlobStore implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public byte[] read(Tile tile) throws TileStoreException {
+  public Blob read(Tile tile) throws TileStoreException {
     try {
-      return blobStore.get(getURI(tile)).getInputStream().readAllBytes();
-    } catch (BlobStoreException | IOException e) {
+      return blobStore.get(getURI(tile));
+    } catch (BlobStoreException e) {
       throw new TileStoreException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public void write(Tile tile, byte[] bytes) throws TileStoreException {
+  public void write(Tile tile, Blob blob) throws TileStoreException {
     try {
-      blobStore.put(
-          getURI(tile),
-          Blob.builder()
-              .withByteArray(bytes)
-              .withContentEncoding("gzip")
-              .withContentType("application/vnd.mapbox-vector-tile")
-              .build());
+      blobStore.put(getURI(tile), blob);
     } catch (BlobStoreException e) {
       throw new TileStoreException(e);
     }

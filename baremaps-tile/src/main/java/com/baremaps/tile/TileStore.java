@@ -14,6 +14,8 @@
 
 package com.baremaps.tile;
 
+import com.baremaps.blob.Blob;
+
 /** Represents a store for tiles. */
 public interface TileStore {
 
@@ -24,16 +26,16 @@ public interface TileStore {
    * @return the content of the tile
    * @throws TileStoreException
    */
-  byte[] read(Tile tile) throws TileStoreException;
+  Blob read(Tile tile) throws TileStoreException;
 
   /**
    * Writes the content of a tile.
    *
    * @param tile the tile
-   * @param data the content of the tile
+   * @param blob the content of the tile
    * @throws TileStoreException
    */
-  void write(Tile tile, byte[] data) throws TileStoreException;
+  void write(Tile tile, Blob blob) throws TileStoreException;
 
   /**
    * Deletes the content of a tile.

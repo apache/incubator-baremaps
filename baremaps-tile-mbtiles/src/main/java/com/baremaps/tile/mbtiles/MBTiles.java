@@ -14,10 +14,12 @@
 
 package com.baremaps.tile.mbtiles;
 
+import com.baremaps.blob.Blob;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -69,7 +71,7 @@ public class MBTiles implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public byte[] read(Tile tile) throws TileStoreException {
+  public Blob read(Tile tile) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_TILE)) {
       statement.setInt(1, tile.z());
@@ -77,7 +79,7 @@ public class MBTiles implements TileStore {
       statement.setInt(3, reverseY(tile.y(), tile.z()));
       try (ResultSet resultSet = statement.executeQuery()) {
         if (resultSet.next()) {
-          return resultSet.getBytes("tile_data");
+          return Blob.builder().withByteArray(resultSet.getBytes("tile_data")).build();
         } else {
           throw new SQLException("The tile does not exist");
         }
@@ -89,15 +91,17 @@ public class MBTiles implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public void write(Tile tile, byte[] bytes) throws TileStoreException {
+  public void write(Tile tile, Blob blob) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
       statement.setInt(1, tile.z());
       statement.setInt(2, tile.x());
       statement.setInt(3, reverseY(tile.y(), tile.z()));
-      statement.setBytes(4, bytes);
+      try (InputStream inputStream = blob.getInputStream()) {
+        statement.setBytes(4, inputStream.readAllBytes());
+      }
       statement.executeUpdate();
-    } catch (SQLException e) {
+    } catch (SQLException | IOException e) {
       throw new TileStoreException(e);
     }
   }
