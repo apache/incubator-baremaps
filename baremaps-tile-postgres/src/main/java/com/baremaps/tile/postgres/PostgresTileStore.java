@@ -16,6 +16,7 @@ package com.baremaps.tile.postgres;
 
 import static com.baremaps.tile.VariableUtils.interpolate;
 
+import com.baremaps.blob.Blob;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
@@ -78,6 +79,10 @@ public class PostgresTileStore implements TileStore {
 
   private static final String EMPTY = "";
 
+  public static final String CONTENT_ENCODING = "gzip";
+
+  public static final String CONTENT_TYPE = "application/vnd.mapbox-vector-tile";
+
   private final DataSource datasource;
 
   private final List<PostgresQuery> queries;
@@ -89,7 +94,7 @@ public class PostgresTileStore implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public byte[] read(Tile tile) throws TileStoreException {
+  public Blob read(Tile tile) throws TileStoreException {
     try (Connection connection = datasource.getConnection();
         Statement statement = connection.createStatement();
         ByteArrayOutputStream data = new ByteArrayOutputStream()) {
@@ -98,7 +103,7 @@ public class PostgresTileStore implements TileStore {
       logger.debug("Executing query: {}", sql);
 
       int length = 0;
-      try(GZIPOutputStream gzip = new GZIPOutputStream(data);
+      try (GZIPOutputStream gzip = new GZIPOutputStream(data);
           ResultSet resultSet = statement.executeQuery(sql)) {
         while (resultSet.next()) {
           byte[] bytes = resultSet.getBytes(1);
@@ -108,7 +113,13 @@ public class PostgresTileStore implements TileStore {
       }
 
       if (length > 0) {
-        return data.toByteArray();
+        byte[] byteArray = data.toByteArray();
+        return Blob.builder()
+            .withContentEncoding(CONTENT_ENCODING)
+            .withContentType(CONTENT_TYPE)
+            .withContentLength(Long.valueOf(byteArray.length))
+            .withByteArray(byteArray)
+            .build();
       } else {
         return null;
       }
@@ -251,7 +262,7 @@ public class PostgresTileStore implements TileStore {
   }
 
   /** This operation is not supported. */
-  public void write(Tile tile, byte[] bytes) {
+  public void write(Tile tile, Blob blob) {
     throw new UnsupportedOperationException("The postgis tile store is read only");
   }
 

@@ -78,7 +78,15 @@ public class Blob {
   /** A mutable builder for binary large objects (blobs). */
   public static class Builder {
 
-    private final Blob blob = new Blob();
+    private Long contentLength;
+
+    private String contentType;
+
+    private String contentEncoding;
+
+    private InputStream inputStream;
+
+    private byte[] byteArray;
 
     private Builder() {}
 
@@ -89,7 +97,7 @@ public class Blob {
      * @return the builder
      */
     public Builder withContentLength(Long contentLength) {
-      blob.contentLength = contentLength;
+      this.contentLength = contentLength;
       return this;
     }
 
@@ -100,7 +108,7 @@ public class Blob {
      * @return the builder
      */
     public Builder withContentType(String contentType) {
-      blob.contentType = contentType;
+      this.contentType = contentType;
       return this;
     }
 
@@ -111,7 +119,7 @@ public class Blob {
      * @return the builder
      */
     public Builder withContentEncoding(String contentEncoding) {
-      blob.contentEncoding = contentEncoding;
+      this.contentEncoding = contentEncoding;
       return this;
     }
 
@@ -122,20 +130,107 @@ public class Blob {
      * @return the builder
      */
     public Builder withInputStream(InputStream inputStream) {
-      blob.inputStream = inputStream;
+      this.inputStream = inputStream;
       return this;
     }
 
     /**
      * Sets the content.
      *
-     * @param bytes the content
+     * @param byteArray the content
      * @return the builder
      */
-    public Builder withByteArray(byte[] bytes) {
-      blob.contentLength = (long) bytes.length;
-      blob.inputStream = new ByteArrayInputStream(bytes);
+    public void setByteArray(byte[] byteArray) {
+      this.contentLength = (long) byteArray.length;
+      this.byteArray = byteArray;
+    }
+
+    /**
+     * Sets the content length.
+     *
+     * @param contentLength the content length
+     * @return the builder
+     */
+    public void setContentLength(Long contentLength) {
+      this.contentLength = contentLength;
+    }
+
+    /**
+     * Sets the content type.
+     *
+     * @param contentType the content type
+     * @return the builder
+     */
+    public void setContentType(String contentType) {
+      this.contentType = contentType;
+    }
+
+    /**
+     * Sets the content encoding.
+     *
+     * @param contentEncoding the content encoding
+     * @return the builder
+     */
+    public void setContentEncoding(String contentEncoding) {
+      this.contentEncoding = contentEncoding;
+    }
+
+    /**
+     * Sets the content.
+     *
+     * @param inputStream the content
+     * @return the builder
+     */
+    public void setInputStream(InputStream inputStream) {
+      this.inputStream = inputStream;
+    }
+
+    /**
+     * Sets the content.
+     *
+     * @param byteArray the content
+     * @return the builder
+     */
+    public Builder withByteArray(byte[] byteArray) {
+      this.contentLength = (long) byteArray.length;
+      this.byteArray = byteArray;
       return this;
+    }
+
+    /**
+     * Returns the content length.
+     *
+     * @return the content length
+     */
+    public Long getContentLength() {
+      return contentLength;
+    }
+
+    /**
+     * Returns the content type.
+     *
+     * @return the content type
+     */
+    public String getContentType() {
+      return contentType;
+    }
+
+    /**
+     * Returns the content encoding.
+     *
+     * @return the content encoding
+     */
+    public String getContentEncoding() {
+      return contentEncoding;
+    }
+
+    /**
+     * Returns the content.
+     *
+     * @return the content
+     */
+    public InputStream getInputStream() {
+      return inputStream;
     }
 
     /**
@@ -144,6 +239,16 @@ public class Blob {
      * @return the blob
      */
     public Blob build() {
+      Blob blob = new Blob();
+      blob.contentLength = contentLength;
+      blob.contentEncoding = contentEncoding;
+      blob.contentType = contentType;
+      if (inputStream != null) {
+        blob.inputStream = inputStream;
+      }
+      if (byteArray != null) {
+        blob.inputStream = new ByteArrayInputStream(byteArray);
+      }
       return blob;
     }
   }

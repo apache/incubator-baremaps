@@ -175,12 +175,12 @@ public class EditorResources {
       List<PostgresQuery> queries = asPostgresQuery(getTileset());
       TileStore tileStore = new PostgresTileStore(dataSource, queries);
       Tile tile = new Tile(x, y, z);
-      byte[] bytes = tileStore.read(tile);
-      if (bytes != null) {
+      Blob blob = tileStore.read(tile);
+      if (blob != null) {
         return Response.status(200)
-            .header(CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
-            .header(CONTENT_ENCODING, "gzip")
-            .entity(bytes)
+            .header(CONTENT_TYPE, blob.getContentType())
+            .header(CONTENT_ENCODING, blob.getContentEncoding())
+            .entity(blob.getInputStream())
             .build();
       } else {
         return Response.status(204).build();
