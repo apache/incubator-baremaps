@@ -75,6 +75,6 @@ public class TileBlobStore implements TileStore {
   }
 
   public URI getURI(Tile tile) {
-    return uri.resolve(String.format("%s/%s/%s.pbf", tile.z(), tile.x(), tile.y()));
+    return uri.resolve(String.format("%s/%s/%s.mvt", tile.z(), tile.x(), tile.y()));
   }
 }

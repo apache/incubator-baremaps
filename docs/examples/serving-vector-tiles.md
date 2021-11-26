@@ -60,11 +60,11 @@ Serving HTTP on 0.0.0.0 port 9001 (http://0.0.0.0:9001/) ...
 
 Now you can access the tiles through a url like this, depending upon your directory structure;
 
-http://localhost:9001/tiles/{z}/{x}/{y}.pbf
+http://localhost:9001/tiles/{z}/{x}/{y}.mvt
 
 OR
 
-http://yourip:9001/tiles/{z}/{x}/{y}.pbf
+http://yourip:9001/tiles/{z}/{x}/{y}.mvt
 
 ## Serve with Nginx
 
@@ -100,7 +100,7 @@ server {
 Add the following lines to the configuration file;
 
 ```
-location ~* \.pbf$ {
+location ~* \.mvt$ {
     include proxy_params;
     add_header Access-Control-Allow-Origin *;
     add_header Content-Encoding gzip;
@@ -129,7 +129,7 @@ server {
         }
         
         # Add support for serving pbf files
-        location ~* \.pbf$ {
+        location ~* \.mvt$ {
             include proxy_params;
             add_header Access-Control-Allow-Origin *;
             add_header Content-Encoding gzip;
@@ -142,10 +142,10 @@ Copy the tiles folder into nginx root directory i.e. `/var/www/html`
 
 and you should be now able to access the tiles with a url like this;
 
-http://localhost:80/tiles/{z}/{x}/{y}.pbf
+http://localhost:80/tiles/{z}/{x}/{y}.mvt
 
 OR
 
-http://yourip:80/tiles/{z}/{x}/{y}.pbf
+http://yourip:80/tiles/{z}/{x}/{y}.mvt
 
 

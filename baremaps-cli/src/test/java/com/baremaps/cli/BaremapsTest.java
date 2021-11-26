@@ -97,7 +97,7 @@ class BaremapsTest {
             "--repository",
             "repository/");
     assertEquals(0, exportExitCode);
-    assertTrue(Files.exists(Paths.get("repository/14/8626/5750.pbf")));
+    assertTrue(Files.exists(Paths.get("repository/14/8626/5750.mvt")));
 
     // Test the serve command in a separate thread
     Thread thread =
