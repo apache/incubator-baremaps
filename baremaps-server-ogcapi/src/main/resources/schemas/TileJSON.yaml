@@ -54,3 +54,5 @@ properties:
     type: array
     items:
       $ref: 'vector_layer.yaml'
+  fillzoom:
+    type: integer

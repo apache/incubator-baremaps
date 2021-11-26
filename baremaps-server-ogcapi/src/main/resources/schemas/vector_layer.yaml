@@ -2,8 +2,16 @@ type: object
 properties:
   id:
     type: string
+  fields:
+    type: object
+    additionalProperties:
+      type: string
   description:
     type: string
+  minzoom:
+    type: integer
+  maxzoom:
+    type: integer
   queries:
     type: array
     items:
