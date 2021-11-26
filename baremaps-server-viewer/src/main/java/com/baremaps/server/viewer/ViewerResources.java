@@ -18,6 +18,7 @@ import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
+import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreException;
 import com.baremaps.tile.Tile;
@@ -75,13 +76,13 @@ public class ViewerResources {
   public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
     Tile tile = new Tile(x, y, z);
     try {
-      byte[] bytes = tileStore.read(tile);
-      if (bytes != null) {
+      Blob blob = tileStore.read(tile);
+      if (blob != null) {
         return Response.status(200) // lgtm [java/xss]
-            .header(CONTENT_TYPE, "application/vnd.mapbox-vector-tile")
-            .header(CONTENT_ENCODING, "gzip")
             .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-            .entity(bytes)
+            .header(CONTENT_TYPE, blob.getContentType())
+            .header(CONTENT_ENCODING, blob.getContentEncoding())
+            .entity(blob.getInputStream())
             .build();
       } else {
         return Response.status(204).build();
