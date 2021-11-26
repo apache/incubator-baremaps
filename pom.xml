@@ -61,7 +61,7 @@
     <version.lib.jersey>2.34</version.lib.jersey>
     <version.lib.jts>1.18.2</version.lib.jts>
     <version.lib.lmdb>0.8.1</version.lib.lmdb>
-    <version.lib.log4j>2.14.0</version.lib.log4j>
+    <version.lib.log4j>2.14.1</version.lib.log4j>
     <version.lib.picocli>4.6.2</version.lib.picocli>
     <version.lib.postgresql>42.3.1</version.lib.postgresql>
     <version.lib.proj4j>1.1.4</version.lib.proj4j>
