@@ -98,14 +98,15 @@ public class PostgresTileStore implements TileStore {
       logger.debug("Executing query: {}", sql);
 
       int length = 0;
-      GZIPOutputStream gzip = new GZIPOutputStream(data);
-      ResultSet resultSet = statement.executeQuery(sql);
-      while (resultSet.next()) {
-        byte[] bytes = resultSet.getBytes(1);
-        length += bytes.length;
-        gzip.write(bytes);
+      try(GZIPOutputStream gzip = new GZIPOutputStream(data);
+          ResultSet resultSet = statement.executeQuery(sql)) {
+        while (resultSet.next()) {
+          byte[] bytes = resultSet.getBytes(1);
+          length += bytes.length;
+          gzip.write(bytes);
+        }
       }
-      gzip.close();
+
       if (length > 0) {
         return data.toByteArray();
       } else {
