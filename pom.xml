@@ -85,7 +85,7 @@
     <version.lib.testng>7.4.0</version.lib.testng>
     <version.lib.selenium>3.141.59</version.lib.selenium>
     <version.lib.s3mock>2.2.3</version.lib.s3mock>
-    <version.lib.testcontainers>1.16.0</version.lib.testcontainers>
+    <version.lib.testcontainers>1.16.2</version.lib.testcontainers>
     <version.lib.junit-vintage>5.7.2</version.lib.junit-vintage>
     <version.lib.mockito>1.10.19</version.lib.mockito>
     <version.lib.junit>5.7.1</version.lib.junit>
