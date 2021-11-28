@@ -140,6 +140,17 @@ public class Blob {
      * @param byteArray the content
      * @return the builder
      */
+    public Builder withByteArray(byte[] byteArray) {
+      this.contentLength = (long) byteArray.length;
+      this.byteArray = byteArray;
+      return this;
+    }
+
+    /**
+     * Sets the content.
+     *
+     * @param byteArray the content
+     */
     public void setByteArray(byte[] byteArray) {
       this.contentLength = (long) byteArray.length;
       this.byteArray = byteArray;
@@ -149,7 +160,6 @@ public class Blob {
      * Sets the content length.
      *
      * @param contentLength the content length
-     * @return the builder
      */
     public void setContentLength(Long contentLength) {
       this.contentLength = contentLength;
@@ -159,7 +169,6 @@ public class Blob {
      * Sets the content type.
      *
      * @param contentType the content type
-     * @return the builder
      */
     public void setContentType(String contentType) {
       this.contentType = contentType;
@@ -169,7 +178,6 @@ public class Blob {
      * Sets the content encoding.
      *
      * @param contentEncoding the content encoding
-     * @return the builder
      */
     public void setContentEncoding(String contentEncoding) {
       this.contentEncoding = contentEncoding;
@@ -179,22 +187,9 @@ public class Blob {
      * Sets the content.
      *
      * @param inputStream the content
-     * @return the builder
      */
     public void setInputStream(InputStream inputStream) {
       this.inputStream = inputStream;
-    }
-
-    /**
-     * Sets the content.
-     *
-     * @param byteArray the content
-     * @return the builder
-     */
-    public Builder withByteArray(byte[] byteArray) {
-      this.contentLength = (long) byteArray.length;
-      this.byteArray = byteArray;
-      return this;
     }
 
     /**

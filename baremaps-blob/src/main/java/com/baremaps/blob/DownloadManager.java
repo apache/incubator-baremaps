@@ -42,7 +42,7 @@ public class DownloadManager {
    *
    * @param uri the URI of the blob
    * @return the path of the downloaded blob
-   * @throws BlobStoreException
+   * @throws BlobStoreException a blob store exception
    */
   public Path download(URI uri) throws BlobStoreException {
     if (uri.getScheme() == null || uri.getScheme().equals("file")) {

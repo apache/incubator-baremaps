@@ -42,6 +42,7 @@ public class BlobStoreRouter implements BlobStore {
    *
    * @param scheme the scheme (e.g. http, ftp, etc.)
    * @param blobStore the blob store
+   * @return the router
    */
   public BlobStoreRouter addScheme(String scheme, BlobStore blobStore) {
     schemes.put(scheme, blobStore);
