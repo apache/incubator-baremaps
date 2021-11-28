@@ -72,5 +72,22 @@ jobs:
           java-version: 11
           distribution: 'adopt'
           cache: 'maven'
-      - name: run linter
+      - name: Run linter
         run: mvn spotless:check
+
+  javadoc:
+    name: Build javadoc
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Set up Java 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: 'adopt'
+          cache: 'maven'
+      - name: Build javadoc
+        run: mvn -B install javadoc:javadoc
