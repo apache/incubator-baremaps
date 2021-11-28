@@ -4,7 +4,7 @@
   <parent>
     <artifactId>baremaps-server</artifactId>
     <groupId>com.baremaps</groupId>
-    <version>0.6.4-SNAPSHOT</version>
+    <version>0.6.4</version>
     <relativePath>../baremaps-server</relativePath>
   </parent>
 
