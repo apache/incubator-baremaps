@@ -27,7 +27,7 @@ public interface BlobStore {
    *
    * @param uri the URI
    * @return the blob
-   * @throws BlobStoreException
+   * @throws BlobStoreException a blob store exception
    */
   Blob head(URI uri) throws BlobStoreException;
 
@@ -36,7 +36,7 @@ public interface BlobStore {
    *
    * @param uri the URI
    * @return the blob
-   * @throws BlobStoreException
+   * @throws BlobStoreException a blob store exception
    */
   Blob get(URI uri) throws BlobStoreException;
 
@@ -45,7 +45,7 @@ public interface BlobStore {
    *
    * @param uri the URI
    * @param blob the blob
-   * @throws BlobStoreException
+   * @throws BlobStoreException a blob store exception
    */
   void put(URI uri, Blob blob) throws BlobStoreException;
 
@@ -53,7 +53,7 @@ public interface BlobStore {
    * Deletes a blob at a specified URI.
    *
    * @param uri the URI
-   * @throws BlobStoreException
+   * @throws BlobStoreException a blob store exception
    */
   void delete(URI uri) throws BlobStoreException;
 }
