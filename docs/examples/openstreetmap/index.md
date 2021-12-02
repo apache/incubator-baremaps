@@ -77,12 +77,12 @@ The following Figure displays the schema of the Postgis database created by Bare
 
 In order to create vector tiles, Baremaps uses JSON configuration files.
 You can obtain a copy of the [tileset.json](https://raw.githubusercontent.com/baremaps/baremaps/main/docs/examples/openstreetmap/tileset.json) and [style.json](https://raw.githubusercontent.com/baremaps/baremaps/main/docs/examples/openstreetmap/style.json) file in the repository.
-The [tileset.json](https://raw.githubusercontent.com/baremaps/baremaps/main/docs/examples/openstreetmap/tileset.json) is loosely based on the [TileJSON](https://github.com/mapbox/tilejson-spec) specification. 
+The [tileset.json](https://raw.githubusercontent.com/baremaps/baremaps/main/docs/examples/openstreetmap/tileset.json) is loosely based on the [TileJSON](https://github.com/mapbox/tilejson-spec) specification.
 It defines general tileset properties and lists layers containing SQL queries to be executed by Postgis.
 The [style.json](https://raw.githubusercontent.com/baremaps/baremaps/main/docs/examples/openstreetmap/style.json) file is a [Maplibre Style](https://maplibre.org/maplibre-gl-js-docs/api/).
-It defines general style and rendering properties. 
+It defines general style and rendering properties.
 
-Let's preview and edit the map with the sample configuration files by executing the following command in a terminal.
+Let's preview and edit the map with the sample configuration files by executing the following command in a terminal (you must be in the folder containing the files).
 
 ```
 baremaps edit \
@@ -95,6 +95,8 @@ Well done, a local tile server should have started and you can open a map of Lie
 Baremaps dynamically generates a blueprint [Mapbox Style](https://docs.mapbox.com/mapbox-gl-js/style-spec/) from the json configuration file.
 It is aimed at quickly previsualizing the data and provides a foundation for creating more complex styles.
 Notice that the changes in the configuration files are automatically reloaded by the browser.
+
+Don't forget that the Baremaps container which is inside Docker (c.f. [installation](https://www.baremaps.com/installation/)) must be running and that the edit command must have been executed each time you want to start edit the map.
 
 ![Maputnik editor](screenshot.png)
 
