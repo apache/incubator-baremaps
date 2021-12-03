@@ -14,7 +14,7 @@ Therefore, start by installing `gdal`:
 sudo apt-get install gdal-bin
 ```
 
-or
+or if you prefer with Homebrew:
 
 ```bash
 brew install gdal
@@ -34,7 +34,8 @@ gdalwarp -rc -overwrite \
 You can now import any GeoTiff DEM as contours in postgis. 
 Here, the `-nln` argument name the table that contains the data, 
 the `-a` argument name the column that contains the elevation, 
-the `-i` argument specifies the interval in meters at which contours are generated. Notice that you must be located in the example's folder which contains the files (for example baremaps/docs/examples/contour).
+the `-i` argument specifies the interval in meters at which contours are generated.
+Notice that you must be located in the example's folder which contains the files (for example baremaps/docs/examples/contour).
 
 ```
 gdal_contour \
@@ -44,7 +45,8 @@ gdal_contour \
 ```
 
 The following index can now be created to improve performances. 
-When available, a smoothing function such as `ST_ChaikinSmoothing` can be used to improve rendering. 
+When available, a smoothing function such as `ST_ChaikinSmoothing` can be used to improve rendering.
+In order to run the [PSQL](https://www.postgresql.org/download/) command, log in with baremaps as user.
 
 ```
 psql -U baremaps -h localhost baremaps
@@ -54,6 +56,8 @@ psql -U baremaps -h localhost baremaps
 DROP INDEX IF EXISTS aster_dem_gix;
 CREATE INDEX CONCURRENTLY IF NOT EXISTS aster_dem_gix ON aster_dem USING SPGIST(wkb_geometry);
 ```
+
+You can then quit before going on:
 
 ```
 \q
