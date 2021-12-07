@@ -23,10 +23,16 @@ import com.baremaps.osm.cache.CoordinateMapper;
 import com.baremaps.osm.cache.LongMapper;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
+import org.rocksdb.ColumnFamilyDescriptor;
+import org.rocksdb.ColumnFamilyHandle;
+import org.rocksdb.ColumnFamilyOptions;
+import org.rocksdb.DBOptions;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 
@@ -37,20 +43,36 @@ class RocksdbCacheTest {
   void test() throws Exception {
     RocksDB.loadLibrary();
     Path path = Files.createTempDirectory("baremaps_").toAbsolutePath();
-    Options options = new Options().setCreateIfMissing(true);
-    RocksDB db = RocksDB.open(options, path.toString());
-    Cache<Long, Coordinate> cache = new RocksdbCache(db, new LongMapper(), new CoordinateMapper());
-    Coordinate c1 = new Coordinate(1, 0);
-    Coordinate c2 = new Coordinate(2, 0);
-    Coordinate c3 = new Coordinate(3, 0);
-    Coordinate c4 = new Coordinate(4, 0);
-    cache.put(1l, c1);
-    cache.put(Arrays.asList(new Entry(2l, c2), new Entry(3l, c3), new Entry(4l, c4)));
-    assertEquals(cache.get(1l), c1);
-    assertEquals(cache.get(Arrays.asList(1l, 2l)), Arrays.asList(c1, c2));
-    cache.delete(1l);
-    assertNull(cache.get(1l));
-    cache.delete(Arrays.asList(1l, 2l));
-    assertEquals(Arrays.asList(null, null), cache.get(Arrays.asList(1l, 2l)));
+
+    ColumnFamilyDescriptor defaultColumnFamily =
+        new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY, new ColumnFamilyOptions());
+    ColumnFamilyDescriptor columnFamily =
+        new ColumnFamilyDescriptor("column".getBytes(), new ColumnFamilyOptions());
+    try (Options options = new Options().setCreateIfMissing(true);
+        RocksDB db = RocksDB.open(options, path.toString());
+        ColumnFamilyHandle handle = db.createColumnFamily(columnFamily)) {}
+
+    List<ColumnFamilyDescriptor> columnFamilyDescriptors =
+        List.of(defaultColumnFamily, columnFamily);
+    List<ColumnFamilyHandle> columnFamilyHandles = new ArrayList<>();
+    try (DBOptions options = new DBOptions();
+        RocksDB db =
+            RocksDB.open(options, path.toString(), columnFamilyDescriptors, columnFamilyHandles)) {
+      Cache<Long, Coordinate> cache =
+          new RocksdbCache(
+              db, columnFamilyHandles.get(1), new LongMapper(), new CoordinateMapper());
+      Coordinate c1 = new Coordinate(1, 0);
+      Coordinate c2 = new Coordinate(2, 0);
+      Coordinate c3 = new Coordinate(3, 0);
+      Coordinate c4 = new Coordinate(4, 0);
+      cache.put(1l, c1);
+      cache.put(Arrays.asList(new Entry(2l, c2), new Entry(3l, c3), new Entry(4l, c4)));
+      assertEquals(cache.get(1l), c1);
+      assertEquals(cache.get(Arrays.asList(1l, 2l)), Arrays.asList(c1, c2));
+      cache.delete(1l);
+      assertNull(cache.get(1l));
+      cache.delete(Arrays.asList(1l, 2l));
+      assertEquals(Arrays.asList(null, null), cache.get(Arrays.asList(1l, 2l)));
+    }
   }
 }

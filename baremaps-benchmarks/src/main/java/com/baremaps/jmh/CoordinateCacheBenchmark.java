@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.lmdbjava.DbiFlags;
 import org.lmdbjava.Env;
@@ -41,6 +43,10 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.rocksdb.ColumnFamilyDescriptor;
+import org.rocksdb.ColumnFamilyHandle;
+import org.rocksdb.ColumnFamilyOptions;
+import org.rocksdb.DBOptions;
 import org.rocksdb.Options;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
@@ -92,10 +98,25 @@ public class CoordinateCacheBenchmark {
   @Measurement(iterations = 5)
   public void rocksdb() throws IOException, RocksDBException, CacheException {
     Path path = Files.createTempDirectory("baremaps_").toAbsolutePath();
+
+    ColumnFamilyDescriptor defaultCFD =
+        new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY, new ColumnFamilyOptions());
+    ColumnFamilyDescriptor columnCFD =
+        new ColumnFamilyDescriptor("coordinates".getBytes(), new ColumnFamilyOptions());
+
+    // Create the db and the column family
     try (Options options = new Options().setCreateIfMissing(true);
-        RocksDB db = RocksDB.open(options, path.toString())) {
+        RocksDB db = RocksDB.open(options, path.toString());
+        ColumnFamilyHandle ignored = db.createColumnFamily(columnCFD)) {}
+
+    List<ColumnFamilyDescriptor> columnFamilyDescriptors = List.of(defaultCFD, columnCFD);
+    List<ColumnFamilyHandle> columnFamilyHandles = new ArrayList<>();
+    try (DBOptions options = new DBOptions();
+        RocksDB db =
+            RocksDB.open(options, path.toString(), columnFamilyDescriptors, columnFamilyHandles)) {
       Cache<Long, Coordinate> cache =
-          new RocksdbCache(db, new LongMapper(), new CoordinateMapper());
+          new RocksdbCache(
+              db, columnFamilyHandles.get(1), new LongMapper(), new CoordinateMapper());
       benchmark(cache, N);
     }
   }

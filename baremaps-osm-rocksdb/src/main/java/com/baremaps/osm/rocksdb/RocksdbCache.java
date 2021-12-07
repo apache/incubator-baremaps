@@ -22,6 +22,7 @@ import com.baremaps.osm.cache.CacheMapper;
 import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.rocksdb.ColumnFamilyHandle;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 import org.rocksdb.WriteBatch;
@@ -32,13 +33,18 @@ public class RocksdbCache<K, V> implements Cache<K, V> {
 
   private final RocksDB db;
 
+  private final ColumnFamilyHandle handle;
+
   private final CacheMapper<K> keyType;
 
   private final CacheMapper<V> valueType;
 
-  public RocksdbCache(RocksDB db, CacheMapper<K> keyType, CacheMapper<V> valueType) {
+  public RocksdbCache(
+      RocksDB db, ColumnFamilyHandle handle, CacheMapper<K> keyType, CacheMapper<V> valueType) {
     checkNotNull(db);
+    checkNotNull(handle);
     this.db = db;
+    this.handle = handle;
     this.keyType = keyType;
     this.valueType = valueType;
   }
@@ -47,7 +53,7 @@ public class RocksdbCache<K, V> implements Cache<K, V> {
   @Override
   public void put(K key, V value) throws CacheException {
     try {
-      db.put(buffer(keyType, key), buffer(valueType, value));
+      db.put(handle, buffer(keyType, key), buffer(valueType, value));
     } catch (RocksDBException e) {
       throw new CacheException(e);
     }
@@ -60,7 +66,7 @@ public class RocksdbCache<K, V> implements Cache<K, V> {
       for (Entry<K, V> entry : entries) {
         K key = entry.key();
         V value = entry.value();
-        writeBatch.put(buffer(keyType, key), buffer(valueType, value));
+        writeBatch.put(handle, buffer(keyType, key), buffer(valueType, value));
       }
       db.write(new WriteOptions(), writeBatch);
     } catch (RocksDBException e) {
@@ -72,7 +78,7 @@ public class RocksdbCache<K, V> implements Cache<K, V> {
   @Override
   public void delete(K key) throws CacheException {
     try {
-      db.delete(buffer(keyType, key));
+      db.delete(handle, buffer(keyType, key));
     } catch (RocksDBException e) {
       throw new CacheException(e);
     }
@@ -83,7 +89,7 @@ public class RocksdbCache<K, V> implements Cache<K, V> {
   public void delete(List<K> keys) throws CacheException {
     try (WriteBatch writeBatch = new WriteBatch()) {
       for (K key : keys) {
-        writeBatch.delete(buffer(keyType, key));
+        writeBatch.delete(handle, buffer(keyType, key));
       }
       db.write(new WriteOptions(), writeBatch);
     } catch (RocksDBException e) {
@@ -95,7 +101,7 @@ public class RocksdbCache<K, V> implements Cache<K, V> {
   @Override
   public V get(K key) throws CacheException {
     try {
-      byte[] value = db.get(buffer(keyType, key));
+      byte[] value = db.get(handle, buffer(keyType, key));
       if (value == null) {
         return null;
       }
@@ -111,6 +117,7 @@ public class RocksdbCache<K, V> implements Cache<K, V> {
     try {
       List<byte[]> values =
           db.multiGetAsList(
+              keys.stream().map(key -> handle).collect(Collectors.toList()),
               keys.stream().map(key -> buffer(keyType, key)).collect(Collectors.toList()));
       return values.stream()
           .map(
