@@ -34,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -54,6 +55,10 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.rocksdb.ColumnFamilyDescriptor;
+import org.rocksdb.ColumnFamilyHandle;
+import org.rocksdb.ColumnFamilyOptions;
+import org.rocksdb.DBOptions;
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
 
@@ -127,16 +132,27 @@ public class OpenStreetMapGeometriesBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void rocksdb() throws IOException, RocksDBException {
-    Path coordinatesDirectory = Files.createTempDirectory("baremaps_").toAbsolutePath();
-    Path referenceDirectory = Files.createTempDirectory("baremaps_").toAbsolutePath();
+    Path cacheDirectory = Files.createTempDirectory("baremaps_").toAbsolutePath();
 
+    ColumnFamilyDescriptor defaultCFD = new ColumnFamilyDescriptor(RocksDB.DEFAULT_COLUMN_FAMILY, new ColumnFamilyOptions());
+    ColumnFamilyDescriptor coordinatesCFD = new ColumnFamilyDescriptor("coordinates".getBytes(), new ColumnFamilyOptions());
+    ColumnFamilyDescriptor referencesCFD = new ColumnFamilyDescriptor("references".getBytes(), new ColumnFamilyOptions());
+
+    // Create the db and the column families
     try (org.rocksdb.Options options = new org.rocksdb.Options().setCreateIfMissing(true);
-        RocksDB coordinatesDB = RocksDB.open(options, coordinatesDirectory.toString());
-        RocksDB referenceDB = RocksDB.open(options, referenceDirectory.toString())) {
+        RocksDB db = RocksDB.open(options, cacheDirectory.toString());
+        ColumnFamilyHandle coordinatesCFH = db.createColumnFamily(coordinatesCFD);
+        ColumnFamilyHandle referencesCFH = db.createColumnFamily(referencesCFD)) {
+    }
+
+    List<ColumnFamilyDescriptor> columnFamilyDescriptors = List.of(defaultCFD, coordinatesCFD, referencesCFD);
+    List<ColumnFamilyHandle> columnFamilyHandles = new ArrayList<>();
+    try (DBOptions options = new DBOptions();
+        RocksDB db = RocksDB.open(options, cacheDirectory.toString(), columnFamilyDescriptors, columnFamilyHandles)) {
       Cache<Long, Coordinate> coordinateCache =
-          new RocksdbCache(coordinatesDB, new LongMapper(), new CoordinateMapper());
+          new RocksdbCache(db, columnFamilyHandles.get(1), new LongMapper(), new CoordinateMapper());
       Cache<Long, List<Long>> referenceCache =
-          new RocksdbCache(referenceDB, new LongMapper(), new LongListMapper());
+          new RocksdbCache(db, columnFamilyHandles.get(2), new LongMapper(), new LongListMapper());
 
       AtomicLong nodes = new AtomicLong(0);
       AtomicLong ways = new AtomicLong(0);
