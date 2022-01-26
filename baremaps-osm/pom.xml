@@ -52,7 +52,7 @@
               <goal>test-compile</goal>
             </goals>
             <configuration>
-              <protocArtifact>com.google.protobuf:protoc:3.6.1:exe:${os.detected.classifier}</protocArtifact>
+              <protocArtifact>com.google.protobuf:protoc:3.19.3:exe:${os.detected.classifier}</protocArtifact>
             </configuration>
           </execution>
         </executions>
