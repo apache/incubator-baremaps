@@ -90,10 +90,6 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-osm-lmdb</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
       <artifactId>baremaps-osm-postgres</artifactId>
     </dependency>
     <dependency>

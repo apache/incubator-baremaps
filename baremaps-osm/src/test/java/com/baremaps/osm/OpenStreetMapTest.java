@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.baremaps.osm.domain.Bound;
+import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
@@ -35,9 +36,12 @@ import com.baremaps.osm.domain.State;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumer;
 import com.baremaps.osm.state.StateReader;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -195,4 +199,37 @@ class OpenStreetMapTest {
     assertEquals(wayCount, ways.get());
     assertEquals(relationCount, relations.get());
   }
+
+  void planetOsmPdf() throws IOException, URISyntaxException {
+    try (InputStream inputStream = new BufferedInputStream(
+        Files.newInputStream(Paths.get("/Users/bchapuis/Datasets/OpenStreetMap/planet-latest.osm.pbf")))) {
+
+      Stats stats = new Stats();
+
+      OpenStreetMap.streamPbfEntities(inputStream)
+          .filter(entity -> entity instanceof Element)
+          .map(entity -> (Element) entity)
+          .reduce(stats, (s, e) -> {
+            s.counter += 1;
+            s.max = Math.max(s.max, e.getId());
+            return s;
+          }, (s1, s2) -> {
+            Stats s = new Stats();
+            s.max = Math.max(s1.max, s2.max);
+            s.counter = s1.counter + s2.counter;
+            return s;
+          });
+
+      System.out.println(stats.max);
+      System.out.println(stats.counter);
+
+    }
+  }
+
+  class Stats {
+
+    public long counter = 0;
+    public long max = 0;
+  }
+
 }

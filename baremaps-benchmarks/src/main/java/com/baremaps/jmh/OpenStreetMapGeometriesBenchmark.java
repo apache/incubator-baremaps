@@ -16,20 +16,21 @@ package com.baremaps.jmh;
 
 import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.CoordinateMapper;
-import com.baremaps.osm.cache.LongListMapper;
-import com.baremaps.osm.cache.LongMapper;
+import com.baremaps.osm.cache.StoreCache;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
-import com.baremaps.osm.lmdb.LmdbCache;
-import com.baremaps.osm.rocksdb.RocksdbCache;
+import com.baremaps.store.DataStore;
+import com.baremaps.store.LongDataOpenHashMap;
+import com.baremaps.store.memory.FileMemory;
+import com.baremaps.store.memory.OnHeapMemory;
+import com.baremaps.store.type.CoordinateDataType;
+import com.baremaps.store.type.LongListDataType;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,8 +38,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.lmdbjava.DbiFlags;
-import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -54,19 +53,17 @@ import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
-import org.rocksdb.RocksDB;
-import org.rocksdb.RocksDBException;
 
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(1)
 public class OpenStreetMapGeometriesBenchmark {
 
-  private final Path path = Paths.get("./liechtenstein-latest.pbf");
+  private final Path path = Paths.get("./switzerland-latest.pbf");
 
   @Setup
   public void setup() throws IOException {
-    URL url = new URL("http://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf");
+    URL url = new URL("http://download.geofabrik.de/europe/switzerland-latest.osm.pbf");
     if (!Files.exists(path)) {
       try (InputStream inputStream = url.openStream()) {
         Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
@@ -76,29 +73,18 @@ public class OpenStreetMapGeometriesBenchmark {
 
   @Benchmark
   @BenchmarkMode(Mode.SingleShotTime)
-  @Warmup(iterations = 2)
-  @Measurement(iterations = 5)
-  public void lmdb() throws IOException {
-    Path cacheDirectory = Files.createTempDirectory("baremaps_").toAbsolutePath();
-    Env<ByteBuffer> env =
-        Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(cacheDirectory.toFile());
-    Cache<Long, Coordinate> coordinateCache =
-        new LmdbCache(
-            env,
-            env.openDbi("coordinate", DbiFlags.MDB_CREATE),
-            new LongMapper(),
-            new CoordinateMapper());
-    Cache<Long, List<Long>> referenceCache =
-        new LmdbCache(
-            env,
-            env.openDbi("reference", DbiFlags.MDB_CREATE),
-            new LongMapper(),
-            new LongListMapper());
-
+  @Warmup(iterations = 0)
+  @Measurement(iterations = 1)
+  public void store() throws IOException {
+    Cache<Long, Coordinate> coordinateCache = new StoreCache<>(
+        new LongDataOpenHashMap<>(
+            new DataStore<>(new CoordinateDataType(), new FileMemory())));
+    Cache<Long, List<Long>> referenceCache = new StoreCache<>(
+        new LongDataOpenHashMap<>(
+            new DataStore<>(new LongListDataType(), new OnHeapMemory())));
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
-
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
       OpenStreetMap.streamPbfEntitiesWithGeometries(
               inputStream, coordinateCache, referenceCache, 4326)
@@ -119,50 +105,6 @@ public class OpenStreetMapGeometriesBenchmark {
                   relations.incrementAndGet();
                 }
               });
-    }
-  }
-
-  @Benchmark
-  @BenchmarkMode(Mode.SingleShotTime)
-  @Warmup(iterations = 2)
-  @Measurement(iterations = 5)
-  public void rocksdb() throws IOException, RocksDBException {
-    Path coordinatesDirectory = Files.createTempDirectory("baremaps_").toAbsolutePath();
-    Path referenceDirectory = Files.createTempDirectory("baremaps_").toAbsolutePath();
-
-    try (org.rocksdb.Options options = new org.rocksdb.Options().setCreateIfMissing(true);
-        RocksDB coordinatesDB = RocksDB.open(options, coordinatesDirectory.toString());
-        RocksDB referenceDB = RocksDB.open(options, referenceDirectory.toString())) {
-      Cache<Long, Coordinate> coordinateCache =
-          new RocksdbCache(coordinatesDB, new LongMapper(), new CoordinateMapper());
-      Cache<Long, List<Long>> referenceCache =
-          new RocksdbCache(referenceDB, new LongMapper(), new LongListMapper());
-
-      AtomicLong nodes = new AtomicLong(0);
-      AtomicLong ways = new AtomicLong(0);
-      AtomicLong relations = new AtomicLong(0);
-
-      try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-        OpenStreetMap.streamPbfEntitiesWithGeometries(
-                inputStream, coordinateCache, referenceCache, 4326)
-            .forEach(
-                new EntityConsumerAdapter() {
-                  @Override
-                  public void match(Node node) {
-                    nodes.incrementAndGet();
-                  }
-
-                  @Override
-                  public void match(Way way) {
-                    ways.incrementAndGet();
-                  }
-
-                  @Override
-                  public void match(Relation relation) {
-                    relations.incrementAndGet();
-                  }
-                });
-      }
     }
   }
 

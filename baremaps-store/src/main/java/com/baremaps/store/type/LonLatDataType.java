@@ -1,0 +1,39 @@
+package com.baremaps.store.type;
+
+import java.nio.ByteBuffer;
+import org.locationtech.jts.geom.Coordinate;
+
+public class LonLatDataType implements DataType<Coordinate> {
+
+  private static final long LOWER_32_BIT_MASK = (1L << 32) - 1L;
+
+  public static double decodeLat(long encoded) {
+    return (double) (encoded & LOWER_32_BIT_MASK) / 10000000;
+  }
+
+  public static double decodeLon(long encoded) {
+    return (double) (encoded >>> 32) / 10000000;
+  }
+
+  public static long encodeLonLat(double lon, double lat) {
+    long x = (long) (lon * 10000000);
+    long y = (long) (lat * 10000000);
+    return (x << 32) | (y & LOWER_32_BIT_MASK);
+  }
+
+  @Override
+  public int size(Coordinate value) {
+    return 8;
+  }
+
+  @Override
+  public void write(ByteBuffer buffer, int position, Coordinate value) {
+    buffer.putLong(position, encodeLonLat(value.x, value.y));
+  }
+
+  @Override
+  public Coordinate read(ByteBuffer buffer, int position) {
+    long value = buffer.getLong(position);
+    return new Coordinate(decodeLon(value), decodeLat(value));
+  }
+}

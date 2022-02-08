@@ -40,11 +40,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Set up Java 11
+      - name: Set up Java 17
         uses: actions/setup-java@v2
         with:
-          java-version: 11
-          distribution: 'adopt'
+          java-version: 17
+          distribution: 'temurin'
           cache: 'maven'
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
@@ -66,11 +66,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Set up Java 11
+      - name: Set up Java 17
         uses: actions/setup-java@v2
         with:
-          java-version: 11
-          distribution: 'adopt'
+          java-version: 17
+          distribution: 'temurin'
           cache: 'maven'
       - name: Run linter
         run: mvn spotless:check
@@ -83,11 +83,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Set up Java 11
+      - name: Set up Java 17
         uses: actions/setup-java@v2
         with:
-          java-version: 11
-          distribution: 'adopt'
+          java-version: 17
+          distribution: 'temurin'
           cache: 'maven'
       - name: Build javadoc
         run: mvn -B install javadoc:javadoc

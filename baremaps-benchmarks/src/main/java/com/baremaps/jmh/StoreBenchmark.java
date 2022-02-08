@@ -14,16 +14,15 @@
 
 package com.baremaps.jmh;
 
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.CacheException;
-import com.baremaps.osm.cache.SimpleCache;
-import com.baremaps.osm.cache.StoreCache;
-import com.baremaps.store.LongFixedSizeDataDenseMap;
+import com.baremaps.store.DataStore;
+import com.baremaps.store.FixedSizeDataList;
+import com.baremaps.store.memory.DirectoryMemory;
+import com.baremaps.store.memory.FileMemory;
 import com.baremaps.store.memory.OffHeapMemory;
-import com.baremaps.store.type.CoordinateDataType;
+import com.baremaps.store.memory.OnHeapMemory;
+import com.baremaps.store.type.LongDataType;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-import org.locationtech.jts.geom.Coordinate;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -40,16 +39,16 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(1)
-public class CoordinateCacheBenchmark {
+public class StoreBenchmark {
 
-  private final long N = 1000000;
+  private final long N = 1 << 25;
 
-  private void benchmark(Cache<Long, Coordinate> cache, long n) throws CacheException {
+  private void benchmark(FixedSizeDataList<Long> store, long n) {
     for (long i = 0; i < n; i++) {
-      cache.put(i, new Coordinate(i, i));
+      store.add(i);
     }
     for (long i = 0; i < n; i++) {
-      cache.get(i);
+      store.get(i);
     }
   }
 
@@ -57,24 +56,40 @@ public class CoordinateCacheBenchmark {
   @BenchmarkMode(Mode.SingleShotTime)
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
-  public void inmemory() throws CacheException {
-    benchmark(new SimpleCache(), N);
+  public void onHeap()  {
+    benchmark(new FixedSizeDataList<>(new LongDataType(), new OnHeapMemory()), N);
   }
 
   @Benchmark
   @BenchmarkMode(Mode.SingleShotTime)
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
-  public void store() throws CacheException {
-      Cache<Long, Coordinate> cache = new StoreCache<>(
-          new LongFixedSizeDataDenseMap<>(new CoordinateDataType(), new OffHeapMemory()));
-      benchmark(cache, N);
+  public void offHeap() {
+    benchmark(new FixedSizeDataList<>(new LongDataType(), new OffHeapMemory()), N);
   }
+
+  /*
+  @Benchmark
+  @BenchmarkMode(Mode.SingleShotTime)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
+  public void file() throws IOException {
+    benchmark(new FixedSizeDataList<>(new LongDataType(), new FileMemory()), N);
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.SingleShotTime)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
+  public void directory() throws IOException {
+    benchmark(new FixedSizeDataList<>(new LongDataType(), new DirectoryMemory()), N);
+  }
+   */
 
   public static void main(String[] args) throws RunnerException {
     org.openjdk.jmh.runner.options.Options opt =
         new OptionsBuilder()
-            .include(CoordinateCacheBenchmark.class.getSimpleName())
+            .include(StoreBenchmark.class.getSimpleName())
             .forks(1)
             .build();
     new Runner(opt).run();
