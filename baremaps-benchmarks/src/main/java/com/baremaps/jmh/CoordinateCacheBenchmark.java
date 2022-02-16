@@ -14,11 +14,8 @@
 
 package com.baremaps.jmh;
 
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.CacheException;
-import com.baremaps.osm.cache.SimpleCache;
-import com.baremaps.osm.cache.StoreCache;
-import com.baremaps.store.LongFixedSizeDataDenseMap;
+import com.baremaps.store.map.LongDataMap;
+import com.baremaps.store.map.LongFixedSizeDataDenseMap;
 import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.type.CoordinateDataType;
 import java.util.concurrent.TimeUnit;
@@ -43,7 +40,7 @@ public class CoordinateCacheBenchmark {
 
   private final long N = 1000000;
 
-  private void benchmark(Cache<Long, Coordinate> cache, long n) throws CacheException {
+  private void benchmark(LongDataMap<Coordinate> cache, long n) {
     for (long i = 0; i < n; i++) {
       cache.put(i, new Coordinate(i, i));
     }
@@ -56,18 +53,9 @@ public class CoordinateCacheBenchmark {
   @BenchmarkMode(Mode.SingleShotTime)
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
-  public void inmemory() throws CacheException {
-    benchmark(new SimpleCache(), N);
-  }
-
-  @Benchmark
-  @BenchmarkMode(Mode.SingleShotTime)
-  @Warmup(iterations = 2)
-  @Measurement(iterations = 5)
-  public void store() throws CacheException {
-    Cache<Long, Coordinate> cache =
-        new StoreCache<>(
-            new LongFixedSizeDataDenseMap<>(new CoordinateDataType(), new OffHeapMemory()));
+  public void store() {
+    LongDataMap<Coordinate> cache =
+            new LongFixedSizeDataDenseMap<>(new CoordinateDataType(), new OffHeapMemory());
     benchmark(cache, N);
   }
 

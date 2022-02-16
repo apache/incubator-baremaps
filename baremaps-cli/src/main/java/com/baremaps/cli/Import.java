@@ -15,8 +15,6 @@
 package com.baremaps.cli;
 
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.StoreCache;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
@@ -29,9 +27,10 @@ import com.baremaps.osm.repository.ImportService;
 import com.baremaps.osm.repository.Repository;
 import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.store.DataStore;
-import com.baremaps.store.LongDataOpenHashMap;
+import com.baremaps.store.map.LongDataMap;
+import com.baremaps.store.map.LongDataOpenHashMap;
 import com.baremaps.store.memory.FileMemory;
-import com.baremaps.store.type.CoordinateDataType;
+import com.baremaps.store.type.LonLatDataType;
 import com.baremaps.store.type.LongListDataType;
 import java.net.URI;
 import java.nio.file.Path;
@@ -50,7 +49,8 @@ public class Import implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Import.class);
 
-  @Mixin private Options options;
+  @Mixin
+  private Options options;
 
   @Option(
       names = {"--file"},
@@ -87,24 +87,22 @@ public class Import implements Callable<Integer> {
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
     Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
 
-    Cache<Long, Coordinate> coordinateCache =
-        new StoreCache<>(
-            new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new FileMemory())));
-    Cache<Long, List<Long>> referenceCache =
-        new StoreCache<>(
-            new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new FileMemory())));
+    LongDataMap<Coordinate> coordinateCache =
+        new LongDataOpenHashMap<>(new DataStore<>(new LonLatDataType(), new FileMemory()));
+    LongDataMap<List<Long>> referenceCache =
+        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new FileMemory()));
 
     logger.info("Importing data");
     new ImportService(
-            file,
-            blobStore,
-            coordinateCache,
-            referenceCache,
-            headerRepository,
-            nodeRepository,
-            wayRepository,
-            relationRepository,
-            srid)
+        file,
+        blobStore,
+        coordinateCache,
+        referenceCache,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        srid)
         .call();
 
     logger.info("Done");

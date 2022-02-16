@@ -16,7 +16,6 @@ package com.baremaps.cli;
 
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
@@ -30,6 +29,7 @@ import com.baremaps.osm.repository.DiffService;
 import com.baremaps.osm.repository.HeaderRepository;
 import com.baremaps.osm.repository.Repository;
 import com.baremaps.postgres.jdbc.PostgresUtils;
+import com.baremaps.store.map.LongDataMap;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Files;
@@ -82,8 +82,8 @@ public class Diff implements Callable<Integer> {
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.datasource(database);
-    Cache<Long, Coordinate> coordinateCache = new PostgresCoordinateCache(datasource);
-    Cache<Long, List<Long>> referenceCache = new PostgresReferenceCache(datasource);
+    LongDataMap<Coordinate> coordinateCache = new PostgresCoordinateCache(datasource);
+    LongDataMap<List<Long>> referenceCache = new PostgresReferenceCache(datasource);
     HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
     Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);

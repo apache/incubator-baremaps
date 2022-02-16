@@ -18,12 +18,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.ResourceBlobStore;
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.SimpleCache;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.repository.DiffService;
 import com.baremaps.osm.repository.ImportService;
 import com.baremaps.osm.repository.UpdateService;
+import com.baremaps.store.DataStore;
+import com.baremaps.store.map.LongDataMap;
+import com.baremaps.store.map.LongDataOpenHashMap;
+import com.baremaps.store.memory.FileMemory;
+import com.baremaps.store.type.CoordinateDataType;
+import com.baremaps.store.type.LongListDataType;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -59,17 +63,22 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
   @Tag("integration")
   void liechtenstein() throws Exception {
 
+    LongDataMap<Coordinate> coordinateCache =
+        new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new FileMemory()));
+    LongDataMap<List<Long>> referenceCache =
+        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new FileMemory()));
+
     // Import data
     new ImportService(
-            new URI("res://liechtenstein/liechtenstein.osm.pbf"),
-            blobStore,
-            new SimpleCache<>(),
-            new SimpleCache<>(),
-            headerRepository,
-            nodeRepository,
-            wayRepository,
-            relationRepository,
-            3857)
+        new URI("res://liechtenstein/liechtenstein.osm.pbf"),
+        blobStore,
+        coordinateCache,
+        referenceCache,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        3857)
         .call();
     assertEquals(2434l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
@@ -78,26 +87,12 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
         new Header(
             2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), "res://liechtenstein", "", ""));
 
-    Cache<Long, Coordinate> coordinateCache = new PostgresCoordinateCache(dataSource);
-    Cache<Long, List<Long>> referenceCache = new PostgresReferenceCache(dataSource);
+    coordinateCache = new PostgresCoordinateCache(dataSource);
+    referenceCache = new PostgresReferenceCache(dataSource);
 
     assertEquals(
         0,
         new DiffService(
-                blobStore,
-                coordinateCache,
-                referenceCache,
-                headerRepository,
-                nodeRepository,
-                wayRepository,
-                relationRepository,
-                3857,
-                14)
-            .call()
-            .size());
-
-    // Update the database
-    new UpdateService(
             blobStore,
             coordinateCache,
             referenceCache,
@@ -105,26 +100,27 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
             nodeRepository,
             wayRepository,
             relationRepository,
-            3857)
+            3857,
+            14)
+            .call()
+            .size());
+
+    // Update the database
+    new UpdateService(
+        blobStore,
+        coordinateCache,
+        referenceCache,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        3857)
         .call();
     assertEquals(2435l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(
         2,
         new DiffService(
-                blobStore,
-                coordinateCache,
-                referenceCache,
-                headerRepository,
-                nodeRepository,
-                wayRepository,
-                relationRepository,
-                3857,
-                14)
-            .call()
-            .size());
-
-    new UpdateService(
             blobStore,
             coordinateCache,
             referenceCache,
@@ -132,26 +128,26 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
             nodeRepository,
             wayRepository,
             relationRepository,
-            3857)
+            3857,
+            14)
+            .call()
+            .size());
+
+    new UpdateService(
+        blobStore,
+        coordinateCache,
+        referenceCache,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        3857)
         .call();
     assertEquals(2436l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(
         0,
         new DiffService(
-                blobStore,
-                coordinateCache,
-                referenceCache,
-                headerRepository,
-                nodeRepository,
-                wayRepository,
-                relationRepository,
-                3857,
-                14)
-            .call()
-            .size());
-
-    new UpdateService(
             blobStore,
             coordinateCache,
             referenceCache,
@@ -159,7 +155,20 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
             nodeRepository,
             wayRepository,
             relationRepository,
-            3857)
+            3857,
+            14)
+            .call()
+            .size());
+
+    new UpdateService(
+        blobStore,
+        coordinateCache,
+        referenceCache,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        3857)
         .call();
     assertEquals(2437l, headerRepository.selectLatest().getReplicationSequenceNumber());
   }

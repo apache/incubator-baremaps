@@ -12,13 +12,15 @@
  * the License.
  */
 
-package com.baremaps.store;
+package com.baremaps.store.list;
 
 import com.baremaps.store.memory.Memory;
 import com.baremaps.store.type.FixedSizeDataType;
+import com.baremaps.store.type.IntegerDataType;
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicLong;
 
-public class LongFixedSizeDataDenseMap<T> implements LongDataMap<T> {
+public class FixedSizeDataList<T> implements DataList<T> {
 
   private final FixedSizeDataType<T> dataType;
 
@@ -30,27 +32,33 @@ public class LongFixedSizeDataDenseMap<T> implements LongDataMap<T> {
 
   private final long segmentMask;
 
-  public LongFixedSizeDataDenseMap(FixedSizeDataType<T> dataType, Memory memory) {
+  private AtomicLong size;
+
+  public FixedSizeDataList(FixedSizeDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentBytes()) {
-      throw new RuntimeException("The values are too big");
+      throw new RuntimeException("The segment size is too small for the data type");
+    }
+    if (memory.segmentBytes() % dataType.size() != 0) {
+      throw new RuntimeException("The segment size and data type size must be aligned");
     }
     this.dataType = dataType;
     this.memory = memory;
     this.valueShift = (int) (Math.log(dataType.size()) + 1);
     this.segmentBits = memory.segmentBits();
     this.segmentMask = memory.segmentMask();
+    this.size = new AtomicLong(0);
   }
 
-  @Override
-  public void put(long key, T value) {
-    long position = key << valueShift;
+  public long add(T value) {
+    long index = size.getAndIncrement();
+    long position = index << valueShift;
     int segmentIndex = (int) (position >>> segmentBits);
     int segmentOffset = (int) (position & segmentMask);
     ByteBuffer segment = memory.segment(segmentIndex);
     dataType.write(segment, segmentOffset, value);
+    return index;
   }
 
-  @Override
   public T get(long key) {
     long position = key << valueShift;
     int segmentIndex = (int) (position >> segmentBits);
@@ -58,4 +66,9 @@ public class LongFixedSizeDataDenseMap<T> implements LongDataMap<T> {
     ByteBuffer segment = memory.segment(segmentIndex);
     return dataType.read(segment, segmentOffset);
   }
+
+  public long size() {
+    return size.get();
+  }
+
 }

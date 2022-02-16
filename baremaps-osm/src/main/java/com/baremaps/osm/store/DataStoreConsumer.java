@@ -12,20 +12,21 @@
  * the License.
  */
 
-package com.baremaps.osm.cache;
+package com.baremaps.osm.store;
 
-import com.baremaps.osm.cache.Cache.Entry;
 import com.baremaps.osm.domain.DataBlock;
 import com.baremaps.osm.function.BlockConsumerAdapter;
+import com.baremaps.store.map.LongDataMap;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
 
-/** A consumer that stores osm nodes and ways in the provided caches. */
-public class CacheBlockConsumer implements BlockConsumerAdapter {
+/**
+ * A consumer that stores osm nodes and ways in the provided caches.
+ */
+public class DataStoreConsumer implements BlockConsumerAdapter {
 
-  private final Cache<Long, Coordinate> coordiateCache;
-  private final Cache<Long, List<Long>> referenceCache;
+  private final LongDataMap<Coordinate> coordiateCache;
+  private final LongDataMap<List<Long>> referenceCache;
 
   /**
    * Constructs a {@code CacheBlockConsumer} with the provided caches.
@@ -33,26 +34,22 @@ public class CacheBlockConsumer implements BlockConsumerAdapter {
    * @param coordiateCache the cache of coordinates
    * @param referenceCache the cache of references
    */
-  public CacheBlockConsumer(
-      Cache<Long, Coordinate> coordiateCache, Cache<Long, List<Long>> referenceCache) {
+  public DataStoreConsumer(
+      LongDataMap<Coordinate> coordiateCache, LongDataMap<List<Long>> referenceCache) {
     this.coordiateCache = coordiateCache;
     this.referenceCache = referenceCache;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void match(DataBlock dataBlock) throws Exception {
-    coordiateCache.put(
-        dataBlock.getDenseNodes().stream()
-            .map(node -> new Entry<>(node.getId(), new Coordinate(node.getLon(), node.getLat())))
-            .collect(Collectors.toList()));
-    coordiateCache.put(
-        dataBlock.getNodes().stream()
-            .map(node -> new Entry<>(node.getId(), new Coordinate(node.getLon(), node.getLat())))
-            .collect(Collectors.toList()));
-    referenceCache.put(
-        dataBlock.getWays().stream()
-            .map(way -> new Entry<>(way.getId(), way.getNodes()))
-            .collect(Collectors.toList()));
+    dataBlock.getDenseNodes().stream()
+        .forEach(node -> coordiateCache.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
+    dataBlock.getNodes().stream()
+        .forEach(node -> coordiateCache.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
+    dataBlock.getWays().stream()
+        .forEach(way -> referenceCache.put(way.getId(), way.getNodes()));
   }
 }

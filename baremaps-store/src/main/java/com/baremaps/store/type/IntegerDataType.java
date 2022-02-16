@@ -16,7 +16,7 @@ package com.baremaps.store.type;
 
 import java.nio.ByteBuffer;
 
-public class IntDataType implements FixedSizeDataType<Integer> {
+public class IntegerDataType implements FixedSizeDataType<Integer> {
 
   @Override
   public int size(Integer value) {

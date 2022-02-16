@@ -18,12 +18,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.ResourceBlobStore;
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.SimpleCache;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.repository.DiffService;
 import com.baremaps.osm.repository.ImportService;
 import com.baremaps.osm.repository.UpdateService;
+import com.baremaps.store.DataStore;
+import com.baremaps.store.map.LongDataMap;
+import com.baremaps.store.map.LongDataOpenHashMap;
+import com.baremaps.store.memory.FileMemory;
+import com.baremaps.store.type.CoordinateDataType;
+import com.baremaps.store.type.LongListDataType;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
@@ -57,18 +61,22 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
   @Test
   @Tag("integration")
   void monaco() throws Exception {
+    LongDataMap<Coordinate> coordinateCache =
+        new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new FileMemory()));
+    LongDataMap<List<Long>> referenceCache =
+        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new FileMemory()));
 
     // Import data
     new ImportService(
-            new URI("res://monaco/monaco-210801.osm.pbf"),
-            blobStore,
-            new SimpleCache<>(),
-            new SimpleCache<>(),
-            headerRepository,
-            nodeRepository,
-            wayRepository,
-            relationRepository,
-            3857)
+        new URI("res://monaco/monaco-210801.osm.pbf"),
+        blobStore,
+        coordinateCache,
+        referenceCache,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        3857)
         .call();
 
     assertEquals(3047l, headerRepository.selectLatest().getReplicationSequenceNumber());
@@ -83,32 +91,32 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
             "",
             ""));
 
-    Cache<Long, Coordinate> coordinateCache = new PostgresCoordinateCache(dataSource);
-    Cache<Long, List<Long>> referenceCache = new PostgresReferenceCache(dataSource);
+    coordinateCache = new PostgresCoordinateCache(dataSource);
+    referenceCache = new PostgresReferenceCache(dataSource);
 
     // Generate the diff and update the database
     long replicationSequenceNumber = headerRepository.selectLatest().getReplicationSequenceNumber();
     while (replicationSequenceNumber < 3075) {
       new DiffService(
-              blobStore,
-              coordinateCache,
-              referenceCache,
-              headerRepository,
-              nodeRepository,
-              wayRepository,
-              relationRepository,
-              3857,
-              14)
+          blobStore,
+          coordinateCache,
+          referenceCache,
+          headerRepository,
+          nodeRepository,
+          wayRepository,
+          relationRepository,
+          3857,
+          14)
           .call();
       new UpdateService(
-              blobStore,
-              coordinateCache,
-              referenceCache,
-              headerRepository,
-              nodeRepository,
-              wayRepository,
-              relationRepository,
-              3857)
+          blobStore,
+          coordinateCache,
+          referenceCache,
+          headerRepository,
+          nodeRepository,
+          wayRepository,
+          relationRepository,
+          3857)
           .call();
       long nextReplicationSequenceNumber =
           headerRepository.selectLatest().getReplicationSequenceNumber();

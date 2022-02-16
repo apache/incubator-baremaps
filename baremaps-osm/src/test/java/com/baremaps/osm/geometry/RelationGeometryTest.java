@@ -17,12 +17,12 @@ package com.baremaps.osm.geometry;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.baremaps.osm.OpenStreetMap;
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.MockCache;
+import com.baremaps.osm.store.MockLongDataMap;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.store.map.LongDataMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -38,15 +38,15 @@ class RelationGeometryTest {
   Geometry handleRelation(String file) throws IOException {
     InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
     List<Entity> entities = OpenStreetMap.streamXmlEntities(input).collect(Collectors.toList());
-    Cache<Long, Coordinate> coordinateCache =
-        new MockCache<>(
+    LongDataMap<Coordinate> coordinateCache =
+        new MockLongDataMap<>(
             entities.stream()
                 .filter(e -> e instanceof Node)
                 .map(e -> (Node) e)
                 .collect(
                     Collectors.toMap(n -> n.getId(), n -> new Coordinate(n.getLon(), n.getLat()))));
-    Cache<Long, List<Long>> referenceCache =
-        new MockCache<>(
+    LongDataMap<List<Long>> referenceCache =
+        new MockLongDataMap<>(
             entities.stream()
                 .filter(e -> e instanceof Way)
                 .map(e -> (Way) e)

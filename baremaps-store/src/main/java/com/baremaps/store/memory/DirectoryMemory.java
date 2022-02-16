@@ -40,7 +40,7 @@ public class DirectoryMemory implements Memory {
   private final List<MappedByteBuffer> segments = new ArrayList<>();
 
   public DirectoryMemory() throws IOException {
-    this(Files.createTempDirectory("tmp_"), 1 << 30);
+    this(Files.createTempDirectory("tmp_"), 1 << 20);
   }
 
   public DirectoryMemory(int segmentBytes) throws IOException {
@@ -104,7 +104,7 @@ public class DirectoryMemory implements Memory {
           segments.set(index, buffer);
         }
       } catch (IOException e) {
-        throw new RuntimeException();
+        throw new RuntimeException(e);
       }
     }
     return buffer;

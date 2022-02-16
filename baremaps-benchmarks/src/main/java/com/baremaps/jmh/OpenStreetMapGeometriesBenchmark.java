@@ -15,14 +15,13 @@
 package com.baremaps.jmh;
 
 import com.baremaps.osm.OpenStreetMap;
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.StoreCache;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
 import com.baremaps.store.DataStore;
-import com.baremaps.store.LongDataOpenHashMap;
+import com.baremaps.store.map.LongDataMap;
+import com.baremaps.store.map.LongDataOpenHashMap;
 import com.baremaps.store.memory.FileMemory;
 import com.baremaps.store.memory.OnHeapMemory;
 import com.baremaps.store.type.CoordinateDataType;
@@ -76,12 +75,10 @@ public class OpenStreetMapGeometriesBenchmark {
   @Warmup(iterations = 0)
   @Measurement(iterations = 1)
   public void store() throws IOException {
-    Cache<Long, Coordinate> coordinateCache =
-        new StoreCache<>(
-            new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new FileMemory())));
-    Cache<Long, List<Long>> referenceCache =
-        new StoreCache<>(
-            new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory())));
+    LongDataMap<Coordinate> coordinateCache =
+            new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new FileMemory()));
+    LongDataMap<List<Long>> referenceCache =
+            new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);

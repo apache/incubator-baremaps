@@ -12,8 +12,9 @@
  * the License.
  */
 
-package com.baremaps.store;
+package com.baremaps.store.map;
 
+import com.baremaps.store.list.FixedSizeDataList;
 import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.type.LongDataType;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;

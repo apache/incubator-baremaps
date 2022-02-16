@@ -17,7 +17,7 @@ package com.baremaps.store.type;
 import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
 
-public class LonLatDataType implements DataType<Coordinate> {
+public class LonLatDataType implements FixedSizeDataType<Coordinate> {
 
   private static final long LOWER_32_BIT_MASK = (1L << 32) - 1L;
 

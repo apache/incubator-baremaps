@@ -19,14 +19,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.MockCache;
+import com.baremaps.osm.store.MockLongDataMap;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Member;
 import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.store.map.LongDataMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.time.LocalDateTime;
@@ -110,8 +110,8 @@ class GeometryHandlerTest {
 
   static final Node NODE_15 = new Node(15, INFO, ImmutableMap.of(), 3, 1);
 
-  static final Cache<Long, Coordinate> COORDINATE_CACHE =
-      new MockCache(
+  static final LongDataMap<Coordinate> COORDINATE_CACHE =
+      new MockLongDataMap(
           Arrays.asList(
                   NODE_0, NODE_1, NODE_2, NODE_3, NODE_4, NODE_5, NODE_6, NODE_7, NODE_8, NODE_9,
                   NODE_10, NODE_11, NODE_12, NODE_13, NODE_14, NODE_15)
@@ -135,8 +135,8 @@ class GeometryHandlerTest {
   static final Way WAY_5 =
       new Way(5, INFO, ImmutableMap.of(), ImmutableList.of(12l, 13l, 14l, 15l, 12l));
 
-  static final Cache<Long, List<Long>> REFERENCE_CACHE =
-      new MockCache(
+  static final LongDataMap<List<Long>> REFERENCE_CACHE =
+      new MockLongDataMap(
           Arrays.asList(WAY_0, WAY_1, WAY_2, WAY_3, WAY_4, WAY_5).stream()
               .collect(Collectors.toMap(w -> w.getId(), w -> w.getNodes())));
 

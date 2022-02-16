@@ -14,8 +14,7 @@
 
 package com.baremaps.osm.postgres;
 
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.CacheException;
+import com.baremaps.store.map.LongDataMap;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,7 +27,7 @@ import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A read-only {@code Cache} for coordinates baked by OpenStreetMap nodes stored in PostgreSQL. */
-public class PostgresCoordinateCache implements Cache<Long, Coordinate> {
+public class PostgresCoordinateCache implements LongDataMap<Coordinate> {
 
   private static final String SELECT = "SELECT lon, lat FROM osm_nodes WHERE id = ?";
 
@@ -43,7 +42,7 @@ public class PostgresCoordinateCache implements Cache<Long, Coordinate> {
 
   /** {@inheritDoc} */
   @Override
-  public Coordinate get(Long key) throws CacheException {
+  public Coordinate get(long key) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, key);
@@ -57,13 +56,13 @@ public class PostgresCoordinateCache implements Cache<Long, Coordinate> {
         }
       }
     } catch (SQLException e) {
-      throw new CacheException(e);
+      throw new RuntimeException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public List<Coordinate> get(List<Long> keys) throws CacheException {
+  public List<Coordinate> get(List<Long> keys) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
@@ -78,31 +77,13 @@ public class PostgresCoordinateCache implements Cache<Long, Coordinate> {
         return keys.stream().map(nodes::get).collect(Collectors.toList());
       }
     } catch (SQLException e) {
-      throw new CacheException(e);
+      throw new RuntimeException(e);
     }
   }
 
-  /** This operation is not supported. */
+  /** {@inheritDoc} */
   @Override
-  public void put(Long key, Coordinate values) {
-    throw new UnsupportedOperationException();
-  }
-
-  /** This operation is not supported. */
-  @Override
-  public void put(List<Entry<Long, Coordinate>> storeEntries) {
-    throw new UnsupportedOperationException();
-  }
-
-  /** This operation is not supported. */
-  @Override
-  public void delete(Long key) {
-    throw new UnsupportedOperationException();
-  }
-
-  /** This operation is not supported. */
-  @Override
-  public void delete(List<Long> keys) {
+  public void put(long key, Coordinate value) {
     throw new UnsupportedOperationException();
   }
 }

@@ -19,7 +19,6 @@ import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.OpenStreetMap;
-import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Header;
@@ -32,6 +31,7 @@ import com.baremaps.osm.geometry.CreateGeometryConsumer;
 import com.baremaps.osm.geometry.ReprojectEntityConsumer;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
+import com.baremaps.store.map.LongDataMap;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -45,8 +45,8 @@ import org.locationtech.jts.geom.Coordinate;
 public class UpdateService implements Callable<Void> {
 
   private final BlobStore blobStore;
-  private final Cache<Long, Coordinate> coordinateCache;
-  private final Cache<Long, List<Long>> referenceCache;
+  private final LongDataMap<Coordinate> coordinateCache;
+  private final LongDataMap<List<Long>> referenceCache;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
@@ -55,8 +55,8 @@ public class UpdateService implements Callable<Void> {
 
   public UpdateService(
       BlobStore blobStore,
-      Cache<Long, Coordinate> coordinateCache,
-      Cache<Long, List<Long>> referenceCache,
+      LongDataMap<Coordinate> coordinateCache,
+      LongDataMap<List<Long>> referenceCache,
       HeaderRepository headerRepository,
       Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository,

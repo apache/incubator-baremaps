@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IntListDataType implements DataType<List<Integer>> {
+public class IntegerListDataType implements DataType<List<Integer>> {
 
   @Override
   public int size(List<Integer> values) {

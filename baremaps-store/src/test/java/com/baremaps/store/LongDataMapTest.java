@@ -16,6 +16,13 @@ package com.baremaps.store;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.baremaps.store.list.FixedSizeDataList;
+import com.baremaps.store.map.LongDataMap;
+import com.baremaps.store.map.LongDataOpenHashMap;
+import com.baremaps.store.map.LongDataSortedMap;
+import com.baremaps.store.map.LongFixedSizeDataDenseMap;
+import com.baremaps.store.map.LongFixedSizeDataSortedMap;
+import com.baremaps.store.map.LongFixedSizeDataSparseMap;
 import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.type.LongDataType;
 import java.io.IOException;

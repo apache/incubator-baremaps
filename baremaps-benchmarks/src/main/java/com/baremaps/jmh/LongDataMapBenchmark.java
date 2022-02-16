@@ -14,7 +14,7 @@
 
 package com.baremaps.jmh;
 
-import com.baremaps.store.FixedSizeDataList;
+import com.baremaps.store.list.FixedSizeDataList;
 import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.memory.OnHeapMemory;
 import com.baremaps.store.type.LongDataType;
@@ -35,7 +35,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(1)
-public class StoreBenchmark {
+public class LongDataMapBenchmark {
 
   private final long N = 1 << 25;
 
@@ -84,7 +84,7 @@ public class StoreBenchmark {
 
   public static void main(String[] args) throws RunnerException {
     org.openjdk.jmh.runner.options.Options opt =
-        new OptionsBuilder().include(StoreBenchmark.class.getSimpleName()).forks(1).build();
+        new OptionsBuilder().include(LongDataMapBenchmark.class.getSimpleName()).forks(1).build();
     new Runner(opt).run();
   }
 }

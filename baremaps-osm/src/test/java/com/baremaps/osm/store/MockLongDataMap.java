@@ -12,28 +12,36 @@
  * the License.
  */
 
-package com.baremaps.store;
+package com.baremaps.osm.store;
 
-import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
+import com.baremaps.store.map.LongDataMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-public class LongDataOpenHashMap<T> implements LongDataMap<T> {
+public class MockLongDataMap<T> implements LongDataMap<T> {
 
-  private final Map<Long, Long> map;
-  private final DataStore<T> store;
+  private final Map<Long, T> values;
 
-  public LongDataOpenHashMap(DataStore<T> values) {
-    this.map = new Long2LongOpenHashMap();
-    this.store = values;
+  public MockLongDataMap(Map<Long, T> values) {
+    this.values = values;
+  }
+
+  public List<T> get(List<Long> keys) {
+    List<T> coordinateList = new ArrayList<>();
+    for (Long key : keys) {
+      coordinateList.add(get(key));
+    }
+    return coordinateList;
   }
 
   @Override
   public void put(long key, T value) {
-    map.put(key, store.add(value));
+
   }
 
   @Override
   public T get(long key) {
-    return store.get(map.get(key));
+    return values.get(key);
   }
 }

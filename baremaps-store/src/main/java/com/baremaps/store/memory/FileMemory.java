@@ -42,7 +42,7 @@ public class FileMemory implements Memory {
   private final List<MappedByteBuffer> segments = new ArrayList<>();
 
   public FileMemory() throws IOException {
-    this(Files.createTempFile("tmp_", ".data"), 1 << 30);
+    this(Files.createTempFile("tmp_", ".data"), 1 << 20);
   }
 
   public FileMemory(int segmentBytes) throws IOException {
@@ -58,9 +58,8 @@ public class FileMemory implements Memory {
     this.segmentMask = (1L << segmentBits) - 1;
     this.file = file;
     this.capacity = segmentBytes;
-    this.channel =
-        FileChannel.open(
-            file, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);
+    this.channel = FileChannel.open(
+        file, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE);
   }
 
   public final Path file() {
@@ -101,7 +100,7 @@ public class FileMemory implements Memory {
         buffer = channel.map(MapMode.READ_WRITE, index * (long) capacity, capacity);
         segments.set(index, buffer);
       } catch (IOException e) {
-        throw new RuntimeException();
+        throw new RuntimeException(e);
       }
     }
     return buffer;

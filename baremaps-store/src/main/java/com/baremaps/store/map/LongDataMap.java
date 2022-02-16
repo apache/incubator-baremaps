@@ -12,11 +12,18 @@
  * the License.
  */
 
-package com.baremaps.store;
+package com.baremaps.store.map;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public interface LongDataMap<T> {
 
   void put(long key, T value);
 
   T get(long key);
+
+  default List<T> get(List<Long> keys) {
+    return keys.stream().map(this::get).collect(Collectors.toList());
+  }
 }
