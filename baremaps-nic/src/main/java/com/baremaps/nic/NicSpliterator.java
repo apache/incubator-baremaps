@@ -22,12 +22,12 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 /** Nic spliterator. */
-public class NiceSpliterator implements Spliterator<NiceObject> {
+public class NicSpliterator implements Spliterator<NicObject> {
 
   private final BufferedReader reader;
 
   /** {@inheritdoc} */
-  public NiceSpliterator(InputStream inputStream) {
+  public NicSpliterator(InputStream inputStream) {
     this.reader = new BufferedReader(new InputStreamReader(inputStream));
   }
 
@@ -39,11 +39,11 @@ public class NiceSpliterator implements Spliterator<NiceObject> {
     return IMMUTABLE;
   }
 
-  public Spliterator<NiceObject> trySplit() {
+  public Spliterator<NicObject> trySplit() {
     return null;
   }
 
-  public boolean tryAdvance(Consumer<? super NiceObject> consumer) {
+  public boolean tryAdvance(Consumer<? super NicObject> consumer) {
     try {
       String line;
       StringBuilder key = new StringBuilder();
@@ -82,7 +82,7 @@ public class NiceSpliterator implements Spliterator<NiceObject> {
 
       // build object
       if (!attributes.isEmpty()) {
-        consumer.accept(new NiceObject(attributes));
+        consumer.accept(new NicObject(attributes));
       }
 
       return line != null;

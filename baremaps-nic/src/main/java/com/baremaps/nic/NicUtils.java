@@ -31,7 +31,7 @@ public class NicUtils {
    * @param inputStream the stream of text input
    * @return Stream of Nic Object
    */
-  public static Stream<NiceObject> parse(InputStream inputStream) {
-    return StreamSupport.stream(new NiceSpliterator(inputStream), false);
+  public static Stream<NicObject> parse(InputStream inputStream) {
+    return StreamSupport.stream(new NicSpliterator(inputStream), false);
   }
 }

@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /** Representation of Nic Object. */
-public class NiceObject {
+public class NicObject {
 
   private List<NicAttribute> attributes;
 
@@ -36,7 +36,7 @@ public class NiceObject {
    *
    * @param attributes - list of Nic Attributes
    */
-  public NiceObject(List<NicAttribute> attributes) {
+  public NicObject(List<NicAttribute> attributes) {
     checkNotNull(attributes);
     checkArgument(!attributes.isEmpty());
     Optional<NicAttribute> geoloc =
@@ -67,7 +67,7 @@ public class NiceObject {
   }
 
   /** Empty Constructor. */
-  public NiceObject() {
+  public NicObject() {
     this.attributes = new ArrayList<>();
   }
 
