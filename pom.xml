@@ -119,6 +119,7 @@
     <module>baremaps-tile-mbtiles</module>
     <module>baremaps-tile-postgres</module>
     <module>baremaps-postgres</module>
+    <module>baremaps-nic</module>
   </modules>
 
   <profiles>
@@ -429,6 +430,11 @@
       </dependency>
       <dependency>
         <artifactId>baremaps-postgres</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-nic</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>

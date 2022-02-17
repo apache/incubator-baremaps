@@ -141,6 +141,10 @@
       <artifactId>baremaps-postgres</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-nic</artifactId>
+    </dependency>
+    <dependency>
       <artifactId>picocli</artifactId>
       <groupId>info.picocli</groupId>
     </dependency>
