@@ -10,13 +10,11 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.baremaps.nic.ripe;
+package com.baremaps.nic;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
@@ -28,22 +26,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/** Representation of Ripe Object. */
-@JsonSerialize(using = RipeObjectSerializer.class)
-@JsonDeserialize(using = RipeObjectDeserializer.class)
-public class RipeObject {
+/** Representation of Nic Object. */
+public class NiceObject {
 
-  private List<RipeAttribute> attributes;
+  private List<NicAttribute> attributes;
 
   /**
    * Constructor.
    *
-   * @param attributes - list of Ripe Attributes
+   * @param attributes - list of Nic Attributes
    */
-  public RipeObject(List<RipeAttribute> attributes) {
+  public NiceObject(List<NicAttribute> attributes) {
     checkNotNull(attributes);
     checkArgument(!attributes.isEmpty());
-    Optional<RipeAttribute> geoloc =
+    Optional<NicAttribute> geoloc =
         attributes.stream().filter(attr -> attr.name().equals("geoloc")).findFirst();
     geoloc.ifPresent(
         s -> {
@@ -71,7 +67,7 @@ public class RipeObject {
   }
 
   /** Empty Constructor. */
-  public RipeObject() {
+  public NiceObject() {
     this.attributes = new ArrayList<>();
   }
 
@@ -98,7 +94,7 @@ public class RipeObject {
    *
    * @return RIPE Objects attributes
    */
-  public List<RipeAttribute> attributes() {
+  public List<NicAttribute> attributes() {
     return attributes;
   }
 
@@ -111,7 +107,7 @@ public class RipeObject {
   public Optional<String> single(String name) {
     return attributes.stream()
         .filter(attr -> attr.name().equals(name))
-        .map(RipeAttribute::value)
+        .map(NicAttribute::value)
         .findFirst();
   }
 
@@ -124,7 +120,7 @@ public class RipeObject {
   public List<String> multiple(String name) {
     return attributes.stream()
         .filter(attr -> attr.name().equals(name))
-        .map(RipeAttribute::value)
+        .map(NicAttribute::value)
         .collect(Collectors.toList());
   }
 
@@ -145,11 +141,11 @@ public class RipeObject {
     }
   }
 
-  public List<RipeAttribute> getAttributes() {
+  public List<NicAttribute> getAttributes() {
     return attributes;
   }
 
-  public void setAttributes(List<RipeAttribute> attributes) {
+  public void setAttributes(List<NicAttribute> attributes) {
     this.attributes = attributes;
   }
 
@@ -157,13 +153,13 @@ public class RipeObject {
   @Override
   public String toString() {
     StringBuilder str = new StringBuilder();
-    for (RipeAttribute attr : attributes()) {
+    for (NicAttribute attr : attributes()) {
       str.append(attr.name()).append(": ").append(attr.value()).append("\n");
     }
     return str.toString();
   }
 
-  public void addAttribute(RipeAttribute ripeAttribute) {
+  public void addAttribute(NicAttribute ripeAttribute) {
     attributes.add(ripeAttribute);
   }
 }

@@ -10,7 +10,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.baremaps.nic.ripe;
+package com.baremaps.nic;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,13 +21,13 @@ import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-/** Ripe spliterator. */
-public class RipeSpliterator implements Spliterator<RipeObject> {
+/** Nic spliterator. */
+public class NiceSpliterator implements Spliterator<NiceObject> {
 
   private final BufferedReader reader;
 
   /** {@inheritdoc} */
-  public RipeSpliterator(InputStream inputStream) {
+  public NiceSpliterator(InputStream inputStream) {
     this.reader = new BufferedReader(new InputStreamReader(inputStream));
   }
 
@@ -39,16 +39,16 @@ public class RipeSpliterator implements Spliterator<RipeObject> {
     return IMMUTABLE;
   }
 
-  public Spliterator<RipeObject> trySplit() {
+  public Spliterator<NiceObject> trySplit() {
     return null;
   }
 
-  public boolean tryAdvance(Consumer<? super RipeObject> consumer) {
+  public boolean tryAdvance(Consumer<? super NiceObject> consumer) {
     try {
       String line;
       StringBuilder key = new StringBuilder();
       StringBuilder val = new StringBuilder();
-      List<RipeAttribute> attributes = new ArrayList<>();
+      List<NicAttribute> attributes = new ArrayList<>();
 
       while ((line = reader.readLine()) != null && !"".equals(line)) {
 
@@ -82,7 +82,7 @@ public class RipeSpliterator implements Spliterator<RipeObject> {
 
       // build object
       if (!attributes.isEmpty()) {
-        consumer.accept(new RipeObject(attributes));
+        consumer.accept(new NiceObject(attributes));
       }
 
       return line != null;
@@ -91,9 +91,9 @@ public class RipeSpliterator implements Spliterator<RipeObject> {
     }
   }
 
-  private void addAttributes(StringBuilder key, StringBuilder val, List<RipeAttribute> attributes) {
+  private void addAttributes(StringBuilder key, StringBuilder val, List<NicAttribute> attributes) {
     if (key.length() > 0) {
-      attributes.add(new RipeAttribute(key.toString(), val.toString()));
+      attributes.add(new NicAttribute(key.toString(), val.toString()));
     }
   }
 }

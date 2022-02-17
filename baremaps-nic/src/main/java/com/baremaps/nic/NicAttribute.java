@@ -10,15 +10,10 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.baremaps.nic.ripe;
+package com.baremaps.nic;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-/** Representation of Ripe Attribute. */
-@JsonSerialize(using = RipeAttributeSerializer.class)
-@JsonDeserialize(using = RipeAttributeDeserializer.class)
-public class RipeAttribute {
+/** Representation of Nic Attribute. */
+public class NicAttribute {
 
   private String name;
   private String value;
@@ -29,12 +24,12 @@ public class RipeAttribute {
    * @param name - attribute name
    * @param value - attribute value
    */
-  public RipeAttribute(String name, String value) {
+  public NicAttribute(String name, String value) {
     this.name = name;
     this.value = value;
   }
 
-  public RipeAttribute() {}
+  public NicAttribute() {}
 
   /**
    * Getter for name property.
