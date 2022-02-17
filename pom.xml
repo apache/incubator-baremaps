@@ -127,6 +127,8 @@
     <module>baremaps-http</module>
     <module>baremaps-testing</module>
     <module>baremaps-collection</module>
+    <module>baremaps-geonames</module>
+    <module>baremaps-geocoder</module>
   </modules>
 
   <profiles>
@@ -372,6 +374,16 @@
         <artifactId>baremaps-testing</artifactId>
         <groupId>com.baremaps</groupId>
         <scope>test</scope>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-geonames</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-geocoder</artifactId>
+        <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
 

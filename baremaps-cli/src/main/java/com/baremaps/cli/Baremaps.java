@@ -44,6 +44,8 @@ import picocli.CommandLine.Option;
       Viewer.class,
       Server.class,
       OgcApi.class,
+      GeocoderGeonamesIndex.class,
+      GeocoderGeonamesSearch.class
     })
 public class Baremaps implements Callable<Integer> {
 
