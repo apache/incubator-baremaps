@@ -20,9 +20,9 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
 import com.baremaps.store.DataStore;
-import com.baremaps.store.map.LongDataMap;
-import com.baremaps.store.map.LongDataOpenHashMap;
-import com.baremaps.store.memory.FileMemory;
+import com.baremaps.store.LongDataMap;
+import com.baremaps.store.LongDataOpenHashMap;
+import com.baremaps.store.memory.OnDiskMemory;
 import com.baremaps.store.memory.OnHeapMemory;
 import com.baremaps.store.type.CoordinateDataType;
 import com.baremaps.store.type.LongListDataType;
@@ -76,7 +76,7 @@ public class OpenStreetMapGeometriesBenchmark {
   @Measurement(iterations = 1)
   public void store() throws IOException {
     LongDataMap<Coordinate> coordinateCache =
-            new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new FileMemory()));
+            new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnDiskMemory()));
     LongDataMap<List<Long>> referenceCache =
             new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
     AtomicLong nodes = new AtomicLong(0);

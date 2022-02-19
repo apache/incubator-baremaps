@@ -20,7 +20,7 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
-import com.baremaps.store.map.LongDataMap;
+import com.baremaps.store.LongDataMap;
 import com.baremaps.stream.StreamException;
 import java.util.ArrayList;
 import java.util.HashSet;

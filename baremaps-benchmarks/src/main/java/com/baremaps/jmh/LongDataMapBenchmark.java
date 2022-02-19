@@ -14,10 +14,12 @@
 
 package com.baremaps.jmh;
 
-import com.baremaps.store.list.FixedSizeDataList;
+import com.baremaps.store.AlignedDataList;
 import com.baremaps.store.memory.OffHeapMemory;
+import com.baremaps.store.memory.OnDiskMemory;
 import com.baremaps.store.memory.OnHeapMemory;
 import com.baremaps.store.type.LongDataType;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -39,7 +41,7 @@ public class LongDataMapBenchmark {
 
   private final long N = 1 << 25;
 
-  private void benchmark(FixedSizeDataList<Long> store, long n) {
+  private void benchmark(AlignedDataList<Long> store, long n) {
     for (long i = 0; i < n; i++) {
       store.add(i);
     }
@@ -53,7 +55,7 @@ public class LongDataMapBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void onHeap() {
-    benchmark(new FixedSizeDataList<>(new LongDataType(), new OnHeapMemory()), N);
+    benchmark(new AlignedDataList<>(new LongDataType(), new OnHeapMemory()), N);
   }
 
   @Benchmark
@@ -61,26 +63,16 @@ public class LongDataMapBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void offHeap() {
-    benchmark(new FixedSizeDataList<>(new LongDataType(), new OffHeapMemory()), N);
-  }
-
-  /*
-  @Benchmark
-  @BenchmarkMode(Mode.SingleShotTime)
-  @Warmup(iterations = 2)
-  @Measurement(iterations = 5)
-  public void file() throws IOException {
-    benchmark(new FixedSizeDataList<>(new LongDataType(), new FileMemory()), N);
+    benchmark(new AlignedDataList<>(new LongDataType(), new OffHeapMemory()), N);
   }
 
   @Benchmark
   @BenchmarkMode(Mode.SingleShotTime)
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
-  public void directory() throws IOException {
-    benchmark(new FixedSizeDataList<>(new LongDataType(), new DirectoryMemory()), N);
+  public void onDisk() throws IOException {
+    benchmark(new AlignedDataList<>(new LongDataType(), new OnDiskMemory()), N);
   }
-   */
 
   public static void main(String[] args) throws RunnerException {
     org.openjdk.jmh.runner.options.Options opt =

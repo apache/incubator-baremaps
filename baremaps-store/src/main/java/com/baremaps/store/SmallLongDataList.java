@@ -1,4 +1,4 @@
-package com.baremaps.store.list;
+package com.baremaps.store;
 
 import java.util.function.IntFunction;
 

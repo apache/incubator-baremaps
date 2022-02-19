@@ -12,50 +12,62 @@
  * the License.
  */
 
-package com.baremaps.store.map;
+package com.baremaps.store;
 
 import com.baremaps.store.memory.Memory;
-import com.baremaps.store.type.FixedSizeDataType;
+import com.baremaps.store.type.AlignedDataType;
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicLong;
 
-public class LongFixedSizeDataDenseMap<T> implements LongDataMap<T> {
+public class AlignedDataList<T> implements DataList<T> {
 
-  private final FixedSizeDataType<T> dataType;
+  private final AlignedDataType<T> dataType;
 
   private final Memory memory;
 
   private final int valueShift;
 
-  private final long segmentBits;
+  private final long segmentShift;
 
   private final long segmentMask;
 
-  public LongFixedSizeDataDenseMap(FixedSizeDataType<T> dataType, Memory memory) {
-    if (dataType.size() > memory.segmentBytes()) {
-      throw new RuntimeException("The values are too big");
+  private AtomicLong size;
+
+  public AlignedDataList(AlignedDataType<T> dataType, Memory memory) {
+    if (dataType.size() > memory.segmentSize()) {
+      throw new RuntimeException("The segment size is too small for the data type");
+    }
+    if (memory.segmentSize() % dataType.size() != 0) {
+      throw new RuntimeException("The segment size and data type size must be aligned");
     }
     this.dataType = dataType;
     this.memory = memory;
-    this.valueShift = (int) (Math.log(dataType.size()) + 1);
-    this.segmentBits = memory.segmentBits();
+    this.valueShift = (int) (Math.log(dataType.size()) / Math.log(2));
+    this.segmentShift = memory.segmentShift();
     this.segmentMask = memory.segmentMask();
+    this.size = new AtomicLong(0);
   }
 
-  @Override
-  public void put(long key, T value) {
-    long position = key << valueShift;
-    int segmentIndex = (int) (position >>> segmentBits);
+  public long add(T value) {
+    long index = size.getAndIncrement();
+    long position = index << valueShift;
+    int segmentIndex = (int) (position >>> segmentShift);
     int segmentOffset = (int) (position & segmentMask);
     ByteBuffer segment = memory.segment(segmentIndex);
     dataType.write(segment, segmentOffset, value);
+    return index;
   }
 
-  @Override
-  public T get(long key) {
-    long position = key << valueShift;
-    int segmentIndex = (int) (position >> segmentBits);
+  public T get(long index) {
+    long position = index << valueShift;
+    int segmentIndex = (int) (position >> segmentShift);
     int segmentOffset = (int) (position & segmentMask);
     ByteBuffer segment = memory.segment(segmentIndex);
     return dataType.read(segment, segmentOffset);
   }
+
+  public long size() {
+    return size.get();
+  }
+
 }

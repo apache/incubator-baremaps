@@ -28,7 +28,7 @@ import com.baremaps.osm.pbf.BlobIterator;
 import com.baremaps.osm.pbf.BlobUtils;
 import com.baremaps.osm.xml.XmlChangeSpliterator;
 import com.baremaps.osm.xml.XmlEntitySpliterator;
-import com.baremaps.store.map.LongDataMap;
+import com.baremaps.store.LongDataMap;
 import com.baremaps.stream.StreamException;
 import com.baremaps.stream.StreamUtils;
 import com.google.common.io.CharStreams;

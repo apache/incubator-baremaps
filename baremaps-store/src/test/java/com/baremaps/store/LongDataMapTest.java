@@ -16,16 +16,15 @@ package com.baremaps.store;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.baremaps.store.list.FixedSizeDataList;
-import com.baremaps.store.map.LongDataMap;
-import com.baremaps.store.map.LongDataOpenHashMap;
-import com.baremaps.store.map.LongDataSortedMap;
-import com.baremaps.store.map.LongFixedSizeDataDenseMap;
-import com.baremaps.store.map.LongFixedSizeDataSortedMap;
-import com.baremaps.store.map.LongFixedSizeDataSparseMap;
+import com.baremaps.store.DataStore;
+import com.baremaps.store.AlignedDataList;
+import com.baremaps.store.LongAlignedDataDenseMap;
+import com.baremaps.store.LongAlignedDataSortedMap;
+import com.baremaps.store.LongAlignedDataSparseMap;
+import com.baremaps.store.LongDataMap;
+import com.baremaps.store.LongDataOpenHashMap;
 import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.type.LongDataType;
-import java.io.IOException;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -36,9 +35,9 @@ class LongDataMapTest {
   @ParameterizedTest
   @MethodSource("mapProvider")
   public void test(LongDataMap<Long> value) {
-    LongFixedSizeDataSparseMap<Long> map =
-        new LongFixedSizeDataSparseMap<>(
-            new FixedSizeDataList<>(new LongDataType(), new OffHeapMemory()));
+    LongAlignedDataSparseMap<Long> map =
+        new LongAlignedDataSparseMap<>(
+            new AlignedDataList<>(new LongDataType(), new OffHeapMemory()));
     for (long i = 0; i < 1 << 20; i++) {
       map.put(i, i);
     }
@@ -47,19 +46,17 @@ class LongDataMapTest {
     }
   }
 
-  private static Stream<Arguments> mapProvider() throws IOException {
+  private static Stream<Arguments> mapProvider() {
     return Stream.of(
         Arguments.of(
             new LongDataOpenHashMap<>(new DataStore<>(new LongDataType(), new OffHeapMemory()))),
         Arguments.of(
-            new LongDataSortedMap<>(new DataStore<>(new LongDataType(), new OffHeapMemory()))),
+            new LongAlignedDataSortedMap<>(
+                new AlignedDataList<>(new LongDataType(), new OffHeapMemory()),
+                new AlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
         Arguments.of(
-            new LongFixedSizeDataSortedMap<>(
-                new FixedSizeDataList<>(new LongDataType(), new OffHeapMemory()),
-                new FixedSizeDataList<>(new LongDataType(), new OffHeapMemory()))),
-        Arguments.of(
-            new LongFixedSizeDataSparseMap<>(
-                new FixedSizeDataList<>(new LongDataType(), new OffHeapMemory()))),
-        Arguments.of(new LongFixedSizeDataDenseMap<>(new LongDataType(), new OffHeapMemory())));
+            new LongAlignedDataSparseMap<>(
+                new AlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
+        Arguments.of(new LongAlignedDataDenseMap<>(new LongDataType(), new OffHeapMemory())));
   }
 }

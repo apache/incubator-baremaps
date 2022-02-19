@@ -28,7 +28,7 @@ import com.baremaps.osm.repository.HeaderRepository;
 import com.baremaps.osm.repository.Repository;
 import com.baremaps.osm.repository.UpdateService;
 import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.store.map.LongDataMap;
+import com.baremaps.store.LongDataMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;

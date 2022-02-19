@@ -12,27 +12,26 @@
  * the License.
  */
 
-package com.baremaps.store.map;
+package com.baremaps.store;
 
-import com.baremaps.store.list.FixedSizeDataList;
 import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.type.LongDataType;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 
-public class LongFixedSizeDataSparseMap<T> implements LongDataMap<T> {
+public class LongAlignedDataSparseMap<T> implements LongDataMap<T> {
 
   // The key space is broken into chunks of 256 and for each chunk, store:
   // 1) the index in the outputs array for the first key in the block
-  private final FixedSizeDataList<Long> offsets;
+  private final AlignedDataList<Long> offsets;
   // 2) the number of leading 0's at the start of each block
   private final ByteArrayList offsetStartPad;
 
-  private final FixedSizeDataList<T> values;
+  private final AlignedDataList<T> values;
   private int lastChunk = -1;
   private int lastOffset = 0;
 
-  public LongFixedSizeDataSparseMap(FixedSizeDataList<T> values) {
-    this.offsets = new FixedSizeDataList<>(new LongDataType(), new OffHeapMemory());
+  public LongAlignedDataSparseMap(AlignedDataList<T> values) {
+    this.offsets = new AlignedDataList<>(new LongDataType(), new OffHeapMemory());
     this.offsetStartPad = new ByteArrayList();
     this.values = values;
   }

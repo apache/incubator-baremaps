@@ -22,7 +22,7 @@ import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.store.map.LongDataMap;
+import com.baremaps.store.LongDataMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;

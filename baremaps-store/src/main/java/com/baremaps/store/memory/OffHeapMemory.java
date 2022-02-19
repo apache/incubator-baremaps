@@ -15,68 +15,20 @@
 package com.baremaps.store.memory;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
-public class OffHeapMemory implements Memory {
-
-  private final int segmentBytes;
-
-  private final int segmentBits;
-
-  private final long segmentMask;
-
-  private final List<ByteBuffer> segments = new ArrayList<>();
+public class OffHeapMemory extends Memory {
 
   public OffHeapMemory() {
-    this(1 << 20);
+    super();
   }
 
-  public OffHeapMemory(int segmentBytes) {
-    if ((segmentBytes & -segmentBytes) != segmentBytes) {
-      throw new IllegalArgumentException("The segment size must be a power of 2");
-    }
-    this.segmentBytes = segmentBytes;
-    this.segmentBits = (int) (Math.log(segmentBytes) / Math.log(2));
-    this.segmentMask = (1L << segmentBits) - 1;
+  public OffHeapMemory(int segmentSize) {
+    super(segmentSize);
   }
 
   @Override
-  public int segmentBytes() {
-    return segmentBytes;
+  protected ByteBuffer allocateSegment(int index, int size) {
+    return ByteBuffer.allocateDirect(size);
   }
 
-  @Override
-  public long segmentBits() {
-    return segmentBits;
-  }
-
-  @Override
-  public long segmentMask() {
-    return segmentMask;
-  }
-
-  @Override
-  public ByteBuffer segment(int index) {
-    while (segments.size() <= index) {
-      segments.add(null);
-    }
-    ByteBuffer segment = segments.get(index);
-    if (segment == null) {
-      segment = newSegment(index);
-    }
-    return segment;
-  }
-
-  private synchronized ByteBuffer newSegment(int index) {
-    ByteBuffer segment = segments.get(index);
-    if (segment == null) {
-      segment = ByteBuffer.allocateDirect(segmentBytes);
-      segments.set(index, segment);
-    }
-    return segment;
-  }
-
-  @Override
-  public void close() throws Exception {}
 }

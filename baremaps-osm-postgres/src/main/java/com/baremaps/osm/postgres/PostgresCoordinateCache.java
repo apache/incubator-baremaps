@@ -14,7 +14,7 @@
 
 package com.baremaps.osm.postgres;
 
-import com.baremaps.store.map.LongDataMap;
+import com.baremaps.store.LongDataMap;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

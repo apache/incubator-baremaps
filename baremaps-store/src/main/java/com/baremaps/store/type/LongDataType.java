@@ -16,7 +16,7 @@ package com.baremaps.store.type;
 
 import java.nio.ByteBuffer;
 
-public class LongDataType implements FixedSizeDataType<Long> {
+public class LongDataType implements AlignedDataType<Long> {
 
   @Override
   public int size(Long value) {

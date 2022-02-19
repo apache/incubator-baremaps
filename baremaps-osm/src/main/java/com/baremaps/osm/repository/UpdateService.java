@@ -31,7 +31,7 @@ import com.baremaps.osm.geometry.CreateGeometryConsumer;
 import com.baremaps.osm.geometry.ReprojectEntityConsumer;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
-import com.baremaps.store.map.LongDataMap;
+import com.baremaps.store.LongDataMap;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;

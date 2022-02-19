@@ -12,25 +12,21 @@
  * the License.
  */
 
-package com.baremaps.store.map;
+package com.baremaps.store;
 
-import com.baremaps.store.DataStore;
-import com.baremaps.store.list.FixedSizeDataList;
 import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.type.LongDataType;
 
-public class LongDataSortedMap<T> implements LongDataMap<T> {
+public class LongAlignedDataSortedMap<T> implements LongDataMap<T> {
 
-  private final FixedSizeDataList<Long> offsets;
-  private final FixedSizeDataList<Long> keys;
-  private final FixedSizeDataList<Long> positions;
-  private final DataStore<T> values;
+  private final AlignedDataList<Long> offsets;
+  private final AlignedDataList<Long> keys;
+  private final AlignedDataList<T> values;
   private long lastChunk = -1;
 
-  public LongDataSortedMap(DataStore<T> values) {
-    this.offsets = new FixedSizeDataList<>(new LongDataType(), new OffHeapMemory());
-    this.keys = new FixedSizeDataList<>(new LongDataType(), new OffHeapMemory());
-    this.positions = new FixedSizeDataList<>(new LongDataType(), new OffHeapMemory());
+  public LongAlignedDataSortedMap(AlignedDataList<Long> keys, AlignedDataList<T> values) {
+    this.offsets = new AlignedDataList<>(new LongDataType(), new OffHeapMemory());
+    this.keys = keys;
     this.values = values;
   }
 
@@ -45,8 +41,7 @@ public class LongDataSortedMap<T> implements LongDataMap<T> {
       lastChunk = chunk;
     }
     keys.add(key);
-    long position = values.add(value);
-    positions.add(position);
+    values.add(value);
   }
 
   @Override
@@ -68,8 +63,7 @@ public class LongDataSortedMap<T> implements LongDataMap<T> {
         hi = index - 1;
       } else {
         // found
-        long position = positions.get(index);
-        return values.get(position);
+        return values.get(index);
       }
     }
     return null;

@@ -1,9 +1,9 @@
-package com.baremaps.store.list;
+package com.baremaps.store;
 
 public interface DataList<T> {
 
   long add(T value);
 
-  T get(long position);
+  T get(long index);
 
 }

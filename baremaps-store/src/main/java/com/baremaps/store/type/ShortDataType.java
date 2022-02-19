@@ -16,7 +16,7 @@ package com.baremaps.store.type;
 
 import java.nio.ByteBuffer;
 
-public class ShortDataType implements FixedSizeDataType<Short> {
+public class ShortDataType implements AlignedDataType<Short> {
 
   @Override
   public int size(Short value) {

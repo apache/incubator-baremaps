@@ -31,7 +31,7 @@ import com.baremaps.osm.geometry.ExtractGeometryFunction;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
-import com.baremaps.store.map.LongDataMap;
+import com.baremaps.store.LongDataMap;
 import com.baremaps.tile.Tile;
 import java.io.InputStream;
 import java.net.URI;

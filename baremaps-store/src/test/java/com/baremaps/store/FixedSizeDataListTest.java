@@ -17,37 +17,39 @@ package com.baremaps.store;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.baremaps.store.list.FixedSizeDataList;
+import com.baremaps.store.memory.Memory;
 import com.baremaps.store.memory.OffHeapMemory;
-import com.baremaps.store.type.FixedSizeDataType;
-import com.baremaps.store.type.IntegerDataType;
+import com.baremaps.store.type.AlignedDataType;
 import com.baremaps.store.type.LongDataType;
 import java.nio.ByteBuffer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class FixedSizeDataListTest {
 
   @Test
-  public void smallSegments() {
+  public void segmentsTooSmall() {
     assertThrows(
         RuntimeException.class,
-        () -> new FixedSizeDataList<>(new LongDataType(), new OffHeapMemory(4)));
+        () -> new AlignedDataList<>(new LongDataType(), new OffHeapMemory(4)));
   }
 
   @Test
-  public void misalignedSegments() {
+  public void segmentsMisaligned() {
     assertThrows(
         RuntimeException.class,
         () -> {
-          new FixedSizeDataList<>(
-              new FixedSizeDataType<>() {
+          new AlignedDataList<>(
+              new AlignedDataType<>() {
                 @Override
                 public int size(Object value) {
                   return 3;
                 }
 
                 @Override
-                public void write(ByteBuffer buffer, int position, Object value) {}
+                public void write(ByteBuffer buffer, int position, Object value) {
+                }
 
                 @Override
                 public Object read(ByteBuffer buffer, int position) {
@@ -58,14 +60,16 @@ class FixedSizeDataListTest {
         });
   }
 
-  @Test
-  public void appendFixedSizeValues() {
-    var list = new FixedSizeDataList<>(new IntegerDataType(), new OffHeapMemory(1 << 10));
-    for (int i = 0; i < 1 << 20; i++) {
-      assertEquals(i, list.add(i));
+  @ParameterizedTest
+  @MethodSource("com.baremaps.store.memory.MemoryProvider#memories")
+  public void appendFixedSizeValues(Memory memory) {
+    var list = new AlignedDataList<>(new LongDataType(), memory);
+    for (int i = 0; i < 1 << 10; i++) {
+      assertEquals(i, list.add((long) i));
     }
-    for (int i = 0; i < 1 << 20; i++) {
+    for (int i = 0; i < 1 << 10; i++) {
       assertEquals(i, list.get(i));
     }
   }
+
 }

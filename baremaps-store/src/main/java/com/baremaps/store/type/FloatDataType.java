@@ -16,7 +16,7 @@ package com.baremaps.store.type;
 
 import java.nio.ByteBuffer;
 
-public class FloatDataType implements FixedSizeDataType<Float> {
+public class FloatDataType implements AlignedDataType<Float> {
 
   @Override
   public int size(Float value) {

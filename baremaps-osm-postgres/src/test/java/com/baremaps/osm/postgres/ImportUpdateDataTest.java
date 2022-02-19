@@ -25,9 +25,9 @@ import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.repository.ImportService;
 import com.baremaps.osm.repository.UpdateService;
 import com.baremaps.store.DataStore;
-import com.baremaps.store.map.LongDataMap;
-import com.baremaps.store.map.LongDataOpenHashMap;
-import com.baremaps.store.memory.FileMemory;
+import com.baremaps.store.LongDataMap;
+import com.baremaps.store.LongDataOpenHashMap;
+import com.baremaps.store.memory.OnHeapMemory;
 import com.baremaps.store.type.CoordinateDataType;
 import com.baremaps.store.type.LongListDataType;
 import java.io.IOException;
@@ -65,9 +65,9 @@ class ImportUpdateDataTest extends PostgresBaseTest {
   @Tag("integration")
   void data() throws Exception {
     LongDataMap<Coordinate> coordinateCache =
-        new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new FileMemory()));
+        new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
     LongDataMap<List<Long>> referenceCache =
-        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new FileMemory()));
+        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
     new ImportService(

@@ -12,9 +12,8 @@
  * the License.
  */
 
-package com.baremaps.store.map;
+package com.baremaps.store;
 
-import com.baremaps.store.DataStore;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.Map;
 

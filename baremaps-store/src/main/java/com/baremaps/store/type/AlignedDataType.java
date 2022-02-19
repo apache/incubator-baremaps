@@ -12,18 +12,12 @@
  * the License.
  */
 
-package com.baremaps.store.map;
+package com.baremaps.store.type;
 
-import java.util.List;
-import java.util.stream.Collectors;
+public interface AlignedDataType<T> extends DataType<T> {
 
-public interface LongDataMap<T> {
-
-  void put(long key, T value);
-
-  T get(long key);
-
-  default List<T> get(List<Long> keys) {
-    return keys.stream().map(this::get).collect(Collectors.toList());
+  default int size() {
+    return size(null);
   }
+
 }

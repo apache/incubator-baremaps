@@ -17,7 +17,7 @@ package com.baremaps.store.type;
 import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
 
-public class CoordinateDataType implements FixedSizeDataType<Coordinate> {
+public class CoordinateDataType implements AlignedDataType<Coordinate> {
 
   @Override
   public int size(Coordinate value) {

@@ -33,7 +33,7 @@ public class DataStore<T> {
   public DataStore(DataType<T> dataType, Memory memory) {
     this.dataType = dataType;
     this.memory = memory;
-    this.segmentBytes = memory.segmentBytes();
+    this.segmentBytes = memory.segmentSize();
     this.offset = 0;
     this.size = 0;
   }

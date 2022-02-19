@@ -15,14 +15,64 @@
 package com.baremaps.store.memory;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
-public interface Memory extends AutoCloseable {
+public abstract class Memory {
 
-  int segmentBytes();
+  private final int segmentSize;
 
-  long segmentBits();
+  private final long segmentShift;
 
-  long segmentMask();
+  private final long segmentMask;
 
-  ByteBuffer segment(int index);
+  private final List<ByteBuffer> segments = new ArrayList<>();
+
+  public Memory() {
+    this(1 << 20);
+  }
+
+  public Memory(int segmentSize) {
+    if ((segmentSize & -segmentSize) != segmentSize) {
+      throw new IllegalArgumentException("The segment size must be a power of 2");
+    }
+    this.segmentSize = segmentSize;
+    this.segmentShift = (int) (Math.log(this.segmentSize) / Math.log(2));
+    this.segmentMask = this.segmentSize - 1;
+  }
+
+  public int segmentSize() {
+    return segmentSize;
+  }
+
+  public long segmentShift() {
+    return segmentShift;
+  }
+
+  public long segmentMask() {
+    return segmentMask;
+  }
+
+  public ByteBuffer segment(int index) {
+    while (segments.size() <= index) {
+      segments.add(null);
+    }
+    ByteBuffer segment = segments.get(index);
+    if (segment == null) {
+      segment = registerSegment(index);
+    }
+    return segment;
+  }
+
+  private synchronized ByteBuffer registerSegment(int index) {
+    ByteBuffer segment = segments.get(index);
+    if (segment == null) {
+      segment = allocateSegment(index, segmentSize);
+      segments.set(index, segment);
+    }
+    return segment;
+  }
+
+  protected abstract ByteBuffer allocateSegment(int index, int size);
+
 }

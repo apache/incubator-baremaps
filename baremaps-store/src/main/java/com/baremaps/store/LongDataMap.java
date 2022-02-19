@@ -12,11 +12,18 @@
  * the License.
  */
 
-package com.baremaps.store.type;
+package com.baremaps.store;
 
-public interface FixedSizeDataType<T> extends DataType<T> {
+import java.util.List;
+import java.util.stream.Collectors;
 
-  default int size() {
-    return size(null);
+public interface LongDataMap<T> {
+
+  void put(long key, T value);
+
+  T get(long key);
+
+  default List<T> get(List<Long> keys) {
+    return keys.stream().map(this::get).collect(Collectors.toList());
   }
 }

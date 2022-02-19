@@ -26,7 +26,7 @@ import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.store.map.LongDataMap;
+import com.baremaps.store.LongDataMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.time.LocalDateTime;
