@@ -26,15 +26,11 @@ public class OnDiskMemory extends Memory {
 
   private final Path directory;
 
-  public OnDiskMemory() throws IOException {
-    this(Files.createTempDirectory("tmp_"), 1 << 20);
+  public OnDiskMemory(Path directory) {
+    this(directory, 1 << 30);
   }
 
-  public OnDiskMemory(int segmentBytes) throws IOException {
-    this(Files.createTempDirectory("tmp_"), segmentBytes);
-  }
-
-  public OnDiskMemory(Path directory, int segmentBytes) throws IOException {
+  public OnDiskMemory(Path directory, int segmentBytes) {
     super(segmentBytes);
     this.directory = directory;
   }

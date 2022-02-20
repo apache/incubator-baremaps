@@ -32,6 +32,7 @@ import com.baremaps.store.IntegerDataList;
 import com.baremaps.store.LongAlignedDataSortedMap;
 import com.baremaps.store.LongDataMap;
 import com.baremaps.store.LongDataOpenHashMap;
+import com.baremaps.store.SmallLongDataList;
 import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.memory.OnDiskMemory;
 import com.baremaps.store.memory.OnHeapMemory;
@@ -39,7 +40,9 @@ import com.baremaps.store.type.LonLatDataType;
 import com.baremaps.store.type.LongDataType;
 import com.baremaps.store.type.LongListDataType;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
@@ -93,12 +96,15 @@ public class Import implements Callable<Integer> {
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
     Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
 
+    Path directory = Paths.get(".");
+    Path nodes = Files.createTempDirectory(directory, "nodes_");
     LongDataMap<Coordinate> coordinateCache =
         new LongAlignedDataSortedMap<>(
-            new AlignedDataList<>(new LongDataType(), new OnDiskMemory()),
-            new AlignedDataList<>(new LonLatDataType(), new OnDiskMemory()));
+            new AlignedDataList<>(new LongDataType(), new OnHeapMemory()),
+            new AlignedDataList<>(new LonLatDataType(), new OnDiskMemory(nodes)));
+    Path references = Files.createTempDirectory(directory, "references");
     LongDataMap<List<Long>> referenceCache =
-        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnDiskMemory()));
+        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnDiskMemory(references)));
 
     logger.info("Importing data");
     new ImportService(
