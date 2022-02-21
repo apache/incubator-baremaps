@@ -26,8 +26,6 @@ public abstract class Memory {
 
   private final long segmentMask;
 
-  private final List<ByteBuffer> segments = new ArrayList<>();
-
   public Memory() {
     this(1 << 20);
   }
@@ -53,26 +51,6 @@ public abstract class Memory {
     return segmentMask;
   }
 
-  public ByteBuffer segment(int index) {
-    while (segments.size() <= index) {
-      segments.add(null);
-    }
-    ByteBuffer segment = segments.get(index);
-    if (segment == null) {
-      segment = registerSegment(index);
-    }
-    return segment;
-  }
-
-  private synchronized ByteBuffer registerSegment(int index) {
-    ByteBuffer segment = segments.get(index);
-    if (segment == null) {
-      segment = allocateSegment(index, segmentSize);
-      segments.set(index, segment);
-    }
-    return segment;
-  }
-
-  protected abstract ByteBuffer allocateSegment(int index, int size);
+  public abstract ByteBuffer segment(int index);
 
 }

@@ -15,8 +15,12 @@
 package com.baremaps.store.memory;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OffHeapMemory extends Memory {
+
+  private final List<ByteBuffer> segments = new ArrayList<>();
 
   public OffHeapMemory() {
     super();
@@ -26,9 +30,24 @@ public class OffHeapMemory extends Memory {
     super(segmentSize);
   }
 
-  @Override
-  protected ByteBuffer allocateSegment(int index, int size) {
-    return ByteBuffer.allocateDirect(size);
+  public ByteBuffer segment(int index) {
+    while (segments.size() <= index) {
+      segments.add(null);
+    }
+    ByteBuffer segment = segments.get(index);
+    if (segment == null) {
+      segment = allocate(index);
+    }
+    return segment;
+  }
+
+  private synchronized ByteBuffer allocate(int index) {
+    ByteBuffer segment = segments.get(index);
+    if (segment == null) {
+      segment = ByteBuffer.allocateDirect(segmentSize());
+      segments.set(index, segment);
+    }
+    return segment;
   }
 
 }

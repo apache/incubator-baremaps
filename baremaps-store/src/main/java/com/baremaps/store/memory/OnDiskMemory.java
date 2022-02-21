@@ -14,8 +14,12 @@
 
 package com.baremaps.store.memory;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Files;
@@ -26,8 +30,10 @@ public class OnDiskMemory extends Memory {
 
   private final Path directory;
 
+  Cache<Integer, MappedByteBuffer> segments = Caffeine.newBuilder().maximumSize(1 << 10).build();
+
   public OnDiskMemory(Path directory) {
-    this(directory, 1 << 30);
+    this(directory, 4 << 20);
   }
 
   public OnDiskMemory(Path directory, int segmentBytes) {
@@ -35,20 +41,21 @@ public class OnDiskMemory extends Memory {
     this.directory = directory;
   }
 
-  @Override
-  protected ByteBuffer allocateSegment(int index, int size) {
-    try {
-      Path file = directory.resolve(String.format("%s.part", index));
-      try (FileChannel channel =
-          FileChannel.open(
-              file,
-              StandardOpenOption.CREATE,
-              StandardOpenOption.READ,
-              StandardOpenOption.WRITE)) {
-        return channel.map(MapMode.READ_WRITE, 0, size);
+  public ByteBuffer segment(int index) {
+    return segments.get(index, f -> {
+      try {
+        Path file = directory.resolve(String.format("%s.part", index));
+        try (FileChannel channel =
+            FileChannel.open(
+                file,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.READ,
+                StandardOpenOption.WRITE)) {
+          return channel.map(MapMode.READ_WRITE, 0, segmentSize());
+        }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
       }
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    });
   }
 }

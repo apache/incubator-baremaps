@@ -20,6 +20,8 @@ import java.util.List;
 
 public class OnHeapMemory extends Memory {
 
+  private final List<ByteBuffer> segments = new ArrayList<>();
+
   public OnHeapMemory() {
     super();
   }
@@ -28,9 +30,24 @@ public class OnHeapMemory extends Memory {
     super(segmentSize);
   }
 
-  @Override
-  protected ByteBuffer allocateSegment(int index, int size) {
-    return ByteBuffer.allocate(size);
+  public ByteBuffer segment(int index) {
+    while (segments.size() <= index) {
+      segments.add(null);
+    }
+    ByteBuffer segment = segments.get(index);
+    if (segment == null) {
+      segment = allocate(index);
+    }
+    return segment;
+  }
+
+  private synchronized ByteBuffer allocate(int index) {
+    ByteBuffer segment = segments.get(index);
+    if (segment == null) {
+      segment = ByteBuffer.allocate(segmentSize());
+      segments.set(index, segment);
+    }
+    return segment;
   }
 
 }
