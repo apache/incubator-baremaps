@@ -16,15 +16,9 @@ package com.baremaps.store;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.baremaps.store.DataStore;
-import com.baremaps.store.AlignedDataList;
-import com.baremaps.store.LongAlignedDataDenseMap;
-import com.baremaps.store.LongAlignedDataSortedMap;
-import com.baremaps.store.LongAlignedDataSparseMap;
-import com.baremaps.store.LongDataMap;
-import com.baremaps.store.LongDataOpenHashMap;
 import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.type.LongDataType;
+import com.baremaps.store.type.PairDataType;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -34,10 +28,7 @@ class LongDataMapTest {
 
   @ParameterizedTest
   @MethodSource("mapProvider")
-  public void test(LongDataMap<Long> value) {
-    LongAlignedDataSparseMap<Long> map =
-        new LongAlignedDataSparseMap<>(
-            new AlignedDataList<>(new LongDataType(), new OffHeapMemory()));
+  public void test(LongDataMap<Long> map) {
     for (long i = 0; i < 1 << 20; i++) {
       map.put(i, i);
     }
@@ -54,6 +45,10 @@ class LongDataMapTest {
             new LongAlignedDataSortedMap<>(
                 new AlignedDataList<>(new LongDataType(), new OffHeapMemory()),
                 new AlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
+        Arguments.of(
+            new LongDataSortedMap<>(
+                new AlignedDataList<>(new PairDataType<>(new LongDataType(), new LongDataType()), new OffHeapMemory()),
+                new DataStore<>(new LongDataType(), new OffHeapMemory()))),
         Arguments.of(
             new LongAlignedDataSparseMap<>(
                 new AlignedDataList<>(new LongDataType(), new OffHeapMemory()))),

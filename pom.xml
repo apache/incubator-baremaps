@@ -116,6 +116,7 @@
     <module>baremaps-tile-postgres</module>
     <module>baremaps-postgres</module>
     <module>baremaps-store</module>
+    <module>baremaps-examples</module>
   </modules>
 
   <profiles>

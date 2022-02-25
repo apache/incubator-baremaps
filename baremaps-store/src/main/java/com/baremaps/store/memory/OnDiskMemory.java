@@ -33,7 +33,7 @@ public class OnDiskMemory extends Memory {
   Cache<Integer, MappedByteBuffer> segments = Caffeine.newBuilder().maximumSize(1 << 10).build();
 
   public OnDiskMemory(Path directory) {
-    this(directory, 4 << 20);
+    this(directory, 1 << 30);
   }
 
   public OnDiskMemory(Path directory, int segmentBytes) {
