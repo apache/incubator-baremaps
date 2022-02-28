@@ -24,7 +24,7 @@ public class DataStore<T> {
 
   private final DataType<T> dataType;
   private final Memory memory;
-  private final int segmentBytes;
+  private final long segmentBytes;
   private long offset;
   private long size;
 
@@ -46,8 +46,8 @@ public class DataStore<T> {
 
     lock.lock();
     long position = offset;
-    int segmentIndex = (int) (position / segmentBytes);
-    int segmentOffset = (int) (position % segmentBytes);
+    long segmentIndex = position / segmentBytes;
+    long segmentOffset = position % segmentBytes;
     if (segmentOffset + size > segmentBytes) {
       segmentOffset = 0;
       segmentIndex = segmentIndex + 1;
@@ -57,17 +57,17 @@ public class DataStore<T> {
     this.size++;
     lock.unlock();
 
-    ByteBuffer segment = memory.segment(segmentIndex);
-    dataType.write(segment, segmentOffset, value);
+    ByteBuffer segment = memory.segment((int) segmentIndex);
+    dataType.write(segment, (int) segmentOffset, value);
 
     return position;
   }
 
   public T get(long position) {
-    int segmentIndex = (int) position / segmentBytes;
-    int segmentOffset = (int) position % segmentBytes;
-    ByteBuffer buffer = memory.segment(segmentIndex);
-    return dataType.read(buffer, segmentOffset);
+    long segmentIndex = position / segmentBytes;
+    long segmentOffset = position % segmentBytes;
+    ByteBuffer buffer = memory.segment((int) segmentIndex);
+    return dataType.read(buffer, (int) segmentOffset);
   }
 
   public long bytes() {

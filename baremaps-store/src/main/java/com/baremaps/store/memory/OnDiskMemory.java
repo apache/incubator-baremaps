@@ -14,23 +14,21 @@
 
 package com.baremaps.store.memory;
 
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.LoadingCache;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OnDiskMemory extends Memory {
 
   private final Path directory;
 
-  Cache<Integer, MappedByteBuffer> segments = Caffeine.newBuilder().maximumSize(1 << 10).build();
+  private final List<MappedByteBuffer> segments = new ArrayList<>();
 
   public OnDiskMemory(Path directory) {
     this(directory, 1 << 30);
@@ -42,7 +40,22 @@ public class OnDiskMemory extends Memory {
   }
 
   public ByteBuffer segment(int index) {
-    return segments.get(index, f -> {
+    if (segments.size() <= index) {
+      return allocate(index);
+    }
+    ByteBuffer segment = segments.get(index);
+    if (segment == null) {
+      return allocate(index);
+    }
+    return segment;
+  }
+
+  private synchronized ByteBuffer allocate(int index) {
+    while (segments.size() <= index) {
+      segments.add(null);
+    }
+    MappedByteBuffer segment = segments.get(index);
+    if (segment == null) {
       try {
         Path file = directory.resolve(String.format("%s.part", index));
         try (FileChannel channel =
@@ -51,11 +64,13 @@ public class OnDiskMemory extends Memory {
                 StandardOpenOption.CREATE,
                 StandardOpenOption.READ,
                 StandardOpenOption.WRITE)) {
-          return channel.map(MapMode.READ_WRITE, 0, segmentSize());
+          segment = channel.map(MapMode.READ_WRITE, 0, segmentSize());
+          segments.set(index, segment);
         }
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
-    });
+    }
+    return segment;
   }
 }

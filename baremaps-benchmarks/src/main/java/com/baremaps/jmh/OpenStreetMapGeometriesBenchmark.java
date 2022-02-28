@@ -77,9 +77,10 @@ public class OpenStreetMapGeometriesBenchmark {
   public void store() throws IOException {
     Path directory = Files.createTempDirectory("tmp_");
     LongDataMap<Coordinate> coordinateCache =
-            new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnDiskMemory(directory)));
+        new LongDataOpenHashMap<>(
+            new DataStore<>(new CoordinateDataType(), new OnDiskMemory(directory)));
     LongDataMap<List<Long>> referenceCache =
-            new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
+        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);

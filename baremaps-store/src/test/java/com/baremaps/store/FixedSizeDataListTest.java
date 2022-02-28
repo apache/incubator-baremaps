@@ -48,8 +48,7 @@ class FixedSizeDataListTest {
                 }
 
                 @Override
-                public void write(ByteBuffer buffer, int position, Object value) {
-                }
+                public void write(ByteBuffer buffer, int position, Object value) {}
 
                 @Override
                 public Object read(ByteBuffer buffer, int position) {
@@ -71,5 +70,4 @@ class FixedSizeDataListTest {
       assertEquals(i, list.get(i));
     }
   }
-
 }

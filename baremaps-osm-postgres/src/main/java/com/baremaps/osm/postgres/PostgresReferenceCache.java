@@ -43,8 +43,6 @@ public class PostgresReferenceCache implements LongDataMap<List<Long>> {
     this.dataSource = dataSource;
   }
 
-
-
   /** {@inheritDoc} */
   @Override
   public List<Long> get(long key) {
@@ -96,5 +94,4 @@ public class PostgresReferenceCache implements LongDataMap<List<Long>> {
   public void put(long key, List<Long> value) {
     throw new UnsupportedOperationException();
   }
-
 }

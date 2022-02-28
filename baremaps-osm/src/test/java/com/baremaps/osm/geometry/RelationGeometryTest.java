@@ -17,11 +17,11 @@ package com.baremaps.osm.geometry;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.baremaps.osm.OpenStreetMap;
-import com.baremaps.osm.store.MockLongDataMap;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.store.MockLongDataMap;
 import com.baremaps.store.LongDataMap;
 import java.io.IOException;
 import java.io.InputStream;

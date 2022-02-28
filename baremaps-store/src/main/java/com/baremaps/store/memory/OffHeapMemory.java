@@ -23,7 +23,7 @@ public class OffHeapMemory extends Memory {
   private final List<ByteBuffer> segments = new ArrayList<>();
 
   public OffHeapMemory() {
-    super();
+    this(1 << 20);
   }
 
   public OffHeapMemory(int segmentSize) {
@@ -52,5 +52,4 @@ public class OffHeapMemory extends Memory {
     }
     return segment;
   }
-
 }

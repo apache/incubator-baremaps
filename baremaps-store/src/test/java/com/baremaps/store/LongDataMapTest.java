@@ -47,7 +47,9 @@ class LongDataMapTest {
                 new AlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
         Arguments.of(
             new LongDataSortedMap<>(
-                new AlignedDataList<>(new PairDataType<>(new LongDataType(), new LongDataType()), new OffHeapMemory()),
+                new AlignedDataList<>(
+                    new PairDataType<>(new LongDataType(), new LongDataType()),
+                    new OffHeapMemory()),
                 new DataStore<>(new LongDataType(), new OffHeapMemory()))),
         Arguments.of(
             new LongAlignedDataSparseMap<>(

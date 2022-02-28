@@ -36,9 +36,7 @@ public class MockLongDataMap<T> implements LongDataMap<T> {
   }
 
   @Override
-  public void put(long key, T value) {
-
-  }
+  public void put(long key, T value) {}
 
   @Override
   public T get(long key) {

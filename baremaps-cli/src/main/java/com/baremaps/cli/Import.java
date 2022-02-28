@@ -55,8 +55,7 @@ public class Import implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Import.class);
 
-  @Mixin
-  private Options options;
+  @Mixin private Options options;
 
   @Option(
       names = {"--file"},
@@ -107,22 +106,25 @@ public class Import implements Callable<Integer> {
 
     Path referencesKeys = Files.createTempDirectory(directory, "ref_keys_");
     Path referencesValues = Files.createTempDirectory(directory, "ref_vals_");
-    LongDataMap<List<Long>> referenceCache = new LongDataSortedMap<>(
-        new AlignedDataList<>(new PairDataType<>(new LongDataType(), new LongDataType()), new OnDiskMemory(referencesKeys)),
-        new DataStore<>(new LongListDataType(), new OnDiskMemory(referencesValues)));
+    LongDataMap<List<Long>> referenceCache =
+        new LongDataSortedMap<>(
+            new AlignedDataList<>(
+                new PairDataType<>(new LongDataType(), new LongDataType()),
+                new OnDiskMemory(referencesKeys)),
+            new DataStore<>(new LongListDataType(), new OnDiskMemory(referencesValues)));
 
     logger.info("Importing data");
     new ImportService(
-        file,
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerRepository,
-        nodeRepository,
-        wayRepository,
-        relationRepository,
-        srid,
-        threads)
+            file,
+            blobStore,
+            coordinateCache,
+            referenceCache,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
+            srid,
+            threads)
         .call();
 
     logger.info("Done");

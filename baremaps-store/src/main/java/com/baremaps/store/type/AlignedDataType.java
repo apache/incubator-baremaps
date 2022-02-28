@@ -19,5 +19,4 @@ public interface AlignedDataType<T> extends DataType<T> {
   default int size() {
     return size(null);
   }
-
 }

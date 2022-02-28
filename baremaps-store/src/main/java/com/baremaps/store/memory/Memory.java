@@ -15,8 +15,6 @@
 package com.baremaps.store.memory;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class Memory {
 
@@ -25,10 +23,6 @@ public abstract class Memory {
   private final long segmentShift;
 
   private final long segmentMask;
-
-  public Memory() {
-    this(1 << 20);
-  }
 
   public Memory(int segmentSize) {
     if ((segmentSize & -segmentSize) != segmentSize) {
@@ -52,5 +46,4 @@ public abstract class Memory {
   }
 
   public abstract ByteBuffer segment(int index);
-
 }

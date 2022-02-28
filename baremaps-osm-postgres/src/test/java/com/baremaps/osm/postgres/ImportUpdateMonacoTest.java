@@ -68,16 +68,16 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
 
     // Import data
     new ImportService(
-        new URI("res://monaco/monaco-210801.osm.pbf"),
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerRepository,
-        nodeRepository,
-        wayRepository,
-        relationRepository,
-        3857,
-        Runtime.getRuntime().availableProcessors())
+            new URI("res://monaco/monaco-210801.osm.pbf"),
+            blobStore,
+            coordinateCache,
+            referenceCache,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
+            3857,
+            Runtime.getRuntime().availableProcessors())
         .call();
 
     assertEquals(3047l, headerRepository.selectLatest().getReplicationSequenceNumber());
@@ -99,25 +99,25 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
     long replicationSequenceNumber = headerRepository.selectLatest().getReplicationSequenceNumber();
     while (replicationSequenceNumber < 3075) {
       new DiffService(
-          blobStore,
-          coordinateCache,
-          referenceCache,
-          headerRepository,
-          nodeRepository,
-          wayRepository,
-          relationRepository,
-          3857,
-          14)
+              blobStore,
+              coordinateCache,
+              referenceCache,
+              headerRepository,
+              nodeRepository,
+              wayRepository,
+              relationRepository,
+              3857,
+              14)
           .call();
       new UpdateService(
-          blobStore,
-          coordinateCache,
-          referenceCache,
-          headerRepository,
-          nodeRepository,
-          wayRepository,
-          relationRepository,
-          3857)
+              blobStore,
+              coordinateCache,
+              referenceCache,
+              headerRepository,
+              nodeRepository,
+              wayRepository,
+              relationRepository,
+              3857)
           .call();
       long nextReplicationSequenceNumber =
           headerRepository.selectLatest().getReplicationSequenceNumber();

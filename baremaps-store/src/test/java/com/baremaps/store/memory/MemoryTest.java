@@ -41,5 +41,4 @@ public class MemoryTest {
       assertNotSame(memory.segment(i), memory.segment(i + 1));
     }
   }
-
 }

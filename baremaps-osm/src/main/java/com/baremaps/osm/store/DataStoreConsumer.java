@@ -20,9 +20,7 @@ import com.baremaps.store.LongDataMap;
 import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 
-/**
- * A consumer that stores osm nodes and ways in the provided caches.
- */
+/** A consumer that stores osm nodes and ways in the provided caches. */
 public class DataStoreConsumer implements BlockConsumerAdapter {
 
   private final LongDataMap<Coordinate> coordiateCache;
@@ -40,16 +38,15 @@ public class DataStoreConsumer implements BlockConsumerAdapter {
     this.referenceCache = referenceCache;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void match(DataBlock dataBlock) throws Exception {
     dataBlock.getDenseNodes().stream()
-        .forEach(node -> coordiateCache.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
+        .forEach(
+            node -> coordiateCache.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
     dataBlock.getNodes().stream()
-        .forEach(node -> coordiateCache.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
-    dataBlock.getWays().stream()
-        .forEach(way -> referenceCache.put(way.getId(), way.getNodes()));
+        .forEach(
+            node -> coordiateCache.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
+    dataBlock.getWays().stream().forEach(way -> referenceCache.put(way.getId(), way.getNodes()));
   }
 }

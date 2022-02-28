@@ -16,7 +16,6 @@ package com.baremaps.osm;
 
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
-import com.baremaps.osm.store.DataStoreConsumer;
 import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
@@ -26,6 +25,7 @@ import com.baremaps.osm.geometry.CreateGeometryConsumer;
 import com.baremaps.osm.geometry.ReprojectEntityConsumer;
 import com.baremaps.osm.pbf.BlobIterator;
 import com.baremaps.osm.pbf.BlobUtils;
+import com.baremaps.osm.store.DataStoreConsumer;
 import com.baremaps.osm.xml.XmlChangeSpliterator;
 import com.baremaps.osm.xml.XmlEntitySpliterator;
 import com.baremaps.store.LongDataMap;
@@ -166,5 +166,4 @@ public class OpenStreetMap {
     LocalDateTime timestamp = LocalDateTime.parse(map.get("timestamp").replace("\\", ""), format);
     return new State(sequenceNumber, timestamp);
   }
-
 }

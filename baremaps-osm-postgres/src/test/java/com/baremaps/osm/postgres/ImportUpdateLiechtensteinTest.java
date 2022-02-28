@@ -70,16 +70,16 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
 
     // Import data
     new ImportService(
-        new URI("res://liechtenstein/liechtenstein.osm.pbf"),
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerRepository,
-        nodeRepository,
-        wayRepository,
-        relationRepository,
-        3857,
-        Runtime.getRuntime().availableProcessors())
+            new URI("res://liechtenstein/liechtenstein.osm.pbf"),
+            blobStore,
+            coordinateCache,
+            referenceCache,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
+            3857,
+            Runtime.getRuntime().availableProcessors())
         .call();
     assertEquals(2434l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
@@ -94,6 +94,20 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
     assertEquals(
         0,
         new DiffService(
+                blobStore,
+                coordinateCache,
+                referenceCache,
+                headerRepository,
+                nodeRepository,
+                wayRepository,
+                relationRepository,
+                3857,
+                14)
+            .call()
+            .size());
+
+    // Update the database
+    new UpdateService(
             blobStore,
             coordinateCache,
             referenceCache,
@@ -101,27 +115,26 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
             nodeRepository,
             wayRepository,
             relationRepository,
-            3857,
-            14)
-            .call()
-            .size());
-
-    // Update the database
-    new UpdateService(
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerRepository,
-        nodeRepository,
-        wayRepository,
-        relationRepository,
-        3857)
+            3857)
         .call();
     assertEquals(2435l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(
         2,
         new DiffService(
+                blobStore,
+                coordinateCache,
+                referenceCache,
+                headerRepository,
+                nodeRepository,
+                wayRepository,
+                relationRepository,
+                3857,
+                14)
+            .call()
+            .size());
+
+    new UpdateService(
             blobStore,
             coordinateCache,
             referenceCache,
@@ -129,26 +142,26 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
             nodeRepository,
             wayRepository,
             relationRepository,
-            3857,
-            14)
-            .call()
-            .size());
-
-    new UpdateService(
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerRepository,
-        nodeRepository,
-        wayRepository,
-        relationRepository,
-        3857)
+            3857)
         .call();
     assertEquals(2436l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(
         0,
         new DiffService(
+                blobStore,
+                coordinateCache,
+                referenceCache,
+                headerRepository,
+                nodeRepository,
+                wayRepository,
+                relationRepository,
+                3857,
+                14)
+            .call()
+            .size());
+
+    new UpdateService(
             blobStore,
             coordinateCache,
             referenceCache,
@@ -156,20 +169,7 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
             nodeRepository,
             wayRepository,
             relationRepository,
-            3857,
-            14)
-            .call()
-            .size());
-
-    new UpdateService(
-        blobStore,
-        coordinateCache,
-        referenceCache,
-        headerRepository,
-        nodeRepository,
-        wayRepository,
-        relationRepository,
-        3857)
+            3857)
         .call();
     assertEquals(2437l, headerRepository.selectLatest().getReplicationSequenceNumber());
   }

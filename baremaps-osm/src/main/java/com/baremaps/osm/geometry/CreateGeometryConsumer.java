@@ -46,9 +46,7 @@ import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * A consumer that creates and sets the geometry of OpenStreetMap entities via side-effects.
- */
+/** A consumer that creates and sets the geometry of OpenStreetMap entities via side-effects. */
 public class CreateGeometryConsumer implements EntityConsumerAdapter {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateGeometryConsumer.class);
@@ -61,7 +59,7 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
    * Constructs a consumer that uses the provided caches to create and set geometries.
    *
    * @param coordinateCache the coordinate cache
-   * @param referenceCache  the reference cache
+   * @param referenceCache the reference cache
    */
   public CreateGeometryConsumer(
       LongDataMap<Coordinate> coordinateCache, LongDataMap<List<Long>> referenceCache) {
@@ -70,24 +68,19 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
     this.referenceCache = referenceCache;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void match(Node node) {
     Point point = geometryFactory.createPoint(new Coordinate(node.getLon(), node.getLat()));
     node.setGeometry(point);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void match(Way way) {
     try {
-      List<Coordinate> coordinates = way.getNodes().stream()
-          .map(coordinateCache::get)
-          .collect(Collectors.toList());
+      List<Coordinate> coordinates =
+          way.getNodes().stream().map(coordinateCache::get).collect(Collectors.toList());
       Coordinate[] array = coordinates.toArray(new Coordinate[coordinates.size()]);
       LineString line = geometryFactory.createLineString(array);
       if (!line.isEmpty()) {
@@ -103,9 +96,7 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void match(Relation relation) {
     try {
@@ -219,9 +210,8 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
   private LineString createLine(Member member) {
     try {
       List<Long> references = referenceCache.get(member.getRef());
-      List<Coordinate> coordinates = references.stream()
-          .map(coordinateCache::get)
-          .collect(Collectors.toList());
+      List<Coordinate> coordinates =
+          references.stream().map(coordinateCache::get).collect(Collectors.toList());
       Coordinate[] array = coordinates.toArray(new Coordinate[coordinates.size()]);
       return geometryFactory.createLineString(array);
     } catch (Exception e) {

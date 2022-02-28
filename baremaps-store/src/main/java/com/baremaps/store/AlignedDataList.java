@@ -69,5 +69,4 @@ public class AlignedDataList<T> implements DataList<T> {
   public long size() {
     return size.get();
   }
-
 }

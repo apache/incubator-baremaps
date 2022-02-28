@@ -66,7 +66,8 @@ public class ImportService implements Callable<Void> {
       Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository,
       Repository<Long, Relation> relationRepository,
-      int srid, int threads) {
+      int srid,
+      int threads) {
     this.uri = uri;
     this.blobStore = blobStore;
     this.coordinateCache = coordinateCache;
