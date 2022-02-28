@@ -31,17 +31,20 @@ public class OffHeapMemory extends Memory {
   }
 
   public ByteBuffer segment(int index) {
-    while (segments.size() <= index) {
-      segments.add(null);
+    if (segments.size() <= index) {
+      return allocate(index);
     }
     ByteBuffer segment = segments.get(index);
     if (segment == null) {
-      segment = allocate(index);
+      return allocate(index);
     }
     return segment;
   }
 
   private synchronized ByteBuffer allocate(int index) {
+    while (segments.size() <= index) {
+      segments.add(null);
+    }
     ByteBuffer segment = segments.get(index);
     if (segment == null) {
       segment = ByteBuffer.allocateDirect(segmentSize());

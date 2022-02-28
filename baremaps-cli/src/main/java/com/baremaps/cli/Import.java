@@ -30,9 +30,7 @@ import com.baremaps.store.AlignedDataList;
 import com.baremaps.store.DataStore;
 import com.baremaps.store.LongAlignedDataDenseMap;
 import com.baremaps.store.LongDataMap;
-import com.baremaps.store.LongDataOpenHashMap;
 import com.baremaps.store.LongDataSortedMap;
-import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.memory.OnDiskMemory;
 import com.baremaps.store.type.LonLatDataType;
 import com.baremaps.store.type.LongDataType;
@@ -86,6 +84,12 @@ public class Import implements Callable<Integer> {
       description = "The projection used by the database.")
   private int srid = 3857;
 
+  @Option(
+      names = {"--threads"},
+      paramLabel = "THREADS",
+      description = "The number of threads to use when importing data.")
+  private int threads = Runtime.getRuntime().availableProcessors();
+
   @Override
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
@@ -106,7 +110,7 @@ public class Import implements Callable<Integer> {
     LongDataMap<List<Long>> referenceCache = new LongDataSortedMap<>(
         new AlignedDataList<>(new PairDataType<>(new LongDataType(), new LongDataType()), new OnDiskMemory(referencesKeys)),
         new DataStore<>(new LongListDataType(), new OnDiskMemory(referencesValues)));
-    
+
     logger.info("Importing data");
     new ImportService(
         file,
@@ -117,7 +121,8 @@ public class Import implements Callable<Integer> {
         nodeRepository,
         wayRepository,
         relationRepository,
-        srid)
+        srid,
+        threads)
         .call();
 
     logger.info("Done");

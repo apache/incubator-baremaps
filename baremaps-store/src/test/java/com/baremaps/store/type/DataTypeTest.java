@@ -26,7 +26,6 @@ import org.locationtech.jts.geom.Coordinate;
 
 public class DataTypeTest {
 
-
   @ParameterizedTest
   @MethodSource("com.baremaps.store.type.DataTypeProvider#dataTypes")
   public void writeAndRead(DataType dataType, Object value) {

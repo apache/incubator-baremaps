@@ -79,7 +79,8 @@ class ImportUpdateDataTest extends PostgresBaseTest {
             nodeRepository,
             wayRepository,
             relationRepository,
-            3857)
+            3857,
+        Runtime.getRuntime().availableProcessors())
         .call();
 
     headerRepository.put(

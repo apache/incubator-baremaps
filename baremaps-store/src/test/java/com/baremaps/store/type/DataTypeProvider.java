@@ -23,7 +23,8 @@ public class DataTypeProvider {
         Arguments.of(new ShortListDataType(), List.of((short) 1, (short) 2, (short) 3)),
         Arguments.of(new ListDataType<>(new IntegerDataType()), List.of(1, 2, 3)),
         Arguments.of(new CoordinateDataType(), new Coordinate(1, 2)),
-        Arguments.of(new LonLatDataType(), new Coordinate(1, 2)));
+        Arguments.of(new LonLatDataType(), new Coordinate(1, 2)),
+        Arguments.of(new PairDataType<>(new LongDataType(), new LongDataType()), new Pair<>(1l, 2l)));
   }
 
 
