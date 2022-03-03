@@ -29,7 +29,6 @@ public class MemoryProvider {
     return Stream.of(
         Arguments.of(new OnHeapMemory(SEGMENT_BYTES)),
         Arguments.of(new OffHeapMemory(SEGMENT_BYTES)),
-        Arguments.of(new OnDiskMemory(directory, SEGMENT_BYTES)),
-        Arguments.of(new OnDiskCachedMemory(directory, SEGMENT_BYTES)));
+        Arguments.of(new OnDiskMemory(directory, SEGMENT_BYTES)));
   }
 }
