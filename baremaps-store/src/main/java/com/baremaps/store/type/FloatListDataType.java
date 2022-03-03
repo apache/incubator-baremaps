@@ -18,13 +18,16 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+/** A {@link DataType} for reading and writing lists of floats in {@link ByteBuffer}s. */
 public class FloatListDataType implements DataType<List<Float>> {
 
+  /** {@inheritDoc} */
   @Override
   public int size(List<Float> values) {
     return 4 + values.size() * 4;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, List<Float> values) {
     buffer.putInt(position, values.size());
@@ -35,6 +38,7 @@ public class FloatListDataType implements DataType<List<Float>> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public List<Float> read(ByteBuffer buffer, int position) {
     int size = buffer.getInt(position);

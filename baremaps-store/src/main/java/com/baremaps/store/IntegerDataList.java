@@ -17,8 +17,14 @@ package com.baremaps.store;
 import com.baremaps.store.memory.Memory;
 import com.baremaps.store.type.IntegerDataType;
 
+/** A list of integers backed by a {@link Memory}. */
 public class IntegerDataList extends AlignedDataList<Integer> {
 
+  /**
+   * Constructs a list.
+   *
+   * @param memory the memory
+   */
   public IntegerDataList(Memory memory) {
     super(new IntegerDataType(), memory);
   }

@@ -14,9 +14,33 @@
 
 package com.baremaps.store;
 
+/**
+ * A list of data.
+ *
+ * @param <T>
+ */
 public interface DataList<T> {
 
+  /**
+   * Adds a value to the list and returns its index.
+   *
+   * @param value the value
+   * @return the index of the value
+   */
   long add(T value);
 
+  /**
+   * Returns a values by its index.
+   *
+   * @param index the index of the value
+   * @return the value
+   */
   T get(long index);
+
+  /**
+   * Returns the size of the list.
+   *
+   * @return the size of the list.
+   */
+  long size();
 }

@@ -18,7 +18,10 @@ import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.Map;
 
 /**
- * This code has been adapted from {@link <a
+ * A map of data backed by a {@link DataStore} and whose keys are stored in an {@link
+ * Long2LongOpenHashMap}.
+ *
+ * <p>This code has been adapted from {@link <a
  * href="https://github.com/onthegomap/planetiler">Planetiler</a>} (Apache license).
  *
  * <p>Copyright (c) Planetiler.

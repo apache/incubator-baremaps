@@ -14,12 +14,14 @@
 
 package com.baremaps.store;
 
-import com.baremaps.store.memory.OffHeapMemory;
-import com.baremaps.store.type.LongDataType;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import java.util.List;
 
 /**
- * This code has been adapted from {@link <a
+ * A sparse map of data backed by a {@link AlignedDataList} for storing values.
+ *
+ * <p>This code has been adapted from {@link <a
  * href="https://github.com/onthegomap/planetiler">Planetiler</a>} (Apache license).
  *
  * <p>Copyright (c) Planetiler.
@@ -28,7 +30,7 @@ public class LongAlignedDataSparseMap<T> implements LongDataMap<T> {
 
   // The key space is broken into chunks of 256 and for each chunk, store:
   // 1) the index in the outputs array for the first key in the block
-  private final AlignedDataList<Long> offsets;
+  private final List<Long> offsets;
   // 2) the number of leading 0's at the start of each block
   private final ByteArrayList offsetStartPad;
 
@@ -36,8 +38,13 @@ public class LongAlignedDataSparseMap<T> implements LongDataMap<T> {
   private int lastChunk = -1;
   private int lastOffset = 0;
 
+  /**
+   * Constructs a map.
+   *
+   * @param values the list of values
+   */
   public LongAlignedDataSparseMap(AlignedDataList<T> values) {
-    this.offsets = new AlignedDataList<>(new LongDataType(), new OffHeapMemory());
+    this.offsets = new LongArrayList();
     this.offsetStartPad = new ByteArrayList();
     this.values = values;
   }

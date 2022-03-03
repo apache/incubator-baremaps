@@ -16,18 +16,22 @@ package com.baremaps.store.type;
 
 import java.nio.ByteBuffer;
 
+/** A {@link DataType} for reading and writing doubles in {@link ByteBuffer}s. */
 public class DoubleDataType implements AlignedDataType<Double> {
 
+  /** {@inheritDoc} */
   @Override
   public int size(Double value) {
     return 8;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, Double value) {
     buffer.putDouble(position, value);
   }
 
+  /** {@inheritDoc} */
   @Override
   public Double read(ByteBuffer buffer, int position) {
     return buffer.getDouble(position);

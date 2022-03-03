@@ -16,18 +16,22 @@ package com.baremaps.store.type;
 
 import java.nio.ByteBuffer;
 
+/** A {@link DataType} for reading and writing shorts in {@link ByteBuffer}s. */
 public class ShortDataType implements AlignedDataType<Short> {
 
+  /** {@inheritDoc} */
   @Override
   public int size(Short value) {
     return 2;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, Short value) {
     buffer.putShort(position, value);
   }
 
+  /** {@inheritDoc} */
   @Override
   public Short read(ByteBuffer buffer, int position) {
     return buffer.getShort(position);

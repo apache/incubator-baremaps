@@ -15,20 +15,18 @@
 package com.baremaps.store.memory;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
 
-public class OnDiskMemory extends Memory {
+/**
+ * A memory that stores segments on-disk using mapped byte buffers.
+ */
+public class OnDiskMemory extends Memory<MappedByteBuffer> {
 
   private final Path directory;
-
-  private final List<MappedByteBuffer> segments = new ArrayList<>();
 
   public OnDiskMemory(Path directory) {
     this(directory, 1 << 30);
@@ -39,38 +37,17 @@ public class OnDiskMemory extends Memory {
     this.directory = directory;
   }
 
-  public ByteBuffer segment(int index) {
-    if (segments.size() <= index) {
-      return allocate(index);
-    }
-    ByteBuffer segment = segments.get(index);
-    if (segment == null) {
-      return allocate(index);
-    }
-    return segment;
-  }
-
-  private synchronized ByteBuffer allocate(int index) {
-    while (segments.size() <= index) {
-      segments.add(null);
-    }
-    MappedByteBuffer segment = segments.get(index);
-    if (segment == null) {
-      try {
-        Path file = directory.resolve(String.format("%s.part", index));
-        try (FileChannel channel =
-            FileChannel.open(
-                file,
-                StandardOpenOption.CREATE,
-                StandardOpenOption.READ,
-                StandardOpenOption.WRITE)) {
-          segment = channel.map(MapMode.READ_WRITE, 0, segmentSize());
-          segments.set(index, segment);
-        }
-      } catch (IOException e) {
-        throw new RuntimeException(e);
+  @Override
+  protected MappedByteBuffer allocate(int index, int size) {
+    try {
+      Path file = directory.resolve(String.format("%s.part", index));
+      try (FileChannel channel =
+          FileChannel.open(
+              file, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+        return channel.map(MapMode.READ_WRITE, 0, size);
       }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
-    return segment;
   }
 }

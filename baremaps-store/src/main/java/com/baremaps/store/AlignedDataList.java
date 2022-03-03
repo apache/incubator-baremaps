@@ -19,6 +19,16 @@ import com.baremaps.store.type.AlignedDataType;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * A list of data backed by a {@link AlignedDataType} and a {@link Memory}.
+ *
+ * <p>This code has been adapted from {@link <a
+ * href="https://github.com/onthegomap/planetiler">Planetiler</a>} (Apache license).
+ *
+ * <p>Copyright (c) Planetiler.
+ *
+ * @param <T>
+ */
 public class AlignedDataList<T> implements DataList<T> {
 
   private final AlignedDataType<T> dataType;
@@ -33,6 +43,12 @@ public class AlignedDataList<T> implements DataList<T> {
 
   private AtomicLong size;
 
+  /**
+   * Constructs a list.
+   *
+   * @param dataType the data type
+   * @param memory the memory
+   */
   public AlignedDataList(AlignedDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new RuntimeException("The segment size is too small for the data type");
@@ -48,6 +64,7 @@ public class AlignedDataList<T> implements DataList<T> {
     this.size = new AtomicLong(0);
   }
 
+  /** {@inheritDoc} */
   public long add(T value) {
     long index = size.getAndIncrement();
     long position = index << valueShift;
@@ -58,6 +75,7 @@ public class AlignedDataList<T> implements DataList<T> {
     return index;
   }
 
+  /** {@inheritDoc} */
   public T get(long index) {
     long position = index << valueShift;
     int segmentIndex = (int) (position >> segmentShift);
@@ -66,6 +84,7 @@ public class AlignedDataList<T> implements DataList<T> {
     return dataType.read(segment, segmentOffset);
   }
 
+  /** {@inheritDoc} */
   public long size() {
     return size.get();
   }

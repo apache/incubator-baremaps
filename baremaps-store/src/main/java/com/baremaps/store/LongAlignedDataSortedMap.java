@@ -18,7 +18,9 @@ import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.type.LongDataType;
 
 /**
- * This code has been adapted from {@link <a
+ * A sorted map of data backed by {@link AlignedDataList}s for storing keys and values.
+ *
+ * <p>This code has been adapted from {@link <a
  * href="https://github.com/onthegomap/planetiler">Planetiler</a>} (Apache license).
  *
  * <p>Copyright (c) Planetiler.
@@ -30,12 +32,19 @@ public class LongAlignedDataSortedMap<T> implements LongDataMap<T> {
   private final AlignedDataList<T> values;
   private long lastChunk = -1;
 
+  /**
+   * Constructs a map.
+   *
+   * @param keys the list of keys
+   * @param values the list of values
+   */
   public LongAlignedDataSortedMap(AlignedDataList<Long> keys, AlignedDataList<T> values) {
     this.offsets = new AlignedDataList<>(new LongDataType(), new OffHeapMemory());
     this.keys = keys;
     this.values = values;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void put(long key, T value) {
     long index = keys.size();
@@ -50,6 +59,7 @@ public class LongAlignedDataSortedMap<T> implements LongDataMap<T> {
     values.add(value);
   }
 
+  /** {@inheritDoc} */
   @Override
   public T get(long key) {
     long chunk = key >>> 8;

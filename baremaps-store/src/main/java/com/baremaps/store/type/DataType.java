@@ -16,11 +16,38 @@ package com.baremaps.store.type;
 
 import java.nio.ByteBuffer;
 
+/**
+ * A data type for reading and writing values in {@link ByteBuffer}s.
+ *
+ * @note read and write operations must use absolute positions within the {@link ByteBuffer}.
+ * @param <T>
+ */
 public interface DataType<T> {
 
+  /**
+   * Returns the size of the value in memory.
+   *
+   * @param value the value
+   * @return the size of the value in memory.
+   */
   int size(T value);
 
+  /**
+   * Write a value.
+   *
+   * @param buffer the source buffer
+   * @param position the absolute position of the value within the buffer
+   * @param value the value
+   * @return the object
+   */
   void write(ByteBuffer buffer, int position, T value);
 
+  /**
+   * Read a value.
+   *
+   * @param buffer the source buffer
+   * @param position the absolute position of the value within the buffer
+   * @return the object
+   */
   T read(ByteBuffer buffer, int position);
 }

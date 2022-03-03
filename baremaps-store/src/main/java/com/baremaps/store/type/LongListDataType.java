@@ -18,13 +18,16 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+/** A {@link DataType} for reading and writing lists of longs in {@link ByteBuffer}s. */
 public class LongListDataType implements DataType<List<Long>> {
 
+  /** {@inheritDoc} */
   @Override
   public int size(List<Long> values) {
     return Integer.BYTES + values.size() * Long.BYTES;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, List<Long> values) {
     buffer.putInt(position, values.size());
@@ -35,6 +38,7 @@ public class LongListDataType implements DataType<List<Long>> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public List<Long> read(ByteBuffer buffer, int position) {
     int size = buffer.getInt(position);

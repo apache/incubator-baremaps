@@ -17,19 +17,23 @@ package com.baremaps.store.type;
 import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
 
+/** A {@link DataType} for reading and writing {@link Coordinate}s in {@link ByteBuffer}s. */
 public class CoordinateDataType implements AlignedDataType<Coordinate> {
 
+  /** {@inheritDoc} */
   @Override
   public int size(Coordinate value) {
     return 16;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, Coordinate value) {
     buffer.putDouble(position, value.x);
     buffer.putDouble(position + 8, value.y);
   }
 
+  /** {@inheritDoc} */
   @Override
   public Coordinate read(ByteBuffer buffer, int position) {
     double x = buffer.getDouble(position);

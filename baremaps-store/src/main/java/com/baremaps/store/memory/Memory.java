@@ -15,8 +15,11 @@
 package com.baremaps.store.memory;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
-public abstract class Memory {
+/** A base class to manage segments of on-heap, off-heap, or on-disk memory. */
+public abstract class Memory<T extends ByteBuffer> {
 
   private final int segmentSize;
 
@@ -24,7 +27,9 @@ public abstract class Memory {
 
   private final long segmentMask;
 
-  public Memory(int segmentSize) {
+  private final List<T> segments = new ArrayList<>();
+
+  protected Memory(int segmentSize) {
     if ((segmentSize & -segmentSize) != segmentSize) {
       throw new IllegalArgumentException("The segment size must be a power of 2");
     }
@@ -33,17 +38,70 @@ public abstract class Memory {
     this.segmentMask = this.segmentSize - 1;
   }
 
+  /**
+   * Returns the size of the segments.
+   *
+   * @return the size of the segments
+   */
   public int segmentSize() {
     return segmentSize;
   }
 
+  /**
+   * Returns the bit shift to find a segment index from a memory position.
+   *
+   * @return the bit shift
+   */
   public long segmentShift() {
     return segmentShift;
   }
 
+  /**
+   * Returns the bit mask to find a segment offset from a memory position.
+   *
+   * @return the bit mask
+   */
   public long segmentMask() {
     return segmentMask;
   }
 
-  public abstract ByteBuffer segment(int index);
+  /**
+   * Returns a segment of the memory.
+   *
+   * @param index the index of the segment
+   * @return the segment
+   */
+  public ByteBuffer segment(int index) {
+    if (segments.size() <= index) {
+      return allocate(index);
+    }
+    ByteBuffer segment = segments.get(index);
+    if (segment == null) {
+      return allocate(index);
+    }
+    return segment;
+  }
+
+  /**
+   * The allocation of segments is synchronized to enable access by multiple threads.
+   */
+  private synchronized ByteBuffer allocate(int index) {
+    while (segments.size() <= index) {
+      segments.add(null);
+    }
+    T segment = segments.get(index);
+    if (segment == null) {
+      segment = allocate(index, segmentSize);
+      segments.set(index, segment);
+    }
+    return segment;
+  }
+
+  /**
+   * Allocates a segment for a given index and size.
+   * @param index the index of the segment
+   * @param size the size of the segment
+   * @return the segment
+   */
+  protected abstract T allocate(int index, int size);
 }

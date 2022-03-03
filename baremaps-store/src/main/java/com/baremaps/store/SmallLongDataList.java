@@ -17,7 +17,10 @@ package com.baremaps.store;
 import java.util.function.IntFunction;
 
 /**
- * This code has been adapted from {@link <a
+ * A list of longs that uses 4 bytes to represent each long by using a list of integers. Only
+ * suitable for values less than ~20 billion (i.e. OSM node IDs)
+ *
+ * <p>This code has been adapted from {@link <a
  * href="https://github.com/onthegomap/planetiler">Planetiler</a>} (Apache license).
  *
  * <p>Copyright (c) Planetiler.
@@ -35,6 +38,7 @@ public class SmallLongDataList implements DataList<Long> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public long add(Long value) {
     int block = (int) (value >>> BITS);
@@ -43,6 +47,7 @@ public class SmallLongDataList implements DataList<Long> {
     return ++numWritten;
   }
 
+  /** {@inheritDoc} */
   @Override
   public Long get(long index) {
     for (int i = 0; i < ints.length; i++) {
@@ -54,5 +59,11 @@ public class SmallLongDataList implements DataList<Long> {
       index -= size;
     }
     throw new IndexOutOfBoundsException("index: " + index + " size: " + numWritten);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public long size() {
+    return numWritten;
   }
 }

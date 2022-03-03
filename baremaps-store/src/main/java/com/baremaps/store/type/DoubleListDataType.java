@@ -18,13 +18,16 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+/** A {@link DataType} for reading and writing lists of doubles in {@link ByteBuffer}s. */
 public class DoubleListDataType implements DataType<List<Double>> {
 
+  /** {@inheritDoc} */
   @Override
   public int size(List<Double> values) {
     return 4 + values.size() * 8;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, List<Double> values) {
     buffer.putInt(position, values.size());
@@ -35,6 +38,7 @@ public class DoubleListDataType implements DataType<List<Double>> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public List<Double> read(ByteBuffer buffer, int position) {
     int size = buffer.getInt(position);

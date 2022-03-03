@@ -19,7 +19,9 @@ import com.baremaps.store.type.AlignedDataType;
 import java.nio.ByteBuffer;
 
 /**
- * This code has been adapted from {@link <a
+ * A dense map of data backed by a {@link AlignedDataType} and a {@link Memory}.
+ *
+ * <p>This code has been adapted from {@link <a
  * href="https://github.com/onthegomap/planetiler">Planetiler</a>} (Apache license).
  *
  * <p>Copyright (c) Planetiler.
@@ -36,6 +38,12 @@ public class LongAlignedDataDenseMap<T> implements LongDataMap<T> {
 
   private final long segmentMask;
 
+  /**
+   * Constructs a map.
+   *
+   * @param dataType the data type
+   * @param memory the memory
+   */
   public LongAlignedDataDenseMap(AlignedDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new RuntimeException("The values are too big");
@@ -51,6 +59,7 @@ public class LongAlignedDataDenseMap<T> implements LongDataMap<T> {
     this.segmentMask = memory.segmentMask();
   }
 
+  /** {@inheritDoc} */
   @Override
   public void put(long key, T value) {
     long position = key << valueShift;
@@ -60,6 +69,7 @@ public class LongAlignedDataDenseMap<T> implements LongDataMap<T> {
     dataType.write(segment, segmentOffset, value);
   }
 
+  /** {@inheritDoc} */
   @Override
   public T get(long key) {
     long position = key << valueShift;

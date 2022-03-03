@@ -20,6 +20,10 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * A data store backed by a {@link DataType} and a {@link Memory}. Data is appended to the store and
+ * can be accessed by its position in the {@link Memory}.
+ */
 public class DataStore<T> {
 
   private final DataType<T> dataType;
@@ -30,6 +34,12 @@ public class DataStore<T> {
 
   private Lock lock = new ReentrantLock();
 
+  /**
+   * Constructs a data store.
+   *
+   * @param dataType the data type
+   * @param memory the memory
+   */
   public DataStore(DataType<T> dataType, Memory memory) {
     this.dataType = dataType;
     this.memory = memory;
@@ -38,6 +48,12 @@ public class DataStore<T> {
     this.size = 0;
   }
 
+  /**
+   * Appends a value to the data store and returns its position in the memory.
+   *
+   * @param value the value
+   * @return the position of the value in the memory.
+   */
   public long add(T value) {
     int size = dataType.size(value);
     if (size > segmentBytes) {
@@ -63,6 +79,12 @@ public class DataStore<T> {
     return position;
   }
 
+  /**
+   * Returns a values by its position in memory.
+   *
+   * @param position the position of the value
+   * @return the value
+   */
   public T get(long position) {
     long segmentIndex = position / segmentBytes;
     long segmentOffset = position % segmentBytes;
@@ -70,10 +92,11 @@ public class DataStore<T> {
     return dataType.read(buffer, (int) segmentOffset);
   }
 
-  public long bytes() {
-    return offset;
-  }
-
+  /**
+   * Returns the number of values stored in the data store.
+   *
+   * @return the number of values
+   */
   public long size() {
     return size;
   }

@@ -17,6 +17,10 @@ package com.baremaps.store.type;
 import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
 
+/**
+ * A {@link DataType} for reading and writing longitude/latitude coordinates in {@link ByteBuffer}s.
+ * An integer is used to compress the coordinates to the detriment of precision (centimeters).
+ */
 public class LonLatDataType implements AlignedDataType<Coordinate> {
 
   private static final long LOWER_32_BIT_MASK = (1L << 32) - 1L;
@@ -35,16 +39,19 @@ public class LonLatDataType implements AlignedDataType<Coordinate> {
     return (x << 32) | (y & LOWER_32_BIT_MASK);
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(Coordinate value) {
     return 8;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, Coordinate value) {
     buffer.putLong(position, encodeLonLat(value.x, value.y));
   }
 
+  /** {@inheritDoc} */
   @Override
   public Coordinate read(ByteBuffer buffer, int position) {
     long value = buffer.getLong(position);

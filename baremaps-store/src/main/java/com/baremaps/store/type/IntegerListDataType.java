@@ -18,13 +18,16 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+/** A {@link DataType} for reading and writing lists of integers in {@link ByteBuffer}s. */
 public class IntegerListDataType implements DataType<List<Integer>> {
 
+  /** {@inheritDoc} */
   @Override
   public int size(List<Integer> values) {
     return 4 + values.size() * 4;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, List<Integer> values) {
     buffer.putInt(position, values.size());
@@ -35,6 +38,7 @@ public class IntegerListDataType implements DataType<List<Integer>> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public List<Integer> read(ByteBuffer buffer, int position) {
     int size = buffer.getInt(position);

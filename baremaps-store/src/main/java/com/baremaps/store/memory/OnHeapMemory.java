@@ -15,12 +15,11 @@
 package com.baremaps.store.memory;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * A memory that stores segments on-heap using regular byte buffers.
+ */
 public class OnHeapMemory extends Memory {
-
-  private final List<ByteBuffer> segments = new ArrayList<>();
 
   public OnHeapMemory() {
     this(1 << 20);
@@ -30,26 +29,8 @@ public class OnHeapMemory extends Memory {
     super(segmentSize);
   }
 
-  public ByteBuffer segment(int index) {
-    if (segments.size() <= index) {
-      return allocate(index);
-    }
-    ByteBuffer segment = segments.get(index);
-    if (segment == null) {
-      return allocate(index);
-    }
-    return segment;
-  }
-
-  private synchronized ByteBuffer allocate(int index) {
-    while (segments.size() <= index) {
-      segments.add(null);
-    }
-    ByteBuffer segment = segments.get(index);
-    if (segment == null) {
-      segment = ByteBuffer.allocate(segmentSize());
-      segments.set(index, segment);
-    }
-    return segment;
+  @Override
+  protected ByteBuffer allocate(int index, int size) {
+    return ByteBuffer.allocate(size);
   }
 }

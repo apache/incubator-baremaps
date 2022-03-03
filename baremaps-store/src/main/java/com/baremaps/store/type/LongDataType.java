@@ -16,18 +16,22 @@ package com.baremaps.store.type;
 
 import java.nio.ByteBuffer;
 
+/** A {@link DataType} for reading and writing longs in {@link ByteBuffer}s. */
 public class LongDataType implements AlignedDataType<Long> {
 
+  /** {@inheritDoc} */
   @Override
   public int size(Long value) {
     return 8;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, Long value) {
     buffer.putLong(position, value);
   }
 
+  /** {@inheritDoc} */
   @Override
   public Long read(ByteBuffer buffer, int position) {
     return buffer.getLong(position);

@@ -14,8 +14,21 @@
 
 package com.baremaps.store.type;
 
+import java.nio.ByteBuffer;
+
+/**
+ * A {@link DataType} for reading and writing values in {@link ByteBuffer}s whose size is fixed and
+ * aligned to memory.
+ *
+ * @param <T>
+ */
 public interface AlignedDataType<T> extends DataType<T> {
 
+  /**
+   * Returns the size of the data type.
+   *
+   * @return the size of the data type.
+   */
   default int size() {
     return size(null);
   }
