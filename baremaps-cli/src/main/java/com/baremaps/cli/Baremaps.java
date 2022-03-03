@@ -43,6 +43,7 @@ import picocli.CommandLine.Option;
       Edit.class,
       View.class,
       Studio.class,
+      Geocoder.class
     })
 public class Baremaps implements Callable<Integer> {
 
