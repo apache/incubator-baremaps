@@ -83,12 +83,6 @@ public class Import implements Callable<Integer> {
       description = "The projection used by the database.")
   private int srid = 3857;
 
-  @Option(
-      names = {"--threads"},
-      paramLabel = "THREADS",
-      description = "The number of threads to use when importing data.")
-  private int threads = Runtime.getRuntime().availableProcessors();
-
   @Override
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
@@ -123,8 +117,7 @@ public class Import implements Callable<Integer> {
             nodeRepository,
             wayRepository,
             relationRepository,
-            srid,
-            threads)
+            srid)
         .call();
 
     logger.info("Done");

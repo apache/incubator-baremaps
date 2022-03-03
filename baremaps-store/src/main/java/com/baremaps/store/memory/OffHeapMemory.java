@@ -16,9 +16,7 @@ package com.baremaps.store.memory;
 
 import java.nio.ByteBuffer;
 
-/**
- * A memory that stores segments off-heap using direct byte buffers.
- */
+/** A memory that stores segments off-heap using direct byte buffers. */
 public class OffHeapMemory extends Memory<ByteBuffer> {
 
   public OffHeapMemory() {

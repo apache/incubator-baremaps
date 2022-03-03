@@ -16,9 +16,7 @@ package com.baremaps.store.memory;
 
 import java.nio.ByteBuffer;
 
-/**
- * A memory that stores segments on-heap using regular byte buffers.
- */
+/** A memory that stores segments on-heap using regular byte buffers. */
 public class OnHeapMemory extends Memory {
 
   public OnHeapMemory() {

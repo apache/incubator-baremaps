@@ -78,8 +78,7 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
             nodeRepository,
             wayRepository,
             relationRepository,
-            3857,
-            Runtime.getRuntime().availableProcessors())
+            3857)
         .call();
     assertEquals(2434l, headerRepository.selectLatest().getReplicationSequenceNumber());
 

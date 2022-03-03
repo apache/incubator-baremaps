@@ -76,8 +76,7 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
             nodeRepository,
             wayRepository,
             relationRepository,
-            3857,
-            Runtime.getRuntime().availableProcessors())
+            3857)
         .call();
 
     assertEquals(3047l, headerRepository.selectLatest().getReplicationSequenceNumber());

@@ -82,9 +82,7 @@ public abstract class Memory<T extends ByteBuffer> {
     return segment;
   }
 
-  /**
-   * The allocation of segments is synchronized to enable access by multiple threads.
-   */
+  /** The allocation of segments is synchronized to enable access by multiple threads. */
   private synchronized ByteBuffer allocate(int index) {
     while (segments.size() <= index) {
       segments.add(null);
@@ -99,6 +97,7 @@ public abstract class Memory<T extends ByteBuffer> {
 
   /**
    * Allocates a segment for a given index and size.
+   *
    * @param index the index of the segment
    * @param size the size of the segment
    * @return the segment
