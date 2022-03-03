@@ -16,6 +16,12 @@ package com.baremaps.store;
 
 import java.util.function.IntFunction;
 
+/**
+ * This code has been adapted from {@link <a
+ * href="https://github.com/onthegomap/planetiler">Planetiler</a>} (Apache license).
+ *
+ * <p>Copyright (c) Planetiler.
+ */
 public class SmallLongDataList implements DataList<Long> {
 
   private static final int BITS = 31;

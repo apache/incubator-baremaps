@@ -18,6 +18,12 @@ import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.type.LongDataType;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 
+/**
+ * This code has been adapted from {@link <a
+ * href="https://github.com/onthegomap/planetiler">Planetiler</a>} (Apache license).
+ *
+ * <p>Copyright (c) Planetiler.
+ */
 public class LongAlignedDataSparseMap<T> implements LongDataMap<T> {
 
   // The key space is broken into chunks of 256 and for each chunk, store:

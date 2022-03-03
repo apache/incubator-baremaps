@@ -17,6 +17,12 @@ package com.baremaps.store;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.Map;
 
+/**
+ * This code has been adapted from {@link <a
+ * href="https://github.com/onthegomap/planetiler">Planetiler</a>} (Apache license).
+ *
+ * <p>Copyright (c) Planetiler.
+ */
 public class LongDataOpenHashMap<T> implements LongDataMap<T> {
 
   private final Map<Long, Long> map;

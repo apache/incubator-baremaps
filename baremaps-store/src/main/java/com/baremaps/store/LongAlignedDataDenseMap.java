@@ -18,6 +18,12 @@ import com.baremaps.store.memory.Memory;
 import com.baremaps.store.type.AlignedDataType;
 import java.nio.ByteBuffer;
 
+/**
+ * This code has been adapted from {@link <a
+ * href="https://github.com/onthegomap/planetiler">Planetiler</a>} (Apache license).
+ *
+ * <p>Copyright (c) Planetiler.
+ */
 public class LongAlignedDataDenseMap<T> implements LongDataMap<T> {
 
   private final AlignedDataType<T> dataType;

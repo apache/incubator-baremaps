@@ -17,6 +17,12 @@ package com.baremaps.store;
 import com.baremaps.store.memory.OffHeapMemory;
 import com.baremaps.store.type.LongDataType;
 
+/**
+ * This code has been adapted from {@link <a
+ * href="https://github.com/onthegomap/planetiler">Planetiler</a>} (Apache license).
+ *
+ * <p>Copyright (c) Planetiler.
+ */
 public class LongAlignedDataSortedMap<T> implements LongDataMap<T> {
 
   private final AlignedDataList<Long> offsets;
