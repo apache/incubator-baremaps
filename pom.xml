@@ -119,6 +119,8 @@
     <module>baremaps-tile-mbtiles</module>
     <module>baremaps-tile-postgres</module>
     <module>baremaps-postgres</module>
+    <module>baremaps-geonames</module>
+    <module>baremaps-geocoder</module>
   </modules>
 
   <profiles>
@@ -429,6 +431,16 @@
       </dependency>
       <dependency>
         <artifactId>baremaps-postgres</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-geonames</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-geocoder</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
