@@ -92,14 +92,13 @@ public class Import implements Callable<Integer> {
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
     Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
 
-    Path directory = Paths.get(".");
+    Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
+    Path nodes = Files.createDirectories(directory.resolve("nodes"));
+    Path referencesKeys = Files.createDirectories(directory.resolve("references_keys"));
+    Path referencesValues = Files.createDirectories(directory.resolve("references_values"));
 
-    Path nodes = Files.createTempDirectory(directory, "nodes_");
     LongDataMap<Coordinate> coordinateCache =
         new LongAlignedDataDenseMap<>(new LonLatDataType(), new OnDiskMemory(nodes));
-
-    Path referencesKeys = Files.createTempDirectory(directory, "ref_keys_");
-    Path referencesValues = Files.createTempDirectory(directory, "ref_vals_");
     LongDataMap<List<Long>> referenceCache =
         new LongDataSortedMap<>(
             new AlignedDataList<>(
