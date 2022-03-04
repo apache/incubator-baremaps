@@ -22,6 +22,7 @@ import com.baremaps.store.type.LongDataType;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -73,7 +74,7 @@ public class LongDataMapBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void onDisk() throws IOException {
-    Path directory = Files.createTempDirectory("tmp_");
+    Path directory = Files.createTempDirectory(Paths.get("."),"benchmark_");
     benchmark(new AlignedDataList<>(new LongDataType(), new OnDiskMemory(directory)), N);
   }
 
