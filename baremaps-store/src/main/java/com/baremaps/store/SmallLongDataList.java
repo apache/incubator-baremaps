@@ -21,6 +21,7 @@ import java.util.function.IntFunction;
  * suitable for values less than ~20 billion (i.e. OSM node IDs)
  *
  * <p>This code has been adapted from Planetiler (Apache license).
+ *
  * <p>Copyright (c) Planetiler.
  */
 public class SmallLongDataList implements DataList<Long> {

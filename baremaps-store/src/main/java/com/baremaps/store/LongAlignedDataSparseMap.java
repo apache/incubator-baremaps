@@ -22,6 +22,7 @@ import java.util.List;
  * A sparse map of data backed by a {@link AlignedDataList} for storing values.
  *
  * <p>This code has been adapted from Planetiler (Apache license).
+ *
  * <p>Copyright (c) Planetiler.
  */
 public class LongAlignedDataSparseMap<T> implements LongDataMap<T> {

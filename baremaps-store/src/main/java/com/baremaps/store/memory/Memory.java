@@ -34,8 +34,8 @@ public abstract class Memory<T extends ByteBuffer> {
       throw new IllegalArgumentException("The segment size must be a power of 2");
     }
     this.segmentSize = segmentSize;
-    this.segmentShift = (int) (Math.log(this.segmentSize) / Math.log(2));
-    this.segmentMask = this.segmentSize - 1;
+    this.segmentShift = (long) (Math.log(this.segmentSize) / Math.log(2));
+    this.segmentMask = this.segmentSize - 1l;
   }
 
   /**

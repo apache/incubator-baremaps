@@ -22,6 +22,7 @@ import java.util.Map;
  * Long2LongOpenHashMap}.
  *
  * <p>This code has been adapted from Planetiler (Apache license).
+ *
  * <p>Copyright (c) Planetiler.
  */
 public class LongDataOpenHashMap<T> implements LongDataMap<T> {

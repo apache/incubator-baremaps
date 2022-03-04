@@ -23,6 +23,7 @@ import com.baremaps.store.type.PairDataType.Pair;
  * storing values.
  *
  * <p>This code has been adapted from Planetiler (Apache license).
+ *
  * <p>Copyright (c) Planetiler.
  */
 public class LongDataSortedMap<T> implements LongDataMap<T> {
