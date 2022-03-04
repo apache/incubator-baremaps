@@ -57,7 +57,7 @@ public class DataStore<T> {
   public long add(T value) {
     int size = dataType.size(value);
     if (size > segmentBytes) {
-      throw new RuntimeException("The value is too big to fit in a segment");
+      throw new StoreException("The value is too big to fit in a segment");
     }
 
     lock.lock();

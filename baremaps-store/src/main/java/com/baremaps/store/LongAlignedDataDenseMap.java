@@ -46,10 +46,10 @@ public class LongAlignedDataDenseMap<T> implements LongDataMap<T> {
    */
   public LongAlignedDataDenseMap(AlignedDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
-      throw new RuntimeException("The values are too big");
+      throw new StoreException("The values are too big");
     }
     if (memory.segmentSize() % dataType.size() != 0) {
-      throw new RuntimeException("The segment size and data type size must be aligned");
+      throw new StoreException("The segment size and data type size must be aligned");
     }
     this.dataType = dataType;
     this.memory = memory;

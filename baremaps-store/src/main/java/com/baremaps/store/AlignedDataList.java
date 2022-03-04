@@ -51,10 +51,10 @@ public class AlignedDataList<T> implements DataList<T> {
    */
   public AlignedDataList(AlignedDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
-      throw new RuntimeException("The segment size is too small for the data type");
+      throw new StoreException("The segment size is too small for the data type");
     }
     if (memory.segmentSize() % dataType.size() != 0) {
-      throw new RuntimeException("The segment size and data type size must be aligned");
+      throw new StoreException("The segment size and data type size must be aligned");
     }
     this.dataType = dataType;
     this.memory = memory;

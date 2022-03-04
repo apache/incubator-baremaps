@@ -42,7 +42,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @Fork(1)
 public class LongDataMapBenchmark {
 
-  private final long N = 1 << 25;
+  private static final long N = 1 << 25;
 
   private void benchmark(AlignedDataList<Long> store, long n) {
     for (long i = 0; i < n; i++) {
@@ -74,7 +74,7 @@ public class LongDataMapBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void onDisk() throws IOException {
-    Path directory = Files.createTempDirectory(Paths.get("."),"benchmark_");
+    Path directory = Files.createTempDirectory(Paths.get("."), "benchmark_");
     benchmark(new AlignedDataList<>(new LongDataType(), new OnDiskMemory(directory)), N);
   }
 

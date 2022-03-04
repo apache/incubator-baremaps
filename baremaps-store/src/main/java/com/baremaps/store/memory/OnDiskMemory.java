@@ -14,6 +14,7 @@
 
 package com.baremaps.store.memory;
 
+import com.baremaps.store.StoreException;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -45,7 +46,7 @@ public class OnDiskMemory extends Memory<MappedByteBuffer> {
         return channel.map(MapMode.READ_WRITE, 0, size);
       }
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new StoreException(e);
     }
   }
 }

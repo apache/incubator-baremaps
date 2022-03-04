@@ -75,7 +75,7 @@ public class OpenStreetMapGeometriesBenchmark {
   @Warmup(iterations = 0)
   @Measurement(iterations = 1)
   public void store() throws IOException {
-    Path directory = Files.createTempDirectory(Paths.get("."),"benchmark_");
+    Path directory = Files.createTempDirectory(Paths.get("."), "benchmark_");
     LongDataMap<Coordinate> coordinateCache =
         new LongDataOpenHashMap<>(
             new DataStore<>(new CoordinateDataType(), new OnDiskMemory(directory)));
