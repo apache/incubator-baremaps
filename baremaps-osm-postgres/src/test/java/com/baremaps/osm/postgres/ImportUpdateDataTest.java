@@ -114,8 +114,8 @@ class ImportUpdateDataTest extends PostgresBaseTest {
     // Update the database
     new UpdateService(
             blobStore,
-            new PostgresCoordinateCache(dataSource),
-            new PostgresReferenceCache(dataSource),
+            new PostgresCoordinateMap(dataSource),
+            new PostgresReferenceMap(dataSource),
             headerRepository,
             nodeRepository,
             wayRepository,

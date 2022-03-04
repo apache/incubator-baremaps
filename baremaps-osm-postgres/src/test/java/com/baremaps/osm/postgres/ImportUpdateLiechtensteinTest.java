@@ -87,8 +87,8 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
         new Header(
             2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), "res://liechtenstein", "", ""));
 
-    coordinateCache = new PostgresCoordinateCache(dataSource);
-    referenceCache = new PostgresReferenceCache(dataSource);
+    coordinateCache = new PostgresCoordinateMap(dataSource);
+    referenceCache = new PostgresReferenceMap(dataSource);
 
     assertEquals(
         0,

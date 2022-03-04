@@ -91,8 +91,8 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
             "",
             ""));
 
-    coordinateCache = new PostgresCoordinateCache(dataSource);
-    referenceCache = new PostgresReferenceCache(dataSource);
+    coordinateCache = new PostgresCoordinateMap(dataSource);
+    referenceCache = new PostgresReferenceMap(dataSource);
 
     // Generate the diff and update the database
     long replicationSequenceNumber = headerRepository.selectLatest().getReplicationSequenceNumber();

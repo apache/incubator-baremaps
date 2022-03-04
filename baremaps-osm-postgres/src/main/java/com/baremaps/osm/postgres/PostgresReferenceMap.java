@@ -15,75 +15,84 @@
 package com.baremaps.osm.postgres;
 
 import com.baremaps.store.LongDataMap;
+import com.baremaps.store.StoreException;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import org.locationtech.jts.geom.Coordinate;
 
-/** A read-only {@code Cache} for coordinates baked by OpenStreetMap nodes stored in PostgreSQL. */
-public class PostgresCoordinateCache implements LongDataMap<Coordinate> {
+/** A read-only {@code Cache} for references baked by an OpenStreetMap ways stored in Postgres. */
+public class PostgresReferenceMap implements LongDataMap<List<Long>> {
 
-  private static final String SELECT = "SELECT lon, lat FROM osm_nodes WHERE id = ?";
+  private static final String SELECT = "SELECT nodes FROM osm_ways WHERE id = ?";
 
-  private static final String SELECT_IN = "SELECT id, lon, lat FROM osm_nodes WHERE id = ANY (?)";
+  private static final String SELECT_IN =
+      "SELECT id, nodes FROM osm_ways WHERE id WHERE id = ANY (?)";
 
   private final DataSource dataSource;
 
   /** Constructs a {@code PostgresCoordinateCache}. */
-  public PostgresCoordinateCache(DataSource dataSource) {
+  public PostgresReferenceMap(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
   /** {@inheritDoc} */
   @Override
-  public Coordinate get(long key) {
+  public List<Long> get(long key) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT)) {
       statement.setLong(1, key);
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
-          double lon = result.getDouble(1);
-          double lat = result.getDouble(2);
-          return new Coordinate(lon, lat);
+          List<Long> nodes = new ArrayList<>();
+          Array array = result.getArray(1);
+          if (array != null) {
+            nodes = Arrays.asList((Long[]) array.getArray());
+          }
+          return nodes;
         } else {
-          return null;
+          throw new IllegalArgumentException();
         }
       }
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new StoreException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public List<Coordinate> get(List<Long> keys) {
+  public List<List<Long>> get(List<Long> keys) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       try (ResultSet result = statement.executeQuery()) {
-        Map<Long, Coordinate> nodes = new HashMap<>();
+        Map<Long, List<Long>> references = new HashMap<>();
         while (result.next()) {
+          List<Long> nodes = new ArrayList<>();
           long key = result.getLong(1);
-          double lon = result.getDouble(2);
-          double lat = result.getDouble(3);
-          nodes.put(key, new Coordinate(lon, lat));
+          Array array = result.getArray(2);
+          if (array != null) {
+            nodes = Arrays.asList((Long[]) array.getArray());
+          }
+          references.put(key, nodes);
         }
-        return keys.stream().map(nodes::get).collect(Collectors.toList());
+        return keys.stream().map(references::get).collect(Collectors.toList());
       }
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new StoreException(e);
     }
   }
 
-  /** {@inheritDoc} */
   @Override
-  public void put(long key, Coordinate value) {
+  public void put(long key, List<Long> value) {
     throw new UnsupportedOperationException();
   }
 }

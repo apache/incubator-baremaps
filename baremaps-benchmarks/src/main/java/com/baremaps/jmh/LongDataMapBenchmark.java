@@ -75,7 +75,7 @@ public class LongDataMapBenchmark {
   @Measurement(iterations = 5)
   public void onDisk() throws IOException {
     Path directory = Files.createTempDirectory(Paths.get("."), "benchmark_");
-    benchmark(new AlignedDataList<>(new LongDataType(), new OnDiskMemory(directory)), N);
+    benchmark(new AlignedDataList<Long>(new LongDataType(), new OnDiskMemory(directory)), N);
   }
 
   public static void main(String[] args) throws RunnerException {
