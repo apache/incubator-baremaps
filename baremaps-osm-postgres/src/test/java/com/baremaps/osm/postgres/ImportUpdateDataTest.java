@@ -19,21 +19,28 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.ResourceBlobStore;
-import com.baremaps.osm.cache.SimpleCache;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.repository.ImportService;
 import com.baremaps.osm.repository.UpdateService;
+import com.baremaps.store.DataStore;
+import com.baremaps.store.LongDataMap;
+import com.baremaps.store.LongDataOpenHashMap;
+import com.baremaps.store.memory.OnHeapMemory;
+import com.baremaps.store.type.CoordinateDataType;
+import com.baremaps.store.type.LongListDataType;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
 
 class ImportUpdateDataTest extends PostgresBaseTest {
 
@@ -57,13 +64,17 @@ class ImportUpdateDataTest extends PostgresBaseTest {
   @Test
   @Tag("integration")
   void data() throws Exception {
+    LongDataMap<Coordinate> coordinateCache =
+        new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
+    LongDataMap<List<Long>> referenceCache =
+        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
     new ImportService(
             new URI("res://simple/data.osm.pbf"),
             blobStore,
-            new SimpleCache<>(),
-            new SimpleCache<>(),
+            coordinateCache,
+            referenceCache,
             headerRepository,
             nodeRepository,
             wayRepository,
@@ -103,8 +114,8 @@ class ImportUpdateDataTest extends PostgresBaseTest {
     // Update the database
     new UpdateService(
             blobStore,
-            new PostgresCoordinateCache(dataSource),
-            new PostgresReferenceCache(dataSource),
+            new PostgresCoordinateMap(dataSource),
+            new PostgresReferenceMap(dataSource),
             headerRepository,
             nodeRepository,
             wayRepository,

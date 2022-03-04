@@ -195,4 +195,10 @@ class OpenStreetMapTest {
     assertEquals(wayCount, ways.get());
     assertEquals(relationCount, relations.get());
   }
+
+  class Stats {
+
+    public long counter = 0;
+    public long max = 0;
+  }
 }

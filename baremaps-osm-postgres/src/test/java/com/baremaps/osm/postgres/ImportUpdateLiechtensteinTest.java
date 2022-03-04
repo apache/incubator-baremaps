@@ -18,12 +18,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.ResourceBlobStore;
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.SimpleCache;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.repository.DiffService;
 import com.baremaps.osm.repository.ImportService;
 import com.baremaps.osm.repository.UpdateService;
+import com.baremaps.store.DataStore;
+import com.baremaps.store.LongDataMap;
+import com.baremaps.store.LongDataOpenHashMap;
+import com.baremaps.store.memory.OnHeapMemory;
+import com.baremaps.store.type.CoordinateDataType;
+import com.baremaps.store.type.LongListDataType;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -59,12 +63,17 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
   @Tag("integration")
   void liechtenstein() throws Exception {
 
+    LongDataMap<Coordinate> coordinateCache =
+        new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
+    LongDataMap<List<Long>> referenceCache =
+        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
+
     // Import data
     new ImportService(
             new URI("res://liechtenstein/liechtenstein.osm.pbf"),
             blobStore,
-            new SimpleCache<>(),
-            new SimpleCache<>(),
+            coordinateCache,
+            referenceCache,
             headerRepository,
             nodeRepository,
             wayRepository,
@@ -78,8 +87,8 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
         new Header(
             2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), "res://liechtenstein", "", ""));
 
-    Cache<Long, Coordinate> coordinateCache = new PostgresCoordinateCache(dataSource);
-    Cache<Long, List<Long>> referenceCache = new PostgresReferenceCache(dataSource);
+    coordinateCache = new PostgresCoordinateMap(dataSource);
+    referenceCache = new PostgresReferenceMap(dataSource);
 
     assertEquals(
         0,

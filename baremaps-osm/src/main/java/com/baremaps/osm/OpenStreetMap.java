@@ -16,8 +16,6 @@ package com.baremaps.osm;
 
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.CacheBlockConsumer;
 import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
@@ -27,8 +25,10 @@ import com.baremaps.osm.geometry.CreateGeometryConsumer;
 import com.baremaps.osm.geometry.ReprojectEntityConsumer;
 import com.baremaps.osm.pbf.BlobIterator;
 import com.baremaps.osm.pbf.BlobUtils;
+import com.baremaps.osm.store.DataStoreConsumer;
 import com.baremaps.osm.xml.XmlChangeSpliterator;
 import com.baremaps.osm.xml.XmlEntitySpliterator;
+import com.baremaps.store.LongDataMap;
 import com.baremaps.stream.StreamException;
 import com.baremaps.stream.StreamUtils;
 import com.google.common.io.CharStreams;
@@ -86,10 +86,10 @@ public class OpenStreetMap {
    */
   public static Stream<Block> streamPbfBlocksWithGeometries(
       InputStream input,
-      Cache<Long, Coordinate> coordinateCache,
-      Cache<Long, List<Long>> referenceCache,
+      LongDataMap<Coordinate> coordinateCache,
+      LongDataMap<List<Long>> referenceCache,
       int srid) {
-    Consumer<Block> cacheBlock = new CacheBlockConsumer(coordinateCache, referenceCache);
+    Consumer<Block> cacheBlock = new DataStoreConsumer(coordinateCache, referenceCache);
     Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinateCache, referenceCache);
     Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, srid);
     Consumer<Block> prepareGeometries =
@@ -119,8 +119,8 @@ public class OpenStreetMap {
    */
   public static Stream<Entity> streamPbfEntitiesWithGeometries(
       InputStream input,
-      Cache<Long, Coordinate> coordinateCache,
-      Cache<Long, List<Long>> referenceCache,
+      LongDataMap<Coordinate> coordinateCache,
+      LongDataMap<List<Long>> referenceCache,
       int srid) {
     return streamPbfBlocksWithGeometries(input, coordinateCache, referenceCache, srid)
         .flatMap(OpenStreetMap::streamPbfBlockEntities);

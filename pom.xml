@@ -60,7 +60,6 @@
     <version.lib.guava>31.0.1-jre</version.lib.guava>
     <version.lib.jersey>2.34</version.lib.jersey>
     <version.lib.jts>1.18.2</version.lib.jts>
-    <version.lib.lmdb>0.8.1</version.lib.lmdb>
     <version.lib.log4j>2.17.0</version.lib.log4j>
     <version.lib.picocli>4.6.2</version.lib.picocli>
     <version.lib.postgresql>42.3.1</version.lib.postgresql>
@@ -75,7 +74,6 @@
     <version.lib.jdbi>3.24.1</version.lib.jdbi>
     <version.lib.awaitability>3.0.0</version.lib.awaitability>
     <version.lib.jsqlparser>4.2</version.lib.jsqlparser>
-    <version.lib.rocksdb>6.22.1.1</version.lib.rocksdb>
     <version.lib.swagger-parser>2.0.24</version.lib.swagger-parser>
     <version.lib.jaxb-runtime>2.3.5</version.lib.jaxb-runtime>
     <version.lib.activation>1.2.2</version.lib.activation>
@@ -109,8 +107,6 @@
     <module>baremaps-blob</module>
     <module>baremaps-blob-s3</module>
     <module>baremaps-osm</module>
-    <module>baremaps-osm-lmdb</module>
-    <module>baremaps-osm-rocksdb</module>
     <module>baremaps-osm-postgres</module>
     <module>baremaps-stream</module>
     <module>baremaps-server</module>
@@ -119,6 +115,7 @@
     <module>baremaps-tile-mbtiles</module>
     <module>baremaps-tile-postgres</module>
     <module>baremaps-postgres</module>
+    <module>baremaps-store</module>
   </modules>
 
   <profiles>
@@ -295,13 +292,12 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.12.2</version>
+        <version>2.20.2</version>
         <configuration>
           <configLocation>google_checks.xml</configLocation>
           <java>
             <googleJavaFormat>
-              <version>1.8</version>
-              <style>GOOGLE</style>
+              <version>1.13.0</version>
             </googleJavaFormat>
             <removeUnusedImports />
             <licenseHeader>
@@ -337,6 +333,11 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
+        <artifactId>baremaps-store</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
         <artifactId>baremaps-blob</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
@@ -353,16 +354,6 @@
       </dependency>
       <dependency>
         <artifactId>baremaps-osm</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-osm-lmdb</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-osm-rocksdb</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -483,16 +474,6 @@
         <artifactId>proj4j</artifactId>
         <groupId>org.locationtech.proj4j</groupId>
         <version>${version.lib.proj4j}</version>
-      </dependency>
-      <dependency>
-        <artifactId>lmdbjava</artifactId>
-        <groupId>org.lmdbjava</groupId>
-        <version>${version.lib.lmdb}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.rocksdb</groupId>
-        <artifactId>rocksdbjni</artifactId>
-        <version>${version.lib.rocksdb}</version>
       </dependency>
       <dependency>
         <artifactId>protobuf-java</artifactId>
@@ -656,6 +637,12 @@
         <version>${version.lib.junit}</version>
       </dependency>
       <dependency>
+        <artifactId>junit-jupiter-params</artifactId>
+        <groupId>org.junit.jupiter</groupId>
+        <scope>test</scope>
+        <version>${version.lib.junit}</version>
+      </dependency>
+      <dependency>
         <artifactId>junit-jupiter-engine</artifactId>
         <groupId>org.junit.jupiter</groupId>
         <scope>test</scope>
@@ -803,6 +790,10 @@
     <!-- Testing libraries -->
     <dependency>
       <artifactId>junit-jupiter-api</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>junit-jupiter-params</artifactId>
       <groupId>org.junit.jupiter</groupId>
     </dependency>
     <dependency>

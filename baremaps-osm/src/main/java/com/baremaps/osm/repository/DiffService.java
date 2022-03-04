@@ -19,7 +19,6 @@ import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.osm.OpenStreetMap;
-import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Header;
@@ -32,6 +31,7 @@ import com.baremaps.osm.geometry.ExtractGeometryFunction;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
+import com.baremaps.store.LongDataMap;
 import com.baremaps.tile.Tile;
 import java.io.InputStream;
 import java.net.URI;
@@ -65,8 +65,8 @@ public class DiffService implements Callable<List<Tile>> {
 
   public DiffService(
       BlobStore blobStore,
-      Cache<Long, Coordinate> coordinateCache,
-      Cache<Long, List<Long>> referenceCache,
+      LongDataMap<Coordinate> coordinateCache,
+      LongDataMap<List<Long>> referenceCache,
       HeaderRepository headerRepository,
       Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository,

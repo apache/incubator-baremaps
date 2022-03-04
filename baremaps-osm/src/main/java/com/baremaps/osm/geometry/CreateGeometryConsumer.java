@@ -14,13 +14,13 @@
 
 package com.baremaps.osm.geometry;
 
-import com.baremaps.osm.cache.Cache;
 import com.baremaps.osm.domain.Member;
 import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
+import com.baremaps.store.LongDataMap;
 import com.baremaps.stream.StreamException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -51,8 +52,8 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
   private static final Logger logger = LoggerFactory.getLogger(CreateGeometryConsumer.class);
 
   protected final GeometryFactory geometryFactory;
-  private final Cache<Long, Coordinate> coordinateCache;
-  private final Cache<Long, List<Long>> referenceCache;
+  private final LongDataMap<Coordinate> coordinateCache;
+  private final LongDataMap<List<Long>> referenceCache;
 
   /**
    * Constructs a consumer that uses the provided caches to create and set geometries.
@@ -61,7 +62,7 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
    * @param referenceCache the reference cache
    */
   public CreateGeometryConsumer(
-      Cache<Long, Coordinate> coordinateCache, Cache<Long, List<Long>> referenceCache) {
+      LongDataMap<Coordinate> coordinateCache, LongDataMap<List<Long>> referenceCache) {
     this.geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
     this.coordinateCache = coordinateCache;
     this.referenceCache = referenceCache;
@@ -78,7 +79,8 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
   @Override
   public void match(Way way) {
     try {
-      List<Coordinate> coordinates = coordinateCache.get(way.getNodes());
+      List<Coordinate> coordinates =
+          way.getNodes().stream().map(coordinateCache::get).collect(Collectors.toList());
       Coordinate[] array = coordinates.toArray(new Coordinate[coordinates.size()]);
       LineString line = geometryFactory.createLineString(array);
       if (!line.isEmpty()) {
@@ -208,7 +210,8 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
   private LineString createLine(Member member) {
     try {
       List<Long> references = referenceCache.get(member.getRef());
-      List<Coordinate> coordinates = coordinateCache.get(references);
+      List<Coordinate> coordinates =
+          references.stream().map(coordinateCache::get).collect(Collectors.toList());
       Coordinate[] array = coordinates.toArray(new Coordinate[coordinates.size()]);
       return geometryFactory.createLineString(array);
     } catch (Exception e) {

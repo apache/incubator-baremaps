@@ -18,12 +18,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.ResourceBlobStore;
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.SimpleCache;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.repository.DiffService;
 import com.baremaps.osm.repository.ImportService;
 import com.baremaps.osm.repository.UpdateService;
+import com.baremaps.store.DataStore;
+import com.baremaps.store.LongDataMap;
+import com.baremaps.store.LongDataOpenHashMap;
+import com.baremaps.store.memory.OnHeapMemory;
+import com.baremaps.store.type.CoordinateDataType;
+import com.baremaps.store.type.LongListDataType;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
@@ -57,13 +61,17 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
   @Test
   @Tag("integration")
   void monaco() throws Exception {
+    LongDataMap<Coordinate> coordinateCache =
+        new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
+    LongDataMap<List<Long>> referenceCache =
+        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
     new ImportService(
             new URI("res://monaco/monaco-210801.osm.pbf"),
             blobStore,
-            new SimpleCache<>(),
-            new SimpleCache<>(),
+            coordinateCache,
+            referenceCache,
             headerRepository,
             nodeRepository,
             wayRepository,
@@ -83,8 +91,8 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
             "",
             ""));
 
-    Cache<Long, Coordinate> coordinateCache = new PostgresCoordinateCache(dataSource);
-    Cache<Long, List<Long>> referenceCache = new PostgresReferenceCache(dataSource);
+    coordinateCache = new PostgresCoordinateMap(dataSource);
+    referenceCache = new PostgresReferenceMap(dataSource);
 
     // Generate the diff and update the database
     long replicationSequenceNumber = headerRepository.selectLatest().getReplicationSequenceNumber();

@@ -12,16 +12,19 @@ jobs:
   build-ubuntu:
     name: Build on Ubuntu
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ '11', '17' ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Set up Java 11
+      - name: Set up Java ${{ matrix.Java }}
         uses: actions/setup-java@v2
         with:
-          java-version: 11
-          distribution: 'adopt'
+          java-version: ${{ matrix.Java }}
+          distribution: 'temurin'
           cache: 'maven'
       - name: Build with Maven
         run: mvn package -P integration,maputnik -B
@@ -29,16 +32,19 @@ jobs:
   build-macos:
     name: Build on MacOS
     runs-on: macos-latest
+    strategy:
+      matrix:
+        java: [ '11', '17' ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Set up Java 11
+      - name: Set up Java ${{ matrix.Java }}
         uses: actions/setup-java@v2
         with:
-          java-version: 11
-          distribution: 'adopt'
+          java-version: ${{ matrix.Java }}
+          distribution: 'temurin'
           cache: 'maven'
       - name: Build with Maven
         run: mvn package -P maputnik -B
@@ -46,16 +52,19 @@ jobs:
   build-windows:
     name: Build on Windows
     runs-on: windows-latest
+    strategy:
+      matrix:
+        java: [ '11', '17' ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Set up Java 11
+      - name: Set up Java ${{ matrix.Java }}
         uses: actions/setup-java@v2
         with:
-          java-version: 11
-          distribution: 'adopt'
+          java-version: ${{ matrix.Java }}
+          distribution: 'temurin'
           cache: 'maven'
       - name: Build with Maven
-        run: mvn package -P maputnik -B
+        run: mvn package -B

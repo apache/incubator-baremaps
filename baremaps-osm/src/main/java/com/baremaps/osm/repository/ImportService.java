@@ -20,8 +20,6 @@ import static com.baremaps.stream.StreamUtils.batch;
 
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.CacheBlockConsumer;
 import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Node;
@@ -32,6 +30,8 @@ import com.baremaps.osm.geometry.CreateGeometryConsumer;
 import com.baremaps.osm.geometry.ReprojectEntityConsumer;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
+import com.baremaps.osm.store.DataStoreConsumer;
+import com.baremaps.store.LongDataMap;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;
@@ -48,8 +48,8 @@ public class ImportService implements Callable<Void> {
 
   private final URI uri;
   private final BlobStore blobStore;
-  private final Cache<Long, Coordinate> coordinateCache;
-  private final Cache<Long, List<Long>> referenceCache;
+  private final LongDataMap<Coordinate> coordinateCache;
+  private final LongDataMap<List<Long>> referenceCache;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
@@ -59,8 +59,8 @@ public class ImportService implements Callable<Void> {
   public ImportService(
       URI uri,
       BlobStore blobStore,
-      Cache<Long, Coordinate> coordinateCache,
-      Cache<Long, List<Long>> referenceCache,
+      LongDataMap<Coordinate> coordinateCache,
+      LongDataMap<List<Long>> referenceCache,
       HeaderRepository headerRepository,
       Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository,
@@ -79,7 +79,7 @@ public class ImportService implements Callable<Void> {
 
   @Override
   public Void call() throws Exception {
-    Consumer<Block> cacheBlock = new CacheBlockConsumer(coordinateCache, referenceCache);
+    Consumer<Block> cacheBlock = new DataStoreConsumer(coordinateCache, referenceCache);
     Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinateCache, referenceCache);
     Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, srid);
     Consumer<Block> prepareGeometries =
