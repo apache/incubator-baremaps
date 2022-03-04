@@ -18,8 +18,8 @@ import java.nio.ByteBuffer;
 
 /**
  * A data type for reading and writing values in {@link ByteBuffer}s.
+ * Read and write operations must use absolute positions within the {@link ByteBuffer}.
  *
- * @note read and write operations must use absolute positions within the {@link ByteBuffer}.
  * @param <T>
  */
 public interface DataType<T> {
@@ -38,7 +38,6 @@ public interface DataType<T> {
    * @param buffer the source buffer
    * @param position the absolute position of the value within the buffer
    * @param value the value
-   * @return the object
    */
   void write(ByteBuffer buffer, int position, T value);
 

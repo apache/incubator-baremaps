@@ -20,9 +20,7 @@ import java.util.function.IntFunction;
  * A list of longs that uses 4 bytes to represent each long by using a list of integers. Only
  * suitable for values less than ~20 billion (i.e. OSM node IDs)
  *
- * <p>This code has been adapted from {@link <a
- * href="https://github.com/onthegomap/planetiler">Planetiler</a>} (Apache license).
- *
+ * <p>This code has been adapted from Planetiler (Apache license).
  * <p>Copyright (c) Planetiler.
  */
 public class SmallLongDataList implements DataList<Long> {

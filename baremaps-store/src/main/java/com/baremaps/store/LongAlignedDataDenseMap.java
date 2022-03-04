@@ -21,9 +21,7 @@ import java.nio.ByteBuffer;
 /**
  * A dense map of data backed by a {@link AlignedDataType} and a {@link Memory}.
  *
- * <p>This code has been adapted from {@link <a
- * href="https://github.com/onthegomap/planetiler">Planetiler</a>} (Apache license).
- *
+ * <p>This code has been adapted from Planetiler (Apache license).
  * <p>Copyright (c) Planetiler.
  */
 public class LongAlignedDataDenseMap<T> implements LongDataMap<T> {

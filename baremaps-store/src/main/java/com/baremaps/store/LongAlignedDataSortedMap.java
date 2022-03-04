@@ -20,9 +20,7 @@ import com.baremaps.store.type.LongDataType;
 /**
  * A sorted map of data backed by {@link AlignedDataList}s for storing keys and values.
  *
- * <p>This code has been adapted from {@link <a
- * href="https://github.com/onthegomap/planetiler">Planetiler</a>} (Apache license).
- *
+ * <p>This code has been adapted from Planetiler (Apache license).
  * <p>Copyright (c) Planetiler.
  */
 public class LongAlignedDataSortedMap<T> implements LongDataMap<T> {
