@@ -53,7 +53,6 @@ public class LongAlignedDataDenseMap<T> implements LongDataMap<T> {
     this.dataType = dataType;
     this.memory = memory;
     this.valueShift = (int) (Math.log(dataType.size()) / Math.log(2));
-    ;
     this.segmentShift = memory.segmentShift();
     this.segmentMask = memory.segmentMask();
   }

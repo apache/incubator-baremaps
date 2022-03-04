@@ -20,11 +20,11 @@ import java.nio.ByteBuffer;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class DataTypeTest {
+class DataTypeTest {
 
   @ParameterizedTest
   @MethodSource("com.baremaps.store.type.DataTypeProvider#dataTypes")
-  public void writeAndRead(DataType dataType, Object value) {
+  void writeAndRead(DataType dataType, Object value) {
     var size = dataType.size(value);
     var buffer = ByteBuffer.allocate(size);
     dataType.write(buffer, 0, value);

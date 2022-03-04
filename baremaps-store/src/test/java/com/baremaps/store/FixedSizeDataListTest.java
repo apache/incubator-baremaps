@@ -29,39 +29,36 @@ import org.junit.jupiter.params.provider.MethodSource;
 class FixedSizeDataListTest {
 
   @Test
-  public void segmentsTooSmall() {
-    assertThrows(
-        RuntimeException.class,
-        () -> new AlignedDataList<>(new LongDataType(), new OffHeapMemory(4)));
+  void segmentsTooSmall() {
+    var dataType = new LongDataType();
+    var memory = new OffHeapMemory(4);
+    assertThrows(StoreException.class, () -> new AlignedDataList<>(dataType, memory));
   }
 
   @Test
-  public void segmentsMisaligned() {
-    assertThrows(
-        RuntimeException.class,
-        () -> {
-          new AlignedDataList<>(
-              new AlignedDataType<>() {
-                @Override
-                public int size(Object value) {
-                  return 3;
-                }
+  void segmentsMisaligned() {
+    var dataType =
+        new AlignedDataType<>() {
+          @Override
+          public int size(Object value) {
+            return 3;
+          }
 
-                @Override
-                public void write(ByteBuffer buffer, int position, Object value) {}
+          @Override
+          public void write(ByteBuffer buffer, int position, Object value) {}
 
-                @Override
-                public Object read(ByteBuffer buffer, int position) {
-                  return null;
-                }
-              },
-              new OffHeapMemory(16));
-        });
+          @Override
+          public Object read(ByteBuffer buffer, int position) {
+            return null;
+          }
+        };
+    var memory = new OffHeapMemory(16);
+    assertThrows(StoreException.class, () -> new AlignedDataList<>(dataType, memory));
   }
 
   @ParameterizedTest
   @MethodSource("com.baremaps.store.memory.MemoryProvider#memories")
-  public void appendFixedSizeValues(Memory memory) {
+  void appendFixedSizeValues(Memory memory) {
     var list = new AlignedDataList<>(new LongDataType(), memory);
     for (int i = 0; i < 1 << 10; i++) {
       assertEquals(i, list.add((long) i));

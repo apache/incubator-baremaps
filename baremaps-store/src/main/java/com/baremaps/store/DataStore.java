@@ -28,7 +28,7 @@ public class DataStore<T> {
 
   private final DataType<T> dataType;
   private final Memory memory;
-  private final long segmentBytes;
+  private final long segmentSize;
   private long offset;
   private long size;
 
@@ -43,7 +43,7 @@ public class DataStore<T> {
   public DataStore(DataType<T> dataType, Memory memory) {
     this.dataType = dataType;
     this.memory = memory;
-    this.segmentBytes = memory.segmentSize();
+    this.segmentSize = memory.segmentSize();
     this.offset = 0;
     this.size = 0;
   }
@@ -55,21 +55,21 @@ public class DataStore<T> {
    * @return the position of the value in the memory.
    */
   public long add(T value) {
-    int size = dataType.size(value);
-    if (size > segmentBytes) {
+    int valueSize = dataType.size(value);
+    if (valueSize > segmentSize) {
       throw new StoreException("The value is too big to fit in a segment");
     }
 
     lock.lock();
     long position = offset;
-    long segmentIndex = position / segmentBytes;
-    long segmentOffset = position % segmentBytes;
-    if (segmentOffset + size > segmentBytes) {
+    long segmentIndex = position / segmentSize;
+    long segmentOffset = position % segmentSize;
+    if (segmentOffset + valueSize > segmentSize) {
       segmentOffset = 0;
       segmentIndex = segmentIndex + 1;
-      position = segmentIndex * segmentBytes;
+      position = segmentIndex * segmentSize;
     }
-    offset = position + size;
+    offset = position + valueSize;
     this.size++;
     lock.unlock();
 
@@ -86,8 +86,8 @@ public class DataStore<T> {
    * @return the value
    */
   public T get(long position) {
-    long segmentIndex = position / segmentBytes;
-    long segmentOffset = position % segmentBytes;
+    long segmentIndex = position / segmentSize;
+    long segmentOffset = position % segmentSize;
     ByteBuffer buffer = memory.segment((int) segmentIndex);
     return dataType.read(buffer, (int) segmentOffset);
   }

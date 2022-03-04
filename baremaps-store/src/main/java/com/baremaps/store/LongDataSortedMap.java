@@ -51,7 +51,7 @@ public class LongDataSortedMap<T> implements LongDataMap<T> {
       lastChunk = chunk;
     }
     long position = values.add(value);
-    keys.add(new Pair(key, position));
+    keys.add(new Pair<>(key, position));
   }
 
   @Override

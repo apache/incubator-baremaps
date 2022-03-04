@@ -17,7 +17,6 @@ package com.baremaps.store.memory;
 import com.baremaps.store.StoreException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Path;

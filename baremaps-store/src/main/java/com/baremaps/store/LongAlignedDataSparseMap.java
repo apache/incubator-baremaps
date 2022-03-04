@@ -84,7 +84,7 @@ public class LongAlignedDataSparseMap<T> implements LongDataMap<T> {
         Math.min(
                 values.size(), chunk >= offsets.size() - 1 ? values.size() : offsets.get(chunk + 1))
             - 1;
-    int startPad = offsetStartPad.get(chunk) & 255;
+    int startPad = offsetStartPad.getByte(chunk) & 255;
 
     long index = lo + offset - startPad;
 

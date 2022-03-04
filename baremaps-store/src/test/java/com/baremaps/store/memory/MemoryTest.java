@@ -22,19 +22,19 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class MemoryTest {
+class MemoryTest {
 
   private static final int SEGMENT_NUMBER = 10;
 
   @ParameterizedTest
   @MethodSource("com.baremaps.store.memory.MemoryProvider#memories")
-  public void capacity(Memory memory) {
+  void capacity(Memory memory) {
     assertEquals(SEGMENT_BYTES, memory.segmentSize());
   }
 
   @ParameterizedTest
   @MethodSource("com.baremaps.store.memory.MemoryProvider#memories")
-  public void segment(Memory memory) {
+  void segment(Memory memory) {
     for (int i = 0; i < SEGMENT_NUMBER; i++) {
       assertEquals(SEGMENT_BYTES, memory.segment(i).capacity());
       assertSame(memory.segment(i), memory.segment(i));

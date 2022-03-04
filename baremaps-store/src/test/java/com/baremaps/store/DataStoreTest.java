@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 class DataStoreTest {
 
   @Test
-  public void addFixedSizeData() {
+  void addFixedSizeData() {
     var store = new DataStore<>(new IntegerDataType(), new OffHeapMemory(1 << 10));
     for (int i = 0; i < 1 << 20; i++) {
       assertEquals(i << 2, store.add(i));
@@ -37,7 +37,7 @@ class DataStoreTest {
   }
 
   @Test
-  public void addVariableSizeValues() {
+  void addVariableSizeValues() {
     var store = new DataStore<>(new IntegerListDataType(), new OffHeapMemory(1 << 10));
     var random = new Random(0);
     var positions = new ArrayList<Long>();

@@ -27,7 +27,10 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
 
-/** A read-only {@link LongDataMap} for coordinates baked by OpenStreetMap nodes stored in PostgreSQL. */
+/**
+ * A read-only {@link LongDataMap} for coordinates baked by OpenStreetMap nodes stored in
+ * PostgreSQL.
+ */
 public class PostgresCoordinateMap implements LongDataMap<Coordinate> {
 
   private static final String SELECT = "SELECT lon, lat FROM osm_nodes WHERE id = ?";

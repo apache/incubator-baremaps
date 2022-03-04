@@ -28,7 +28,7 @@ class LongDataMapTest {
 
   @ParameterizedTest
   @MethodSource("mapProvider")
-  public void test(LongDataMap<Long> map) {
+  void test(LongDataMap<Long> map) {
     for (long i = 0; i < 1 << 20; i++) {
       map.put(i, i);
     }
@@ -37,7 +37,7 @@ class LongDataMapTest {
     }
   }
 
-  private static Stream<Arguments> mapProvider() {
+  static Stream<Arguments> mapProvider() {
     return Stream.of(
         Arguments.of(
             new LongDataOpenHashMap<>(new DataStore<>(new LongDataType(), new OffHeapMemory()))),
