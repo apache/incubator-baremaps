@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** A base class to manage segments of on-heap, off-heap, or on-disk memory. */
-public abstract class Memory<T extends ByteBuffer> {
+public abstract class Memory {
 
   private final int segmentSize;
 
@@ -27,7 +27,7 @@ public abstract class Memory<T extends ByteBuffer> {
 
   private final long segmentMask;
 
-  private final List<T> segments = new ArrayList<>();
+  private final List<ByteBuffer> segments = new ArrayList<>();
 
   protected Memory(int segmentSize) {
     if ((segmentSize & -segmentSize) != segmentSize) {
@@ -87,7 +87,7 @@ public abstract class Memory<T extends ByteBuffer> {
     while (segments.size() <= index) {
       segments.add(null);
     }
-    T segment = segments.get(index);
+    ByteBuffer segment = segments.get(index);
     if (segment == null) {
       segment = allocate(index, segmentSize);
       segments.set(index, segment);
@@ -102,5 +102,5 @@ public abstract class Memory<T extends ByteBuffer> {
    * @param size the size of the segment
    * @return the segment
    */
-  protected abstract T allocate(int index, int size);
+  protected abstract ByteBuffer allocate(int index, int size);
 }

@@ -16,6 +16,7 @@ package com.baremaps.store.memory;
 
 import com.baremaps.store.StoreException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
@@ -23,7 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 /** A memory that stores segments on-disk using mapped byte buffers. */
-public class OnDiskMemory extends Memory<MappedByteBuffer> {
+public class OnDiskMemory extends Memory {
 
   private final Path directory;
 
@@ -37,7 +38,7 @@ public class OnDiskMemory extends Memory<MappedByteBuffer> {
   }
 
   @Override
-  protected MappedByteBuffer allocate(int index, int size) {
+  protected ByteBuffer allocate(int index, int size) {
     try {
       Path file = directory.resolve(String.format("%s.part", index));
       try (FileChannel channel =
