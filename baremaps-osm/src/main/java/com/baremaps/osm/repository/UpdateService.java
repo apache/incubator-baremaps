@@ -18,7 +18,7 @@ import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.OpenStreetMap;
+import com.baremaps.osm.change.OsmChangeParser;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Header;
@@ -31,6 +31,7 @@ import com.baremaps.osm.geometry.CreateGeometryConsumer;
 import com.baremaps.osm.geometry.ReprojectEntityConsumer;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
+import com.baremaps.osm.state.OsmStateParser;
 import com.baremaps.store.LongDataMap;
 import java.io.InputStream;
 import java.net.URI;
@@ -92,13 +93,13 @@ public class UpdateService implements Callable<Void> {
     try (InputStream blobInputStream = changeBlob.getInputStream();
         InputStream progressInputStream = new InputStreamProgress(blobInputStream, progressLogger);
         InputStream gzipInputStream = new GZIPInputStream(progressInputStream)) {
-      OpenStreetMap.streamXmlChanges(gzipInputStream).map(prepareChange).forEach(saveChange);
+      new OsmChangeParser().changes(gzipInputStream).map(prepareChange).forEach(saveChange);
     }
 
     URI stateUri = resolve(replicationUrl, sequenceNumber, "state.txt");
     Blob stateBlob = blobStore.get(stateUri);
     try (InputStream stateInputStream = stateBlob.getInputStream()) {
-      State state = OpenStreetMap.readState(stateInputStream);
+      State state = new OsmStateParser().state(stateInputStream);
       headerRepository.put(
           new Header(
               state.getSequenceNumber(),

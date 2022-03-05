@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.blob.BlobStoreException;
 import com.baremaps.blob.ResourceBlobStore;
-import com.baremaps.osm.OpenStreetMap;
+import com.baremaps.osm.pbf.OsmPbfParser;
 import com.baremaps.osm.repository.RepositoryException;
 import com.baremaps.osm.repository.SaveBlockConsumer;
 import com.baremaps.postgres.jdbc.PostgresUtils;
@@ -66,7 +66,7 @@ class SaveBlockConsumerTest {
             headerRepository, nodeRepository, tableRepository, relationRepository);
     InputStream inputStream =
         new ResourceBlobStore().get(new URI("res://simple/data.osm.pbf")).getInputStream();
-    OpenStreetMap.streamPbfBlocks(inputStream).forEach(dataImporter);
+    new OsmPbfParser().blocks(inputStream).forEach(dataImporter);
 
     // Check node importation
     assertNull(nodeRepository.get(0l));

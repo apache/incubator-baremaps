@@ -18,7 +18,7 @@ import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.OpenStreetMap;
+import com.baremaps.osm.change.OsmChangeParser;
 import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Header;
@@ -97,7 +97,8 @@ public class DiffService implements Callable<List<Tile>> {
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(srid, 4326);
     try (InputStream changesInputStream =
         new GZIPInputStream(new InputStreamProgress(blob.getInputStream(), progressLogger))) {
-      return OpenStreetMap.streamXmlChanges(changesInputStream)
+      return new OsmChangeParser()
+          .changes(changesInputStream)
           .flatMap(this::geometriesForChange)
           .map(projectionTransformer::transform)
           .flatMap(this::tilesForGeometry)

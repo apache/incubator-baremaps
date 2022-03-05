@@ -25,30 +25,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-/** A reader that extract state information from an OpenStreetMap state file. */
-public class StateReader {
-
-  private static final DateTimeFormatter format =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-  private final InputStreamReader reader;
+public class OsmStateParser {
 
   /**
-   * Constructs the state reader.
+   * Parse an OSM state file.
    *
-   * @param inputStream the OpenStreetMap state file
+   * @param input the OpenStreetMap state file
+   * @return the state
    */
-  public StateReader(InputStream inputStream) {
-    this.reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-  }
-
-  /**
-   * Returns the state information.
-   *
-   * @return the state information
-   * @throws IOException
-   */
-  public State read() throws IOException {
+  public State state(InputStream input) throws IOException {
+    InputStreamReader reader = new InputStreamReader(input, StandardCharsets.UTF_8);
     Map<String, String> map = new HashMap<>();
     for (String line : CharStreams.readLines(reader)) {
       String[] array = line.split("=");
@@ -57,6 +43,7 @@ public class StateReader {
       }
     }
     long sequenceNumber = Long.parseLong(map.get("sequenceNumber"));
+    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
     LocalDateTime timestamp = LocalDateTime.parse(map.get("timestamp").replace("\\", ""), format);
     return new State(sequenceNumber, timestamp);
   }

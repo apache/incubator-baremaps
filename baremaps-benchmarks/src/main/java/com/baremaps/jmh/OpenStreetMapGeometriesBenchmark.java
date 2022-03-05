@@ -14,11 +14,11 @@
 
 package com.baremaps.jmh;
 
-import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
+import com.baremaps.osm.pbf.OsmPbfParser;
 import com.baremaps.store.DataStore;
 import com.baremaps.store.LongDataMap;
 import com.baremaps.store.LongDataOpenHashMap;
@@ -85,8 +85,11 @@ public class OpenStreetMapGeometriesBenchmark {
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      OpenStreetMap.streamPbfEntitiesWithGeometries(
-              inputStream, coordinateCache, referenceCache, 4326)
+      new OsmPbfParser()
+          .coordinateMap(coordinateCache)
+          .referenceMap(referenceCache)
+          .projection(4326)
+          .entities(inputStream)
           .forEach(
               new EntityConsumerAdapter() {
                 @Override
