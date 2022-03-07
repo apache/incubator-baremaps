@@ -76,18 +76,18 @@ public class OpenStreetMapGeometriesBenchmark {
   @Measurement(iterations = 1)
   public void store() throws IOException {
     Path directory = Files.createTempDirectory(Paths.get("."), "benchmark_");
-    LongDataMap<Coordinate> coordinateCache =
+    LongDataMap<Coordinate> coordinates =
         new LongDataOpenHashMap<>(
             new DataStore<>(new CoordinateDataType(), new OnDiskMemory(directory)));
-    LongDataMap<List<Long>> referenceCache =
+    LongDataMap<List<Long>> references =
         new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
       new OsmPbfParser()
-          .coordinateMap(coordinateCache)
-          .referenceMap(referenceCache)
+          .coordinates(coordinates)
+          .references(references)
           .projection(4326)
           .entities(inputStream)
           .forEach(

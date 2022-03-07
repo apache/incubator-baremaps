@@ -26,12 +26,22 @@ public class BlockReader {
     this.blob = blob;
   }
 
-  public Block readBlock() {
+  /**
+   * Reads the provided {@code Blob} and returns the corresponding {@code Block}.
+   *
+   * @param blob the blob
+   * @return the block
+   */
+  public static Block read(Blob blob) {
+    return new BlockReader(blob).read();
+  }
+
+  public Block read() {
     switch (blob.header().getType()) {
       case "OSMHeader":
-        return BlobUtils.readHeaderBlock(blob);
+        return HeaderBlockReader.read(blob);
       case "OSMData":
-        return BlobUtils.readDataBlock(blob);
+        return DataBlockReader.read(blob);
       default:
         throw new RuntimeException("Unknown blob type");
     }

@@ -38,14 +38,14 @@ class RelationGeometryTest {
   Geometry handleRelation(String file) throws IOException {
     InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
     List<Entity> entities = new OsmXmlParser().entities(input).collect(Collectors.toList());
-    LongDataMap<Coordinate> coordinateCache =
+    LongDataMap<Coordinate> coordinates =
         new MockLongDataMap<>(
             entities.stream()
                 .filter(e -> e instanceof Node)
                 .map(e -> (Node) e)
                 .collect(
                     Collectors.toMap(n -> n.getId(), n -> new Coordinate(n.getLon(), n.getLat()))));
-    LongDataMap<List<Long>> referenceCache =
+    LongDataMap<List<Long>> references =
         new MockLongDataMap<>(
             entities.stream()
                 .filter(e -> e instanceof Way)
@@ -57,7 +57,7 @@ class RelationGeometryTest {
             .map(e -> (Relation) e)
             .findFirst()
             .get();
-    new CreateGeometryConsumer(coordinateCache, referenceCache).match(relation);
+    new CreateGeometryConsumer(coordinates, references).match(relation);
     return relation.getGeometry();
   }
 

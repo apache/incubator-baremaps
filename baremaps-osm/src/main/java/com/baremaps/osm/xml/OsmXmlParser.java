@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/** A utility class for parsing an OpenStreetMap XML file. */
 public class OsmXmlParser {
 
   /**

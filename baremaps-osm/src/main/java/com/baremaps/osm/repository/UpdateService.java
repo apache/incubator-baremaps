@@ -46,8 +46,8 @@ import org.locationtech.jts.geom.Coordinate;
 public class UpdateService implements Callable<Void> {
 
   private final BlobStore blobStore;
-  private final LongDataMap<Coordinate> coordinateCache;
-  private final LongDataMap<List<Long>> referenceCache;
+  private final LongDataMap<Coordinate> coordinates;
+  private final LongDataMap<List<Long>> references;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
@@ -56,16 +56,16 @@ public class UpdateService implements Callable<Void> {
 
   public UpdateService(
       BlobStore blobStore,
-      LongDataMap<Coordinate> coordinateCache,
-      LongDataMap<List<Long>> referenceCache,
+      LongDataMap<Coordinate> coordinates,
+      LongDataMap<List<Long>> references,
       HeaderRepository headerRepository,
       Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository,
       Repository<Long, Relation> relationRepository,
       int srid) {
     this.blobStore = blobStore;
-    this.coordinateCache = coordinateCache;
-    this.referenceCache = referenceCache;
+    this.coordinates = coordinates;
+    this.references = references;
     this.headerRepository = headerRepository;
     this.nodeRepository = nodeRepository;
     this.wayRepository = wayRepository;
@@ -79,7 +79,7 @@ public class UpdateService implements Callable<Void> {
     String replicationUrl = header.getReplicationUrl();
     Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
 
-    Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinateCache, referenceCache);
+    Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
     Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, srid);
     Consumer<Change> prepareGeometries =
         new ChangeEntityConsumer(createGeometry.andThen(reprojectGeometry));

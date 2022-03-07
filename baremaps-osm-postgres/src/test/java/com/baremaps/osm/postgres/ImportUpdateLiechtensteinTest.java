@@ -63,17 +63,17 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
   @Tag("integration")
   void liechtenstein() throws Exception {
 
-    LongDataMap<Coordinate> coordinateCache =
+    LongDataMap<Coordinate> coordinates =
         new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
-    LongDataMap<List<Long>> referenceCache =
+    LongDataMap<List<Long>> references =
         new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
     new ImportService(
             new URI("res://liechtenstein/liechtenstein.osm.pbf"),
             blobStore,
-            coordinateCache,
-            referenceCache,
+            coordinates,
+            references,
             headerRepository,
             nodeRepository,
             wayRepository,
@@ -87,15 +87,15 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
         new Header(
             2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), "res://liechtenstein", "", ""));
 
-    coordinateCache = new PostgresCoordinateMap(dataSource);
-    referenceCache = new PostgresReferenceMap(dataSource);
+    coordinates = new PostgresCoordinateMap(dataSource);
+    references = new PostgresReferenceMap(dataSource);
 
     assertEquals(
         0,
         new DiffService(
                 blobStore,
-                coordinateCache,
-                referenceCache,
+                coordinates,
+                references,
                 headerRepository,
                 nodeRepository,
                 wayRepository,
@@ -108,8 +108,8 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
     // Update the database
     new UpdateService(
             blobStore,
-            coordinateCache,
-            referenceCache,
+            coordinates,
+            references,
             headerRepository,
             nodeRepository,
             wayRepository,
@@ -122,8 +122,8 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
         2,
         new DiffService(
                 blobStore,
-                coordinateCache,
-                referenceCache,
+                coordinates,
+                references,
                 headerRepository,
                 nodeRepository,
                 wayRepository,
@@ -135,8 +135,8 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
 
     new UpdateService(
             blobStore,
-            coordinateCache,
-            referenceCache,
+            coordinates,
+            references,
             headerRepository,
             nodeRepository,
             wayRepository,
@@ -149,8 +149,8 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
         0,
         new DiffService(
                 blobStore,
-                coordinateCache,
-                referenceCache,
+                coordinates,
+                references,
                 headerRepository,
                 nodeRepository,
                 wayRepository,
@@ -162,8 +162,8 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
 
     new UpdateService(
             blobStore,
-            coordinateCache,
-            referenceCache,
+            coordinates,
+            references,
             headerRepository,
             nodeRepository,
             wayRepository,

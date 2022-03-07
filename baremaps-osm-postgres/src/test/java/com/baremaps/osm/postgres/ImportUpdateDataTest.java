@@ -64,17 +64,17 @@ class ImportUpdateDataTest extends PostgresBaseTest {
   @Test
   @Tag("integration")
   void data() throws Exception {
-    LongDataMap<Coordinate> coordinateCache =
+    LongDataMap<Coordinate> coordinates =
         new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
-    LongDataMap<List<Long>> referenceCache =
+    LongDataMap<List<Long>> references =
         new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
     new ImportService(
             new URI("res://simple/data.osm.pbf"),
             blobStore,
-            coordinateCache,
-            referenceCache,
+            coordinates,
+            references,
             headerRepository,
             nodeRepository,
             wayRepository,

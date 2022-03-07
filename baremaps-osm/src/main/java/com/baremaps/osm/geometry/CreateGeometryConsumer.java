@@ -52,20 +52,20 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
   private static final Logger logger = LoggerFactory.getLogger(CreateGeometryConsumer.class);
 
   protected final GeometryFactory geometryFactory;
-  private final LongDataMap<Coordinate> coordinateCache;
-  private final LongDataMap<List<Long>> referenceCache;
+  private final LongDataMap<Coordinate> coordinates;
+  private final LongDataMap<List<Long>> references;
 
   /**
    * Constructs a consumer that uses the provided caches to create and set geometries.
    *
-   * @param coordinateCache the coordinate cache
-   * @param referenceCache the reference cache
+   * @param coordinates the coordinate cache
+   * @param references the reference cache
    */
   public CreateGeometryConsumer(
-      LongDataMap<Coordinate> coordinateCache, LongDataMap<List<Long>> referenceCache) {
+      LongDataMap<Coordinate> coordinates, LongDataMap<List<Long>> references) {
     this.geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-    this.coordinateCache = coordinateCache;
-    this.referenceCache = referenceCache;
+    this.coordinates = coordinates;
+    this.references = references;
   }
 
   /** {@inheritDoc} */
@@ -79,9 +79,9 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
   @Override
   public void match(Way way) {
     try {
-      List<Coordinate> coordinates =
-          way.getNodes().stream().map(coordinateCache::get).collect(Collectors.toList());
-      Coordinate[] array = coordinates.toArray(new Coordinate[coordinates.size()]);
+      List<Coordinate> list =
+          way.getNodes().stream().map(coordinates::get).collect(Collectors.toList());
+      Coordinate[] array = list.toArray(new Coordinate[list.size()]);
       LineString line = geometryFactory.createLineString(array);
       if (!line.isEmpty()) {
         if (!line.isClosed()) {
@@ -209,10 +209,9 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
 
   private LineString createLine(Member member) {
     try {
-      List<Long> references = referenceCache.get(member.getRef());
-      List<Coordinate> coordinates =
-          references.stream().map(coordinateCache::get).collect(Collectors.toList());
-      Coordinate[] array = coordinates.toArray(new Coordinate[coordinates.size()]);
+      List<Long> refs = this.references.get(member.getRef());
+      List<Coordinate> coords = refs.stream().map(coordinates::get).collect(Collectors.toList());
+      Coordinate[] array = coords.toArray(new Coordinate[coords.size()]);
       return geometryFactory.createLineString(array);
     } catch (Exception e) {
       throw new StreamException(e);

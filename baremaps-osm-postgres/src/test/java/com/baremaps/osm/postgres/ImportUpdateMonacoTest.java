@@ -61,17 +61,17 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
   @Test
   @Tag("integration")
   void monaco() throws Exception {
-    LongDataMap<Coordinate> coordinateCache =
+    LongDataMap<Coordinate> coordinates =
         new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
-    LongDataMap<List<Long>> referenceCache =
+    LongDataMap<List<Long>> references =
         new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
     new ImportService(
             new URI("res://monaco/monaco-210801.osm.pbf"),
             blobStore,
-            coordinateCache,
-            referenceCache,
+            coordinates,
+            references,
             headerRepository,
             nodeRepository,
             wayRepository,
@@ -91,16 +91,16 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
             "",
             ""));
 
-    coordinateCache = new PostgresCoordinateMap(dataSource);
-    referenceCache = new PostgresReferenceMap(dataSource);
+    coordinates = new PostgresCoordinateMap(dataSource);
+    references = new PostgresReferenceMap(dataSource);
 
     // Generate the diff and update the database
     long replicationSequenceNumber = headerRepository.selectLatest().getReplicationSequenceNumber();
     while (replicationSequenceNumber < 3075) {
       new DiffService(
               blobStore,
-              coordinateCache,
-              referenceCache,
+              coordinates,
+              references,
               headerRepository,
               nodeRepository,
               wayRepository,
@@ -110,8 +110,8 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
           .call();
       new UpdateService(
               blobStore,
-              coordinateCache,
-              referenceCache,
+              coordinates,
+              references,
               headerRepository,
               nodeRepository,
               wayRepository,

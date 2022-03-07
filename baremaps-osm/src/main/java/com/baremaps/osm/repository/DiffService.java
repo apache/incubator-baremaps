@@ -65,8 +65,8 @@ public class DiffService implements Callable<List<Tile>> {
 
   public DiffService(
       BlobStore blobStore,
-      LongDataMap<Coordinate> coordinateCache,
-      LongDataMap<List<Long>> referenceCache,
+      LongDataMap<Coordinate> coordinates,
+      LongDataMap<List<Long>> references,
       HeaderRepository headerRepository,
       Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository,
@@ -80,7 +80,7 @@ public class DiffService implements Callable<List<Tile>> {
     this.relationRepository = relationRepository;
     this.srid = srid;
     this.zoom = zoom;
-    this.createGeometryConsumer = new CreateGeometryConsumer(coordinateCache, referenceCache);
+    this.createGeometryConsumer = new CreateGeometryConsumer(coordinates, references);
   }
 
   @Override

@@ -19,10 +19,11 @@ import java.io.InputStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+/** A utility class for parsing an OpenStreetMap change file. */
 public class OsmChangeParser {
 
   /**
-   * Creates an ordered stream of OSM changes from a XML file.
+   * Creates an ordered stream of OSM changes from an XML file.
    *
    * @param input
    * @return

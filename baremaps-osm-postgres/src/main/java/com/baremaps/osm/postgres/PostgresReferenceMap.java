@@ -39,7 +39,7 @@ public class PostgresReferenceMap implements LongDataMap<List<Long>> {
 
   private final DataSource dataSource;
 
-  /** Constructs a {@code PostgresCoordinateCache}. */
+  /** Constructs a {@code PostgresReferenceMap}. */
   public PostgresReferenceMap(DataSource dataSource) {
     this.dataSource = dataSource;
   }
