@@ -16,12 +16,12 @@ package com.baremaps.osm.geometry;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.store.MockLongDataMap;
+import com.baremaps.osm.xml.OsmXmlParser;
 import com.baremaps.store.LongDataMap;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,15 +37,15 @@ class RelationGeometryTest {
 
   Geometry handleRelation(String file) throws IOException {
     InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
-    List<Entity> entities = OpenStreetMap.streamXmlEntities(input).collect(Collectors.toList());
-    LongDataMap<Coordinate> coordinateCache =
+    List<Entity> entities = new OsmXmlParser().entities(input).collect(Collectors.toList());
+    LongDataMap<Coordinate> coordinates =
         new MockLongDataMap<>(
             entities.stream()
                 .filter(e -> e instanceof Node)
                 .map(e -> (Node) e)
                 .collect(
                     Collectors.toMap(n -> n.getId(), n -> new Coordinate(n.getLon(), n.getLat()))));
-    LongDataMap<List<Long>> referenceCache =
+    LongDataMap<List<Long>> references =
         new MockLongDataMap<>(
             entities.stream()
                 .filter(e -> e instanceof Way)
@@ -57,7 +57,7 @@ class RelationGeometryTest {
             .map(e -> (Relation) e)
             .findFirst()
             .get();
-    new CreateGeometryConsumer(coordinateCache, referenceCache).match(relation);
+    new CreateGeometryConsumer(coordinates, references).match(relation);
     return relation.getGeometry();
   }
 

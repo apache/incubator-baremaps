@@ -22,10 +22,9 @@ import static javax.xml.stream.XMLInputFactory.SUPPORT_DTD;
 import static javax.xml.stream.XMLStreamConstants.END_DOCUMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
-import com.baremaps.osm.domain.Change;
-import com.baremaps.osm.domain.Change.ChangeType;
-import com.baremaps.osm.domain.Element;
+import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Entity;
+import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Member;
 import com.baremaps.osm.domain.Member.MemberType;
@@ -33,6 +32,8 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.stream.StreamException;
+import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -48,15 +49,14 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 /**
- * An object for traversing an OpenStreetMap XML file describing changes (osc.xml) and creating a
+ * An object for traversing an OpenStreetMap XML file describing entities (osm.xml) and creating a
  * stream.
  */
-public class XmlChangeSpliterator implements Spliterator<Change> {
+public class OsmXmlSpliterator implements Spliterator<Entity> {
 
-  private static final String ELEMENT_NAME_OSMCHANGE = "osmChange";
-  private static final String ELEMENT_NAME_CREATE = "create";
-  private static final String ELEMENT_NAME_DELETE = "delete";
-  private static final String ELEMENT_NAME_MODIFY = "modify";
+  private static final String ELEMENT_NAME_OSM = "osm";
+  private static final String ELEMENT_NAME_BOUND = "bound";
+  private static final String ELEMENT_NAME_BOUNDS = "bounds";
   private static final String ELEMENT_NAME_NODE = "node";
   private static final String ELEMENT_NAME_WAY = "way";
   private static final String ELEMENT_NAME_RELATION = "relation";
@@ -65,7 +65,14 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
   private static final String ELEMENT_NAME_MEMBER = "member";
   private static final String ATTRIBUTE_NAME_ID = "id";
   private static final String ATTRIBUTE_NAME_VERSION = "version";
+  private static final String ATTRIBUTE_NAME_GENERATOR = "generator";
+  private static final String ATTRIBUTE_NAME_SOURCE = "source";
   private static final String ATTRIBUTE_NAME_TIMESTAMP = "timestamp";
+  private static final String ATTRIBUTE_NAME_OSMOSIS_REPLICATION_URL = "osmosis_replication_url";
+  private static final String ATTRIBUTE_NAME_OSMOSIS_REPLICATION_TIMESTAMP =
+      "osmosis_replication_timestamp";
+  private static final String ATTRIBUTE_NAME_OSMOSIS_REPLICATION_SEQUENCE_NUMBER =
+      "osmosis_replication_sequence_number";
   private static final String ATTRIBUTE_NAME_USER_ID = "uid";
   private static final String ATTRIBUTE_NAME_CHANGESET_ID = "changeset";
   private static final String ATTRIBUTE_NAME_LATITUDE = "lat";
@@ -75,12 +82,16 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
   private static final String ATTRIBUTE_NAME_REF = "ref";
   private static final String ATTRIBUTE_NAME_TYPE = "type";
   private static final String ATTRIBUTE_NAME_ROLE = "role";
+  private static final String ATTRIBUTE_NAME_MAXLON = "maxlon";
+  private static final String ATTRIBUTE_NAME_MAXLAT = "maxlat";
+  private static final String ATTRIBUTE_NAME_MINLON = "minlon";
+  private static final String ATTRIBUTE_NAME_MINLAT = "minlat";
   public static final DateTimeFormatter format =
       DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   private final XMLStreamReader reader;
 
-  public XmlChangeSpliterator(InputStream input) {
+  public OsmXmlSpliterator(InputStream input) {
     XMLInputFactory factory = XMLInputFactory.newInstance();
     factory.setProperty(SUPPORT_DTD, false);
     factory.setProperty(IS_SUPPORTING_EXTERNAL_ENTITIES, false);
@@ -88,24 +99,20 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
     factory.setProperty(IS_VALIDATING, false);
     factory.setProperty(IS_COALESCING, false);
     try {
-      this.reader = factory.createXMLStreamReader(input);
+      reader = factory.createXMLStreamReader(input);
     } catch (XMLStreamException e) {
       throw new StreamException(e);
     }
   }
 
   @Override
-  public boolean tryAdvance(Consumer<? super Change> consumer) {
+  public boolean tryAdvance(Consumer<? super Entity> consumer) {
     try {
       if (reader.hasNext()) {
         int event = reader.next();
         switch (event) {
           case START_ELEMENT:
-            if (ELEMENT_NAME_OSMCHANGE.equals(reader.getLocalName())) {
-              return true;
-            }
-            Change entity = readChange();
-            consumer.accept(entity);
+            readEntity(consumer);
             return true;
           case END_DOCUMENT:
             return false;
@@ -120,35 +127,58 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
     }
   }
 
-  private Change readChange() throws XMLStreamException {
+  private void readEntity(Consumer<? super Entity> consumer) throws XMLStreamException {
     switch (reader.getLocalName()) {
-      case ELEMENT_NAME_CREATE:
-      case ELEMENT_NAME_DELETE:
-      case ELEMENT_NAME_MODIFY:
-        ChangeType type = ChangeType.valueOf(reader.getLocalName().toUpperCase());
-        List<Entity> elements = new ArrayList<>();
-        reader.nextTag();
-        while (reader.getEventType() == XMLStreamConstants.START_ELEMENT) {
-          elements.add(readElement());
-          reader.nextTag();
-        }
-        return new Change(type, elements);
+      case ELEMENT_NAME_OSM:
+        consumer.accept(readHeader());
+        return;
+      case ELEMENT_NAME_BOUND:
+      case ELEMENT_NAME_BOUNDS:
+        consumer.accept(readBounds());
+        return;
+      case ELEMENT_NAME_NODE:
+        consumer.accept(readNode());
+        return;
+      case ELEMENT_NAME_WAY:
+        consumer.accept(readWay());
+        return;
+      case ELEMENT_NAME_RELATION:
+        consumer.accept(readRelation());
+        return;
       default:
-        throw new StreamException("Unexpected XML element: " + reader.getLocalName());
+        readUnknownElement();
+        return;
     }
   }
 
-  private Element readElement() throws XMLStreamException {
-    switch (reader.getLocalName()) {
-      case ELEMENT_NAME_NODE:
-        return readNode();
-      case ELEMENT_NAME_WAY:
-        return readWay();
-      case ELEMENT_NAME_RELATION:
-        return readRelation();
-      default:
-        throw new StreamException("Unexpected XML element: " + reader.getLocalName());
-    }
+  private Header readHeader() {
+    String generator = reader.getAttributeValue(null, ATTRIBUTE_NAME_GENERATOR);
+    String source = reader.getAttributeValue(null, ATTRIBUTE_NAME_SOURCE);
+    String replicationUrl = reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_URL);
+    String replicationSequenceNumberValue =
+        reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_SEQUENCE_NUMBER);
+    Long replicationSequenceNumber =
+        replicationSequenceNumberValue != null
+            ? Long.parseLong(replicationSequenceNumberValue)
+            : null;
+    String timestampValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_TIMESTAMP);
+    LocalDateTime timestamp =
+        timestampValue != null ? LocalDateTime.parse(timestampValue, format) : null;
+    String osmosisReplicationTimestampValue =
+        reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_TIMESTAMP);
+    timestamp =
+        osmosisReplicationTimestampValue != null
+            ? LocalDateTime.parse(osmosisReplicationTimestampValue, format)
+            : timestamp;
+    return new Header(replicationSequenceNumber, timestamp, replicationUrl, source, generator);
+  }
+
+  private Bound readBounds() {
+    double maxLon = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_MAXLON));
+    double maxLat = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_MAXLAT));
+    double minLon = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_MINLON));
+    double minLat = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_MINLAT));
+    return new Bound(maxLat, maxLon, minLat, minLon);
   }
 
   private Node readNode() throws XMLStreamException {
@@ -171,7 +201,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
       }
     }
 
-    return new Node(id, info, tags, latitude, longitude);
+    return new Node(id, info, tags, longitude, latitude);
   }
 
   private Way readWay() throws XMLStreamException {
@@ -243,13 +273,15 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
   }
 
   private Info readInfo() {
-    int version = Integer.parseInt(reader.getAttributeValue(null, ATTRIBUTE_NAME_VERSION));
+    String versionValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_VERSION);
+    int version = versionValue != null ? Ints.tryParse(versionValue) : 0;
+    String timestampValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_TIMESTAMP);
     LocalDateTime timestamp =
-        LocalDateTime.parse(reader.getAttributeValue(null, ATTRIBUTE_NAME_TIMESTAMP), format);
+        timestampValue != null ? LocalDateTime.parse(timestampValue, format) : null;
     String changesetValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_CHANGESET_ID);
-    long changeset = changesetValue != null ? Long.parseLong(changesetValue) : -1;
+    long changeset = changesetValue != null ? Longs.tryParse(changesetValue) : -1;
     String uidValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_USER_ID);
-    int uid = uidValue != null ? Integer.parseInt(uidValue) : -1;
+    int uid = uidValue != null && Ints.tryParse(uidValue) != null ? Ints.tryParse(uidValue) : -1;
     return new Info(version, timestamp, changeset, uid);
   }
 
@@ -269,12 +301,12 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
       } else if (reader.getEventType() == XMLStreamConstants.END_ELEMENT) {
         level--;
       }
-      reader.nextTag();
+      reader.next();
     } while (level > 0);
   }
 
   @Override
-  public Spliterator<Change> trySplit() {
+  public Spliterator<Entity> trySplit() {
     return null;
   }
 
@@ -285,6 +317,6 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
 
   @Override
   public int characteristics() {
-    return ORDERED | DISTINCT | NONNULL | IMMUTABLE;
+    return NONNULL | ORDERED | CONCURRENT;
   }
 }

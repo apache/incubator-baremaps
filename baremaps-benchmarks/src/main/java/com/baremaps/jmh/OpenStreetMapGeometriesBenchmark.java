@@ -14,11 +14,11 @@
 
 package com.baremaps.jmh;
 
-import com.baremaps.osm.OpenStreetMap;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
+import com.baremaps.osm.pbf.OsmPbfParser;
 import com.baremaps.store.DataStore;
 import com.baremaps.store.LongDataMap;
 import com.baremaps.store.LongDataOpenHashMap;
@@ -76,17 +76,20 @@ public class OpenStreetMapGeometriesBenchmark {
   @Measurement(iterations = 1)
   public void store() throws IOException {
     Path directory = Files.createTempDirectory(Paths.get("."), "benchmark_");
-    LongDataMap<Coordinate> coordinateCache =
+    LongDataMap<Coordinate> coordinates =
         new LongDataOpenHashMap<>(
             new DataStore<>(new CoordinateDataType(), new OnDiskMemory(directory)));
-    LongDataMap<List<Long>> referenceCache =
+    LongDataMap<List<Long>> references =
         new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      OpenStreetMap.streamPbfEntitiesWithGeometries(
-              inputStream, coordinateCache, referenceCache, 4326)
+      new OsmPbfParser()
+          .coordinates(coordinates)
+          .references(references)
+          .projection(4326)
+          .entities(inputStream)
           .forEach(
               new EntityConsumerAdapter() {
                 @Override

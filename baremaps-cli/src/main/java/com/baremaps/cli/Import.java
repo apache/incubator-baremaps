@@ -97,9 +97,9 @@ public class Import implements Callable<Integer> {
     Path referencesKeys = Files.createDirectories(directory.resolve("references_keys"));
     Path referencesValues = Files.createDirectories(directory.resolve("references_values"));
 
-    LongDataMap<Coordinate> coordinateCache =
+    LongDataMap<Coordinate> coordinates =
         new LongAlignedDataDenseMap<>(new LonLatDataType(), new OnDiskMemory(nodes));
-    LongDataMap<List<Long>> referenceCache =
+    LongDataMap<List<Long>> references =
         new LongDataSortedMap<>(
             new AlignedDataList<>(
                 new PairDataType<>(new LongDataType(), new LongDataType()),
@@ -110,8 +110,8 @@ public class Import implements Callable<Integer> {
     new ImportService(
             file,
             blobStore,
-            coordinateCache,
-            referenceCache,
+            coordinates,
+            references,
             headerRepository,
             nodeRepository,
             wayRepository,

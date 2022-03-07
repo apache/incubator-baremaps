@@ -82,8 +82,8 @@ public class Diff implements Callable<Integer> {
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.datasource(database);
-    LongDataMap<Coordinate> coordinateCache = new PostgresCoordinateMap(datasource);
-    LongDataMap<List<Long>> referenceCache = new PostgresReferenceMap(datasource);
+    LongDataMap<Coordinate> coordinates = new PostgresCoordinateMap(datasource);
+    LongDataMap<List<Long>> references = new PostgresReferenceMap(datasource);
     HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
     Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
@@ -94,8 +94,8 @@ public class Diff implements Callable<Integer> {
     try (PrintWriter printWriter = new PrintWriter(Files.newBufferedWriter(tmpTiles))) {
       new DiffService(
               blobStore,
-              coordinateCache,
-              referenceCache,
+              coordinates,
+              references,
               headerRepository,
               nodeRepository,
               wayRepository,

@@ -23,19 +23,19 @@ import org.locationtech.jts.geom.Coordinate;
 /** A consumer that stores osm nodes and ways in the provided caches. */
 public class DataStoreConsumer implements BlockConsumerAdapter {
 
-  private final LongDataMap<Coordinate> coordiateCache;
-  private final LongDataMap<List<Long>> referenceCache;
+  private final LongDataMap<Coordinate> coordinates;
+  private final LongDataMap<List<Long>> references;
 
   /**
    * Constructs a {@code CacheBlockConsumer} with the provided caches.
    *
-   * @param coordiateCache the cache of coordinates
-   * @param referenceCache the cache of references
+   * @param coordinates the map of coordinates
+   * @param references the map of references
    */
   public DataStoreConsumer(
-      LongDataMap<Coordinate> coordiateCache, LongDataMap<List<Long>> referenceCache) {
-    this.coordiateCache = coordiateCache;
-    this.referenceCache = referenceCache;
+      LongDataMap<Coordinate> coordinates, LongDataMap<List<Long>> references) {
+    this.coordinates = coordinates;
+    this.references = references;
   }
 
   /** {@inheritDoc} */
@@ -43,10 +43,10 @@ public class DataStoreConsumer implements BlockConsumerAdapter {
   public void match(DataBlock dataBlock) throws Exception {
     dataBlock.getDenseNodes().stream()
         .forEach(
-            node -> coordiateCache.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
+            node -> coordinates.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
     dataBlock.getNodes().stream()
         .forEach(
-            node -> coordiateCache.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
-    dataBlock.getWays().stream().forEach(way -> referenceCache.put(way.getId(), way.getNodes()));
+            node -> coordinates.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
+    dataBlock.getWays().stream().forEach(way -> references.put(way.getId(), way.getNodes()));
   }
 }

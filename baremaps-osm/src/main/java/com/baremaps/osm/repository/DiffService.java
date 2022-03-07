@@ -18,7 +18,7 @@ import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.OpenStreetMap;
+import com.baremaps.osm.change.OsmChangeParser;
 import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Header;
@@ -65,8 +65,8 @@ public class DiffService implements Callable<List<Tile>> {
 
   public DiffService(
       BlobStore blobStore,
-      LongDataMap<Coordinate> coordinateCache,
-      LongDataMap<List<Long>> referenceCache,
+      LongDataMap<Coordinate> coordinates,
+      LongDataMap<List<Long>> references,
       HeaderRepository headerRepository,
       Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository,
@@ -80,7 +80,7 @@ public class DiffService implements Callable<List<Tile>> {
     this.relationRepository = relationRepository;
     this.srid = srid;
     this.zoom = zoom;
-    this.createGeometryConsumer = new CreateGeometryConsumer(coordinateCache, referenceCache);
+    this.createGeometryConsumer = new CreateGeometryConsumer(coordinates, references);
   }
 
   @Override
@@ -97,7 +97,8 @@ public class DiffService implements Callable<List<Tile>> {
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(srid, 4326);
     try (InputStream changesInputStream =
         new GZIPInputStream(new InputStreamProgress(blob.getInputStream(), progressLogger))) {
-      return OpenStreetMap.streamXmlChanges(changesInputStream)
+      return new OsmChangeParser()
+          .changes(changesInputStream)
           .flatMap(this::geometriesForChange)
           .map(projectionTransformer::transform)
           .flatMap(this::tilesForGeometry)
