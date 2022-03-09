@@ -106,7 +106,6 @@
     <module>baremaps-benchmarks</module>
     <module>baremaps-cli</module>
     <module>baremaps-blob</module>
-    <module>baremaps-blob-s3</module>
     <module>baremaps-osm</module>
     <module>baremaps-osm-postgres</module>
     <module>baremaps-stream</module>

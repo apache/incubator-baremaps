@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.blob.s3;
+package com.baremaps.blob;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -21,6 +21,7 @@ import com.adobe.testing.s3mock.junit5.S3MockExtension;
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreException;
+import com.baremaps.blob.S3BlobStore;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import java.io.IOException;

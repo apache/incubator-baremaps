@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.blob.s3;
+package com.baremaps.blob;
 
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
