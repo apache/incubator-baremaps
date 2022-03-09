@@ -30,7 +30,7 @@ import com.baremaps.tile.TileBlobStore;
 import com.baremaps.tile.TileChannel;
 import com.baremaps.tile.TileStore;
 import com.baremaps.tile.TileStoreException;
-import com.baremaps.tile.mbtiles.MBTiles;
+import com.baremaps.tile.MBTiles;
 import com.baremaps.tile.postgres.PostgresQuery;
 import com.baremaps.tile.postgres.PostgresTileStore;
 import com.fasterxml.jackson.core.JsonProcessingException;

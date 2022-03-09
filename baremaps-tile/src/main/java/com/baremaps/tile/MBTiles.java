@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.tile.mbtiles;
+package com.baremaps.tile;
 
 import com.baremaps.blob.Blob;
 import com.baremaps.tile.Tile;

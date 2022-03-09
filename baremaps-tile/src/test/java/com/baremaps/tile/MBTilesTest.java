@@ -12,11 +12,12 @@
  * the License.
  */
 
-package com.baremaps.tile.mbtiles;
+package com.baremaps.tile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.baremaps.tile.MBTiles;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
