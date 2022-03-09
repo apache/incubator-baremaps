@@ -17,9 +17,8 @@ package com.baremaps.server.ogcapi.studio;
 import static com.baremaps.testing.TestConstants.DATABASE_URL;
 import static org.junit.Assert.assertEquals;
 
-import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.postgres.jdbi.PostgisPlugin;
-import com.baremaps.server.ogcapi.studio.ImportResource;
+import com.baremaps.core.jdbc.PostgresUtils;
+import com.baremaps.core.jdbi.PostgisPlugin;
 import com.google.common.io.Resources;
 import java.io.File;
 import java.net.URL;

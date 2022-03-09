@@ -16,19 +16,11 @@
   <dependencies>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-tile</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
       <artifactId>baremaps-server-common</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-server-ogcapi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-tile-postgres</artifactId>
     </dependency>
   </dependencies>
 

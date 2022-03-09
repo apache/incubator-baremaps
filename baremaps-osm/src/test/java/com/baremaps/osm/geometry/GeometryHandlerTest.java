@@ -25,6 +25,7 @@ import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.function.CreateGeometryConsumer;
 import com.baremaps.osm.store.MockLongDataMap;
 import com.baremaps.store.LongDataMap;
 import com.google.common.collect.ImmutableList;

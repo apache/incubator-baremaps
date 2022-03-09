@@ -17,7 +17,7 @@ package com.baremaps.cli;
 import static com.baremaps.server.common.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
-import com.baremaps.postgres.jdbc.PostgresUtils;
+import com.baremaps.core.jdbc.PostgresUtils;
 import com.baremaps.server.common.CorsFilter;
 import com.baremaps.server.ogcapi.ApiResource;
 import com.baremaps.server.ogcapi.CollectionsResource;

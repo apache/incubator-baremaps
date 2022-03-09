@@ -47,12 +47,10 @@ The repository contains several sets of directories with code:
 The source code of Baremaps is organized in modules:
 
 - `baremaps-benchmarks` contains JMH benchmarks.
-- `baremaps-blob` contains a storage abstraction for blobs and some of its implementations (file, http, etc.).
 - `baremaps-cli` contains the command line interface of baremaps.
 - `baremaps-editor` integrates the [maputnik](https://maputnik.github.io/) editor.
 - `baremaps-osm` contains parsers for various osm formats (xml, pbf) and a cache and a database abstraction to import these data.
 - `baremaps-osm-lmdb` contains an implementation of the cache abstraction for [LMDB](https://github.com/lmdbjava/lmdbjava).
-- `baremaps-osm-postgres` contains an implementation of the database abstraction for [Postgresql](https://www.postgresql.org).
 - `baremaps-server` contains the parent sever module with the main dependencies.
 - `baremaps-server-common` contains filters and components used by all the other server modules.
 - `baremaps-server-editor` contains the maputnik editor and a backend for editing a style and tileset.
@@ -60,8 +58,6 @@ The source code of Baremaps is organized in modules:
 - `baremaps-server-viewer` contains a a tile server and a minimal map.
 - `baremaps-stream` contains utilities for the Stream API introduced in Java 8.
 - `baremaps-testing` contains common utilities (data, etc.) used for testing in different module.
-- `baremaps-tile` contains simple abstractions for tiles and tile storage, transfer and computation.
-- `baremaps-tile-postgres` contains an implementation of the tile storage abstraction for producing [Mapbox Vector Tiles](https://github.com/mapbox/vector-tile-spec) with Postgresql.
 
 The naming convention used for the modules is 'baremaps-{component}-{implementation}'.
 Here, component corresponds to the api and the main implementation of a component.

@@ -14,18 +14,18 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.blob.BlobStore;
+import com.baremaps.core.blob.BlobStore;
+import com.baremaps.core.jdbc.PostgresUtils;
+import com.baremaps.core.database.PostgresHeaderRepository;
+import com.baremaps.core.database.PostgresNodeRepository;
+import com.baremaps.core.database.PostgresRelationRepository;
+import com.baremaps.core.database.PostgresWayRepository;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.postgres.PostgresHeaderRepository;
-import com.baremaps.osm.postgres.PostgresNodeRepository;
-import com.baremaps.osm.postgres.PostgresRelationRepository;
-import com.baremaps.osm.postgres.PostgresWayRepository;
-import com.baremaps.osm.repository.HeaderRepository;
-import com.baremaps.osm.repository.ImportService;
-import com.baremaps.osm.repository.Repository;
-import com.baremaps.postgres.jdbc.PostgresUtils;
+import com.baremaps.core.database.HeaderRepository;
+import com.baremaps.core.database.ImportService;
+import com.baremaps.core.database.Repository;
 import com.baremaps.store.AlignedDataList;
 import com.baremaps.store.DataStore;
 import com.baremaps.store.LongAlignedDataDenseMap;

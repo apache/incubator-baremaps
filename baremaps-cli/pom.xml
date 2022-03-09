@@ -77,15 +77,15 @@
   <dependencies>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-blob</artifactId>
+      <artifactId>baremaps-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-osm</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-osm-postgres</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
@@ -109,19 +109,7 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-tile</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
       <artifactId>baremaps-testing</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-tile-postgres</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-postgres</artifactId>
     </dependency>
     <dependency>
       <artifactId>picocli</artifactId>

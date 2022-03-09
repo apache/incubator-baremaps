@@ -58,10 +58,6 @@
       <groupId>org.jdbi</groupId>
       <artifactId>jdbi3-jackson2</artifactId>
     </dependency>
-    <dependency>
-      <artifactId>baremaps-postgres</artifactId>
-      <groupId>com.baremaps</groupId>
-    </dependency>
 
     <!-- jersey -->
     <dependency>

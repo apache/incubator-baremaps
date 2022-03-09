@@ -20,6 +20,7 @@ import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.function.CreateGeometryConsumer;
 import com.baremaps.osm.store.MockLongDataMap;
 import com.baremaps.osm.xml.OsmXmlParser;
 import com.baremaps.store.LongDataMap;

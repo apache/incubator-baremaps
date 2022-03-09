@@ -18,15 +18,15 @@ import static com.baremaps.server.common.DefaultObjectMapper.defaultObjectMapper
 import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
-import com.baremaps.blob.BlobStore;
+import com.baremaps.core.blob.BlobStore;
+import com.baremaps.core.jdbc.PostgresUtils;
+import com.baremaps.core.tile.PostgresQuery;
+import com.baremaps.core.tile.PostgresTileStore;
 import com.baremaps.model.TileJSON;
-import com.baremaps.postgres.jdbc.PostgresUtils;
 import com.baremaps.server.common.CorsFilter;
 import com.baremaps.server.viewer.ViewerResources;
-import com.baremaps.tile.TileCache;
-import com.baremaps.tile.TileStore;
-import com.baremaps.tile.postgres.PostgresQuery;
-import com.baremaps.tile.postgres.PostgresTileStore;
+import com.baremaps.core.tile.TileCache;
+import com.baremaps.core.tile.TileStore;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.servicetalk.http.api.BlockingStreamingHttpService;

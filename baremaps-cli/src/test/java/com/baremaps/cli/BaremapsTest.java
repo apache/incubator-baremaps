@@ -19,7 +19,7 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.baremaps.postgres.jdbc.PostgresUtils;
+import com.baremaps.core.jdbc.PostgresUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
