@@ -14,7 +14,7 @@
 
 package com.baremaps.cli;
 
-import static com.baremaps.server.common.DefaultObjectMapper.defaultObjectMapper;
+import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 
 import com.baremaps.core.blob.Blob;
 import com.baremaps.core.blob.BlobStore;

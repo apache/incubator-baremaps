@@ -16,8 +16,6 @@ package com.baremaps.core.tile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.baremaps.core.tile.Tile;
-import com.baremaps.core.tile.TileIterator;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.junit.jupiter.api.Test;

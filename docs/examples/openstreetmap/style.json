@@ -11,6 +11,9 @@
     "type" : "fill",
     "source" : "baremaps",
     "source-layer" : "building",
+    "layout" : {
+      "visibility" : "visible"
+    },
     "paint" : {
       "fill-color" : "rgba(0, 255, 0, 1)"
     }

@@ -18,7 +18,6 @@ import com.baremaps.osm.domain.Element;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.function.EntityConsumerAdapter;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import org.locationtech.jts.geom.Geometry;
 

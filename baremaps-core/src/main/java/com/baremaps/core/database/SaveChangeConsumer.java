@@ -14,6 +14,7 @@
 
 package com.baremaps.core.database;
 
+import com.baremaps.core.database.repository.Repository;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Node;

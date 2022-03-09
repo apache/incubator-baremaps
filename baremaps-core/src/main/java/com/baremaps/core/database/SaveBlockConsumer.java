@@ -14,6 +14,7 @@
 
 package com.baremaps.core.database;
 
+import com.baremaps.core.database.repository.Repository;
 import com.baremaps.osm.domain.DataBlock;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.HeaderBlock;

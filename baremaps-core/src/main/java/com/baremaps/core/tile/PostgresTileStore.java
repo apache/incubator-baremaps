@@ -17,9 +17,6 @@ package com.baremaps.core.tile;
 import static com.baremaps.core.tile.VariableUtils.interpolate;
 
 import com.baremaps.core.blob.Blob;
-import com.baremaps.core.tile.Tile;
-import com.baremaps.core.tile.TileStore;
-import com.baremaps.core.tile.TileStoreException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Connection;

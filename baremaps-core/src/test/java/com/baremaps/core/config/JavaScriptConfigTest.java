@@ -31,7 +31,11 @@ class JavaScriptConfigTest {
   void read() throws IOException, ConfigException, BlobStoreException {
     var uri = URI.create("file://./tmp/test.txt");
     var store = new FileBlobStore();
-    store.put(uri, Blob.builder().withByteArray("export default 'test'".getBytes(StandardCharsets.UTF_8)).build());
+    store.put(
+        uri,
+        Blob.builder()
+            .withByteArray("export default 'test'".getBytes(StandardCharsets.UTF_8))
+            .build());
     var config = new JavaScriptConfig(store, uri);
     var content = config.read();
     assertArrayEquals("test".getBytes(StandardCharsets.UTF_8), content);
@@ -43,8 +47,6 @@ class JavaScriptConfigTest {
     var store = new FileBlobStore();
     var config = new JavaScriptConfig(store, uri);
     var content = "test".getBytes(StandardCharsets.UTF_8);
-    assertThrows(
-        UnsupportedOperationException.class,
-        () -> config.write(content));
+    assertThrows(UnsupportedOperationException.class, () -> config.write(content));
   }
 }

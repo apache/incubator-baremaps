@@ -17,7 +17,7 @@ package com.baremaps.core.tile;
 import static com.baremaps.testing.TestConstants.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.baremaps.core.jdbc.PostgresUtils;
+import com.baremaps.core.postgres.PostgresUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;

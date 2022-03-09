@@ -18,6 +18,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.blob.ResourceBlobStore;
+import com.baremaps.core.database.collection.PostgresCoordinateMap;
+import com.baremaps.core.database.collection.PostgresReferenceMap;
+import com.baremaps.core.database.repository.PostgresHeaderRepository;
+import com.baremaps.core.database.repository.PostgresNodeRepository;
+import com.baremaps.core.database.repository.PostgresRelationRepository;
+import com.baremaps.core.database.repository.PostgresWayRepository;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.store.DataStore;
 import com.baremaps.store.LongDataMap;

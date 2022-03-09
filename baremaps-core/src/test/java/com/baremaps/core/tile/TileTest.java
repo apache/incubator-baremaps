@@ -16,7 +16,6 @@ package com.baremaps.core.tile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.baremaps.core.tile.Tile;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Envelope;
 

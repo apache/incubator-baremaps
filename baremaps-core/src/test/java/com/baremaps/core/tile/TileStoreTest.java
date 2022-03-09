@@ -18,9 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.baremaps.core.blob.Blob;
-import com.baremaps.core.tile.Tile;
-import com.baremaps.core.tile.TileStore;
-import com.baremaps.core.tile.TileStoreException;
 import java.io.InputStream;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

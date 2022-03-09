@@ -16,7 +16,7 @@ package com.baremaps.core.database;
 
 import static com.baremaps.testing.TestConstants.DATABASE_URL;
 
-import com.baremaps.core.jdbc.PostgresUtils;
+import com.baremaps.core.postgres.PostgresUtils;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;

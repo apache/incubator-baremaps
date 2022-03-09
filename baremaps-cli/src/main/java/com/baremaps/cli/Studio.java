@@ -14,11 +14,10 @@
 
 package com.baremaps.cli;
 
-import static com.baremaps.server.common.DefaultObjectMapper.defaultObjectMapper;
+import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
-import com.baremaps.core.jdbc.PostgresUtils;
-import com.baremaps.server.common.CorsFilter;
+import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.server.ogcapi.ApiResource;
 import com.baremaps.server.ogcapi.CollectionsResource;
 import com.baremaps.server.ogcapi.ConformanceResource;
@@ -26,8 +25,9 @@ import com.baremaps.server.ogcapi.RootResource;
 import com.baremaps.server.ogcapi.StylesResource;
 import com.baremaps.server.ogcapi.SwaggerResource;
 import com.baremaps.server.ogcapi.TilesetsResource;
-import com.baremaps.server.ogcapi.studio.ImportResource;
-import com.baremaps.server.ogcapi.studio.StudioResource;
+import com.baremaps.server.resources.ImportResource;
+import com.baremaps.server.resources.StudioResource;
+import com.baremaps.server.utils.CorsFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;

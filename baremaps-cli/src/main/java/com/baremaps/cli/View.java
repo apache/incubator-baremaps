@@ -14,19 +14,19 @@
 
 package com.baremaps.cli;
 
-import static com.baremaps.server.common.DefaultObjectMapper.defaultObjectMapper;
 import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
+import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
 import com.baremaps.core.blob.BlobStore;
-import com.baremaps.core.jdbc.PostgresUtils;
+import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.core.tile.PostgresQuery;
 import com.baremaps.core.tile.PostgresTileStore;
-import com.baremaps.model.TileJSON;
-import com.baremaps.server.common.CorsFilter;
-import com.baremaps.server.viewer.ViewerResources;
 import com.baremaps.core.tile.TileCache;
 import com.baremaps.core.tile.TileStore;
+import com.baremaps.model.TileJSON;
+import com.baremaps.server.resources.ViewerResources;
+import com.baremaps.server.utils.CorsFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.servicetalk.http.api.BlockingStreamingHttpService;

@@ -19,7 +19,6 @@ import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.function.EntityFunction;
 import java.util.Optional;
 import org.locationtech.jts.geom.Geometry;
 

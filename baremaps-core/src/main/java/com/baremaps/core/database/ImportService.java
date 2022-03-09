@@ -19,6 +19,8 @@ import static com.baremaps.osm.stream.StreamUtils.batch;
 
 import com.baremaps.core.blob.Blob;
 import com.baremaps.core.blob.BlobStore;
+import com.baremaps.core.database.repository.HeaderRepository;
+import com.baremaps.core.database.repository.Repository;
 import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Node;

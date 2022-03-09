@@ -16,7 +16,6 @@ package com.baremaps.core.postgres;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.baremaps.core.jdbi.PostgisPlugin;
 import java.util.List;
 import org.jdbi.v3.core.Jdbi;
 import org.junit.jupiter.api.Tag;

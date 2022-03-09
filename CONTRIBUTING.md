@@ -51,11 +51,7 @@ The source code of Baremaps is organized in modules:
 - `baremaps-editor` integrates the [maputnik](https://maputnik.github.io/) editor.
 - `baremaps-osm` contains parsers for various osm formats (xml, pbf) and a cache and a database abstraction to import these data.
 - `baremaps-osm-lmdb` contains an implementation of the cache abstraction for [LMDB](https://github.com/lmdbjava/lmdbjava).
-- `baremaps-server` contains the parent sever module with the main dependencies.
-- `baremaps-server-common` contains filters and components used by all the other server modules.
-- `baremaps-server-editor` contains the maputnik editor and a backend for editing a style and tileset.
-- `baremaps-server-ogcapi` contains an implementation ogcapi generated with openapi.
-- `baremaps-server-viewer` contains a a tile server and a minimal map.
+- `baremaps-http` contains the parent sever module with the main dependencies.
 - `baremaps-stream` contains utilities for the Stream API introduced in Java 8.
 - `baremaps-testing` contains common utilities (data, etc.) used for testing in different module.
 
