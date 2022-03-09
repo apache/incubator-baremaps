@@ -77,7 +77,7 @@
     <version.lib.swagger-parser>2.0.24</version.lib.swagger-parser>
     <version.lib.jaxb-runtime>2.3.5</version.lib.jaxb-runtime>
     <version.lib.activation>1.2.2</version.lib.activation>
-    <version.lib.servlet>3.1.0</version.lib.servlet>
+    <version.lib.servlet>4.0.1</version.lib.servlet>
     <version.lib.graalvm>22.0.0.2</version.lib.graalvm>
 
     <!-- testing -->
