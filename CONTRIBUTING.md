@@ -57,7 +57,6 @@ The source code of Baremaps is organized in modules:
 - `baremaps-server-common` contains filters and components used by all the other server modules.
 - `baremaps-server-editor` contains the maputnik editor and a backend for editing a style and tileset.
 - `baremaps-server-ogcapi` contains an implementation ogcapi generated with openapi.
-- `baremaps-server-studio` contains services for importing and exporting spatial data in postgres.
 - `baremaps-server-viewer` contains a a tile server and a minimal map.
 - `baremaps-stream` contains utilities for the Stream API introduced in Java 8.
 - `baremaps-testing` contains common utilities (data, etc.) used for testing in different module.

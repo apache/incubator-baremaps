@@ -16,7 +16,6 @@
     <module>../baremaps-server-common</module>
     <module>../baremaps-server-editor</module>
     <module>../baremaps-server-ogcapi</module>
-    <module>../baremaps-server-studio</module>
     <module>../baremaps-server-viewer</module>
   </modules>
 

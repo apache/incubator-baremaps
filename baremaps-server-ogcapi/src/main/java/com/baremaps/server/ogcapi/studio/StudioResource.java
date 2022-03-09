@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.server.studio;
+package com.baremaps.server.ogcapi.studio;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.net.URI;

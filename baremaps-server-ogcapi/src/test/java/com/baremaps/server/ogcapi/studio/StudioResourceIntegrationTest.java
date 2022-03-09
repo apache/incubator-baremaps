@@ -12,10 +12,11 @@
  * the License.
  */
 
-package com.baremaps.server.studio;
+package com.baremaps.server.ogcapi.studio;
 
 import static org.junit.Assert.assertEquals;
 
+import com.baremaps.server.ogcapi.studio.StudioResource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;

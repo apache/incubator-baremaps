@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.server.studio;
+package com.baremaps.server.ogcapi.studio;
 
 import com.baremaps.model.Collection;
 import com.baremaps.model.Extent;
