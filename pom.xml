@@ -108,11 +108,9 @@
     <module>baremaps-blob</module>
     <module>baremaps-osm</module>
     <module>baremaps-osm-postgres</module>
-    <module>baremaps-stream</module>
     <module>baremaps-server</module>
     <module>baremaps-testing</module>
     <module>baremaps-tile</module>
-    <module>baremaps-tile-mbtiles</module>
     <module>baremaps-tile-postgres</module>
     <module>baremaps-postgres</module>
     <module>baremaps-store</module>
@@ -344,11 +342,6 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-blob-s3</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
         <artifactId>baremaps-cli</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
@@ -365,11 +358,6 @@
       </dependency>
       <dependency>
         <artifactId>baremaps-tile</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-tile-mbtiles</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>

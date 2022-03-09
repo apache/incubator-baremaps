@@ -14,7 +14,7 @@
 
 package com.baremaps.osm.repository;
 
-import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
+import static com.baremaps.osm.stream.ConsumerUtils.consumeThenReturn;
 
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;

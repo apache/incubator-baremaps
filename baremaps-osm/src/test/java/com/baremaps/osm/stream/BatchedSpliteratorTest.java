@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.stream;
+package com.baremaps.osm.stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

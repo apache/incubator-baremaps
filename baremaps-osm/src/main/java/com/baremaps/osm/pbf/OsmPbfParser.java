@@ -14,7 +14,7 @@
 
 package com.baremaps.osm.pbf;
 
-import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
+import static com.baremaps.osm.stream.ConsumerUtils.consumeThenReturn;
 
 import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.domain.Entity;
@@ -23,8 +23,8 @@ import com.baremaps.osm.geometry.CreateGeometryConsumer;
 import com.baremaps.osm.geometry.ReprojectEntityConsumer;
 import com.baremaps.osm.store.DataStoreConsumer;
 import com.baremaps.store.LongDataMap;
-import com.baremaps.stream.StreamException;
-import com.baremaps.stream.StreamUtils;
+import com.baremaps.osm.stream.StreamException;
+import com.baremaps.osm.stream.StreamUtils;
 import java.io.InputStream;
 import java.util.List;
 import java.util.function.Consumer;

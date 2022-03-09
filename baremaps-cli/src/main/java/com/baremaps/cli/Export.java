@@ -23,7 +23,7 @@ import com.baremaps.model.Query;
 import com.baremaps.model.TileJSON;
 import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.stream.StreamUtils;
+import com.baremaps.osm.stream.StreamUtils;
 import com.baremaps.tile.Tile;
 import com.baremaps.tile.TileBatchPredicate;
 import com.baremaps.tile.TileBlobStore;

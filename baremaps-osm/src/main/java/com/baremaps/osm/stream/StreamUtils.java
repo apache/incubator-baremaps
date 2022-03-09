@@ -12,11 +12,11 @@
  * the License.
  */
 
-package com.baremaps.stream;
+package com.baremaps.osm.stream;
 
-import com.baremaps.stream.BufferedSpliterator.CompletionOrder;
-import com.baremaps.stream.BufferedSpliterator.InCompletionOrder;
-import com.baremaps.stream.BufferedSpliterator.InSourceOrder;
+import com.baremaps.osm.stream.BufferedSpliterator.CompletionOrder;
+import com.baremaps.osm.stream.BufferedSpliterator.InCompletionOrder;
+import com.baremaps.osm.stream.BufferedSpliterator.InSourceOrder;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;

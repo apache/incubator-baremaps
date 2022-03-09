@@ -18,8 +18,8 @@ import static com.baremaps.tile.VariableUtils.interpolate;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.stream.StreamException;
-import com.baremaps.stream.StreamUtils;
+import com.baremaps.osm.stream.StreamException;
+import com.baremaps.osm.stream.StreamUtils;
 import com.google.common.base.Splitter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;

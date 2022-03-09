@@ -48,7 +48,6 @@ The source code of Baremaps is organized in modules:
 
 - `baremaps-benchmarks` contains JMH benchmarks.
 - `baremaps-blob` contains a storage abstraction for blobs and some of its implementations (file, http, etc.).
-- `baremaps-blob-s3` contains an implementation of the storage abstraction for amazon s3.
 - `baremaps-cli` contains the command line interface of baremaps.
 - `baremaps-editor` integrates the [maputnik](https://maputnik.github.io/) editor.
 - `baremaps-osm` contains parsers for various osm formats (xml, pbf) and a cache and a database abstraction to import these data.
@@ -63,7 +62,6 @@ The source code of Baremaps is organized in modules:
 - `baremaps-stream` contains utilities for the Stream API introduced in Java 8.
 - `baremaps-testing` contains common utilities (data, etc.) used for testing in different module.
 - `baremaps-tile` contains simple abstractions for tiles and tile storage, transfer and computation.
-- `baremaps-tile-mbtiles` contains an implementation of the tile storage abstraction for sqlite according to the [MBTiles](https://github.com/mapbox/mbtiles-spec) specification.
 - `baremaps-tile-postgres` contains an implementation of the tile storage abstraction for producing [Mapbox Vector Tiles](https://github.com/mapbox/vector-tile-spec) with Postgresql.
 
 The naming convention used for the modules is 'baremaps-{component}-{implementation}'.

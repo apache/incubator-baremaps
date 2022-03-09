@@ -12,27 +12,33 @@
  * the License.
  */
 
-package com.baremaps.stream;
+package com.baremaps.osm.stream;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
-/** Utility methods for dealing with consumers. */
-public class ConsumerUtils {
+/**
+ * A {@code Consumer} that accumulates the values it accepts.
+ *
+ * @param <T>
+ */
+public class AccumulatingConsumer<T> implements Consumer<T> {
 
-  private ConsumerUtils() {}
+  private final List<T> values = new ArrayList<>();
+
+  /** Stores the accepted value. */
+  @Override
+  public void accept(T value) {
+    values.add(value);
+  }
 
   /**
-   * Transforms a consumer into a function.
+   * Returns the accumulated values.
    *
-   * @param consumer the consumer
-   * @param <T> the type
-   * @return the function
+   * @return the accumulated values.
    */
-  public static <T> Function<T, T> consumeThenReturn(Consumer<T> consumer) {
-    return t -> {
-      consumer.accept(t);
-      return t;
-    };
+  public List<T> values() {
+    return values;
   }
 }

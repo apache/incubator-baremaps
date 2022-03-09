@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.stream;
+package com.baremaps.osm.stream;
 
 import static java.util.Objects.requireNonNull;
 
