@@ -78,6 +78,7 @@
     <version.lib.jaxb-runtime>2.3.5</version.lib.jaxb-runtime>
     <version.lib.activation>1.2.2</version.lib.activation>
     <version.lib.servlet>3.1.0</version.lib.servlet>
+    <version.lib.graalvm>22.0.0.2</version.lib.graalvm>
 
     <!-- testing -->
     <version.lib.testng>7.4.0</version.lib.testng>
@@ -116,6 +117,7 @@
     <module>baremaps-tile-postgres</module>
     <module>baremaps-postgres</module>
     <module>baremaps-store</module>
+    <module>baremaps-config</module>
   </modules>
 
   <profiles>
