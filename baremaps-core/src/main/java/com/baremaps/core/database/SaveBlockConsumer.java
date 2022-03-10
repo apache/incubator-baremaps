@@ -24,7 +24,7 @@ import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.BlockConsumerAdapter;
 
 /** A consumer for saving OpenStreetMap blocks in a database. */
-public class SaveBlockConsumer implements BlockConsumerAdapter {
+class SaveBlockConsumer implements BlockConsumerAdapter {
 
   private final Repository<Long, Header> headerRepository;
   private final Repository<Long, Node> nodeRepository;

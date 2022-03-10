@@ -89,10 +89,6 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-stream</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
       <artifactId>baremaps-http</artifactId>
     </dependency>
     <dependency>

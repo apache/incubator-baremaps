@@ -369,11 +369,6 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-stream</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
         <artifactId>baremaps-testing</artifactId>
         <groupId>com.baremaps</groupId>
         <scope>test</scope>

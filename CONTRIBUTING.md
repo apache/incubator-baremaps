@@ -52,7 +52,6 @@ The source code of Baremaps is organized in modules:
 - `baremaps-osm` contains parsers for various osm formats (xml, pbf) and a cache and a database abstraction to import these data.
 - `baremaps-osm-lmdb` contains an implementation of the cache abstraction for [LMDB](https://github.com/lmdbjava/lmdbjava).
 - `baremaps-http` contains the parent sever module with the main dependencies.
-- `baremaps-stream` contains utilities for the Stream API introduced in Java 8.
 - `baremaps-testing` contains common utilities (data, etc.) used for testing in different module.
 
 The naming convention used for the modules is 'baremaps-{component}-{implementation}'.

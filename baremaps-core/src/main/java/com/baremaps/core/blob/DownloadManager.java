@@ -49,7 +49,7 @@ public class DownloadManager {
       return Paths.get(uri.getPath());
     } else {
       try {
-        File tempFile = File.createTempFile("baremaps_", ".tmp");
+        File tempFile = File.createTempFile("baremaps_", ".tmp", Paths.get(".").toFile());
         tempFile.deleteOnExit();
         try (InputStream input = blobStore.get(uri).getInputStream()) {
           Files.copy(input, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);

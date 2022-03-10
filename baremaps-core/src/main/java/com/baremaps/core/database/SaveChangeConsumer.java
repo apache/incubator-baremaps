@@ -24,7 +24,7 @@ import com.baremaps.osm.function.ChangeConsumer;
 import com.baremaps.osm.function.EntityConsumerAdapter;
 
 /** A consumer for saving OpenStreetMap changes in a database. */
-public class SaveChangeConsumer implements ChangeConsumer {
+class SaveChangeConsumer implements ChangeConsumer {
 
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
