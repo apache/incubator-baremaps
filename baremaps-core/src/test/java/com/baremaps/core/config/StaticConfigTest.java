@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.baremaps.core.blob.FileBlobStore;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 
@@ -26,9 +27,7 @@ class StaticConfigTest {
 
   @Test
   void readWrite() throws IOException, ConfigException {
-    var file = File.createTempFile("baremaps_", ".tmp");
-    file.deleteOnExit();
-    var uri = file.toURI();
+    var uri = URI.create("file://./tmp/test.txt");
     var store = new FileBlobStore();
     var config = new StaticConfig(store, uri);
     var content = "test".getBytes(StandardCharsets.UTF_8);
