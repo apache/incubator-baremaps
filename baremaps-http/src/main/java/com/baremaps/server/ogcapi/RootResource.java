@@ -18,10 +18,12 @@ import com.baremaps.api.DefaultApi;
 import com.baremaps.model.LandingPage;
 import com.baremaps.model.Link;
 import java.util.Arrays;
+import javax.inject.Singleton;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+@Singleton
 public class RootResource implements DefaultApi {
 
   @Context UriInfo uriInfo;

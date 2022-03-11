@@ -20,7 +20,7 @@ import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFea
 import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.config.StaticConfig;
 import com.baremaps.core.postgres.PostgresUtils;
-import com.baremaps.server.resources.EditorResources;
+import com.baremaps.server.resources.DevelopmentResources;
 import com.baremaps.server.utils.CorsFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
@@ -90,14 +90,13 @@ public class Editor implements Callable<Integer> {
     ResourceConfig application =
         new ResourceConfig()
             .register(CorsFilter.class)
-            .register(EditorResources.class)
+            .register(DevelopmentResources.class)
             .register(contextResolverFor(objectMapper))
             .register(
                 new AbstractBinder() {
                   @Override
                   protected void configure() {
-                    new StaticConfig(blobStore, tileset);
-
+                    bind("editor").to(String.class).named("assets");
                     bind(tileset).to(URI.class).named("tileset");
                     bind(style).to(URI.class).named("style");
                     bind(blobStore).to(BlobStore.class);

@@ -25,7 +25,7 @@ import com.baremaps.core.tile.PostgresTileStore;
 import com.baremaps.core.tile.TileCache;
 import com.baremaps.core.tile.TileStore;
 import com.baremaps.model.TileJSON;
-import com.baremaps.server.resources.ViewerResources;
+import com.baremaps.server.resources.DevelopmentResources;
 import com.baremaps.server.utils.CorsFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
@@ -93,31 +93,28 @@ public class Viewer implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    ObjectMapper objectMapper = defaultObjectMapper();
     BlobStore blobStore = options.blobStore();
-    TileJSON tileJSON =
-        objectMapper.readValue(blobStore.get(this.tileset).getInputStream(), TileJSON.class);
-    CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
-    DataSource datasource = PostgresUtils.datasource(database);
+    DataSource dataSource = PostgresUtils.datasource(database);
 
-    List<PostgresQuery> queries = asPostgresQuery(tileJSON);
-    TileStore tileStore = new PostgresTileStore(datasource, queries);
-    TileStore tileCache = new TileCache(tileStore, caffeineSpec);
+    // Configure serialization
+    ObjectMapper objectMapper = defaultObjectMapper();
 
     // Configure the application
     ResourceConfig application =
         new ResourceConfig()
             .register(CorsFilter.class)
-            .register(ViewerResources.class)
+            .register(DevelopmentResources.class)
             .register(contextResolverFor(objectMapper))
             .register(
                 new AbstractBinder() {
                   @Override
                   protected void configure() {
+                    bind("viewer").to(String.class).named("assets");
                     bind(tileset).to(URI.class).named("tileset");
                     bind(style).to(URI.class).named("style");
                     bind(blobStore).to(BlobStore.class);
-                    bind(tileCache).to(TileStore.class);
+                    bind(dataSource).to(DataSource.class);
+                    bind(objectMapper).to(ObjectMapper.class);
                   }
                 });
 
@@ -127,7 +124,6 @@ public class Viewer implements Callable<Integer> {
         HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
     logger.info("Listening on {}", serverContext.listenAddress());
-
     serverContext.awaitShutdown();
 
     return 0;

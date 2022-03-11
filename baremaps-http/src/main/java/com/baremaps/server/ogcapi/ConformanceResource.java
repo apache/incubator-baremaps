@@ -17,8 +17,10 @@ package com.baremaps.server.ogcapi;
 import com.baremaps.api.ConformanceApi;
 import com.baremaps.model.ConfClasses;
 import java.util.Arrays;
+import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
 
+@Singleton
 public class ConformanceResource implements ConformanceApi {
 
   @Override

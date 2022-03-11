@@ -17,10 +17,12 @@ package com.baremaps.server.ogcapi;
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
+@Singleton
 @Path("/swagger")
 public class SwaggerResource {
 

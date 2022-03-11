@@ -16,7 +16,6 @@ package com.baremaps.server.resources;
 
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 import com.baremaps.core.blob.Blob;
 import com.baremaps.core.blob.BlobStore;
@@ -32,18 +31,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.WatchEvent;
-import java.nio.file.WatchKey;
-import java.nio.file.WatchService;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.sql.DataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -60,10 +60,13 @@ import javax.ws.rs.sse.SseEventSink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 @javax.ws.rs.Path("/")
-public class EditorResources {
+public class DevelopmentResources {
 
-  private static final Logger logger = LoggerFactory.getLogger(EditorResources.class);
+  private static final Logger logger = LoggerFactory.getLogger(DevelopmentResources.class);
+
+  private final String assets;
 
   private final URI style;
 
@@ -75,58 +78,53 @@ public class EditorResources {
 
   private final ObjectMapper objectMapper;
 
+  private final Sse sse;
   private final SseBroadcaster sseBroadcaster;
-
-  private final Thread fileWatcher;
+  private final OutboundSseEvent.Builder sseEventBuilder;
 
   @Inject
-  public EditorResources(
+  public DevelopmentResources(
+      @Named("assets") String assets,
       @Named("tileset") URI tileset,
       @Named("style") URI style,
       BlobStore blobStore,
       DataSource dataSource,
       ObjectMapper objectMapper,
       Sse sse) {
+    this.assets = assets;
     this.tileset = tileset;
     this.style = style;
     this.blobStore = blobStore;
     this.dataSource = dataSource;
     this.objectMapper = objectMapper;
+    this.sse = sse;
+    this.sseBroadcaster = sse.newBroadcaster();
+    this.sseEventBuilder = sse.newEventBuilder();
 
     // Observe the file system for changes
-    OutboundSseEvent.Builder sseEventBuilder = sse.newEventBuilder();
-    this.sseBroadcaster = sse.newBroadcaster();
-    fileWatcher =
-        new Thread(
-            () -> {
-              try {
-                Path tilesetFile = Paths.get(tileset.getPath()).toAbsolutePath();
-                Path styleFile = Paths.get(style.getPath()).toAbsolutePath();
-                WatchService watchService = FileSystems.getDefault().newWatchService();
-                tilesetFile.getParent().register(watchService, ENTRY_MODIFY);
-                styleFile.getParent().register(watchService, ENTRY_MODIFY);
-                WatchKey key;
-                while ((key = watchService.take()) != null) {
-                  Path dir = (Path) key.watchable();
-                  for (WatchEvent<?> event : key.pollEvents()) {
-                    Path path = dir.resolve((Path) event.context());
-                    try (InputStream inputStream = blobStore.get(style).getInputStream()) {
-                      ObjectNode jsonNode = objectMapper.readValue(inputStream, ObjectNode.class);
-                      jsonNode.put("reload", path.endsWith(tilesetFile.getFileName()));
-                      sseBroadcaster.broadcast(sseEventBuilder.data(jsonNode.toString()).build());
-                    }
-                  }
-                  key.reset();
-                }
-              } catch (InterruptedException e) {
-                logger.error(e.getMessage());
-                Thread.currentThread().interrupt();
-              } catch (BlobStoreException | IOException e) {
-                logger.error(e.getMessage());
-              }
-            });
-    fileWatcher.start();
+    Set<Path> directories = new HashSet<>(Arrays.asList(
+        Paths.get(tileset.getPath()).toAbsolutePath().getParent(),
+        Paths.get(style.getPath()).toAbsolutePath().getParent()));
+    new Thread(new DirectoryWatcher(directories, this::broadcastChanges)).start();
   }
+
+  public void broadcastChanges(Path path) {
+    try (InputStream styleInputStream = blobStore.get(style).getInputStream()) {
+      var styleObjectNode = objectMapper.readValue(styleInputStream, ObjectNode.class);
+
+      // reload the page if changes affected the tileset
+      var tilesetPath = Paths.get(tileset.getPath()).toAbsolutePath();
+      styleObjectNode.put("reload", path.endsWith(tilesetPath.getFileName()));
+
+      OutboundSseEvent.Builder sseEventBuilder = sse.newEventBuilder();
+      sseBroadcaster.broadcast(sseEventBuilder.data(styleObjectNode.toString()).build());
+    } catch (IOException e) {
+      logger.error(e.getMessage());
+    } catch (BlobStoreException e) {
+      logger.error(e.getMessage());
+    }
+  }
+
 
   @GET
   @javax.ws.rs.Path("changes")
@@ -197,7 +195,7 @@ public class EditorResources {
     if (path.equals("") || path.endsWith("/")) {
       path += "index.html";
     }
-    path = String.format("editor/%s", path);
+    path = String.format("%s/%s", assets, path);
     try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
       var bytes = inputStream.readAllBytes();
       return Response.ok().entity(bytes).build();

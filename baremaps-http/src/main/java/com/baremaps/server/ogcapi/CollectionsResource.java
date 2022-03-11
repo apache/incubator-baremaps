@@ -22,6 +22,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -29,6 +30,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.json.Json;
 
+@Singleton
 public class CollectionsResource implements CollectionsApi {
 
   @Context UriInfo uriInfo;

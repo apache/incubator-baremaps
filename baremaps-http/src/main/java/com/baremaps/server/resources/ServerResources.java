@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.net.URI;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -36,6 +37,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+@Singleton
 @Path("/")
 public class ServerResources {
 
@@ -98,7 +100,7 @@ public class ServerResources {
     if (path.equals("") || path.endsWith("/")) {
       path += "index.html";
     }
-    path = String.format("viewer/%s", path);
+    path = String.format("server/%s", path);
     try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
       var bytes = inputStream.readAllBytes();
       return Response.ok().entity(bytes).build();

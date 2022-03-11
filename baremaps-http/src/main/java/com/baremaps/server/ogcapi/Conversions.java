@@ -18,7 +18,9 @@ import com.baremaps.core.tile.PostgresQuery;
 import com.baremaps.model.TileJSON;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.inject.Singleton;
 
+@Singleton
 public class Conversions {
 
   public static List<PostgresQuery> asPostgresQuery(TileJSON tileJSON) {

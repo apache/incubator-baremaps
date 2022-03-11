@@ -28,17 +28,6 @@
   });
   map.addControl(new maplibregl.NavigationControl());
 
-  // Listen to map changes
-  const connection = new EventSource('/changes')
-  connection.onmessage = e => {
-    let style = JSON.parse(e.data);
-    if (style.reload) {
-      location.reload();
-    }
-    delete style.reload;
-    map.setStyle(style);
-  }
-
 </script>
 </body>
 </html>

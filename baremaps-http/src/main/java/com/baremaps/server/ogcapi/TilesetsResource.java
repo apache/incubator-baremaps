@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.sql.DataSource;
 import javax.ws.rs.core.Response;
 import org.jdbi.v3.core.Jdbi;
@@ -38,6 +39,7 @@ import org.jdbi.v3.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class TilesetsResource implements TilesetsApi {
 
   private static final Logger logger = LoggerFactory.getLogger(TilesetsResource.class);
