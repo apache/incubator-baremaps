@@ -126,7 +126,7 @@
     <module>baremaps-osm</module>
     <module>baremaps-http</module>
     <module>baremaps-testing</module>
-    <module>baremaps-store</module>
+    <module>baremaps-collection</module>
   </modules>
 
   <profiles>
@@ -344,7 +344,7 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-store</artifactId>
+        <artifactId>baremaps-collection</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>

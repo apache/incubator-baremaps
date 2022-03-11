@@ -14,8 +14,8 @@
 
 package com.baremaps.core.database.collection;
 
-import com.baremaps.store.LongDataMap;
-import com.baremaps.store.StoreException;
+import com.baremaps.collection.LongDataMap;
+import com.baremaps.collection.StoreException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

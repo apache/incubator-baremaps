@@ -33,7 +33,7 @@ import com.baremaps.osm.pbf.OsmPbfParser;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
 import com.baremaps.osm.store.DataStoreConsumer;
-import com.baremaps.store.LongDataMap;
+import com.baremaps.collection.LongDataMap;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.List;

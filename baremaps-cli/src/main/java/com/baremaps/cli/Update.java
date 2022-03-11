@@ -28,7 +28,7 @@ import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.store.LongDataMap;
+import com.baremaps.collection.LongDataMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;

@@ -14,7 +14,7 @@
   <dependencies>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-store</artifactId>
+      <artifactId>baremaps-collection</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>

@@ -14,11 +14,11 @@
 
 package com.baremaps.jmh;
 
-import com.baremaps.store.AlignedDataList;
-import com.baremaps.store.memory.OffHeapMemory;
-import com.baremaps.store.memory.OnDiskMemory;
-import com.baremaps.store.memory.OnHeapMemory;
-import com.baremaps.store.type.LongDataType;
+import com.baremaps.collection.AlignedDataList;
+import com.baremaps.collection.memory.OffHeapMemory;
+import com.baremaps.collection.memory.OnDiskMemory;
+import com.baremaps.collection.memory.OnHeapMemory;
+import com.baremaps.collection.type.LongDataType;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

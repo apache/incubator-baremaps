@@ -34,7 +34,7 @@ import com.baremaps.osm.function.ExtractGeometryFunction;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
-import com.baremaps.store.LongDataMap;
+import com.baremaps.collection.LongDataMap;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;

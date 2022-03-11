@@ -46,7 +46,7 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-store</artifactId>
+      <artifactId>baremaps-collection</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.annotation</groupId>

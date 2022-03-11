@@ -24,7 +24,7 @@ import com.baremaps.osm.function.ReprojectEntityConsumer;
 import com.baremaps.osm.store.DataStoreConsumer;
 import com.baremaps.osm.stream.StreamException;
 import com.baremaps.osm.stream.StreamUtils;
-import com.baremaps.store.LongDataMap;
+import com.baremaps.collection.LongDataMap;
 import java.io.InputStream;
 import java.util.List;
 import java.util.function.Consumer;
