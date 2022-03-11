@@ -104,7 +104,7 @@ class BaremapsTest {
         new Thread(
             () -> {
               cmd.execute(
-                  "edit",
+                  "editor",
                   "--database",
                   DATABASE_URL,
                   "--tileset",

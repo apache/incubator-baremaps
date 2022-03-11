@@ -48,13 +48,13 @@ The source code of Baremaps is organized in modules:
 
 - `baremaps-benchmarks` contains JMH benchmarks.
 - `baremaps-cli` contains the command line interface of baremaps.
-- `baremaps-editor` integrates the [maputnik](https://maputnik.github.io/) editor.
-- `baremaps-osm` contains parsers for various osm formats (xml, pbf) and a cache and a database abstraction to import these data.
-- `baremaps-osm-lmdb` contains an implementation of the cache abstraction for [LMDB](https://github.com/lmdbjava/lmdbjava).
+- `baremaps-collection` contains fast on-heap, off-heap, and on-disk collections inspired by planetiler.
+- `baremaps-core` contains the pipeline to import osm data in postgis and produce vector tiles.
 - `baremaps-http` contains the parent sever module with the main dependencies.
+- `baremaps-osm` contains parsers for various osm formats (xml, pbf) and a cache and a database abstraction to import these data.
 - `baremaps-testing` contains common utilities (data, etc.) used for testing in different module.
 
-The naming convention used for the modules is 'baremaps-{component}-{implementation}'.
+The naming convention used for the modules is 'baremaps-{component}'.
 Here, component corresponds to the api and the main implementation of a component.
 If the component has multiple implementation or requires some specific dependencies, an additional module is created.
 
