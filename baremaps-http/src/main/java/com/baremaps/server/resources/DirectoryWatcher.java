@@ -44,8 +44,7 @@ public class DirectoryWatcher implements Runnable {
 
   @Override
   public void run() {
-    try {
-      WatchService watchService = FileSystems.getDefault().newWatchService();
+    try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
       for (Path directory : directories) {
         directory.register(watchService, ENTRY_MODIFY, ENTRY_CREATE, ENTRY_DELETE);
       }
