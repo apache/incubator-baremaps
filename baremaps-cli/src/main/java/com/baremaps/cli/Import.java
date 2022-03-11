@@ -14,6 +14,16 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.collection.AlignedDataList;
+import com.baremaps.collection.DataStore;
+import com.baremaps.collection.LongAlignedDataDenseMap;
+import com.baremaps.collection.LongDataMap;
+import com.baremaps.collection.LongDataSortedMap;
+import com.baremaps.collection.memory.OnDiskMemory;
+import com.baremaps.collection.type.LonLatDataType;
+import com.baremaps.collection.type.LongDataType;
+import com.baremaps.collection.type.LongListDataType;
+import com.baremaps.collection.type.PairDataType;
 import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.database.ImportService;
 import com.baremaps.core.database.repository.HeaderRepository;
@@ -26,16 +36,6 @@ import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.collection.AlignedDataList;
-import com.baremaps.collection.DataStore;
-import com.baremaps.collection.LongAlignedDataDenseMap;
-import com.baremaps.collection.LongDataMap;
-import com.baremaps.collection.LongDataSortedMap;
-import com.baremaps.collection.memory.OnDiskMemory;
-import com.baremaps.collection.type.LonLatDataType;
-import com.baremaps.collection.type.LongDataType;
-import com.baremaps.collection.type.LongListDataType;
-import com.baremaps.collection.type.PairDataType;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;

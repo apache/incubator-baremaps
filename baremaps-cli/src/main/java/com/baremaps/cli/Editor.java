@@ -18,7 +18,6 @@ import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
 import com.baremaps.core.blob.BlobStore;
-import com.baremaps.core.config.StaticConfig;
 import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.server.resources.DevelopmentResources;
 import com.baremaps.server.utils.CorsFilter;
@@ -38,7 +37,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "editor", description = "Start a development server for editing a map with maputnik.")
+@Command(
+    name = "editor",
+    description = "Start a development server for editing a map with maputnik.")
 public class Editor implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Editor.class);

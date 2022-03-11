@@ -16,6 +16,7 @@ package com.baremaps.core.database;
 
 import static com.baremaps.osm.stream.ConsumerUtils.consumeThenReturn;
 
+import com.baremaps.collection.LongDataMap;
 import com.baremaps.core.blob.Blob;
 import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.database.repository.HeaderRepository;
@@ -34,7 +35,6 @@ import com.baremaps.osm.function.ReprojectEntityConsumer;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
 import com.baremaps.osm.state.OsmStateParser;
-import com.baremaps.collection.LongDataMap;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.baremaps.collection.LongDataMap;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Member;
 import com.baremaps.osm.domain.Member.MemberType;
@@ -27,7 +28,6 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.CreateGeometryConsumer;
 import com.baremaps.osm.store.MockLongDataMap;
-import com.baremaps.collection.LongDataMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.time.LocalDateTime;

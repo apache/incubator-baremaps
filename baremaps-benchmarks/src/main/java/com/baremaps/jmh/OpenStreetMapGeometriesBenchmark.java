@@ -14,11 +14,6 @@
 
 package com.baremaps.jmh;
 
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.function.EntityConsumerAdapter;
-import com.baremaps.osm.pbf.OsmPbfParser;
 import com.baremaps.collection.DataStore;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.collection.LongDataOpenHashMap;
@@ -26,6 +21,11 @@ import com.baremaps.collection.memory.OnDiskMemory;
 import com.baremaps.collection.memory.OnHeapMemory;
 import com.baremaps.collection.type.CoordinateDataType;
 import com.baremaps.collection.type.LongListDataType;
+import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.function.EntityConsumerAdapter;
+import com.baremaps.osm.pbf.OsmPbfParser;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;

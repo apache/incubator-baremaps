@@ -34,16 +34,16 @@ import picocli.CommandLine.Option;
     description = "A toolkit for producing vector tiles.",
     versionProvider = VersionProvider.class,
     subcommands = {
-        Init.class,
-        Execute.class,
-        Import.class,
-        Update.class,
-        Diff.class,
-        Export.class,
-        Editor.class,
-        Viewer.class,
-        Server.class,
-        OgcApi.class,
+      Init.class,
+      Execute.class,
+      Import.class,
+      Update.class,
+      Diff.class,
+      Export.class,
+      Editor.class,
+      Viewer.class,
+      Server.class,
+      OgcApi.class,
     })
 public class Baremaps implements Callable<Integer> {
 
@@ -91,13 +91,13 @@ public class Baremaps implements Callable<Integer> {
     public String[] getVersion() throws Exception {
       URL url = getClass().getResource("/version.txt");
       if (url == null) {
-        return new String[]{"No version.txt file found in the classpath."};
+        return new String[] {"No version.txt file found in the classpath."};
       }
       try (InputStream inputStream = url.openStream()) {
         Properties properties = new Properties();
         properties.load(inputStream);
-        return new String[]{
-            properties.getProperty("application") + " v" + properties.getProperty("version"),
+        return new String[] {
+          properties.getProperty("application") + " v" + properties.getProperty("version"),
         };
       }
     }

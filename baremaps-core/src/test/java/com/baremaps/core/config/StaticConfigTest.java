@@ -17,7 +17,6 @@ package com.baremaps.core.config;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.baremaps.core.blob.FileBlobStore;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;

@@ -16,6 +16,7 @@ package com.baremaps.osm.geometry;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.baremaps.collection.LongDataMap;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
@@ -23,7 +24,6 @@ import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.CreateGeometryConsumer;
 import com.baremaps.osm.store.MockLongDataMap;
 import com.baremaps.osm.xml.OsmXmlParser;
-import com.baremaps.collection.LongDataMap;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;

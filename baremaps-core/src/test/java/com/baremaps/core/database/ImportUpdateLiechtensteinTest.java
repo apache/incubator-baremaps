@@ -16,6 +16,12 @@ package com.baremaps.core.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.baremaps.collection.DataStore;
+import com.baremaps.collection.LongDataMap;
+import com.baremaps.collection.LongDataOpenHashMap;
+import com.baremaps.collection.memory.OnHeapMemory;
+import com.baremaps.collection.type.CoordinateDataType;
+import com.baremaps.collection.type.LongListDataType;
 import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.blob.ResourceBlobStore;
 import com.baremaps.core.database.collection.PostgresCoordinateMap;
@@ -25,12 +31,6 @@ import com.baremaps.core.database.repository.PostgresNodeRepository;
 import com.baremaps.core.database.repository.PostgresRelationRepository;
 import com.baremaps.core.database.repository.PostgresWayRepository;
 import com.baremaps.osm.domain.Header;
-import com.baremaps.collection.DataStore;
-import com.baremaps.collection.LongDataMap;
-import com.baremaps.collection.LongDataOpenHashMap;
-import com.baremaps.collection.memory.OnHeapMemory;
-import com.baremaps.collection.type.CoordinateDataType;
-import com.baremaps.collection.type.LongListDataType;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;

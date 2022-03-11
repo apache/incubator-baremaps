@@ -31,7 +31,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -102,9 +101,11 @@ public class DevelopmentResources {
     this.sseEventBuilder = sse.newEventBuilder();
 
     // Observe the file system for changes
-    Set<Path> directories = new HashSet<>(Arrays.asList(
-        Paths.get(tileset.getPath()).toAbsolutePath().getParent(),
-        Paths.get(style.getPath()).toAbsolutePath().getParent()));
+    Set<Path> directories =
+        new HashSet<>(
+            Arrays.asList(
+                Paths.get(tileset.getPath()).toAbsolutePath().getParent(),
+                Paths.get(style.getPath()).toAbsolutePath().getParent()));
     new Thread(new DirectoryWatcher(directories, this::broadcastChanges)).start();
   }
 
@@ -124,7 +125,6 @@ public class DevelopmentResources {
       logger.error(e.getMessage());
     }
   }
-
 
   @GET
   @javax.ws.rs.Path("changes")
