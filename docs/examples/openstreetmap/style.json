@@ -11,8 +11,11 @@
     "type" : "fill",
     "source" : "baremaps",
     "source-layer" : "building",
+    "layout" : {
+      "visibility" : "visible"
+    },
     "paint" : {
-      "fill-color" : "rgba(0, 255, 0, 1)"
+      "fill-color" : "rgba(255, 0, 0, 1)"
     }
   } ],
   "center" : [ 9.5554, 47.166 ],

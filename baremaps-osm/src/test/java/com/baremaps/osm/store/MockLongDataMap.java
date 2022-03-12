@@ -14,7 +14,7 @@
 
 package com.baremaps.osm.store;
 
-import com.baremaps.store.LongDataMap;
+import com.baremaps.collection.LongDataMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

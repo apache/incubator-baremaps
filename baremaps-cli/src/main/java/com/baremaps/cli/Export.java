@@ -14,25 +14,25 @@
 
 package com.baremaps.cli;
 
-import static com.baremaps.server.common.DefaultObjectMapper.defaultObjectMapper;
 import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
+import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 
-import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.BlobStoreException;
+import com.baremaps.core.blob.BlobStore;
+import com.baremaps.core.blob.BlobStoreException;
+import com.baremaps.core.postgres.PostgresUtils;
+import com.baremaps.core.tile.MBTiles;
+import com.baremaps.core.tile.PostgresQuery;
+import com.baremaps.core.tile.PostgresTileStore;
+import com.baremaps.core.tile.Tile;
+import com.baremaps.core.tile.TileBatchPredicate;
+import com.baremaps.core.tile.TileBlobStore;
+import com.baremaps.core.tile.TileChannel;
+import com.baremaps.core.tile.TileStore;
+import com.baremaps.core.tile.TileStoreException;
 import com.baremaps.model.Query;
 import com.baremaps.model.TileJSON;
 import com.baremaps.osm.progress.StreamProgress;
-import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.stream.StreamUtils;
-import com.baremaps.tile.Tile;
-import com.baremaps.tile.TileBatchPredicate;
-import com.baremaps.tile.TileBlobStore;
-import com.baremaps.tile.TileChannel;
-import com.baremaps.tile.TileStore;
-import com.baremaps.tile.TileStoreException;
-import com.baremaps.tile.mbtiles.MBTiles;
-import com.baremaps.tile.postgres.PostgresQuery;
-import com.baremaps.tile.postgres.PostgresTileStore;
+import com.baremaps.osm.stream.StreamUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;

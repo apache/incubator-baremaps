@@ -48,6 +48,23 @@
     </repository>
   </distributionManagement>
 
+  <repositories>
+    <repository>
+      <id>osgeo</id>
+      <name>OSGeo Release Repository</name>
+      <url>https://repo.osgeo.org/repository/release/</url>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+    </repository>
+    <repository>
+      <id>osgeo-snapshot</id>
+      <name>OSGeo Snapshot Repository</name>
+      <url>https://repo.osgeo.org/repository/snapshot/</url>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+    </repository>
+  </repositories>
+
   <properties>
     <!-- project -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -105,19 +122,11 @@
   <modules>
     <module>baremaps-benchmarks</module>
     <module>baremaps-cli</module>
-    <module>baremaps-blob</module>
-    <module>baremaps-blob-s3</module>
+    <module>baremaps-core</module>
     <module>baremaps-osm</module>
-    <module>baremaps-osm-postgres</module>
-    <module>baremaps-stream</module>
-    <module>baremaps-server</module>
+    <module>baremaps-http</module>
     <module>baremaps-testing</module>
-    <module>baremaps-tile</module>
-    <module>baremaps-tile-mbtiles</module>
-    <module>baremaps-tile-postgres</module>
-    <module>baremaps-postgres</module>
-    <module>baremaps-store</module>
-    <module>baremaps-config</module>
+    <module>baremaps-collection</module>
   </modules>
 
   <profiles>
@@ -335,17 +344,12 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-store</artifactId>
+        <artifactId>baremaps-collection</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-blob</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-blob-s3</artifactId>
+        <artifactId>baremaps-core</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -360,57 +364,7 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-osm-postgres</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-tile</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-tile-mbtiles</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-tile-postgres</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-server</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-server-common</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-server-editor</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-server-ogcapi</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-server-studio</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-server-viewer</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-stream</artifactId>
+        <artifactId>baremaps-http</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -418,11 +372,6 @@
         <artifactId>baremaps-testing</artifactId>
         <groupId>com.baremaps</groupId>
         <scope>test</scope>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-postgres</artifactId>
-        <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
 
@@ -628,12 +577,6 @@
       <!-- Testing libraries -->
       <dependency>
         <artifactId>junit-jupiter-api</artifactId>
-        <groupId>org.junit.jupiter</groupId>
-        <scope>test</scope>
-        <version>${version.lib.junit}</version>
-      </dependency>
-      <dependency>
-        <artifactId>junit-jupiter-params</artifactId>
         <groupId>org.junit.jupiter</groupId>
         <scope>test</scope>
         <version>${version.lib.junit}</version>

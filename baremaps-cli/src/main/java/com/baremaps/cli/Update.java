@@ -14,21 +14,21 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.blob.BlobStore;
+import com.baremaps.collection.LongDataMap;
+import com.baremaps.core.blob.BlobStore;
+import com.baremaps.core.database.UpdateService;
+import com.baremaps.core.database.collection.PostgresCoordinateMap;
+import com.baremaps.core.database.collection.PostgresReferenceMap;
+import com.baremaps.core.database.repository.HeaderRepository;
+import com.baremaps.core.database.repository.PostgresHeaderRepository;
+import com.baremaps.core.database.repository.PostgresNodeRepository;
+import com.baremaps.core.database.repository.PostgresRelationRepository;
+import com.baremaps.core.database.repository.PostgresWayRepository;
+import com.baremaps.core.database.repository.Repository;
+import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.postgres.PostgresCoordinateMap;
-import com.baremaps.osm.postgres.PostgresHeaderRepository;
-import com.baremaps.osm.postgres.PostgresNodeRepository;
-import com.baremaps.osm.postgres.PostgresReferenceMap;
-import com.baremaps.osm.postgres.PostgresRelationRepository;
-import com.baremaps.osm.postgres.PostgresWayRepository;
-import com.baremaps.osm.repository.HeaderRepository;
-import com.baremaps.osm.repository.Repository;
-import com.baremaps.osm.repository.UpdateService;
-import com.baremaps.postgres.jdbc.PostgresUtils;
-import com.baremaps.store.LongDataMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;

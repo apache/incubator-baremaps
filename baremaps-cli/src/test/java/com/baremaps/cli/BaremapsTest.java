@@ -19,7 +19,7 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.baremaps.postgres.jdbc.PostgresUtils;
+import com.baremaps.core.postgres.PostgresUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -83,7 +83,7 @@ class BaremapsTest {
             "--database",
             DATABASE_URL,
             "--file",
-            "res://liechtenstein/liechtenstein.osm.pbf");
+            "res:///liechtenstein/liechtenstein.osm.pbf");
     assertEquals(0, importExitCode);
 
     // Test the export command
@@ -93,7 +93,7 @@ class BaremapsTest {
             "--database",
             DATABASE_URL,
             "--tileset",
-            "res://tileset.json",
+            "res:///tileset.json",
             "--repository",
             "repository/");
     assertEquals(0, exportExitCode);
@@ -104,13 +104,13 @@ class BaremapsTest {
         new Thread(
             () -> {
               cmd.execute(
-                  "edit",
+                  "editor",
                   "--database",
                   DATABASE_URL,
                   "--tileset",
-                  "res://tileset.json",
+                  "res:///tileset.json",
                   "--style",
-                  "res://style.json",
+                  "res:///style.json",
                   "--port",
                   "9000");
             });

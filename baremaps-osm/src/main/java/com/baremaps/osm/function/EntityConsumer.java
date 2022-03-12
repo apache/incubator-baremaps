@@ -20,7 +20,7 @@ import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.stream.StreamException;
+import com.baremaps.osm.stream.StreamException;
 import java.util.function.Consumer;
 
 /** Represents an operation on entities of different types. */

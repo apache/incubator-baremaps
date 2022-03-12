@@ -2,7 +2,7 @@
   <configuration default="false" name="execute" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.baremaps.cli.Baremaps" />
     <module name="baremaps-cli" />
-    <option name="PROGRAM_PARAMETERS" value="execute --database jdbc:postgresql://localhost:5432/baremaps?&amp;user=baremaps&amp;password=baremaps --file res://osm_create_extensions.sql --file res://osm_drop_tables.sql --file res://osm_create_tables.sql --file res://osm_create_gist_indexes.sql --file res://osm_create_gin_indexes.sql" />
+    <option name="PROGRAM_PARAMETERS" value="execute --database jdbc:postgresql://localhost:5432/baremaps?&amp;user=baremaps&amp;password=baremaps --file res:///osm_create_extensions.sql --file res:///osm_drop_tables.sql --file res:///osm_create_tables.sql --file res:///osm_create_gist_indexes.sql --file res:///osm_create_gin_indexes.sql" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/docs/examples/openstreetmap" />
     <extension name="coverage">
       <pattern>
