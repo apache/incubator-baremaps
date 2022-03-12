@@ -34,14 +34,14 @@ class ResourceBlobStoreTest {
     BlobStore blobStore = new ResourceBlobStore();
 
     // Read the data
-    try (InputStream inputStream = blobStore.get(URI.create("res://blob.txt")).getInputStream()) {
+    try (InputStream inputStream = blobStore.get(URI.create("res:///blob.txt")).getInputStream()) {
       assertEquals(
           "test", CharStreams.toString(new InputStreamReader(inputStream, Charsets.UTF_8)));
     }
 
     // Get unexisting blob
     try (InputStream ignored =
-        blobStore.get(URI.create("res://missing-blob.txt")).getInputStream()) {
+        blobStore.get(URI.create("res:///missing-blob.txt")).getInputStream()) {
       fail("Expected an IOException to be thrown");
     } catch (BlobStoreException e) {
       // Test exception message...

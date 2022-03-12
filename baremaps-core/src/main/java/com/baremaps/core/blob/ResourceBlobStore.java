@@ -22,7 +22,7 @@ import java.net.URI;
 /** A {@code BlobStore} for reading blobs in the classpath. */
 public class ResourceBlobStore implements BlobStore {
 
-  private static final String SCHEMA = "res://";
+  private static final String SCHEMA = "res:///";
 
   /** {@inheritDoc} */
   @Override
@@ -63,7 +63,7 @@ public class ResourceBlobStore implements BlobStore {
 
   private ByteSource byteSource(URI uri) throws BlobStoreException {
     try {
-      var path = uri.toString().replace(SCHEMA, "");
+      var path = uri.getPath().substring(1);
       var resource = Resources.getResource(path);
       return Resources.asByteSource(resource);
     } catch (IllegalArgumentException ex) {

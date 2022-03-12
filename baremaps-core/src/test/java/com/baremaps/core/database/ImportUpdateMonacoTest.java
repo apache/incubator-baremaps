@@ -71,7 +71,7 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
 
     // Import data
     new ImportService(
-            new URI("res://monaco/monaco-210801.osm.pbf"),
+            new URI("res:///monaco/monaco-210801.osm.pbf"),
             blobStore,
             coordinates,
             references,
@@ -90,7 +90,7 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
         new Header(
             3047l,
             LocalDateTime.of(2021, 8, 01, 20, 21, 41, 0),
-            "res://monaco/monaco-updates",
+            "res:///monaco/monaco-updates",
             "",
             ""));
 

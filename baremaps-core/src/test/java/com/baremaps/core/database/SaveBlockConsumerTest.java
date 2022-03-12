@@ -68,7 +68,7 @@ class SaveBlockConsumerTest {
         new SaveBlockConsumer(
             headerRepository, nodeRepository, tableRepository, relationRepository);
     InputStream inputStream =
-        new ResourceBlobStore().get(new URI("res://simple/data.osm.pbf")).getInputStream();
+        new ResourceBlobStore().get(new URI("res:///simple/data.osm.pbf")).getInputStream();
     new OsmPbfParser().blocks(inputStream).forEach(dataImporter);
 
     // Check node importation

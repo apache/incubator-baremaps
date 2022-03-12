@@ -12,11 +12,11 @@ To begin with the tutorial, prepare the database by executing the following comm
 ```shell
 baremaps execute \
   --database 'jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps' \
-  --file 'res://osm_create_extensions.sql' \
-  --file 'res://osm_drop_tables.sql' \
-  --file 'res://osm_create_tables.sql' \
-  --file 'res://osm_create_gist_indexes.sql' \
-  --file 'res://osm_create_gin_indexes.sql'
+  --file 'res:///osm_create_extensions.sql' \
+  --file 'res:///osm_drop_tables.sql' \
+  --file 'res:///osm_create_tables.sql' \
+  --file 'res:///osm_create_gist_indexes.sql' \
+  --file 'res:///osm_create_gin_indexes.sql'
 ```
 
 To import London data in the database.

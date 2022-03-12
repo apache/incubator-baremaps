@@ -75,7 +75,7 @@ class ImportUpdateDataTest extends PostgresBaseTest {
 
     // Import data
     new ImportService(
-            new URI("res://simple/data.osm.pbf"),
+            new URI("res:///simple/data.osm.pbf"),
             blobStore,
             coordinates,
             references,
@@ -87,7 +87,7 @@ class ImportUpdateDataTest extends PostgresBaseTest {
         .call();
 
     headerRepository.put(
-        new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), "res://simple", "", ""));
+        new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), "res:///simple", "", ""));
 
     // Check node importation
     assertNull(nodeRepository.get(0l));

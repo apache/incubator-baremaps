@@ -22,16 +22,16 @@ In this example we will use a tiny extract of OSM for [Liechtenstein](https://en
 ## Importing OpenStreetMap Data
 
 To begin with the tutorial, prepare the database by executing the following command.
-Hereafter, the command executes resources (`res://`) located in the Java classpath sequentially, but the queries they contain are executed in parallel.
+Hereafter, the command executes resources (`res:///`) located in the Java classpath sequentially, but the queries they contain are executed in parallel.
 
 ```
 baremaps execute \
   --database 'jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps' \
-  --file 'res://osm_create_extensions.sql' \
-  --file 'res://osm_drop_tables.sql' \
-  --file 'res://osm_create_tables.sql' \
-  --file 'res://osm_create_gist_indexes.sql' \
-  --file 'res://osm_create_gin_indexes.sql'
+  --file 'res:///osm_create_extensions.sql' \
+  --file 'res:///osm_drop_tables.sql' \
+  --file 'res:///osm_create_tables.sql' \
+  --file 'res:///osm_create_gist_indexes.sql' \
+  --file 'res:///osm_create_gin_indexes.sql'
 ```
 
 To import the sample OSM data (`liechtenstein-latest.osm.pbf`) in Postgis with Baremaps, execute the following command in a terminal.

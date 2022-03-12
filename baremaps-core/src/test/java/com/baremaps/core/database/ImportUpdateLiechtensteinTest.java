@@ -73,7 +73,7 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
 
     // Import data
     new ImportService(
-            new URI("res://liechtenstein/liechtenstein.osm.pbf"),
+            new URI("res:///liechtenstein/liechtenstein.osm.pbf"),
             blobStore,
             coordinates,
             references,
@@ -88,7 +88,7 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
     // Fix the replicationUrl so that we can update the database with local files
     headerRepository.put(
         new Header(
-            2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), "res://liechtenstein", "", ""));
+            2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), "res:///liechtenstein", "", ""));
 
     coordinates = new PostgresCoordinateMap(dataSource);
     references = new PostgresReferenceMap(dataSource);
