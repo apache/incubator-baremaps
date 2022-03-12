@@ -19,7 +19,6 @@ import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
 import com.baremaps.core.blob.Blob;
-import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.blob.BlobStoreException;
 import com.baremaps.core.blob.ConfigBlobStore;
 import com.baremaps.core.tile.Tile;
