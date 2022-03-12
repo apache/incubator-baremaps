@@ -52,7 +52,7 @@ public class DirectoryWatcher implements Runnable {
       while ((key = watchService.take()) != null) {
         Path dir = (Path) key.watchable();
         for (WatchEvent<?> event : key.pollEvents()) {
-          Path path = dir.resolve((Path) event.context());
+          Path path = dir.resolve((Path) event.context()).toAbsolutePath();
           logger.info("Change detected in {}", path);
           consumer.accept(path);
         }

@@ -20,6 +20,7 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import com.baremaps.core.blob.Blob;
 import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.blob.BlobStoreException;
+import com.baremaps.core.blob.ConfigBlobStore;
 import com.baremaps.core.tile.PostgresQuery;
 import com.baremaps.core.tile.PostgresTileStore;
 import com.baremaps.core.tile.Tile;
@@ -71,14 +72,16 @@ public class DevelopmentResources {
 
   private final URI tileset;
 
-  private final BlobStore blobStore;
+  private final ConfigBlobStore blobStore;
 
   private final DataSource dataSource;
 
   private final ObjectMapper objectMapper;
 
   private final Sse sse;
+
   private final SseBroadcaster sseBroadcaster;
+
   private final OutboundSseEvent.Builder sseEventBuilder;
 
   @Inject
@@ -86,7 +89,7 @@ public class DevelopmentResources {
       @Named("assets") String assets,
       @Named("tileset") URI tileset,
       @Named("style") URI style,
-      BlobStore blobStore,
+      ConfigBlobStore blobStore,
       DataSource dataSource,
       ObjectMapper objectMapper,
       Sse sse) {
@@ -117,7 +120,7 @@ public class DevelopmentResources {
       var tilesetPath = Paths.get(tileset.getPath()).toAbsolutePath();
       styleObjectNode.put("reload", path.endsWith(tilesetPath.getFileName()));
 
-      OutboundSseEvent.Builder sseEventBuilder = sse.newEventBuilder();
+      // broadcast the changes
       sseBroadcaster.broadcast(sseEventBuilder.data(styleObjectNode.toString()).build());
     } catch (IOException e) {
       logger.error(e.getMessage());

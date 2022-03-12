@@ -29,7 +29,7 @@ public class BlobStoreRouter implements BlobStore {
 
   private final Map<String, BlobStore> schemes;
 
-  /** Constructs a */
+  /** Constructs a {@link BlobStoreRouter}. */
   public BlobStoreRouter() {
     schemes = new HashMap<>();
     schemes.put(null, new FileBlobStore());

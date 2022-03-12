@@ -17,7 +17,7 @@ package com.baremaps.cli;
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
-import com.baremaps.core.blob.BlobStore;
+import com.baremaps.core.blob.ConfigBlobStore;
 import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.server.resources.DevelopmentResources;
 import com.baremaps.server.utils.CorsFilter;
@@ -81,7 +81,7 @@ public class Editor implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    BlobStore blobStore = options.blobStore();
+    ConfigBlobStore blobStore = new ConfigBlobStore(options.blobStore());
     DataSource dataSource = PostgresUtils.datasource(database);
 
     // Configure serialization
@@ -100,7 +100,7 @@ public class Editor implements Callable<Integer> {
                     bind("editor").to(String.class).named("assets");
                     bind(tileset).to(URI.class).named("tileset");
                     bind(style).to(URI.class).named("style");
-                    bind(blobStore).to(BlobStore.class);
+                    bind(blobStore).to(ConfigBlobStore.class);
                     bind(dataSource).to(DataSource.class);
                     bind(objectMapper).to(ObjectMapper.class);
                   }
