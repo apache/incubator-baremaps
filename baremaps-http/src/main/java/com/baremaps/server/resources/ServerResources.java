@@ -21,6 +21,7 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import com.baremaps.core.blob.Blob;
 import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.blob.BlobStoreException;
+import com.baremaps.core.blob.ConfigBlobStore;
 import com.baremaps.core.tile.Tile;
 import com.baremaps.core.tile.TileStore;
 import com.baremaps.core.tile.TileStoreException;
@@ -41,9 +42,11 @@ import javax.ws.rs.core.Response;
 @Path("/")
 public class ServerResources {
 
-  private final byte[] style;
+  private final URI style;
 
-  private final byte[] tileset;
+  private final URI tileset;
+
+  private final ConfigBlobStore blobStore;
 
   private final TileStore tileStore;
 
@@ -51,26 +54,27 @@ public class ServerResources {
   public ServerResources(
       @Named("tileset") URI tileset,
       @Named("style") URI style,
-      BlobStore blobStore,
+      ConfigBlobStore blobStore,
       TileStore tileStore)
       throws BlobStoreException, IOException {
-    this.tileset = blobStore.get(tileset).getInputStream().readAllBytes();
-    this.style = blobStore.get(style).getInputStream().readAllBytes();
+    this.tileset = tileset;
+    this.style = style;
+    this.blobStore = blobStore;
     this.tileStore = tileStore;
   }
 
   @GET
   @Path("style.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getStyle() {
-    return Response.ok(style).build();
+  public Response getStyle() throws BlobStoreException, IOException {
+    return Response.ok(blobStore.get(style).getInputStream().readAllBytes()).build();
   }
 
   @GET
   @Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getTileset() {
-    return Response.ok(tileset).build();
+  public Response getTileset() throws BlobStoreException, IOException {
+    return Response.ok(blobStore.get(tileset).getInputStream().readAllBytes()).build();
   }
 
   @GET
