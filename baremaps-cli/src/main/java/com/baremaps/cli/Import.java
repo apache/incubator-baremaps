@@ -19,7 +19,7 @@ import com.baremaps.collection.DataStore;
 import com.baremaps.collection.LongAlignedDataDenseMap;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.collection.LongDataSortedMap;
-import com.baremaps.collection.memory.OnDiskMemory;
+import com.baremaps.collection.memory.OnDiskDirectoryMemory;
 import com.baremaps.collection.type.LonLatDataType;
 import com.baremaps.collection.type.LongDataType;
 import com.baremaps.collection.type.LongListDataType;
@@ -92,19 +92,19 @@ public class Import implements Callable<Integer> {
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
     Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
 
-    Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
+    Path directory = Files.createTempDirectory("baremaps_");
     Path nodes = Files.createDirectories(directory.resolve("nodes"));
     Path referencesKeys = Files.createDirectories(directory.resolve("references_keys"));
     Path referencesValues = Files.createDirectories(directory.resolve("references_values"));
 
     LongDataMap<Coordinate> coordinates =
-        new LongAlignedDataDenseMap<>(new LonLatDataType(), new OnDiskMemory(nodes));
+        new LongAlignedDataDenseMap<>(new LonLatDataType(), new OnDiskDirectoryMemory(nodes));
     LongDataMap<List<Long>> references =
         new LongDataSortedMap<>(
             new AlignedDataList<>(
                 new PairDataType<>(new LongDataType(), new LongDataType()),
-                new OnDiskMemory(referencesKeys)),
-            new DataStore<>(new LongListDataType(), new OnDiskMemory(referencesValues)));
+                new OnDiskDirectoryMemory(referencesKeys)),
+            new DataStore<>(new LongListDataType(), new OnDiskDirectoryMemory(referencesValues)));
 
     logger.info("Importing data");
     new ImportService(

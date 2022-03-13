@@ -18,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -27,10 +29,9 @@ class MBTilesTest extends TileStoreTest {
 
   @Override
   public MBTiles createTileStore() throws Exception {
-    File file = File.createTempFile("baremaps_", ".db");
-    file.deleteOnExit();
+    Path file = Files.createTempFile("baremaps_", ".tmp");
     SQLiteDataSource dataSource = new SQLiteDataSource();
-    dataSource.setUrl("jdbc:sqlite:" + file.getPath());
+    dataSource.setUrl("jdbc:sqlite:" + file);
     MBTiles tilesStore = new MBTiles(dataSource);
     tilesStore.initializeDatabase();
     return tilesStore;

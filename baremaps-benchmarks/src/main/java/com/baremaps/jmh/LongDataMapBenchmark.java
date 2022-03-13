@@ -16,7 +16,7 @@ package com.baremaps.jmh;
 
 import com.baremaps.collection.AlignedDataList;
 import com.baremaps.collection.memory.OffHeapMemory;
-import com.baremaps.collection.memory.OnDiskMemory;
+import com.baremaps.collection.memory.OnDiskDirectoryMemory;
 import com.baremaps.collection.memory.OnHeapMemory;
 import com.baremaps.collection.type.LongDataType;
 import java.io.IOException;
@@ -74,8 +74,8 @@ public class LongDataMapBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void onDisk() throws IOException {
-    Path directory = Files.createTempDirectory(Paths.get("."), "benchmark_");
-    benchmark(new AlignedDataList<>(new LongDataType(), new OnDiskMemory(directory)), N);
+    Path directory = Files.createTempDirectory("baremaps_");
+    benchmark(new AlignedDataList<>(new LongDataType(), new OnDiskDirectoryMemory(directory)), N);
   }
 
   public static void main(String[] args) throws RunnerException {

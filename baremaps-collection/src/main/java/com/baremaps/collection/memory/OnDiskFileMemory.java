@@ -22,28 +22,29 @@ import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-/** A memory that stores segments on-disk using mapped byte buffers. */
-public class OnDiskMemory extends Memory {
+/**
+ * A memory that stores segments on-disk using mapped byte buffers.
+ */
+public class OnDiskFileMemory extends Memory {
 
-  private final Path directory;
+  private final Path file;
 
-  public OnDiskMemory(Path directory) {
-    this(directory, 1 << 30);
+  public OnDiskFileMemory(Path file) {
+    this(file, 1 << 30);
   }
 
-  public OnDiskMemory(Path directory, int segmentBytes) {
+  public OnDiskFileMemory(Path file, int segmentBytes) {
     super(segmentBytes);
-    this.directory = directory;
+    this.file = file;
   }
 
   @Override
   protected ByteBuffer allocate(int index, int size) {
     try {
-      Path file = directory.resolve(String.format("%s.part", index));
       try (FileChannel channel =
           FileChannel.open(
               file, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE)) {
-        return channel.map(MapMode.READ_WRITE, 0, size);
+        return channel.map(MapMode.READ_WRITE, index * size, size);
       }
     } catch (IOException e) {
       throw new StoreException(e);

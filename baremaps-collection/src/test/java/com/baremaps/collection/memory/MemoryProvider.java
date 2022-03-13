@@ -25,10 +25,11 @@ public class MemoryProvider {
   public static final int SEGMENT_BYTES = 1 << 10;
 
   public static Stream<Arguments> memories() throws IOException {
-    Path directory = Files.createTempDirectory("tmp_");
+
     return Stream.of(
         Arguments.of(new OnHeapMemory(SEGMENT_BYTES)),
         Arguments.of(new OffHeapMemory(SEGMENT_BYTES)),
-        Arguments.of(new OnDiskMemory(directory, SEGMENT_BYTES)));
+        Arguments.of(new OnDiskFileMemory(Files.createTempFile("baremaps_", ".tmp"), SEGMENT_BYTES)),
+        Arguments.of(new OnDiskDirectoryMemory(Files.createTempDirectory("baremaps_"), SEGMENT_BYTES)));
   }
 }
