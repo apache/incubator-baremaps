@@ -22,9 +22,7 @@ import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-/**
- * A memory that stores segments on-disk using mapped byte buffers.
- */
+/** A memory that stores segments on-disk using mapped byte buffers. */
 public class OnDiskFileMemory extends Memory {
 
   private final Path file;

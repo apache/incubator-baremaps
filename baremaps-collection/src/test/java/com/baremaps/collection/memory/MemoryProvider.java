@@ -16,7 +16,6 @@ package com.baremaps.collection.memory;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.provider.Arguments;
 
@@ -29,7 +28,9 @@ public class MemoryProvider {
     return Stream.of(
         Arguments.of(new OnHeapMemory(SEGMENT_BYTES)),
         Arguments.of(new OffHeapMemory(SEGMENT_BYTES)),
-        Arguments.of(new OnDiskFileMemory(Files.createTempFile("baremaps_", ".tmp"), SEGMENT_BYTES)),
-        Arguments.of(new OnDiskDirectoryMemory(Files.createTempDirectory("baremaps_"), SEGMENT_BYTES)));
+        Arguments.of(
+            new OnDiskFileMemory(Files.createTempFile("baremaps_", ".tmp"), SEGMENT_BYTES)),
+        Arguments.of(
+            new OnDiskDirectoryMemory(Files.createTempDirectory("baremaps_"), SEGMENT_BYTES)));
   }
 }

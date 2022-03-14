@@ -39,7 +39,6 @@ import com.baremaps.osm.domain.Way;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
