@@ -22,6 +22,7 @@ import java.io.IOException;
  * memory.
  */
 public final class BinaryFileBuffer implements IOStringStack {
+
   public BinaryFileBuffer(BufferedReader r) throws IOException {
     this.fbr = r;
     reload();

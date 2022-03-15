@@ -14,19 +14,41 @@
 
 package com.baremaps.collection.sort;
 
+import static com.baremaps.collection.sort.ExternalSort.DEFAULTMAXTEMPFILES;
+import static com.baremaps.collection.sort.ExternalSort.defaultcomparator;
+import static com.baremaps.collection.sort.ExternalSort.estimateAvailableMemory;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -35,29 +57,32 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-/** Unit test for simple App. */
+/**
+ * Unit test for simple App.
+ */
 @SuppressWarnings({"static-method", "javadoc"})
 public class ExternalSortTest {
+
   private static final String TEST_FILE1_TXT = "test-file-1.txt";
   private static final String TEST_FILE2_TXT = "test-file-2.txt";
   private static final String TEST_FILE1_CSV = "test-file-1.csv";
   private static final String[] EXPECTED_SORT_RESULTS = {
-    "a", "b", "b", "e", "f", "i", "m", "o", "u", "u", "x", "y", "z"
+      "a", "b", "b", "e", "f", "i", "m", "o", "u", "u", "x", "y", "z"
   };
   private static final String[] EXPECTED_MERGE_RESULTS = {
-    "a", "a", "b", "c", "c", "d", "e", "e", "f", "g", "g", "h", "i", "j", "k"
+      "a", "a", "b", "c", "c", "d", "e", "e", "f", "g", "g", "h", "i", "j", "k"
   };
   private static final String[] EXPECTED_MERGE_DISTINCT_RESULTS = {
-    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"
+      "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"
   };
   private static final String[] EXPECTED_HEADER_RESULTS = {
-    "HEADER, HEADER", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"
+      "HEADER, HEADER", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"
   };
   private static final String[] EXPECTED_DISTINCT_RESULTS = {
-    "a", "b", "e", "f", "i", "m", "o", "u", "x", "y", "z"
+      "a", "b", "e", "f", "i", "m", "o", "u", "x", "y", "z"
   };
   private static final String[] SAMPLE = {
-    "f", "m", "b", "e", "i", "o", "u", "x", "a", "y", "z", "b", "u"
+      "f", "m", "b", "e", "i", "o", "u", "x", "a", "y", "z", "b", "u"
   };
 
   private File file1;
@@ -65,7 +90,9 @@ public class ExternalSortTest {
   private File csvFile;
   private List<File> fileList;
 
-  /** @throws Exception */
+  /**
+   * @throws Exception
+   */
   @Before
   public void setUp() throws Exception {
     this.fileList = new ArrayList<File>(3);
@@ -83,7 +110,9 @@ public class ExternalSortTest {
     this.fileList.add(tmpFile2);
   }
 
-  /** @throws Exception */
+  /**
+   * @throws Exception
+   */
   @After
   public void tearDown() throws Exception {
     this.file1 = null;
@@ -133,7 +162,9 @@ public class ExternalSortTest {
       bogus += estimateTotalSize(mystrings);
       aft = System.nanoTime();
       diff = aft - bef;
-      if (diff < bestdiff) bestdiff = diff;
+      if (diff < bestdiff) {
+        bestdiff = diff;
+      }
     }
     System.out.println("#ignore = " + bogus);
     System.out.println(
@@ -153,8 +184,13 @@ public class ExternalSortTest {
     File f2 = File.createTempFile("tmp", "unit");
     f1.deleteOnExit();
     f2.deleteOnExit();
-    ExternalSort.mergeSortedFiles(ExternalSort.sortInBatch(f1), f2);
-    if (f2.length() != 0) throw new RuntimeException("empty files should end up emtpy");
+    ExternalSort.mergeSortedFiles(
+        ExternalSort.sortInBatch(new BufferedReader(new InputStreamReader(new FileInputStream(f1))), f1.length(),
+            ExternalSort.defaultcomparator, DEFAULTMAXTEMPFILES, estimateAvailableMemory(), null, false, true),
+            new BufferedWriter(new OutputStreamWriter(new FileOutputStream(f2))), defaultcomparator, false);
+    if (f2.length() != 0) {
+      throw new RuntimeException("empty files should end up emtpy");
+    }
   }
 
   @Test
@@ -170,7 +206,8 @@ public class ExternalSortTest {
         };
     File out = File.createTempFile("test_results", ".tmp", null);
     out.deleteOnExit();
-    ExternalSort.mergeSortedFiles(this.fileList, out, cmp, false);
+    ExternalSort.mergeSortedFiles(this.fileList,
+            new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out))), cmp, false);
 
     List<String> result = new ArrayList<>();
     try (BufferedReader bf = new BufferedReader(new FileReader(out))) {
@@ -194,7 +231,8 @@ public class ExternalSortTest {
         };
     File out = File.createTempFile("test_results", ".tmp", null);
     out.deleteOnExit();
-    ExternalSort.mergeSortedFiles(this.fileList, out, cmp, true);
+    ExternalSort.mergeSortedFiles(this.fileList,
+            new BufferedWriter(new OutputStreamWriter(new FileOutputStream(out))), cmp, true);
 
     List<String> result = new ArrayList<>();
     try (BufferedReader bf = new BufferedReader(new FileReader(out))) {
@@ -204,33 +242,6 @@ public class ExternalSortTest {
     }
     assertArrayEquals(
         Arrays.toString(result.toArray()), EXPECTED_MERGE_DISTINCT_RESULTS, result.toArray());
-  }
-
-  @Test
-  public void testMergeSortedFiles_Append() throws Exception {
-    String line;
-
-    Comparator<String> cmp =
-        new Comparator<String>() {
-          @Override
-          public int compare(String o1, String o2) {
-            return o1.compareTo(o2);
-          }
-        };
-
-    File out = File.createTempFile("test_results", ".tmp", null);
-    out.deleteOnExit();
-    writeStringToFile(out, "HEADER, HEADER\n");
-
-    ExternalSort.mergeSortedFiles(this.fileList, out, cmp, true, true);
-
-    List<String> result = new ArrayList<>();
-    try (BufferedReader bf = new BufferedReader(new FileReader(out))) {
-      while ((line = bf.readLine()) != null) {
-        result.add(line);
-      }
-    }
-    assertArrayEquals(Arrays.toString(result.toArray()), EXPECTED_HEADER_RESULTS, result.toArray());
   }
 
   @Test
@@ -301,7 +312,9 @@ public class ExternalSortTest {
 
     List<File> listOfFiles =
         ExternalSort.sortInBatch(
-            this.csvFile, cmp, ExternalSort.DEFAULTMAXTEMPFILES, null, false, true);
+            new BufferedReader(new InputStreamReader(new FileInputStream(this.csvFile))), this.csvFile.length(), cmp,
+            DEFAULTMAXTEMPFILES,
+            estimateAvailableMemory(), null, false, true);
     assertEquals(1, listOfFiles.size());
 
     ArrayList<String> result = readLines(listOfFiles.get(0));
@@ -335,11 +348,15 @@ public class ExternalSortTest {
   @Ignore("This test takes too long to execute")
   @Test
   public void sortVeryLargeFile() throws IOException {
-    final Path veryLargeFile = getTestFile();
-    final Path outputFile = Files.createTempFile("Merged-File", ".tmp");
+    final File veryLargeFile = getTestFile().toFile();
+    final File outputFile = Files.createTempFile("Merged-File", ".tmp").toFile();
     final long sortedLines =
         ExternalSort.mergeSortedFiles(
-            ExternalSort.sortInBatch(veryLargeFile.toFile()), outputFile.toFile());
+            ExternalSort.sortInBatch(new BufferedReader(new InputStreamReader(new FileInputStream(veryLargeFile))),
+                veryLargeFile.length(), ExternalSort.defaultcomparator, DEFAULTMAXTEMPFILES, estimateAvailableMemory(),
+                null,
+                false, true),
+                new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile))), defaultcomparator, false);
     final long expectedLines = 2148L * 1000000L;
     assertEquals(expectedLines, sortedLines);
   }
@@ -448,8 +465,11 @@ public class ExternalSortTest {
     BufferedWriter outputWriter =
         new BufferedWriter(new OutputStreamWriter(new FileOutputStream((tmpOutputFile))));
     ExternalSort.mergeSortedFiles(
-        tmpSortedFiles, outputWriter, ExternalSort.defaultcomparator, false // no distinct
-        ); // don't use gzip
+        tmpSortedFiles,
+        outputWriter,
+        ExternalSort.defaultcomparator,
+        false // no distinct
+    ); // don't use gzip
 
     for (File tmpSortedFile : tmpSortedFiles) {
       assertFalse(tmpSortedFile.exists());
