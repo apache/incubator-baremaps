@@ -10,6 +10,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -17,9 +18,12 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -37,40 +41,48 @@ public class GeocoderLucene {
     try (Analyzer analyzer = new StandardAnalyzer()) {
       IndexWriterConfig config = new IndexWriterConfig(analyzer);
       try (IndexWriter indexWriter = new IndexWriter(directory, config)) {
-        geonamesRecords.forEach(geonamesRecord -> index(indexWriter, geonamesRecord.name, geonamesRecord.alternatenames, geonamesRecord.countryCode, geonamesRecord.admin1Code, geonamesRecord.admin2Code, geonamesRecord.longitude, geonamesRecord.latitude));
+        geonamesRecords.forEach(geonamesRecord -> index(indexWriter, geonamesRecord.name, geonamesRecord.countryCode));
       }
     }
     directory.close();
   }
 
-  private void index(IndexWriter indexWriter, String name, String alternateNames, String countryCode, String admin1Code, String admin2Code, Double longitude, Double latitude) {
+  private void index(IndexWriter indexWriter, String name, String countryCode) {
     try {
       Document doc = new Document();
       doc.add(new Field("name", name, TextField.TYPE_STORED));
-      doc.add(new Field("alternatename", alternateNames, TextField.TYPE_STORED));
-      doc.add(new Field("countryCode", countryCode, TextField.TYPE_STORED));
-      doc.add(new Field("admin1Code", admin1Code, TextField.TYPE_STORED));
-      doc.add(new Field("admin2Code", admin2Code, TextField.TYPE_STORED));
-      doc.add(new StoredField("longitude", longitude));
-      doc.add(new StoredField("latitude", latitude));
+      doc.add(new Field("countryCode", countryCode, StringField.TYPE_STORED));
       indexWriter.addDocument(doc);
     } catch (Exception e) {
       throw new RuntimeException("An error occurred while creating Lucene document for Geonames data");
     }
-
   }
 
-  public void search(String query) throws IOException, ParseException {
-    try (Analyzer analyzer = new StandardAnalyzer()) {
-      Directory directory = FSDirectory.open(indexPath);
-      DirectoryReader indexReader = DirectoryReader.open(directory);
-      IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+  public void search(String searchValue) throws IOException, ParseException {
+    Directory directory = FSDirectory.open(indexPath);
+    DirectoryReader indexReader = DirectoryReader.open(directory);
+    IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+    BooleanQuery.Builder booleanQueryBuilder = new Builder();
+
+    try(StandardAnalyzer analyzer = new StandardAnalyzer()) {
+      Query q1 = new QueryParser("name", analyzer).parse(searchValue);
+      Query q2 = new QueryParser("countryCode", analyzer).parse(searchValue);
+
+      booleanQueryBuilder.add(q1, Occur.SHOULD);
+      booleanQueryBuilder.add(q2, Occur.SHOULD);
+    }
 
 
-      ScoreDoc[] hits = indexSearcher.search(booleanQueryBuilder.build(), 10).scoreDocs;
 
-      indexReader.close();
-      directory.close();
+    ScoreDoc[] hits = indexSearcher.search(booleanQueryBuilder.build(), 10).scoreDocs;
+
+    indexReader.close();
+    directory.close();
+
+    for(int i=0;i<hits.length;++i) {
+      int docId = hits[i].doc;
+      Document d = indexSearcher.doc(docId);
+      System.out.println((i + 1) + ". " + d.get("isbn") + "\t" + d.get("title"));
     }
   }
 
