@@ -14,16 +14,17 @@
 
 package com.baremaps.collection.type;
 
+import com.baremaps.collection.type.PairDataType.Pair;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
 /** A {@link DataType} for reading and writing pairs of values in {@link ByteBuffer}s. */
-public class PairDataType<L, R> implements AlignedDataType<PairDataType.Pair<L, R>> {
+public class PairDataType<L, R> implements SizedDataType<Pair<L, R>> {
 
-  private final AlignedDataType<L> left;
-  private final AlignedDataType<R> right;
+  private final SizedDataType<L> left;
+  private final SizedDataType<R> right;
 
-  public PairDataType(AlignedDataType<L> left, AlignedDataType<R> right) {
+  public PairDataType(SizedDataType<L> left, SizedDataType<R> right) {
     this.left = left;
     this.right = right;
   }

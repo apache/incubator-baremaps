@@ -17,7 +17,7 @@ package com.baremaps.collection.type;
 import java.nio.ByteBuffer;
 
 /** A {@link DataType} for reading and writing longs in {@link ByteBuffer}s. */
-public class LongDataType implements AlignedDataType<Long> {
+public class LongDataType implements SizedDataType<Long> {
 
   /** {@inheritDoc} */
   @Override

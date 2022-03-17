@@ -12,24 +12,20 @@
  * the License.
  */
 
-package com.baremaps.collection.type;
+package com.baremaps.collection;
 
-import java.nio.ByteBuffer;
+import com.baremaps.collection.memory.Memory;
+import com.baremaps.collection.type.LongDataType;
 
-/**
- * A {@link DataType} for reading and writing values in {@link ByteBuffer}s whose size is fixed and
- * aligned to memory.
- *
- * @param <T>
- */
-public interface AlignedDataType<T> extends DataType<T> {
+/** A list of longs backed by a {@link Memory}. */
+public class LongList extends AlignedDataList<Long> {
 
   /**
-   * Returns the size of the data type.
+   * Constructs a list.
    *
-   * @return the size of the data type.
+   * @param memory the memory
    */
-  default int size() {
-    return size(null);
+  public LongList(Memory memory) {
+    super(new LongDataType(), memory);
   }
 }

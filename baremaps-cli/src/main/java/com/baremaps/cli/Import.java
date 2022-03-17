@@ -16,7 +16,7 @@ package com.baremaps.cli;
 
 import com.baremaps.collection.AlignedDataList;
 import com.baremaps.collection.DataStore;
-import com.baremaps.collection.LongAlignedDataDenseMap;
+import com.baremaps.collection.LongSizedDataDenseMap;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.collection.LongDataSortedMap;
 import com.baremaps.collection.memory.OnDiskDirectoryMemory;
@@ -97,7 +97,7 @@ public class Import implements Callable<Integer> {
     Path referencesValues = Files.createDirectories(directory.resolve("references_values"));
 
     LongDataMap<Coordinate> coordinates =
-        new LongAlignedDataDenseMap<>(new LonLatDataType(), new OnDiskDirectoryMemory(nodes));
+        new LongSizedDataDenseMap<>(new LonLatDataType(), new OnDiskDirectoryMemory(nodes));
     LongDataMap<List<Long>> references =
         new LongDataSortedMap<>(
             new AlignedDataList<>(

@@ -17,7 +17,7 @@ package com.baremaps.collection.type;
 import java.nio.ByteBuffer;
 
 /** A {@link DataType} for reading and writing shorts in {@link ByteBuffer}s. */
-public class ShortDataType implements AlignedDataType<Short> {
+public class ShortDataType implements SizedDataType<Short> {
 
   /** {@inheritDoc} */
   @Override

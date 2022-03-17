@@ -14,12 +14,14 @@
 
 package com.baremaps.collection;
 
+import java.io.Closeable;
+
 /**
  * A list of data.
  *
  * @param <T>
  */
-public interface DataList<T> {
+public interface DataList<T> extends Closeable, Cleanable {
 
   /**
    * Adds a value to the list and returns its index.
@@ -28,6 +30,14 @@ public interface DataList<T> {
    * @return the index of the value
    */
   long add(T value);
+
+  /**
+   * Inserts the specified element at the specified position in this list.
+   *
+   * @param index the index of the value
+   * @param value the value
+   */
+  void add(long index, T value);
 
   /**
    * Returns a values by its index.
@@ -43,4 +53,5 @@ public interface DataList<T> {
    * @return the size of the list.
    */
   long size();
+
 }

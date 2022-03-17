@@ -23,6 +23,7 @@ public class DataTypeProvider {
 
   private static Stream<Arguments> dataTypes() {
     return Stream.of(
+        Arguments.of(new StringDataType(), "Hello, World!"),
         Arguments.of(new ByteDataType(), (byte) 1),
         Arguments.of(new ByteListDataType(), List.of((byte) 1, (byte) 2, (byte) 3)),
         Arguments.of(new DoubleDataType(), (double) 1),
@@ -38,6 +39,30 @@ public class DataTypeProvider {
         Arguments.of(new ListDataType<>(new IntegerDataType()), List.of(1, 2, 3)),
         Arguments.of(new CoordinateDataType(), new Coordinate(1, 2)),
         Arguments.of(new LonLatDataType(), new Coordinate(1, 2)),
+        Arguments.of(new SmallIntegerDataType(1), (int) Math.pow(2, 7) - 1),
+        Arguments.of(new SmallIntegerDataType(1), (int) -Math.pow(2, 7)),
+        Arguments.of(new SmallIntegerDataType(2), (int) Math.pow(2, 15) - 1),
+        Arguments.of(new SmallIntegerDataType(2), (int) -Math.pow(2, 15)),
+        Arguments.of(new SmallIntegerDataType(3), (int) Math.pow(2, 23) - 1),
+        Arguments.of(new SmallIntegerDataType(3), (int) -Math.pow(2, 23)),
+        Arguments.of(new SmallIntegerDataType(4), Integer.MAX_VALUE),
+        Arguments.of(new SmallIntegerDataType(4), Integer.MIN_VALUE),
+        Arguments.of(new SmallLongDataType(1), (long) Math.pow(2, 7) - 1),
+        Arguments.of(new SmallLongDataType(1), (long) -Math.pow(2, 7)),
+        Arguments.of(new SmallLongDataType(2), (long) Math.pow(2, 15) - 1),
+        Arguments.of(new SmallLongDataType(2), (long) -Math.pow(2, 15)),
+        Arguments.of(new SmallLongDataType(3), (long) Math.pow(2, 23) - 1),
+        Arguments.of(new SmallLongDataType(3), (long) -Math.pow(2, 23)),
+        Arguments.of(new SmallLongDataType(4), (long) Integer.MAX_VALUE),
+        Arguments.of(new SmallLongDataType(4), (long) Integer.MIN_VALUE),
+        Arguments.of(new SmallLongDataType(5), (long) Math.pow(2, 39) - 1),
+        Arguments.of(new SmallLongDataType(5), (long) -Math.pow(2, 39)),
+        Arguments.of(new SmallLongDataType(6), (long) Math.pow(2, 47) - 1),
+        Arguments.of(new SmallLongDataType(6), (long) -Math.pow(2, 47)),
+        Arguments.of(new SmallLongDataType(7), (long) Math.pow(2, 55) - 1),
+        Arguments.of(new SmallLongDataType(7), (long) -Math.pow(2, 55)),
+        Arguments.of(new SmallLongDataType(8), Long.MAX_VALUE),
+        Arguments.of(new SmallLongDataType(8), Long.MIN_VALUE),
         Arguments.of(
             new PairDataType<>(new LongDataType(), new LongDataType()),
             new PairDataType.Pair<>(1l, 2l)));

@@ -24,7 +24,7 @@ import com.baremaps.collection.type.LongDataType;
  *
  * <p>Copyright (c) Planetiler.
  */
-public class LongAlignedDataSortedMap<T> implements LongDataMap<T> {
+public class LongSizedDataSortedMap<T> implements LongDataMap<T> {
 
   private final AlignedDataList<Long> offsets;
   private final AlignedDataList<Long> keys;
@@ -37,7 +37,7 @@ public class LongAlignedDataSortedMap<T> implements LongDataMap<T> {
    * @param keys the list of keys
    * @param values the list of values
    */
-  public LongAlignedDataSortedMap(AlignedDataList<Long> keys, AlignedDataList<T> values) {
+  public LongSizedDataSortedMap(AlignedDataList<Long> keys, AlignedDataList<T> values) {
     this.offsets = new AlignedDataList<>(new LongDataType(), new OffHeapMemory());
     this.keys = keys;
     this.values = values;

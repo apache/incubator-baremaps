@@ -15,15 +15,20 @@
 package com.baremaps.collection.memory;
 
 import com.baremaps.collection.StoreException;
+import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Comparator;
 
-/** A memory that stores segments on-disk using mapped byte buffers. */
-public class OnDiskDirectoryMemory extends Memory {
+/**
+ * A memory that stores segments on-disk using mapped byte buffers.
+ */
+public class OnDiskDirectoryMemory extends Memory<MappedByteBuffer> {
 
   private final Path directory;
 
@@ -37,7 +42,7 @@ public class OnDiskDirectoryMemory extends Memory {
   }
 
   @Override
-  protected ByteBuffer allocate(int index, int size) {
+  protected MappedByteBuffer allocate(int index, int size) {
     try {
       Path file = directory.resolve(String.format("%s.part", index));
       try (FileChannel channel =
@@ -49,4 +54,19 @@ public class OnDiskDirectoryMemory extends Memory {
       throw new StoreException(e);
     }
   }
+
+  @Override
+  public void close() throws IOException {
+    MappedByteBufferUtils.unmap(segments);
+  }
+
+  @Override
+  public void clean() throws IOException {
+    close();
+    Files.walk(directory)
+        .sorted(Comparator.reverseOrder())
+        .map(Path::toFile)
+        .forEach(File::delete);
+  }
+
 }

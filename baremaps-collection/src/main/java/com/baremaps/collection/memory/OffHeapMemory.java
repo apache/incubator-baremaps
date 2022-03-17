@@ -14,10 +14,11 @@
 
 package com.baremaps.collection.memory;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /** A memory that stores segments off-heap using direct byte buffers. */
-public class OffHeapMemory extends Memory {
+public class OffHeapMemory extends Memory<ByteBuffer> {
 
   public OffHeapMemory() {
     this(1 << 20);
@@ -30,5 +31,15 @@ public class OffHeapMemory extends Memory {
   @Override
   protected ByteBuffer allocate(int index, int size) {
     return ByteBuffer.allocateDirect(size);
+  }
+
+  @Override
+  public void close() throws IOException {
+
+  }
+
+  @Override
+  public void clean() throws IOException {
+
   }
 }

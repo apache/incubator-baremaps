@@ -14,10 +14,11 @@
 
 package com.baremaps.collection.memory;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /** A memory that stores segments on-heap using regular byte buffers. */
-public class OnHeapMemory extends Memory {
+public class OnHeapMemory extends Memory<ByteBuffer> {
 
   public OnHeapMemory() {
     this(1 << 20);
@@ -31,4 +32,15 @@ public class OnHeapMemory extends Memory {
   protected ByteBuffer allocate(int index, int size) {
     return ByteBuffer.allocate(size);
   }
+
+  @Override
+  public void close() throws IOException {
+
+  }
+
+  @Override
+  public void clean() throws IOException {
+
+  }
+
 }

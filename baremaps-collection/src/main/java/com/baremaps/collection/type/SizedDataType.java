@@ -12,20 +12,23 @@
  * the License.
  */
 
-package com.baremaps.collection;
+package com.baremaps.collection.type;
 
-import com.baremaps.collection.memory.Memory;
-import com.baremaps.collection.type.IntegerDataType;
+import java.nio.ByteBuffer;
 
-/** A list of integers backed by a {@link Memory}. */
-public class IntegerDataList extends AlignedDataList<Integer> {
+/**
+ * A {@link DataType} for reading and writing values in {@link ByteBuffer}s whose size is fixed.
+ *
+ * @param <T>
+ */
+public interface SizedDataType<T> extends DataType<T> {
 
   /**
-   * Constructs a list.
+   * Returns the size of the data type.
    *
-   * @param memory the memory
+   * @return the size of the data type.
    */
-  public IntegerDataList(Memory memory) {
-    super(new IntegerDataType(), memory);
+  default int size() {
+    return size(null);
   }
 }

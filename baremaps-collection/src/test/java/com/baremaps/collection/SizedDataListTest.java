@@ -19,40 +19,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.baremaps.collection.memory.Memory;
 import com.baremaps.collection.memory.OffHeapMemory;
-import com.baremaps.collection.type.AlignedDataType;
 import com.baremaps.collection.type.LongDataType;
-import java.nio.ByteBuffer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class FixedSizeDataListTest {
+class SizedDataListTest {
 
   @Test
   void segmentsTooSmall() {
     var dataType = new LongDataType();
     var memory = new OffHeapMemory(4);
-    assertThrows(StoreException.class, () -> new AlignedDataList<>(dataType, memory));
-  }
-
-  @Test
-  void segmentsMisaligned() {
-    var dataType =
-        new AlignedDataType<>() {
-          @Override
-          public int size(Object value) {
-            return 3;
-          }
-
-          @Override
-          public void write(ByteBuffer buffer, int position, Object value) {}
-
-          @Override
-          public Object read(ByteBuffer buffer, int position) {
-            return null;
-          }
-        };
-    var memory = new OffHeapMemory(16);
     assertThrows(StoreException.class, () -> new AlignedDataList<>(dataType, memory));
   }
 

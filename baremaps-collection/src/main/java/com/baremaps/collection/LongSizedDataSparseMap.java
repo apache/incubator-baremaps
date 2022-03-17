@@ -25,7 +25,7 @@ import java.util.List;
  *
  * <p>Copyright (c) Planetiler.
  */
-public class LongAlignedDataSparseMap<T> implements LongDataMap<T> {
+public class LongSizedDataSparseMap<T> implements LongDataMap<T> {
 
   // The key space is broken into chunks of 256 and for each chunk, store:
   // 1) the index in the outputs array for the first key in the block
@@ -42,7 +42,7 @@ public class LongAlignedDataSparseMap<T> implements LongDataMap<T> {
    *
    * @param values the list of values
    */
-  public LongAlignedDataSparseMap(AlignedDataList<T> values) {
+  public LongSizedDataSparseMap(AlignedDataList<T> values) {
     this.offsets = new LongArrayList();
     this.offsetStartPad = new ByteArrayList();
     this.values = values;
