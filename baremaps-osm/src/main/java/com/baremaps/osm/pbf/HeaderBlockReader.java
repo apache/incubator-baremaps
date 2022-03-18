@@ -20,6 +20,7 @@ import com.baremaps.osm.domain.Blob;
 import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.HeaderBlock;
+import com.baremaps.osm.stream.StreamException;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -53,7 +54,7 @@ public class HeaderBlockReader {
    *
    * @return the header block
    */
-  public HeaderBlock readHeaderBlock() {
+  public HeaderBlock read() {
     LocalDateTime timestamp =
         LocalDateTime.ofEpochSecond(
             headerBlock.getOsmosisReplicationTimestamp(), 0, ZoneOffset.UTC);
@@ -73,5 +74,19 @@ public class HeaderBlockReader {
     Bound bound = new Bound(maxLat, maxLon, minLat, minLon);
 
     return new HeaderBlock(blob, header, bound);
+  }
+
+  /**
+   * Reads the provided header {@code Blob} and returns the corresponding {@code HeaderBlock}.
+   *
+   * @param blob the header blob
+   * @return the header block
+   */
+  public static HeaderBlock read(Blob blob) {
+    try {
+      return new HeaderBlockReader(blob).read();
+    } catch (DataFormatException | InvalidProtocolBufferException e) {
+      throw new StreamException(e);
+    }
   }
 }

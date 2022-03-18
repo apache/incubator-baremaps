@@ -46,11 +46,7 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-osm-lmdb</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-osm-rocksdb</artifactId>
+      <artifactId>baremaps-collection</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.annotation</groupId>

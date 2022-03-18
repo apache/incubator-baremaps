@@ -20,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.baremaps.osm.domain.Entity;
-import com.baremaps.stream.AccumulatingConsumer;
-import com.baremaps.stream.HoldingConsumer;
+import com.baremaps.osm.stream.AccumulatingConsumer;
+import com.baremaps.osm.stream.HoldingConsumer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Spliterator;
@@ -32,7 +32,7 @@ class XmlEntitySpliteratorTest {
   @Test
   void tryAdvance() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
-      Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
+      Spliterator<Entity> spliterator = new OsmXmlSpliterator(input);
       spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
       assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
     }
@@ -41,7 +41,7 @@ class XmlEntitySpliteratorTest {
   @Test
   void forEachRemaining() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
-      Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
+      Spliterator<Entity> spliterator = new OsmXmlSpliterator(input);
       AccumulatingConsumer<Object> accumulator = new AccumulatingConsumer<>();
       spliterator.forEachRemaining(accumulator);
       assertEquals(12, accumulator.values().size());

@@ -16,13 +16,14 @@ package com.baremaps.osm.geometry;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.baremaps.osm.OpenStreetMap;
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.MockCache;
+import com.baremaps.collection.LongDataMap;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.function.CreateGeometryConsumer;
+import com.baremaps.osm.store.MockLongDataMap;
+import com.baremaps.osm.xml.OsmXmlParser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -37,16 +38,16 @@ class RelationGeometryTest {
 
   Geometry handleRelation(String file) throws IOException {
     InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
-    List<Entity> entities = OpenStreetMap.streamXmlEntities(input).collect(Collectors.toList());
-    Cache<Long, Coordinate> coordinateCache =
-        new MockCache<>(
+    List<Entity> entities = new OsmXmlParser().entities(input).collect(Collectors.toList());
+    LongDataMap<Coordinate> coordinates =
+        new MockLongDataMap<>(
             entities.stream()
                 .filter(e -> e instanceof Node)
                 .map(e -> (Node) e)
                 .collect(
                     Collectors.toMap(n -> n.getId(), n -> new Coordinate(n.getLon(), n.getLat()))));
-    Cache<Long, List<Long>> referenceCache =
-        new MockCache<>(
+    LongDataMap<List<Long>> references =
+        new MockLongDataMap<>(
             entities.stream()
                 .filter(e -> e instanceof Way)
                 .map(e -> (Way) e)
@@ -57,7 +58,7 @@ class RelationGeometryTest {
             .map(e -> (Relation) e)
             .findFirst()
             .get();
-    new CreateGeometryConsumer(coordinateCache, referenceCache).match(relation);
+    new CreateGeometryConsumer(coordinates, references).match(relation);
     return relation.getGeometry();
   }
 

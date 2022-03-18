@@ -14,33 +14,35 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.blob.BlobStore;
-import com.baremaps.osm.cache.Cache;
-import com.baremaps.osm.cache.CoordinateMapper;
-import com.baremaps.osm.cache.LongListMapper;
-import com.baremaps.osm.cache.LongMapper;
-import com.baremaps.osm.cache.SimpleCache;
+import com.baremaps.collection.AlignedDataList;
+import com.baremaps.collection.DataStore;
+import com.baremaps.collection.LongAlignedDataDenseMap;
+import com.baremaps.collection.LongDataMap;
+import com.baremaps.collection.LongDataSortedMap;
+import com.baremaps.collection.memory.OnDiskMemory;
+import com.baremaps.collection.type.LonLatDataType;
+import com.baremaps.collection.type.LongDataType;
+import com.baremaps.collection.type.LongListDataType;
+import com.baremaps.collection.type.PairDataType;
+import com.baremaps.core.blob.BlobStore;
+import com.baremaps.core.database.ImportService;
+import com.baremaps.core.database.repository.HeaderRepository;
+import com.baremaps.core.database.repository.PostgresHeaderRepository;
+import com.baremaps.core.database.repository.PostgresNodeRepository;
+import com.baremaps.core.database.repository.PostgresRelationRepository;
+import com.baremaps.core.database.repository.PostgresWayRepository;
+import com.baremaps.core.database.repository.Repository;
+import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.lmdb.LmdbCache;
-import com.baremaps.osm.postgres.PostgresHeaderRepository;
-import com.baremaps.osm.postgres.PostgresNodeRepository;
-import com.baremaps.osm.postgres.PostgresRelationRepository;
-import com.baremaps.osm.postgres.PostgresWayRepository;
-import com.baremaps.osm.repository.HeaderRepository;
-import com.baremaps.osm.repository.ImportService;
-import com.baremaps.osm.repository.Repository;
-import com.baremaps.postgres.jdbc.PostgresUtils;
 import java.net.URI;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
-import org.lmdbjava.DbiFlags;
-import org.lmdbjava.Env;
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,11 +54,6 @@ import picocli.CommandLine.Option;
 public class Import implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Import.class);
-
-  private enum CacheType {
-    LMDB,
-    MEMORY
-  }
 
   @Mixin private Options options;
 
@@ -73,12 +70,6 @@ public class Import implements Callable<Integer> {
       description = "The JDBC url of the database.",
       required = true)
   private String database;
-
-  @Option(
-      names = {"--cache-type"},
-      paramLabel = "CACHE_TYPE",
-      description = "The type of cache used when importing data.")
-  private CacheType cacheType = CacheType.LMDB;
 
   @Option(
       names = {"--cache-directory"},
@@ -101,44 +92,26 @@ public class Import implements Callable<Integer> {
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
     Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
 
-    final Cache<Long, Coordinate> coordinateCache;
-    final Cache<Long, List<Long>> referenceCache;
-    switch (cacheType) {
-      case MEMORY:
-        coordinateCache = new SimpleCache<>();
-        referenceCache = new SimpleCache<>();
-        break;
-      case LMDB:
-        if (cacheDirectory != null) {
-          cacheDirectory = Files.createDirectories(cacheDirectory);
-        } else {
-          cacheDirectory = Files.createTempDirectory("baremaps_");
-        }
-        Env<ByteBuffer> env =
-            Env.create().setMapSize(1_000_000_000_000L).setMaxDbs(3).open(cacheDirectory.toFile());
-        coordinateCache =
-            new LmdbCache(
-                env,
-                env.openDbi("coordinate", DbiFlags.MDB_CREATE),
-                new LongMapper(),
-                new CoordinateMapper());
-        referenceCache =
-            new LmdbCache(
-                env,
-                env.openDbi("reference", DbiFlags.MDB_CREATE),
-                new LongMapper(),
-                new LongListMapper());
-        break;
-      default:
-        throw new UnsupportedOperationException("Unsupported cache type");
-    }
+    Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
+    Path nodes = Files.createDirectories(directory.resolve("nodes"));
+    Path referencesKeys = Files.createDirectories(directory.resolve("references_keys"));
+    Path referencesValues = Files.createDirectories(directory.resolve("references_values"));
+
+    LongDataMap<Coordinate> coordinates =
+        new LongAlignedDataDenseMap<>(new LonLatDataType(), new OnDiskMemory(nodes));
+    LongDataMap<List<Long>> references =
+        new LongDataSortedMap<>(
+            new AlignedDataList<>(
+                new PairDataType<>(new LongDataType(), new LongDataType()),
+                new OnDiskMemory(referencesKeys)),
+            new DataStore<>(new LongListDataType(), new OnDiskMemory(referencesValues)));
 
     logger.info("Importing data");
     new ImportService(
             file,
             blobStore,
-            coordinateCache,
-            referenceCache,
+            coordinates,
+            references,
             headerRepository,
             nodeRepository,
             wayRepository,

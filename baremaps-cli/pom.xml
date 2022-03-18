@@ -77,68 +77,23 @@
   <dependencies>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-blob</artifactId>
+      <artifactId>baremaps-core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-blob-s3</artifactId>
+      <artifactId>baremaps-core</artifactId>
     </dependency>
-
     <dependency>
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-osm</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-osm-lmdb</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-osm-postgres</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-stream</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-server-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-server-editor</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-server-ogcapi</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-server-studio</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-server-viewer</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-tile</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-tile-mbtiles</artifactId>
+      <artifactId>baremaps-http</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-testing</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-tile-postgres</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-postgres</artifactId>
     </dependency>
     <dependency>
       <artifactId>picocli</artifactId>

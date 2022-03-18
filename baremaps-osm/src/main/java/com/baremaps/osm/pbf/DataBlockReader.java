@@ -26,6 +26,7 @@ import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.stream.StreamException;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -74,7 +75,7 @@ public class DataBlockReader {
    *
    * @return the data block
    */
-  public DataBlock readDataBlock() {
+  public DataBlock read() {
     List<Node> denseNodes = new ArrayList<>();
     readDenseNodes(denseNodes::add);
     List<Node> nodes = new ArrayList<>();
@@ -265,5 +266,19 @@ public class DataBlockReader {
 
   private String getString(int id) {
     return stringTable[id];
+  }
+
+  /**
+   * Reads the provided data {@code Blob} and returns the corresponding {@code DataBlock}.
+   *
+   * @param blob the data blob
+   * @return the data block
+   */
+  public static DataBlock read(Blob blob) {
+    try {
+      return new DataBlockReader(blob).read();
+    } catch (DataFormatException | InvalidProtocolBufferException e) {
+      throw new StreamException(e);
+    }
   }
 }
