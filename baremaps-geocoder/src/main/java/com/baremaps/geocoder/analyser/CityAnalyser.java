@@ -1,21 +1,22 @@
 /*
- * Copyright (C) 2021 Heig-vd
+ * Copyright (C) 2020 The Baremaps Authors
  *
- * Licensed under the “Commons Clause” License Condition v1.0. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
- * https://github.com/heigvd-software-engineering/netscan/blob/main/LICENSE
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+
 package com.baremaps.geocoder.analyser;
 
 import static org.apache.lucene.analysis.miscellaneous.WordDelimiterGraphFilter.GENERATE_NUMBER_PARTS;
 import static org.apache.lucene.analysis.miscellaneous.WordDelimiterGraphFilter.GENERATE_WORD_PARTS;
 
-import ch.heigvd.netscan.geocoder.analyser.filter.NumberFilter;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
@@ -35,7 +36,6 @@ public class CityAnalyser extends Analyzer {
         new WordDelimiterGraphFilter(result, GENERATE_NUMBER_PARTS | GENERATE_WORD_PARTS, null);
     result = new LengthFilter(result, 3, 40);
     result = Analyser.applyLanguageStopWordsFilter(result);
-    result = new NumberFilter(result);
     return new TokenStreamComponents(src, result);
   }
 }

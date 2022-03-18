@@ -1,9 +1,22 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.geocoder;
 
 import com.baremaps.baremaps.geonames.GeonamesRecord;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.stream.Stream;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -13,12 +26,10 @@ import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.queryparser.flexible.core.builders.QueryBuilder;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
@@ -41,20 +52,31 @@ public class GeocoderLucene {
     try (Analyzer analyzer = new StandardAnalyzer()) {
       IndexWriterConfig config = new IndexWriterConfig(analyzer);
       try (IndexWriter indexWriter = new IndexWriter(directory, config)) {
-        geonamesRecords.forEach(geonamesRecord -> index(indexWriter, geonamesRecord.name, geonamesRecord.countryCode));
+        geonamesRecords.forEach(
+            geonamesRecord ->
+                index(
+                    indexWriter,
+                    geonamesRecord.name,
+                    geonamesRecord.countryCode,
+                    geonamesRecord.longitude,
+                    geonamesRecord.latitude));
       }
     }
     directory.close();
   }
 
-  private void index(IndexWriter indexWriter, String name, String countryCode) {
+  private void index(
+      IndexWriter indexWriter, String name, String countryCode, Double longitude, Double latitude) {
     try {
       Document doc = new Document();
       doc.add(new Field("name", name, TextField.TYPE_STORED));
       doc.add(new Field("countryCode", countryCode, StringField.TYPE_STORED));
+      doc.add(new StoredField("longitude", longitude));
+      doc.add(new StoredField("latitude", latitude));
       indexWriter.addDocument(doc);
     } catch (Exception e) {
-      throw new RuntimeException("An error occurred while creating Lucene document for Geonames data");
+      throw new RuntimeException(
+          "An error occurred while creating Lucene document for Geonames data");
     }
   }
 
@@ -64,7 +86,7 @@ public class GeocoderLucene {
     IndexSearcher indexSearcher = new IndexSearcher(indexReader);
     BooleanQuery.Builder booleanQueryBuilder = new Builder();
 
-    try(StandardAnalyzer analyzer = new StandardAnalyzer()) {
+    try (StandardAnalyzer analyzer = new StandardAnalyzer()) {
       Query q1 = new QueryParser("name", analyzer).parse(searchValue);
       Query q2 = new QueryParser("countryCode", analyzer).parse(searchValue);
 
@@ -72,18 +94,25 @@ public class GeocoderLucene {
       booleanQueryBuilder.add(q2, Occur.SHOULD);
     }
 
-
-
     ScoreDoc[] hits = indexSearcher.search(booleanQueryBuilder.build(), 10).scoreDocs;
+
+    for (int i = 0; i < hits.length; ++i) {
+      int docId = hits[i].doc;
+      Document d = indexSearcher.doc(docId);
+      System.out.println(
+          (i + 1)
+              + ". "
+              + d.get("name")
+              + "\t"
+              + d.get("countryCode")
+              + "\t("
+              + d.get("longitude")
+              + ":"
+              + d.get("latitude")
+              + ")");
+    }
 
     indexReader.close();
     directory.close();
-
-    for(int i=0;i<hits.length;++i) {
-      int docId = hits[i].doc;
-      Document d = indexSearcher.doc(docId);
-      System.out.println((i + 1) + ". " + d.get("isbn") + "\t" + d.get("title"));
-    }
   }
-
 }
