@@ -4,33 +4,96 @@ package com.baremaps.collection.sort;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.baremaps.collection.AlignedDataList;
 import com.baremaps.collection.DataList;
+import com.baremaps.collection.DataStore;
+import com.baremaps.collection.IndexedDataList;
+import com.baremaps.collection.LongList;
 import com.baremaps.collection.memory.OnHeapMemory;
-import com.baremaps.collection.type.LongDataType;
+import com.baremaps.collection.type.StringDataType;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ExternalMergeSortTest {
 
+  List<String> strings = List.of("a", "b", "k", "c", "d", "a", "i", "j", "e", "e", "h", "f", "g");
+  List<String> stringsAsc = strings.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
+  List<String> stringsDsc = strings.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+  List<String> stringsDistinct = stringsAsc.stream().distinct().collect(Collectors.toList());
+  DataList<String> input;
+  DataList<String> output;
+  Supplier<DataList<String>> supplier;
+
+  @BeforeEach
+  void before() {
+    input = new IndexedDataList<>(
+        new LongList(new OnHeapMemory()),
+        new DataStore<>(new StringDataType(), new OnHeapMemory()));
+    output = new IndexedDataList<>(
+        new LongList(new OnHeapMemory()),
+        new DataStore<>(new StringDataType(), new OnHeapMemory()));
+    supplier = () -> new IndexedDataList<>(
+        new LongList(new OnHeapMemory()),
+        new DataStore<>(new StringDataType(), new OnHeapMemory()));
+    for (var string : strings) {
+      input.add(string);
+    }
+  }
+
+  public List<String> stringList(DataList<String> list) {
+    var l = new ArrayList<String>();
+    for (long i = 0; i < list.size(); i++) {
+      l.add(list.get(i));
+    }
+    return l;
+  }
+
+  public String randomString(Random random) {
+    int leftLimit = 97; // letter 'a'
+    int rightLimit = 122; // letter 'z'
+    int targetStringLength = 10;
+    StringBuilder buffer = new StringBuilder(targetStringLength);
+    for (int i = 0; i < 8 + random.nextInt(248); i++) {
+      int randomLimitedInt = leftLimit + (int)
+          (random.nextFloat() * (rightLimit - leftLimit + 1));
+      buffer.append((char) randomLimitedInt);
+    }
+    return buffer.toString();
+  }
+
   @Test
-  void sort() throws IOException {
-    AlignedDataList<Long> input = new AlignedDataList<>(new LongDataType(), new OnHeapMemory());
-    Random random = new Random(0);
-    for (long i = 0; i < 1000000; i++) {
-      input.add(random.nextLong());
+  void sortStringsAsc() throws IOException {
+   ExternalMergeSort.sort(input, output, Comparator.naturalOrder(), supplier, 4, false, true);
+    assertEquals(stringsAsc, stringList(output));
+  }
+
+  @Test
+  void sortStringsDsc() throws IOException {
+    ExternalMergeSort.sort(input, output, Comparator.reverseOrder(), supplier, 4, false, true);
+    assertEquals(stringsDsc, stringList(output));
+  }
+
+  @Test
+  void sortStringsDistinct() throws IOException {
+    ExternalMergeSort.sort(input, output, Comparator.naturalOrder(), supplier, 4,true, true);
+    assertEquals(stringsDistinct, stringList(output));
+  }
+
+  @Test
+  void sortRandomString() throws IOException {
+    var random = new Random(0);
+    for (int i = 0; i < 1_000_000; i++) {
+      input.add(randomString(random));
     }
-    Supplier<DataList<Long>> tempListSupplier = () -> new AlignedDataList<>(new LongDataType(), new OnHeapMemory());
-    AlignedDataList<Long> output = new AlignedDataList<>(new LongDataType(), new OnHeapMemory());
-    new ExternalMergeSort(tempListSupplier).sort(input, output, Comparator.naturalOrder());
-    long v = output.get(0);
-    for (long i = 0; i < output.size(); i++) {
-      assertTrue(output.get(i) >= v);
-      v = output.get(i);
+    ExternalMergeSort.sort(input, output, Comparator.naturalOrder(), supplier, 100_000,false, true);
+    for (int i = 1; i < 1_000_000; i++) {
+      assertTrue(output.get(i - 1).compareTo(output.get(i)) <= 0);
     }
-    assertEquals(1000000, output.size());
   }
 }
