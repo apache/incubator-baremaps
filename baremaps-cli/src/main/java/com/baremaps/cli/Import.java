@@ -16,14 +16,15 @@ package com.baremaps.cli;
 
 import com.baremaps.collection.AlignedDataList;
 import com.baremaps.collection.DataStore;
-import com.baremaps.collection.LongAlignedDataDenseMap;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.collection.LongDataSortedMap;
-import com.baremaps.collection.memory.OnDiskMemory;
+import com.baremaps.collection.LongSizedDataDenseMap;
+import com.baremaps.collection.memory.OnDiskDirectoryMemory;
 import com.baremaps.collection.type.LonLatDataType;
 import com.baremaps.collection.type.LongDataType;
 import com.baremaps.collection.type.LongListDataType;
 import com.baremaps.collection.type.PairDataType;
+import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.database.ImportService;
 import com.baremaps.core.database.repository.HeaderRepository;
@@ -98,13 +99,13 @@ public class Import implements Callable<Integer> {
     Path referencesValues = Files.createDirectories(directory.resolve("references_values"));
 
     LongDataMap<Coordinate> coordinates =
-        new LongAlignedDataDenseMap<>(new LonLatDataType(), new OnDiskMemory(nodes));
+        new LongSizedDataDenseMap<>(new LonLatDataType(), new OnDiskDirectoryMemory(nodes));
     LongDataMap<List<Long>> references =
         new LongDataSortedMap<>(
             new AlignedDataList<>(
                 new PairDataType<>(new LongDataType(), new LongDataType()),
-                new OnDiskMemory(referencesKeys)),
-            new DataStore<>(new LongListDataType(), new OnDiskMemory(referencesValues)));
+                new OnDiskDirectoryMemory(referencesKeys)),
+            new DataStore<>(new LongListDataType(), new OnDiskDirectoryMemory(referencesValues)));
 
     logger.info("Importing data");
     new ImportService(
@@ -118,6 +119,8 @@ public class Import implements Callable<Integer> {
             relationRepository,
             srid)
         .call();
+
+    FileUtils.deleteRecursively(directory);
 
     logger.info("Done");
 

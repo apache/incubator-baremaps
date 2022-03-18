@@ -12,20 +12,20 @@
  * the License.
  */
 
-package com.baremaps.collection;
+package com.baremaps.collection.utils;
 
-import com.baremaps.collection.memory.Memory;
-import com.baremaps.collection.type.IntegerDataType;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.stream.Stream;
 
-/** A list of integers backed by a {@link Memory}. */
-public class IntegerDataList extends AlignedDataList<Integer> {
+public class FileUtils {
 
-  /**
-   * Constructs a list.
-   *
-   * @param memory the memory
-   */
-  public IntegerDataList(Memory memory) {
-    super(new IntegerDataType(), memory);
+  public static void deleteRecursively(Path path) throws IOException {
+    try (Stream<Path> files = Files.walk(path)) {
+      files.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+    }
   }
 }

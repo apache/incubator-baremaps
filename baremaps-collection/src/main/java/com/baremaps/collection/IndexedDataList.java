@@ -12,43 +12,50 @@
  * the License.
  */
 
-package com.baremaps.collection.memory;
+package com.baremaps.collection;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
-/** A memory that stores segments on-heap using regular byte buffers. */
-public class OnHeapMemory extends Memory<ByteBuffer> {
+public class IndexedDataList<T> implements DataList<T> {
 
-  /** Constructs an {@link OnHeapMemory} with a default segment size of 1mb. */
-  public OnHeapMemory() {
-    this(1 << 20);
+  private final LongList index;
+
+  private final DataStore<T> store;
+
+  public IndexedDataList(LongList index, DataStore<T> store) {
+    this.index = index;
+    this.store = store;
   }
 
-  /**
-   * Constructs an {@link OnHeapMemory} with a custom segment size.
-   *
-   * @param segmentSize the size of the segments in bytes
-   */
-  public OnHeapMemory(int segmentSize) {
-    super(segmentSize);
-  }
-
-  /** {@inheritDoc} */
   @Override
-  protected ByteBuffer allocate(int index, int size) {
-    return ByteBuffer.allocate(size);
+  public long add(T value) {
+    return index.add(store.add(value));
   }
 
-  /** {@inheritDoc} */
+  @Override
+  public void add(long idx, T value) {
+    index.add(idx, store.add(value));
+  }
+
+  @Override
+  public T get(long idx) {
+    return store.get(index.get(idx));
+  }
+
+  @Override
+  public long size() {
+    return index.size();
+  }
+
   @Override
   public void close() throws IOException {
-    // Nothing to close
+    index.close();
+    store.close();
   }
 
-  /** {@inheritDoc} */
   @Override
   public void clean() throws IOException {
-    // Nothing to clean
+    index.clean();
+    store.clean();
   }
 }

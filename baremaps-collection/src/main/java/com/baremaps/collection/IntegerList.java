@@ -18,14 +18,14 @@ import com.baremaps.collection.memory.Memory;
 import com.baremaps.collection.type.IntegerDataType;
 
 /** A list of integers backed by a {@link Memory}. */
-public class LongDataList extends AlignedDataList<Integer> {
+public class IntegerList extends AlignedDataList<Integer> {
 
   /**
    * Constructs a list.
    *
    * @param memory the memory
    */
-  public LongDataList(Memory memory) {
+  public IntegerList(Memory memory) {
     super(new IntegerDataType(), memory);
   }
 }

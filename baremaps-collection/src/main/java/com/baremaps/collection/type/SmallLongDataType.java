@@ -16,24 +16,49 @@ package com.baremaps.collection.type;
 
 import java.nio.ByteBuffer;
 
-/** A {@link DataType} for reading and writing longs in {@link ByteBuffer}s. */
-public class LongDataType implements SizedDataType<Long> {
+/** A {@link DataType} for reading and writing small longs in {@link ByteBuffer}s. */
+public class SmallLongDataType implements SizedDataType<Long> {
+
+  private final int n;
+
+  /**
+   * Constructs a {@link SmallIntegerDataType}.
+   *
+   * @param n the number of bytes used to store the integer
+   */
+  public SmallLongDataType(int n) {
+    if (n < 1 || n > 8) {
+      throw new IllegalArgumentException(
+          "The number of bytes used to store small longs must be comprised between 1 and 8");
+    }
+    this.n = n;
+  }
 
   /** {@inheritDoc} */
   @Override
   public int size(Long value) {
-    return 8;
+    return n;
   }
 
   /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, Long value) {
-    buffer.putLong(position, value);
+    for (int i = 0; i < n; i++) {
+      buffer.put(position + i, (byte) (value >> (i << 3)));
+    }
   }
 
   /** {@inheritDoc} */
   @Override
   public Long read(ByteBuffer buffer, int position) {
-    return buffer.getLong(position);
+    byte s = (byte) (buffer.get(position + n - 1) >= 0 ? 0 : -1);
+    long l = 0;
+    for (int i = 7; i > n - 1; i--) {
+      l |= ((long) s & 0xff) << (i << 3);
+    }
+    for (int i = n - 1; i >= 0; i--) {
+      l |= ((long) buffer.get(position + i) & 0xff) << (i << 3);
+    }
+    return l;
   }
 }

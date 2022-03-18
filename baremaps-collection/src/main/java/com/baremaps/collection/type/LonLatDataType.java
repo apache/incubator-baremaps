@@ -21,7 +21,7 @@ import org.locationtech.jts.geom.Coordinate;
  * A {@link DataType} for reading and writing longitude/latitude coordinates in {@link ByteBuffer}s.
  * An integer is used to compress the coordinates to the detriment of precision (centimeters).
  */
-public class LonLatDataType implements AlignedDataType<Coordinate> {
+public class LonLatDataType implements SizedDataType<Coordinate> {
 
   private static final long LOWER_32_BIT_MASK = (1L << 32) - 1L;
 

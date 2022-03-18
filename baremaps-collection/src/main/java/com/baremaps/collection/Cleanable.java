@@ -12,28 +12,16 @@
  * the License.
  */
 
-package com.baremaps.collection.type;
+package com.baremaps.collection;
 
-import java.nio.ByteBuffer;
+import java.io.IOException;
 
-/** A {@link DataType} for reading and writing longs in {@link ByteBuffer}s. */
-public class LongDataType implements SizedDataType<Long> {
+/**
+ * A {@link Cleanable} is a data object that can be cleaned. The clean method is invoked to delete
+ * resources that the object is using.
+ */
+public interface Cleanable {
 
-  /** {@inheritDoc} */
-  @Override
-  public int size(Long value) {
-    return 8;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void write(ByteBuffer buffer, int position, Long value) {
-    buffer.putLong(position, value);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public Long read(ByteBuffer buffer, int position) {
-    return buffer.getLong(position);
-  }
+  /** Cleans the underlying resources (files, memory, etc.) used by this object. */
+  void clean() throws IOException;
 }

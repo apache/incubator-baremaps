@@ -49,12 +49,13 @@ public class DownloadManager {
       return Paths.get(uri.getPath());
     } else {
       try {
-        File tempFile = File.createTempFile("baremaps_", ".tmp", Paths.get(".").toFile());
-        tempFile.deleteOnExit();
+        File file = File.createTempFile("download_", ".blob", Paths.get(".").toFile());
+        file.deleteOnExit();
+        Path path = file.toPath().toAbsolutePath();
         try (InputStream input = blobStore.get(uri).getInputStream()) {
-          Files.copy(input, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+          Files.copy(input, path, StandardCopyOption.REPLACE_EXISTING);
         }
-        return tempFile.toPath();
+        return path;
       } catch (IOException e) {
         throw new BlobStoreException(e);
       }

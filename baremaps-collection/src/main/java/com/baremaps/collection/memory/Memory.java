@@ -14,12 +14,14 @@
 
 package com.baremaps.collection.memory;
 
+import com.baremaps.collection.Cleanable;
+import java.io.Closeable;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 /** A base class to manage segments of on-heap, off-heap, or on-disk memory. */
-public abstract class Memory {
+public abstract class Memory<T extends ByteBuffer> implements Closeable, Cleanable {
 
   private final int segmentSize;
 
@@ -27,7 +29,7 @@ public abstract class Memory {
 
   private final long segmentMask;
 
-  private final List<ByteBuffer> segments = new ArrayList<>();
+  protected final List<T> segments = new ArrayList<>();
 
   protected Memory(int segmentSize) {
     if ((segmentSize & -segmentSize) != segmentSize) {
@@ -87,7 +89,7 @@ public abstract class Memory {
     while (segments.size() <= index) {
       segments.add(null);
     }
-    ByteBuffer segment = segments.get(index);
+    T segment = segments.get(index);
     if (segment == null) {
       segment = allocate(index, segmentSize);
       segments.set(index, segment);
@@ -102,5 +104,5 @@ public abstract class Memory {
    * @param size the size of the segment
    * @return the segment
    */
-  protected abstract ByteBuffer allocate(int index, int size);
+  protected abstract T allocate(int index, int size);
 }

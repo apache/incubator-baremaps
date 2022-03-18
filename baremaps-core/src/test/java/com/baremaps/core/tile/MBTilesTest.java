@@ -17,20 +17,37 @@ package com.baremaps.core.tile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
+import com.baremaps.collection.utils.FileUtils;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sqlite.SQLiteDataSource;
 
 class MBTilesTest extends TileStoreTest {
 
+  Path file;
+
+  @BeforeEach
+  void before() throws IOException {
+    file = Files.createTempFile(Paths.get("."), "baremaps_", ".tmp");
+  }
+
+  @AfterEach
+  void after() throws IOException {
+    FileUtils.deleteRecursively(file);
+  }
+
   @Override
   public MBTiles createTileStore() throws Exception {
-    File file = File.createTempFile("baremaps_", ".db");
-    file.deleteOnExit();
     SQLiteDataSource dataSource = new SQLiteDataSource();
-    dataSource.setUrl("jdbc:sqlite:" + file.getPath());
+    String url = "jdbc:sqlite:" + file.toAbsolutePath();
+    dataSource.setUrl(url);
     MBTiles tilesStore = new MBTiles(dataSource);
     tilesStore.initializeDatabase();
     return tilesStore;

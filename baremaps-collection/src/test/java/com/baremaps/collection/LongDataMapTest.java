@@ -42,7 +42,7 @@ class LongDataMapTest {
         Arguments.of(
             new LongDataOpenHashMap<>(new DataStore<>(new LongDataType(), new OffHeapMemory()))),
         Arguments.of(
-            new LongAlignedDataSortedMap<>(
+            new LongSizedDataSortedMap<>(
                 new AlignedDataList<>(new LongDataType(), new OffHeapMemory()),
                 new AlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
         Arguments.of(
@@ -52,8 +52,8 @@ class LongDataMapTest {
                     new OffHeapMemory()),
                 new DataStore<>(new LongDataType(), new OffHeapMemory()))),
         Arguments.of(
-            new LongAlignedDataSparseMap<>(
+            new LongSizedDataSparseMap<>(
                 new AlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
-        Arguments.of(new LongAlignedDataDenseMap<>(new LongDataType(), new OffHeapMemory())));
+        Arguments.of(new LongSizedDataDenseMap<>(new LongDataType(), new OffHeapMemory())));
   }
 }

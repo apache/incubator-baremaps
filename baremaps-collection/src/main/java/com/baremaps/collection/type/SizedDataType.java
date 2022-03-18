@@ -17,12 +17,11 @@ package com.baremaps.collection.type;
 import java.nio.ByteBuffer;
 
 /**
- * A {@link DataType} for reading and writing values in {@link ByteBuffer}s whose size is fixed and
- * aligned to memory.
+ * A {@link DataType} for reading and writing values in {@link ByteBuffer}s whose size is fixed.
  *
  * @param <T>
  */
-public interface AlignedDataType<T> extends DataType<T> {
+public interface SizedDataType<T> extends DataType<T> {
 
   /**
    * Returns the size of the data type.

@@ -16,7 +16,7 @@ package com.baremaps.collection.memory;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.provider.Arguments;
 
@@ -25,10 +25,14 @@ public class MemoryProvider {
   public static final int SEGMENT_BYTES = 1 << 10;
 
   public static Stream<Arguments> memories() throws IOException {
-    Path directory = Files.createTempDirectory("tmp_");
     return Stream.of(
         Arguments.of(new OnHeapMemory(SEGMENT_BYTES)),
         Arguments.of(new OffHeapMemory(SEGMENT_BYTES)),
-        Arguments.of(new OnDiskMemory(directory, SEGMENT_BYTES)));
+        Arguments.of(
+            new OnDiskFileMemory(
+                Files.createTempFile(Paths.get("."), "baremaps_", ".tmp"), SEGMENT_BYTES)),
+        Arguments.of(
+            new OnDiskDirectoryMemory(
+                Files.createTempDirectory(Paths.get("."), "baremaps_"), SEGMENT_BYTES)));
   }
 }

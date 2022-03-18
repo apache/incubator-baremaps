@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
+import java.io.IOException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -28,17 +29,21 @@ class MemoryTest {
 
   @ParameterizedTest
   @MethodSource("com.baremaps.collection.memory.MemoryProvider#memories")
-  void capacity(Memory memory) {
+  void capacity(Memory memory) throws IOException {
     assertEquals(SEGMENT_BYTES, memory.segmentSize());
+    memory.close();
+    memory.clean();
   }
 
   @ParameterizedTest
   @MethodSource("com.baremaps.collection.memory.MemoryProvider#memories")
-  void segment(Memory memory) {
+  void segment(Memory memory) throws IOException {
     for (int i = 0; i < SEGMENT_NUMBER; i++) {
       assertEquals(SEGMENT_BYTES, memory.segment(i).capacity());
       assertSame(memory.segment(i), memory.segment(i));
       assertNotSame(memory.segment(i), memory.segment(i + 1));
     }
+    memory.close();
+    memory.clean();
   }
 }

@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A {@link DataType} for reading and writing {@link Coordinate}s in {@link ByteBuffer}s. */
-public class CoordinateDataType implements AlignedDataType<Coordinate> {
+public class CoordinateDataType implements SizedDataType<Coordinate> {
 
   /** {@inheritDoc} */
   @Override

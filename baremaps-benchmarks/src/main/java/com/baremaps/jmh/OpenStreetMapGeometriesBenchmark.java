@@ -17,10 +17,11 @@ package com.baremaps.jmh;
 import com.baremaps.collection.DataStore;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.collection.LongDataOpenHashMap;
-import com.baremaps.collection.memory.OnDiskMemory;
+import com.baremaps.collection.memory.OnDiskDirectoryMemory;
 import com.baremaps.collection.memory.OnHeapMemory;
 import com.baremaps.collection.type.CoordinateDataType;
 import com.baremaps.collection.type.LongListDataType;
+import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
@@ -75,10 +76,10 @@ public class OpenStreetMapGeometriesBenchmark {
   @Warmup(iterations = 0)
   @Measurement(iterations = 1)
   public void store() throws IOException {
-    Path directory = Files.createTempDirectory(Paths.get("."), "benchmark_");
+    Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
     LongDataMap<Coordinate> coordinates =
         new LongDataOpenHashMap<>(
-            new DataStore<>(new CoordinateDataType(), new OnDiskMemory(directory)));
+            new DataStore<>(new CoordinateDataType(), new OnDiskDirectoryMemory(directory)));
     LongDataMap<List<Long>> references =
         new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
     AtomicLong nodes = new AtomicLong(0);
@@ -108,6 +109,7 @@ public class OpenStreetMapGeometriesBenchmark {
                 }
               });
     }
+    FileUtils.deleteRecursively(directory);
   }
 
   public static void main(String[] args) throws RunnerException {

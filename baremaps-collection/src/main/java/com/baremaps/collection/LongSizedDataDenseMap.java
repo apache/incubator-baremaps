@@ -15,19 +15,19 @@
 package com.baremaps.collection;
 
 import com.baremaps.collection.memory.Memory;
-import com.baremaps.collection.type.AlignedDataType;
+import com.baremaps.collection.type.SizedDataType;
 import java.nio.ByteBuffer;
 
 /**
- * A dense map of data backed by a {@link AlignedDataType} and a {@link Memory}.
+ * A dense map of data backed by a {@link SizedDataType} and a {@link Memory}.
  *
  * <p>This code has been adapted from Planetiler (Apache license).
  *
  * <p>Copyright (c) Planetiler.
  */
-public class LongAlignedDataDenseMap<T> implements LongDataMap<T> {
+public class LongSizedDataDenseMap<T> implements LongDataMap<T> {
 
-  private final AlignedDataType<T> dataType;
+  private final SizedDataType<T> dataType;
 
   private final Memory memory;
 
@@ -43,7 +43,7 @@ public class LongAlignedDataDenseMap<T> implements LongDataMap<T> {
    * @param dataType the data type
    * @param memory the memory
    */
-  public LongAlignedDataDenseMap(AlignedDataType<T> dataType, Memory memory) {
+  public LongSizedDataDenseMap(SizedDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new StoreException("The values are too big");
     }

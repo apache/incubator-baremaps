@@ -29,17 +29,11 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @param <T>
  */
-public class AlignedDataList<T> implements DataList<T> {
+public class SizedDataList<T> implements DataList<T> {
 
   private final SizedDataType<T> dataType;
 
   private final Memory memory;
-
-  private final int valueShift;
-
-  private final long segmentShift;
-
-  private final long segmentMask;
 
   private AtomicLong size;
 
@@ -49,25 +43,19 @@ public class AlignedDataList<T> implements DataList<T> {
    * @param dataType the data type
    * @param memory the memory
    */
-  public AlignedDataList(SizedDataType<T> dataType, Memory memory) {
+  public SizedDataList(SizedDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new StoreException("The segment size is too small for the data type");
     }
-    if (memory.segmentSize() % dataType.size() != 0) {
-      throw new StoreException("The segment size and data type size must be aligned");
-    }
     this.dataType = dataType;
     this.memory = memory;
-    this.valueShift = (int) (Math.log(dataType.size()) / Math.log(2));
-    this.segmentShift = memory.segmentShift();
-    this.segmentMask = memory.segmentMask();
     this.size = new AtomicLong(0);
   }
 
   private void write(long index, T value) {
-    long position = index << valueShift;
-    int segmentIndex = (int) (position >>> segmentShift);
-    int segmentOffset = (int) (position & segmentMask);
+    long position = index * dataType.size();
+    int segmentIndex = (int) (position / dataType.size());
+    int segmentOffset = (int) (position % dataType.size());
     ByteBuffer segment = memory.segment(segmentIndex);
     dataType.write(segment, segmentOffset, value);
   }
@@ -89,9 +77,9 @@ public class AlignedDataList<T> implements DataList<T> {
 
   /** {@inheritDoc} */
   public T get(long index) {
-    long position = index << valueShift;
-    int segmentIndex = (int) (position >> segmentShift);
-    int segmentOffset = (int) (position & segmentMask);
+    long position = index * dataType.size();
+    int segmentIndex = (int) (position / dataType.size());
+    int segmentOffset = (int) (position % dataType.size());
     ByteBuffer segment = memory.segment(segmentIndex);
     return dataType.read(segment, segmentOffset);
   }

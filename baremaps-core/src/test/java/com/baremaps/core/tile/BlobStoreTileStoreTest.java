@@ -14,18 +14,33 @@
 
 package com.baremaps.core.tile;
 
+import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.core.blob.FileBlobStore;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 class BlobStoreTileStoreTest extends TileStoreTest {
 
+  Path directory;
+
+  @BeforeEach
+  void before() throws IOException {
+    directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
+  }
+
+  @AfterEach
+  void after() throws IOException {
+    FileUtils.deleteRecursively(directory);
+  }
+
   @Override
   TileStore createTileStore() throws IOException, URISyntaxException {
-    Path directory = Files.createTempDirectory("baremaps_");
     return new TileBlobStore(new FileBlobStore(), new URI(directory.toString()));
   }
 }

@@ -15,29 +15,44 @@
 package com.baremaps.collection.memory;
 
 import com.baremaps.collection.StoreException;
+import com.baremaps.collection.utils.FileUtils;
+import com.baremaps.collection.utils.MappedByteBufferUtils;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 /** A memory that stores segments on-disk using mapped byte buffers. */
-public class OnDiskMemory extends Memory {
+public class OnDiskDirectoryMemory extends Memory<MappedByteBuffer> {
 
   private final Path directory;
 
-  public OnDiskMemory(Path directory) {
+  /**
+   * Constructs an {@link OnDiskDirectoryMemory} with a custom directory and a default segment size
+   * of 1gb.
+   *
+   * @param directory the directory that stores the data
+   */
+  public OnDiskDirectoryMemory(Path directory) {
     this(directory, 1 << 30);
   }
 
-  public OnDiskMemory(Path directory, int segmentBytes) {
+  /**
+   * Constructs an {@link OnDiskDirectoryMemory} with a custom directory and a custom segment size.
+   *
+   * @param directory the directory that stores the data
+   * @param segmentBytes the size of the segments in bytes
+   */
+  public OnDiskDirectoryMemory(Path directory, int segmentBytes) {
     super(segmentBytes);
     this.directory = directory;
   }
 
+  /** {@inheritDoc} */
   @Override
-  protected ByteBuffer allocate(int index, int size) {
+  protected MappedByteBuffer allocate(int index, int size) {
     try {
       Path file = directory.resolve(String.format("%s.part", index));
       try (FileChannel channel =
@@ -48,5 +63,17 @@ public class OnDiskMemory extends Memory {
     } catch (IOException e) {
       throw new StoreException(e);
     }
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void close() throws IOException {
+    MappedByteBufferUtils.unmap(segments);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public void clean() throws IOException {
+    FileUtils.deleteRecursively(directory);
   }
 }
