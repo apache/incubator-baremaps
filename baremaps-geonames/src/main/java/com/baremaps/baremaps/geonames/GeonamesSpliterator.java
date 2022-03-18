@@ -27,6 +27,7 @@ public class GeonamesSpliterator implements Spliterator<GeonamesRecord> {
 
   /**
    * Construct a geonames spliterator
+   *
    * @param inputStream
    */
   public GeonamesSpliterator(InputStream inputStream) {
