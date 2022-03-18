@@ -16,9 +16,9 @@ package com.baremaps.cli;
 
 import com.baremaps.collection.AlignedDataList;
 import com.baremaps.collection.DataStore;
-import com.baremaps.collection.LongSizedDataDenseMap;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.collection.LongDataSortedMap;
+import com.baremaps.collection.LongSizedDataDenseMap;
 import com.baremaps.collection.memory.OnDiskDirectoryMemory;
 import com.baremaps.collection.type.LonLatDataType;
 import com.baremaps.collection.type.LongDataType;

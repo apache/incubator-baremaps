@@ -23,9 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-/**
- * A memory that stores segments on-disk using mapped byte buffers.
- */
+/** A memory that stores segments on-disk using mapped byte buffers. */
 public class OnDiskFileMemory extends Memory<MappedByteBuffer> {
 
   private final Path file;
@@ -62,5 +60,4 @@ public class OnDiskFileMemory extends Memory<MappedByteBuffer> {
     close();
     Files.delete(file);
   }
-
 }

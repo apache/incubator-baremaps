@@ -25,9 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
 
-/**
- * A memory that stores segments on-disk using mapped byte buffers.
- */
+/** A memory that stores segments on-disk using mapped byte buffers. */
 public class OnDiskDirectoryMemory extends Memory<MappedByteBuffer> {
 
   private final Path directory;
@@ -63,10 +61,6 @@ public class OnDiskDirectoryMemory extends Memory<MappedByteBuffer> {
   @Override
   public void clean() throws IOException {
     close();
-    Files.walk(directory)
-        .sorted(Comparator.reverseOrder())
-        .map(Path::toFile)
-        .forEach(File::delete);
+    Files.walk(directory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
   }
-
 }

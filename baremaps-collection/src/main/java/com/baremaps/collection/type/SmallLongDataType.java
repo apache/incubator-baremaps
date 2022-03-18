@@ -16,15 +16,14 @@ package com.baremaps.collection.type;
 
 import java.nio.ByteBuffer;
 
-/**
- * A {@link DataType} for reading and writing small longs in {@link ByteBuffer}s.
- */
+/** A {@link DataType} for reading and writing small longs in {@link ByteBuffer}s. */
 public class SmallLongDataType implements SizedDataType<Long> {
 
   private final int n;
 
   /**
    * Constructs a {@link SmallIntegerDataType}.
+   *
    * @param n the number of bytes used to store the integer
    */
   public SmallLongDataType(int n) {
@@ -35,17 +34,13 @@ public class SmallLongDataType implements SizedDataType<Long> {
     this.n = n;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public int size(Long value) {
     return n;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, Long value) {
     for (int i = 0; i < n; i++) {
@@ -53,9 +48,7 @@ public class SmallLongDataType implements SizedDataType<Long> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Long read(ByteBuffer buffer, int position) {
     byte s = (byte) (buffer.get(position + n - 1) >= 0 ? 0 : -1);
@@ -68,5 +61,4 @@ public class SmallLongDataType implements SizedDataType<Long> {
     }
     return l;
   }
-
 }

@@ -53,5 +53,4 @@ public interface DataList<T> extends Closeable, Cleanable {
    * @return the size of the list.
    */
   long size();
-
 }

@@ -34,12 +34,8 @@ public class OffHeapMemory extends Memory<ByteBuffer> {
   }
 
   @Override
-  public void close() throws IOException {
-
-  }
+  public void close() throws IOException {}
 
   @Override
-  public void clean() throws IOException {
-
-  }
+  public void clean() throws IOException {}
 }

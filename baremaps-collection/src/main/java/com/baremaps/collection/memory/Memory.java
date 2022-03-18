@@ -16,10 +16,8 @@ package com.baremaps.collection.memory;
 
 import com.baremaps.collection.Cleanable;
 import java.io.Closeable;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /** A base class to manage segments of on-heap, off-heap, or on-disk memory. */
@@ -107,5 +105,4 @@ public abstract class Memory<T extends ByteBuffer> implements Closeable, Cleanab
    * @return the segment
    */
   protected abstract T allocate(int index, int size);
-
 }

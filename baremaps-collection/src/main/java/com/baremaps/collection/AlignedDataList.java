@@ -47,7 +47,7 @@ public class AlignedDataList<T> implements DataList<T> {
    * Constructs a list.
    *
    * @param dataType the data type
-   * @param memory   the memory
+   * @param memory the memory
    */
   public AlignedDataList(SizedDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
@@ -72,9 +72,7 @@ public class AlignedDataList<T> implements DataList<T> {
     dataType.write(segment, segmentOffset, value);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   public long add(T value) {
     long index = size.getAndIncrement();
     write(index, value);
@@ -89,9 +87,7 @@ public class AlignedDataList<T> implements DataList<T> {
     write(index, value);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   public T get(long index) {
     long position = index << valueShift;
     int segmentIndex = (int) (position >> segmentShift);
@@ -100,24 +96,18 @@ public class AlignedDataList<T> implements DataList<T> {
     return dataType.read(segment, segmentOffset);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   public long size() {
     return size.get();
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void close() throws IOException {
     memory.close();
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void clean() throws IOException {
     memory.clean();

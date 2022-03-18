@@ -16,9 +16,7 @@ package com.baremaps.collection.type;
 
 import java.nio.ByteBuffer;
 
-/**
- * A {@link DataType} for reading and writing small integers in {@link ByteBuffer}s.
- */
+/** A {@link DataType} for reading and writing small integers in {@link ByteBuffer}s. */
 public class SmallIntegerDataType implements SizedDataType<Integer> {
 
   private final int n;
@@ -42,17 +40,13 @@ public class SmallIntegerDataType implements SizedDataType<Integer> {
     this.min = (int) -Math.pow(2, n * 8 - 1);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public int size(Integer value) {
     return n;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, Integer value) {
     for (int i = 0; i < n; i++) {
@@ -60,9 +54,7 @@ public class SmallIntegerDataType implements SizedDataType<Integer> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Integer read(ByteBuffer buffer, int position) {
     byte s = (byte) (buffer.get(position + n - 1) >= 0 ? 0 : -1);
@@ -83,5 +75,4 @@ public class SmallIntegerDataType implements SizedDataType<Integer> {
   public int min() {
     return min;
   }
-
 }
