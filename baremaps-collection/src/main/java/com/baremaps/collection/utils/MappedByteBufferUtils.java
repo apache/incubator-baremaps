@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.collection.memory;
+package com.baremaps.collection.utils;
 
 import java.io.IOException;
 import java.lang.reflect.Field;

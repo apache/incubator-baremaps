@@ -19,8 +19,8 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.core.postgres.PostgresUtils;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -35,7 +35,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
@@ -61,10 +60,7 @@ class BaremapsTest {
   @AfterEach
   void clean() throws IOException {
     Path repository = Paths.get("repository");
-    Files.walk(repository)
-        .sorted(Comparator.reverseOrder())
-        .map(Path::toFile)
-        .forEach(File::delete);
+    FileUtils.deleteRecursively(repository);
   }
 
   @Test

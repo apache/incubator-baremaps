@@ -21,10 +21,6 @@ public class SmallIntegerDataType implements SizedDataType<Integer> {
 
   private final int n;
 
-  private final int max;
-
-  private final int min;
-
   /**
    * Constructs a {@link SmallIntegerDataType}.
    *
@@ -36,8 +32,6 @@ public class SmallIntegerDataType implements SizedDataType<Integer> {
           "The number of bytes used to store small integers must be comprised between 1 and 4");
     }
     this.n = n;
-    this.max = (int) Math.pow(2, n * 8 - 1);
-    this.min = (int) -Math.pow(2, n * 8 - 1);
   }
 
   /** {@inheritDoc} */
@@ -66,13 +60,5 @@ public class SmallIntegerDataType implements SizedDataType<Integer> {
       l |= ((int) buffer.get(position + i) & 0xff) << (i << 3);
     }
     return l;
-  }
-
-  public int max() {
-    return max;
-  }
-
-  public int min() {
-    return min;
   }
 }

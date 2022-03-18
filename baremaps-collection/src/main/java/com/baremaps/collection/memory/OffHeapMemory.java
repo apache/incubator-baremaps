@@ -20,22 +20,35 @@ import java.nio.ByteBuffer;
 /** A memory that stores segments off-heap using direct byte buffers. */
 public class OffHeapMemory extends Memory<ByteBuffer> {
 
+  /** Constructs an {@link OffHeapMemory} with a default segment size of 1mb. */
   public OffHeapMemory() {
     this(1 << 20);
   }
 
+  /**
+   * Constructs an {@link OffHeapMemory} with a custom segment size.
+   *
+   * @param segmentSize the size of the segments in bytes
+   */
   public OffHeapMemory(int segmentSize) {
     super(segmentSize);
   }
 
+  /** {@inheritDoc} */
   @Override
   protected ByteBuffer allocate(int index, int size) {
     return ByteBuffer.allocateDirect(size);
   }
 
+  /** {@inheritDoc} */
   @Override
-  public void close() throws IOException {}
+  public void close() throws IOException {
+    // Nothing to close
+  }
 
+  /** {@inheritDoc} */
   @Override
-  public void clean() throws IOException {}
+  public void clean() throws IOException {
+    // Nothing to clean
+  }
 }

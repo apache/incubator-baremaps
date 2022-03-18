@@ -15,49 +15,63 @@
 package com.baremaps.collection.memory;
 
 import com.baremaps.collection.StoreException;
+import com.baremaps.collection.utils.FileUtils;
+import com.baremaps.collection.utils.MappedByteBufferUtils;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-/** A memory that stores segments on-disk using mapped byte buffers. */
+/** A memory that stores segments on-disk using mapped byte buffers in a file. */
 public class OnDiskFileMemory extends Memory<MappedByteBuffer> {
 
   private final Path file;
 
+  /**
+   * Constructs an {@link OnDiskFileMemory} with a custom file and a default segment size of 1gb.
+   *
+   * @param file the file that stores the data
+   */
   public OnDiskFileMemory(Path file) {
     this(file, 1 << 30);
   }
 
+  /**
+   * Constructs an {@link OnDiskFileMemory} with a custom file and a custom segment size.
+   *
+   * @param file the file that stores the data
+   * @param segmentBytes the size of the segments in bytes
+   */
   public OnDiskFileMemory(Path file, int segmentBytes) {
     super(segmentBytes);
     this.file = file;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected MappedByteBuffer allocate(int index, int size) {
     try {
       try (FileChannel channel =
           FileChannel.open(
               file, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE)) {
-        return channel.map(MapMode.READ_WRITE, index * size, size);
+        return channel.map(MapMode.READ_WRITE, (long) index * size, size);
       }
     } catch (IOException e) {
       throw new StoreException(e);
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void close() throws IOException {
     MappedByteBufferUtils.unmap(segments);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void clean() throws IOException {
-    close();
-    Files.delete(file);
+    FileUtils.deleteRecursively(file);
   }
 }

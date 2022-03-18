@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.baremaps.collection.memory.Memory;
 import com.baremaps.collection.memory.OffHeapMemory;
 import com.baremaps.collection.type.LongDataType;
+import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -35,7 +36,7 @@ class SizedDataListTest {
 
   @ParameterizedTest
   @MethodSource("com.baremaps.collection.memory.MemoryProvider#memories")
-  void appendFixedSizeValues(Memory memory) {
+  void appendFixedSizeValues(Memory memory) throws IOException {
     var list = new AlignedDataList<>(new LongDataType(), memory);
     for (int i = 0; i < 1 << 10; i++) {
       assertEquals(i, list.add((long) i));
@@ -43,5 +44,7 @@ class SizedDataListTest {
     for (int i = 0; i < 1 << 10; i++) {
       assertEquals(i, list.get(i));
     }
+    memory.close();
+    memory.clean();
   }
 }

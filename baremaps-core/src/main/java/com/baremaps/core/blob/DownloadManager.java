@@ -14,6 +14,7 @@
 
 package com.baremaps.core.blob;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -48,11 +49,13 @@ public class DownloadManager {
       return Paths.get(uri.getPath());
     } else {
       try {
-        Path tempFile = Files.createTempFile("baremaps_", ".tmp");
+        File file = File.createTempFile("download_", ".blob", Paths.get(".").toFile());
+        file.deleteOnExit();
+        Path path = file.toPath().toAbsolutePath();
         try (InputStream input = blobStore.get(uri).getInputStream()) {
-          Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
+          Files.copy(input, path, StandardCopyOption.REPLACE_EXISTING);
         }
-        return tempFile;
+        return path;
       } catch (IOException e) {
         throw new BlobStoreException(e);
       }

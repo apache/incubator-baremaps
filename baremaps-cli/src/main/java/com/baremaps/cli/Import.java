@@ -24,6 +24,7 @@ import com.baremaps.collection.type.LonLatDataType;
 import com.baremaps.collection.type.LongDataType;
 import com.baremaps.collection.type.LongListDataType;
 import com.baremaps.collection.type.PairDataType;
+import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.database.ImportService;
 import com.baremaps.core.database.repository.HeaderRepository;
@@ -39,6 +40,7 @@ import com.baremaps.osm.domain.Way;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
@@ -91,7 +93,7 @@ public class Import implements Callable<Integer> {
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
     Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
 
-    Path directory = Files.createTempDirectory("baremaps_");
+    Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
     Path nodes = Files.createDirectories(directory.resolve("nodes"));
     Path referencesKeys = Files.createDirectories(directory.resolve("references_keys"));
     Path referencesValues = Files.createDirectories(directory.resolve("references_values"));
@@ -117,6 +119,8 @@ public class Import implements Callable<Integer> {
             relationRepository,
             srid)
         .call();
+
+    FileUtils.deleteRecursively(directory);
 
     logger.info("Done");
 
