@@ -21,6 +21,7 @@ import java.io.InputStreamReader;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
+/** Geonames spliterator */
 public class GeonamesSpliterator implements Spliterator<GeonamesRecord> {
   private final BufferedReader reader;
 

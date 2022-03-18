@@ -14,7 +14,7 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.geocoder.GeocoderLucene;
+import com.baremaps.geocoder.GeonamesGeocoder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
@@ -42,9 +42,9 @@ public class GeocoderGeonamesSearch implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    GeocoderLucene geocoderLucene = new GeocoderLucene(indexPath);
+    GeonamesGeocoder geonamesGeocoder = new GeonamesGeocoder(indexPath);
     logger.info("Searching into the lucene index for your search value...");
-    geocoderLucene.search(searchValue);
+    geonamesGeocoder.search(searchValue);
 
     return 0;
   }

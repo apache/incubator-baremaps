@@ -39,13 +39,26 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-public class GeocoderLucene {
+/** Represent geonames geocoder */
+public class GeonamesGeocoder {
   private Path indexPath;
 
-  public GeocoderLucene(Path indexPath) throws IOException {
+  /**
+   * Constructs a {@link GeonamesGeocoder}
+   *
+   * @param indexPath - the path to the lucene index
+   * @throws IOException
+   */
+  public GeonamesGeocoder(Path indexPath) throws IOException {
     this.indexPath = indexPath;
   }
 
+  /**
+   * Index {@link GeonamesRecord} in a lucene index
+   *
+   * @param geonamesRecords - Stream of {@link GeonamesRecord}
+   * @throws IOException
+   */
   public void indexGeonames(Stream<GeonamesRecord> geonamesRecords) throws IOException {
     Directory directory = FSDirectory.open(indexPath);
 
@@ -80,6 +93,13 @@ public class GeocoderLucene {
     }
   }
 
+  /**
+   * Search into geonames lucene index and show the best 10 results
+   *
+   * @param searchValue - the value to be search in the index
+   * @throws IOException
+   * @throws ParseException
+   */
   public void search(String searchValue) throws IOException, ParseException {
     Directory directory = FSDirectory.open(indexPath);
     DirectoryReader indexReader = DirectoryReader.open(directory);

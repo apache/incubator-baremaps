@@ -17,7 +17,7 @@ package com.baremaps.cli;
 import com.baremaps.baremaps.geonames.Geonames;
 import com.baremaps.baremaps.geonames.GeonamesRecord;
 import com.baremaps.core.blob.BlobStore;
-import com.baremaps.geocoder.GeocoderLucene;
+import com.baremaps.geocoder.GeonamesGeocoder;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Path;
@@ -52,14 +52,13 @@ public class GeocoderGeonamesIndex implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
-    GeocoderLucene geocoderLucene = new GeocoderLucene(indexPath);
-    Geonames geonames = new Geonames();
+    GeonamesGeocoder geonamesGeocoder = new GeonamesGeocoder(indexPath);
 
     try (InputStream inputStream = blobStore.get(geonamesDataPath).getInputStream()) {
       logger.info("Parsing geonames file...");
-      Stream<GeonamesRecord> geonamesRecordStream = geonames.parse(inputStream);
+      Stream<GeonamesRecord> geonamesRecordStream = Geonames.parse(inputStream);
       logger.info("Indexing geonames into lucene...");
-      geocoderLucene.indexGeonames(geonamesRecordStream);
+      geonamesGeocoder.indexGeonames(geonamesRecordStream);
       logger.info("Indexing finished.");
     }
 
