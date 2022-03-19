@@ -14,30 +14,30 @@
 
 package com.baremaps.nic;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-/** A spliter. */
+/**
+ * A spliter.
+ */
 class NicSpliterator implements Spliterator<NicObject> {
 
-  private final BufferedReader reader;
+  private final Spliterator<String> lineSpliterator;
 
-  NicSpliterator(InputStream inputStream) {
-    this.reader = new BufferedReader(new InputStreamReader(inputStream));
+  private String line;
+
+  NicSpliterator(Spliterator<String> lineSpliterator) {
+    this.lineSpliterator = lineSpliterator;
   }
 
   public long estimateSize() {
-    return Long.MAX_VALUE;
+    return lineSpliterator.estimateSize();
   }
 
   public int characteristics() {
-    return IMMUTABLE;
+    return lineSpliterator.characteristics();
   }
 
   public Spliterator<NicObject> trySplit() {
@@ -45,51 +45,50 @@ class NicSpliterator implements Spliterator<NicObject> {
   }
 
   public boolean tryAdvance(Consumer<? super NicObject> consumer) {
-    try {
-      String line;
-      StringBuilder keyBuilder = new StringBuilder();
-      StringBuilder valBuilder = new StringBuilder();
-      List<NicAttribute> attributes = new ArrayList<>();
+    StringBuilder keyBuilder = new StringBuilder();
+    StringBuilder valBuilder = new StringBuilder();
+    List<NicAttribute> attributes = new ArrayList<>();
 
-      while ((line = reader.readLine()) != null && !"".equals(line)) {
-
-        // handle multiline values
-        if (line.startsWith(" ")) {
-          valBuilder.append("\n");
-          valBuilder.append(line.trim());
-        }
-
-        // handle multiline values
-        else if (line.startsWith("+")) {
-          valBuilder.append("\n");
-          valBuilder.append(line.substring(1).trim());
-        }
-
-        // handle attribute line
-        else if (!line.startsWith("#") && !line.startsWith("%")) {
-          int index = line.indexOf(":");
-          if (index >= 0) {
-            addAttribute(attributes, keyBuilder, valBuilder);
-            keyBuilder = new StringBuilder();
-            valBuilder = new StringBuilder();
-            keyBuilder.append(line.substring(0, index).trim());
-            valBuilder.append(line.substring(index + 1).trim());
-          }
-        }
+    boolean tryAdvance;
+    while ((tryAdvance = lineSpliterator.tryAdvance(this::acceptLine)) && !"".equals(line)) {
+      // handle multiline values
+      if (line.startsWith(" ")) {
+        valBuilder.append("\n");
+        valBuilder.append(line.trim());
       }
 
-      // handle last attribute
-      addAttribute(attributes, keyBuilder, valBuilder);
-
-      // build object
-      if (!attributes.isEmpty()) {
-        consumer.accept(new NicObject(attributes));
+      // handle multiline values
+      else if (line.startsWith("+")) {
+        valBuilder.append("\n");
+        valBuilder.append(line.substring(1).trim());
       }
 
-      return line != null;
-    } catch (IOException e) {
-      return false;
+      // handle attribute line
+      else if (!line.startsWith("#") && !line.startsWith("%")) {
+        int index = line.indexOf(":");
+        if (index >= 0) {
+          addAttribute(attributes, keyBuilder, valBuilder);
+          keyBuilder = new StringBuilder();
+          valBuilder = new StringBuilder();
+          keyBuilder.append(line.substring(0, index).trim());
+          valBuilder.append(line.substring(index + 1).trim());
+        }
+      }
     }
+
+    // handle last attribute
+    addAttribute(attributes, keyBuilder, valBuilder);
+
+    // build object
+    if (!attributes.isEmpty()) {
+      consumer.accept(new NicObject(attributes));
+    }
+
+    return tryAdvance;
+  }
+
+  private void acceptLine(String line) {
+    this.line = line;
   }
 
   private void addAttribute(List<NicAttribute> attributes, StringBuilder key, StringBuilder val) {

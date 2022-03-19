@@ -14,18 +14,21 @@
 
 package com.baremaps.nic;
 
+import com.google.common.base.Charsets;
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
-/** A parser for Network Coordination Center (NIC) data. */
+/**
+ * A parser for Network Coordination Center (NIC) data.
+ */
 public class NicParser {
 
-  private static final Logger logger = LogManager.getLogger(NicParser.class);
-
-  private NicParser() {}
+  private NicParser() {
+  }
 
   /**
    * Creates an ordered stream of NIC objects.
@@ -34,6 +37,8 @@ public class NicParser {
    * @return a {@link Stream} of NIC Object
    */
   public static Stream<NicObject> parse(InputStream inputStream) {
-    return StreamSupport.stream(new NicSpliterator(inputStream), false);
+    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, Charsets.UTF_8));
+    Spliterator<String> spliterator = reader.lines().spliterator();
+    return StreamSupport.stream(new NicSpliterator(spliterator), false);
   }
 }
