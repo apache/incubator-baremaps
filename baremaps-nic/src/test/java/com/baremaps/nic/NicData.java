@@ -14,26 +14,19 @@
 
 package com.baremaps.nic;
 
+import com.google.common.io.Resources;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.List;
+import java.util.stream.Collectors;
 
-/** A parser for Network Coordination Center (NIC) data. */
-public class NicParser {
+public class NicData {
 
-  private static final Logger logger = LogManager.getLogger(NicParser.class);
+  private static final String SAMPLE = "sample.txt";
 
-  private NicParser() {}
-
-  /**
-   * Creates an ordered stream of NIC objects.
-   *
-   * @param inputStream a {@link InputStream} containing NIC objects
-   * @return a {@link Stream} of NIC Object
-   */
-  public static Stream<NicObject> parse(InputStream inputStream) {
-    return StreamSupport.stream(new NicSpliterator(inputStream), false);
+  public static List<NicObject> sample() throws IOException {
+    try (InputStream input = Resources.getResource(SAMPLE).openStream()) {
+      return NicParser.parse(input).collect(Collectors.toList());
+    }
   }
 }

@@ -23,13 +23,12 @@ import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-/** Nic spliterator. */
-public class NicSpliterator implements Spliterator<NicObject> {
+/** A spliter. */
+class NicSpliterator implements Spliterator<NicObject> {
 
   private final BufferedReader reader;
 
-  /** {@inheritdoc} */
-  public NicSpliterator(InputStream inputStream) {
+  NicSpliterator(InputStream inputStream) {
     this.reader = new BufferedReader(new InputStreamReader(inputStream));
   }
 
@@ -48,39 +47,39 @@ public class NicSpliterator implements Spliterator<NicObject> {
   public boolean tryAdvance(Consumer<? super NicObject> consumer) {
     try {
       String line;
-      StringBuilder key = new StringBuilder();
-      StringBuilder val = new StringBuilder();
+      StringBuilder keyBuilder = new StringBuilder();
+      StringBuilder valBuilder = new StringBuilder();
       List<NicAttribute> attributes = new ArrayList<>();
 
       while ((line = reader.readLine()) != null && !"".equals(line)) {
 
         // handle multiline values
         if (line.startsWith(" ")) {
-          val.append("\n");
-          val.append(line.trim());
+          valBuilder.append("\n");
+          valBuilder.append(line.trim());
         }
 
         // handle multiline values
         else if (line.startsWith("+")) {
-          val.append("\n");
-          val.append(line.substring(1).trim());
+          valBuilder.append("\n");
+          valBuilder.append(line.substring(1).trim());
         }
 
         // handle attribute line
         else if (!line.startsWith("#") && !line.startsWith("%")) {
           int index = line.indexOf(":");
           if (index >= 0) {
-            addAttributes(key, val, attributes);
-            key = new StringBuilder();
-            val = new StringBuilder();
-            key.append(line.substring(0, index).trim());
-            val.append(line.substring(index + 1).trim());
+            addAttribute(attributes, keyBuilder, valBuilder);
+            keyBuilder = new StringBuilder();
+            valBuilder = new StringBuilder();
+            keyBuilder.append(line.substring(0, index).trim());
+            valBuilder.append(line.substring(index + 1).trim());
           }
         }
       }
 
       // handle last attribute
-      addAttributes(key, val, attributes);
+      addAttribute(attributes, keyBuilder, valBuilder);
 
       // build object
       if (!attributes.isEmpty()) {
@@ -93,7 +92,7 @@ public class NicSpliterator implements Spliterator<NicObject> {
     }
   }
 
-  private void addAttributes(StringBuilder key, StringBuilder val, List<NicAttribute> attributes) {
+  private void addAttribute(List<NicAttribute> attributes, StringBuilder key, StringBuilder val) {
     if (key.length() > 0) {
       attributes.add(new NicAttribute(key.toString(), val.toString()));
     }
