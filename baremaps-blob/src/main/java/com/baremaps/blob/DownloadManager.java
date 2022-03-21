@@ -21,7 +21,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-/** An object for downloading and saving blobs in the local file system. */
+/**
+ * An object for downloading and saving blobs in the local file system.
+ */
 public class DownloadManager {
 
   private final BlobStore blobStore;
@@ -36,27 +38,44 @@ public class DownloadManager {
   }
 
   /**
-   * Returns the path of the downloaded blob.
+   * Returns the temporary path of the downloaded blob.
    *
-   * @param uri the URI of the blob
+   * @param blob the URI of the blob
    * @return the path of the downloaded blob
    * @throws BlobStoreException a blob store exception
    */
-  public Path download(URI uri) throws BlobStoreException {
-    if (uri.getScheme() == null || uri.getScheme().equals("file")) {
-      return Paths.get(uri.getPath());
+  public Path download(URI blob) throws BlobStoreException {
+    if (blob.getScheme() == null || blob.getScheme().equals("file")) {
+      return Paths.get(blob.getPath());
     } else {
       try {
         File file = File.createTempFile("download_", ".blob", Paths.get(".").toFile());
         file.deleteOnExit();
         Path path = file.toPath().toAbsolutePath();
-        try (InputStream input = blobStore.get(uri).getInputStream()) {
-          Files.copy(input, path, StandardCopyOption.REPLACE_EXISTING);
-        }
-        return path;
+        return download(blob, path);
       } catch (IOException e) {
         throw new BlobStoreException(e);
       }
+    }
+  }
+
+  /**
+   * Downloads and saves a blob in a file.
+   *
+   * @param blob the URI of the blob
+   * @param file the path of the file
+   * @return the path of the downloaded blob
+   * @throws BlobStoreException a blob store exception
+   */
+  public Path download(URI blob, Path file) throws BlobStoreException {
+    if (blob.getScheme() == null || blob.getScheme().equals("file")) {
+      return Paths.get(blob.getPath());
+    }
+    try (InputStream input = blobStore.get(blob).getInputStream()) {
+      Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
+      return file;
+    } catch (IOException e) {
+      throw new BlobStoreException(e);
     }
   }
 }
