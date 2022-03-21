@@ -12,10 +12,11 @@
  * the License.
  */
 
-package com.baremaps.cli;
+package com.baremaps.cli.pipeline;
 
 import static com.baremaps.core.tile.VariableUtils.interpolate;
 
+import com.baremaps.cli.Options;
 import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.osm.stream.StreamException;

@@ -12,29 +12,22 @@
  * the License.
  */
 
-package com.baremaps.cli;
+package com.baremaps.cli.pipeline;
 
-import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
+import com.baremaps.cli.Options;
 import com.baremaps.core.blob.ConfigBlobStore;
 import com.baremaps.core.postgres.PostgresUtils;
-import com.baremaps.core.tile.PostgresQuery;
-import com.baremaps.core.tile.PostgresTileStore;
-import com.baremaps.core.tile.TileCache;
-import com.baremaps.core.tile.TileStore;
-import com.baremaps.model.TileJSON;
-import com.baremaps.server.resources.ServerResources;
+import com.baremaps.server.resources.DevelopmentResources;
 import com.baremaps.server.utils.CorsFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
 import java.net.URI;
-import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -45,10 +38,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "server", description = "Start a tile server with caching capabilities.")
-public class Server implements Callable<Integer> {
+@Command(name = "viewer", description = "Start a development server for live reloading a map.")
+public class Viewer implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(Server.class);
+  private static final Logger logger = LoggerFactory.getLogger(Viewer.class);
 
   @Mixin private Options options;
 
@@ -93,31 +86,28 @@ public class Server implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    ObjectMapper objectMapper = defaultObjectMapper();
     ConfigBlobStore blobStore = new ConfigBlobStore(options.blobStore());
-    TileJSON tileJSON =
-        objectMapper.readValue(blobStore.get(this.tileset).getInputStream(), TileJSON.class);
-    CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
-    DataSource datasource = PostgresUtils.datasource(database);
+    DataSource dataSource = PostgresUtils.datasource(database);
 
-    List<PostgresQuery> queries = asPostgresQuery(tileJSON);
-    TileStore tileStore = new PostgresTileStore(datasource, queries);
-    TileStore tileCache = new TileCache(tileStore, caffeineSpec);
+    // Configure serialization
+    ObjectMapper objectMapper = defaultObjectMapper();
 
     // Configure the application
     ResourceConfig application =
         new ResourceConfig()
             .register(CorsFilter.class)
-            .register(ServerResources.class)
+            .register(DevelopmentResources.class)
             .register(contextResolverFor(objectMapper))
             .register(
                 new AbstractBinder() {
                   @Override
                   protected void configure() {
+                    bind("viewer").to(String.class).named("assets");
                     bind(tileset).to(URI.class).named("tileset");
                     bind(style).to(URI.class).named("style");
                     bind(blobStore).to(ConfigBlobStore.class);
-                    bind(tileCache).to(TileStore.class);
+                    bind(dataSource).to(DataSource.class);
+                    bind(objectMapper).to(ObjectMapper.class);
                   }
                 });
 
@@ -127,7 +117,6 @@ public class Server implements Callable<Integer> {
         HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
     logger.info("Listening on {}", serverContext.listenAddress());
-
     serverContext.awaitShutdown();
 
     return 0;

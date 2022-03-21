@@ -12,8 +12,9 @@
  * the License.
  */
 
-package com.baremaps.cli;
+package com.baremaps.cli.pipeline;
 
+import com.baremaps.cli.Options;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.core.blob.Blob;
 import com.baremaps.core.blob.BlobStore;

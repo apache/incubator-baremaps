@@ -12,9 +12,8 @@
  * the License.
  */
 
-package com.baremaps.cli;
+package com.baremaps.cli.geocoder;
 
-import com.baremaps.geocoder.GeonamesGeocoder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
@@ -22,9 +21,9 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "geocoder-geonames-search", description = "Transform a text into a geocode point.")
-public class GeocoderGeonamesSearch implements Callable<Integer> {
-  private static final Logger logger = LoggerFactory.getLogger(GeocoderGeonamesSearch.class);
+@Command(name = "search", description = "Search geonames data.")
+public class Search implements Callable<Integer> {
+  private static final Logger logger = LoggerFactory.getLogger(Search.class);
 
   @Option(
       names = {"--index"},
@@ -34,17 +33,14 @@ public class GeocoderGeonamesSearch implements Callable<Integer> {
   private Path indexPath;
 
   @Option(
-      names = {"--search-value"},
-      paramLabel = "SEARCH_VALUE",
-      description = "The address to find in the index.",
+      names = {"--search"},
+      paramLabel = "SEARCH",
+      description = "The terms to search in the index.",
       required = true)
   private String searchValue;
 
   @Override
   public Integer call() throws Exception {
-    GeonamesGeocoder geonamesGeocoder = new GeonamesGeocoder(indexPath);
-    logger.info("Searching into the lucene index for your search value...");
-    geonamesGeocoder.search(searchValue);
 
     return 0;
   }

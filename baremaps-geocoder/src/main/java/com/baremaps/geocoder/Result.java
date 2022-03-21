@@ -12,16 +12,27 @@
  * the License.
  */
 
-package com.baremaps.baremaps.geonames;
+package com.baremaps.geocoder;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.search.ScoreDoc;
 
-/** Utils for Geonames data */
-public class Geonames {
-  public static Stream<GeonamesRecord> parse(InputStream inputStream) throws IOException {
-    return StreamSupport.stream(new GeonamesSpliterator(inputStream), false);
+public class Result {
+
+  private final ScoreDoc scoreDoc;
+
+  private final Document document;
+
+  public Result(ScoreDoc scoreDoc, Document document) {
+    this.scoreDoc = scoreDoc;
+    this.document = document;
+  }
+
+  public ScoreDoc scoreDoc() {
+    return scoreDoc;
+  }
+
+  public Document document() {
+    return document;
   }
 }

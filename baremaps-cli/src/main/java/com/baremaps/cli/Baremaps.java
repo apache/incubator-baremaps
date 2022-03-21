@@ -15,6 +15,16 @@
 package com.baremaps.cli;
 
 import com.baremaps.cli.Baremaps.VersionProvider;
+import com.baremaps.cli.ogcapi.OgcApi;
+import com.baremaps.cli.pipeline.Diff;
+import com.baremaps.cli.pipeline.Editor;
+import com.baremaps.cli.pipeline.Execute;
+import com.baremaps.cli.pipeline.Export;
+import com.baremaps.cli.pipeline.Import;
+import com.baremaps.cli.pipeline.Init;
+import com.baremaps.cli.pipeline.Server;
+import com.baremaps.cli.pipeline.Update;
+import com.baremaps.cli.pipeline.Viewer;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
@@ -43,9 +53,7 @@ import picocli.CommandLine.Option;
       Editor.class,
       Viewer.class,
       Server.class,
-      OgcApi.class,
-      GeocoderGeonamesIndex.class,
-      GeocoderGeonamesSearch.class
+      OgcApi.class
     })
 public class Baremaps implements Callable<Integer> {
 

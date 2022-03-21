@@ -12,26 +12,21 @@
  * the License.
  */
 
-package com.baremaps.cli;
+package com.baremaps.cli.geocoder;
 
-import com.baremaps.baremaps.geonames.Geonames;
-import com.baremaps.baremaps.geonames.GeonamesRecord;
-import com.baremaps.core.blob.BlobStore;
-import com.baremaps.geocoder.GeonamesGeocoder;
-import java.io.InputStream;
+import com.baremaps.cli.Options;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "geocoder-geonames-index", description = "Transform a text into a geocode point.")
-public class GeocoderGeonamesIndex implements Callable<Integer> {
-  private static final Logger logger = LoggerFactory.getLogger(GeocoderGeonamesIndex.class);
+@Command(name = "index", description = "Index geonames data.")
+public class Index implements Callable<Integer> {
+  private static final Logger logger = LoggerFactory.getLogger(Index.class);
 
   @Mixin private Options options;
 
@@ -43,24 +38,14 @@ public class GeocoderGeonamesIndex implements Callable<Integer> {
   private Path indexPath;
 
   @Option(
-      names = {"--geonames"},
-      paramLabel = "GEONAMES",
+      names = {"--data"},
+      paramLabel = "DATA",
       description = "The path to the geonames data.",
       required = true)
   private URI geonamesDataPath;
 
   @Override
   public Integer call() throws Exception {
-    BlobStore blobStore = options.blobStore();
-    GeonamesGeocoder geonamesGeocoder = new GeonamesGeocoder(indexPath);
-
-    try (InputStream inputStream = blobStore.get(geonamesDataPath).getInputStream()) {
-      logger.info("Parsing geonames file...");
-      Stream<GeonamesRecord> geonamesRecordStream = Geonames.parse(inputStream);
-      logger.info("Indexing geonames into lucene...");
-      geonamesGeocoder.indexGeonames(geonamesRecordStream);
-      logger.info("Indexing finished.");
-    }
 
     return 0;
   }
