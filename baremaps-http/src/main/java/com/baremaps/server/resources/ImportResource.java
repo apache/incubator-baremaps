@@ -1,6 +1,4 @@
 /*
- * Copyright (C) 2020 The Baremaps Authors
- *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
@@ -15,14 +13,7 @@
 package com.baremaps.server.resources;
 
 import com.baremaps.model.Collection;
-import com.baremaps.model.Extent;
-import com.baremaps.model.ExtentSpatial;
 import java.io.InputStream;
-import java.net.URI;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
@@ -30,13 +21,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.geotools.geojson.feature.FeatureJSON;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.qualifier.QualifiedType;
 import org.jdbi.v3.json.Json;
-import org.opengis.feature.simple.SimpleFeature;
 
 @Singleton
 @Path("")
@@ -59,6 +48,8 @@ public class ImportResource {
       @FormDataParam("file") InputStream fileInputStream,
       @FormDataParam("file") FormDataContentDisposition fileMetaData)
       throws Exception {
+    /*
+    TODO: replace GeoTools with Apache SIS
     // Read FeatureCollection
     FeatureJSON fjson = new FeatureJSON();
     var fc = fjson.readFeatureCollection(fileInputStream);
@@ -124,5 +115,7 @@ public class ImportResource {
         });
 
     return Response.created(URI.create("collections/" + collection.getId())).build();
+    */
+    return Response.ok().build();
   }
 }

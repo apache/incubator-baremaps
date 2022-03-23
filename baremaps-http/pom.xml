@@ -184,23 +184,6 @@
       <artifactId>jaxb-runtime</artifactId>
     </dependency>
 
-    <!-- geotools -->
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-main</artifactId>
-      <version>25.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-geojson</artifactId>
-      <version>25.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools.jdbc</groupId>
-      <artifactId>gt-jdbc-postgis</artifactId>
-      <version>25.2</version>
-    </dependency>
-
     <!-- openapi -->
     <dependency>
       <groupId>io.swagger.parser.v3</groupId>
