@@ -30,6 +30,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
@@ -86,16 +87,31 @@ public class GeonamesGeocoder extends Geocoder {
         .map(
             record -> {
               Document document = new Document();
-              document.add(new Field("name", record.getName(), TextField.TYPE_STORED));
+              document.add(new TextField("name", record.getName(), Store.YES));
               document.add(
-                  new Field(
+                  new StringField(
                       "country",
                       IsoCountriesUtils.getCountry(record.getCountryCode()),
-                      StringField.TYPE_STORED));
+                      Store.YES));
               document.add(
-                  new Field("countryCode", record.getCountryCode(), StringField.TYPE_STORED));
+                  new StringField("countryCode", record.getCountryCode(), Store.YES));
               document.add(new StoredField("longitude", record.getLongitude()));
               document.add(new StoredField("latitude", record.getLatitude()));
+              document.add(new StoredField("asciiname", record.getLatitude()));
+              document.add(new StoredField("alternatenames", record.getLatitude()));
+              document.add(new StoredField("featureClass", record.getLatitude()));
+              document.add(new StoredField("featureCode", record.getLatitude()));
+              document.add(new StoredField("cc2", record.getLatitude()));
+              document.add(new StoredField("cc2", record.getLatitude()));
+              document.add(new StoredField("admin1Code", record.getLatitude()));
+              document.add(new StoredField("admin2Code", record.getLatitude()));
+              document.add(new StoredField("admin3Code", record.getLatitude()));
+              document.add(new StoredField("admin4Code", record.getLatitude()));
+              document.add(new StoredField("population", record.getLatitude()));
+              document.add(new StoredField("elevation", record.getLatitude()));
+              document.add(new StoredField("dem", record.getLatitude()));
+              document.add(new StoredField("timezone", record.getLatitude()));
+              document.add(new StoredField("modificationDate", record.getLatitude()));
               return document;
             });
   }
