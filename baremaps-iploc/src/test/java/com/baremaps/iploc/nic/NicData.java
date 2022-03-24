@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.nic;
+package com.baremaps.iploc.nic;
 
 import com.google.common.io.Resources;
 import java.io.IOException;

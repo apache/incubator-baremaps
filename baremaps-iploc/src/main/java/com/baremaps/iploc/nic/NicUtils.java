@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.nic;
+package com.baremaps.iploc.nic;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;

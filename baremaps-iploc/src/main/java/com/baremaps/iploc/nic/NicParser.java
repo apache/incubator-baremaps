@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.nic;
+package com.baremaps.iploc.nic;
 
 import com.google.common.base.Charsets;
 import java.io.BufferedReader;

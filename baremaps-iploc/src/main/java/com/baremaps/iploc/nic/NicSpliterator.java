@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.nic;
+package com.baremaps.iploc.nic;
 
 import java.util.ArrayList;
 import java.util.List;

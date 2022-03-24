@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.nic;
+package com.baremaps.iploc.nic;
 
 /** Represents a NIC attribute. */
 public class NicAttribute {

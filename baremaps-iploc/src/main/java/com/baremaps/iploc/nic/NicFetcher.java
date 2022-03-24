@@ -1,4 +1,4 @@
-package com.baremaps.nic;
+package com.baremaps.iploc.nic;
 
 import java.io.BufferedInputStream;
 import java.io.File;
