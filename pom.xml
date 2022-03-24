@@ -127,6 +127,7 @@
     <module>baremaps-http</module>
     <module>baremaps-testing</module>
     <module>baremaps-collection</module>
+    <module>baremaps-nic</module>
   </modules>
 
   <profiles>
