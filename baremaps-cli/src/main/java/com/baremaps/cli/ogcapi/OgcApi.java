@@ -12,11 +12,12 @@
  * the License.
  */
 
-package com.baremaps.cli;
+package com.baremaps.cli.ogcapi;
 
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
+import com.baremaps.cli.Options;
 import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.server.ogcapi.ApiResource;
 import com.baremaps.server.ogcapi.CollectionsResource;

@@ -12,13 +12,22 @@
  * the License.
  */
 
-package com.baremaps.cli;
+package com.baremaps.cli.pipeline;
 
+import com.baremaps.cli.Options;
+import com.baremaps.collection.AlignedDataList;
+import com.baremaps.collection.DataStore;
 import com.baremaps.collection.LongDataMap;
+import com.baremaps.collection.LongDataSortedMap;
+import com.baremaps.collection.LongSizedDataDenseMap;
+import com.baremaps.collection.memory.OnDiskDirectoryMemory;
+import com.baremaps.collection.type.LonLatDataType;
+import com.baremaps.collection.type.LongDataType;
+import com.baremaps.collection.type.LongListDataType;
+import com.baremaps.collection.type.PairDataType;
+import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.core.blob.BlobStore;
-import com.baremaps.core.database.UpdateService;
-import com.baremaps.core.database.collection.PostgresCoordinateMap;
-import com.baremaps.core.database.collection.PostgresReferenceMap;
+import com.baremaps.core.database.ImportService;
 import com.baremaps.core.database.repository.HeaderRepository;
 import com.baremaps.core.database.repository.PostgresHeaderRepository;
 import com.baremaps.core.database.repository.PostgresNodeRepository;
@@ -29,6 +38,10 @@ import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
@@ -39,12 +52,19 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "update", description = "Update OpenStreetMap data in the database (experimental).")
-public class Update implements Callable<Integer> {
+@Command(name = "import", description = "Import OpenStreetMap data in the database.")
+public class Import implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(Update.class);
+  private static final Logger logger = LoggerFactory.getLogger(Import.class);
 
   @Mixin private Options options;
+
+  @Option(
+      names = {"--file"},
+      paramLabel = "FILE",
+      description = "The PBF file to import in the database.",
+      required = true)
+  private URI file;
 
   @Option(
       names = {"--database"},
@@ -52,6 +72,12 @@ public class Update implements Callable<Integer> {
       description = "The JDBC url of the database.",
       required = true)
   private String database;
+
+  @Option(
+      names = {"--cache-directory"},
+      paramLabel = "CACHE_DIRECTORY",
+      description = "The directory used by the cache.")
+  private Path cacheDirectory;
 
   @Option(
       names = {"--srid"},
@@ -63,15 +89,28 @@ public class Update implements Callable<Integer> {
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.datasource(database);
-    LongDataMap<Coordinate> coordinates = new PostgresCoordinateMap(datasource);
-    LongDataMap<List<Long>> references = new PostgresReferenceMap(datasource);
     HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
     Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
     Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
 
-    logger.info("Importing changes");
-    new UpdateService(
+    Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
+    Path nodes = Files.createDirectories(directory.resolve("nodes"));
+    Path referencesKeys = Files.createDirectories(directory.resolve("references_keys"));
+    Path referencesValues = Files.createDirectories(directory.resolve("references_values"));
+
+    LongDataMap<Coordinate> coordinates =
+        new LongSizedDataDenseMap<>(new LonLatDataType(), new OnDiskDirectoryMemory(nodes));
+    LongDataMap<List<Long>> references =
+        new LongDataSortedMap<>(
+            new AlignedDataList<>(
+                new PairDataType<>(new LongDataType(), new LongDataType()),
+                new OnDiskDirectoryMemory(referencesKeys)),
+            new DataStore<>(new LongListDataType(), new OnDiskDirectoryMemory(referencesValues)));
+
+    logger.info("Importing data");
+    new ImportService(
+            file,
             blobStore,
             coordinates,
             references,
@@ -81,6 +120,9 @@ public class Update implements Callable<Integer> {
             relationRepository,
             srid)
         .call();
+
+    FileUtils.deleteRecursively(directory);
+
     logger.info("Done");
 
     return 0;
