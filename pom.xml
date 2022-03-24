@@ -129,6 +129,7 @@
     <module>baremaps-collection</module>
     <module>baremaps-geocoder</module>
     <module>baremaps-nic</module>
+    <module>baremaps-grpc</module>
   </modules>
 
   <profiles>
