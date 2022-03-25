@@ -3,32 +3,35 @@ package com.baremaps.core.data;
 import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.blob.BlobStoreRouter;
-import com.baremaps.core.blob.HttpBlobStore;
+import com.baremaps.core.database.PostgresBaseTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
+import javax.sql.DataSource;
 import org.junit.Ignore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class ManagerTest {
+class DataManagerTest extends PostgresBaseTest {
 
   Path sources;
 
-  Manager manager;
+  DataSource dataSource;
+
+  DataManager dataManager;
 
   @BeforeEach
-  public void before() throws IOException {
-    BlobStore blobStore = new BlobStoreRouter()
-        .addScheme("http", new HttpBlobStore())
-        .addScheme("https", new HttpBlobStore());
+  public void before() throws IOException, SQLException {
+    BlobStore blobStore = new BlobStoreRouter();
     Config config = new ObjectMapper().readValue(Resources.getResource("data.json"), Config.class);
     sources = Files.createDirectories(Paths.get("sources"));
-    manager = new Manager(blobStore, config, sources);
+    dataSource = initDataSource();
+    dataManager = new DataManager(blobStore, dataSource, config, sources);
   }
 
   @AfterEach
@@ -39,7 +42,9 @@ class ManagerTest {
   @Test
   @Ignore
   public void download() {
-    manager.handle();
+    dataManager.execute();
   }
+
+
 
 }

@@ -1,25 +1,11 @@
 {
   "sources": [
     {
-      "id" : "simplified_water_polygons",
-      "url": "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
-      "file": "simplified-water-polygons-split-3857/simplified_water_polygons.shp",
+      "id" : "monaco-shapefile.zip",
+      "url": "res:///monaco-shapefile.zip",
+      "file": "gis_osm_buildings_a_free_1.shp",
       "format": "shp",
       "archive": "zip"
-    },
-    {
-      "id" : "ne_110m_admin_0_boundary_lines_land",
-      "url": "https://naturalearth.s3.amazonaws.com/110m_cultural/ne_110m_admin_0_boundary_lines_land.zip",
-      "file": "ne_110m_admin_0_boundary_lines_land.shp",
-      "format": "shp",
-      "archive": "zip"
-    },
-    {
-      "id" : "liechtenstein",
-      "url": "https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
-      "file": "liechtenstein-latest.osm.pbf",
-      "format": "pbf",
-      "archive": "raw"
     }
   ]
 }

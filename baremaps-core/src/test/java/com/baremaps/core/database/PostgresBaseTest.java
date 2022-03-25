@@ -20,7 +20,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 
-abstract class PostgresBaseTest {
+public abstract class PostgresBaseTest {
 
   public DataSource initDataSource() throws SQLException, IOException {
     DataSource dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
