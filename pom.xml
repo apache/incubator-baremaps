@@ -121,6 +121,7 @@
 
   <modules>
     <module>baremaps-benchmarks</module>
+    <module>baremaps-blob</module>
     <module>baremaps-cli</module>
     <module>baremaps-core</module>
     <module>baremaps-osm</module>
@@ -340,6 +341,11 @@
       <!-- Internal dependencies -->
       <dependency>
         <artifactId>baremaps-benchmarks</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-blob</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>

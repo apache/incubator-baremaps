@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.core.blob;
+package com.baremaps.blob;
 
 import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;

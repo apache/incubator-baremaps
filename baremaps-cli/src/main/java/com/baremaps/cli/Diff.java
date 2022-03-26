@@ -14,9 +14,9 @@
 
 package com.baremaps.cli;
 
+import com.baremaps.blob.Blob;
+import com.baremaps.blob.BlobStore;
 import com.baremaps.collection.LongDataMap;
-import com.baremaps.core.blob.Blob;
-import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.database.DiffService;
 import com.baremaps.core.database.collection.PostgresCoordinateMap;
 import com.baremaps.core.database.collection.PostgresReferenceMap;

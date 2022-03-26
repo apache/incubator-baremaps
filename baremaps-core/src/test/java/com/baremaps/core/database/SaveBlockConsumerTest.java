@@ -18,8 +18,8 @@ import static com.baremaps.testing.TestConstants.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.baremaps.core.blob.BlobStoreException;
-import com.baremaps.core.blob.ResourceBlobStore;
+import com.baremaps.blob.BlobStoreException;
+import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.core.database.repository.PostgresHeaderRepository;
 import com.baremaps.core.database.repository.PostgresNodeRepository;
 import com.baremaps.core.database.repository.PostgresRelationRepository;

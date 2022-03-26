@@ -18,9 +18,9 @@ import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
-import com.baremaps.core.blob.Blob;
-import com.baremaps.core.blob.BlobStoreException;
-import com.baremaps.core.blob.ConfigBlobStore;
+import com.baremaps.blob.Blob;
+import com.baremaps.blob.BlobStoreException;
+import com.baremaps.blob.ConfigBlobStore;
 import com.baremaps.core.tile.Tile;
 import com.baremaps.core.tile.TileStore;
 import com.baremaps.core.tile.TileStoreException;
