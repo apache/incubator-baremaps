@@ -128,7 +128,7 @@
     <module>baremaps-testing</module>
     <module>baremaps-collection</module>
     <module>baremaps-geocoder</module>
-    <module>baremaps-nic</module>
+    <module>baremaps-iploc</module>
   </modules>
 
   <profiles>

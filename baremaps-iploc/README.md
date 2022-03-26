@@ -1,7 +1,7 @@
-# Baremaps NIC
+# Baremaps Iploc
 
-This module contains a parser for Network Coordination Centers (NIC) data.
-This data is commonly used to implement ip to location services.
+This module contains a parser for Network Coordination Centers (NIC) data as well as a generator for the Iploc database.
+This data is commonly used to implement IP to location services.
 
 ## References
 - https://www.iana.org/numbers

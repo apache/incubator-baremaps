@@ -8,7 +8,15 @@
     <version>0.6.6-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-
-  <artifactId>baremaps-nic</artifactId>
-
+  <artifactId>baremaps-iploc</artifactId>
+  <properties>
+    <version.lib.sqlite>3.34.0</version.lib.sqlite>
+  </properties>
+  <dependencies>
+    <dependency>
+      <artifactId>sqlite-jdbc</artifactId>
+      <groupId>org.xerial</groupId>
+      <version>${version.lib.sqlite}</version>
+    </dependency>
+  </dependencies>
 </project>
