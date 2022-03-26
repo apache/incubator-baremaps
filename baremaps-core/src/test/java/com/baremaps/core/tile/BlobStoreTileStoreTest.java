@@ -15,7 +15,7 @@
 package com.baremaps.core.tile;
 
 import com.baremaps.collection.utils.FileUtils;
-import com.baremaps.core.blob.FileBlobStore;
+import com.baremaps.blob.FileBlobStore;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -47,6 +47,7 @@ The repository contains several sets of directories with code:
 The source code of Baremaps is organized in modules:
 
 - `baremaps-benchmarks` contains JMH benchmarks.
+- `baremaps-blob` contains an storage abstraction for reading and writing blobs.
 - `baremaps-cli` contains the command line interface of baremaps.
 - `baremaps-collection` contains fast on-heap, off-heap, and on-disk collections inspired by planetiler.
 - `baremaps-core` contains the pipeline to import osm data in postgis and produce vector tiles.

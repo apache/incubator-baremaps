@@ -18,8 +18,8 @@ import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 
 import com.baremaps.cli.Options;
-import com.baremaps.core.blob.BlobStore;
-import com.baremaps.core.blob.BlobStoreException;
+import com.baremaps.blob.BlobStore;
+import com.baremaps.blob.BlobStoreException;
 import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.core.tile.MBTiles;
 import com.baremaps.core.tile.PostgresQuery;

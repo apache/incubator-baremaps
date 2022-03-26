@@ -14,7 +14,7 @@
 
 package com.baremaps.core.tile;
 
-import com.baremaps.core.blob.Blob;
+import com.baremaps.blob.Blob;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;

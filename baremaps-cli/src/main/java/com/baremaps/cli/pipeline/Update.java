@@ -16,7 +16,7 @@ package com.baremaps.cli.pipeline;
 
 import com.baremaps.cli.Options;
 import com.baremaps.collection.LongDataMap;
-import com.baremaps.core.blob.BlobStore;
+import com.baremaps.blob.BlobStore;
 import com.baremaps.core.database.UpdateService;
 import com.baremaps.core.database.collection.PostgresCoordinateMap;
 import com.baremaps.core.database.collection.PostgresReferenceMap;

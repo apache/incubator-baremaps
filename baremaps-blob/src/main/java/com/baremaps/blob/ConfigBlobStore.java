@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.core.blob;
+package com.baremaps.blob;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;

@@ -26,7 +26,7 @@ import com.baremaps.collection.type.LongDataType;
 import com.baremaps.collection.type.LongListDataType;
 import com.baremaps.collection.type.PairDataType;
 import com.baremaps.collection.utils.FileUtils;
-import com.baremaps.core.blob.BlobStore;
+import com.baremaps.blob.BlobStore;
 import com.baremaps.core.database.ImportService;
 import com.baremaps.core.database.repository.HeaderRepository;
 import com.baremaps.core.database.repository.PostgresHeaderRepository;

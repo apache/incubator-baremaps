@@ -17,9 +17,9 @@ package com.baremaps.cli.pipeline;
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 
 import com.baremaps.cli.Options;
-import com.baremaps.core.blob.Blob;
-import com.baremaps.core.blob.BlobStore;
-import com.baremaps.core.blob.BlobStoreException;
+import com.baremaps.blob.Blob;
+import com.baremaps.blob.BlobStore;
+import com.baremaps.blob.BlobStoreException;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.MbStyleSources;
 import com.baremaps.model.TileJSON;
