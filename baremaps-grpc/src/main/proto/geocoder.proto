@@ -1,0 +1,33 @@
+ syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.baremaps.grpc";
+option java_outer_classname = "GeocoderProto";
+option objc_class_prefix = "GEO";
+
+package geocoder;
+
+// The greeting service definition.
+service Geocoder {
+  // Sends a greeting
+  rpc search (SearchRequest) returns (SearchReply) {}
+}
+
+// The request message containing the user's name.
+message SearchRequest {
+  string query = 1;
+  optional int32 limit = 2;
+}
+
+// The response message containing the greetings
+message SearchReply {
+  message GeonamesResults {
+    message GeoPoint {
+      int32 longitude = 1;
+      int32 latitude = 2;
+    }
+    string name = 1;
+    GeoPoint location = 2;
+  }
+  repeated GeonamesResults geonamesResults = 1;
+}
