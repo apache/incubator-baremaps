@@ -28,10 +28,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import org.apache.sis.storage.FeatureSet;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A utility class for parsing an OpenStreetMap pbf file. */
-public class OsmPbfParser {
+public class PbfReader {
 
   private int buffer = Runtime.getRuntime().availableProcessors();
 
@@ -58,7 +59,7 @@ public class OsmPbfParser {
    * @param buffer the size of the buffer
    * @return the parser
    */
-  public OsmPbfParser buffer(int buffer) {
+  public PbfReader buffer(int buffer) {
     this.buffer = buffer;
     return this;
   }
@@ -78,7 +79,7 @@ public class OsmPbfParser {
    * @param geometries the value of the flag
    * @return the parser
    */
-  public OsmPbfParser geometries(boolean geometries) {
+  public PbfReader geometries(boolean geometries) {
     this.geometry = geometries;
     return this;
   }
@@ -98,7 +99,7 @@ public class OsmPbfParser {
    * @param srid the projection of the geometries
    * @return the parser
    */
-  public OsmPbfParser projection(int srid) {
+  public PbfReader projection(int srid) {
     this.srid = srid;
     return this;
   }
@@ -118,7 +119,7 @@ public class OsmPbfParser {
    * @param coordinates the map of coordinates
    * @return the parser
    */
-  public OsmPbfParser coordinates(LongDataMap<Coordinate> coordinates) {
+  public PbfReader coordinates(LongDataMap<Coordinate> coordinates) {
     this.coordinates = coordinates;
     return this;
   }
@@ -138,7 +139,7 @@ public class OsmPbfParser {
    * @param references the map of references
    * @return the parser
    */
-  public OsmPbfParser references(LongDataMap<List<Long>> references) {
+  public PbfReader references(LongDataMap<List<Long>> references) {
     this.references = references;
     return this;
   }

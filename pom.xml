@@ -80,6 +80,8 @@
     <version.lib.servlet>3.1.0</version.lib.servlet>
     <version.lib.graalvm>22.0.0.2</version.lib.graalvm>
     <version.lib.ipresource>1.49</version.lib.ipresource>
+    <version.lib.sis>1.1</version.lib.sis>
+    <version.lib.esri>2.2.4</version.lib.esri>
 
     <!-- testing -->
     <version.lib.testng>7.4.0</version.lib.testng>
@@ -392,6 +394,58 @@
         <artifactId>baremaps-iploc</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
+      </dependency>
+
+      <!-- Apache SIS -->
+      <dependency>
+        <groupId>org.apache.sis.core</groupId>
+        <artifactId>sis-feature</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.core</groupId>
+        <artifactId>sis-utility</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.core</groupId>
+        <artifactId>sis-referencing</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-storage</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-earth-observation</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-geotiff</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-xmlstore</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-sqlstore</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-netcdf</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.esri.geometry</groupId>
+        <artifactId>esri-geometry-api</artifactId>
+        <version>${version.lib.esri}</version>
       </dependency>
 
       <!-- External dependencies -->

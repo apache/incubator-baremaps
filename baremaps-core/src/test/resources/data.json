@@ -3,9 +3,9 @@
     {
       "id" : "monaco-shapefile.zip",
       "url": "res:///monaco-shapefile.zip",
-      "file": "gis_osm_buildings_a_free_1.shp",
+      "archive": "zip",
       "format": "shp",
-      "archive": "zip"
+      "file": "gis_osm_buildings_a_free_1.shp"
     }
   ]
 }

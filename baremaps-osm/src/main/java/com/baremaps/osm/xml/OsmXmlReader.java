@@ -10,23 +10,23 @@
  * the License.
  */
 
-package com.baremaps.osm.change;
+package com.baremaps.osm.xml;
 
-import com.baremaps.osm.domain.Change;
+import com.baremaps.osm.domain.Entity;
 import java.io.InputStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-/** A utility class for parsing an OpenStreetMap change file. */
-public class OsmChangeParser {
+/** A utility class for parsing an OpenStreetMap XML file. */
+public class OsmXmlReader {
 
   /**
-   * Creates an ordered stream of OSM changes from an XML file.
+   * Creates an ordered stream of OSM entities from a XML file.
    *
    * @param input
    * @return
    */
-  public Stream<Change> changes(InputStream input) {
-    return StreamSupport.stream(new OsmChangeSpliterator(input), false);
+  public Stream<Entity> entities(InputStream input) {
+    return StreamSupport.stream(new OsmXmlSpliterator(input), false);
   }
 }

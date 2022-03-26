@@ -12,27 +12,27 @@
 
 package com.baremaps.osm;
 
-import com.baremaps.osm.change.OsmChangeParser;
-import com.baremaps.osm.pbf.OsmPbfParser;
-import com.baremaps.osm.state.OsmStateParser;
-import com.baremaps.osm.xml.OsmXmlParser;
+import com.baremaps.osm.change.OsmChangeReader;
+import com.baremaps.osm.pbf.PbfReader;
+import com.baremaps.osm.state.StateReader;
+import com.baremaps.osm.xml.OsmXmlReader;
 
 /** Utility methods for creating OpenStreetMap parsers. */
-public class OsmParsers {
+public class OsmReaders {
 
-  public static OsmStateParser state() {
-    return new OsmStateParser();
+  public static StateReader state() {
+    return new StateReader();
   }
 
-  public static OsmPbfParser pbf() {
-    return new OsmPbfParser();
+  public static PbfReader pbf() {
+    return new PbfReader();
   }
 
-  public static OsmXmlParser xml() {
-    return new OsmXmlParser();
+  public static OsmXmlReader xml() {
+    return new OsmXmlReader();
   }
 
-  public static OsmChangeParser change() {
-    return new OsmChangeParser();
+  public static OsmChangeReader change() {
+    return new OsmChangeReader();
   }
 }

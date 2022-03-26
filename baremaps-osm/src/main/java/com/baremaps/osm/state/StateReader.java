@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OsmStateParser {
+public class StateReader {
 
   /**
    * Parse an OSM state file.

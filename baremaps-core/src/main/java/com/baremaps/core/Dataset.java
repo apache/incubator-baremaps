@@ -1,6 +1,6 @@
-package com.baremaps.core.data;
+package com.baremaps.core;
 
-public class Source {
+public class Dataset {
 
   private String id;
 
@@ -12,7 +12,7 @@ public class Source {
 
   private String file;
 
-  public Source() {
+  public Dataset() {
 
   }
 
@@ -55,4 +55,5 @@ public class Source {
   public void setArchive(String archive) {
     this.archive = archive;
   }
+
 }

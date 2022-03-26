@@ -8,22 +8,16 @@ import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.sis.feature.AbstractFeature;
 import org.apache.sis.feature.AbstractIdentifiedType;
+import org.apache.sis.feature.DefaultAttributeType;
 import org.apache.sis.feature.DefaultFeatureType;
-import org.apache.sis.internal.shapefile.jdbc.DBase3FieldDescriptor;
-import org.apache.sis.internal.shapefile.jdbc.DBaseDataType;
 
 public class PostgresFeatureRepository {
 
   private final DefaultFeatureType featureType;
-
-  private final Map<String, DBaseDataType> descriptors;
 
   private final DataSource dataSource;
 
@@ -35,30 +29,28 @@ public class PostgresFeatureRepository {
 
   private String drop;
 
+  private String copy;
+
   public PostgresFeatureRepository(
       DataSource dataSource,
-      DefaultFeatureType featureType,
-      Collection<DBase3FieldDescriptor> descriptors) {
+      DefaultFeatureType featureType) {
     this.dataSource = dataSource;
     this.featureType = featureType;
-    this.descriptors = descriptors.stream().collect(Collectors.toMap(d -> d.getName(), d -> d.getType()));
-    this.create = String.format("CREATE TABLE IF NOT EXISTS %s (%s)",
-        tableName(),
-        featureType.getProperties(false).stream()
-            .map(this::columnDefinition)
-            .collect(Collectors.joining(", ")));
-    this.select = String.format("SELECT * FROM %s", tableName());
-    this.insert = String.format("INSERT INTO %s (%s) VALUES (%s)",
-        tableName(),
-        featureType.getProperties(false).stream()
-            .map(a -> a.getName().toString())
-            .collect(Collectors.joining(", ")),
-        featureType.getProperties(false).stream()
-            .map(a -> "?").collect(Collectors.joining(", ")));
-    this.drop = String.format("DROP TABLE IF EXISTS %s CASCADE", tableName());
+    String tableName = featureType.getName().toString().replace(".", "_");
+    String columnDefinitions = featureType.getProperties(false).stream()
+        .map(this::columnDefinition)
+        .collect(Collectors.joining(", "));
+    String columnNames = featureType.getProperties(false).stream()
+        .map(a -> a.getName().toString())
+        .collect(Collectors.joining(", "));
+    String columnValues = featureType.getProperties(false).stream()
+        .map(a -> "?").collect(Collectors.joining(", "));
+    this.create = String.format("CREATE TABLE IF NOT EXISTS %s (%s)", tableName, columnDefinitions);
+    this.insert = String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, columnNames, columnValues);
+    this.copy = String.format( "COPY %s (%s) FROM STDIN BINARY", tableName, columnNames);
+    this.drop = String.format("DROP TABLE IF EXISTS %s CASCADE", tableName);
+    this.select = String.format("SELECT * FROM %s", tableName);
   }
-
-
 
   public void create() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -96,8 +88,6 @@ public class PostgresFeatureRepository {
               .getInstance().getOperator(Operator.Type.ExportToWkb);
           ByteBuffer byteBuffer = operatorExport.execute(0, (Geometry) value, null);
           value = byteBuffer.array();
-        } else {
-          value = valueType(descriptors.get(name), (String) value);
         }
         statement.setObject(i++, value);
       }
@@ -105,66 +95,25 @@ public class PostgresFeatureRepository {
     } catch (SQLException e) {
       throw new RepositoryException(e);
     }
-
-  }
-
-  private String tableName() {
-    return featureType.getName().toString().replace(".", "_");
   }
 
   private String columnDefinition(AbstractIdentifiedType attributeType) {
     String name = attributeType.getName().toString();
-    String type = Optional.ofNullable(descriptors.get(name))
-        .map(this::columnType)
-        .orElse("geometry");
+    String type =  columnType(((DefaultAttributeType) attributeType).getValueClass().getSimpleName());
     return String.format("%s %s", name, type);
   }
 
-  private String columnType(DBaseDataType type) {
+  private String columnType(String type) {
     switch (type) {
-      case Integer:
-      case AutoIncrement:
+      case "Integer":
         return "integer";
-      case Number:
-      case Double:
-      case FloatingPoint:
+      case "Number":
+      case "Double":
+      case "Float":
         return "numeric";
-      case Picture:
-      case Character:
-      case Logical:
-      case Date:
-      case Memo:
-      case Currency:
-      case DateTime:
-      case VariField:
-      case Variant:
-      case TimeStamp:
+      case "String":
       default:
         return "varchar";
-    }
-  }
-
-  private Object valueType(DBaseDataType type, String value) {
-    switch (type) {
-      case Integer:
-      case AutoIncrement:
-        return Integer.valueOf(value);
-      case Number:
-      case Double:
-      case FloatingPoint:
-        return Double.valueOf(value);
-      case Picture:
-      case Character:
-      case Logical:
-      case Date:
-      case Memo:
-      case Currency:
-      case DateTime:
-      case VariField:
-      case Variant:
-      case TimeStamp:
-      default:
-        return value;
     }
   }
 

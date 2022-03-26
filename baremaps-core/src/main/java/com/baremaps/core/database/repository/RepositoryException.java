@@ -15,11 +15,11 @@ package com.baremaps.core.database.repository;
 /** Signals that an exception occurred in a {@code Repository}. */
 public class RepositoryException extends Exception {
 
-  /** Constructs a {@code DatabaseException} with {@code null} as its error detail message. */
+  /** Constructs a {@code RepositoryException} with {@code null} as its error detail message. */
   public RepositoryException() {}
 
   /**
-   * Constructs an {@code DatabaseException} with the specified detail message.
+   * Constructs an {@code RepositoryException} with the specified detail message.
    *
    * @param message the message
    */
@@ -28,7 +28,7 @@ public class RepositoryException extends Exception {
   }
 
   /**
-   * Constructs a {@code DatabaseException} with the specified cause.
+   * Constructs a {@code RepositoryException} with the specified cause.
    *
    * @param cause the cause
    */
@@ -37,7 +37,7 @@ public class RepositoryException extends Exception {
   }
 
   /**
-   * Constructs a {@code DatabaseException} with the specified detail message and cause.
+   * Constructs a {@code RepositoryException} with the specified detail message and cause.
    *
    * @param message the message
    * @param cause the cause

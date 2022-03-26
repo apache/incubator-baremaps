@@ -1,6 +1,8 @@
-package com.baremaps.core.data;
+package com.baremaps.core.util;
 
 import com.baremaps.collection.utils.FileUtils;
+import com.baremaps.core.Context;
+import com.baremaps.core.Pipeline;
 import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.blob.BlobStoreRouter;
 import com.baremaps.core.database.PostgresBaseTest;
@@ -23,15 +25,15 @@ class DataManagerTest extends PostgresBaseTest {
 
   DataSource dataSource;
 
-  DataManager dataManager;
+  Pipeline dataManager;
 
   @BeforeEach
   public void before() throws IOException, SQLException {
     BlobStore blobStore = new BlobStoreRouter();
-    Config config = new ObjectMapper().readValue(Resources.getResource("data.json"), Config.class);
+    Context config = new ObjectMapper().readValue(Resources.getResource("data.json"), Context.class);
     sources = Files.createDirectories(Paths.get("sources"));
     dataSource = initDataSource();
-    dataManager = new DataManager(blobStore, dataSource, config, sources);
+    dataManager = new Pipeline(blobStore, dataSource, config, sources);
   }
 
   @AfterEach

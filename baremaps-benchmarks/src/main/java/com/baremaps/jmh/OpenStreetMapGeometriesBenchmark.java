@@ -24,7 +24,7 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
-import com.baremaps.osm.pbf.OsmPbfParser;
+import com.baremaps.osm.pbf.PbfReader;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -84,7 +84,7 @@ public class OpenStreetMapGeometriesBenchmark {
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      new OsmPbfParser()
+      new PbfReader()
           .coordinates(coordinates)
           .references(references)
           .projection(4326)
