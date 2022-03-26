@@ -16,14 +16,14 @@ package com.baremaps.core.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.baremaps.blob.BlobStore;
+import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.collection.DataStore;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.collection.LongDataOpenHashMap;
 import com.baremaps.collection.memory.OnHeapMemory;
 import com.baremaps.collection.type.CoordinateDataType;
 import com.baremaps.collection.type.LongListDataType;
-import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.core.database.collection.PostgresCoordinateMap;
 import com.baremaps.core.database.collection.PostgresReferenceMap;
 import com.baremaps.core.database.repository.PostgresHeaderRepository;

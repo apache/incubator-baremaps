@@ -16,8 +16,8 @@ package com.baremaps.cli.pipeline;
 
 import static com.baremaps.core.tile.VariableUtils.interpolate;
 
-import com.baremaps.cli.Options;
 import com.baremaps.blob.BlobStore;
+import com.baremaps.cli.Options;
 import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.osm.stream.StreamException;
 import com.baremaps.osm.stream.StreamUtils;

@@ -16,9 +16,9 @@ package com.baremaps.core.database;
 
 import static com.baremaps.osm.stream.ConsumerUtils.consumeThenReturn;
 
-import com.baremaps.collection.LongDataMap;
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
+import com.baremaps.collection.LongDataMap;
 import com.baremaps.core.database.repository.HeaderRepository;
 import com.baremaps.core.database.repository.Repository;
 import com.baremaps.core.tile.Tile;

@@ -19,9 +19,7 @@ import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-/**
- * A spliter.
- */
+/** A spliter. */
 class NicSpliterator implements Spliterator<NicObject> {
 
   private final Spliterator<String> lineSpliterator;
