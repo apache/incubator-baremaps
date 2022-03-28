@@ -16,7 +16,8 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
-import com.baremaps.osm.pbf.PbfReader;
+import com.baremaps.osm.pbf.PbfBlockReader;
+import com.baremaps.osm.pbf.PbfEntityReader;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -69,25 +70,25 @@ public class OpenStreetMapBenchmark {
     AtomicLong relations = new AtomicLong(0);
 
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      new PbfReader()
-          .entities(inputStream)
-          .forEach(
-              new EntityConsumerAdapter() {
-                @Override
-                public void match(Node node) {
-                  nodes.incrementAndGet();
-                }
+      new PbfEntityReader(new PbfBlockReader())
+          .stream(inputStream)
+              .forEach(
+                  new EntityConsumerAdapter() {
+                    @Override
+                    public void match(Node node) {
+                      nodes.incrementAndGet();
+                    }
 
-                @Override
-                public void match(Way way) {
-                  ways.incrementAndGet();
-                }
+                    @Override
+                    public void match(Way way) {
+                      ways.incrementAndGet();
+                    }
 
-                @Override
-                public void match(Relation relation) {
-                  relations.incrementAndGet();
-                }
-              });
+                    @Override
+                    public void match(Relation relation) {
+                      relations.incrementAndGet();
+                    }
+                  });
     }
   }
 

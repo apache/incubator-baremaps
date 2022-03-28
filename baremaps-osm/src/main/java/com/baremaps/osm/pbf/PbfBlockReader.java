@@ -15,24 +15,24 @@ package com.baremaps.osm.pbf;
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import com.baremaps.collection.LongDataMap;
+import com.baremaps.osm.OsmReader;
+import com.baremaps.osm.domain.Blob;
 import com.baremaps.osm.domain.Block;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.function.BlockEntityConsumer;
 import com.baremaps.osm.function.CreateGeometryConsumer;
 import com.baremaps.osm.function.ReprojectEntityConsumer;
 import com.baremaps.osm.store.DataStoreConsumer;
-import com.baremaps.stream.StreamException;
 import com.baremaps.stream.StreamUtils;
 import java.io.InputStream;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import org.apache.sis.storage.FeatureSet;
 import org.locationtech.jts.geom.Coordinate;
 
-/** A utility class for parsing an OpenStreetMap pbf file. */
-public class PbfReader {
+/** A utility class for reading an OpenStreetMap pbf file. */
+public class PbfBlockReader implements OsmReader<Block> {
 
   private int buffer = Runtime.getRuntime().availableProcessors();
 
@@ -59,7 +59,7 @@ public class PbfReader {
    * @param buffer the size of the buffer
    * @return the parser
    */
-  public PbfReader buffer(int buffer) {
+  public PbfBlockReader buffer(int buffer) {
     this.buffer = buffer;
     return this;
   }
@@ -79,7 +79,7 @@ public class PbfReader {
    * @param geometries the value of the flag
    * @return the parser
    */
-  public PbfReader geometries(boolean geometries) {
+  public PbfBlockReader geometries(boolean geometries) {
     this.geometry = geometries;
     return this;
   }
@@ -99,7 +99,7 @@ public class PbfReader {
    * @param srid the projection of the geometries
    * @return the parser
    */
-  public PbfReader projection(int srid) {
+  public PbfBlockReader projection(int srid) {
     this.srid = srid;
     return this;
   }
@@ -119,7 +119,7 @@ public class PbfReader {
    * @param coordinates the map of coordinates
    * @return the parser
    */
-  public PbfReader coordinates(LongDataMap<Coordinate> coordinates) {
+  public PbfBlockReader coordinates(LongDataMap<Coordinate> coordinates) {
     this.coordinates = coordinates;
     return this;
   }
@@ -139,7 +139,7 @@ public class PbfReader {
    * @param references the map of references
    * @return the parser
    */
-  public PbfReader references(LongDataMap<List<Long>> references) {
+  public PbfBlockReader references(LongDataMap<List<Long>> references) {
     this.references = references;
     return this;
   }
@@ -150,11 +150,11 @@ public class PbfReader {
    * @param inputStream an osm pbf {@link InputStream}
    * @return a stream of blocks
    */
-  public Stream<Block> blocks(InputStream inputStream) {
+  public Stream<Block> stream(InputStream inputStream) {
     Stream<Block> blocks =
         StreamUtils.bufferInSourceOrder(
             StreamUtils.stream(new BlobIterator(inputStream)),
-            BlockReader::read,
+            this::read,
             Runtime.getRuntime().availableProcessors());
     if (geometry) {
       Consumer<Block> cacheBlock = new DataStoreConsumer(coordinates, references);
@@ -171,23 +171,14 @@ public class PbfReader {
     return blocks;
   }
 
-  /**
-   * Creates an ordered stream of entities.
-   *
-   * @param inputStream an osm pbf {@link InputStream}
-   * @return a stream of blocks
-   */
-  public Stream<Entity> entities(InputStream inputStream) {
-    return blocks(inputStream)
-        .flatMap(
-            block -> {
-              try {
-                Stream.Builder<Entity> entities = Stream.builder();
-                block.visit(new BlockEntityConsumer(entities::add));
-                return entities.build();
-              } catch (Exception e) {
-                throw new StreamException(e);
-              }
-            });
+  public Block read(Blob blob) {
+    switch (blob.header().getType()) {
+      case "OSMHeader":
+        return HeaderBlockReader.read(blob);
+      case "OSMData":
+        return DataBlockReader.read(blob);
+      default:
+        throw new RuntimeException("Unknown blob type");
+    }
   }
 }

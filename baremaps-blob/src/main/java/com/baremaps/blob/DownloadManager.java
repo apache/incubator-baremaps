@@ -21,9 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-/**
- * An object for downloading and saving blobs in the local file system.
- */
+/** An object for downloading and saving blobs in the local file system. */
 public class DownloadManager {
 
   private final BlobStore blobStore;

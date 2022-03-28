@@ -21,7 +21,7 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.CreateGeometryConsumer;
 import com.baremaps.osm.store.MockLongDataMap;
-import com.baremaps.osm.xml.OsmXmlReader;
+import com.baremaps.osm.xml.XmlEntityReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -36,7 +36,7 @@ class RelationGeometryTest {
 
   Geometry handleRelation(String file) throws IOException {
     InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
-    List<Entity> entities = new OsmXmlReader().entities(input).collect(Collectors.toList());
+    List<Entity> entities = new XmlEntityReader().stream(input).collect(Collectors.toList());
     LongDataMap<Coordinate> coordinates =
         new MockLongDataMap<>(
             entities.stream()

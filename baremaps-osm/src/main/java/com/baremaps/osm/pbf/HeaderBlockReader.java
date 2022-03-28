@@ -26,7 +26,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.zip.DataFormatException;
 
 /** A reader that extracts header blocks and entities from OpenStreetMap header blobs. */
-public class HeaderBlockReader {
+class HeaderBlockReader {
 
   public static final DateTimeFormatter format =
       DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");

@@ -12,10 +12,10 @@
 
 package com.baremaps.osm;
 
-import com.baremaps.osm.change.OsmChangeReader;
-import com.baremaps.osm.pbf.PbfReader;
+import com.baremaps.osm.pbf.PbfBlockReader;
 import com.baremaps.osm.state.StateReader;
-import com.baremaps.osm.xml.OsmXmlReader;
+import com.baremaps.osm.xml.XmlChangeReader;
+import com.baremaps.osm.xml.XmlEntityReader;
 
 /** Utility methods for creating OpenStreetMap parsers. */
 public class OsmReaders {
@@ -24,15 +24,15 @@ public class OsmReaders {
     return new StateReader();
   }
 
-  public static PbfReader pbf() {
-    return new PbfReader();
+  public static PbfBlockReader pbf() {
+    return new PbfBlockReader();
   }
 
-  public static OsmXmlReader xml() {
-    return new OsmXmlReader();
+  public static XmlEntityReader xml() {
+    return new XmlEntityReader();
   }
 
-  public static OsmChangeReader change() {
-    return new OsmChangeReader();
+  public static XmlChangeReader change() {
+    return new XmlChangeReader();
   }
 }

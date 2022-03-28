@@ -1,6 +1,17 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.core;
 
-import com.baremaps.core.blob.BlobStore;
 import com.baremaps.core.database.repository.PostgresFeatureRepository;
 import java.io.InputStream;
 import java.net.URI;
@@ -10,10 +21,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import javax.sql.DataSource;
 import org.apache.sis.feature.AbstractFeature;
 import org.apache.sis.feature.DefaultFeatureType;
 import org.apache.sis.storage.shapefile.InputFeatureStream;
@@ -25,36 +34,30 @@ public class Pipeline {
 
   private static final Logger logger = LoggerFactory.getLogger(Pipeline.class);
 
-  private BlobStore blobStore;
+  private Context context;
 
-  private DataSource dataSource;
+  private List<Source> sources = new ArrayList<>();
 
-  private Path directory;
-
-  private List<Dataset> sources = new ArrayList<>();
-
-  public Pipeline(BlobStore blobStore, DataSource dataSource, Context config, Path directory) {
-    this.blobStore = blobStore;
-    this.dataSource = dataSource;
-    this.directory = directory;
+  public Pipeline(Context context) {
+    this.context = context;
   }
 
   public void execute() {
     sources.stream().parallel().forEach(this::handle);
   }
 
-  private void handle(Dataset source) {
+  private void handle(Source source) {
     URI uri = URI.create(source.getUrl());
-    Path dir = directory.resolve(source.getId());
-    Path file = dir.resolve(source.getFile());
+    Path directory = context.directory().resolve(source.getId());
+    Path file = directory.resolve(source.getFile());
 
     // Download and save the source
     switch (source.getArchive()) {
       case "zip":
-        downloadZip(uri, dir);
+        downloadZip(uri, directory);
         break;
       default:
-        downloadRaw(uri, dir);
+        downloadRaw(uri, directory);
         break;
     }
 
@@ -79,7 +82,7 @@ public class Pipeline {
   }
 
   private void downloadZip(URI uri, Path path) {
-    try (ZipInputStream zis = new ZipInputStream(blobStore.get(uri).getInputStream())) {
+    try (ZipInputStream zis = new ZipInputStream(context.blobStore().get(uri).getInputStream())) {
       ZipEntry ze;
       while ((ze = zis.getNextEntry()) != null) {
         Path file = path.resolve(ze.getName());
@@ -93,7 +96,7 @@ public class Pipeline {
 
   private void downloadRaw(URI uri, Path path) {
     Path file = path.resolve(Paths.get(uri.getPath()).getFileName());
-    try (InputStream is = blobStore.get(uri).getInputStream()) {
+    try (InputStream is = context.blobStore().get(uri).getInputStream()) {
       Files.createDirectories(file.getParent());
       Files.copy(is, file, StandardCopyOption.REPLACE_EXISTING);
     } catch (Exception e) {
@@ -105,7 +108,8 @@ public class Pipeline {
     ShapeFile shp = new ShapeFile(file.toAbsolutePath().toString());
     try (InputFeatureStream is = shp.findAll()) {
       DefaultFeatureType featureType = is.getFeaturesType();
-      PostgresFeatureRepository repository = new PostgresFeatureRepository(dataSource, featureType);
+      PostgresFeatureRepository repository =
+          new PostgresFeatureRepository(context.dataSource(), featureType);
       repository.create();
       AbstractFeature feature = is.readFeature();
       while (feature != null) {
@@ -117,9 +121,5 @@ public class Pipeline {
     }
   }
 
-  private void importPbf(Path file) {
-
-  }
-
-
+  private void importPbf(Path file) {}
 }

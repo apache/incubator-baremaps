@@ -50,7 +50,7 @@ import javax.xml.stream.XMLStreamReader;
  * An object for traversing an OpenStreetMap XML file describing entities (osm.xml) and creating a
  * stream.
  */
-public class OsmXmlSpliterator implements Spliterator<Entity> {
+public class XmlEntitySpliterator implements Spliterator<Entity> {
 
   private static final String ELEMENT_NAME_OSM = "osm";
   private static final String ELEMENT_NAME_BOUND = "bound";
@@ -89,7 +89,7 @@ public class OsmXmlSpliterator implements Spliterator<Entity> {
 
   private final XMLStreamReader reader;
 
-  public OsmXmlSpliterator(InputStream input) {
+  public XmlEntitySpliterator(InputStream input) {
     XMLInputFactory factory = XMLInputFactory.newInstance();
     factory.setProperty(SUPPORT_DTD, false);
     factory.setProperty(IS_SUPPORTING_EXTERNAL_ENTITIES, false);

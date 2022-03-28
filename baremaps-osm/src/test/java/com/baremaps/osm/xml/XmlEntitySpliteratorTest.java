@@ -30,7 +30,7 @@ class XmlEntitySpliteratorTest {
   @Test
   void tryAdvance() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
-      Spliterator<Entity> spliterator = new OsmXmlSpliterator(input);
+      Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
       spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
       assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
     }
@@ -39,7 +39,7 @@ class XmlEntitySpliteratorTest {
   @Test
   void forEachRemaining() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
-      Spliterator<Entity> spliterator = new OsmXmlSpliterator(input);
+      Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
       AccumulatingConsumer<Object> accumulator = new AccumulatingConsumer<>();
       spliterator.forEachRemaining(accumulator);
       assertEquals(12, accumulator.values().size());

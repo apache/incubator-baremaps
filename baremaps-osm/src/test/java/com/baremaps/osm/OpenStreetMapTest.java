@@ -24,7 +24,6 @@ import static com.baremaps.testing.TestFiles.WAYS_OSM_PBF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.baremaps.osm.change.OsmChangeReader;
 import com.baremaps.osm.domain.Bound;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Header;
@@ -33,9 +32,11 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.State;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumer;
-import com.baremaps.osm.pbf.PbfReader;
+import com.baremaps.osm.pbf.PbfBlockReader;
+import com.baremaps.osm.pbf.PbfEntityReader;
 import com.baremaps.osm.state.StateReader;
-import com.baremaps.osm.xml.OsmXmlReader;
+import com.baremaps.osm.xml.XmlChangeReader;
+import com.baremaps.osm.xml.XmlEntityReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -51,21 +52,21 @@ class OpenStreetMapTest {
   @Test
   void dataOsmXml() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
-      assertEquals(12, new OsmXmlReader().entities(input).collect(Collectors.toList()).size());
+      assertEquals(12, new XmlEntityReader().stream(input).collect(Collectors.toList()).size());
     }
   }
 
   @Test
   void dataOsmXmlNodes() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
-      assertEquals(6, new OsmXmlReader().entities(input).filter(e -> e instanceof Node).count());
+      assertEquals(6, new XmlEntityReader().stream(input).filter(e -> e instanceof Node).count());
     }
   }
 
   @Test
   void dataOsmXmlWays() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
-      assertEquals(3, new OsmXmlReader().entities(input).filter(e -> e instanceof Way).count());
+      assertEquals(3, new XmlEntityReader().stream(input).filter(e -> e instanceof Way).count());
     }
   }
 
@@ -73,35 +74,41 @@ class OpenStreetMapTest {
   void dataOsmXmlRelations() throws IOException {
     try (InputStream input = DATA_OSM_XML.openStream()) {
       assertEquals(
-          1, new OsmXmlReader().entities(input).filter(e -> e instanceof Relation).count());
+          1, new XmlEntityReader().stream(input).filter(e -> e instanceof Relation).count());
     }
   }
 
   @Test
   void dataOscXml() throws IOException {
     try (InputStream input = DATA_OSC_XML.openStream()) {
-      assertEquals(7, new OsmChangeReader().changes(input).collect(Collectors.toList()).size());
+      assertEquals(7, new XmlChangeReader().stream(input).collect(Collectors.toList()).size());
     }
   }
 
   @Test
   void dataOsmPbf() throws IOException {
     try (InputStream input = DATA_OSM_PBF.openStream()) {
-      assertEquals(72002, new PbfReader().entities(input).count());
+      assertEquals(72002, new PbfEntityReader(new PbfBlockReader()).stream(input).count());
     }
   }
 
   @Test
   void denseNodesOsmPbf() throws IOException {
     try (InputStream input = DENSE_NODES_OSM_PBF.openStream()) {
-      assertEquals(8000, new PbfReader().entities(input).filter(e -> e instanceof Node).count());
+      assertEquals(
+          8000,
+          new PbfEntityReader(new PbfBlockReader())
+              .stream(input).filter(e -> e instanceof Node).count());
     }
   }
 
   @Test
   void waysOsmPbf() throws IOException {
     try (InputStream input = WAYS_OSM_PBF.openStream()) {
-      assertEquals(8000, new PbfReader().entities(input).filter(e -> e instanceof Way).count());
+      assertEquals(
+          8000,
+          new PbfEntityReader(new PbfBlockReader())
+              .stream(input).filter(e -> e instanceof Way).count());
     }
   }
 
@@ -109,7 +116,9 @@ class OpenStreetMapTest {
   void relationsOsmPbf() throws IOException {
     try (InputStream input = RELATIONS_OSM_PBF.openStream()) {
       assertEquals(
-          8000, new PbfReader().entities(input).filter(e -> e instanceof Relation).count());
+          8000,
+          new PbfEntityReader(new PbfBlockReader())
+              .stream(input).filter(e -> e instanceof Relation).count());
     }
   }
 
@@ -125,7 +134,7 @@ class OpenStreetMapTest {
   @Test
   void monacoOsmPbf() throws IOException, URISyntaxException {
     try (InputStream inputStream = MONACO_OSM_PBF.openStream()) {
-      Stream<Entity> stream = new PbfReader().entities(inputStream);
+      Stream<Entity> stream = new PbfEntityReader(new PbfBlockReader()).stream(inputStream);
       process(stream, 1, 1, 25002, 4018, 243);
     }
   }
@@ -133,7 +142,7 @@ class OpenStreetMapTest {
   @Test
   void monacoOsmBz2() throws IOException, URISyntaxException {
     try (InputStream inputStream = new BZip2CompressorInputStream(MONACO_OSM_BZ2.openStream())) {
-      Stream<Entity> stream = new OsmXmlReader().entities(inputStream);
+      Stream<Entity> stream = new XmlEntityReader().stream(inputStream);
       process(stream, 1, 1, 24951, 4015, 243);
     }
   }

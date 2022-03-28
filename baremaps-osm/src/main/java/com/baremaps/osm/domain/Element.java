@@ -15,13 +15,14 @@ package com.baremaps.osm.domain;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
+import org.apache.sis.feature.AbstractFeature;
 import org.locationtech.jts.geom.Geometry;
 
 /**
  * Represents an element in an OpenStreetMap dataset. Elements are a basis to model the physical
  * world.
  */
-public abstract class Element implements Entity {
+public abstract class Element implements Entity  {
 
   protected final long id;
 

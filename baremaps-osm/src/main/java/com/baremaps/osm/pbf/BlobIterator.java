@@ -21,7 +21,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /** An iterator over the blobs of an OpenStreetMap PBF {@code InputStream}. */
-public class BlobIterator implements Iterator<Blob> {
+class BlobIterator implements Iterator<Blob> {
 
   private final DataInputStream dis;
 

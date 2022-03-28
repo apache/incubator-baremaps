@@ -19,7 +19,6 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.core.database.repository.HeaderRepository;
 import com.baremaps.core.database.repository.Repository;
-import com.baremaps.osm.change.OsmChangeReader;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Header;
@@ -33,6 +32,7 @@ import com.baremaps.osm.function.ReprojectEntityConsumer;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
 import com.baremaps.osm.state.StateReader;
+import com.baremaps.osm.xml.XmlChangeReader;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -93,7 +93,7 @@ public class UpdateService implements Callable<Void> {
     try (InputStream blobInputStream = changeBlob.getInputStream();
         InputStream progressInputStream = new InputStreamProgress(blobInputStream, progressLogger);
         InputStream gzipInputStream = new GZIPInputStream(progressInputStream)) {
-      new OsmChangeReader().changes(gzipInputStream).map(prepareChange).forEach(saveChange);
+      new XmlChangeReader().stream(gzipInputStream).map(prepareChange).forEach(saveChange);
     }
 
     URI stateUri = resolve(replicationUrl, sequenceNumber, "state.txt");

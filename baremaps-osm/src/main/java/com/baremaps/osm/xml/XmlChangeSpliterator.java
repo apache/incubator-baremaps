@@ -10,7 +10,7 @@
  * the License.
  */
 
-package com.baremaps.osm.change;
+package com.baremaps.osm.xml;
 
 import static javax.xml.stream.XMLInputFactory.IS_COALESCING;
 import static javax.xml.stream.XMLInputFactory.IS_NAMESPACE_AWARE;
@@ -49,7 +49,7 @@ import javax.xml.stream.XMLStreamReader;
  * An object for traversing an OpenStreetMap XML file describing changes (osc.xml) and creating a
  * stream.
  */
-public class OsmChangeSpliterator implements Spliterator<Change> {
+public class XmlChangeSpliterator implements Spliterator<Change> {
 
   private static final String ELEMENT_NAME_OSMCHANGE = "osmChange";
   private static final String ELEMENT_NAME_CREATE = "create";
@@ -78,7 +78,7 @@ public class OsmChangeSpliterator implements Spliterator<Change> {
 
   private final XMLStreamReader reader;
 
-  public OsmChangeSpliterator(InputStream input) {
+  public XmlChangeSpliterator(InputStream input) {
     XMLInputFactory factory = XMLInputFactory.newInstance();
     factory.setProperty(SUPPORT_DTD, false);
     factory.setProperty(IS_SUPPORTING_EXTERNAL_ENTITIES, false);

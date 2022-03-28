@@ -28,7 +28,7 @@ import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.BlockEntityConsumer;
 import com.baremaps.osm.function.CreateGeometryConsumer;
 import com.baremaps.osm.function.ReprojectEntityConsumer;
-import com.baremaps.osm.pbf.PbfReader;
+import com.baremaps.osm.pbf.PbfBlockReader;
 import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.progress.ProgressLogger;
 import com.baremaps.osm.store.DataStoreConsumer;
@@ -90,7 +90,7 @@ public class ImportService implements Callable<Void> {
     Blob blob = blobStore.get(uri);
     ProgressLogger progressLogger = new ProgressLogger(blob.getContentLength(), 5000);
     try (InputStream inputStream = new InputStreamProgress(blob.getInputStream(), progressLogger)) {
-      batch(new PbfReader().blocks(inputStream).map(prepareBlock)).forEach(saveBlock);
+      batch(new PbfBlockReader().stream(inputStream).map(prepareBlock)).forEach(saveBlock);
     }
     return null;
   }

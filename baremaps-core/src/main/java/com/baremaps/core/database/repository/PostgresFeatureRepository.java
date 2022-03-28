@@ -1,3 +1,15 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.core.database.repository;
 
 import com.esri.core.geometry.Geometry;
@@ -31,23 +43,24 @@ public class PostgresFeatureRepository {
 
   private String copy;
 
-  public PostgresFeatureRepository(
-      DataSource dataSource,
-      DefaultFeatureType featureType) {
+  public PostgresFeatureRepository(DataSource dataSource, DefaultFeatureType featureType) {
     this.dataSource = dataSource;
     this.featureType = featureType;
     String tableName = featureType.getName().toString().replace(".", "_");
-    String columnDefinitions = featureType.getProperties(false).stream()
-        .map(this::columnDefinition)
-        .collect(Collectors.joining(", "));
-    String columnNames = featureType.getProperties(false).stream()
-        .map(a -> a.getName().toString())
-        .collect(Collectors.joining(", "));
-    String columnValues = featureType.getProperties(false).stream()
-        .map(a -> "?").collect(Collectors.joining(", "));
+    String columnDefinitions =
+        featureType.getProperties(false).stream()
+            .map(this::columnDefinition)
+            .collect(Collectors.joining(", "));
+    String columnNames =
+        featureType.getProperties(false).stream()
+            .map(a -> a.getName().toString())
+            .collect(Collectors.joining(", "));
+    String columnValues =
+        featureType.getProperties(false).stream().map(a -> "?").collect(Collectors.joining(", "));
     this.create = String.format("CREATE TABLE IF NOT EXISTS %s (%s)", tableName, columnDefinitions);
-    this.insert = String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, columnNames, columnValues);
-    this.copy = String.format( "COPY %s (%s) FROM STDIN BINARY", tableName, columnNames);
+    this.insert =
+        String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, columnNames, columnValues);
+    this.copy = String.format("COPY %s (%s) FROM STDIN BINARY", tableName, columnNames);
     this.drop = String.format("DROP TABLE IF EXISTS %s CASCADE", tableName);
     this.select = String.format("SELECT * FROM %s", tableName);
   }
@@ -75,7 +88,8 @@ public class PostgresFeatureRepository {
       return;
     }
     if (!feature.getType().equals(featureType)) {
-      throw new IllegalArgumentException("The type of the feature is not compatible with this store.");
+      throw new IllegalArgumentException(
+          "The type of the feature is not compatible with this store.");
     }
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(insert)) {
@@ -84,8 +98,9 @@ public class PostgresFeatureRepository {
         String name = type.getName().toString();
         Object value = feature.getPropertyValue(name);
         if (value instanceof Geometry) {
-          OperatorExportToWkb operatorExport = (OperatorExportToWkb) OperatorFactoryLocal
-              .getInstance().getOperator(Operator.Type.ExportToWkb);
+          OperatorExportToWkb operatorExport =
+              (OperatorExportToWkb)
+                  OperatorFactoryLocal.getInstance().getOperator(Operator.Type.ExportToWkb);
           ByteBuffer byteBuffer = operatorExport.execute(0, (Geometry) value, null);
           value = byteBuffer.array();
         }
@@ -99,7 +114,8 @@ public class PostgresFeatureRepository {
 
   private String columnDefinition(AbstractIdentifiedType attributeType) {
     String name = attributeType.getName().toString();
-    String type =  columnType(((DefaultAttributeType) attributeType).getValueClass().getSimpleName());
+    String type =
+        columnType(((DefaultAttributeType) attributeType).getValueClass().getSimpleName());
     return String.format("%s %s", name, type);
   }
 
@@ -116,5 +132,4 @@ public class PostgresFeatureRepository {
         return "varchar";
     }
   }
-
 }

@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 import java.util.zip.DataFormatException;
 
 /** A reader that extracts data blocks and entities from OpenStreetMap data blobs. */
-public class DataBlockReader {
+class DataBlockReader {
 
   private final Blob blob;
 

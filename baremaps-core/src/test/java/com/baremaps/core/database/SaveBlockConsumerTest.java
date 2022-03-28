@@ -24,7 +24,7 @@ import com.baremaps.core.database.repository.PostgresRelationRepository;
 import com.baremaps.core.database.repository.PostgresWayRepository;
 import com.baremaps.core.database.repository.RepositoryException;
 import com.baremaps.core.postgres.PostgresUtils;
-import com.baremaps.osm.pbf.PbfReader;
+import com.baremaps.osm.pbf.PbfBlockReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -67,7 +67,7 @@ class SaveBlockConsumerTest {
             headerRepository, nodeRepository, tableRepository, relationRepository);
     InputStream inputStream =
         new ResourceBlobStore().get(new URI("res:///simple/data.osm.pbf")).getInputStream();
-    new PbfReader().blocks(inputStream).forEach(dataImporter);
+    new PbfBlockReader().stream(inputStream).forEach(dataImporter);
 
     // Check node importation
     assertNull(nodeRepository.get(0l));

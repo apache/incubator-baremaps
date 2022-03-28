@@ -10,17 +10,12 @@
  * the License.
  */
 
-package com.baremaps.core;
+package com.baremaps.osm;
 
-import com.baremaps.core.blob.BlobStore;
-import java.nio.file.Path;
-import javax.sql.DataSource;
+import java.io.InputStream;
+import java.util.stream.Stream;
 
-public interface Context {
+public interface OsmReader<T> {
 
-  Path directory();
-
-  BlobStore blobStore();
-
-  DataSource dataSource();
+  Stream<T> stream(InputStream inputStream);
 }
