@@ -8,6 +8,7 @@ import io.grpc.ServerBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
@@ -23,18 +24,21 @@ public class GeocoderServer {
     /* The port on which the server should run */
     int port = 50051;
     logger.info("Get geonames data.");
-    Path indexPath = Paths.get("geonamesIndex");
-    URI geonamesData = getClass().getClassLoader().getResource("geonames_sample.txt").toURI();
+    Path indexPath = Files.createTempDirectory(Paths.get("."), "geocoder_");
+    URI geonamesData = getClass().getClassLoader().getResource("CH.txt").toURI();
+
     Geocoder geocoder = new GeonamesGeocoder(indexPath, geonamesData);
     logger.info("Index Geocoder.");
     geocoder.build();
     logger.info("Index finished.");
+
     logger.info("Start grpc server.");
     server = ServerBuilder.forPort(port)
         .addService(new GeocoderServiceImpl(geocoder))
         .build()
         .start();
     logger.info("Server started, listening on " + port);
+
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
       public void run() {
