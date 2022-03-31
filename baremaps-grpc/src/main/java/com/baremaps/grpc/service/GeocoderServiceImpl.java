@@ -34,7 +34,7 @@ public class GeocoderServiceImpl extends GeocoderServiceImplBase {
     }
 
     Result bestResult;
-    if(!response.results().isEmpty()) {
+    if(response != null && !response.results().isEmpty()) {
       bestResult = response.results().get(0);
     } else {
       throw new RuntimeException("No best result found");
