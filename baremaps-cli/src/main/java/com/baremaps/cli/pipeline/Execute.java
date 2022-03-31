@@ -14,13 +14,13 @@
 
 package com.baremaps.cli.pipeline;
 
-import static com.baremaps.core.tile.VariableUtils.interpolate;
+import static com.baremaps.pipeline.tile.VariableUtils.interpolate;
 
 import com.baremaps.cli.Options;
-import com.baremaps.core.blob.BlobStore;
-import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.osm.stream.StreamException;
 import com.baremaps.osm.stream.StreamUtils;
+import com.baremaps.pipeline.blob.BlobStore;
+import com.baremaps.pipeline.postgres.PostgresUtils;
 import com.google.common.base.Splitter;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;

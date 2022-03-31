@@ -22,13 +22,10 @@ import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-/**
- * A parser for Network Coordination Center (NIC) data.
- */
+/** A parser for Network Coordination Center (NIC) data. */
 public class NicParser {
 
-  private NicParser() {
-  }
+  private NicParser() {}
 
   /**
    * Creates an ordered stream of NIC objects.

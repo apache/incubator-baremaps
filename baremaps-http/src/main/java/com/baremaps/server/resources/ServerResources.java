@@ -18,12 +18,12 @@ import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
-import com.baremaps.core.blob.Blob;
-import com.baremaps.core.blob.BlobStoreException;
-import com.baremaps.core.blob.ConfigBlobStore;
-import com.baremaps.core.tile.Tile;
-import com.baremaps.core.tile.TileStore;
-import com.baremaps.core.tile.TileStoreException;
+import com.baremaps.pipeline.blob.Blob;
+import com.baremaps.pipeline.blob.BlobStoreException;
+import com.baremaps.pipeline.blob.ConfigBlobStore;
+import com.baremaps.pipeline.tile.Tile;
+import com.baremaps.pipeline.tile.TileStore;
+import com.baremaps.pipeline.tile.TileStoreException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;

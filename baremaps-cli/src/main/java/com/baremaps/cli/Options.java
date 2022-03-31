@@ -14,10 +14,10 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.core.blob.BlobStore;
-import com.baremaps.core.blob.BlobStoreRouter;
-import com.baremaps.core.blob.HttpBlobStore;
-import com.baremaps.core.blob.S3BlobStore;
+import com.baremaps.pipeline.blob.BlobStore;
+import com.baremaps.pipeline.blob.BlobStoreRouter;
+import com.baremaps.pipeline.blob.HttpBlobStore;
+import com.baremaps.pipeline.blob.S3BlobStore;
 import picocli.CommandLine.Option;
 
 public class Options {
