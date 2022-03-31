@@ -67,10 +67,9 @@ public class IpLoc {
   }
 
   /**
-   * Process an NicObject of type Inetnum
-   * Todo: Add the country for every query
-   * Todo: Only insert if the score is above a threshold
-   * Todo: Insert the address that was used for the geocoding into the database
+   * Process an NicObject of type Inetnum Todo: Add the country for every query Todo: Only insert if
+   * the score is above a threshold Todo: Insert the address that was used for the geocoding into
+   * the database
    *
    * @param nicObject the nicObject
    * @param firstAttribute the first attribute of the NicObject which should contain the IP range

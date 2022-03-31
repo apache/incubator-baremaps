@@ -16,9 +16,7 @@ package com.baremaps.iploc;
 
 import java.util.List;
 
-/**
- * A DAO interface to interact with the Inetnum location database
- */
+/** A DAO interface to interact with the Inetnum location database */
 public interface InetnumLocationDao extends Dao<InetnumLocation> {
   List<InetnumLocation> getAllByIp(byte[] ip);
 }
