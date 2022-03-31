@@ -29,7 +29,6 @@ import java.util.stream.StreamSupport;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
@@ -90,11 +89,8 @@ public class GeonamesGeocoder extends Geocoder {
               document.add(new TextField("name", record.getName(), Store.YES));
               document.add(
                   new TextField(
-                      "country",
-                      IsoCountriesUtils.getCountry(record.getCountryCode()),
-                      Store.YES));
-              document.add(
-                  new StringField("countryCode", record.getCountryCode(), Store.YES));
+                      "country", IsoCountriesUtils.getCountry(record.getCountryCode()), Store.YES));
+              document.add(new StringField("countryCode", record.getCountryCode(), Store.YES));
               document.add(new StoredField("longitude", record.getLongitude()));
               document.add(new StoredField("latitude", record.getLatitude()));
               document.add(new StoredField("asciiname", record.getLatitude()));
