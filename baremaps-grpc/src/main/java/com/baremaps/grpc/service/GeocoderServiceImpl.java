@@ -33,11 +33,16 @@ public class GeocoderServiceImpl extends GeocoderServiceImplBase {
       e.printStackTrace();
     }
 
-    Result bestResult = response.results().get(0);
+    Result bestResult;
+    if(!response.results().isEmpty()) {
+      bestResult = response.results().get(0);
+    } else {
+      throw new RuntimeException("No best result found");
+    }
 
     GeoPoint.Builder geoPointBuilder = GeoPoint.newBuilder();
-    geoPointBuilder.setLatitude(Integer.parseInt(bestResult.document().get("latitude")));
-    geoPointBuilder.setLatitude(Integer.parseInt(bestResult.document().get("longitude")));
+    geoPointBuilder.setLatitude(Double.parseDouble(bestResult.document().get("latitude")));
+    geoPointBuilder.setLatitude(Double.parseDouble(bestResult.document().get("longitude")));
 
     GeonamesResults.Builder geonamesResultsBuilder = GeonamesResults.newBuilder();
     geonamesResultsBuilder.setLocation(geoPointBuilder);
@@ -45,5 +50,9 @@ public class GeocoderServiceImpl extends GeocoderServiceImplBase {
 
     SearchReply.Builder searchReplyBuilder = SearchReply.newBuilder();
     searchReplyBuilder.addGeonamesResults(geonamesResultsBuilder);
+
+    SearchReply searchReply = searchReplyBuilder.build();
+    responseObserver.onNext(searchReply);
+    responseObserver.onCompleted();
   }
 }

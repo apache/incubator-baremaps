@@ -7,7 +7,9 @@ import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,20 +18,23 @@ public class GeocoderServer {
   private static final Logger logger = LoggerFactory.getLogger(GeocoderServer.class);
 
   private Server server;
-  private Path indexPath;
-  private URI geonamesData;
 
-  private void start() throws IOException {
+  private void start() throws IOException, URISyntaxException {
     /* The port on which the server should run */
     int port = 50051;
-
+    logger.info("Get geonames data.");
+    Path indexPath = Paths.get("geonamesIndex");
+    URI geonamesData = getClass().getClassLoader().getResource("geonames_sample.txt").toURI();
     Geocoder geocoder = new GeonamesGeocoder(indexPath, geonamesData);
-
+    logger.info("Index Geocoder.");
+    geocoder.build();
+    logger.info("Index finished.");
+    logger.info("Start grpc server.");
     server = ServerBuilder.forPort(port)
         .addService(new GeocoderServiceImpl(geocoder))
         .build()
         .start();
-    //logger.info("Server started, listening on " + port);
+    logger.info("Server started, listening on " + port);
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
       public void run() {
@@ -63,7 +68,7 @@ public class GeocoderServer {
   /**
    * Main launches the server from the command line.
    */
-  public static void main(String[] args) throws IOException, InterruptedException {
+  public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
     final GeocoderServer server = new GeocoderServer();
     server.start();
     server.blockUntilShutdown();

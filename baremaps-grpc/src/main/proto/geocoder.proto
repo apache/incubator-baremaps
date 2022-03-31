@@ -21,8 +21,8 @@ message SearchRequest {
 message SearchReply {
   message GeonamesResults {
     message GeoPoint {
-      int32 longitude = 1;
-      int32 latitude = 2;
+      double longitude = 1;
+      double latitude = 2;
     }
     string name = 1;
     GeoPoint location = 2;

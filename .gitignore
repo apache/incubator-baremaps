@@ -2,10 +2,10 @@
 .idea/
 *.iml
 *.iws
- 
+
 # Mac
 .DS_Store
- 
+
 # Maven
 log/
 target/
@@ -23,3 +23,4 @@ jmh-result.json
 _site/
 .sass-cache/
 Gemfile.lock
+/baremaps-grpc/geocoder_*
