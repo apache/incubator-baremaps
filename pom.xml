@@ -387,7 +387,11 @@
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
-
+      <dependency>
+        <artifactId>baremaps-grpc</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
       <!-- External dependencies -->
       <dependency>
         <artifactId>guava</artifactId>

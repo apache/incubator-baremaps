@@ -127,7 +127,10 @@
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-geocoder</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-grpc</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

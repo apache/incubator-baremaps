@@ -13,13 +13,25 @@ import io.grpc.stub.StreamObserver;
 import java.io.IOException;
 import org.apache.lucene.queryparser.classic.ParseException;
 
+/**
+ * Implementation of the geocoder grpc service
+ */
 public class GeocoderServiceImpl extends GeocoderServiceImplBase {
   private Geocoder geocoder;
 
+  /**
+   * Constructs a GeocoderServiceImpl
+   * @param geocoder a baremapse-geocoder
+   */
   public GeocoderServiceImpl(Geocoder geocoder) {
     this.geocoder = geocoder;
   }
 
+  /**
+   * Implementation of the search of the geolocation of a place define by a query
+   * @param request - search request
+   * @param responseObserver - response of the search
+   */
   @Override
   public void search(SearchRequest request,
       StreamObserver<SearchReply> responseObserver) {

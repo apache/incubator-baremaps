@@ -70,11 +70,23 @@ public class GeocoderServer {
   }
 
   /**
-   * Main launches the server from the command line.
+   * Run GeocoderServer
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws URISyntaxException
    */
-  public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
+  public static void run() throws IOException, InterruptedException, URISyntaxException {
     final GeocoderServer server = new GeocoderServer();
     server.start();
     server.blockUntilShutdown();
   }
+
+  /**
+   * Main launches the server from the command line.
+   */
+  public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
+    run();
+  }
+
+
 }
