@@ -14,9 +14,63 @@
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
+    <version.lib.grpc>1.45.0</version.lib.grpc><!-- CURRENT_GRPC_VERSION -->
+    <version.lib.protobuf>3.19.4</version.lib.protobuf>
+    <version.lib.protoc>3.19.4</version.lib.protoc>
+    <version.lib.gson>2.8.9</version.lib.gson>
+    <version.lib.tomcat>6.0.53</version.lib.tomcat>
   </properties>
 
-  <!-- setup of grpc-java -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-bom</artifactId>
+        <version>${version.lib.grpc}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty-shaded</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${version.lib.gson}</version> <!-- prevent downgrade via protobuf-java-util -->
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>annotations-api</artifactId>
+      <version>${version.lib.tomcat}</version>
+      <scope>provided</scope> <!-- not needed at runtime -->
+    </dependency>
+    <!-- baremaps dependencies -->
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-geocoder</artifactId>
+    </dependency>
+    <!-- testing -->
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-testing</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
   <build>
     <extensions>
       <extension>
@@ -31,9 +85,9 @@
         <artifactId>protobuf-maven-plugin</artifactId>
         <version>0.6.1</version>
         <configuration>
-          <protocArtifact>com.google.protobuf:protoc:3.19.2:exe:${os.detected.classifier}</protocArtifact>
+          <protocArtifact>com.google.protobuf:protoc:${version.lib.protoc}:exe:${os.detected.classifier}</protocArtifact>
           <pluginId>grpc-java</pluginId>
-          <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.45.0:exe:${os.detected.classifier}</pluginArtifact>
+          <pluginArtifact>io.grpc:protoc-gen-grpc-java:${version.lib.grpc}:exe:${os.detected.classifier}</pluginArtifact>
         </configuration>
         <executions>
           <execution>
@@ -46,29 +100,4 @@
       </plugin>
     </plugins>
   </build>
-
-  <dependencies>
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-netty-shaded</artifactId>
-      <version>1.45.0</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-protobuf</artifactId>
-      <version>1.45.0</version>
-    </dependency>
-    <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-stub</artifactId>
-      <version>1.45.0</version>
-    </dependency>
-    <dependency> <!-- necessary for Java 9+ -->
-      <groupId>org.apache.tomcat</groupId>
-      <artifactId>annotations-api</artifactId>
-      <version>6.0.53</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
 </project>
