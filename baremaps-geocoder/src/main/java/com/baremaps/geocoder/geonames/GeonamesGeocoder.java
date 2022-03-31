@@ -94,7 +94,7 @@ public class GeonamesGeocoder extends Geocoder {
                       IsoCountriesUtils.getCountry(record.getCountryCode()),
                       Store.YES));
               document.add(
-                  new StringField("countryCode", record.getCountryCode(), Store.YES));
+                  new TextField("countryCode", record.getCountryCode(), Store.YES));
               document.add(new StoredField("longitude", record.getLongitude()));
               document.add(new StoredField("latitude", record.getLatitude()));
               document.add(new StoredField("asciiname", record.getLatitude()));
