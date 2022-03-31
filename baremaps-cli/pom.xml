@@ -77,11 +77,11 @@
   <dependencies>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-core</artifactId>
+      <artifactId>baremaps-pipeline</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-core</artifactId>
+      <artifactId>baremaps-pipeline</artifactId>
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>

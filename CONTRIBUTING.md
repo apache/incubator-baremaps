@@ -49,7 +49,7 @@ The source code of Baremaps is organized in modules:
 - `baremaps-benchmarks` contains JMH benchmarks.
 - `baremaps-cli` contains the command line interface of baremaps.
 - `baremaps-collection` contains fast on-heap, off-heap, and on-disk collections inspired by planetiler.
-- `baremaps-core` contains the pipeline to import osm data in postgis and produce vector tiles.
+- `baremaps-pipeline` contains the pipeline to import osm data in postgis and produce vector tiles.
 - `baremaps-http` contains the parent sever module with the main dependencies.
 - `baremaps-osm` contains parsers for various osm formats (xml, pbf) and a cache and a database abstraction to import these data.
 - `baremaps-testing` contains common utilities (data, etc.) used for testing in different module.
