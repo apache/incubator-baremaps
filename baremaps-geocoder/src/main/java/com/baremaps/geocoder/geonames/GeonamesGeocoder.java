@@ -89,12 +89,12 @@ public class GeonamesGeocoder extends Geocoder {
               Document document = new Document();
               document.add(new TextField("name", record.getName(), Store.YES));
               document.add(
-                  new StringField(
+                  new TextField(
                       "country",
                       IsoCountriesUtils.getCountry(record.getCountryCode()),
                       Store.YES));
               document.add(
-                  new TextField("countryCode", record.getCountryCode(), Store.YES));
+                  new StringField("countryCode", record.getCountryCode(), Store.YES));
               document.add(new StoredField("longitude", record.getLongitude()));
               document.add(new StoredField("latitude", record.getLatitude()));
               document.add(new StoredField("asciiname", record.getLatitude()));
