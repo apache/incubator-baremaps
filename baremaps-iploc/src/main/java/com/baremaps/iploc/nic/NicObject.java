@@ -17,9 +17,7 @@ package com.baremaps.iploc.nic;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /** Represents a NIC Object. */
@@ -89,6 +87,21 @@ public class NicObject {
         .filter(attr -> attr.name().equals(name))
         .map(NicAttribute::value)
         .collect(Collectors.toList());
+  }
+
+  /**
+   * Return the attributes as a map
+   *
+   * @return
+   */
+  public Map<String, String> toMap() {
+    HashMap<String, String> map = new HashMap<>();
+    for (NicAttribute attr : attributes()) {
+      map.put(
+          attr.name(),
+          (map.containsKey(attr.name()) ? map.get(attr.name()) + "\n" : "") + attr.value());
+    }
+    return map;
   }
 
   /** {@inheritDoc} */

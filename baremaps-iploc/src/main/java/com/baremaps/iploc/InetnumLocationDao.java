@@ -12,19 +12,13 @@
  * the License.
  */
 
-package com.baremaps.iploc.nic;
+package com.baremaps.iploc;
 
-import com.google.common.io.Resources;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class NicData {
-
-  public static List<NicObject> sample(String resource) throws IOException {
-    try (InputStream input = Resources.getResource(resource).openStream()) {
-      return NicParser.parse(input).collect(Collectors.toList());
-    }
-  }
+/**
+ * A DAO interface to interact with the Inetnum location database
+ */
+public interface InetnumLocationDao extends Dao<InetnumLocation> {
+  List<InetnumLocation> getAllByIp(byte[] ip);
 }

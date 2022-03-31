@@ -18,5 +18,23 @@
       <groupId>org.xerial</groupId>
       <version>${version.lib.sqlite}</version>
     </dependency>
+    <dependency>
+        <groupId>com.baremaps</groupId>
+        <artifactId>baremaps-geocoder</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-geocoder</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>com.baremaps</groupId>
+        <artifactId>baremaps-geocoder</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.ripe.ipresource</groupId>
+      <artifactId>ipresource</artifactId>
+    </dependency>
   </dependencies>
 </project>

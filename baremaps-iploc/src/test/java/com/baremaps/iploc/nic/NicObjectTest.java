@@ -27,7 +27,7 @@ class NicObjectTest {
 
   @BeforeEach
   public void before() throws IOException {
-    nicObjects = NicData.sample();
+    nicObjects = NicData.sample("sample.txt");
   }
 
   @Test

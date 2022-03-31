@@ -12,19 +12,25 @@
  * the License.
  */
 
-package com.baremaps.iploc.nic;
+package com.baremaps.iploc;
 
-import com.google.common.io.Resources;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-public class NicData {
+/**
+ * A basic DAO interface to implement the data access object pattern
+ *
+ * @param <T> the type of entity
+ */
+public interface Dao<T> {
 
-  public static List<NicObject> sample(String resource) throws IOException {
-    try (InputStream input = Resources.getResource(resource).openStream()) {
-      return NicParser.parse(input).collect(Collectors.toList());
-    }
-  }
+  Optional<T> get(long id);
+
+  List<T> getAll();
+
+  void save(T t);
+
+  void update(T t, String[] params);
+
+  void delete(T t);
 }
