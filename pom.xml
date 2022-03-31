@@ -129,6 +129,7 @@
     <module>baremaps-collection</module>
     <module>baremaps-geocoder</module>
     <module>baremaps-nic</module>
+    <module>baremaps-blob</module>
   </modules>
 
   <profiles>
@@ -386,7 +387,11 @@
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
-
+      <dependency>
+        <artifactId>baremaps-blob</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
       <!-- External dependencies -->
       <dependency>
         <artifactId>guava</artifactId>

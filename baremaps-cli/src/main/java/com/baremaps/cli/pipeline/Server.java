@@ -18,8 +18,8 @@ import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
+import com.baremaps.blob.ConfigBlobStore;
 import com.baremaps.cli.Options;
-import com.baremaps.core.blob.ConfigBlobStore;
 import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.core.tile.PostgresQuery;
 import com.baremaps.core.tile.PostgresTileStore;

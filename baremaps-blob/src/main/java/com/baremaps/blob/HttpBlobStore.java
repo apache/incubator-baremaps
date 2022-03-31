@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.core.blob;
+package com.baremaps.blob;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

@@ -14,7 +14,7 @@
 
 package com.baremaps.core.tile;
 
-import com.baremaps.core.blob.Blob;
+import com.baremaps.blob.Blob;
 
 /** Represents a store for tiles. */
 public interface TileStore {
