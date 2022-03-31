@@ -14,7 +14,7 @@
 
 package com.baremaps.core.tile;
 
-import com.baremaps.core.blob.Blob;
+import com.baremaps.blob.Blob;
 import java.util.function.Consumer;
 
 /** A channel that conveys tiles from a source to a target. */

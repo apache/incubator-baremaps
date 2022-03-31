@@ -14,7 +14,7 @@
 
 package com.baremaps.core.tile;
 
-import com.baremaps.core.blob.Blob;
+import com.baremaps.blob.Blob;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;

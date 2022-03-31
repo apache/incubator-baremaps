@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.core.blob;
+package com.baremaps.blob;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
