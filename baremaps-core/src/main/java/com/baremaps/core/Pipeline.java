@@ -1,4 +1,6 @@
 /*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
@@ -45,9 +47,8 @@ public class Pipeline {
   }
 
   public void execute() {
-    CompletableFuture[] futures = config.getSources().stream()
-        .map(this::handle)
-        .toArray(size -> new CompletableFuture[size]);
+    CompletableFuture[] futures =
+        config.getSources().stream().map(this::handle).toArray(size -> new CompletableFuture[size]);
     CompletableFuture.allOf(futures).join();
   }
 
@@ -71,7 +72,8 @@ public class Pipeline {
   }
 
   private void download(Source source) {
-    try (InputStream inputStream = context.blobStore().get(URI.create(source.getUrl())).getInputStream()) {
+    try (InputStream inputStream =
+        context.blobStore().get(URI.create(source.getUrl())).getInputStream()) {
       Path sourceDirectory = Files.createDirectories(context.directory().resolve(source.getId()));
       Path downloadFile = Files.createFile(sourceDirectory.resolve("download"));
       Files.copy(inputStream, downloadFile, StandardCopyOption.REPLACE_EXISTING);
@@ -83,7 +85,8 @@ public class Pipeline {
   private void unzip(Source source) {
     Path sourceDirectory = context.directory().resolve(source.getId());
     Path downloadFile = sourceDirectory.resolve("download");
-    try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(Files.newInputStream(downloadFile)))) {
+    try (ZipInputStream zis =
+        new ZipInputStream(new BufferedInputStream(Files.newInputStream(downloadFile)))) {
       Path archiveDirectory = Files.createDirectories(sourceDirectory.resolve("archive"));
       ZipEntry ze;
       while ((ze = zis.getNextEntry()) != null) {
@@ -113,5 +116,4 @@ public class Pipeline {
       throw new PipelineException(e);
     }
   }
-
 }

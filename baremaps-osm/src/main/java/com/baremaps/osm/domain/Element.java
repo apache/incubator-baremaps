@@ -1,4 +1,6 @@
 /*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
@@ -15,14 +17,13 @@ package com.baremaps.osm.domain;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
-import org.apache.sis.feature.AbstractFeature;
 import org.locationtech.jts.geom.Geometry;
 
 /**
  * Represents an element in an OpenStreetMap dataset. Elements are a basis to model the physical
  * world.
  */
-public abstract class Element implements Entity  {
+public abstract class Element implements Entity {
 
   protected final long id;
 
