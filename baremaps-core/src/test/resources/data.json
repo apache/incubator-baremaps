@@ -1,10 +1,10 @@
 {
   "sources": [
     {
-      "id" : "monaco-shapefile.zip",
+      "id": "monaco-shapefile",
       "url": "res:///monaco-shapefile.zip",
-      "archive": "zip",
       "format": "shp",
+      "archive": "zip",
       "file": "gis_osm_buildings_a_free_1.shp"
     }
   ]

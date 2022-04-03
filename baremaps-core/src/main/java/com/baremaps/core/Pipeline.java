@@ -12,15 +12,16 @@
 
 package com.baremaps.core;
 
+import com.baremaps.core.config.Config;
+import com.baremaps.core.config.Source;
 import com.baremaps.core.database.repository.PostgresFeatureRepository;
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.sis.feature.AbstractFeature;
@@ -36,57 +37,57 @@ public class Pipeline {
 
   private Context context;
 
-  private List<Source> sources = new ArrayList<>();
+  private Config config;
 
-  public Pipeline(Context context) {
+  public Pipeline(Context context, Config config) {
     this.context = context;
+    this.config = config;
   }
 
   public void execute() {
-    sources.stream().parallel().forEach(this::handle);
+    CompletableFuture[] futures = config.getSources().stream()
+        .map(this::handle)
+        .toArray(size -> new CompletableFuture[size]);
+    CompletableFuture.allOf(futures).join();
   }
 
-  private void handle(Source source) {
-    URI uri = URI.create(source.getUrl());
-    Path directory = context.directory().resolve(source.getId());
-    Path file = directory.resolve(source.getFile());
+  public CompletableFuture<Void> handle(Source source) {
+    CompletableFuture<Void> steps = CompletableFuture.completedFuture(null);
 
-    // Download and save the source
-    switch (source.getArchive()) {
-      case "zip":
-        downloadZip(uri, directory);
-        break;
-      default:
-        downloadRaw(uri, directory);
-        break;
+    // download url
+    steps = steps.thenRunAsync(() -> download(source));
+
+    // expand archive
+    if ("zip".equals(source.getArchive())) {
+      steps = steps.thenRunAsync(() -> unzip(source));
     }
 
-    // Import the source in the database
-    switch (source.getFormat()) {
-      case "pbf":
-        importPbf(file);
-        break;
-      case "shp":
-        importShp(file);
-        break;
-      case "sqlite":
-        // TODO: importSqlite(file);
-        break;
-      default:
-        break;
+    // import file
+    if ("shp".equals(source.getFormat())) {
+      steps = steps.thenRunAsync(() -> importShp(source));
     }
 
-    // Simplify the source at multiple zoom levels
-
-    // Index the source
+    return steps;
   }
 
-  private void downloadZip(URI uri, Path path) {
-    try (ZipInputStream zis = new ZipInputStream(context.blobStore().get(uri).getInputStream())) {
+  private void download(Source source) {
+    try (InputStream inputStream = context.blobStore().get(URI.create(source.getUrl())).getInputStream()) {
+      Path sourceDirectory = Files.createDirectories(context.directory().resolve(source.getId()));
+      Path downloadFile = Files.createFile(sourceDirectory.resolve("download"));
+      Files.copy(inputStream, downloadFile, StandardCopyOption.REPLACE_EXISTING);
+    } catch (Exception e) {
+      throw new PipelineException(e);
+    }
+  }
+
+  private void unzip(Source source) {
+    Path sourceDirectory = context.directory().resolve(source.getId());
+    Path downloadFile = sourceDirectory.resolve("download");
+    try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(Files.newInputStream(downloadFile)))) {
+      Path archiveDirectory = Files.createDirectories(sourceDirectory.resolve("archive"));
       ZipEntry ze;
       while ((ze = zis.getNextEntry()) != null) {
-        Path file = path.resolve(ze.getName());
-        Files.createDirectories(file.getParent());
+        Path file = Files.createDirectories(archiveDirectory.resolve(ze.getName()));
         Files.copy(zis, file, StandardCopyOption.REPLACE_EXISTING);
       }
     } catch (Exception e) {
@@ -94,18 +95,10 @@ public class Pipeline {
     }
   }
 
-  private void downloadRaw(URI uri, Path path) {
-    Path file = path.resolve(Paths.get(uri.getPath()).getFileName());
-    try (InputStream is = context.blobStore().get(uri).getInputStream()) {
-      Files.createDirectories(file.getParent());
-      Files.copy(is, file, StandardCopyOption.REPLACE_EXISTING);
-    } catch (Exception e) {
-      throw new PipelineException(e);
-    }
-  }
-
-  private void importShp(Path file) {
-    ShapeFile shp = new ShapeFile(file.toAbsolutePath().toString());
+  private void importShp(Source source) {
+    Path archiveDirectory = context.directory().resolve(source.getId()).resolve("archive");
+    Path archiveFile = archiveDirectory.resolve(source.getFile());
+    ShapeFile shp = new ShapeFile(archiveFile.toAbsolutePath().toString());
     try (InputFeatureStream is = shp.findAll()) {
       DefaultFeatureType featureType = is.getFeaturesType();
       PostgresFeatureRepository repository =
@@ -121,5 +114,4 @@ public class Pipeline {
     }
   }
 
-  private void importPbf(Path file) {}
 }
