@@ -38,7 +38,7 @@ class PipelineTest extends PostgresBaseTest {
   @Tag("integration")
   void execute() throws IOException, SQLException {
     ObjectMapper mapper = new ObjectMapper();
-    URL resource = Resources.getResource("data.json");
+    URL resource = Resources.getResource("config.json");
     Path directory = Files.createTempDirectory(Paths.get("."), "pipeline_");
     BlobStore blobStore = new BlobStoreRouter();
     DataSource dataSource = initDataSource();

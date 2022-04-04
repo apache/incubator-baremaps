@@ -46,9 +46,12 @@ public class PostgresFeatureRepository {
   private String copy;
 
   public PostgresFeatureRepository(DataSource dataSource, DefaultFeatureType featureType) {
+    this(dataSource, featureType, featureType.getName().toString().replace(".", "_"));
+  }
+
+  public PostgresFeatureRepository(DataSource dataSource, DefaultFeatureType featureType, String tableName) {
     this.dataSource = dataSource;
     this.featureType = featureType;
-    String tableName = featureType.getName().toString().replace(".", "_");
     String columnDefinitions =
         featureType.getProperties(false).stream()
             .map(this::columnDefinition)
@@ -129,6 +132,8 @@ public class PostgresFeatureRepository {
       case "Double":
       case "Float":
         return "numeric";
+      case "Geometry":
+        return "geometry";
       case "String":
       default:
         return "varchar";

@@ -18,9 +18,19 @@ import java.util.List;
 
 public class Config {
 
+  private String database;
+
   private List<Source> sources;
 
   public Config() {}
+
+  public String getDatabase() {
+    return database;
+  }
+
+  public void setDatabase(String database) {
+    this.database = database;
+  }
 
   public List<Source> getSources() {
     return sources;
@@ -29,4 +39,5 @@ public class Config {
   public void setSources(List<Source> sources) {
     this.sources = sources;
   }
+
 }

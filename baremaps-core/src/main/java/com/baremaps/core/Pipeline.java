@@ -75,7 +75,7 @@ public class Pipeline {
     try (InputStream inputStream =
         context.blobStore().get(URI.create(source.getUrl())).getInputStream()) {
       Path sourceDirectory = Files.createDirectories(context.directory().resolve(source.getId()));
-      Path downloadFile = Files.createFile(sourceDirectory.resolve("download"));
+      Path downloadFile = Files.createFile(sourceDirectory.resolve("file"));
       Files.copy(inputStream, downloadFile, StandardCopyOption.REPLACE_EXISTING);
     } catch (Exception e) {
       throw new PipelineException(e);
@@ -84,7 +84,7 @@ public class Pipeline {
 
   private void unzip(Source source) {
     Path sourceDirectory = context.directory().resolve(source.getId());
-    Path downloadFile = sourceDirectory.resolve("download");
+    Path downloadFile = sourceDirectory.resolve("file");
     try (ZipInputStream zis =
         new ZipInputStream(new BufferedInputStream(Files.newInputStream(downloadFile)))) {
       Path archiveDirectory = Files.createDirectories(sourceDirectory.resolve("archive"));

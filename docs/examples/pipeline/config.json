@@ -1,0 +1,19 @@
+{
+  "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+  "sources": [
+    {
+      "id": "simplified-water-polygons-split-3857",
+      "url": "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
+      "format": "shp",
+      "archive": "zip",
+      "file": "simplified-water-polygons-split-3857/simplified_water_polygons.shp"
+    },
+    {
+      "id": "water-polygons-split-3857",
+      "url": "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip",
+      "format": "shp",
+      "archive": "zip",
+      "file": "water-polygons-split-3857/water_polygons.shp"
+    }
+  ]
+}

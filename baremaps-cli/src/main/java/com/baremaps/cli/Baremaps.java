@@ -24,6 +24,7 @@ import com.baremaps.cli.pipeline.Execute;
 import com.baremaps.cli.pipeline.Export;
 import com.baremaps.cli.pipeline.Import;
 import com.baremaps.cli.pipeline.Init;
+import com.baremaps.cli.pipeline.Pipeline;
 import com.baremaps.cli.pipeline.Server;
 import com.baremaps.cli.pipeline.Update;
 import com.baremaps.cli.pipeline.Viewer;
@@ -49,6 +50,7 @@ import picocli.CommandLine.Option;
       Init.class,
       Execute.class,
       Import.class,
+      Pipeline.class,
       Update.class,
       Diff.class,
       Export.class,
