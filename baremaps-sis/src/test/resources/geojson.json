@@ -1,0 +1,44 @@
+{
+  "type": "FeatureCollection",
+  "bbox": [100.0, 0.0, 105.0, 1.0],
+  "features": [
+    {
+      "type": "Feature",
+      "bbox": [-10.0, -10.0, 10.0, 10.0],
+      "properties": {
+        "string": "string",
+        "integer": 0
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-10.0, -10.0],
+            [10.0, -10.0],
+            [10.0, 10.0],
+            [-10.0, -10.0]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "bbox": [-10.0, -10.0, 10.0, 10.0],
+      "properties": {
+        "string": "string",
+        "integer": 1
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-10.0, -10.0],
+            [10.0, -10.0],
+            [10.0, 10.0],
+            [-10.0, -10.0]
+          ]
+        ]
+      }
+    }
+  ]
+}

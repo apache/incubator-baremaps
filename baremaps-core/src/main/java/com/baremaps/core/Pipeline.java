@@ -28,10 +28,17 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.sis.feature.AbstractFeature;
 import org.apache.sis.feature.DefaultFeatureType;
+import org.apache.sis.storage.DataStore;
+import org.apache.sis.storage.DataStoreException;
+import org.apache.sis.storage.StorageConnector;
 import org.apache.sis.storage.shapefile.InputFeatureStream;
 import org.apache.sis.storage.shapefile.ShapeFile;
+import org.apache.sis.storage.sql.ResourceDefinition;
+import org.apache.sis.storage.sql.SQLStore;
+import org.apache.sis.storage.sql.SQLStoreProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sqlite.SQLiteDataSource;
 
 public class Pipeline {
 
@@ -56,14 +63,19 @@ public class Pipeline {
     CompletableFuture<Void> steps = CompletableFuture.completedFuture(null);
 
     // download url
-    steps = steps.thenRunAsync(() -> download(source));
+    Path sourceDirectory = context.directory().resolve(source.getId()).resolve("file");
+    Path downloadFile = sourceDirectory;
+
+    if (Files.exists(downloadFile)) {
+      steps = steps.thenRunAsync(() -> download(source));
+    }
 
     // expand archive
     if ("zip".equals(source.getArchive())) {
       steps = steps.thenRunAsync(() -> unzip(source));
     }
 
-    // import file
+    // import shape file
     if ("shp".equals(source.getFormat())) {
       steps = steps.thenRunAsync(() -> importShp(source));
     }
@@ -85,8 +97,7 @@ public class Pipeline {
   private void unzip(Source source) {
     Path sourceDirectory = context.directory().resolve(source.getId());
     Path downloadFile = sourceDirectory.resolve("file");
-    try (ZipInputStream zis =
-        new ZipInputStream(new BufferedInputStream(Files.newInputStream(downloadFile)))) {
+    try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(Files.newInputStream(downloadFile)))) {
       Path archiveDirectory = Files.createDirectories(sourceDirectory.resolve("archive"));
       ZipEntry ze;
       while ((ze = zis.getNextEntry()) != null) {
@@ -104,8 +115,8 @@ public class Pipeline {
     ShapeFile shp = new ShapeFile(archiveFile.toAbsolutePath().toString());
     try (InputFeatureStream is = shp.findAll()) {
       DefaultFeatureType featureType = is.getFeaturesType();
-      PostgresFeatureRepository repository =
-          new PostgresFeatureRepository(context.dataSource(), featureType);
+      PostgresFeatureRepository repository = new PostgresFeatureRepository(context.dataSource(), featureType);
+      repository.drop();
       repository.create();
       AbstractFeature feature = is.readFeature();
       while (feature != null) {
@@ -116,4 +127,8 @@ public class Pipeline {
       throw new PipelineException(e);
     }
   }
+
+
+
+
 }

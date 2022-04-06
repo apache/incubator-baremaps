@@ -52,6 +52,20 @@
       <groupId>com.esri.geometry</groupId>
       <artifactId>esri-geometry-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>mil.nga.geopackage</groupId>
+      <artifactId>geopackage</artifactId>
+      <version>6.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>mil.nga.sf</groupId>
+      <artifactId>sf-geojson</artifactId>
+      <version>3.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId></groupId>
+      <artifactId></artifactId>
+    </dependency>
   </dependencies>
 
 </project>
