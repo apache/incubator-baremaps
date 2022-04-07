@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.core.blob;
+package com.baremaps.blob;
 
 /** Signals that an exception occurred in a {@code BlobStore}. */
 public class BlobStoreException extends Exception {

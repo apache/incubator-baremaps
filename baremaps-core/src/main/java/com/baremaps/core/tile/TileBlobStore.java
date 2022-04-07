@@ -14,9 +14,9 @@
 
 package com.baremaps.core.tile;
 
-import com.baremaps.core.blob.Blob;
-import com.baremaps.core.blob.BlobStore;
-import com.baremaps.core.blob.BlobStoreException;
+import com.baremaps.blob.Blob;
+import com.baremaps.blob.BlobStore;
+import com.baremaps.blob.BlobStoreException;
 import java.net.URI;
 
 /** Represents a {@code TileStore} baked by a {@code BlobStore}. */

@@ -130,6 +130,8 @@
     <module>baremaps-collection</module>
     <module>baremaps-geocoder</module>
     <module>baremaps-iploc</module>
+    <module>baremaps-nic</module>
+    <module>baremaps-blob</module>
   </modules>
 
   <profiles>
@@ -347,6 +349,11 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
+        <artifactId>baremaps-blob</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
         <artifactId>baremaps-collection</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
@@ -384,6 +391,16 @@
       </dependency>
       <dependency>
         <artifactId>baremaps-geocoder</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-nic</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-iploc</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>

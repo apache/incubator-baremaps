@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.core.blob;
+package com.baremaps.blob;
 
 import com.google.common.io.ByteSource;
 import com.google.common.io.Resources;

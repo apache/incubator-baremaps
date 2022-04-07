@@ -12,44 +12,28 @@
  * the License.
  */
 
-package com.baremaps.core.blob;
+package com.baremaps.blob;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import com.adobe.testing.s3mock.junit5.S3MockExtension;
 import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
-class S3BlobStoreTest {
-
-  @RegisterExtension
-  static final S3MockExtension S3_MOCK =
-      S3MockExtension.builder().silent().withSecureConnection(false).build();
-
-  private final S3Client s3Client = S3_MOCK.createS3ClientV2();
-
-  @BeforeEach
-  void initAll() {
-    s3Client.createBucket(CreateBucketRequest.builder().bucket("test").build());
-  }
+class FileBlobStoreTest {
 
   @Test
   @Tag("integration")
   void readWriteDelete() throws IOException, BlobStoreException {
-    URI uri = URI.create("s3://test/test/test.txt");
+    URI uri = URI.create("file://./tmp/test.txt");
     String content = "content";
-    BlobStore blobStore = new S3BlobStore(s3Client);
+    BlobStore blobStore = new FileBlobStore();
 
     // Write data
     blobStore.put(uri, Blob.builder().withByteArray(content.getBytes(Charsets.UTF_8)).build());
