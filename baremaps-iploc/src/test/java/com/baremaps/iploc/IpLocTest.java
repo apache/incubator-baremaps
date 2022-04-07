@@ -29,7 +29,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,46 +40,72 @@ import org.junit.jupiter.api.Test;
  * file and a geocoder from a sample Geonames txt file.
  */
 class IpLocTest {
-  List<NicObject> nicObjects;
-  Geocoder geocoder;
-  String databaseUrl = "JDBC:sqlite:test.db";
-  IpLoc ipLoc;
+  private static final String databaseUrl = "JDBC:sqlite:test.db";
+  private static List<NicObject> nicObjects;
+  private static IpLoc ipLoc;
+  private static InetnumLocationDao inetnumLocationDao;
 
-  @BeforeEach
-  public void before() throws IOException, URISyntaxException, SQLException {
+  @BeforeAll
+  public static void beforeAll() throws IOException, URISyntaxException {
+    // Load the NIC sample objects
     nicObjects = NicData.sample("simple_nic_sample.txt");
 
+    // Init the geocoderservice
     Path path = Files.createTempDirectory(Paths.get("."), "geocoder_");
     URI data = Resources.getResource("geocoder_sample.txt").toURI();
-    geocoder = new GeonamesGeocoder(path, data);
+    Geocoder geocoder = new GeonamesGeocoder(path, data);
     geocoder.build();
 
-    SqliteUtils.executeResource(databaseUrl, "iploc_init.sql");
-
+    // Create the IPLoc service
     ipLoc = new IpLoc(databaseUrl, geocoder);
-    ipLoc.insertNicObjects(nicObjects.stream());
+
+    // Accessor for the database
+    inetnumLocationDao = new InetnumLocationDaoSqliteImpl(databaseUrl);
+  }
+
+  @BeforeEach
+  public void beforeEach() throws IOException, URISyntaxException, SQLException {
+    SqliteUtils.executeResource(databaseUrl, "iploc_init.sql");
   }
 
   @Test
   void findAll() {
-    InetnumLocationDaoImpl inetnumLocationDao = new InetnumLocationDaoImpl(databaseUrl);
-    List<InetnumLocation> inetnumLocations = inetnumLocationDao.getAll();
-    assertEquals(inetnumLocations.size(), 5);
+    ipLoc.insertNicObjects(nicObjects.stream());
+    List<InetnumLocation> inetnumLocations = inetnumLocationDao.findAll();
+    assertEquals(5, inetnumLocations.size());
   }
 
   @Test
   void findByIpWithZeroes() {
-    InetnumLocationDaoImpl inetnumLocationDao = new InetnumLocationDaoImpl(databaseUrl);
+    ipLoc.insertNicObjects(nicObjects.stream());
     List<InetnumLocation> inetnumLocations =
-        inetnumLocationDao.getAllByIp(new Ipv4Range("0.0.0.5/32").start());
-    assertEquals(inetnumLocations.size(), 3);
+        inetnumLocationDao.findByIp(new Ipv4Range("0.0.0.5/32").start());
+    assertEquals(3, inetnumLocations.size());
   }
 
   @Test
   void findByIp() {
-    InetnumLocationDaoImpl inetnumLocationDao = new InetnumLocationDaoImpl(databaseUrl);
+    ipLoc.insertNicObjects(nicObjects.stream());
     List<InetnumLocation> inetnumLocations =
-        inetnumLocationDao.getAllByIp(new Ipv4Range("255.22.22.2/32").start());
-    assertEquals(inetnumLocations.size(), 1);
+        inetnumLocationDao.findByIp(new Ipv4Range("255.22.22.2/32").start());
+    assertEquals(1, inetnumLocations.size());
+  }
+
+  @Test
+  void save() throws SQLException {
+    inetnumLocationDao.save(new InetnumLocation("Test", new Ipv4Range("192.168.0.0/24"), 1, 1));
+    List<InetnumLocation> getAllInetnumLocations = inetnumLocationDao.findAll();
+    assertEquals(1, getAllInetnumLocations.size());
+  }
+
+  @Test
+  void saveMultiple() throws SQLException {
+    List<InetnumLocation> inetnumLocations = new ArrayList<>();
+    for (int i = 0; i < 30; i++) {
+      inetnumLocations.add(new InetnumLocation("Test", new Ipv4Range("192.168.0.0/24"), 1, 1));
+    }
+    inetnumLocationDao.save(inetnumLocations);
+    List<InetnumLocation> getAllInetnumLocations = inetnumLocationDao.findAll();
+    assertEquals(30, getAllInetnumLocations.size());
   }
 }

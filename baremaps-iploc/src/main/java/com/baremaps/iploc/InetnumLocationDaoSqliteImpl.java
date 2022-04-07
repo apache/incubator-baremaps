@@ -14,15 +14,19 @@
 
 package com.baremaps.iploc;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sqlite.SQLiteConfig;
+import org.sqlite.SQLiteDataSource;
 
 /** Data access object for Sqlite JDBC to the inetnum_locations table */
-public class InetnumLocationDaoImpl implements InetnumLocationDao {
+public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
 
   private static final String INSERT_SQL =
       "INSERT INTO inetnum_locations(name, ip_start, ip_end, latitude, longitude) VALUES(?,?,?,?,?)";
@@ -43,24 +47,57 @@ public class InetnumLocationDaoImpl implements InetnumLocationDao {
           + "latitude, \n"
           + "longitude FROM inetnum_locations WHERE ip_start <= ? AND ip_end >= ?;";
 
-  private static final Logger logger = LoggerFactory.getLogger(InetnumLocationDaoImpl.class);
+  private static final Logger logger = LoggerFactory.getLogger(InetnumLocationDaoSqliteImpl.class);
 
-  Connection connection = null;
-  PreparedStatement stmt = null;
-  String url;
+  private final HikariDataSource readDatasource;
+  private final SQLiteDataSource writeDatasource;
+  private final String url;
 
-  public InetnumLocationDaoImpl(String url) {
+  /**
+   * Init the datasources
+   *
+   * @param url
+   */
+  public InetnumLocationDaoSqliteImpl(String url) {
     this.url = url;
+
+    {
+      // Init the read datasource
+      HikariConfig config = new HikariConfig();
+      config.setJdbcUrl(url);
+      config.addDataSourceProperty("cachePrepStmts", "true");
+      config.addDataSourceProperty("prepStmtCacheSize", "250");
+      config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+      // config.setReadOnly(true);
+      readDatasource = new HikariDataSource(config);
+    }
+
+    {
+      // Init the write datasource
+      SQLiteConfig config = new SQLiteConfig();
+      writeDatasource = new SQLiteDataSource(config);
+      writeDatasource.setUrl(url);
+    }
   }
 
   /**
-   * Create a connection to the database file
+   * Get a connection to the database file in read only
    *
    * @return
    * @throws SQLException
    */
-  private Connection getConnection() throws SQLException {
-    return DriverManager.getConnection(url);
+  public Connection getReadConnection() throws SQLException {
+    return readDatasource.getConnection();
+  }
+
+  /**
+   * Get a connection to the database file in read only
+   *
+   * @return
+   * @throws SQLException
+   */
+  public Connection getWriteConnection() throws SQLException {
+    return writeDatasource.getConnection();
   }
 
   /**
@@ -70,7 +107,7 @@ public class InetnumLocationDaoImpl implements InetnumLocationDao {
    * @return
    */
   @Override
-  public Optional<InetnumLocation> get(long id) {
+  public Optional<InetnumLocation> findOne(long id) {
     return Optional.empty();
   }
 
@@ -80,10 +117,12 @@ public class InetnumLocationDaoImpl implements InetnumLocationDao {
    * @return
    */
   @Override
-  public List<InetnumLocation> getAll() {
+  public List<InetnumLocation> findAll() {
     List<InetnumLocation> results = new ArrayList<>();
+    Connection connection = null;
+    PreparedStatement stmt = null;
     try {
-      connection = getConnection();
+      connection = getReadConnection();
       stmt = connection.prepareStatement(SELECT_ALL_SQL);
       ResultSet rs = stmt.executeQuery();
 
@@ -115,10 +154,12 @@ public class InetnumLocationDaoImpl implements InetnumLocationDao {
    * @return
    */
   @Override
-  public List<InetnumLocation> getAllByIp(byte[] ip) {
+  public List<InetnumLocation> findByIp(byte[] ip) {
     List<InetnumLocation> results = new ArrayList<>();
+    Connection connection = null;
+    PreparedStatement stmt = null;
     try {
-      connection = getConnection();
+      connection = getReadConnection();
       stmt = connection.prepareStatement(SELECT_ALL_BY_IP_SQL);
       stmt.setBytes(1, ip);
       stmt.setBytes(2, ip);
@@ -152,8 +193,10 @@ public class InetnumLocationDaoImpl implements InetnumLocationDao {
    */
   @Override
   public void save(InetnumLocation inetnumLocation) {
+    Connection connection = null;
+    PreparedStatement stmt = null;
     try {
-      connection = getConnection();
+      connection = getWriteConnection();
       stmt = connection.prepareStatement(INSERT_SQL);
       stmt.setString(1, inetnumLocation.getName());
       stmt.setBytes(2, inetnumLocation.getIpv4Range().start());
@@ -164,6 +207,43 @@ public class InetnumLocationDaoImpl implements InetnumLocationDao {
       logger.debug("Data Added Successfully " + inetnumLocation);
     } catch (SQLException e) {
       e.printStackTrace();
+    } finally {
+      try {
+        if (stmt != null) stmt.close();
+        if (connection != null) connection.close();
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  /**
+   * Insert a batch of elements in the database
+   *
+   * @param inetnumLocations
+   */
+  @Override
+  public void save(List<InetnumLocation> inetnumLocations) {
+    Connection connection = null;
+    PreparedStatement stmt = null;
+    try {
+      connection = getWriteConnection();
+      connection.setAutoCommit(false);
+      stmt = connection.prepareStatement(INSERT_SQL);
+      for (InetnumLocation inetnumLocation : inetnumLocations) {
+        stmt.setString(1, inetnumLocation.getName());
+        stmt.setBytes(2, inetnumLocation.getIpv4Range().start());
+        stmt.setBytes(3, inetnumLocation.getIpv4Range().end());
+        stmt.setDouble(4, inetnumLocation.getLatitude());
+        stmt.setDouble(5, inetnumLocation.getLongitude());
+        stmt.addBatch();
+        logger.debug("Data Added To Batch Successfully " + inetnumLocation);
+      }
+      stmt.executeBatch();
+      connection.commit();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      // connection.rollback();
     } finally {
       try {
         if (stmt != null) stmt.close();

@@ -40,7 +40,7 @@ public class IpLoc {
    * @param geocoder the geocoder that will be used to find the locations of the objects
    */
   public IpLoc(String databaseUrl, Geocoder geocoder) {
-    inetnumLocationDao = new InetnumLocationDaoImpl(databaseUrl);
+    inetnumLocationDao = new InetnumLocationDaoSqliteImpl(databaseUrl);
     this.geocoder = geocoder;
   }
 
@@ -144,6 +144,7 @@ public class IpLoc {
     if (matcher.find()) {
       double latitude = Double.parseDouble(matcher.group(1));
       double longitude = Double.parseDouble(matcher.group(2));
+      // TODO BATCH INSERT
       inetnumLocationDao.save(new InetnumLocation(name, ipRange, latitude, longitude));
       return true;
     }

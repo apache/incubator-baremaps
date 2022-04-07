@@ -18,5 +18,7 @@ import java.util.List;
 
 /** A DAO interface to interact with the Inetnum location database */
 public interface InetnumLocationDao extends Dao<InetnumLocation> {
-  List<InetnumLocation> getAllByIp(byte[] ip);
+  List<InetnumLocation> findByIp(byte[] ip);
+
+  void save(List<InetnumLocation> t);
 }

@@ -24,9 +24,9 @@ import java.util.Optional;
  */
 public interface Dao<T> {
 
-  Optional<T> get(long id);
+  Optional<T> findOne(long id);
 
-  List<T> getAll();
+  List<T> findAll();
 
   void save(T t);
 
