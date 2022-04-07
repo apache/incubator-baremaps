@@ -18,9 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.geocoder.Geocoder;
 import com.baremaps.geocoder.geonames.GeonamesGeocoder;
+import com.baremaps.iploc.data.InetnumLocation;
+import com.baremaps.iploc.data.Ipv4Range;
+import com.baremaps.iploc.data.Location;
+import com.baremaps.iploc.database.InetnumLocationDao;
+import com.baremaps.iploc.database.InetnumLocationDaoSqliteImpl;
+import com.baremaps.iploc.database.SqliteUtils;
 import com.baremaps.iploc.nic.NicData;
 import com.baremaps.iploc.nic.NicObject;
-import com.baremaps.iploc.sqlite.SqliteUtils;
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URI;
@@ -93,7 +98,8 @@ class IpLocTest {
 
   @Test
   void save() throws SQLException {
-    inetnumLocationDao.save(new InetnumLocation("Test", new Ipv4Range("192.168.0.0/24"), 1, 1));
+    inetnumLocationDao.save(
+        new InetnumLocation("Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1)));
     List<InetnumLocation> getAllInetnumLocations = inetnumLocationDao.findAll();
     assertEquals(1, getAllInetnumLocations.size());
   }
@@ -102,7 +108,8 @@ class IpLocTest {
   void saveMultiple() throws SQLException {
     List<InetnumLocation> inetnumLocations = new ArrayList<>();
     for (int i = 0; i < 30; i++) {
-      inetnumLocations.add(new InetnumLocation("Test", new Ipv4Range("192.168.0.0/24"), 1, 1));
+      inetnumLocations.add(
+          new InetnumLocation("Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1)));
     }
     inetnumLocationDao.save(inetnumLocations);
     List<InetnumLocation> getAllInetnumLocations = inetnumLocationDao.findAll();

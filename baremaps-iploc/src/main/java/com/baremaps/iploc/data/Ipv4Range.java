@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.iploc;
+package com.baremaps.iploc.data;
 
 import com.google.common.primitives.Bytes;
 import java.math.BigInteger;

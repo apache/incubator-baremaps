@@ -16,6 +16,7 @@ package com.baremaps.iploc;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
+import com.baremaps.iploc.data.Ipv4Range;
 import org.junit.jupiter.api.Test;
 
 /**

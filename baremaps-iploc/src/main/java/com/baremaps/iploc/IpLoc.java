@@ -17,20 +17,30 @@ package com.baremaps.iploc;
 import com.baremaps.geocoder.Geocoder;
 import com.baremaps.geocoder.Request;
 import com.baremaps.geocoder.Response;
+import com.baremaps.iploc.data.InetnumLocation;
+import com.baremaps.iploc.data.Ipv4Range;
+import com.baremaps.iploc.data.Location;
+import com.baremaps.iploc.database.InetnumLocationDao;
+import com.baremaps.iploc.database.InetnumLocationDaoSqliteImpl;
 import com.baremaps.iploc.nic.NicAttribute;
 import com.baremaps.iploc.nic.NicObject;
+import com.baremaps.stream.PartitionedSpliterator;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.apache.lucene.queryparser.classic.ParseException;
 
 /** Generating pairs of IP address ranges and their locations into an SQLite database */
 public class IpLoc {
 
-  private final Dao<InetnumLocation> inetnumLocationDao;
+  private final InetnumLocationDao inetnumLocationDao;
   private final Geocoder geocoder;
 
   /**
@@ -51,18 +61,30 @@ public class IpLoc {
    * @param nicObjects the stream of nic objects to import
    */
   public void insertNicObjects(Stream<NicObject> nicObjects) {
-    nicObjects.forEach(
-        nicObject -> {
-          if (nicObject.attributes().size() > 0) {
-            NicAttribute firstAttribute = nicObject.attributes().get(0);
-            if (Objects.equals(firstAttribute.name(), "inetnum")) {
-              try {
-                processInetnum(nicObject, firstAttribute);
-              } catch (Exception e) {
-                throw new RuntimeException(e);
-              }
-            }
-          }
+    Stream<NicObject> filteredNicObjects =
+        nicObjects.filter(
+            nicObject ->
+                nicObject.attributes().size() > 0
+                    && Objects.equals(nicObject.attributes().get(0).name(), "inetnum"));
+    Stream<Stream<NicObject>> partitionnedStream =
+        StreamSupport.stream(
+            new PartitionedSpliterator<>(filteredNicObjects.spliterator(), 100), false);
+    partitionnedStream.forEach(
+        partition -> {
+          List<InetnumLocation> inetnumLocationList =
+              partition
+                  .map(
+                      nicObject -> {
+                        try {
+                          return nicObjectToInetnumLocation(nicObject);
+                        } catch (IOException | ParseException e) {
+                          throw new RuntimeException(e);
+                        }
+                      })
+                  .filter(Optional::isPresent)
+                  .map(Optional::get)
+                  .collect(Collectors.toList());
+          inetnumLocationDao.save(inetnumLocationList);
         });
   }
 
@@ -72,12 +94,22 @@ public class IpLoc {
    * the database
    *
    * @param nicObject the nicObject
-   * @param firstAttribute the first attribute of the NicObject which should contain the IP range
+   * @return
    * @throws IOException
    * @throws ParseException
    */
-  private void processInetnum(NicObject nicObject, NicAttribute firstAttribute)
+  private Optional<InetnumLocation> nicObjectToInetnumLocation(NicObject nicObject)
       throws IOException, ParseException {
+
+    if (nicObject.attributes().isEmpty()) {
+      return Optional.empty();
+    }
+
+    NicAttribute firstAttribute = nicObject.attributes().get(0);
+
+    if (!Objects.equals(firstAttribute.name(), "inetnum")) {
+      return Optional.empty();
+    }
 
     Ipv4Range ipRange = new Ipv4Range(firstAttribute.value());
     Map<String, String> attributes = nicObject.toMap();
@@ -85,69 +117,72 @@ public class IpLoc {
     // Use a default name if there is no netname
     String name = attributes.getOrDefault("netname", "unknown");
 
-    // If there is a geoloc field, we use the lat lon provided
-    if (attributes.containsKey("geoloc")
-        && insertInetnumFromGeoloc(name, ipRange, attributes.get("geoloc"))) {
-      return;
+    // If there is a geoloc field, we use the latitude and longitude provided
+    if (attributes.containsKey("geoloc")) {
+      Optional<Location> location = stringToLocation(attributes.get("geoloc"));
+      if (location.isPresent()) {
+        return Optional.of(new InetnumLocation(name, ipRange, location.get()));
+      }
     }
-    // If there is an address we use that location to query geonames
-    if (attributes.containsKey("address")
-        && findAndInsertInetnumLocationFromQuery(name, ipRange, attributes.get("address"))) {
-      return;
+    // If there is an address we use that address to query the geocoder
+    if (attributes.containsKey("address")) {
+      Optional<Location> location = findLocation(new Request(attributes.get("address"), 1));
+      if (location.isPresent()) {
+        return Optional.of(new InetnumLocation(name, ipRange, location.get()));
+      }
     }
-    // If there is a description we use that location to query geonames
-    if (attributes.containsKey("descr")
-        && findAndInsertInetnumLocationFromQuery(name, ipRange, attributes.get("descr"))) {
-      return;
+    // If there a description we use that description to query the geocoder
+    if (attributes.containsKey("descr")) {
+      Optional<Location> location = findLocation(new Request(attributes.get("descr"), 1));
+      if (location.isPresent()) {
+        return Optional.of(new InetnumLocation(name, ipRange, location.get()));
+      }
     }
-    // If there is a country
-    if (attributes.containsKey("country")
-        && findAndInsertInetnumLocationFromQuery(name, ipRange, attributes.get("country"))) {
-      return;
+    // If there a country we use that country to query the geocoder
+    if (attributes.containsKey("country")) {
+      Optional<Location> location = findLocation(new Request(attributes.get("country"), 1));
+      if (location.isPresent()) {
+        return Optional.of(new InetnumLocation(name, ipRange, location.get()));
+      }
     }
+
+    return Optional.empty();
   }
 
   /**
-   * Use the geocoder to find a latitude/longitude with the given query. If one is found, insert the
-   * inetnum location into the database.
+   * Use the geocoder to find a latitude/longitude with the given query.
    *
-   * @param ipRange the range of IPs
-   * @param query the query for the geocoder
-   * @return true if a location was found and a row was inserted
+   * @param request for the location
+   * @return an optional of the location
    * @throws IOException
    * @throws ParseException
    */
-  private boolean findAndInsertInetnumLocationFromQuery(
-      String name, Ipv4Range ipRange, String query) throws IOException, ParseException {
-    Response response = geocoder.search(new Request(query, 1));
+  private Optional<Location> findLocation(Request request) throws IOException, ParseException {
+    Response response = geocoder.search(request);
     if (response.results().size() > 0) {
       double latitude = Double.parseDouble(response.results().get(0).document().get("latitude"));
       double longitude = Double.parseDouble(response.results().get(0).document().get("longitude"));
-      inetnumLocationDao.save(new InetnumLocation(name, ipRange, latitude, longitude));
-      return true;
+      return Optional.of(new Location(latitude, longitude));
     }
-    return false;
+    return Optional.empty();
   }
 
   /**
    * Parse the geoloc in the given string and insert it in the database. The given geoloc is
    * represented by two doubles split by a space.
    *
-   * @param ipRange the range of IPs
-   * @param geoloc the latitude/longitude coordinates
-   * @return true if the given location was valid
+   * @param geoloc the latitude/longitude coordinates in a string
+   * @return an optional containing the location
    */
-  private boolean insertInetnumFromGeoloc(String name, Ipv4Range ipRange, String geoloc) {
+  private Optional<Location> stringToLocation(String geoloc) {
     String doubleRegex = "(\\d+\\.\\d+)";
     Pattern pattern = Pattern.compile("^" + doubleRegex + " " + doubleRegex + "$");
     Matcher matcher = pattern.matcher(geoloc);
     if (matcher.find()) {
       double latitude = Double.parseDouble(matcher.group(1));
       double longitude = Double.parseDouble(matcher.group(2));
-      // TODO BATCH INSERT
-      inetnumLocationDao.save(new InetnumLocation(name, ipRange, latitude, longitude));
-      return true;
+      return Optional.of(new Location(latitude, longitude));
     }
-    return false;
+    return Optional.empty();
   }
 }

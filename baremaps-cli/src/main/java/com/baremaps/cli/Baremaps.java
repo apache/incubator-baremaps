@@ -15,6 +15,7 @@
 package com.baremaps.cli;
 
 import com.baremaps.cli.Baremaps.VersionProvider;
+import com.baremaps.cli.iploc.Iploc;
 import com.baremaps.cli.ogcapi.OgcApi;
 import com.baremaps.cli.pipeline.Diff;
 import com.baremaps.cli.pipeline.Editor;
@@ -53,7 +54,8 @@ import picocli.CommandLine.Option;
       Editor.class,
       Viewer.class,
       Server.class,
-      OgcApi.class
+      OgcApi.class,
+      Iploc.class
     })
 public class Baremaps implements Callable<Integer> {
 

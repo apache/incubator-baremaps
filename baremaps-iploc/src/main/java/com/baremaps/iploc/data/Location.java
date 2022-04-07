@@ -12,36 +12,16 @@
  * the License.
  */
 
-package com.baremaps.iploc;
+package com.baremaps.iploc.data;
 
-/** Contains an IP range along with its position in the world */
-public class InetnumLocation {
-  private String name;
-  private Ipv4Range ipv4Range;
+/** Contains a location comprising a latitude and a longitude */
+public class Location {
   private double latitude;
   private double longitude;
 
-  public InetnumLocation(String name, Ipv4Range ipv4Range, double latitude, double longitude) {
-    this.name = name;
-    this.ipv4Range = ipv4Range;
+  public Location(double latitude, double longitude) {
     this.latitude = latitude;
     this.longitude = longitude;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public Ipv4Range getIpv4Range() {
-    return ipv4Range;
-  }
-
-  public void setIpv4Range(Ipv4Range ipv4Range) {
-    this.ipv4Range = ipv4Range;
   }
 
   public double getLatitude() {
@@ -62,16 +42,6 @@ public class InetnumLocation {
 
   @Override
   public String toString() {
-    return "InetnumLocation{"
-        + "name='"
-        + name
-        + '\''
-        + ", ipv4Range="
-        + ipv4Range
-        + ", latitude="
-        + latitude
-        + ", longitude="
-        + longitude
-        + '}';
+    return "Location{" + "latitude=" + latitude + ", longitude=" + longitude + '}';
   }
 }

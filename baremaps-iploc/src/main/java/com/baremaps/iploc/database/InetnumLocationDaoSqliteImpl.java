@@ -12,8 +12,11 @@
  * the License.
  */
 
-package com.baremaps.iploc;
+package com.baremaps.iploc.database;
 
+import com.baremaps.iploc.data.InetnumLocation;
+import com.baremaps.iploc.data.Ipv4Range;
+import com.baremaps.iploc.data.Location;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.sql.*;
@@ -132,8 +135,7 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
             new InetnumLocation(
                 rs.getString("name"),
                 new Ipv4Range(rs.getBytes("ip_start"), rs.getBytes("ip_end")),
-                rs.getDouble("latitude"),
-                rs.getDouble("longitude")));
+                new Location(rs.getDouble("latitude"), rs.getDouble("longitude"))));
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -170,8 +172,7 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
             new InetnumLocation(
                 rs.getString("name"),
                 new Ipv4Range(rs.getBytes("ip_start"), rs.getBytes("ip_end")),
-                rs.getDouble("latitude"),
-                rs.getDouble("longitude")));
+                new Location(rs.getDouble("latitude"), rs.getDouble("longitude"))));
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -201,8 +202,8 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
       stmt.setString(1, inetnumLocation.getName());
       stmt.setBytes(2, inetnumLocation.getIpv4Range().start());
       stmt.setBytes(3, inetnumLocation.getIpv4Range().end());
-      stmt.setDouble(4, inetnumLocation.getLatitude());
-      stmt.setDouble(5, inetnumLocation.getLongitude());
+      stmt.setDouble(4, inetnumLocation.getLocation().getLatitude());
+      stmt.setDouble(5, inetnumLocation.getLocation().getLongitude());
       stmt.executeUpdate();
       logger.debug("Data Added Successfully " + inetnumLocation);
     } catch (SQLException e) {
@@ -234,13 +235,13 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
         stmt.setString(1, inetnumLocation.getName());
         stmt.setBytes(2, inetnumLocation.getIpv4Range().start());
         stmt.setBytes(3, inetnumLocation.getIpv4Range().end());
-        stmt.setDouble(4, inetnumLocation.getLatitude());
-        stmt.setDouble(5, inetnumLocation.getLongitude());
+        stmt.setDouble(4, inetnumLocation.getLocation().getLatitude());
+        stmt.setDouble(5, inetnumLocation.getLocation().getLongitude());
         stmt.addBatch();
-        logger.debug("Data Added To Batch Successfully " + inetnumLocation);
       }
       stmt.executeBatch();
       connection.commit();
+      logger.debug("Batch executed Successfully " + inetnumLocations);
     } catch (SQLException e) {
       e.printStackTrace();
       // connection.rollback();

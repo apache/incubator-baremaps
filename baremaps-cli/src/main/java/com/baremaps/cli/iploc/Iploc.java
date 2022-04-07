@@ -15,16 +15,15 @@
 package com.baremaps.cli.iploc;
 
 import com.baremaps.cli.Options;
-import com.baremaps.core.blob.BlobStoreException;
 import com.baremaps.geocoder.Geocoder;
 import com.baremaps.geocoder.geonames.GeonamesGeocoder;
 import com.baremaps.iploc.IpLoc;
+import com.baremaps.iploc.database.SqliteUtils;
 import com.baremaps.iploc.nic.NicFetcher;
 import com.baremaps.iploc.nic.NicObject;
 import com.baremaps.iploc.nic.NicParser;
-import com.baremaps.iploc.sqlite.SqliteUtils;
-import com.google.common.io.Resources;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,10 +39,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "init", description = "Init the Iploc database.")
-public class Init implements Callable<Integer> {
+@Command(name = "iploc", description = "Init the Iploc database.")
+public class Iploc implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(Init.class);
+  private static final Logger logger = LoggerFactory.getLogger(Iploc.class);
 
   @Mixin private Options options;
 
@@ -61,11 +60,11 @@ public class Init implements Callable<Integer> {
   private Path databasePath;
 
   @Override
-  public Integer call() throws BlobStoreException, IOException, SQLException, URISyntaxException {
+  public Integer call() throws IOException, SQLException, URISyntaxException {
 
     logger.info("Loading the geocoder index");
     Path path = Files.createTempDirectory(Paths.get("."), "geocoder_");
-    URI data = Resources.getResource("geocoder_sample.txt").toURI();
+    URI data = new File("baremaps-iploc/src/test/resources/geocoder_sample.txt").toURI();
     Geocoder geocoder = new GeonamesGeocoder(path, data);
     geocoder.build();
 

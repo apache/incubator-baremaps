@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.iploc.sqlite;
+package com.baremaps.iploc.database;
 
 import com.google.common.io.Resources;
 import java.io.IOException;

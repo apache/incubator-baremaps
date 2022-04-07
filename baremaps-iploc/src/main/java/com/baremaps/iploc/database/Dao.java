@@ -12,13 +12,25 @@
  * the License.
  */
 
-package com.baremaps.iploc;
+package com.baremaps.iploc.database;
 
 import java.util.List;
+import java.util.Optional;
 
-/** A DAO interface to interact with the Inetnum location database */
-public interface InetnumLocationDao extends Dao<InetnumLocation> {
-  List<InetnumLocation> findByIp(byte[] ip);
+/**
+ * A basic DAO interface to implement the data access object pattern
+ *
+ * @param <T> the type of entity
+ */
+public interface Dao<T> {
 
-  void save(List<InetnumLocation> t);
+  Optional<T> findOne(long id);
+
+  List<T> findAll();
+
+  void save(T t);
+
+  void update(T t, String[] params);
+
+  void delete(T t);
 }
