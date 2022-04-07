@@ -20,11 +20,11 @@ import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFea
 
 import com.baremaps.blob.ConfigBlobStore;
 import com.baremaps.cli.Options;
-import com.baremaps.core.postgres.PostgresUtils;
-import com.baremaps.core.tile.PostgresQuery;
-import com.baremaps.core.tile.PostgresTileStore;
-import com.baremaps.core.tile.TileCache;
-import com.baremaps.core.tile.TileStore;
+import com.baremaps.pipeline.postgres.PostgresUtils;
+import com.baremaps.pipeline.tile.PostgresQuery;
+import com.baremaps.pipeline.tile.PostgresTileStore;
+import com.baremaps.pipeline.tile.TileCache;
+import com.baremaps.pipeline.tile.TileStore;
 import com.baremaps.model.TileJSON;
 import com.baremaps.server.resources.ServerResources;
 import com.baremaps.server.utils.CorsFilter;

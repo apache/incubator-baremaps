@@ -14,48 +14,19 @@
 
 package com.baremaps.cli.pipeline;
 
+import com.baremaps.blob.Blob;
+import com.baremaps.blob.BlobStore;
 import com.baremaps.cli.Options;
-import com.baremaps.collection.AlignedDataList;
-import com.baremaps.collection.DataStore;
-import com.baremaps.collection.LongDataMap;
-import com.baremaps.collection.LongDataSortedMap;
-import com.baremaps.collection.LongSizedDataDenseMap;
-import com.baremaps.collection.memory.OnDiskDirectoryMemory;
-import com.baremaps.collection.type.LonLatDataType;
-import com.baremaps.collection.type.LongDataType;
-import com.baremaps.collection.type.LongListDataType;
-import com.baremaps.collection.type.PairDataType;
-import com.baremaps.collection.utils.FileUtils;
-import com.baremaps.core.Context;
-import com.baremaps.core.blob.Blob;
-import com.baremaps.core.blob.BlobStore;
-import com.baremaps.core.blob.BlobStoreRouter;
-import com.baremaps.core.config.Config;
-import com.baremaps.core.database.ImportService;
-import com.baremaps.core.database.repository.HeaderRepository;
-import com.baremaps.core.database.repository.PostgresHeaderRepository;
-import com.baremaps.core.database.repository.PostgresNodeRepository;
-import com.baremaps.core.database.repository.PostgresRelationRepository;
-import com.baremaps.core.database.repository.PostgresWayRepository;
-import com.baremaps.core.database.repository.Repository;
-import com.baremaps.core.postgres.PostgresUtils;
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.domain.Way;
+import com.baremaps.pipeline.Context;
+import com.baremaps.pipeline.config.Config;
+import com.baremaps.pipeline.postgres.PostgresUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Resources;
-import java.io.File;
 import java.net.URI;
-import java.net.URL;
-import java.nio.channels.Pipe;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
-import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -101,7 +72,7 @@ public class Pipeline implements Callable<Integer> {
             return dataSource;
           }
         };
-    com.baremaps.core.Pipeline pipeline = new com.baremaps.core.Pipeline(context, config);
+    com.baremaps.pipeline.Pipeline pipeline = new com.baremaps.pipeline.Pipeline(context, config);
     pipeline.execute();
     return 0;
   }

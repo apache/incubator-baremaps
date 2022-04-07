@@ -16,16 +16,15 @@ package com.baremaps.server.resources;
 
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
-
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStoreException;
 import com.baremaps.blob.ConfigBlobStore;
-import com.baremaps.core.tile.PostgresQuery;
-import com.baremaps.core.tile.PostgresTileStore;
-import com.baremaps.core.tile.Tile;
-import com.baremaps.core.tile.TileStore;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileJSON;
+import com.baremaps.pipeline.tile.PostgresQuery;
+import com.baremaps.pipeline.tile.PostgresTileStore;
+import com.baremaps.pipeline.tile.Tile;
+import com.baremaps.pipeline.tile.TileStore;
 import com.baremaps.server.ogcapi.Conversions;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;

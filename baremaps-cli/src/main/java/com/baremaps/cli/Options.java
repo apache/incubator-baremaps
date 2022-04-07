@@ -18,6 +18,7 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreRouter;
 import com.baremaps.blob.HttpBlobStore;
 import com.baremaps.blob.S3BlobStore;
+
 import picocli.CommandLine.Option;
 
 public class Options {

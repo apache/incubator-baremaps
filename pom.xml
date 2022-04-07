@@ -48,6 +48,25 @@
     </repository>
   </distributionManagement>
 
+  <repositories>
+    <repository>
+      <id>geotoolkit.org</id>
+      <name>Geotoolkit.org repository</name>
+      <url>https://maven.geotoolkit.org</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>geomatys</id>
+      <name>Geomatys public repository</name>
+      <url>https://nexus.geomatys.com/repository/maven-public</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
   <properties>
     <!-- project -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -107,17 +126,19 @@
 
   <modules>
     <module>baremaps-benchmarks</module>
+    <module>baremaps-blob</module>
     <module>baremaps-cli</module>
-    <module>baremaps-core</module>
-    <module>baremaps-osm</module>
-    <module>baremaps-sis</module>
-    <module>baremaps-http</module>
-    <module>baremaps-testing</module>
     <module>baremaps-collection</module>
     <module>baremaps-geocoder</module>
     <module>baremaps-iploc</module>
     <module>baremaps-blob</module>
+    <module>baremaps-http</module>
+    <module>baremaps-nic</module>
+    <module>baremaps-osm</module>
+    <module>baremaps-pipeline</module>
+    <module>baremaps-storage</module>
     <module>baremaps-stream</module>
+    <module>baremaps-testing</module>
   </modules>
 
   <profiles>
@@ -340,27 +361,17 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-collection</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-core</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
         <artifactId>baremaps-cli</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-osm</artifactId>
+        <artifactId>baremaps-collection</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-stream</artifactId>
+        <artifactId>baremaps-geocoder</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -370,7 +381,27 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-sis</artifactId>
+        <artifactId>baremaps-nic</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-osm</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-pipeline</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-storage</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-stream</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -378,16 +409,6 @@
         <artifactId>baremaps-testing</artifactId>
         <groupId>com.baremaps</groupId>
         <scope>test</scope>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-geonames</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-geocoder</artifactId>
-        <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>

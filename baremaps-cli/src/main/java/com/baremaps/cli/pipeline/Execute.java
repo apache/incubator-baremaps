@@ -14,11 +14,10 @@
 
 package com.baremaps.cli.pipeline;
 
-import static com.baremaps.core.tile.VariableUtils.interpolate;
-
+import static com.baremaps.pipeline.tile.VariableUtils.interpolate;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.cli.Options;
-import com.baremaps.core.postgres.PostgresUtils;
+import com.baremaps.pipeline.postgres.PostgresUtils;
 import com.baremaps.stream.StreamException;
 import com.baremaps.stream.StreamUtils;
 import com.google.common.base.Splitter;
