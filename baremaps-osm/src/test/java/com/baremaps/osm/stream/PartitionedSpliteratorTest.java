@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.stream;
+package com.baremaps.stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

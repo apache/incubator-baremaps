@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.stream;
+package com.baremaps.stream;
 
 import java.util.Spliterator;
 import java.util.function.Consumer;

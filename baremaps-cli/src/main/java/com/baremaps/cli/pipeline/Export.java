@@ -33,7 +33,7 @@ import com.baremaps.core.tile.TileStoreException;
 import com.baremaps.model.Query;
 import com.baremaps.model.TileJSON;
 import com.baremaps.osm.progress.StreamProgress;
-import com.baremaps.osm.stream.StreamUtils;
+import com.baremaps.stream.StreamUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;

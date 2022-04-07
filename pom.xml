@@ -130,6 +130,7 @@
     <module>baremaps-geocoder</module>
     <module>baremaps-nic</module>
     <module>baremaps-blob</module>
+    <module>baremaps-stream</module>
   </modules>
 
   <profiles>

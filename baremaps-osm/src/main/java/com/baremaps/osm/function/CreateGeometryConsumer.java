@@ -20,7 +20,7 @@ import com.baremaps.osm.domain.Member.MemberType;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.stream.StreamException;
+import com.baremaps.stream.StreamException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;

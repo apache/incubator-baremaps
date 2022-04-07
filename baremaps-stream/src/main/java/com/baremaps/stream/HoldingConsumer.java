@@ -12,27 +12,31 @@
  * the License.
  */
 
-package com.baremaps.osm.stream;
+package com.baremaps.stream;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
-/** Utility methods for dealing with consumers. */
-public class ConsumerUtils {
+/**
+ * A {@code Consumer} that holds the latest value it accepted.
+ *
+ * @param <T>
+ */
+public class HoldingConsumer<T> implements Consumer<T> {
 
-  private ConsumerUtils() {}
+  private T value;
+
+  /** {@inheritDoc} */
+  @Override
+  public void accept(T value) {
+    this.value = value;
+  }
 
   /**
-   * Transforms a consumer into a function.
+   * Returns the holded value.
    *
-   * @param consumer the consumer
-   * @param <T> the type
-   * @return the function
+   * @return the holded value.
    */
-  public static <T> Function<T, T> consumeThenReturn(Consumer<T> consumer) {
-    return t -> {
-      consumer.accept(t);
-      return t;
-    };
+  public T value() {
+    return value;
   }
 }
