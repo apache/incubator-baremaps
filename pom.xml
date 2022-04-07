@@ -373,6 +373,11 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
+        <artifactId>baremaps-stream</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
         <artifactId>baremaps-http</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
