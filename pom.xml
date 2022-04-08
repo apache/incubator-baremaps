@@ -130,6 +130,7 @@
     <module>baremaps-geocoder</module>
     <module>baremaps-nic</module>
     <module>baremaps-blob</module>
+    <module>baremaps-stream</module>
   </modules>
 
   <profiles>
@@ -368,6 +369,11 @@
       </dependency>
       <dependency>
         <artifactId>baremaps-osm</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-stream</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>

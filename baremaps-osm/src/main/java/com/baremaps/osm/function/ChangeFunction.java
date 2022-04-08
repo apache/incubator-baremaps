@@ -15,7 +15,7 @@
 package com.baremaps.osm.function;
 
 import com.baremaps.osm.domain.Change;
-import com.baremaps.osm.stream.StreamException;
+import com.baremaps.stream.StreamException;
 import java.util.function.Function;
 
 /**
