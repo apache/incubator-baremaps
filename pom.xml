@@ -91,7 +91,7 @@
     <version.lib.jdbi>3.24.1</version.lib.jdbi>
     <version.lib.awaitability>3.0.0</version.lib.awaitability>
     <version.lib.jsqlparser>4.2</version.lib.jsqlparser>
-    <version.lib.swagger-parser>2.0.24</version.lib.swagger-parser>
+    <version.lib.swagger-parser>2.0.32</version.lib.swagger-parser>
     <version.lib.jaxb-runtime>2.3.5</version.lib.jaxb-runtime>
     <version.lib.activation>1.2.2</version.lib.activation>
     <version.lib.servlet>3.1.0</version.lib.servlet>
@@ -130,6 +130,7 @@
     <module>baremaps-geocoder</module>
     <module>baremaps-nic</module>
     <module>baremaps-blob</module>
+    <module>baremaps-stream</module>
   </modules>
 
   <profiles>
@@ -368,6 +369,11 @@
       </dependency>
       <dependency>
         <artifactId>baremaps-osm</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-stream</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
