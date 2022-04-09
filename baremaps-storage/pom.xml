@@ -11,23 +11,22 @@
 
   <artifactId>baremaps-storage</artifactId>
 
-  <repositories>
-    <repository>
-      <id>geotoolkit</id>
-      <name>Geotk Modules</name>
-      <url>https://maven.geotoolkit.org/</url>
-      <layout>default</layout>
-    </repository>
-  </repositories>
-
   <dependencies>
     <dependency>
       <groupId>com.esri.geometry</groupId>
       <artifactId>esri-geometry-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opengis</groupId>
+      <artifactId>geoapi-pending</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.sis.core</groupId>
       <artifactId>sis-feature</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sis.core</groupId>
+      <artifactId>sis-utility</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.sis.core</groupId>
@@ -41,22 +40,23 @@
       <groupId>org.apache.sis.storage</groupId>
       <artifactId>sis-storage</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+    </dependency>
 
     <!-- TODO: remove these LGPL dependencies once alternatives are available in Apache SIS -->
     <dependency>
       <groupId>org.geotoolkit</groupId>
       <artifactId>geotk-feature-shapefile</artifactId>
-      <version>4.0.5</version>
     </dependency>
     <dependency>
       <groupId>org.geotoolkit</groupId>
       <artifactId>geotk-feature-geojson</artifactId>
-      <version>4.0.5</version>
     </dependency>
     <dependency>
       <groupId>org.geotoolkit</groupId>
       <artifactId>geotk-feature-postgres</artifactId>
-      <version>4.0.5</version>
     </dependency>
   </dependencies>
 

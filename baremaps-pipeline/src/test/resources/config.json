@@ -2,10 +2,10 @@
   "sources": [
     {
       "id": "monaco-shapefile",
-      "url": "res:///monaco-shapefile.zip",
+      "url": "http://download.geofabrik.de/europe/monaco-latest-free.shp.zip",
       "format": "shp",
       "archive": "zip",
-      "file": "gis_osm_buildings_a_free_1.shp"
+      "file": "archive/gis_osm_buildings_a_free_1.shp"
     }
   ]
 }

@@ -16,7 +16,9 @@ package com.baremaps.pipeline;
 
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreRouter;
+import com.baremaps.blob.HttpBlobStore;
 import com.baremaps.pipeline.config.Config;
+import com.baremaps.pipeline.config.Database;
 import com.baremaps.pipeline.database.PostgresBaseTest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
@@ -28,20 +30,38 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Comparator;
-import javax.sql.DataSource;
-import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 class PipelineTest extends PostgresBaseTest {
 
+  PostgreSQLContainer container;
+
+  @BeforeEach
+  public void before() {
+    DockerImageName postgis = DockerImageName.parse("postgis/postgis:13-3.1").asCompatibleSubstituteFor("postgres");
+    container = new PostgreSQLContainer(postgis);
+    container.start();
+  }
+
+  @AfterEach
+  public void after() {
+    container.stop();
+  }
+
   @Test
-  @Tag("integration")
+  @Disabled
   void execute() throws IOException, SQLException {
     ObjectMapper mapper = new ObjectMapper();
     URL resource = Resources.getResource("config.json");
     Path directory = Files.createTempDirectory(Paths.get("."), "pipeline_");
-    BlobStore blobStore = new BlobStoreRouter();
-    DataSource dataSource = initDataSource();
+    BlobStore blobStore = new BlobStoreRouter()
+        .addScheme("http", new HttpBlobStore())
+        .addScheme("https", new HttpBlobStore());
     Context context =
         new Context() {
           @Override
@@ -53,13 +73,16 @@ class PipelineTest extends PostgresBaseTest {
           public BlobStore blobStore() {
             return blobStore;
           }
-
-          @Override
-          public DataSource dataSource() {
-            return dataSource;
-          }
-        };
+     };
     Config config = mapper.readValue(resource, Config.class);
+    Database database = new Database();
+    database.setHost(container.getHost());
+    database.setName(container.getDatabaseName());
+    database.setUsername(container.getUsername());
+    database.setPassword(container.getPassword());
+    database.setSchema("public");
+    database.setPort(container.getMappedPort(5432));
+    config.setDatabase(database);
     Pipeline pipeline = new Pipeline(context, config);
     pipeline.execute();
     Files.walk(directory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);

@@ -19,6 +19,7 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.cli.Options;
 import com.baremaps.pipeline.Context;
 import com.baremaps.pipeline.config.Config;
+import com.baremaps.pipeline.config.Database;
 import com.baremaps.pipeline.postgres.PostgresUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
@@ -53,7 +54,6 @@ public class Pipeline implements Callable<Integer> {
     Blob blob = blobStore.get(config);
     ObjectMapper mapper = new ObjectMapper();
     Config config = mapper.readValue(blob.getInputStream(), Config.class);
-    DataSource dataSource = PostgresUtils.datasource(config.getDatabase());
     Path directory = Files.createDirectories(Paths.get("pipeline"));
     Context context =
         new Context() {
@@ -67,10 +67,6 @@ public class Pipeline implements Callable<Integer> {
             return blobStore;
           }
 
-          @Override
-          public DataSource dataSource() {
-            return dataSource;
-          }
         };
     com.baremaps.pipeline.Pipeline pipeline = new com.baremaps.pipeline.Pipeline(context, config);
     pipeline.execute();

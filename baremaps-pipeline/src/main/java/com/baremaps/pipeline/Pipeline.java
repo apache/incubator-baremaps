@@ -15,19 +15,25 @@
 package com.baremaps.pipeline;
 
 import com.baremaps.pipeline.config.Config;
+import com.baremaps.pipeline.config.Database;
 import com.baremaps.pipeline.config.Source;
-import com.baremaps.pipeline.database.repository.PostgresFeatureRepository;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import org.apache.sis.feature.AbstractFeature;
-import org.apache.sis.feature.DefaultFeatureType;
+import org.apache.sis.storage.Aggregate;
+import org.apache.sis.storage.DataStoreException;
+import org.apache.sis.storage.FeatureSet;
+import org.apache.sis.storage.Resource;
+import org.apache.sis.storage.WritableFeatureSet;
+import org.geotoolkit.data.shapefile.ShapefileFeatureStore;
+import org.geotoolkit.db.postgres.PostgresStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,27 +60,26 @@ public class Pipeline {
     CompletableFuture<Void> steps = CompletableFuture.completedFuture(null);
 
     // download url
-    Path sourceDirectory = context.directory().resolve(source.getId()).resolve("file");
-    Path downloadFile = sourceDirectory;
+    Path sourceDirectory = context.directory().resolve(source.getId());
+    Path downloadFile = sourceDirectory.resolve("file");
 
-    if (Files.exists(downloadFile)) {
-      steps = steps.thenRunAsync(() -> download(source));
+    if (!Files.exists(downloadFile)) {
+      steps = steps.thenRunAsync(() -> downloadSource(source));
     }
 
     // expand archive
     if ("zip".equals(source.getArchive())) {
-      steps = steps.thenRunAsync(() -> unzip(source));
+      steps = steps.thenRunAsync(() -> unzipSource(source));
     }
 
-    // import shape file
     if ("shp".equals(source.getFormat())) {
-      steps = steps.thenRunAsync(() -> importShp(source));
+      steps = steps.thenRunAsync(() -> importShapefileSource(source));
     }
 
     return steps;
   }
 
-  private void download(Source source) {
+  private void downloadSource(Source source) {
     try (InputStream inputStream =
         context.blobStore().get(URI.create(source.getUrl())).getInputStream()) {
       Path sourceDirectory = Files.createDirectories(context.directory().resolve(source.getId()));
@@ -85,7 +90,7 @@ public class Pipeline {
     }
   }
 
-  private void unzip(Source source) {
+  private void unzipSource(Source source) {
     Path sourceDirectory = context.directory().resolve(source.getId());
     Path downloadFile = sourceDirectory.resolve("file");
     try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(Files.newInputStream(downloadFile)))) {
@@ -100,7 +105,36 @@ public class Pipeline {
     }
   }
 
-  private void importShp(Source source) {
+  private void importShapefileSource(Source source) {
+    Path sourceDirectory = context.directory().resolve(source.getId());
+    Path downloadFile = sourceDirectory.resolve("file");
+    Path archiveFile = sourceDirectory.resolve(source.getFile());
+    Path file = Optional.ofNullable(archiveFile).orElse(downloadFile);
+    try {
+      importAggregate(new ShapefileFeatureStore(file.toUri()));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
+  private void importAggregate(Aggregate aggregate) throws DataStoreException {
+    Database database = config.getDatabase();
+    PostgresStore store = new PostgresStore(
+        database.getHost(),
+        database.getPort(),
+        database.getName(),
+        database.getSchema(),
+        database.getUsername(),
+        database.getPassword());
+    for (Resource source : aggregate.components()) {
+      if (source instanceof FeatureSet sourceFeatureSet) {
+        var type = sourceFeatureSet.getType();
+        store.createFeatureType(sourceFeatureSet.getType());
+        var target =  store.findResource(type.getName().toString());
+        if (target instanceof WritableFeatureSet targetFeatureSet) {
+          targetFeatureSet.add(((FeatureSet) source).features(false).iterator());
+        }
+      }
+    }
   }
 }

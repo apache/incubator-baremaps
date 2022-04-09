@@ -1,12 +1,19 @@
 {
-  "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "schema": "public",
+    "name": "baremaps",
+    "username": "baremaps",
+    "password": "baremaps"
+  },
   "sources": [
     {
-      "id": "natural_earth_vector",
-      "url": "http://naciscdn.org/naturalearth/packages/natural_earth_vector.sqlite.zip",
-      "format": "sqlite",
-      "archive": "zip",
-      "file": "packages/natural_earth_vector.sqlite"
+    "id": "monaco-shapefile",
+    "url": "http://download.geofabrik.de/europe/monaco-latest-free.shp.zip",
+    "format": "shp",
+    "archive": "zip",
+    "file": "archive/gis_osm_buildings_a_free_1.shp"
     }
   ]
 }

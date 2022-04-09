@@ -70,11 +70,12 @@
   <properties>
     <!-- project -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
 
     <!-- libraries -->
     <version.lib.caffeine>3.0.4</version.lib.caffeine>
+    <version.lib.derby>10.7.1.1</version.lib.derby>
     <version.lib.commons-compress>1.21</version.lib.commons-compress>
     <version.lib.guava>31.0.1-jre</version.lib.guava>
     <version.lib.jersey>2.34</version.lib.jersey>
@@ -100,6 +101,9 @@
     <version.lib.graalvm>22.0.0.2</version.lib.graalvm>
     <version.lib.ipresource>1.49</version.lib.ipresource>
     <version.lib.sis>1.1</version.lib.sis>
+    <version.lib.geoapi>4.0-M19</version.lib.geoapi>
+    <version.lib.sis>2.0-M0084</version.lib.sis>
+    <version.lib.geotk>22.04.05</version.lib.geotk>
     <version.lib.esri>2.2.4</version.lib.esri>
 
     <!-- testing -->
@@ -419,6 +423,16 @@
 
       <!-- Apache SIS -->
       <dependency>
+        <groupId>com.esri.geometry</groupId>
+        <artifactId>esri-geometry-api</artifactId>
+        <version>${version.lib.esri}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opengis</groupId>
+        <artifactId>geoapi-pending</artifactId>
+        <version>${version.lib.geoapi}</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.sis.core</groupId>
         <artifactId>sis-feature</artifactId>
         <version>${version.lib.sis}</version>
@@ -464,9 +478,26 @@
         <version>${version.lib.sis}</version>
       </dependency>
       <dependency>
-        <groupId>com.esri.geometry</groupId>
-        <artifactId>esri-geometry-api</artifactId>
-        <version>${version.lib.esri}</version>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derby</artifactId>
+        <version>${version.lib.derby}</version>
+      </dependency>
+
+      <!-- TODO: remove these LGPL dependencies once alternatives are available in Apache SIS -->
+      <dependency>
+        <groupId>org.geotoolkit</groupId>
+        <artifactId>geotk-feature-shapefile</artifactId>
+        <version>${version.lib.geotk}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geotoolkit</groupId>
+        <artifactId>geotk-feature-geojson</artifactId>
+        <version>${version.lib.geotk}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.geotoolkit</groupId>
+        <artifactId>geotk-feature-postgres</artifactId>
+        <version>${version.lib.geotk}</version>
       </dependency>
 
       <!-- External dependencies -->

@@ -24,5 +24,4 @@ public interface Context {
 
   BlobStore blobStore();
 
-  DataSource dataSource();
 }

@@ -18,17 +18,17 @@ import java.util.List;
 
 public class Config {
 
-  private String database;
+  private Database database;
 
   private List<Source> sources;
 
   public Config() {}
 
-  public String getDatabase() {
+  public Database getDatabase() {
     return database;
   }
 
-  public void setDatabase(String database) {
+  public void setDatabase(Database database) {
     this.database = database;
   }
 
