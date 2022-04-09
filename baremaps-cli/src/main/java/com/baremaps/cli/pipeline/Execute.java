@@ -15,6 +15,7 @@
 package com.baremaps.cli.pipeline;
 
 import static com.baremaps.pipeline.tile.VariableUtils.interpolate;
+
 import com.baremaps.blob.BlobStore;
 import com.baremaps.cli.Options;
 import com.baremaps.pipeline.postgres.PostgresUtils;

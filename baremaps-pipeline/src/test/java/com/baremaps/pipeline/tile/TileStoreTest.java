@@ -16,6 +16,7 @@ package com.baremaps.pipeline.tile;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.baremaps.blob.Blob;
 import java.io.InputStream;
 import org.junit.jupiter.api.Tag;

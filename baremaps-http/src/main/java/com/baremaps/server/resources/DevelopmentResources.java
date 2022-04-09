@@ -16,6 +16,7 @@ package com.baremaps.server.resources;
 
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
+
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStoreException;
 import com.baremaps.blob.ConfigBlobStore;

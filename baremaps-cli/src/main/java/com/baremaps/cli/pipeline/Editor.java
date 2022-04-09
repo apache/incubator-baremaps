@@ -16,6 +16,7 @@ package com.baremaps.cli.pipeline;
 
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
+
 import com.baremaps.blob.ConfigBlobStore;
 import com.baremaps.cli.Options;
 import com.baremaps.pipeline.postgres.PostgresUtils;

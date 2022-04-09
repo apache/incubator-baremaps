@@ -20,7 +20,6 @@ import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.blob.BlobStoreException;
 import com.baremaps.cli.Options;
-
 import com.baremaps.model.Query;
 import com.baremaps.model.TileJSON;
 import com.baremaps.osm.progress.StreamProgress;

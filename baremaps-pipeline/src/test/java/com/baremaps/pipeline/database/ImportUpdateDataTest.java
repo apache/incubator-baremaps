@@ -25,7 +25,6 @@ import com.baremaps.collection.LongDataOpenHashMap;
 import com.baremaps.collection.memory.OnHeapMemory;
 import com.baremaps.collection.type.CoordinateDataType;
 import com.baremaps.collection.type.LongListDataType;
-
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
