@@ -39,5 +39,4 @@ public class Config {
   public void setSources(List<Source> sources) {
     this.sources = sources;
   }
-
 }

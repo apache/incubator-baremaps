@@ -16,12 +16,10 @@ package com.baremaps.pipeline;
 
 import com.baremaps.blob.BlobStore;
 import java.nio.file.Path;
-import javax.sql.DataSource;
 
 public interface Context {
 
   Path directory();
 
   BlobStore blobStore();
-
 }

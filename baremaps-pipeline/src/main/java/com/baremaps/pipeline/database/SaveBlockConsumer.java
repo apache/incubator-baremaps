@@ -14,7 +14,6 @@
 
 package com.baremaps.pipeline.database;
 
-import com.baremaps.pipeline.database.repository.Repository;
 import com.baremaps.osm.domain.DataBlock;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.HeaderBlock;
@@ -22,6 +21,7 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.BlockConsumerAdapter;
+import com.baremaps.pipeline.database.repository.Repository;
 
 /** A consumer for saving OpenStreetMap blocks in a database. */
 class SaveBlockConsumer implements BlockConsumerAdapter {

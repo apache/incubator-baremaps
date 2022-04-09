@@ -21,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import com.baremaps.osm.domain.Node;
 import com.baremaps.pipeline.database.repository.PostgresNodeRepository;
 import com.baremaps.pipeline.database.repository.RepositoryException;
-import com.baremaps.osm.domain.Node;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;

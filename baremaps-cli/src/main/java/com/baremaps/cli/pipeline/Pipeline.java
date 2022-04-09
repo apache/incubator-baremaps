@@ -19,15 +19,12 @@ import com.baremaps.blob.BlobStore;
 import com.baremaps.cli.Options;
 import com.baremaps.pipeline.Context;
 import com.baremaps.pipeline.config.Config;
-import com.baremaps.pipeline.config.Database;
-import com.baremaps.pipeline.postgres.PostgresUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
-import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -66,7 +63,6 @@ public class Pipeline implements Callable<Integer> {
           public BlobStore blobStore() {
             return blobStore;
           }
-
         };
     com.baremaps.pipeline.Pipeline pipeline = new com.baremaps.pipeline.Pipeline(context, config);
     pipeline.execute();

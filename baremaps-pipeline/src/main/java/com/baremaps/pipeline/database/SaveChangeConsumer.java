@@ -14,7 +14,6 @@
 
 package com.baremaps.pipeline.database;
 
-import com.baremaps.pipeline.database.repository.Repository;
 import com.baremaps.osm.domain.Change;
 import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.domain.Node;
@@ -22,6 +21,7 @@ import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.ChangeConsumer;
 import com.baremaps.osm.function.EntityConsumerAdapter;
+import com.baremaps.pipeline.database.repository.Repository;
 
 /** A consumer for saving OpenStreetMap changes in a database. */
 class SaveChangeConsumer implements ChangeConsumer {

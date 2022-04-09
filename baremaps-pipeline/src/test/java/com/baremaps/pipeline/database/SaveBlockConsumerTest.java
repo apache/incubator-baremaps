@@ -20,13 +20,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.blob.BlobStoreException;
 import com.baremaps.blob.ResourceBlobStore;
+import com.baremaps.osm.pbf.PbfBlockReader;
 import com.baremaps.pipeline.database.repository.PostgresHeaderRepository;
 import com.baremaps.pipeline.database.repository.PostgresNodeRepository;
 import com.baremaps.pipeline.database.repository.PostgresRelationRepository;
 import com.baremaps.pipeline.database.repository.PostgresWayRepository;
 import com.baremaps.pipeline.database.repository.RepositoryException;
 import com.baremaps.pipeline.postgres.PostgresUtils;
-import com.baremaps.osm.pbf.PbfBlockReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;

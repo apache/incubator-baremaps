@@ -93,7 +93,8 @@ public class Pipeline {
   private void unzipSource(Source source) {
     Path sourceDirectory = context.directory().resolve(source.getId());
     Path downloadFile = sourceDirectory.resolve("file");
-    try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(Files.newInputStream(downloadFile)))) {
+    try (ZipInputStream zis =
+        new ZipInputStream(new BufferedInputStream(Files.newInputStream(downloadFile)))) {
       Path archiveDirectory = Files.createDirectories(sourceDirectory.resolve("archive"));
       ZipEntry ze;
       while ((ze = zis.getNextEntry()) != null) {
@@ -119,18 +120,19 @@ public class Pipeline {
 
   private void importAggregate(Aggregate aggregate) throws DataStoreException {
     Database database = config.getDatabase();
-    PostgresStore store = new PostgresStore(
-        database.getHost(),
-        database.getPort(),
-        database.getName(),
-        database.getSchema(),
-        database.getUsername(),
-        database.getPassword());
+    PostgresStore store =
+        new PostgresStore(
+            database.getHost(),
+            database.getPort(),
+            database.getName(),
+            database.getSchema(),
+            database.getUsername(),
+            database.getPassword());
     for (Resource source : aggregate.components()) {
       if (source instanceof FeatureSet sourceFeatureSet) {
         var type = sourceFeatureSet.getType();
         store.createFeatureType(sourceFeatureSet.getType());
-        var target =  store.findResource(type.getName().toString());
+        var target = store.findResource(type.getName().toString());
         if (target instanceof WritableFeatureSet targetFeatureSet) {
           targetFeatureSet.add(((FeatureSet) source).features(false).iterator());
         }

@@ -17,10 +17,10 @@ package com.baremaps.pipeline.database.repository;
 import static com.baremaps.pipeline.database.repository.PostgresJsonbMapper.toJson;
 import static com.baremaps.pipeline.database.repository.PostgresJsonbMapper.toMap;
 
-import com.baremaps.pipeline.postgres.CopyWriter;
 import com.baremaps.osm.domain.Info;
 import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.geometry.GeometryUtils;
+import com.baremaps.pipeline.postgres.CopyWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.sql.Array;

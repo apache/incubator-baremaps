@@ -43,7 +43,8 @@ class PipelineTest extends PostgresBaseTest {
 
   @BeforeEach
   public void before() {
-    DockerImageName postgis = DockerImageName.parse("postgis/postgis:13-3.1").asCompatibleSubstituteFor("postgres");
+    DockerImageName postgis =
+        DockerImageName.parse("postgis/postgis:13-3.1").asCompatibleSubstituteFor("postgres");
     container = new PostgreSQLContainer(postgis);
     container.start();
   }
@@ -59,9 +60,10 @@ class PipelineTest extends PostgresBaseTest {
     ObjectMapper mapper = new ObjectMapper();
     URL resource = Resources.getResource("config.json");
     Path directory = Files.createTempDirectory(Paths.get("."), "pipeline_");
-    BlobStore blobStore = new BlobStoreRouter()
-        .addScheme("http", new HttpBlobStore())
-        .addScheme("https", new HttpBlobStore());
+    BlobStore blobStore =
+        new BlobStoreRouter()
+            .addScheme("http", new HttpBlobStore())
+            .addScheme("https", new HttpBlobStore());
     Context context =
         new Context() {
           @Override
@@ -73,7 +75,7 @@ class PipelineTest extends PostgresBaseTest {
           public BlobStore blobStore() {
             return blobStore;
           }
-     };
+        };
     Config config = mapper.readValue(resource, Config.class);
     Database database = new Database();
     database.setHost(container.getHost());
