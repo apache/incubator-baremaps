@@ -17,7 +17,6 @@ package com.baremaps.server.ogcapi;
 import com.baremaps.model.TileJSON;
 import com.baremaps.pipeline.tile.PostgresQuery;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.inject.Singleton;
 
 @Singleton
@@ -35,6 +34,6 @@ public class Conversions {
                                 query.getMinzoom(),
                                 query.getMaxzoom(),
                                 query.getSql())))
-        .collect(Collectors.toList());
+        .toList();
   }
 }

@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
@@ -197,7 +196,7 @@ public class PostgresHeaderRepository implements HeaderRepository {
           Header value = getValue(result);
           values.put(value.getReplicationSequenceNumber(), value);
         }
-        return keys.stream().map(values::get).collect(Collectors.toList());
+        return keys.stream().map(values::get).toList();
       }
     } catch (SQLException e) {
       throw new RepositoryException(e);

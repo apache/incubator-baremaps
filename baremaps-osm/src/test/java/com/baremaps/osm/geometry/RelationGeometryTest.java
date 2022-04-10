@@ -38,7 +38,7 @@ class RelationGeometryTest {
 
   Geometry handleRelation(String file) throws IOException {
     InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
-    List<Entity> entities = new XmlEntityReader().stream(input).collect(Collectors.toList());
+    List<Entity> entities = new XmlEntityReader().stream(input).toList();
     LongDataMap<Coordinate> coordinates =
         new MockLongDataMap<>(
             entities.stream()

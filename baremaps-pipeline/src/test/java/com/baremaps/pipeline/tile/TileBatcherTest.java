@@ -20,7 +20,6 @@ import com.google.common.math.IntMath;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 class TileBatcherTest {
@@ -46,7 +45,7 @@ class TileBatcherTest {
           tiles.stream()
               .filter(new TileBatchPredicate(batchArraySize, batchArrayIndex))
               .sorted(Comparator.comparingLong(Tile::index))
-              .collect(Collectors.toList());
+              .toList();
       assertEquals(streamSize / batchArraySize, batch.size());
       int tileIndex = batchArrayIndex;
       for (Tile tile : batch) {

@@ -43,7 +43,6 @@ import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
@@ -105,7 +104,7 @@ public class DiffService implements Callable<List<Tile>> {
               .map(projectionTransformer::transform)
               .flatMap(this::tilesForGeometry)
               .distinct()
-              .collect(Collectors.toList());
+              .toList();
     }
   }
 

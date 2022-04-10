@@ -92,7 +92,7 @@ public class PostgresQueryGenerator {
         .filter(table -> table.getPrimaryKeyColumns().size() == 1)
         .filter(table -> table.getGeometryColumns().size() == 1)
         .map(this::getLayer)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private PostgresQuery getLayer(Table table) {
@@ -129,7 +129,7 @@ public class PostgresQueryGenerator {
                     entry.getValue(),
                     primaryKeys.getOrDefault(entry.getKey(), List.of()),
                     columns.getOrDefault(entry.getKey(), List.of())))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private List<TableDescription> listTableDescriptions() {
@@ -192,9 +192,7 @@ class Table {
   }
 
   public List<TableColumn> getGeometryColumns() {
-    return columns.stream()
-        .filter(column -> "geometry".equals(column.getTypeName()))
-        .collect(Collectors.toList());
+    return columns.stream().filter(column -> "geometry".equals(column.getTypeName())).toList();
   }
 
   @Override

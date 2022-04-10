@@ -15,7 +15,6 @@
 package com.baremaps.collection;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A map of data.
@@ -50,6 +49,6 @@ public interface LongDataMap<T> {
    * @return the values to which the specified keys are mapped
    */
   default List<T> get(List<Long> keys) {
-    return keys.stream().map(this::get).collect(Collectors.toList());
+    return keys.stream().map(this::get).toList();
   }
 }

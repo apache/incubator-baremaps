@@ -28,18 +28,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.apache.sis.storage.Aggregate;
-import org.apache.sis.storage.DataStoreException;
 import org.apache.sis.storage.FeatureSet;
 import org.apache.sis.storage.Resource;
 import org.apache.sis.storage.WritableFeatureSet;
 import org.geotoolkit.data.shapefile.ShapefileFeatureStore;
 import org.geotoolkit.db.postgres.PostgresStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Pipeline {
-
-  private static final Logger logger = LoggerFactory.getLogger(Pipeline.class);
 
   private Context context;
 
@@ -114,29 +109,34 @@ public class Pipeline {
     try {
       importAggregate(new ShapefileFeatureStore(file.toUri()));
     } catch (Exception e) {
-      e.printStackTrace();
+      throw new PipelineException(e);
     }
   }
 
-  private void importAggregate(Aggregate aggregate) throws DataStoreException {
+  private void importAggregate(Aggregate aggregate) {
     Database database = config.getDatabase();
-    PostgresStore store =
+    try (PostgresStore store =
         new PostgresStore(
             database.getHost(),
             database.getPort(),
             database.getName(),
             database.getSchema(),
             database.getUsername(),
-            database.getPassword());
-    for (Resource source : aggregate.components()) {
-      if (source instanceof FeatureSet sourceFeatureSet) {
-        var type = sourceFeatureSet.getType();
-        store.createFeatureType(sourceFeatureSet.getType());
-        var target = store.findResource(type.getName().toString());
-        if (target instanceof WritableFeatureSet targetFeatureSet) {
-          targetFeatureSet.add(((FeatureSet) source).features(false).iterator());
+            database.getPassword())) {
+      for (Resource source : aggregate.components()) {
+        if (source instanceof FeatureSet) {
+          var sourceFeatureSet = (FeatureSet) source;
+          var type = sourceFeatureSet.getType();
+          store.createFeatureType(sourceFeatureSet.getType());
+          var target = store.findResource(type.getName().toString());
+          if (target instanceof WritableFeatureSet) {
+            var targetFeatureSet = (WritableFeatureSet) target;
+            targetFeatureSet.add(((FeatureSet) source).features(false).iterator());
+          }
         }
       }
+    } catch (Exception e) {
+      throw new PipelineException(e);
     }
   }
 }

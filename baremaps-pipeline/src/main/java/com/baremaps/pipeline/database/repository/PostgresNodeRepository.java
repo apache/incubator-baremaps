@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
@@ -198,7 +197,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
           Node value = getValue(result);
           values.put(value.getId(), value);
         }
-        return keys.stream().map(values::get).collect(Collectors.toList());
+        return keys.stream().map(values::get).toList();
       }
     } catch (SQLException | JsonProcessingException e) {
       throw new RepositoryException(e);

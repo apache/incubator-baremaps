@@ -18,13 +18,14 @@ import com.google.common.io.Resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class NicData {
 
+  private static final String SAMPLE = "sample.txt";
+
   public static List<NicObject> sample(String resource) throws IOException {
     try (InputStream input = Resources.getResource(resource).openStream()) {
-      return NicParser.parse(input).collect(Collectors.toList());
+      return NicParser.parse(input).toList();
     }
   }
 }

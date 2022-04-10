@@ -207,7 +207,7 @@ public class Export implements Callable<Integer> {
                       layer.getQueries().stream().mapToInt(Query::getMaxzoom).max().getAsInt());
                   return map;
                 })
-            .collect(Collectors.toList());
+            .toList();
     metadata.put("json", new ObjectMapper().writeValueAsString(layers));
     return metadata;
   }

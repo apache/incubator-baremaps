@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -78,8 +77,7 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
   @Override
   public void match(Way way) {
     try {
-      List<Coordinate> list =
-          way.getNodes().stream().map(coordinates::get).collect(Collectors.toList());
+      List<Coordinate> list = way.getNodes().stream().map(coordinates::get).toList();
       Coordinate[] array = list.toArray(new Coordinate[list.size()]);
       LineString line = geometryFactory.createLineString(array);
       if (!line.isEmpty()) {
@@ -209,7 +207,7 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
   private LineString createLine(Member member) {
     try {
       List<Long> refs = this.references.get(member.getRef());
-      List<Coordinate> coords = refs.stream().map(coordinates::get).collect(Collectors.toList());
+      List<Coordinate> coords = refs.stream().map(coordinates::get).toList();
       Coordinate[] array = coords.toArray(new Coordinate[coords.size()]);
       return geometryFactory.createLineString(array);
     } catch (Exception e) {

@@ -209,7 +209,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
           Relation value = getValue(result);
           values.put(value.getId(), value);
         }
-        return keys.stream().map(values::get).collect(Collectors.toList());
+        return keys.stream().map(values::get).toList();
       }
     } catch (SQLException | JsonProcessingException e) {
       throw new RepositoryException(e);

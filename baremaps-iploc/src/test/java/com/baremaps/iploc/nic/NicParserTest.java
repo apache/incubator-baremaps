@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 class NicParserTest {
@@ -31,11 +30,11 @@ class NicParserTest {
 
   @Test
   void parseAttributes() throws IOException {
-    List<NicAttribute> nicAttributes =
-        NicData.sample("sample.txt").stream()
-            .map(NicObject::attributes)
-            .flatMap(List::stream)
-            .collect(Collectors.toList());
+    List<NicAttribute> nicAttributes = NicData.sample("sample.txt")
+        .stream()
+        .map(NicObject::attributes)
+        .flatMap(List::stream)
+        .toList();
     assertEquals(233, nicAttributes.size());
   }
 }

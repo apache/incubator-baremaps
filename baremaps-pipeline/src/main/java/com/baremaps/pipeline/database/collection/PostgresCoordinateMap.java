@@ -23,7 +23,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
 
@@ -78,7 +77,8 @@ public class PostgresCoordinateMap implements LongDataMap<Coordinate> {
           double lat = result.getDouble(3);
           nodes.put(key, new Coordinate(lon, lat));
         }
-        return keys.stream().map(nodes::get).collect(Collectors.toList());
+        return keys.stream().map(nodes::get).toList();
+        ;
       }
     } catch (SQLException e) {
       throw new StoreException(e);

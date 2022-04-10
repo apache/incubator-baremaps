@@ -25,11 +25,11 @@ class StreamUtilsTest {
 
   @Test
   void partition() {
-    List<Integer> list = IntStream.range(0, 100).mapToObj(i -> i).collect(Collectors.toList());
+    List<Integer> list = IntStream.range(0, 100).mapToObj(i -> i).toList();
     List<List<Integer>> partitions =
         StreamUtils.partition(list.stream(), 10)
             .map(stream -> stream.collect(Collectors.toList()))
-            .collect(Collectors.toList());
+            .toList();
     assertEquals(partitions.size(), 10);
   }
 }

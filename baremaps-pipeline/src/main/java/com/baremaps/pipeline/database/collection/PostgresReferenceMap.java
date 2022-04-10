@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 /** A read-only {@code Cache} for references baked by an OpenStreetMap ways stored in Postgres. */
@@ -84,7 +83,7 @@ public class PostgresReferenceMap implements LongDataMap<List<Long>> {
           }
           references.put(key, nodes);
         }
-        return keys.stream().map(references::get).collect(Collectors.toList());
+        return keys.stream().map(references::get).toList();
       }
     } catch (SQLException e) {
       throw new StoreException(e);

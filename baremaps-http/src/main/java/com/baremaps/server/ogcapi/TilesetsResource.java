@@ -28,7 +28,6 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
@@ -81,7 +80,7 @@ public class TilesetsResource implements TilesetsApi {
                                     query.getMinzoom(),
                                     query.getMaxzoom(),
                                     query.getSql())))
-            .collect(Collectors.toList());
+            .toList();
     return new PostgresTileStore(dataSource, queries);
   }
 
