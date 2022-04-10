@@ -10,18 +10,15 @@ jobs:
   release-github:
     name: Release on GitHub
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: [ '17' ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Set up Java ${{ matrix.Java }}
+      - name: Set up Java 17
         uses: actions/setup-java@v2
         with:
-          java-version: ${{ matrix.Java }}
+          java-version: 17
           distribution: 'temurin'
       - name: Build with maven
         run: ./mvnw install -P maputnik -B
@@ -49,18 +46,15 @@ jobs:
   release-maven:
     name: Release on Maven Central
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: [ '17' ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Set up Java ${{ matrix.Java }}
+      - name: Set up Java 17
         uses: actions/setup-java@v2
         with:
-          java-version: ${{ matrix.Java }}
+          java-version: 17
           distribution: 'temurin'
           server-id: maven
           server-username: MAVEN_USERNAME
@@ -79,9 +73,6 @@ jobs:
   release-docker:
     name: Release on DockerHub
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: [ '17' ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -92,10 +83,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: Set up Java ${{ matrix.Java }}
+      - name: Set up Java 17
         uses: actions/setup-java@v2
         with:
-          java-version: ${{ matrix.Java }}
+          java-version: 17
           distribution: 'temurin'
       - name: Build with maven
         run: ./mvnw install -P maputnik -B

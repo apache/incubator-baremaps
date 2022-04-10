@@ -78,7 +78,6 @@ public class PostgresCoordinateMap implements LongDataMap<Coordinate> {
           nodes.put(key, new Coordinate(lon, lat));
         }
         return keys.stream().map(nodes::get).toList();
-        ;
       }
     } catch (SQLException e) {
       throw new StoreException(e);

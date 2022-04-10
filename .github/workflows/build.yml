@@ -12,9 +12,6 @@ jobs:
   build-ubuntu:
     name: Build on Ubuntu
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: 17
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -32,9 +29,6 @@ jobs:
   build-macos:
     name: Build on MacOS
     runs-on: macos-latest
-    strategy:
-      matrix:
-        java: 17
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -52,9 +46,6 @@ jobs:
   build-windows:
     name: Build on Windows
     runs-on: windows-latest
-    strategy:
-      matrix:
-        java: 17
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
