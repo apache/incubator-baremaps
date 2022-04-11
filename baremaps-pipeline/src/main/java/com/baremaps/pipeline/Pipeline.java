@@ -17,22 +17,26 @@ package com.baremaps.pipeline;
 import com.baremaps.pipeline.config.Config;
 import com.baremaps.pipeline.config.Database;
 import com.baremaps.pipeline.config.Source;
+import com.baremaps.storage.geopackage.GeoPackageStore;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import org.apache.sis.storage.Aggregate;
+import mil.nga.geopackage.GeoPackageManager;
+import org.apache.sis.storage.DataStores;
 import org.apache.sis.storage.FeatureSet;
 import org.apache.sis.storage.Resource;
 import org.apache.sis.storage.WritableFeatureSet;
 import org.geotoolkit.data.shapefile.ShapefileFeatureStore;
 import org.geotoolkit.db.postgres.PostgresStore;
+import org.opengis.feature.Feature;
 
 public class Pipeline {
 
@@ -46,54 +50,86 @@ public class Pipeline {
   }
 
   public void execute() {
-    CompletableFuture[] futures =
-        config.getSources().stream().map(this::handle).toArray(size -> new CompletableFuture[size]);
+    CompletableFuture[] futures = config.getSources().stream()
+        .map(this::handle)
+        .toArray(CompletableFuture[]::new);
     CompletableFuture.allOf(futures).join();
   }
 
   public CompletableFuture<Void> handle(Source source) {
+    Path downloadFile = downloadFile(source);
     CompletableFuture<Void> steps = CompletableFuture.completedFuture(null);
 
-    // download url
-    Path sourceDirectory = context.directory().resolve(source.getId());
-    Path downloadFile = sourceDirectory.resolve("file");
-
+    // download file
     if (!Files.exists(downloadFile)) {
-      steps = steps.thenRunAsync(() -> downloadSource(source));
+      steps = steps.thenRunAsync(() -> download(source));
     }
 
-    // expand archive
+    // expand file
     if ("zip".equals(source.getArchive())) {
-      steps = steps.thenRunAsync(() -> unzipSource(source));
+      steps = steps.thenRunAsync(() -> unzip(source));
     }
 
-    if ("shp".equals(source.getFormat())) {
-      steps = steps.thenRunAsync(() -> importShapefileSource(source));
+    // import file
+    switch (source.getFormat()) {
+      case "pbf":
+        steps = steps.thenRunAsync(() -> importPbf(source));
+        break;
+      case "shp":
+        steps = steps.thenRunAsync(() -> importShp(source));
+        break;
+      case "geojson":
+        steps = steps.thenRunAsync(() -> importGeoJson(source));
+        break;
+      case "geopackage":
+        steps = steps.thenRunAsync(() -> importGeoPackage(source));
+        break;
     }
 
     return steps;
   }
 
-  private void downloadSource(Source source) {
+  private Path directory(Source source) {
+    return context.directory().resolve(source.getId());
+  }
+
+  private Path archiveFile(Source source) {
+    return directory(source).resolve(source.getFile());
+  }
+
+  private Path downloadFile(Source source) {
+    var uri = URI.create(source.getUrl()).getPath();
+    var name = Paths.get(uri).getFileName();
+    return directory(source).resolve(name);
+  }
+
+  private Path file(Source source) {
+    if (source.getFile() == null) {
+      return downloadFile(source);
+    } else {
+      return archiveFile(source);
+    }
+  }
+
+  private void download(Source source) {
     try (InputStream inputStream =
         context.blobStore().get(URI.create(source.getUrl())).getInputStream()) {
-      Path sourceDirectory = Files.createDirectories(context.directory().resolve(source.getId()));
-      Path downloadFile = Files.createFile(sourceDirectory.resolve("file"));
+      Path downloadFile = downloadFile(source);
+      Files.createDirectories(downloadFile.getParent());
       Files.copy(inputStream, downloadFile, StandardCopyOption.REPLACE_EXISTING);
     } catch (Exception e) {
       throw new PipelineException(e);
     }
   }
 
-  private void unzipSource(Source source) {
-    Path sourceDirectory = context.directory().resolve(source.getId());
-    Path downloadFile = sourceDirectory.resolve("file");
+  private void unzip(Source source) {
+    Path sourceDirectory = directory(source);
+    Path downloadFile = downloadFile(source);
     try (ZipInputStream zis =
         new ZipInputStream(new BufferedInputStream(Files.newInputStream(downloadFile)))) {
-      Path archiveDirectory = Files.createDirectories(sourceDirectory.resolve("archive"));
       ZipEntry ze;
       while ((ze = zis.getNextEntry()) != null) {
-        Path file = Files.createDirectories(archiveDirectory.resolve(ze.getName()));
+        Path file = Files.createDirectories(sourceDirectory.resolve(ze.getName()));
         Files.copy(zis, file, StandardCopyOption.REPLACE_EXISTING);
       }
     } catch (Exception e) {
@@ -101,19 +137,51 @@ public class Pipeline {
     }
   }
 
-  private void importShapefileSource(Source source) {
-    Path sourceDirectory = context.directory().resolve(source.getId());
-    Path downloadFile = sourceDirectory.resolve("file");
-    Path archiveFile = sourceDirectory.resolve(source.getFile());
-    Path file = Optional.ofNullable(archiveFile).orElse(downloadFile);
+  private void importPbf(Source source) {
+    Path file = file(source);
+  }
+
+  private void importShp(Source source) {
     try {
-      importAggregate(new ShapefileFeatureStore(file.toUri()));
+      Path file = file(source);
+      ShapefileFeatureStore aggregate = new ShapefileFeatureStore(file.toUri());
+      for (Resource resource : aggregate.components()) {
+        if (resource instanceof FeatureSet) {
+          var sourceFeatureSet = (FeatureSet) resource;
+          importFeatureSet(sourceFeatureSet);
+        }
+      }
     } catch (Exception e) {
       throw new PipelineException(e);
     }
   }
 
-  private void importAggregate(Aggregate aggregate) {
+  private void importGeoJson(Source source) {
+    try {
+      Path file = file(source);
+      FeatureSet featureSet = (FeatureSet) DataStores.open(file.toUri().toURL());
+      importFeatureSet(featureSet);
+    } catch (Exception e) {
+      throw new PipelineException(e);
+    }
+  }
+
+  private void importGeoPackage(Source source) {
+    try {
+      Path file = file(source);
+      GeoPackageStore store = new GeoPackageStore(GeoPackageManager.open(file.toFile()));
+      for (Resource resource : store.components()) {
+        if (resource instanceof FeatureSet) {
+          var sourceFeatureSet = (FeatureSet) source;
+          importFeatureSet(sourceFeatureSet);
+        }
+      }
+    } catch (Exception e) {
+      throw new PipelineException(e);
+    }
+  }
+
+  private void importFeatureSet(FeatureSet featureSet) {
     Database database = config.getDatabase();
     try (PostgresStore store =
         new PostgresStore(
@@ -123,16 +191,13 @@ public class Pipeline {
             database.getSchema(),
             database.getUsername(),
             database.getPassword())) {
-      for (Resource source : aggregate.components()) {
-        if (source instanceof FeatureSet) {
-          var sourceFeatureSet = (FeatureSet) source;
-          var type = sourceFeatureSet.getType();
-          store.createFeatureType(sourceFeatureSet.getType());
-          var target = store.findResource(type.getName().toString());
-          if (target instanceof WritableFeatureSet) {
-            var targetFeatureSet = (WritableFeatureSet) target;
-            targetFeatureSet.add(((FeatureSet) source).features(false).iterator());
-          }
+      var type = featureSet.getType();
+      store.createFeatureType(type);
+      var target = store.findResource(type.getName().toString());
+      if (target instanceof WritableFeatureSet) {
+        var targetFeatureSet = (WritableFeatureSet) target;
+        try (Stream<Feature> featureStream = featureSet.features(false)) {
+          targetFeatureSet.add(featureStream.iterator());
         }
       }
     } catch (Exception e) {

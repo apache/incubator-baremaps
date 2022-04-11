@@ -33,9 +33,6 @@ import org.jdbi.v3.json.Json;
 @Path("")
 public class ImportResource {
 
-  private static final QualifiedType<Collection> COLLECTION =
-      QualifiedType.of(Collection.class).with(Json.class);
-
   private final Jdbi jdbi;
 
   @Inject
@@ -48,8 +45,7 @@ public class ImportResource {
   @Path("studio/import")
   public Response uploadData(
       @FormDataParam("file") InputStream fileInputStream,
-      @FormDataParam("file") FormDataContentDisposition fileMetaData)
-      throws Exception {
+      @FormDataParam("file") FormDataContentDisposition fileMetaData) {
     /*
     TODO: replace GeoTools with Apache SIS
     // Read FeatureCollection

@@ -34,8 +34,6 @@ import picocli.CommandLine.Option;
 @Command(name = "pipeline", description = "Execute a pipeline.")
 public class Pipeline implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(Pipeline.class);
-
   @Mixin private Options options;
 
   @Option(
@@ -50,7 +48,7 @@ public class Pipeline implements Callable<Integer> {
     BlobStore blobStore = options.blobStore();
     Blob blob = blobStore.get(config);
     ObjectMapper mapper = new ObjectMapper();
-    Config config = mapper.readValue(blob.getInputStream(), Config.class);
+    Config value = mapper.readValue(blob.getInputStream(), Config.class);
     Path directory = Files.createDirectories(Paths.get("pipeline"));
     Context context =
         new Context() {
@@ -64,7 +62,7 @@ public class Pipeline implements Callable<Integer> {
             return blobStore;
           }
         };
-    com.baremaps.pipeline.Pipeline pipeline = new com.baremaps.pipeline.Pipeline(context, config);
+    com.baremaps.pipeline.Pipeline pipeline = new com.baremaps.pipeline.Pipeline(context, value);
     pipeline.execute();
     return 0;
   }

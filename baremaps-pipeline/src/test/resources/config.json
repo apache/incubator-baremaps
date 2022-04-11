@@ -1,11 +1,16 @@
 {
   "sources": [
     {
+      "id": "land",
+      "url": "https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson",
+      "format": "geojson"
+    },
+    {
       "id": "monaco-shapefile",
       "url": "http://download.geofabrik.de/europe/monaco-latest-free.shp.zip",
       "format": "shp",
       "archive": "zip",
-      "file": "archive/gis_osm_buildings_a_free_1.shp"
+      "file": "gis_osm_buildings_a_free_1.shp"
     }
   ]
 }

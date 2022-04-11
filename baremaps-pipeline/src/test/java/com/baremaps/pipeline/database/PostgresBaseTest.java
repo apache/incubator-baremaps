@@ -21,11 +21,23 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
+import org.postgresql.ds.PGSimpleDataSource;
 
 public abstract class PostgresBaseTest {
 
   public DataSource initDataSource() throws SQLException, IOException {
     DataSource dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
+    try (Connection connection = dataSource.getConnection()) {
+      PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
+      PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
+      PostgresUtils.executeResource(connection, "osm_create_tables.sql");
+    }
+    return dataSource;
+  }
+
+  public DataSource postgresDataSource() throws SQLException, IOException {
+    var dataSource = new PGSimpleDataSource();
+    dataSource.setUrl(DATABASE_URL);
     try (Connection connection = dataSource.getConnection()) {
       PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
       PostgresUtils.executeResource(connection, "osm_drop_tables.sql");

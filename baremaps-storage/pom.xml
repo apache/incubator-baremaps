@@ -17,16 +17,8 @@
       <artifactId>esri-geometry-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opengis</groupId>
-      <artifactId>geoapi-pending</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.sis.core</groupId>
       <artifactId>sis-feature</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.sis.core</groupId>
-      <artifactId>sis-utility</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.sis.core</groupId>
@@ -41,11 +33,23 @@
       <artifactId>sis-storage</artifactId>
     </dependency>
     <dependency>
+      <groupId>mil.nga.geopackage</groupId>
+      <artifactId>geopackage</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
     </dependency>
 
     <!-- TODO: remove these LGPL dependencies once alternatives are available in Apache SIS -->
+    <dependency>
+      <groupId>org.apache.sis.non-free</groupId>
+      <artifactId>sis-epsg</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sis.non-free</groupId>
+      <artifactId>sis-embedded-data</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.geotoolkit</groupId>
       <artifactId>geotk-feature-shapefile</artifactId>

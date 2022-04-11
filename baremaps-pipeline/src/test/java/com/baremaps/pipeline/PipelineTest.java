@@ -30,10 +30,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Comparator;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.postgresql.ds.PGSimpleDataSource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -75,6 +77,7 @@ class PipelineTest extends PostgresBaseTest {
           public BlobStore blobStore() {
             return blobStore;
           }
+
         };
     Config config = mapper.readValue(resource, Config.class);
     Database database = new Database();
@@ -85,6 +88,7 @@ class PipelineTest extends PostgresBaseTest {
     database.setSchema("public");
     database.setPort(container.getMappedPort(5432));
     config.setDatabase(database);
+
     Pipeline pipeline = new Pipeline(context, config);
     pipeline.execute();
     Files.walk(directory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);

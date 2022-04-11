@@ -75,8 +75,9 @@
 
     <!-- libraries -->
     <version.lib.caffeine>3.0.4</version.lib.caffeine>
-    <version.lib.derby>10.7.1.1</version.lib.derby>
+    <version.lib.derby>10.14.2.0</version.lib.derby>
     <version.lib.commons-compress>1.21</version.lib.commons-compress>
+    <version.lib.geopackage>6.2.1</version.lib.geopackage>
     <version.lib.guava>31.0.1-jre</version.lib.guava>
     <version.lib.jersey>2.34</version.lib.jersey>
     <version.lib.jts>1.18.2</version.lib.jts>
@@ -103,6 +104,7 @@
     <version.lib.sis>1.1</version.lib.sis>
     <version.lib.geoapi>4.0-M19</version.lib.geoapi>
     <version.lib.sis>2.0-M0084</version.lib.sis>
+    <version.lib.sis-non-free>1.1</version.lib.sis-non-free>
     <version.lib.geotk>22.04.05</version.lib.geotk>
     <version.lib.esri>2.2.4</version.lib.esri>
 
@@ -428,11 +430,6 @@
         <version>${version.lib.esri}</version>
       </dependency>
       <dependency>
-        <groupId>org.opengis</groupId>
-        <artifactId>geoapi-pending</artifactId>
-        <version>${version.lib.geoapi}</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.sis.core</groupId>
         <artifactId>sis-feature</artifactId>
         <version>${version.lib.sis}</version>
@@ -482,8 +479,23 @@
         <artifactId>derby</artifactId>
         <version>${version.lib.derby}</version>
       </dependency>
+      <dependency>
+        <groupId>mil.nga.geopackage</groupId>
+        <artifactId>geopackage</artifactId>
+        <version>${version.lib.geopackage}</version>
+      </dependency>
 
       <!-- TODO: remove these LGPL dependencies once alternatives are available in Apache SIS -->
+      <dependency>
+        <groupId>org.apache.sis.non-free</groupId>
+        <artifactId>sis-epsg</artifactId>
+        <version>${version.lib.sis-non-free}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.non-free</groupId>
+        <artifactId>sis-embedded-data</artifactId>
+        <version>${version.lib.sis-non-free}</version>
+      </dependency>
       <dependency>
         <groupId>org.geotoolkit</groupId>
         <artifactId>geotk-feature-shapefile</artifactId>
