@@ -13,10 +13,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.esri.geometry</groupId>
-      <artifactId>esri-geometry-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.sis.core</groupId>
       <artifactId>sis-feature</artifactId>
     </dependency>

@@ -106,7 +106,6 @@
     <version.lib.sis>2.0-M0084</version.lib.sis>
     <version.lib.sis-non-free>1.1</version.lib.sis-non-free>
     <version.lib.geotk>22.04.05</version.lib.geotk>
-    <version.lib.esri>2.2.4</version.lib.esri>
 
     <!-- testing -->
     <version.lib.testng>7.4.0</version.lib.testng>
@@ -424,11 +423,6 @@
       </dependency>
 
       <!-- Apache SIS -->
-      <dependency>
-        <groupId>com.esri.geometry</groupId>
-        <artifactId>esri-geometry-api</artifactId>
-        <version>${version.lib.esri}</version>
-      </dependency>
       <dependency>
         <groupId>org.apache.sis.core</groupId>
         <artifactId>sis-feature</artifactId>

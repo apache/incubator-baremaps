@@ -66,19 +66,7 @@ class PipelineTest extends PostgresBaseTest {
         new BlobStoreRouter()
             .addScheme("http", new HttpBlobStore())
             .addScheme("https", new HttpBlobStore());
-    Context context =
-        new Context() {
-          @Override
-          public Path directory() {
-            return directory;
-          }
 
-          @Override
-          public BlobStore blobStore() {
-            return blobStore;
-          }
-
-        };
     Config config = mapper.readValue(resource, Config.class);
     Database database = new Database();
     database.setHost(container.getHost());
@@ -89,7 +77,7 @@ class PipelineTest extends PostgresBaseTest {
     database.setPort(container.getMappedPort(5432));
     config.setDatabase(database);
 
-    Pipeline pipeline = new Pipeline(context, config);
+    Pipeline pipeline = new Pipeline(blobStore, directory, config);
     pipeline.execute();
     Files.walk(directory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
   }

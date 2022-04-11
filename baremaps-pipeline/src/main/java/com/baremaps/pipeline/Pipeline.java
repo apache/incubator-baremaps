@@ -14,8 +14,8 @@
 
 package com.baremaps.pipeline;
 
+import com.baremaps.blob.BlobStore;
 import com.baremaps.pipeline.config.Config;
-import com.baremaps.pipeline.config.Database;
 import com.baremaps.pipeline.config.Source;
 import com.baremaps.storage.geopackage.GeoPackageStore;
 import java.io.BufferedInputStream;
@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import mil.nga.geopackage.GeoPackageManager;
+import org.apache.sis.storage.DataStoreException;
 import org.apache.sis.storage.DataStores;
 import org.apache.sis.storage.FeatureSet;
 import org.apache.sis.storage.Resource;
@@ -37,16 +38,33 @@ import org.apache.sis.storage.WritableFeatureSet;
 import org.geotoolkit.data.shapefile.ShapefileFeatureStore;
 import org.geotoolkit.db.postgres.PostgresStore;
 import org.opengis.feature.Feature;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-public class Pipeline {
+public class Pipeline implements AutoCloseable {
 
-  private Context context;
+  private BlobStore blobStore;
+
+  private Path directory;
 
   private Config config;
 
-  public Pipeline(Context context, Config config) {
-    this.context = context;
+  private PostgresStore store;
+
+  public Pipeline(BlobStore blobStore, Path directory, Config config) {
+    this.blobStore = blobStore;
+    this.directory = directory;
     this.config = config;
+    try {
+      this.store = new PostgresStore(
+          config.getDatabase().getHost(),
+          config.getDatabase().getPort(),
+          config.getDatabase().getName(),
+          config.getDatabase().getSchema(),
+          config.getDatabase().getUsername(),
+          config.getDatabase().getPassword());
+    } catch (DataStoreException e) {
+      throw new PipelineException(e);
+    }
   }
 
   public void execute() {
@@ -90,7 +108,7 @@ public class Pipeline {
   }
 
   private Path directory(Source source) {
-    return context.directory().resolve(source.getId());
+    return directory.resolve(source.getId());
   }
 
   private Path archiveFile(Source source) {
@@ -113,7 +131,7 @@ public class Pipeline {
 
   private void download(Source source) {
     try (InputStream inputStream =
-        context.blobStore().get(URI.create(source.getUrl())).getInputStream()) {
+        blobStore.get(URI.create(source.getUrl())).getInputStream()) {
       Path downloadFile = downloadFile(source);
       Files.createDirectories(downloadFile.getParent());
       Files.copy(inputStream, downloadFile, StandardCopyOption.REPLACE_EXISTING);
@@ -182,15 +200,7 @@ public class Pipeline {
   }
 
   private void importFeatureSet(FeatureSet featureSet) {
-    Database database = config.getDatabase();
-    try (PostgresStore store =
-        new PostgresStore(
-            database.getHost(),
-            database.getPort(),
-            database.getName(),
-            database.getSchema(),
-            database.getUsername(),
-            database.getPassword())) {
+    try {
       var type = featureSet.getType();
       store.createFeatureType(type);
       var target = store.findResource(type.getName().toString());
@@ -204,4 +214,10 @@ public class Pipeline {
       throw new PipelineException(e);
     }
   }
+
+  @Override
+  public void close() throws Exception {
+    store.close();
+  }
+
 }

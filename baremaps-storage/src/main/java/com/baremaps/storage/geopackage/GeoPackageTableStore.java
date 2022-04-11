@@ -1,18 +1,35 @@
 package com.baremaps.storage.geopackage;
 
+import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import mil.nga.crs.common.DateTime;
+import mil.nga.geopackage.db.GeoPackageDataType;
 import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
+import mil.nga.geopackage.geom.GeoPackageGeometryData;
+import mil.nga.sf.GeometryType;
 import org.apache.sis.feature.builder.FeatureTypeBuilder;
 import org.apache.sis.storage.DataStore;
 import org.apache.sis.storage.DataStoreException;
 import org.apache.sis.storage.FeatureSet;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureType;
 import org.opengis.geometry.Envelope;
@@ -29,10 +46,17 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
     this.featureDao = featureDao;
     FeatureTypeBuilder builder = new FeatureTypeBuilder().setName(featureDao.getTableName());
     for (FeatureColumn column : featureDao.getColumns()) {
-      builder.addAttribute(column.getDataType().getClassType()).setName(column.getName());
+      if (column.isGeometry()) {
+        builder.addAttribute(jtsType(column.getGeometryType())).setName(column.getName());
+      } else {
+        builder.addAttribute(sisType(column.getDataType())).setName(column.getName());
+      }
     }
     featureType = builder.build();
   }
+
+
+
 
   @Override
   public Optional<Envelope> getEnvelope() throws DataStoreException {
@@ -87,13 +111,125 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
         throw new NoSuchElementException();
       }
       Feature feature = featureType.newInstance();
-      for (FeatureColumn featureColumn: featureResultSet.getColumns().getColumns()) {
-        System.out.println(featureColumn.getName());
-        System.out.println(featureColumn.getType());
-        feature.setPropertyValue(featureColumn.getName(), featureResultSet.getValue(featureColumn));
+      for (FeatureColumn featureColumn : featureResultSet.getColumns().getColumns()) {
+        if (featureColumn.isGeometry()) {
+          GeoPackageGeometryData value = (GeoPackageGeometryData) featureResultSet.getValue(featureColumn);
+          feature.setPropertyValue(featureColumn.getName(), jtsValue(value.getGeometry()));
+        } else {
+          Object value = featureResultSet.getValue(featureColumn);
+          feature.setPropertyValue(featureColumn.getName(), sisValue(value));
+        }
       }
       return feature;
     }
+
+
+  }
+
+  private Class<?> sisType(GeoPackageDataType dataType) {
+    return dataType.getClassType();
+  }
+
+  private Object sisValue(Object value) {
+    if (value instanceof Date || value instanceof DateTime) {
+      return value.toString();
+    } else {
+      return value;
+    }
+  }
+
+
+  private Class<?> jtsType(GeometryType type) {
+    return switch (type) {
+      case GEOMETRY -> Geometry.class;
+      case POINT -> Point.class;
+      case LINESTRING -> LineString.class;
+      case POLYGON -> Polygon.class;
+      case MULTIPOINT -> MultiPoint.class;
+      case MULTILINESTRING -> MultiLineString.class;
+      case MULTIPOLYGON -> MultiPolygon.class;
+      case GEOMETRYCOLLECTION -> GeometryCollection.class;
+      case CIRCULARSTRING -> throw new UnsupportedOperationException();
+      case COMPOUNDCURVE -> throw new UnsupportedOperationException();
+      case CURVEPOLYGON -> throw new UnsupportedOperationException();
+      case MULTICURVE -> throw new UnsupportedOperationException();
+      case MULTISURFACE -> throw new UnsupportedOperationException();
+      case CURVE -> throw new UnsupportedOperationException();
+      case SURFACE -> throw new UnsupportedOperationException();
+      case POLYHEDRALSURFACE -> throw new UnsupportedOperationException();
+      case TIN -> throw new UnsupportedOperationException();
+      case TRIANGLE -> throw new UnsupportedOperationException();
+    };
+  }
+
+  private GeometryFactory geometryFactory = new GeometryFactory();
+
+  private Geometry jtsValue(mil.nga.sf.Geometry geometry) {
+    if (geometry instanceof mil.nga.sf.Point point) {
+      return jtsPoint(point);
+    } else if (geometry instanceof mil.nga.sf.LineString lineString) {
+      return jtsLineString(lineString);
+    } else if (geometry instanceof mil.nga.sf.Polygon polygon) {
+      return jtsPolygon(polygon);
+    } else if (geometry instanceof mil.nga.sf.MultiPoint multiPoint) {
+      return jtsMultiPoint(multiPoint);
+    } else if (geometry instanceof mil.nga.sf.MultiLineString multiLineString) {
+      return jtsMultiLineString(multiLineString);
+    } else if (geometry instanceof mil.nga.sf.MultiPolygon multiPolygon) {
+      return jtsMultiPolygon(multiPolygon);
+    } else if (geometry instanceof mil.nga.sf.GeometryCollection geometryCollection) {
+      return jstGeometryCollection(geometryCollection);
+    } else {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  private GeometryCollection jstGeometryCollection(mil.nga.sf.GeometryCollection geometryCollection) {
+    List<mil.nga.sf.Geometry> geometries = geometryCollection.getGeometries();
+    return geometryFactory.createGeometryCollection(geometries.stream()
+        .map(this::jtsValue)
+        .toArray(Geometry[]::new));
+  }
+
+  private MultiPolygon jtsMultiPolygon(mil.nga.sf.MultiPolygon multiPolygon) {
+    return geometryFactory.createMultiPolygon(multiPolygon.getPolygons().stream()
+        .map(this::jtsPolygon)
+        .toArray(Polygon[]::new));
+  }
+
+  private MultiLineString jtsMultiLineString(mil.nga.sf.MultiLineString multiLineString) {
+    return geometryFactory.createMultiLineString(multiLineString.getLineStrings().stream()
+        .map(this::jtsLineString)
+        .toArray(LineString[]::new));
+  }
+
+  private MultiPoint jtsMultiPoint(mil.nga.sf.MultiPoint multiPoint) {
+    return geometryFactory.createMultiPoint(multiPoint.getPoints().stream()
+        .map(this::jtsPoint)
+        .toArray(Point[]::new));
+  }
+
+  private Polygon jtsPolygon(mil.nga.sf.Polygon polygon) {
+    var shell = geometryFactory.createLinearRing(polygon.getExteriorRing().getPoints().stream()
+        .map(point -> new Coordinate(point.getX(), point.getY()))
+        .toArray(Coordinate[]::new));
+    var holes = polygon.getRings().stream().skip(1)
+        .map(lineString -> geometryFactory.createLinearRing(lineString.getPoints().stream()
+            .map(point -> new Coordinate(point.getX(), point.getY()))
+            .toArray(Coordinate[]::new)))
+        .toArray(LinearRing[]::new);
+    return geometryFactory.createPolygon(shell, holes);
+  }
+
+  private LineString jtsLineString(mil.nga.sf.LineString lineString) {
+    var coordinates = lineString.getPoints().stream()
+        .map(point -> new Coordinate(point.getX(), point.getY()))
+        .toArray(Coordinate[]::new);
+    return geometryFactory.createLineString(coordinates);
+  }
+
+  private Point jtsPoint(mil.nga.sf.Point point) {
+    return geometryFactory.createPoint(new Coordinate(point.getX(), point.getY()));
   }
 
 }
