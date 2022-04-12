@@ -40,8 +40,18 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/** Provides an implementation of the {@code Repository<Relation>} baked by PostgreSQL. */
+/**
+ * Provides an implementation of the {@code Repository<Relation>} baked by PostgreSQL.
+ */
 public class PostgresRelationRepository implements Repository<Long, Relation> {
+
+  private final DataSource dataSource;
+
+  private final String createTable;
+
+  private final String dropTable;
+
+  private final String truncateTable;
 
   private final String select;
 
@@ -53,7 +63,6 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
 
   private final String copy;
 
-  private final DataSource dataSource;
 
   /**
    * Constructs a {@code PostgresRelationRepository}.
@@ -80,7 +89,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
    * Constructs a {@code PostgresRelationRepository} with custom parameters.
    *
    * @param dataSource
-   * @param nodeRepository
+   * @param tableName
    * @param idColumn
    * @param versionColumn
    * @param uidColumn
@@ -94,7 +103,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
    */
   public PostgresRelationRepository(
       DataSource dataSource,
-      String nodeRepository,
+      String tableName,
       String idColumn,
       String versionColumn,
       String uidColumn,
@@ -106,10 +115,37 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
       String memberRoles,
       String geometryColumn) {
     this.dataSource = dataSource;
+    this.createTable =
+        String.format("""
+                CREATE TABLE %1$s (
+                  %2$s bigint PRIMARY KEY,
+                  %3$s int,
+                  %4$s int,
+                  %5$s timestamp without time zone,
+                  %6$s bigint,
+                  %7$s jsonb,
+                  %8$s bigint[],
+                  %9$s int[],
+                  %10$s text[],
+                  %11$s geometry
+                )""",
+            tableName,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            memberRefs,
+            memberTypes,
+            memberRoles,
+            geometryColumn);
+    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s", tableName);
+    this.truncateTable = String.format("TRUNCATE TABLE %1$s", tableName);
     this.select =
         String.format(
             "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, st_asbinary(%11$s) FROM %1$s WHERE %2$s = ?",
-            nodeRepository,
+            tableName,
             idColumn,
             versionColumn,
             uidColumn,
@@ -123,7 +159,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     this.selectIn =
         String.format(
             "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, st_asbinary(%11$s) FROM %1$s WHERE %2$s = ANY (?)",
-            nodeRepository,
+            tableName,
             idColumn,
             versionColumn,
             uidColumn,
@@ -135,20 +171,20 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
             memberRoles,
             geometryColumn);
     this.insert =
-        String.format(
-            "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s) "
-                + "VALUES (?, ?, ?, ?, ?, cast (? AS jsonb), ?, ?, ?, ?) "
-                + "ON CONFLICT (%2$s) DO UPDATE SET "
-                + "%3$s = excluded.%3$s, "
-                + "%4$s = excluded.%4$s, "
-                + "%5$s = excluded.%5$s, "
-                + "%6$s = excluded.%6$s, "
-                + "%7$s = excluded.%7$s, "
-                + "%8$s = excluded.%8$s, "
-                + "%9$s = excluded.%9$s, "
-                + "%10$s = excluded.%10$s, "
-                + "%11$s = excluded.%11$s",
-            nodeRepository,
+        String.format("""
+                INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s)
+                VALUES (?, ?, ?, ?, ?, cast (? AS jsonb), ?, ?, ?, ?)
+                ON CONFLICT (%2$s) DO UPDATE SET
+                %3$s = excluded.%3$s,
+                %4$s = excluded.%4$s,
+                %5$s = excluded.%5$s,
+                %6$s = excluded.%6$s,
+                %7$s = excluded.%7$s,
+                %8$s = excluded.%8$s,
+                %9$s = excluded.%9$s,
+                %10$s = excluded.%10$s,
+                %11$s = excluded.%11$s""",
+            tableName,
             idColumn,
             versionColumn,
             uidColumn,
@@ -159,11 +195,11 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
             memberTypes,
             memberRoles,
             geometryColumn);
-    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", nodeRepository, idColumn);
+    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", tableName, idColumn);
     this.copy =
         String.format(
             "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s) FROM STDIN BINARY",
-            nodeRepository,
+            tableName,
             idColumn,
             versionColumn,
             uidColumn,
@@ -176,7 +212,49 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
             geometryColumn);
   }
 
-  /** {@inheritDoc} */
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void create() throws RepositoryException {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(createTable)) {
+      statement.execute();
+    } catch (SQLException e) {
+      throw new RepositoryException(e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void drop() throws RepositoryException {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(dropTable)) {
+      statement.execute();
+    } catch (SQLException e) {
+      throw new RepositoryException(e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void truncate() throws RepositoryException {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(truncateTable)) {
+      statement.execute();
+    } catch (SQLException e) {
+      throw new RepositoryException(e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Relation get(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -194,7 +272,9 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public List<Relation> get(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
@@ -216,7 +296,9 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void put(Relation value) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -228,7 +310,9 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void put(List<Relation> values) throws RepositoryException {
     if (values.isEmpty()) {
@@ -247,7 +331,9 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void delete(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -259,7 +345,9 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void delete(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
@@ -278,7 +366,9 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void copy(List<Relation> values) throws RepositoryException {
     if (values.isEmpty()) {

@@ -15,20 +15,42 @@
 package com.baremaps.pipeline;
 
 import com.baremaps.blob.BlobStore;
+import com.baremaps.collection.AlignedDataList;
+import com.baremaps.collection.LongDataMap;
+import com.baremaps.collection.LongDataSortedMap;
+import com.baremaps.collection.LongSizedDataDenseMap;
+import com.baremaps.collection.memory.OnDiskDirectoryMemory;
+import com.baremaps.collection.type.LonLatDataType;
+import com.baremaps.collection.type.LongDataType;
+import com.baremaps.collection.type.LongListDataType;
+import com.baremaps.collection.type.PairDataType;
+import com.baremaps.collection.utils.FileUtils;
+import com.baremaps.osm.domain.Node;
+import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.pipeline.config.Config;
 import com.baremaps.pipeline.config.Source;
+import com.baremaps.pipeline.database.ImportService;
+import com.baremaps.pipeline.database.repository.HeaderRepository;
+import com.baremaps.pipeline.database.repository.PostgresHeaderRepository;
+import com.baremaps.pipeline.database.repository.PostgresNodeRepository;
+import com.baremaps.pipeline.database.repository.PostgresRelationRepository;
+import com.baremaps.pipeline.database.repository.PostgresWayRepository;
+import com.baremaps.pipeline.database.repository.Repository;
+import com.baremaps.pipeline.postgres.PostgresUtils;
 import com.baremaps.storage.geopackage.GeoPackageStore;
 import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import javax.sql.DataSource;
 import mil.nga.geopackage.GeoPackageManager;
 import org.apache.sis.storage.DataStoreException;
 import org.apache.sis.storage.DataStores;
@@ -37,8 +59,9 @@ import org.apache.sis.storage.Resource;
 import org.apache.sis.storage.WritableFeatureSet;
 import org.geotoolkit.data.shapefile.ShapefileFeatureStore;
 import org.geotoolkit.db.postgres.PostgresStore;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public class Pipeline implements AutoCloseable {
 
@@ -48,14 +71,18 @@ public class Pipeline implements AutoCloseable {
 
   private Config config;
 
-  private PostgresStore store;
+  private PostgresStore dataStore;
 
   public Pipeline(BlobStore blobStore, Path directory, Config config) {
     this.blobStore = blobStore;
     this.directory = directory;
     this.config = config;
+    this.dataStore = initDataStore(config);
+  }
+
+  private PostgresStore initDataStore(Config config) {
     try {
-      this.store = new PostgresStore(
+      return new PostgresStore(
           config.getDatabase().getHost(),
           config.getDatabase().getPort(),
           config.getDatabase().getName(),
@@ -67,16 +94,26 @@ public class Pipeline implements AutoCloseable {
     }
   }
 
+  private DataSource initDataSource() {
+    DataSource datasource = PostgresUtils.datasource(
+        config.getDatabase().getHost(),
+        config.getDatabase().getPort(),
+        config.getDatabase().getName(),
+        config.getDatabase().getUsername(),
+        config.getDatabase().getPassword());
+    return datasource;
+  }
+
   public void execute() {
-    CompletableFuture[] futures = config.getSources().stream()
+    var futures = config.getSources().stream()
         .map(this::handle)
         .toArray(CompletableFuture[]::new);
     CompletableFuture.allOf(futures).join();
   }
 
   public CompletableFuture<Void> handle(Source source) {
-    Path downloadFile = downloadFile(source);
     CompletableFuture<Void> steps = CompletableFuture.completedFuture(null);
+    var downloadFile = downloadFile(source);
 
     // download file
     if (!Files.exists(downloadFile)) {
@@ -90,11 +127,11 @@ public class Pipeline implements AutoCloseable {
 
     // import file
     switch (source.getFormat()) {
-      case "pbf":
-        steps = steps.thenRunAsync(() -> importPbf(source));
+      case "osmpbf":
+        steps = steps.thenRunAsync(() -> importOsmPbf(source));
         break;
-      case "shp":
-        steps = steps.thenRunAsync(() -> importShp(source));
+      case "shapefile":
+        steps = steps.thenRunAsync(() -> importShapefile(source));
         break;
       case "geojson":
         steps = steps.thenRunAsync(() -> importGeoJson(source));
@@ -130,9 +167,8 @@ public class Pipeline implements AutoCloseable {
   }
 
   private void download(Source source) {
-    try (InputStream inputStream =
-        blobStore.get(URI.create(source.getUrl())).getInputStream()) {
-      Path downloadFile = downloadFile(source);
+    try (var inputStream = blobStore.get(URI.create(source.getUrl())).getInputStream()) {
+      var downloadFile = downloadFile(source);
       Files.createDirectories(downloadFile.getParent());
       Files.copy(inputStream, downloadFile, StandardCopyOption.REPLACE_EXISTING);
     } catch (Exception e) {
@@ -141,13 +177,12 @@ public class Pipeline implements AutoCloseable {
   }
 
   private void unzip(Source source) {
-    Path sourceDirectory = directory(source);
-    Path downloadFile = downloadFile(source);
-    try (ZipInputStream zis =
-        new ZipInputStream(new BufferedInputStream(Files.newInputStream(downloadFile)))) {
+    var sourceDirectory = directory(source);
+    var downloadFile = downloadFile(source);
+    try (var zis = new ZipInputStream(new BufferedInputStream(Files.newInputStream(downloadFile)))) {
       ZipEntry ze;
       while ((ze = zis.getNextEntry()) != null) {
-        Path file = Files.createDirectories(sourceDirectory.resolve(ze.getName()));
+        var file = Files.createDirectories(sourceDirectory.resolve(ze.getName()));
         Files.copy(zis, file, StandardCopyOption.REPLACE_EXISTING);
       }
     } catch (Exception e) {
@@ -155,18 +190,71 @@ public class Pipeline implements AutoCloseable {
     }
   }
 
-  private void importPbf(Source source) {
-    Path file = file(source);
-  }
-
-  private void importShp(Source source) {
+  private void importOsmPbf(Source source) {
     try {
       Path file = file(source);
-      ShapefileFeatureStore aggregate = new ShapefileFeatureStore(file.toUri());
-      for (Resource resource : aggregate.components()) {
-        if (resource instanceof FeatureSet) {
-          var sourceFeatureSet = (FeatureSet) resource;
-          importFeatureSet(sourceFeatureSet);
+
+      DataSource datasource = initDataSource();
+      HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
+      Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
+      Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
+      Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
+
+      headerRepository.drop();
+      nodeRepository.drop();
+      wayRepository.drop();
+      relationRepository.drop();
+
+      headerRepository.create();
+      nodeRepository.create();
+      wayRepository.create();
+      relationRepository.create();
+
+      Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
+      Path nodes = Files.createDirectories(directory.resolve("nodes"));
+      Path referencesKeys = Files.createDirectories(directory.resolve("references_keys"));
+      Path referencesValues = Files.createDirectories(directory.resolve("references_values"));
+
+      LongDataMap<Coordinate> coordinates =
+          new LongSizedDataDenseMap<>(
+              new LonLatDataType(),
+              new OnDiskDirectoryMemory(nodes));
+      LongDataMap<List<Long>> references =
+          new LongDataSortedMap<>(
+              new AlignedDataList<>(
+                  new PairDataType<>(
+                      new LongDataType(),
+                      new LongDataType()),
+                  new OnDiskDirectoryMemory(referencesKeys)),
+              new com.baremaps.collection.DataStore<>(new LongListDataType(),
+                  new OnDiskDirectoryMemory(referencesValues)));
+
+      new ImportService(
+          file.toUri(),
+          blobStore,
+          coordinates,
+          references,
+          headerRepository,
+          nodeRepository,
+          wayRepository,
+          relationRepository,
+          config.getDatabase().getSrid())
+          .call();
+
+      FileUtils.deleteRecursively(directory);
+    } catch (Exception e) {
+      throw new PipelineException(e);
+    }
+  }
+
+
+  private void importShapefile(Source source) {
+    try {
+      var file = file(source);
+      var aggregate = new ShapefileFeatureStore(file.toUri());
+      for (var resource : aggregate.components()) {
+        if (resource instanceof FeatureSet featureSet) {
+          importFeatureSet(featureSet);
         }
       }
     } catch (Exception e) {
@@ -176,8 +264,8 @@ public class Pipeline implements AutoCloseable {
 
   private void importGeoJson(Source source) {
     try {
-      Path file = file(source);
-      FeatureSet featureSet = (FeatureSet) DataStores.open(file.toUri().toURL());
+      var file = file(source);
+      var featureSet = (FeatureSet) DataStores.open(file.toUri().toURL());
       importFeatureSet(featureSet);
     } catch (Exception e) {
       throw new PipelineException(e);
@@ -186,12 +274,11 @@ public class Pipeline implements AutoCloseable {
 
   private void importGeoPackage(Source source) {
     try {
-      Path file = file(source);
-      GeoPackageStore store = new GeoPackageStore(GeoPackageManager.open(file.toFile()));
+      var file = file(source);
+      var store = new GeoPackageStore(GeoPackageManager.open(file.toFile()));
       for (Resource resource : store.components()) {
-        if (resource instanceof FeatureSet) {
-          var sourceFeatureSet = (FeatureSet) source;
-          importFeatureSet(sourceFeatureSet);
+        if (resource instanceof FeatureSet featureSet) {
+          importFeatureSet(featureSet);
         }
       }
     } catch (Exception e) {
@@ -202,12 +289,12 @@ public class Pipeline implements AutoCloseable {
   private void importFeatureSet(FeatureSet featureSet) {
     try {
       var type = featureSet.getType();
-      store.createFeatureType(type);
-      var target = store.findResource(type.getName().toString());
-      if (target instanceof WritableFeatureSet) {
-        var targetFeatureSet = (WritableFeatureSet) target;
-        try (Stream<Feature> featureStream = featureSet.features(false)) {
-          targetFeatureSet.add(featureStream.iterator());
+      dataStore.deleteFeatureType(type.getName().toString());
+      dataStore.createFeatureType(type);
+      var target = dataStore.findResource(type.getName().toString());
+      if (target instanceof WritableFeatureSet writableFeatureSet) {
+        try (var featureStream = featureSet.features(false)) {
+          writableFeatureSet.add(featureStream.map(this::reproject).iterator());
         }
       }
     } catch (Exception e) {
@@ -215,9 +302,20 @@ public class Pipeline implements AutoCloseable {
     }
   }
 
+  private Feature reproject(Feature feature) {
+    for (var property : feature.getType().getProperties(false)) {
+      String name = property.getName().toString();
+      if (feature.getPropertyValue(name) instanceof Geometry geometry) {
+        Geometry value = new ProjectionTransformer(geometry.getSRID(), config.getDatabase().getSrid()).transform(geometry);
+        feature.setPropertyValue(name, value);
+      }
+    }
+    return feature;
+  }
+
   @Override
   public void close() throws Exception {
-    store.close();
+    dataStore.close();
   }
 
 }

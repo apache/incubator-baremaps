@@ -36,10 +36,18 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/** Provides an implementation of the {@code Repository<Node>} baked by PostgreSQL. */
+/**
+ * Provides an implementation of the {@code Repository<Node>} baked by PostgreSQL.
+ */
 public class PostgresNodeRepository implements Repository<Long, Node> {
 
   private final DataSource dataSource;
+
+  private final String createTable;
+
+  private final String dropTable;
+
+  private final String truncateTable;
 
   private final String select;
 
@@ -75,7 +83,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
    * Constructs a {@code PostgresNodeRepository} with custom parameters.
    *
    * @param dataSource
-   * @param nodeRepository
+   * @param tableName
    * @param idColumn
    * @param versionColumn
    * @param uidColumn
@@ -88,7 +96,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
    */
   public PostgresNodeRepository(
       DataSource dataSource,
-      String nodeRepository,
+      String tableName,
       String idColumn,
       String versionColumn,
       String uidColumn,
@@ -99,10 +107,36 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
       String latitudeColumn,
       String geometryColumn) {
     this.dataSource = dataSource;
+    this.createTable =
+        String.format("""
+                CREATE TABLE %1$s
+                (
+                    %2$s bigint PRIMARY KEY,
+                    %3$s int,
+                    %4$s int,
+                    %5$s timestamp without time zone,
+                    %6$s bigint,
+                    %7$s jsonb,
+                    %8$s float,
+                    %9$s float,
+                    %10$s geometry(point)
+                )""",
+            tableName,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            longitudeColumn,
+            latitudeColumn,
+            geometryColumn);
+    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s", tableName);
+    this.truncateTable = String.format("TRUNCATE TABLE %1$s", tableName);
     this.select =
         String.format(
             "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asbinary(%10$s) FROM %1$s WHERE %2$s = ?",
-            nodeRepository,
+            tableName,
             idColumn,
             versionColumn,
             uidColumn,
@@ -115,7 +149,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     this.selectIn =
         String.format(
             "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, st_asbinary(%10$s) FROM %1$s WHERE %2$s = ANY (?)",
-            nodeRepository,
+            tableName,
             idColumn,
             versionColumn,
             uidColumn,
@@ -138,7 +172,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
                 + "%8$s = excluded.%8$s, "
                 + "%9$s = excluded.%9$s, "
                 + "%10$s = excluded.%10$s",
-            nodeRepository,
+            tableName,
             idColumn,
             versionColumn,
             uidColumn,
@@ -148,11 +182,11 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
             longitudeColumn,
             latitudeColumn,
             geometryColumn);
-    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", nodeRepository, idColumn);
+    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", tableName, idColumn);
     this.copy =
         String.format(
             "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s) FROM STDIN BINARY",
-            nodeRepository,
+            tableName,
             idColumn,
             versionColumn,
             uidColumn,
@@ -164,7 +198,49 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
             geometryColumn);
   }
 
-  /** {@inheritDoc} */
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void create() throws RepositoryException {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(createTable)) {
+      statement.execute();
+    } catch (SQLException e) {
+      throw new RepositoryException(e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void drop() throws RepositoryException {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(dropTable)) {
+      statement.execute();
+    } catch (SQLException e) {
+      throw new RepositoryException(e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void truncate() throws RepositoryException {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(truncateTable)) {
+      statement.execute();
+    } catch (SQLException e) {
+      throw new RepositoryException(e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Node get(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -182,7 +258,9 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public List<Node> get(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
@@ -204,7 +282,9 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void put(Node value) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -216,7 +296,9 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void put(List<Node> values) throws RepositoryException {
     if (values.isEmpty()) {
@@ -235,7 +317,9 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void delete(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -247,7 +331,9 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void delete(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
@@ -266,7 +352,9 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void copy(List<Node> values) throws RepositoryException {
     if (values.isEmpty()) {

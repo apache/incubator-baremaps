@@ -28,7 +28,10 @@ public class Database {
 
   private String password;
 
-  public Database() {}
+  private Integer srid = 3857;
+
+  public Database() {
+  }
 
   public String getHost() {
     return host;
@@ -76,5 +79,13 @@ public class Database {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public Integer getSrid() {
+    return srid;
+  }
+
+  public void setSrid(Integer srid) {
+    this.srid = srid;
   }
 }

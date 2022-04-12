@@ -46,7 +46,7 @@ public class ProjectionTransformer extends GeometryTransformer {
    * @param inputSRID the input SRID
    * @param outputSRID the output SRID
    */
-  public ProjectionTransformer(int inputSRID, int outputSRID) {
+  public  ProjectionTransformer(int inputSRID, int outputSRID) {
     this.inputSRID = inputSRID;
     this.outputSRID = outputSRID;
     this.coordinateTransform = GeometryUtils.coordinateTransform(inputSRID, outputSRID);

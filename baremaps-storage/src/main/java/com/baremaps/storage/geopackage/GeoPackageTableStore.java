@@ -30,6 +30,7 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureType;
 import org.opengis.geometry.Envelope;
@@ -42,21 +43,25 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
 
   private final FeatureType featureType;
 
+  private final GeometryFactory geometryFactory;
+
   public GeoPackageTableStore(FeatureDao featureDao) {
     this.featureDao = featureDao;
     FeatureTypeBuilder builder = new FeatureTypeBuilder().setName(featureDao.getTableName());
     for (FeatureColumn column : featureDao.getColumns()) {
       if (column.isGeometry()) {
-        builder.addAttribute(jtsType(column.getGeometryType())).setName(column.getName());
+        builder.addAttribute(jtsType(column.getGeometryType()))
+            .setName(column.getName())
+            .setMinimumOccurs(column.isNotNull() ? 1 : 0);
       } else {
-        builder.addAttribute(sisType(column.getDataType())).setName(column.getName());
+        builder.addAttribute(sisType(column.getDataType()))
+            .setName(column.getName())
+            .setMinimumOccurs(column.isNotNull() ? 1 : 0);
       }
     }
     featureType = builder.build();
+    geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
   }
-
-
-
 
   @Override
   public Optional<Envelope> getEnvelope() throws DataStoreException {
@@ -95,19 +100,22 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
 
     private final FeatureType featureType;
 
+    private boolean hasNext;
+
     public FeatureIterator(FeatureResultSet featureResultSet, FeatureType featureType) {
       this.featureResultSet = featureResultSet;
       this.featureType = featureType;
+      this.hasNext = featureResultSet.moveToFirst();
     }
 
     @Override
     public boolean hasNext() {
-      return featureResultSet.getPosition() <= featureResultSet.getCount();
+      return hasNext;
     }
 
     @Override
     public Feature next() {
-      if (featureResultSet.getPosition() > featureResultSet.getCount()) {
+      if (!hasNext) {
         throw new NoSuchElementException();
       }
       Feature feature = featureType.newInstance();
@@ -120,10 +128,9 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
           feature.setPropertyValue(featureColumn.getName(), sisValue(value));
         }
       }
+      hasNext = featureResultSet.moveToNext();
       return feature;
     }
-
-
   }
 
   private Class<?> sisType(GeoPackageDataType dataType) {
@@ -138,10 +145,8 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
     }
   }
 
-
   private Class<?> jtsType(GeometryType type) {
     return switch (type) {
-      case GEOMETRY -> Geometry.class;
       case POINT -> Point.class;
       case LINESTRING -> LineString.class;
       case POLYGON -> Polygon.class;
@@ -149,20 +154,9 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
       case MULTILINESTRING -> MultiLineString.class;
       case MULTIPOLYGON -> MultiPolygon.class;
       case GEOMETRYCOLLECTION -> GeometryCollection.class;
-      case CIRCULARSTRING -> throw new UnsupportedOperationException();
-      case COMPOUNDCURVE -> throw new UnsupportedOperationException();
-      case CURVEPOLYGON -> throw new UnsupportedOperationException();
-      case MULTICURVE -> throw new UnsupportedOperationException();
-      case MULTISURFACE -> throw new UnsupportedOperationException();
-      case CURVE -> throw new UnsupportedOperationException();
-      case SURFACE -> throw new UnsupportedOperationException();
-      case POLYHEDRALSURFACE -> throw new UnsupportedOperationException();
-      case TIN -> throw new UnsupportedOperationException();
-      case TRIANGLE -> throw new UnsupportedOperationException();
+      case GEOMETRY, CIRCULARSTRING, COMPOUNDCURVE, CURVEPOLYGON, MULTICURVE, MULTISURFACE, CURVE, SURFACE, POLYHEDRALSURFACE, TIN, TRIANGLE -> Geometry.class;
     };
   }
-
-  private GeometryFactory geometryFactory = new GeometryFactory();
 
   private Geometry jtsValue(mil.nga.sf.Geometry geometry) {
     if (geometry instanceof mil.nga.sf.Point point) {
@@ -180,7 +174,8 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
     } else if (geometry instanceof mil.nga.sf.GeometryCollection geometryCollection) {
       return jstGeometryCollection(geometryCollection);
     } else {
-      throw new UnsupportedOperationException();
+      // Unknown geometries are discarded
+      return geometryFactory.createEmpty(0);
     }
   }
 

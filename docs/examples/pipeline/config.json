@@ -5,15 +5,26 @@
     "schema": "public",
     "name": "baremaps",
     "username": "baremaps",
-    "password": "baremaps"
+    "password": "baremaps",
+    "srid": 3857
   },
   "sources": [
     {
-    "id": "monaco-shapefile",
-    "url": "http://download.geofabrik.de/europe/monaco-latest-free.shp.zip",
-    "format": "shp",
-    "archive": "zip",
-    "file": "archive/gis_osm_buildings_a_free_1.shp"
+      "id": "geopackage",
+      "url": "https://tiles.baremaps.com/samples/import_db.gpkg",
+      "format": "geopackage"
+    },
+    {
+      "id": "shapefile",
+      "url": "https://tiles.baremaps.com/samples/monaco-shapefile.zip",
+      "format": "shp",
+      "archive": "zip",
+      "file": "gis_osm_buildings_a_free_1.shp"
+    },
+    {
+      "id": "osmpbf",
+      "url": "https://tiles.baremaps.com/samples/liechtenstein.osm.pbf",
+      "format": "osmpbf"
     }
   ]
 }

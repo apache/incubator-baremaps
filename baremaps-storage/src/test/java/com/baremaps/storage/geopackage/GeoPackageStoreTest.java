@@ -14,7 +14,7 @@ class GeoPackageStoreTest {
 
   @Test
   void components() throws URISyntaxException, DataStoreException {
-    URI uri = Resources.getResource("import_db.gpkg").toURI();
+    URI uri = Resources.getResource("data.gpkg").toURI();
     var store = new GeoPackageStore(GeoPackageManager.open(new File(uri)));
     for (Resource resource :store.components()) {
       if (resource instanceof FeatureSet featureSet) {

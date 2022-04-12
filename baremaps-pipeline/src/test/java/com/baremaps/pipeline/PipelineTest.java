@@ -58,7 +58,7 @@ class PipelineTest extends PostgresBaseTest {
 
   @Test
   @Disabled
-  void execute() throws IOException, SQLException {
+  void execute() throws IOException {
     ObjectMapper mapper = new ObjectMapper();
     URL resource = Resources.getResource("config.json");
     Path directory = Files.createTempDirectory(Paths.get("."), "pipeline_");

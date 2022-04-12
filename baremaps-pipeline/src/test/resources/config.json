@@ -1,16 +1,26 @@
 {
   "sources": [
     {
-      "id": "ne-50m-land",
-      "url": "https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson",
+      "id": "geopackage",
+      "url": "https://tiles.baremaps.com/samples/import_db.gpkg",
+      "format": "geopackage"
+    },
+    {
+      "id": "geojson",
+      "url": "https://tiles.baremaps.com/samples/ne_50m_rivers_lake_centerlines_scale_rank.geojson",
       "format": "geojson"
     },
     {
-      "id": "monaco-shapefile",
-      "url": "http://download.geofabrik.de/europe/monaco-latest-free.shp.zip",
+      "id": "shapefile",
+      "url": "https://tiles.baremaps.com/samples/monaco-shapefile.zip",
       "format": "shp",
       "archive": "zip",
       "file": "gis_osm_buildings_a_free_1.shp"
+    },
+    {
+      "id": "osmpbf",
+      "url": "https://tiles.baremaps.com/samples/liechtenstein.osm.pbf",
+      "format": "osmpbf"
     }
   ]
 }

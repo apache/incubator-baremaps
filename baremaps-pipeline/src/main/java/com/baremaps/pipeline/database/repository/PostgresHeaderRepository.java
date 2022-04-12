@@ -30,10 +30,18 @@ import javax.sql.DataSource;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/** Provides an implementation of the {@code HeaderRepository} baked by a PostgreSQL table. */
+/**
+ * Provides an implementation of the {@code HeaderRepository} baked by a PostgreSQL table.
+ */
 public class PostgresHeaderRepository implements HeaderRepository {
 
   private final DataSource dataSource;
+
+  private final String createTable;
+
+  private final String dropTable;
+
+  private final String truncateTable;
 
   private final String selectLatest;
 
@@ -46,6 +54,7 @@ public class PostgresHeaderRepository implements HeaderRepository {
   private final String delete;
 
   private final String copy;
+
 
   /**
    * Constructs a {@code PostgresHeaderRepository}.
@@ -67,7 +76,7 @@ public class PostgresHeaderRepository implements HeaderRepository {
    * Constructs a {@code PostgresHeaderRepository} with custom parameters.
    *
    * @param dataSource
-   * @param headerRepository
+   * @param tableName
    * @param replicationSequenceNumberColumn
    * @param replicationTimestampColumn
    * @param replicationUrlColumn
@@ -76,17 +85,34 @@ public class PostgresHeaderRepository implements HeaderRepository {
    */
   public PostgresHeaderRepository(
       DataSource dataSource,
-      String headerRepository,
+      String tableName,
       String replicationSequenceNumberColumn,
       String replicationTimestampColumn,
       String replicationUrlColumn,
       String sourceColumn,
       String writingProgramColumn) {
     this.dataSource = dataSource;
+    this.createTable =
+        String.format("""
+                CREATE TABLE IF NOT EXISTS %1$s (
+                  %2$s bigint PRIMARY KEY,
+                  %3$s timestamp without time zone,
+                  %4$s text,
+                  %5$s text,
+                  %6$s text
+                )""",
+            tableName,
+            replicationSequenceNumberColumn,
+            replicationTimestampColumn,
+            replicationUrlColumn,
+            sourceColumn,
+            writingProgramColumn);
+    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s", tableName);
+    this.truncateTable = String.format("TRUNCATE TABLE %1$s", tableName);
     this.selectLatest =
         String.format(
             "SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s ORDER BY %2$s DESC",
-            headerRepository,
+            tableName,
             replicationSequenceNumberColumn,
             replicationTimestampColumn,
             replicationUrlColumn,
@@ -95,7 +121,7 @@ public class PostgresHeaderRepository implements HeaderRepository {
     this.select =
         String.format(
             "SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s WHERE %2$s = ?",
-            headerRepository,
+            tableName,
             replicationSequenceNumberColumn,
             replicationTimestampColumn,
             replicationUrlColumn,
@@ -104,22 +130,22 @@ public class PostgresHeaderRepository implements HeaderRepository {
     this.selectIn =
         String.format(
             "SELECT %2$s, %3$s, %4$s, %5$s, %6$s FROM %1$s WHERE %2$s = ANY (?)",
-            headerRepository,
+            tableName,
             replicationSequenceNumberColumn,
             replicationTimestampColumn,
             replicationUrlColumn,
             sourceColumn,
             writingProgramColumn);
     this.insert =
-        String.format(
-            "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s) "
-                + "VALUES (?, ?, ?, ?, ?)"
-                + "ON CONFLICT (%2$s) DO UPDATE SET "
-                + "%3$s = excluded.%3$s, "
-                + "%4$s = excluded.%4$s, "
-                + "%5$s = excluded.%5$s, "
-                + "%6$s = excluded.%6$s",
-            headerRepository,
+        String.format("""
+                INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s) 
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT (%2$s) DO UPDATE SET 
+                %3$s = excluded.%3$s, 
+                %4$s = excluded.%4$s, 
+                %5$s = excluded.%5$s, 
+                %6$s = excluded.%6$s""",
+            tableName,
             replicationSequenceNumberColumn,
             replicationTimestampColumn,
             replicationUrlColumn,
@@ -127,11 +153,11 @@ public class PostgresHeaderRepository implements HeaderRepository {
             writingProgramColumn);
     this.delete =
         String.format(
-            "DELETE FROM %1$s WHERE %2$s = ?", headerRepository, replicationSequenceNumberColumn);
+            "DELETE FROM %1$s WHERE %2$s = ?", tableName, replicationSequenceNumberColumn);
     this.copy =
         String.format(
             "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s) FROM STDIN BINARY",
-            headerRepository,
+            tableName,
             replicationSequenceNumberColumn,
             replicationTimestampColumn,
             replicationUrlColumn,
@@ -139,7 +165,48 @@ public class PostgresHeaderRepository implements HeaderRepository {
             writingProgramColumn);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void create() throws RepositoryException {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(createTable)) {
+      statement.execute();
+    } catch (SQLException e) {
+      throw new RepositoryException(e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void drop() throws RepositoryException {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(dropTable)) {
+      statement.execute();
+    } catch (SQLException e) {
+      throw new RepositoryException(e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void truncate() throws RepositoryException {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(truncateTable)) {
+      statement.execute();
+    } catch (SQLException e) {
+      throw new RepositoryException(e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public List<Header> selectAll() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -157,13 +224,17 @@ public class PostgresHeaderRepository implements HeaderRepository {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Header selectLatest() throws RepositoryException {
     return selectAll().get(0);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Header get(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -181,7 +252,9 @@ public class PostgresHeaderRepository implements HeaderRepository {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public List<Header> get(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
@@ -203,7 +276,9 @@ public class PostgresHeaderRepository implements HeaderRepository {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void put(Header value) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -215,7 +290,9 @@ public class PostgresHeaderRepository implements HeaderRepository {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void put(List<Header> values) throws RepositoryException {
     if (values.isEmpty()) {
@@ -234,7 +311,9 @@ public class PostgresHeaderRepository implements HeaderRepository {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void delete(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -246,7 +325,9 @@ public class PostgresHeaderRepository implements HeaderRepository {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void delete(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
@@ -265,7 +346,9 @@ public class PostgresHeaderRepository implements HeaderRepository {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void copy(List<Header> values) throws RepositoryException {
     if (values.isEmpty()) {

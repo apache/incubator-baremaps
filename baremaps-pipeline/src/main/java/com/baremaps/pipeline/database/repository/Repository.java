@@ -25,6 +25,27 @@ import java.util.List;
 public interface Repository<K, V> {
 
   /**
+   * Creates the repository.
+   *
+   * @throws RepositoryException
+   */
+  void create() throws RepositoryException;
+
+  /**
+   * Drops the repository.
+   *
+   * @throws RepositoryException
+   */
+  void drop() throws RepositoryException;
+
+  /**
+   * Truncate the repository.
+   *
+   * @throws RepositoryException
+   */
+  void truncate() throws RepositoryException;
+
+  /**
    * Gets a value by its key.
    *
    * @param key the id of the value

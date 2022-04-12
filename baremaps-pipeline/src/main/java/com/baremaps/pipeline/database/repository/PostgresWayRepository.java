@@ -39,10 +39,18 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/** Provides an implementation of the {@code Repository<Way>} baked by PostgreSQL. */
+/**
+ * Provides an implementation of the {@code Repository<Way>} baked by PostgreSQL.
+ */
 public class PostgresWayRepository implements Repository<Long, Way> {
 
   private final DataSource dataSource;
+
+  private final String createTable;
+
+  private final String dropTable;
+
+  private final String truncateTable;
 
   private final String select;
 
@@ -77,7 +85,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
    * Constructs a {@code PostgresWayRepository} with custom parameters.
    *
    * @param dataSource
-   * @param wayRepository
+   * @param tableName
    * @param idColumn
    * @param versionColumn
    * @param uidColumn
@@ -89,7 +97,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
    */
   public PostgresWayRepository(
       DataSource dataSource,
-      String wayRepository,
+      String tableName,
       String idColumn,
       String versionColumn,
       String uidColumn,
@@ -99,10 +107,33 @@ public class PostgresWayRepository implements Repository<Long, Way> {
       String nodesColumn,
       String geometryColumn) {
     this.dataSource = dataSource;
+    this.createTable =
+        String.format("""
+                CREATE TABLE %1$s (
+                  %2$s bigint PRIMARY KEY,
+                  %3$s int,
+                  %4$s int,
+                  %5$s timestamp without time zone,
+                  %6$s bigint,
+                  %7$s jsonb,
+                  %8$s bigint[],
+                  %9$s geometry
+                )""",
+            tableName,
+            idColumn,
+            versionColumn,
+            uidColumn,
+            timestampColumn,
+            changesetColumn,
+            tagsColumn,
+            nodesColumn,
+            geometryColumn);
+    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s", tableName);
+    this.truncateTable = String.format("TRUNCATE TABLE %1$s", tableName);
     this.select =
         String.format(
             "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, st_asbinary(%9$s) FROM %1$s WHERE %2$s = ?",
-            wayRepository,
+            tableName,
             idColumn,
             versionColumn,
             uidColumn,
@@ -114,7 +145,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     this.selectIn =
         String.format(
             "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, st_asbinary(%9$s) FROM %1$s WHERE %2$s = ANY (?)",
-            wayRepository,
+            tableName,
             idColumn,
             versionColumn,
             uidColumn,
@@ -124,18 +155,18 @@ public class PostgresWayRepository implements Repository<Long, Way> {
             nodesColumn,
             geometryColumn);
     this.insert =
-        String.format(
-            "INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s) "
-                + "VALUES (?, ?, ?, ?, ?, cast (? AS jsonb), ?, ?)"
-                + "ON CONFLICT (%2$s) DO UPDATE SET "
-                + "%3$s = excluded.%3$s, "
-                + "%4$s = excluded.%4$s, "
-                + "%5$s = excluded.%5$s, "
-                + "%6$s = excluded.%6$s, "
-                + "%7$s = excluded.%7$s, "
-                + "%8$s = excluded.%8$s, "
-                + "%9$s = excluded.%9$s",
-            wayRepository,
+        String.format("""
+                INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s)
+                VALUES (?, ?, ?, ?, ?, cast (? AS jsonb), ?, ?)
+                ON CONFLICT (%2$s) DO UPDATE SET 
+                %3$s = excluded.%3$s,
+                %4$s = excluded.%4$s,
+                %5$s = excluded.%5$s,
+                %6$s = excluded.%6$s,
+                %7$s = excluded.%7$s,
+                %8$s = excluded.%8$s,
+                %9$s = excluded.%9$s""",
+            tableName,
             idColumn,
             versionColumn,
             uidColumn,
@@ -144,11 +175,11 @@ public class PostgresWayRepository implements Repository<Long, Way> {
             tagsColumn,
             nodesColumn,
             geometryColumn);
-    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", wayRepository, idColumn);
+    this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", tableName, idColumn);
     this.copy =
         String.format(
             "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s) FROM STDIN BINARY",
-            wayRepository,
+            tableName,
             idColumn,
             versionColumn,
             uidColumn,
@@ -159,7 +190,49 @@ public class PostgresWayRepository implements Repository<Long, Way> {
             geometryColumn);
   }
 
-  /** {@inheritDoc} */
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void create() throws RepositoryException {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(createTable)) {
+      statement.execute();
+    } catch (SQLException e) {
+      throw new RepositoryException(e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void drop() throws RepositoryException {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(dropTable)) {
+      statement.execute();
+    } catch (SQLException e) {
+      throw new RepositoryException(e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void truncate() throws RepositoryException {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(truncateTable)) {
+      statement.execute();
+    } catch (SQLException e) {
+      throw new RepositoryException(e);
+    }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Way get(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -177,7 +250,9 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public List<Way> get(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
@@ -199,7 +274,9 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void put(Way value) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -211,7 +288,9 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void put(List<Way> values) throws RepositoryException {
     if (values.isEmpty()) {
@@ -230,7 +309,9 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void delete(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -242,7 +323,9 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void delete(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
@@ -261,7 +344,9 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   public void copy(List<Way> values) throws RepositoryException {
     if (values.isEmpty()) {
       return;
