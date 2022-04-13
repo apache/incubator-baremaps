@@ -29,16 +29,18 @@ import java.util.stream.StreamSupport;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 
 public class GeonamesGeocoder extends Geocoder {
 
@@ -86,16 +88,28 @@ public class GeonamesGeocoder extends Geocoder {
         .map(
             record -> {
               Document document = new Document();
-              document.add(new Field("name", record.getName(), TextField.TYPE_STORED));
+              document.add(new TextField("name", record.getName(), Store.YES));
               document.add(
-                  new Field(
-                      "country",
-                      IsoCountriesUtils.getCountry(record.getCountryCode()),
-                      StringField.TYPE_STORED));
-              document.add(
-                  new Field("countryCode", record.getCountryCode(), StringField.TYPE_STORED));
+                  new TextField(
+                      "country", IsoCountriesUtils.getCountry(record.getCountryCode()), Store.YES));
+              document.add(new StringField("countryCode", record.getCountryCode(), Store.YES));
               document.add(new StoredField("longitude", record.getLongitude()));
               document.add(new StoredField("latitude", record.getLatitude()));
+              document.add(new StoredField("asciiname", record.getLatitude()));
+              document.add(new StoredField("alternatenames", record.getLatitude()));
+              document.add(new StoredField("featureClass", record.getLatitude()));
+              document.add(new StoredField("featureCode", record.getLatitude()));
+              document.add(new StoredField("cc2", record.getLatitude()));
+              document.add(new StoredField("cc2", record.getLatitude()));
+              document.add(new StoredField("admin1Code", record.getLatitude()));
+              document.add(new StoredField("admin2Code", record.getLatitude()));
+              document.add(new StoredField("admin3Code", record.getLatitude()));
+              document.add(new StoredField("admin4Code", record.getLatitude()));
+              document.add(new StoredField("population", record.getLatitude()));
+              document.add(new StoredField("elevation", record.getLatitude()));
+              document.add(new StoredField("dem", record.getLatitude()));
+              document.add(new StoredField("timezone", record.getLatitude()));
+              document.add(new StoredField("modificationDate", record.getLatitude()));
               return document;
             });
   }
@@ -105,7 +119,9 @@ public class GeonamesGeocoder extends Geocoder {
     BooleanQuery.Builder builder = new Builder();
     builder.add(new QueryParser("name", analyzer).parse(request.query()), Occur.SHOULD);
     builder.add(new QueryParser("country", analyzer).parse(request.query()), Occur.SHOULD);
-    builder.add(new QueryParser("countryCode", analyzer).parse(request.query()), Occur.SHOULD);
+    if(request.countryCode() != null){
+        builder.add(new TermQuery(new Term("countryCode", request.countryCode())), Occur.MUST);
+    }
     return builder.build();
   }
 }

@@ -17,16 +17,28 @@ package com.baremaps.geocoder;
 public class Request {
 
   private final String query;
+  private final String countryCode;
 
   private final int limit;
 
   public Request(String query, int limit) {
     this.query = query;
     this.limit = limit;
+    this.countryCode = null;
+  }
+
+  public Request(String query, int limit, String countryCode) {
+    this.query = query;
+    this.limit = limit;
+    this.countryCode = countryCode;
   }
 
   public String query() {
     return query;
+  }
+
+  public String countryCode() {
+    return countryCode;
   }
 
   public int limit() {
