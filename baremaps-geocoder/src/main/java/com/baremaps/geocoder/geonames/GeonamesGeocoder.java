@@ -33,12 +33,14 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 
 public class GeonamesGeocoder extends Geocoder {
 
@@ -117,7 +119,9 @@ public class GeonamesGeocoder extends Geocoder {
     BooleanQuery.Builder builder = new Builder();
     builder.add(new QueryParser("name", analyzer).parse(request.query()), Occur.SHOULD);
     builder.add(new QueryParser("country", analyzer).parse(request.query()), Occur.SHOULD);
-    builder.add(new QueryParser("countryCode", analyzer).parse(request.query()), Occur.SHOULD);
+    if(request.countryCode() != null){
+        builder.add(new TermQuery(new Term("countryCode", request.countryCode())), Occur.MUST);
+    }
     return builder.build();
   }
 }
