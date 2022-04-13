@@ -99,7 +99,7 @@ public class Server implements Callable<Integer> {
     TileJSON tileJSON =
         objectMapper.readValue(blobStore.get(this.tileset).getInputStream(), TileJSON.class);
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
-    DataSource datasource = PostgresUtils.datasource(database);
+    DataSource datasource = PostgresUtils.dataSource(database);
 
     List<PostgresQuery> queries = asPostgresQuery(tileJSON);
     TileStore tileStore = new PostgresTileStore(datasource, queries);

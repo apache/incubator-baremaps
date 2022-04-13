@@ -66,7 +66,7 @@ public class Execute implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    DataSource datasource = PostgresUtils.datasource(database);
+    DataSource datasource = PostgresUtils.dataSource(database);
     BlobStore blobStore = options.blobStore();
 
     for (URI file : files) {

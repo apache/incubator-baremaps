@@ -37,6 +37,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.IVersionProvider;
@@ -62,6 +63,13 @@ import picocli.CommandLine.Option;
       Geocoder.class
     })
 public class Baremaps implements Callable<Integer> {
+
+  static {
+    // Apache SIS uses java.util.logging, therefore, we need to remove
+    // the existing handlers and to replace them with a bridge to slf4j.
+    SLF4JBridgeHandler.removeHandlersForRootLogger();
+    SLF4JBridgeHandler.install();
+  }
 
   @Option(
       names = {"-V", "--version"},
@@ -107,13 +115,13 @@ public class Baremaps implements Callable<Integer> {
     public String[] getVersion() throws Exception {
       URL url = getClass().getResource("/version.txt");
       if (url == null) {
-        return new String[] {"No version.txt file found in the classpath."};
+        return new String[]{"No version.txt file found in the classpath."};
       }
       try (InputStream inputStream = url.openStream()) {
         Properties properties = new Properties();
         properties.load(inputStream);
-        return new String[] {
-          properties.getProperty("application") + " v" + properties.getProperty("version"),
+        return new String[]{
+            properties.getProperty("application") + " v" + properties.getProperty("version"),
         };
       }
     }

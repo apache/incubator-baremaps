@@ -26,7 +26,7 @@ import org.postgresql.ds.PGSimpleDataSource;
 public abstract class PostgresBaseTest {
 
   public DataSource initDataSource() throws SQLException, IOException {
-    DataSource dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
+    DataSource dataSource = PostgresUtils.dataSource(DATABASE_URL, 1);
     try (Connection connection = dataSource.getConnection()) {
       PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
       PostgresUtils.executeResource(connection, "osm_drop_tables.sql");

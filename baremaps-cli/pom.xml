@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <artifactId>baremaps-cli</artifactId>
   <name>baremaps-cli</name>
@@ -123,13 +124,11 @@
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-geocoder</artifactId>
     </dependency>
-      <dependency>
-          <groupId>com.baremaps</groupId>
-          <artifactId>baremaps-iploc</artifactId>
-          <version>0.6.6-SNAPSHOT</version>
-          <scope>compile</scope>
-      </dependency>
-
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-iploc</artifactId>
+      <version>0.6.6-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
-
 </project>

@@ -50,7 +50,7 @@ public class ImportResourceIntegrationTest extends JerseyTest {
     enable(TestProperties.DUMP_ENTITY);
 
     // Create a datasource to a throwaway postgis database
-    DataSource dataSource = PostgresUtils.datasource(DATABASE_URL);
+    DataSource dataSource = PostgresUtils.dataSource(DATABASE_URL);
 
     // Initialize the database
     jdbi =

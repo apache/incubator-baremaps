@@ -111,7 +111,7 @@ public class Export implements Callable<Integer> {
   @Override
   public Integer call() throws TileStoreException, BlobStoreException, IOException {
     ObjectMapper mapper = defaultObjectMapper();
-    DataSource datasource = PostgresUtils.datasource(database);
+    DataSource datasource = PostgresUtils.dataSource(database);
     BlobStore blobStore = options.blobStore();
 
     TileJSON source =

@@ -48,7 +48,7 @@ class SaveBlockConsumerTest {
 
   @BeforeEach
   void init() throws SQLException, IOException {
-    dataSource = PostgresUtils.datasource(DATABASE_URL, 1);
+    dataSource = PostgresUtils.dataSource(DATABASE_URL, 1);
     headerRepository = new PostgresHeaderRepository(dataSource);
     nodeRepository = new PostgresNodeRepository(dataSource);
     tableRepository = new PostgresWayRepository(dataSource);

@@ -127,6 +127,7 @@
     <sonar.organization>baremaps</sonar.organization>
     <sonar.projectKey>baremaps_baremaps</sonar.projectKey>
     <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
+    <version.lib.hikari>5.0.0</version.lib.hikari>
   </properties>
 
   <modules>
@@ -680,6 +681,18 @@
         <artifactId>ipresource</artifactId>
         <version>${version.lib.ipresource}</version>
       </dependency>
+      <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP</artifactId>
+        <version>${version.lib.hikari}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jersey</groupId>
+        <artifactId>jersey-bom</artifactId>
+        <version>${version.lib.jersey}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
 
       <!-- Logging libraries -->
       <dependency>
@@ -703,11 +716,9 @@
         <version>${version.lib.log4j}</version>
       </dependency>
       <dependency>
-        <groupId>org.glassfish.jersey</groupId>
-        <artifactId>jersey-bom</artifactId>
-        <version>${version.lib.jersey}</version>
-        <type>pom</type>
-        <scope>import</scope>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${version.lib.slf4j}</version>
       </dependency>
 
       <!-- Testing libraries -->

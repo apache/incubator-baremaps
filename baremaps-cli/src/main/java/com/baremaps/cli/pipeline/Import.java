@@ -88,7 +88,7 @@ public class Import implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
-    DataSource datasource = PostgresUtils.datasource(database);
+    DataSource datasource = PostgresUtils.dataSource(database);
     HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
     Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);

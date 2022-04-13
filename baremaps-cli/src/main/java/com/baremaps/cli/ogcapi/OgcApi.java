@@ -75,7 +75,7 @@ public class OgcApi implements Callable<Integer> {
     ObjectMapper mapper = defaultObjectMapper();
 
     // Configure jdbi and set the ObjectMapper
-    DataSource datasource = PostgresUtils.datasource(this.database);
+    DataSource datasource = PostgresUtils.dataSource(this.database);
     Jdbi jdbi =
         Jdbi.create(datasource)
             .installPlugin(new PostgresPlugin())

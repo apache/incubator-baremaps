@@ -83,7 +83,7 @@ public class Editor implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     ConfigBlobStore blobStore = new ConfigBlobStore(options.blobStore());
-    DataSource dataSource = PostgresUtils.datasource(database);
+    DataSource dataSource = PostgresUtils.dataSource(database);
 
     // Configure serialization
     ObjectMapper objectMapper = defaultObjectMapper();

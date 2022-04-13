@@ -52,6 +52,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.sql.DataSource;
 import mil.nga.geopackage.GeoPackageManager;
+import org.apache.sis.setup.Configuration;
 import org.apache.sis.storage.DataStoreException;
 import org.apache.sis.storage.DataStores;
 import org.apache.sis.storage.FeatureSet;
@@ -63,7 +64,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.Feature;
 
-public class Pipeline implements AutoCloseable {
+public class Pipeline {
 
   private BlobStore blobStore;
 
@@ -71,16 +72,16 @@ public class Pipeline implements AutoCloseable {
 
   private Config config;
 
-  private PostgresStore dataStore;
-
   public Pipeline(BlobStore blobStore, Path directory, Config config) {
     this.blobStore = blobStore;
     this.directory = directory;
     this.config = config;
-    this.dataStore = initDataStore(config);
+
+    // Use postgresql instead of derby to store crs data
+    Configuration.current().setDatabase(() -> initDataSource());
   }
 
-  private PostgresStore initDataStore(Config config) {
+  private PostgresStore initDataStore() {
     try {
       return new PostgresStore(
           config.getDatabase().getHost(),
@@ -95,7 +96,7 @@ public class Pipeline implements AutoCloseable {
   }
 
   private DataSource initDataSource() {
-    DataSource datasource = PostgresUtils.datasource(
+    DataSource datasource = PostgresUtils.dataSource(
         config.getDatabase().getHost(),
         config.getDatabase().getPort(),
         config.getDatabase().getName(),
@@ -113,7 +114,7 @@ public class Pipeline implements AutoCloseable {
 
   public CompletableFuture<Void> handle(Source source) {
     CompletableFuture<Void> steps = CompletableFuture.completedFuture(null);
-    var downloadFile = downloadFile(source);
+    var downloadFile = downloadPath(source);
 
     // download file
     if (!Files.exists(downloadFile)) {
@@ -144,31 +145,31 @@ public class Pipeline implements AutoCloseable {
     return steps;
   }
 
-  private Path directory(Source source) {
+  private Path sourcePath(Source source) {
     return directory.resolve(source.getId());
   }
 
-  private Path archiveFile(Source source) {
-    return directory(source).resolve(source.getFile());
+  private Path archivePath(Source source) {
+    return sourcePath(source).resolve(source.getFile());
   }
 
-  private Path downloadFile(Source source) {
+  private Path downloadPath(Source source) {
     var uri = URI.create(source.getUrl()).getPath();
     var name = Paths.get(uri).getFileName();
-    return directory(source).resolve(name);
+    return sourcePath(source).resolve(name);
   }
 
-  private Path file(Source source) {
+  private Path filePath(Source source) {
     if (source.getFile() == null) {
-      return downloadFile(source);
+      return downloadPath(source);
     } else {
-      return archiveFile(source);
+      return archivePath(source);
     }
   }
 
   private void download(Source source) {
     try (var inputStream = blobStore.get(URI.create(source.getUrl())).getInputStream()) {
-      var downloadFile = downloadFile(source);
+      var downloadFile = downloadPath(source);
       Files.createDirectories(downloadFile.getParent());
       Files.copy(inputStream, downloadFile, StandardCopyOption.REPLACE_EXISTING);
     } catch (Exception e) {
@@ -177,12 +178,13 @@ public class Pipeline implements AutoCloseable {
   }
 
   private void unzip(Source source) {
-    var sourceDirectory = directory(source);
-    var downloadFile = downloadFile(source);
+    var sourceDirectory = sourcePath(source);
+    var downloadFile = downloadPath(source);
     try (var zis = new ZipInputStream(new BufferedInputStream(Files.newInputStream(downloadFile)))) {
       ZipEntry ze;
       while ((ze = zis.getNextEntry()) != null) {
-        var file = Files.createDirectories(sourceDirectory.resolve(ze.getName()));
+        var file = sourceDirectory.resolve(ze.getName());
+        Files.createDirectories(file.getParent());
         Files.copy(zis, file, StandardCopyOption.REPLACE_EXISTING);
       }
     } catch (Exception e) {
@@ -192,7 +194,7 @@ public class Pipeline implements AutoCloseable {
 
   private void importOsmPbf(Source source) {
     try {
-      Path file = file(source);
+      Path file = filePath(source);
 
       DataSource datasource = initDataSource();
       HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
@@ -247,10 +249,9 @@ public class Pipeline implements AutoCloseable {
     }
   }
 
-
   private void importShapefile(Source source) {
     try {
-      var file = file(source);
+      var file = filePath(source);
       var aggregate = new ShapefileFeatureStore(file.toUri());
       for (var resource : aggregate.components()) {
         if (resource instanceof FeatureSet featureSet) {
@@ -264,7 +265,7 @@ public class Pipeline implements AutoCloseable {
 
   private void importGeoJson(Source source) {
     try {
-      var file = file(source);
+      var file = filePath(source);
       var featureSet = (FeatureSet) DataStores.open(file.toUri().toURL());
       importFeatureSet(featureSet);
     } catch (Exception e) {
@@ -274,7 +275,7 @@ public class Pipeline implements AutoCloseable {
 
   private void importGeoPackage(Source source) {
     try {
-      var file = file(source);
+      var file = filePath(source);
       var store = new GeoPackageStore(GeoPackageManager.open(file.toFile()));
       for (Resource resource : store.components()) {
         if (resource instanceof FeatureSet featureSet) {
@@ -287,14 +288,19 @@ public class Pipeline implements AutoCloseable {
   }
 
   private void importFeatureSet(FeatureSet featureSet) {
-    try {
+    try (PostgresStore dataStore = initDataStore()) {
       var type = featureSet.getType();
-      dataStore.deleteFeatureType(type.getName().toString());
+      var typeName = type.getName().toString();
+      try {
+        dataStore.deleteFeatureType(typeName);
+      } catch (Exception e) {
+        // do nothing
+      }
       dataStore.createFeatureType(type);
       var target = dataStore.findResource(type.getName().toString());
       if (target instanceof WritableFeatureSet writableFeatureSet) {
         try (var featureStream = featureSet.features(false)) {
-          writableFeatureSet.add(featureStream.map(this::reproject).iterator());
+          writableFeatureSet.add(featureStream.map(this::reprojectFeature).iterator());
         }
       }
     } catch (Exception e) {
@@ -302,20 +308,16 @@ public class Pipeline implements AutoCloseable {
     }
   }
 
-  private Feature reproject(Feature feature) {
+  private Feature reprojectFeature(Feature feature) {
     for (var property : feature.getType().getProperties(false)) {
       String name = property.getName().toString();
       if (feature.getPropertyValue(name) instanceof Geometry geometry) {
-        Geometry value = new ProjectionTransformer(geometry.getSRID(), config.getDatabase().getSrid()).transform(geometry);
+        Geometry value = new ProjectionTransformer(geometry.getSRID(), config.getDatabase().getSrid()).transform(
+            geometry);
         feature.setPropertyValue(name, value);
       }
     }
     return feature;
-  }
-
-  @Override
-  public void close() throws Exception {
-    dataStore.close();
   }
 
 }

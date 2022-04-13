@@ -47,7 +47,7 @@ class BaremapsTest {
 
   @BeforeEach
   void init() throws SQLException, IOException {
-    DataSource dataSource = PostgresUtils.datasource(DATABASE_URL);
+    DataSource dataSource = PostgresUtils.dataSource(DATABASE_URL);
     try (Connection connection = dataSource.getConnection()) {
       PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
       PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
