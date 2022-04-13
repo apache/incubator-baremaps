@@ -314,19 +314,29 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.20.2</version>
+        <version>2.22.1</version>
         <configuration>
-          <configLocation>google_checks.xml</configLocation>
           <java>
-            <googleJavaFormat>
-              <version>1.13.0</version>
-            </googleJavaFormat>
+            <importOrder/>
             <removeUnusedImports/>
+            <eclipse>
+              <version>4.21.0</version>
+              <!--suppress UnresolvedMavenProperty -->
+              <file>${maven.multiModuleProjectDirectory}/eclipse-format.xml</file>
+            </eclipse>
             <licenseHeader>
               <file>${maven.multiModuleProjectDirectory}/LICENSE.header</file>
             </licenseHeader>
           </java>
         </configuration>
+        <!-- bind to "mvn verify" -->
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
