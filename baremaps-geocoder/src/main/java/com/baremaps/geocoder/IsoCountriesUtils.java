@@ -34,4 +34,8 @@ public class IsoCountriesUtils {
   public static String getCountry(String iso) {
     return isoCountries.getOrDefault(iso, "");
   }
+
+  public static Boolean containsCountry(String iso) {
+    return isoCountries.containsKey(iso);
+  }
 }

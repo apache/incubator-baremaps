@@ -16,50 +16,85 @@ package com.baremaps.iploc.data;
 
 /** Contains an IP range along with its position in the world */
 public class InetnumLocation {
-  private String name;
+  private String address;
   private Ipv4Range ipv4Range;
   private Location location;
+  private String network;
+  private String country;
 
-  public InetnumLocation(String name, Ipv4Range ipv4Range, Location location) {
-    this.name = name;
+  /**
+   * Create new Inetnum location
+   *
+   * @param name
+   * @param ipv4Range
+   * @param location
+   */
+  public InetnumLocation(String name, Ipv4Range ipv4Range, Location location, String network, String country) {
+    this.address = name;
     this.ipv4Range = ipv4Range;
     this.location = location;
+    this.network = network;
+    this.country = country;
   }
 
-  public String getName() {
-    return name;
+  /**
+   * Returns the name
+   *
+   * @return the name
+   */
+  public String getAddress() {
+    return address;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
+  /**
+   * Returns the ipv4 range
+   *
+   * @return the ipv4 range
+   */
   public Ipv4Range getIpv4Range() {
     return ipv4Range;
   }
 
-  public void setIpv4Range(Ipv4Range ipv4Range) {
-    this.ipv4Range = ipv4Range;
-  }
-
+  /**
+   * Returns the location
+   *
+   * @return the location
+   */
   public Location getLocation() {
     return location;
   }
 
-  public void setLocation(Location location) {
-    this.location = location;
+  /**
+   * Returns the network
+   *
+   * @return the network
+   */
+  public String getNetwork() {
+    return network;
   }
 
+  /**
+   * Returns the country
+   *
+   * @return the country
+   */
+  public String getCountry() {
+    return country;
+  }
+
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return "InetnumLocation{"
         + "name='"
-        + name
+        + address
         + '\''
         + ", ipv4Range="
         + ipv4Range
         + ", location="
         + location
-        + '}';
+        + ", network="
+        + network
+        + "}";
   }
 }

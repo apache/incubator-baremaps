@@ -77,29 +77,29 @@ class IpLocTest {
   void findAll() {
     ipLoc.insertNicObjects(nicObjects.stream());
     List<InetnumLocation> inetnumLocations = inetnumLocationDao.findAll();
-    assertEquals(5, inetnumLocations.size());
+    assertEquals(6, inetnumLocations.size());
   }
 
   @Test
   void findByIpWithZeroes() {
     ipLoc.insertNicObjects(nicObjects.stream());
     List<InetnumLocation> inetnumLocations =
-        inetnumLocationDao.findByIp(new Ipv4Range("0.0.0.5/32").start());
-    assertEquals(3, inetnumLocations.size());
+        inetnumLocationDao.findByIp(new Ipv4Range("0.0.0.5/32").getStart());
+    assertEquals(4, inetnumLocations.size());
   }
 
   @Test
   void findByIp() {
     ipLoc.insertNicObjects(nicObjects.stream());
     List<InetnumLocation> inetnumLocations =
-        inetnumLocationDao.findByIp(new Ipv4Range("255.22.22.2/32").start());
+        inetnumLocationDao.findByIp(new Ipv4Range("255.22.22.2/32").getStart());
     assertEquals(1, inetnumLocations.size());
   }
 
   @Test
   void save() throws SQLException {
     inetnumLocationDao.save(
-        new InetnumLocation("Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1)));
+        new InetnumLocation("Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1), "Test", null));
     List<InetnumLocation> getAllInetnumLocations = inetnumLocationDao.findAll();
     assertEquals(1, getAllInetnumLocations.size());
   }
@@ -109,7 +109,7 @@ class IpLocTest {
     List<InetnumLocation> inetnumLocations = new ArrayList<>();
     for (int i = 0; i < 30; i++) {
       inetnumLocations.add(
-          new InetnumLocation("Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1)));
+          new InetnumLocation("Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1), "Test", null));
     }
     inetnumLocationDao.save(inetnumLocations);
     List<InetnumLocation> getAllInetnumLocations = inetnumLocationDao.findAll();

@@ -24,13 +24,40 @@ import java.util.Optional;
  */
 public interface Dao<T> {
 
+  /**
+   * Find the element with the given id
+   *
+   * @param id the id of the element to find
+   * @return the optional element
+   */
   Optional<T> findOne(long id);
 
+  /**
+   * Find all the elements
+   *
+   * @return the list of all the elements
+   */
   List<T> findAll();
 
+  /**
+   * Save the given element
+   *
+   * @param t the element to save
+   */
   void save(T t);
 
+  /**
+   * Update the given element
+   *
+   * @param t the element to update
+   * @param params the list of fields to update
+   */
   void update(T t, String[] params);
 
+  /**
+   * Delete the given element
+   *
+   * @param t the element to delete
+   */
   void delete(T t);
 }

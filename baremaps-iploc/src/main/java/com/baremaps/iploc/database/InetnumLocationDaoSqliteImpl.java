@@ -32,29 +32,35 @@ import org.sqlite.SQLiteDataSource;
 public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
 
   private static final String INSERT_SQL =
-      "INSERT INTO inetnum_locations(name, ip_start, ip_end, latitude, longitude) VALUES(?,?,?,?,?)";
+      "INSERT INTO inetnum_locations(address, ip_start, ip_end, latitude, longitude, network, country) VALUES(?,?,?,?,?,?,?)";
+
   private static final String SELECT_ALL_SQL =
       "SELECT "
           + "id, \n"
-          + "name, \n"
+          + "address, \n"
           + "ip_start, \n"
           + "ip_end, \n"
           + "latitude, \n"
-          + "longitude FROM inetnum_locations;";
+          + "longitude, \n"
+          + "network, \n"
+          + "country \n"
+          + " FROM inetnum_locations;";
+
   private static final String SELECT_ALL_BY_IP_SQL =
       "SELECT "
           + "id, \n"
-          + "name, \n"
+          + "address, \n"
           + "ip_start, \n"
           + "ip_end, \n"
           + "latitude, \n"
-          + "longitude FROM inetnum_locations WHERE ip_start <= ? AND ip_end >= ?;";
+          + "longitude, \n"
+          + "network, \n"
+          + "country FROM inetnum_locations WHERE ip_start <= ? AND ip_end >= ?;";
 
   private static final Logger logger = LoggerFactory.getLogger(InetnumLocationDaoSqliteImpl.class);
 
   private final HikariDataSource readDatasource;
   private final SQLiteDataSource writeDatasource;
-  private final String url;
 
   /**
    * Init the datasources
@@ -62,8 +68,6 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
    * @param url
    */
   public InetnumLocationDaoSqliteImpl(String url) {
-    this.url = url;
-
     {
       // Init the read datasource
       HikariConfig config = new HikariConfig();
@@ -103,22 +107,13 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
     return writeDatasource.getConnection();
   }
 
-  /**
-   * Get the element with the given id
-   *
-   * @param id
-   * @return
-   */
+  /** {@inheritDoc} */
   @Override
   public Optional<InetnumLocation> findOne(long id) {
     return Optional.empty();
   }
 
-  /**
-   * Get all of the elements
-   *
-   * @return
-   */
+  /** {@inheritDoc} */
   @Override
   public List<InetnumLocation> findAll() {
     List<InetnumLocation> results = new ArrayList<>();
@@ -133,9 +128,11 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
       while (rs.next()) {
         results.add(
             new InetnumLocation(
-                rs.getString("name"),
+                rs.getString("address"),
                 new Ipv4Range(rs.getBytes("ip_start"), rs.getBytes("ip_end")),
-                new Location(rs.getDouble("latitude"), rs.getDouble("longitude"))));
+                new Location(rs.getDouble("latitude"), rs.getDouble("longitude")),
+                    rs.getString("network"),
+                    rs.getString("country")));
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -150,11 +147,7 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
     return results;
   }
 
-  /**
-   * Get all of the elements that have a range that contains the given IP
-   *
-   * @return
-   */
+  /** {@inheritDoc} */
   @Override
   public List<InetnumLocation> findByIp(byte[] ip) {
     List<InetnumLocation> results = new ArrayList<>();
@@ -170,9 +163,11 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
       while (rs.next()) {
         results.add(
             new InetnumLocation(
-                rs.getString("name"),
+                rs.getString("address"),
                 new Ipv4Range(rs.getBytes("ip_start"), rs.getBytes("ip_end")),
-                new Location(rs.getDouble("latitude"), rs.getDouble("longitude"))));
+                new Location(rs.getDouble("latitude"), rs.getDouble("longitude")),
+                    rs.getString("network"),
+                    rs.getString("country")));
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -187,11 +182,7 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
     return results;
   }
 
-  /**
-   * Insert the given element in the database
-   *
-   * @param inetnumLocation
-   */
+  /** {@inheritDoc} */
   @Override
   public void save(InetnumLocation inetnumLocation) {
     Connection connection = null;
@@ -199,11 +190,13 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
     try {
       connection = getWriteConnection();
       stmt = connection.prepareStatement(INSERT_SQL);
-      stmt.setString(1, inetnumLocation.getName());
-      stmt.setBytes(2, inetnumLocation.getIpv4Range().start());
-      stmt.setBytes(3, inetnumLocation.getIpv4Range().end());
+      stmt.setString(1, inetnumLocation.getAddress());
+      stmt.setBytes(2, inetnumLocation.getIpv4Range().getStart());
+      stmt.setBytes(3, inetnumLocation.getIpv4Range().getEnd());
       stmt.setDouble(4, inetnumLocation.getLocation().getLatitude());
       stmt.setDouble(5, inetnumLocation.getLocation().getLongitude());
+      stmt.setString(6, inetnumLocation.getNetwork());
+      stmt.setString(7, inetnumLocation.getCountry());
       stmt.executeUpdate();
       logger.debug("Data Added Successfully " + inetnumLocation);
     } catch (SQLException e) {
@@ -218,11 +211,7 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
     }
   }
 
-  /**
-   * Insert a batch of elements in the database
-   *
-   * @param inetnumLocations
-   */
+  /** {@inheritDoc} */
   @Override
   public void save(List<InetnumLocation> inetnumLocations) {
     Connection connection = null;
@@ -232,11 +221,13 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
       connection.setAutoCommit(false);
       stmt = connection.prepareStatement(INSERT_SQL);
       for (InetnumLocation inetnumLocation : inetnumLocations) {
-        stmt.setString(1, inetnumLocation.getName());
-        stmt.setBytes(2, inetnumLocation.getIpv4Range().start());
-        stmt.setBytes(3, inetnumLocation.getIpv4Range().end());
+        stmt.setString(1, inetnumLocation.getAddress());
+        stmt.setBytes(2, inetnumLocation.getIpv4Range().getStart());
+        stmt.setBytes(3, inetnumLocation.getIpv4Range().getEnd());
         stmt.setDouble(4, inetnumLocation.getLocation().getLatitude());
         stmt.setDouble(5, inetnumLocation.getLocation().getLongitude());
+        stmt.setString(6, inetnumLocation.getNetwork());
+        stmt.setString(7, inetnumLocation.getCountry());
         stmt.addBatch();
       }
       stmt.executeBatch();
@@ -255,20 +246,11 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
     }
   }
 
-  /**
-   * Update the given element
-   *
-   * @param inetnumLocation
-   * @param params
-   */
+  /** {@inheritDoc} */
   @Override
   public void update(InetnumLocation inetnumLocation, String[] params) {}
 
-  /**
-   * Delete the given element
-   *
-   * @param inetnumLocation
-   */
+  /** {@inheritDoc} */
   @Override
   public void delete(InetnumLocation inetnumLocation) {}
 }

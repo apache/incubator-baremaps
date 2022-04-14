@@ -16,30 +16,40 @@ package com.baremaps.iploc.data;
 
 /** Contains a location comprising a latitude and a longitude */
 public class Location {
+
   private double latitude;
   private double longitude;
 
+  /**
+   * Create a new location using the given latitude and longitude
+   *
+   * @param latitude
+   * @param longitude
+   */
   public Location(double latitude, double longitude) {
     this.latitude = latitude;
     this.longitude = longitude;
   }
 
+  /**
+   * Returns the latitude
+   *
+   * @return the latitude
+   */
   public double getLatitude() {
     return latitude;
   }
 
-  public void setLatitude(double latitude) {
-    this.latitude = latitude;
-  }
-
+  /**
+   * Returns the longitude
+   *
+   * @return the longitude
+   */
   public double getLongitude() {
     return longitude;
   }
 
-  public void setLongitude(double longitude) {
-    this.longitude = longitude;
-  }
-
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return "Location{" + "latitude=" + latitude + ", longitude=" + longitude + '}';

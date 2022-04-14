@@ -119,6 +119,7 @@ public class GeonamesGeocoder extends Geocoder {
     BooleanQuery.Builder builder = new Builder();
     builder.add(new QueryParser("name", analyzer).parse(request.query()), Occur.SHOULD);
     builder.add(new QueryParser("country", analyzer).parse(request.query()), Occur.SHOULD);
+    builder.add(new QueryParser("countryCode", analyzer).parse(request.query()), Occur.SHOULD);
     if(request.countryCode() != null){
         builder.add(new TermQuery(new Term("countryCode", request.countryCode())), Occur.MUST);
     }

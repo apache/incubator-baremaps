@@ -86,7 +86,7 @@ public class Ipv4Range {
    *
    * @return the first IP in the range
    */
-  public byte[] start() {
+  public byte[] getStart() {
     return this.start;
   }
 
@@ -95,7 +95,7 @@ public class Ipv4Range {
    *
    * @return the last IP in the range
    */
-  public byte[] end() {
+  public byte[] getEnd() {
     return this.end;
   }
 

@@ -15,6 +15,7 @@
 package com.baremaps.iploc;
 
 import com.baremaps.geocoder.Geocoder;
+import com.baremaps.geocoder.IsoCountriesUtils;
 import com.baremaps.geocoder.Request;
 import com.baremaps.geocoder.Response;
 import com.baremaps.iploc.data.InetnumLocation;
@@ -39,6 +40,7 @@ import org.apache.lucene.queryparser.classic.ParseException;
 
 /** Generating pairs of IP address ranges and their locations into an SQLite database */
 public class IpLoc {
+  private final float SCORE_THRESHOLD = 0.1f;
 
   private final InetnumLocationDao inetnumLocationDao;
   private final Geocoder geocoder;
@@ -89,12 +91,12 @@ public class IpLoc {
   }
 
   /**
-   * Process an NicObject of type Inetnum Todo: Add the country for every query Todo: Only insert if
-   * the score is above a threshold Todo: Insert the address that was used for the geocoding into
+   * Process an NicObject of type Inetnum
+   * the score is above a threshold
    * the database
    *
    * @param nicObject the nicObject
-   * @return
+   * @return the optional inetnum location
    * @throws IOException
    * @throws ParseException
    */
@@ -115,34 +117,41 @@ public class IpLoc {
     Map<String, String> attributes = nicObject.toMap();
 
     // Use a default name if there is no netname
-    String name = attributes.getOrDefault("netname", "unknown");
+    String network = attributes.getOrDefault("netname", "unknown");
 
     // If there is a geoloc field, we use the latitude and longitude provided
     if (attributes.containsKey("geoloc")) {
       Optional<Location> location = stringToLocation(attributes.get("geoloc"));
       if (location.isPresent()) {
-        return Optional.of(new InetnumLocation(name, ipRange, location.get()));
+        return Optional.of(new InetnumLocation(attributes.get("geoloc"), ipRange, location.get(), network, attributes.get("country")));
       }
     }
     // If there is an address we use that address to query the geocoder
     if (attributes.containsKey("address")) {
-      Optional<Location> location = findLocation(new Request(attributes.get("address"), 1));
+      Optional<Location> location = findLocation(new Request(attributes.get("address"), 1, attributes.get("country")));
       if (location.isPresent()) {
-        return Optional.of(new InetnumLocation(name, ipRange, location.get()));
+        return Optional.of(new InetnumLocation(attributes.get("address"), ipRange, location.get(), network, attributes.get("country")));
       }
     }
-    // If there a description we use that description to query the geocoder
+    // If there is a description we use that description to query the geocoder
     if (attributes.containsKey("descr")) {
-      Optional<Location> location = findLocation(new Request(attributes.get("descr"), 1));
+      Optional<Location> location = findLocation(new Request(attributes.get("descr"), 1, attributes.get("country")));
       if (location.isPresent()) {
-        return Optional.of(new InetnumLocation(name, ipRange, location.get()));
+        return Optional.of(new InetnumLocation(attributes.get("descr"), ipRange, location.get(), network, attributes.get("country")));
       }
     }
-    // If there a country we use that country to query the geocoder
+    // If there is a country that is follow the ISO format we use that country's actual name from the iso country map to query the geocoder
+    if (attributes.containsKey("country") && IsoCountriesUtils.containsCountry("country")) {
+      Optional<Location> location = findLocation(new Request(IsoCountriesUtils.getCountry(attributes.get("country")), 1, attributes.get("country")));
+      if (location.isPresent()) {
+        return Optional.of(new InetnumLocation(IsoCountriesUtils.getCountry(attributes.get("country")), ipRange, location.get(), network, attributes.get("country")));
+      }
+    }
+    // If there is a country that did not follow the ISO format we will query using the country has plain text
     if (attributes.containsKey("country")) {
       Optional<Location> location = findLocation(new Request(attributes.get("country"), 1));
       if (location.isPresent()) {
-        return Optional.of(new InetnumLocation(name, ipRange, location.get()));
+        return Optional.of(new InetnumLocation(attributes.get("country"), ipRange, location.get(), network, attributes.get("country")));
       }
     }
 
@@ -160,9 +169,11 @@ public class IpLoc {
   private Optional<Location> findLocation(Request request) throws IOException, ParseException {
     Response response = geocoder.search(request);
     if (response.results().size() > 0) {
-      double latitude = Double.parseDouble(response.results().get(0).document().get("latitude"));
-      double longitude = Double.parseDouble(response.results().get(0).document().get("longitude"));
-      return Optional.of(new Location(latitude, longitude));
+      if(response.topDocs().scoreDocs[0].score > SCORE_THRESHOLD){
+        double latitude = Double.parseDouble(response.results().get(0).document().get("latitude"));
+        double longitude = Double.parseDouble(response.results().get(0).document().get("longitude"));
+        return Optional.of(new Location(latitude, longitude));
+      }
     }
     return Optional.empty();
   }
