@@ -99,7 +99,8 @@ class IpLocTest {
   @Test
   void save() throws SQLException {
     inetnumLocationDao.save(
-        new InetnumLocation("Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1), "Test", null));
+        new InetnumLocation(
+            "Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1), "Test", null));
     List<InetnumLocation> getAllInetnumLocations = inetnumLocationDao.findAll();
     assertEquals(1, getAllInetnumLocations.size());
   }
@@ -109,7 +110,8 @@ class IpLocTest {
     List<InetnumLocation> inetnumLocations = new ArrayList<>();
     for (int i = 0; i < 30; i++) {
       inetnumLocations.add(
-          new InetnumLocation("Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1), "Test", null));
+          new InetnumLocation(
+              "Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1), "Test", null));
     }
     inetnumLocationDao.save(inetnumLocations);
     List<InetnumLocation> getAllInetnumLocations = inetnumLocationDao.findAll();

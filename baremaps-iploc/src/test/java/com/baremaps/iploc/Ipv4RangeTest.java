@@ -42,7 +42,8 @@ class Ipv4RangeTest {
   @Test
   void testRangeMaxValue() {
     Ipv4Range ipv4Range = new Ipv4Range("255.255.255.0 - 255.255.255.255");
-    assertArrayEquals(ipv4Range.getStart(), new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x0});
+    assertArrayEquals(
+        ipv4Range.getStart(), new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x0});
     assertArrayEquals(
         ipv4Range.getEnd(), new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF});
   }
@@ -50,7 +51,8 @@ class Ipv4RangeTest {
   @Test
   void testRangeWithMaxMask() {
     Ipv4Range ipv4Range = new Ipv4Range("255.255.255.0/24");
-    assertArrayEquals(ipv4Range.getStart(), new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x0});
+    assertArrayEquals(
+        ipv4Range.getStart(), new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x0});
     assertArrayEquals(
         ipv4Range.getEnd(), new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF});
   }

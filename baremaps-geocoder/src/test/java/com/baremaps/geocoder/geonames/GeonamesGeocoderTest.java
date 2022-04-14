@@ -48,7 +48,8 @@ class GeonamesGeocoderTest {
   }
 
   @Test
-  public void buildAndSearchWithTheRightCountryCode() throws IOException, URISyntaxException, ParseException {
+  public void buildAndSearchWithTheRightCountryCode()
+      throws IOException, URISyntaxException, ParseException {
     Path path = Files.createTempDirectory(Paths.get("."), "geocoder_");
     URI data = Resources.getResource("LI.txt").toURI();
     Geocoder geocoder = new GeonamesGeocoder(path, data);
@@ -62,7 +63,8 @@ class GeonamesGeocoderTest {
   }
 
   @Test
-  public void buildAndSearchWithTheWrongCountryCode() throws IOException, URISyntaxException, ParseException {
+  public void buildAndSearchWithTheWrongCountryCode()
+      throws IOException, URISyntaxException, ParseException {
     Path path = Files.createTempDirectory(Paths.get("."), "geocoder_");
     URI data = Resources.getResource("LI.txt").toURI();
     Geocoder geocoder = new GeonamesGeocoder(path, data);

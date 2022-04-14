@@ -29,7 +29,8 @@ public class InetnumLocation {
    * @param ipv4Range
    * @param location
    */
-  public InetnumLocation(String name, Ipv4Range ipv4Range, Location location, String network, String country) {
+  public InetnumLocation(
+      String name, Ipv4Range ipv4Range, Location location, String network, String country) {
     this.address = name;
     this.ipv4Range = ipv4Range;
     this.location = location;
@@ -88,7 +89,6 @@ public class InetnumLocation {
     return "InetnumLocation{"
         + "name='"
         + address
-        + '\''
         + ", ipv4Range="
         + ipv4Range
         + ", location="

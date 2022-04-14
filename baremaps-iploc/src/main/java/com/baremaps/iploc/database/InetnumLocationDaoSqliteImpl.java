@@ -131,8 +131,8 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
                 rs.getString("address"),
                 new Ipv4Range(rs.getBytes("ip_start"), rs.getBytes("ip_end")),
                 new Location(rs.getDouble("latitude"), rs.getDouble("longitude")),
-                    rs.getString("network"),
-                    rs.getString("country")));
+                rs.getString("network"),
+                rs.getString("country")));
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -166,8 +166,8 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
                 rs.getString("address"),
                 new Ipv4Range(rs.getBytes("ip_start"), rs.getBytes("ip_end")),
                 new Location(rs.getDouble("latitude"), rs.getDouble("longitude")),
-                    rs.getString("network"),
-                    rs.getString("country")));
+                rs.getString("network"),
+                rs.getString("country")));
       }
     } catch (SQLException e) {
       e.printStackTrace();

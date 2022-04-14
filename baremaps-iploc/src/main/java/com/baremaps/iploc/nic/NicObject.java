@@ -99,7 +99,7 @@ public class NicObject {
     for (NicAttribute attr : attributes()) {
       map.put(
           attr.name(),
-          (map.containsKey(attr.name()) ? map.get(attr.name()) + "\n" : "") + attr.value());
+          (map.containsKey(attr.name()) ? map.get(attr.name()) + ", " : "") + attr.value());
     }
     return map;
   }

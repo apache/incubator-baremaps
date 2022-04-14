@@ -22,14 +22,10 @@ import com.baremaps.iploc.database.SqliteUtils;
 import com.baremaps.iploc.nic.NicFetcher;
 import com.baremaps.iploc.nic.NicObject;
 import com.baremaps.iploc.nic.NicParser;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
@@ -49,46 +45,49 @@ public class Iploc implements Callable<Integer> {
   @Option(
       names = {"--geocoder-index-path"},
       paramLabel = "GEOCODER_INDEX_PATH",
-      description = "The path to the geocoder Lucene index.")
+      description = "The path to the geocoder Lucene index.",
+      defaultValue = "geocoder_index")
   private Path geocoderIndexPath;
 
   @Option(
       names = {"--database-path"},
       paramLabel = "DATABASE_PATH",
       description = "The path to the target database.",
-      required = true)
+      defaultValue = "iploc.db")
   private Path databasePath;
 
   @Override
   public Integer call() throws IOException, SQLException, URISyntaxException {
 
     logger.info("Loading the geocoder index");
-    Path path = Files.createTempDirectory(Paths.get("."), "geocoder_");
     URI data = new File("baremaps-iploc/src/test/resources/geocoder_sample.txt").toURI();
-    Geocoder geocoder = new GeonamesGeocoder(path, data);
+    Geocoder geocoder = new GeonamesGeocoder(geocoderIndexPath, data);
     geocoder.build();
 
     logger.info("Fetching NIC datasets");
     Stream<Path> nicPathsStream = new NicFetcher().fetch();
 
     logger.info("Generating NIC objects stream");
-    Stream<NicObject> nicObjectStream =
-        nicPathsStream.flatMap(
-            nicPath -> {
-              try {
-                return NicParser.parse(new BufferedInputStream(Files.newInputStream(nicPath)));
-              } catch (IOException e) {
-                e.printStackTrace();
-              }
-              return Stream.empty();
-            });
+    /*Stream<NicObject> nicObjectStream =
+    nicPathsStream.flatMap(
+        nicPath -> {
+          try {
+            return NicParser.parse(new BufferedInputStream(Files.newInputStream(nicPath)));
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+          return Stream.empty();
+        });*/
+    InputStream input =
+        new FileInputStream(new File("baremaps-iploc/src/test/resources/simple_nic_sample.txt"));
+    Stream<NicObject> nicObjectStream = NicParser.parse(input);
 
     logger.info("Creating the Iploc database");
-    String databaseUrl = "JDBC:sqlite:test.db";
-    SqliteUtils.executeResource(databaseUrl, "iploc_init.sql");
+    String jdbcUrl = "JDBC:sqlite:" + databasePath.toString();
+    SqliteUtils.executeResource(jdbcUrl, "iploc_init.sql");
 
     logger.info("Inserting the nic objects into the Iploc database");
-    IpLoc ipLoc = new IpLoc(databaseUrl, geocoder);
+    IpLoc ipLoc = new IpLoc(jdbcUrl, geocoder);
     ipLoc.insertNicObjects(nicObjectStream);
 
     return 0;
