@@ -59,7 +59,7 @@ Stream<NicObject> nicObjectStream =
 
 3) You need to create the IpLoc service, giving the target SQLite database url and the geocoder in the second parameter
 
-``java
+```java
 SqliteUtils.executeResource(databaseUrl, "iploc_init.sql"); // Init the SQLite database
 IpLoc ipLoc = new IpLoc(databaseUrl, geocoder);
 ```
