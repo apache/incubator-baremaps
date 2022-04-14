@@ -160,6 +160,7 @@ public class IpLoc {
     }
     // If there is a country that is follow the ISO format we use that country's actual name from
     // the iso country map to query the geocoder
+    // TODO : Case sensitiveness of country code
     if (attributes.containsKey("country") && IsoCountriesUtils.containsCountry("country")) {
       Optional<Location> location =
           findLocation(

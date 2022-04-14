@@ -15,6 +15,7 @@
 package com.baremaps.geocoder;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,23 +38,23 @@ import org.apache.lucene.store.MMapDirectory;
 
 public abstract class Geocoder implements AutoCloseable {
 
-  private Directory directory;
-
+  private final Directory directory;
   private SearcherManager searcherManager;
-
   private Analyzer analyzer = analyzer();
 
   public Geocoder(Path index) throws IOException {
     this.directory = MMapDirectory.open(index);
-    if (DirectoryReader.indexExists(directory)) {
-      searcherManager = new SearcherManager(directory, new SearcherFactory());
-    } else {
-      build(Collections.emptyList());
-    }
   }
 
-  public void build() throws IOException {
-    build(documents()::iterator);
+  public void open() throws IOException {
+    if (!DirectoryReader.indexExists(this.directory)) {
+      throw new IllegalStateException("Invalid Lucene index directory");
+    }
+    this.searcherManager = new SearcherManager(directory, new SearcherFactory());
+  }
+
+  public void build(URI data) throws IOException {
+    build(documents(data)::iterator);
   }
 
   private void build(Iterable<Document> documents) throws IOException {
@@ -90,7 +91,7 @@ public abstract class Geocoder implements AutoCloseable {
 
   protected abstract Analyzer analyzer() throws IOException;
 
-  protected abstract Stream<Document> documents() throws IOException;
+  protected abstract Stream<Document> documents(URI data) throws IOException;
 
   protected abstract Query query(Analyzer analyzer, Request request) throws ParseException;
 }

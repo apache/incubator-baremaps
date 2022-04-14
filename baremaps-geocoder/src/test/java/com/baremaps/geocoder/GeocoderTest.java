@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,12 +45,12 @@ class GeocoderTest {
     Geocoder geocoder =
         new Geocoder(path) {
           @Override
-          protected Analyzer analyzer() throws IOException {
+          protected Analyzer analyzer() {
             return new StandardAnalyzer();
           }
 
           @Override
-          protected Stream<Document> documents() throws IOException {
+          protected Stream<Document> documents(URI data) {
             Document d1 = new Document();
             d1.add(new Field("value", v1, TextField.TYPE_STORED));
             Document d2 = new Document();
@@ -62,7 +63,7 @@ class GeocoderTest {
             return new QueryParser("value", analyzer).parse(request.query());
           }
         };
-    geocoder.build();
+    geocoder.build(null);
 
     Response r3 = geocoder.search(new Request("simple", 10));
     assertEquals(2, r3.results().size());

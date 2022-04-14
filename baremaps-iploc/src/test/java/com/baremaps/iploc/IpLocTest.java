@@ -58,8 +58,8 @@ class IpLocTest {
     // Init the geocoderservice
     Path path = Files.createTempDirectory(Paths.get("."), "geocoder_");
     URI data = Resources.getResource("geocoder_sample.txt").toURI();
-    Geocoder geocoder = new GeonamesGeocoder(path, data);
-    geocoder.build();
+    Geocoder geocoder = new GeonamesGeocoder(path);
+    geocoder.build(data);
 
     // Create the IPLoc service
     ipLoc = new IpLoc(databaseUrl, geocoder);

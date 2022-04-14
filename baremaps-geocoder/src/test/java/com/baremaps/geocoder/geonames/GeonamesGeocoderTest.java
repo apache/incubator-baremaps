@@ -37,8 +37,8 @@ class GeonamesGeocoderTest {
   public void buildAndSearch() throws IOException, URISyntaxException, ParseException {
     Path path = Files.createTempDirectory(Paths.get("."), "geocoder_");
     URI data = Resources.getResource("LI.txt").toURI();
-    Geocoder geocoder = new GeonamesGeocoder(path, data);
-    geocoder.build();
+    Geocoder geocoder = new GeonamesGeocoder(path);
+    geocoder.build(data);
 
     Response response = geocoder.search(new Request("Bim Alta Schloss", 10));
     assertEquals(10, response.results().size());
@@ -52,8 +52,8 @@ class GeonamesGeocoderTest {
       throws IOException, URISyntaxException, ParseException {
     Path path = Files.createTempDirectory(Paths.get("."), "geocoder_");
     URI data = Resources.getResource("LI.txt").toURI();
-    Geocoder geocoder = new GeonamesGeocoder(path, data);
-    geocoder.build();
+    Geocoder geocoder = new GeonamesGeocoder(path);
+    geocoder.build(data);
 
     Response response = geocoder.search(new Request("Bim Alta Schloss", 10, "LI"));
     assertEquals(10, response.results().size());
@@ -67,8 +67,8 @@ class GeonamesGeocoderTest {
       throws IOException, URISyntaxException, ParseException {
     Path path = Files.createTempDirectory(Paths.get("."), "geocoder_");
     URI data = Resources.getResource("LI.txt").toURI();
-    Geocoder geocoder = new GeonamesGeocoder(path, data);
-    geocoder.build();
+    Geocoder geocoder = new GeonamesGeocoder(path);
+    geocoder.build(data);
 
     Response response = geocoder.search(new Request("Bim Alta Schloss", 10, "CH"));
     assertEquals(0, response.results().size());
