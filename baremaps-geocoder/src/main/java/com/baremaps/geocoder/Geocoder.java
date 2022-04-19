@@ -53,8 +53,8 @@ public abstract class Geocoder implements AutoCloseable {
     this.searcherManager = new SearcherManager(directory, new SearcherFactory());
   }
 
-  public void build(URI data) throws IOException {
-    build(documents(data)::iterator);
+  public void build() throws IOException {
+    build(documents()::iterator);
   }
 
   private void build(Iterable<Document> documents) throws IOException {
@@ -91,7 +91,7 @@ public abstract class Geocoder implements AutoCloseable {
 
   protected abstract Analyzer analyzer() throws IOException;
 
-  protected abstract Stream<Document> documents(URI data) throws IOException;
+  protected abstract Stream<Document> documents() throws IOException;
 
   protected abstract Query query(Analyzer analyzer, Request request) throws ParseException;
 }

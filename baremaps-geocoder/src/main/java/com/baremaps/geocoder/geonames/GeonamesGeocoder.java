@@ -46,8 +46,11 @@ import org.apache.lucene.util.QueryBuilder;
 
 public class GeonamesGeocoder extends Geocoder {
 
-  public GeonamesGeocoder(Path index) throws IOException {
+  private URI data;
+
+  public GeonamesGeocoder(Path index, URI data) throws IOException {
     super(index);
+    this.data = data;
   }
 
   @Override
@@ -56,7 +59,7 @@ public class GeonamesGeocoder extends Geocoder {
   }
 
   @Override
-  protected Stream<Document> documents(URI data) throws IOException {
+  protected Stream<Document> documents() throws IOException {
     CsvMapper mapper = new CsvMapper();
     CsvSchema schema =
         CsvSchema.builder()

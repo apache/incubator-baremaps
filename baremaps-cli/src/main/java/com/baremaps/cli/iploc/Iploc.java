@@ -14,7 +14,7 @@
 
 package com.baremaps.cli.iploc;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
@@ -22,9 +22,9 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(name = "iploc",
-        subcommands = {
-                Init.class
-        }, description = "Iploc database generation.")
+    subcommands = {
+        Init.class
+    }, description = "Iploc database generation.")
 public class Iploc implements Callable<Integer> {
 
   @Override

@@ -50,8 +50,8 @@ public class Index implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     logger.info("Building the geocoder index");
-    Geocoder geocoder = new GeonamesGeocoder(indexPath);
-    geocoder.build(geonamesDataPath);
+    Geocoder geocoder = new GeonamesGeocoder(indexPath, geonamesDataPath);
+    geocoder.build();
 
     logger.info("Index created successfully");
     return 0;
