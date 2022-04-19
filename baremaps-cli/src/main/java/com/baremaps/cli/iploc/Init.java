@@ -121,6 +121,8 @@ public class Init implements Callable<Integer> {
     IpLoc ipLoc = new IpLoc(jdbcUrl, loadGeocoderIndex.join());
     ipLoc.insertNicObjects(fetchNicObjectStream.join());
 
+    logger.info("IpLoc database created successfully");
+
     return 0;
   }
 }
