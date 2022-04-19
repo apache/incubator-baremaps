@@ -27,6 +27,7 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
@@ -41,6 +42,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.util.QueryBuilder;
 
 public class GeonamesGeocoder extends Geocoder {
 
@@ -113,13 +115,19 @@ public class GeonamesGeocoder extends Geocoder {
 
   @Override
   protected Query query(Analyzer analyzer, Request request) throws ParseException {
-    BooleanQuery.Builder builder = new Builder();
-    builder.add(new QueryParser("name", analyzer).parse(request.query()), Occur.SHOULD);
-    builder.add(new QueryParser("country", analyzer).parse(request.query()), Occur.SHOULD);
-    builder.add(new QueryParser("countryCode", analyzer).parse(request.query()), Occur.SHOULD);
-    if (request.countryCode() != null) {
-      builder.add(new TermQuery(new Term("countryCode", request.countryCode())), Occur.MUST);
-    }
+      BooleanQuery.Builder builder = new Builder();
+      String query = QueryParser.escape(request.query().replace("\r", "").replace("\n", ""));
+      if (!query.isBlank()) {
+          QueryBuilder queryBuilder = new QueryBuilder(analyzer);
+          Query q1 = queryBuilder.createPhraseQuery("name", query);
+          Query q2 = queryBuilder.createPhraseQuery("country", query);
+
+          builder.add(q1, Occur.SHOULD);
+          builder.add(q2, Occur.SHOULD);
+          if (request.countryCode() != null) {
+              builder.add(new TermQuery(new Term("countryCode", QueryParser.escape(request.countryCode()))), Occur.MUST);
+          }
+      }
     return builder.build();
   }
 }
