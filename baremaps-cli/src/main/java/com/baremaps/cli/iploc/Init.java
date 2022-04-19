@@ -17,6 +17,7 @@ package com.baremaps.cli.iploc;
 import com.baremaps.geocoder.Geocoder;
 import com.baremaps.geocoder.geonames.GeonamesGeocoder;
 import com.baremaps.iploc.IpLoc;
+import com.baremaps.iploc.data.IpLocStats;
 import com.baremaps.iploc.database.SqliteUtils;
 import com.baremaps.iploc.nic.NicFetcher;
 import com.baremaps.iploc.nic.NicObject;
@@ -120,6 +121,22 @@ public class Init implements Callable<Integer> {
     logger.info("Inserting the nic objects into the Iploc database");
     IpLoc ipLoc = new IpLoc(jdbcUrl, loadGeocoderIndex.join());
     ipLoc.insertNicObjects(fetchNicObjectStream.join());
+
+    logger.info(String.format(
+            "IpLoc stats\n" +
+            "-----------\n" +
+            "inetnumInsertedByAddress : %s\n" +
+            "inetnumInsertedByDescr : %s\n" +
+            "inetnumInsertedByCountry : %s\n" +
+            "inetnumInsertedByCountryCode : %s\n" +
+            "inetnumInsertedByGeoloc : %s\n" +
+            "inetnumNotInserted : %s\n",
+            IpLocStats.inetnumInsertedByAddress,
+            IpLocStats.inetnumInsertedByDescr,
+            IpLocStats.inetnumInsertedByCountry,
+            IpLocStats.inetnumInsertedByCountryCode,
+            IpLocStats.inetnumInsertedByGeoloc,
+            IpLocStats.inetnumNotInserted));
 
     logger.info("IpLoc database created successfully");
 

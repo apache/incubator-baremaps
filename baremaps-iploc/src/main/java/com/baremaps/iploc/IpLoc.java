@@ -19,6 +19,7 @@ import com.baremaps.geocoder.IsoCountriesUtils;
 import com.baremaps.geocoder.Request;
 import com.baremaps.geocoder.Response;
 import com.baremaps.iploc.data.InetnumLocation;
+import com.baremaps.iploc.data.IpLocStats;
 import com.baremaps.iploc.data.Ipv4Range;
 import com.baremaps.iploc.data.Location;
 import com.baremaps.iploc.database.InetnumLocationDao;
@@ -68,10 +69,10 @@ public class IpLoc {
             nicObject ->
                 nicObject.attributes().size() > 0
                     && Objects.equals(nicObject.attributes().get(0).name(), "inetnum"));
-    Stream<Stream<NicObject>> partitionnedStream =
+    Stream<Stream<NicObject>> partitionedStream =
         StreamSupport.stream(
             new PartitionedSpliterator<>(filteredNicObjects.spliterator(), 100), false);
-    partitionnedStream.forEach(
+    partitionedStream.forEach(
         partition -> {
           List<InetnumLocation> inetnumLocationList =
               partition
@@ -121,6 +122,7 @@ public class IpLoc {
     if (attributes.containsKey("geoloc")) {
       Optional<Location> location = stringToLocation(attributes.get("geoloc"));
       if (location.isPresent()) {
+        IpLocStats.inetnumInsertedByGeoloc++;
         return Optional.of(
             new InetnumLocation(
                 attributes.get("geoloc"),
@@ -135,6 +137,7 @@ public class IpLoc {
       Optional<Location> location =
           findLocation(new Request(attributes.get("address"), 1, attributes.get("country")));
       if (location.isPresent()) {
+        IpLocStats.inetnumInsertedByAddress++;
         return Optional.of(
             new InetnumLocation(
                 attributes.get("address"),
@@ -149,6 +152,7 @@ public class IpLoc {
       Optional<Location> location =
           findLocation(new Request(attributes.get("descr"), 1, attributes.get("country")));
       if (location.isPresent()) {
+        IpLocStats.inetnumInsertedByDescr++;
         return Optional.of(
             new InetnumLocation(
                 attributes.get("descr"),
@@ -169,6 +173,7 @@ public class IpLoc {
                   1,
                   countryUppercase));
       if (location.isPresent()) {
+        IpLocStats.inetnumInsertedByCountryCode++;
         return Optional.of(
             new InetnumLocation(
                 IsoCountriesUtils.getCountry(countryUppercase),
@@ -183,6 +188,7 @@ public class IpLoc {
     if (attributes.containsKey("country")) {
       Optional<Location> location = findLocation(new Request(attributes.get("country"), 1));
       if (location.isPresent()) {
+        IpLocStats.inetnumInsertedByCountry++;
         return Optional.of(
             new InetnumLocation(
                 attributes.get("country"),
@@ -193,6 +199,7 @@ public class IpLoc {
       }
     }
 
+    IpLocStats.inetnumNotInserted++;
     return Optional.empty();
   }
 
