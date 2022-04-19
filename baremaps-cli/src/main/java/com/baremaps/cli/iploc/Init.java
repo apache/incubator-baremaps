@@ -25,6 +25,7 @@ import com.baremaps.iploc.nic.NicParser;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -32,6 +33,7 @@ import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -76,30 +78,28 @@ public class Init implements Callable<Integer> {
     geocoder.open();
 
     logger.info("Fetching NIC datasets");
-    Stream<Path> nicPathsStream = null;
-    try {
-      nicPathsStream = new NicFetcher().fetch();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    Stream<Path> nicPaths = new NicFetcher().fetch();
 
     logger.info("Generating NIC objects stream");
-    Stream<NicObject> fetchNicObjectStream = nicPathsStream.flatMap(
-        nicPath -> {
-          try {
-            InputStream inputStream = new BufferedInputStream(Files.newInputStream(nicPath));
-            return NicParser.parse(inputStream).onClose(() -> {
+    Stream<NicObject> fetchNicObjectStream =
+        nicPaths.flatMap(
+            nicPath -> {
               try {
-                inputStream.close();
+                InputStream inputStream =
+                    new GZIPInputStream(new BufferedInputStream(Files.newInputStream(nicPath)));
+                return NicParser.parse(inputStream)
+                    .onClose(
+                        () -> {
+                          try {
+                            inputStream.close();
+                          } catch (IOException e) {
+                            throw new UncheckedIOException(e);
+                          }
+                        });
               } catch (IOException e) {
-                e.printStackTrace();
+                throw new UncheckedIOException(e);
               }
             });
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-          return Stream.empty();
-        });
 
     logger.info("Creating the Iploc database");
     try {
@@ -112,21 +112,22 @@ public class Init implements Callable<Integer> {
     IpLoc ipLoc = new IpLoc(jdbcUrl, geocoder);
     ipLoc.insertNicObjects(fetchNicObjectStream);
 
-    logger.info(String.format(
-        "IpLoc stats\n" +
-            "-----------\n" +
-            "inetnumInsertedByAddress : %s\n" +
-            "inetnumInsertedByDescr : %s\n" +
-            "inetnumInsertedByCountry : %s\n" +
-            "inetnumInsertedByCountryCode : %s\n" +
-            "inetnumInsertedByGeoloc : %s\n" +
-            "inetnumNotInserted : %s\n",
-        IpLocStats.inetnumInsertedByAddress,
-        IpLocStats.inetnumInsertedByDescr,
-        IpLocStats.inetnumInsertedByCountry,
-        IpLocStats.inetnumInsertedByCountryCode,
-        IpLocStats.inetnumInsertedByGeoloc,
-        IpLocStats.inetnumNotInserted));
+    logger.info(
+        String.format(
+            "IpLoc stats\n"
+                + "-----------\n"
+                + "inetnumInsertedByAddress : %s\n"
+                + "inetnumInsertedByDescr : %s\n"
+                + "inetnumInsertedByCountry : %s\n"
+                + "inetnumInsertedByCountryCode : %s\n"
+                + "inetnumInsertedByGeoloc : %s\n"
+                + "inetnumNotInserted : %s\n",
+            IpLocStats.inetnumInsertedByAddress,
+            IpLocStats.inetnumInsertedByDescr,
+            IpLocStats.inetnumInsertedByCountry,
+            IpLocStats.inetnumInsertedByCountryCode,
+            IpLocStats.inetnumInsertedByGeoloc,
+            IpLocStats.inetnumNotInserted));
 
     logger.info("IpLoc database created successfully");
 

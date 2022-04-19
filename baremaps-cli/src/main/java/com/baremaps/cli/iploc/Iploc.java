@@ -21,10 +21,10 @@ import java.util.concurrent.Callable;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(name = "iploc",
-    subcommands = {
-        Init.class
-    }, description = "Iploc database generation.")
+@Command(
+    name = "iploc",
+    subcommands = {Init.class},
+    description = "Iploc database generation.")
 public class Iploc implements Callable<Integer> {
 
   @Override

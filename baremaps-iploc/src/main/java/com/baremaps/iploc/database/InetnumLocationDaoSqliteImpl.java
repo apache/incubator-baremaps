@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteConfig;
@@ -234,7 +233,12 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
       }
       stmt.executeBatch();
       connection.commit();
-      logger.info(String.format("Batch executed Successfully \n\t%s", inetnumLocations.stream().map(InetnumLocation::toString).collect(Collectors.joining("\n\t"))));
+      logger.info(
+          String.format(
+              "Batch executed Successfully \n\t%s",
+              inetnumLocations.stream()
+                  .map(InetnumLocation::toString)
+                  .collect(Collectors.joining("\n\t"))));
     } catch (SQLException e) {
       e.printStackTrace();
       // connection.rollback();

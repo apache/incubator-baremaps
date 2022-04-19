@@ -14,13 +14,12 @@
 
 package com.baremaps.cli.geocoder;
 
-import java.nio.file.Path;
-import java.util.concurrent.Callable;
-
 import com.baremaps.geocoder.Geocoder;
 import com.baremaps.geocoder.Request;
 import com.baremaps.geocoder.Response;
 import com.baremaps.geocoder.geonames.GeonamesGeocoder;
+import java.nio.file.Path;
+import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;

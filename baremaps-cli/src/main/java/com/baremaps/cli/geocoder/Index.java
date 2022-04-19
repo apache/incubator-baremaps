@@ -15,12 +15,11 @@
 package com.baremaps.cli.geocoder;
 
 import com.baremaps.cli.Options;
+import com.baremaps.geocoder.Geocoder;
+import com.baremaps.geocoder.geonames.GeonamesGeocoder;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-
-import com.baremaps.geocoder.Geocoder;
-import com.baremaps.geocoder.geonames.GeonamesGeocoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;

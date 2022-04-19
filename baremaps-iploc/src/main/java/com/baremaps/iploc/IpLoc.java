@@ -26,9 +26,8 @@ import com.baremaps.iploc.database.InetnumLocationDao;
 import com.baremaps.iploc.database.InetnumLocationDaoSqliteImpl;
 import com.baremaps.iploc.nic.NicAttribute;
 import com.baremaps.iploc.nic.NicObject;
-import com.baremaps.stream.PartitionedSpliterator;
+import com.baremaps.stream.StreamUtils;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -36,11 +35,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import org.apache.lucene.queryparser.classic.ParseException;
 
 /** Generating pairs of IP address ranges and their locations into an SQLite database */
 public class IpLoc {
+
   private final float SCORE_THRESHOLD = 0.1f;
 
   private final InetnumLocationDao inetnumLocationDao;
@@ -64,31 +63,21 @@ public class IpLoc {
    * @param nicObjects the stream of nic objects to import
    */
   public void insertNicObjects(Stream<NicObject> nicObjects) {
-    Stream<NicObject> filteredNicObjects =
-        nicObjects.filter(
-            nicObject ->
-                nicObject.attributes().size() > 0
-                    && Objects.equals(nicObject.attributes().get(0).name(), "inetnum"));
-    Stream<Stream<NicObject>> partitionedStream =
-        StreamSupport.stream(
-            new PartitionedSpliterator<>(filteredNicObjects.spliterator(), 100), false);
-    partitionedStream.forEach(
-        partition -> {
-          List<InetnumLocation> inetnumLocationList =
-              partition
-                  .map(
-                      nicObject -> {
-                        try {
-                          return nicObjectToInetnumLocation(nicObject);
-                        } catch (IOException | ParseException e) {
-                          throw new RuntimeException(e);
-                        }
-                      })
-                  .filter(Optional::isPresent)
-                  .map(Optional::get)
-                  .collect(Collectors.toList());
-          inetnumLocationDao.save(inetnumLocationList);
-        });
+    StreamUtils.partition(
+            nicObjects
+                .filter(this::isInetnum)
+                .map(this::nicObjectToInetnumLocation)
+                // TODO: we should probably not filter, i.e., even in the worst case we should have
+                // the country
+                .filter(Optional::isPresent)
+                .map(Optional::get),
+            100)
+        .map(partition -> partition.collect(Collectors.toList()))
+        .forEach(inetnumLocationDao::save);
+  }
+
+  private boolean isInetnum(NicObject nicObject) {
+    return "inetnum".equals(nicObject.type());
   }
 
   /**
@@ -99,108 +88,110 @@ public class IpLoc {
    * @throws IOException
    * @throws ParseException
    */
-  private Optional<InetnumLocation> nicObjectToInetnumLocation(NicObject nicObject)
-      throws IOException, ParseException {
-
-    if (nicObject.attributes().isEmpty()) {
-      return Optional.empty();
-    }
-
-    NicAttribute firstAttribute = nicObject.attributes().get(0);
-
-    if (!Objects.equals(firstAttribute.name(), "inetnum")) {
-      return Optional.empty();
-    }
-
-    Ipv4Range ipRange = new Ipv4Range(firstAttribute.value());
-    Map<String, String> attributes = nicObject.toMap();
-
-    // Use a default name if there is no netname
-    String network = attributes.getOrDefault("netname", "unknown");
-
-    // If there is a geoloc field, we use the latitude and longitude provided
-    if (attributes.containsKey("geoloc")) {
-      Optional<Location> location = stringToLocation(attributes.get("geoloc"));
-      if (location.isPresent()) {
-        IpLocStats.inetnumInsertedByGeoloc++;
-        return Optional.of(
-            new InetnumLocation(
-                attributes.get("geoloc"),
-                ipRange,
-                location.get(),
-                network,
-                attributes.get("country")));
+  private Optional<InetnumLocation> nicObjectToInetnumLocation(NicObject nicObject) {
+    try {
+      if (nicObject.attributes().isEmpty()) {
+        return Optional.empty();
       }
-    }
-    // If there is an address we use that address to query the geocoder
-    if (attributes.containsKey("address")) {
-      Optional<Location> location =
-          findLocation(new Request(attributes.get("address"), 1, attributes.get("country")));
-      if (location.isPresent()) {
-        IpLocStats.inetnumInsertedByAddress++;
-        return Optional.of(
-            new InetnumLocation(
-                attributes.get("address"),
-                ipRange,
-                location.get(),
-                network,
-                attributes.get("country")));
+
+      NicAttribute firstAttribute = nicObject.attributes().get(0);
+
+      if (!Objects.equals(firstAttribute.name(), "inetnum")) {
+        return Optional.empty();
       }
-    }
-    // If there is a description we use that description to query the geocoder
-    if (attributes.containsKey("descr")) {
-      Optional<Location> location =
-          findLocation(new Request(attributes.get("descr"), 1, attributes.get("country")));
-      if (location.isPresent()) {
-        IpLocStats.inetnumInsertedByDescr++;
-        return Optional.of(
-            new InetnumLocation(
-                attributes.get("descr"),
-                ipRange,
-                location.get(),
-                network,
-                attributes.get("country")));
+
+      Ipv4Range ipRange = new Ipv4Range(firstAttribute.value());
+      Map<String, String> attributes = nicObject.toMap();
+
+      // Use a default name if there is no netname
+      String network = attributes.getOrDefault("netname", "unknown");
+
+      // If there is a geoloc field, we use the latitude and longitude provided
+      if (attributes.containsKey("geoloc")) {
+        Optional<Location> location = stringToLocation(attributes.get("geoloc"));
+        if (location.isPresent()) {
+          IpLocStats.inetnumInsertedByGeoloc++;
+          return Optional.of(
+              new InetnumLocation(
+                  attributes.get("geoloc"),
+                  ipRange,
+                  location.get(),
+                  network,
+                  attributes.get("country")));
+        }
       }
-    }
-    // If there is a country that is follow the ISO format we use that country's actual name from
-    // the iso country map to query the geocoder
-    if (attributes.containsKey("country") && IsoCountriesUtils.containsCountry(attributes.get("country").toUpperCase())) {
-      String countryUppercase = attributes.get("country").toUpperCase();
-      Optional<Location> location =
-          findLocation(
-              new Request(
+      // If there is an address we use that address to query the geocoder
+      if (attributes.containsKey("address")) {
+        Optional<Location> location =
+            findLocation(new Request(attributes.get("address"), 1, attributes.get("country")));
+        if (location.isPresent()) {
+          IpLocStats.inetnumInsertedByAddress++;
+          return Optional.of(
+              new InetnumLocation(
+                  attributes.get("address"),
+                  ipRange,
+                  location.get(),
+                  network,
+                  attributes.get("country")));
+        }
+      }
+      // If there is a description we use that description to query the geocoder
+      if (attributes.containsKey("descr")) {
+        Optional<Location> location =
+            findLocation(new Request(attributes.get("descr"), 1, attributes.get("country")));
+        if (location.isPresent()) {
+          IpLocStats.inetnumInsertedByDescr++;
+          return Optional.of(
+              new InetnumLocation(
+                  attributes.get("descr"),
+                  ipRange,
+                  location.get(),
+                  network,
+                  attributes.get("country")));
+        }
+      }
+      // If there is a country that is follow the ISO format we use that country's actual name from
+      // the iso country map to query the geocoder
+      if (attributes.containsKey("country")
+          && IsoCountriesUtils.containsCountry(attributes.get("country").toUpperCase())) {
+        String countryUppercase = attributes.get("country").toUpperCase();
+        Optional<Location> location =
+            findLocation(
+                new Request(IsoCountriesUtils.getCountry(countryUppercase), 1, countryUppercase));
+        if (location.isPresent()) {
+          IpLocStats.inetnumInsertedByCountryCode++;
+          return Optional.of(
+              new InetnumLocation(
                   IsoCountriesUtils.getCountry(countryUppercase),
-                  1,
+                  ipRange,
+                  location.get(),
+                  network,
                   countryUppercase));
-      if (location.isPresent()) {
-        IpLocStats.inetnumInsertedByCountryCode++;
-        return Optional.of(
-            new InetnumLocation(
-                IsoCountriesUtils.getCountry(countryUppercase),
-                ipRange,
-                location.get(),
-                network,
-                countryUppercase));
+        }
       }
-    }
-    // If there is a country that did not follow the ISO format we will query using the country has
-    // plain text
-    if (attributes.containsKey("country")) {
-      Optional<Location> location = findLocation(new Request(attributes.get("country"), 1));
-      if (location.isPresent()) {
-        IpLocStats.inetnumInsertedByCountry++;
-        return Optional.of(
-            new InetnumLocation(
-                attributes.get("country"),
-                ipRange,
-                location.get(),
-                network,
-                attributes.get("country")));
+      // If there is a country that did not follow the ISO format we will query using the country
+      // has
+      // plain text
+      if (attributes.containsKey("country")) {
+        Optional<Location> location = findLocation(new Request(attributes.get("country"), 1));
+        if (location.isPresent()) {
+          IpLocStats.inetnumInsertedByCountry++;
+          return Optional.of(
+              new InetnumLocation(
+                  attributes.get("country"),
+                  ipRange,
+                  location.get(),
+                  network,
+                  attributes.get("country")));
+        }
       }
-    }
 
-    IpLocStats.inetnumNotInserted++;
-    return Optional.empty();
+      IpLocStats.inetnumNotInserted++;
+      return Optional.empty();
+
+    } catch (IOException | ParseException e) {
+      return Optional.empty();
+    }
   }
 
   /**

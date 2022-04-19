@@ -14,20 +14,17 @@
 
 package com.baremaps.cli.geocoder;
 
-import com.baremaps.cli.iploc.Init;
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
 
-@Command(name = "geocoder",
-        subcommands = {
-                Index.class,
-                Search.class
-        }, description = "Geocoder index generation.")
+@Command(
+    name = "geocoder",
+    subcommands = {Index.class, Search.class},
+    description = "Geocoder index generation.")
 public class Geocoder implements Callable<Integer> {
 
   @Override
