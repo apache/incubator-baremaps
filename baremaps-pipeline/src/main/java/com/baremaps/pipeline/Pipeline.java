@@ -14,310 +14,107 @@
 
 package com.baremaps.pipeline;
 
-import com.baremaps.blob.BlobStore;
-import com.baremaps.collection.AlignedDataList;
-import com.baremaps.collection.LongDataMap;
-import com.baremaps.collection.LongDataSortedMap;
-import com.baremaps.collection.LongSizedDataDenseMap;
-import com.baremaps.collection.memory.OnDiskDirectoryMemory;
-import com.baremaps.collection.type.LonLatDataType;
-import com.baremaps.collection.type.LongDataType;
-import com.baremaps.collection.type.LongListDataType;
-import com.baremaps.collection.type.PairDataType;
-import com.baremaps.collection.utils.FileUtils;
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.geometry.ProjectionTransformer;
-import com.baremaps.pipeline.config.Config;
-import com.baremaps.pipeline.config.Source;
-import com.baremaps.pipeline.database.ImportService;
-import com.baremaps.pipeline.database.repository.HeaderRepository;
-import com.baremaps.pipeline.database.repository.PostgresHeaderRepository;
-import com.baremaps.pipeline.database.repository.PostgresNodeRepository;
-import com.baremaps.pipeline.database.repository.PostgresRelationRepository;
-import com.baremaps.pipeline.database.repository.PostgresWayRepository;
-import com.baremaps.pipeline.database.repository.Repository;
-import com.baremaps.pipeline.postgres.PostgresUtils;
-import com.baremaps.storage.geopackage.GeoPackageStore;
-import java.io.BufferedInputStream;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import com.google.common.graph.Graph;
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.Graphs;
+import com.google.common.graph.ImmutableGraph;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import javax.sql.DataSource;
-import mil.nga.geopackage.GeoPackageManager;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import org.apache.sis.setup.Configuration;
-import org.apache.sis.storage.DataStoreException;
-import org.apache.sis.storage.DataStores;
-import org.apache.sis.storage.FeatureSet;
-import org.apache.sis.storage.Resource;
-import org.apache.sis.storage.WritableFeatureSet;
-import org.geotoolkit.data.shapefile.ShapefileFeatureStore;
-import org.geotoolkit.db.postgres.PostgresStore;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.Feature;
 
 public class Pipeline {
 
-  private BlobStore blobStore;
+  private final Context context;
 
-  private Path directory;
+  private final Map<String, Step> steps;
 
-  private Config config;
+  private final Map<String, CompletableFuture<Void>> futures;
 
-  public Pipeline(BlobStore blobStore, Path directory, Config config) {
-    this.blobStore = blobStore;
-    this.directory = directory;
-    this.config = config;
+  private final Graph<String> graph;
+
+  public Pipeline(Context context, List<Step> steps) {
+    this.context = context;
+    this.steps = steps.stream().collect(Collectors.toMap(s -> s.id(), s -> s));
+    this.futures = new ConcurrentHashMap<>();
+
+    // Build the execution graph
+    ImmutableGraph.Builder<String> graphBuilder = GraphBuilder.directed().immutable();
+    for (String id : this.steps.keySet()) {
+      graphBuilder.addNode(id);
+    }
+    for (Step step : this.steps.values()) {
+      for (String stepNeeded : step.needs()) {
+        graphBuilder.putEdge(stepNeeded, step.id());
+      }
+    }
+    this.graph = graphBuilder.build();
+
+    Graphs.hasCycle(graph);
 
     // Use postgresql instead of derby to store crs data
-    Configuration.current().setDatabase(() -> initDataSource());
+    Configuration.current().setDatabase(() -> context.dataSource());
   }
 
-  private PostgresStore initDataStore() {
-    try {
-      return new PostgresStore(
-          config.getDatabase().getHost(),
-          config.getDatabase().getPort(),
-          config.getDatabase().getName(),
-          config.getDatabase().getSchema(),
-          config.getDatabase().getUsername(),
-          config.getDatabase().getPassword());
-    } catch (DataStoreException e) {
-      throw new PipelineException(e);
-    }
-  }
-
-  private DataSource initDataSource() {
-    DataSource datasource = PostgresUtils.dataSource(
-        config.getDatabase().getHost(),
-        config.getDatabase().getPort(),
-        config.getDatabase().getName(),
-        config.getDatabase().getUsername(),
-        config.getDatabase().getPassword());
-    return datasource;
-  }
-
-  public void execute() {
-    var futures = config.getSources().stream()
-        .map(this::handle)
+  public CompletableFuture<Void> execute() {
+    var endSteps = graph.nodes().stream()
+        .filter(this::isEndStep)
+        .map(this::getStep)
         .toArray(CompletableFuture[]::new);
-    CompletableFuture.allOf(futures).join();
+    return CompletableFuture.allOf(endSteps);
   }
 
-  public CompletableFuture<Void> handle(Source source) {
-    CompletableFuture<Void> steps = CompletableFuture.completedFuture(null);
-    var downloadFile = downloadPath(source);
-
-    // download file
-    if (!Files.exists(downloadFile)) {
-      steps = steps.thenRunAsync(() -> download(source));
-    }
-
-    // expand file
-    if ("zip".equals(source.getArchive())) {
-      steps = steps.thenRunAsync(() -> unzip(source));
-    }
-
-    // import file
-    switch (source.getFormat()) {
-      case "osmpbf":
-        steps = steps.thenRunAsync(() -> importOsmPbf(source));
-        break;
-      case "shapefile":
-        steps = steps.thenRunAsync(() -> importShapefile(source));
-        break;
-      case "geojson":
-        steps = steps.thenRunAsync(() -> importGeoJson(source));
-        break;
-      case "geopackage":
-        steps = steps.thenRunAsync(() -> importGeoPackage(source));
-        break;
-    }
-
-    return steps;
+  private boolean isEndStep(String id) {
+    return graph.successors(id).isEmpty();
   }
 
-  private Path sourcePath(Source source) {
-    return directory.resolve(source.getId());
+  private CompletableFuture<Void> getStep(String id) {
+    return futures.computeIfAbsent(id, this::computeStep);
   }
 
-  private Path archivePath(Source source) {
-    return sourcePath(source).resolve(source.getFile());
-  }
-
-  private Path downloadPath(Source source) {
-    var uri = URI.create(source.getUrl()).getPath();
-    var name = Paths.get(uri).getFileName();
-    return sourcePath(source).resolve(name);
-  }
-
-  private Path filePath(Source source) {
-    if (source.getFile() == null) {
-      return downloadPath(source);
+  private CompletableFuture<Void> computeStep(String id) {
+    Runnable step = () -> steps.get(id).execute(context);
+    var predecessors = graph.predecessors(id).stream().toList();
+    if (predecessors.isEmpty()) {
+      return CompletableFuture.runAsync(step);
+    } else if (predecessors.size() == 1) {
+      var previousStep = getStep(predecessors.stream().findFirst().get());
+      return previousStep.thenRunAsync(step);
     } else {
-      return archivePath(source);
+      var previousSteps = CompletableFuture.allOf(predecessors.stream()
+          .map(this::getStep)
+          .toArray(CompletableFuture[]::new));
+      return previousSteps.thenRunAsync(step);
     }
   }
 
-  private void download(Source source) {
-    try (var inputStream = blobStore.get(URI.create(source.getUrl())).getInputStream()) {
-      var downloadFile = downloadPath(source);
-      Files.createDirectories(downloadFile.getParent());
-      Files.copy(inputStream, downloadFile, StandardCopyOption.REPLACE_EXISTING);
-    } catch (Exception e) {
-      throw new PipelineException(e);
-    }
+  public static Builder builder() {
+    return new Builder();
   }
 
-  private void unzip(Source source) {
-    var sourceDirectory = sourcePath(source);
-    var downloadFile = downloadPath(source);
-    try (var zis = new ZipInputStream(new BufferedInputStream(Files.newInputStream(downloadFile)))) {
-      ZipEntry ze;
-      while ((ze = zis.getNextEntry()) != null) {
-        var file = sourceDirectory.resolve(ze.getName());
-        Files.createDirectories(file.getParent());
-        Files.copy(zis, file, StandardCopyOption.REPLACE_EXISTING);
-      }
-    } catch (Exception e) {
-      throw new PipelineException(e);
+  public static class Builder {
+
+    private Context context;
+
+    private List<Step> steps = new ArrayList<>();
+
+    public Builder setContext(Context context) {
+      this.context = context;
+      return this;
     }
-  }
 
-  private void importOsmPbf(Source source) {
-    try {
-      Path file = filePath(source);
-
-      DataSource datasource = initDataSource();
-      HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
-      Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
-      Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
-      Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
-
-      headerRepository.drop();
-      nodeRepository.drop();
-      wayRepository.drop();
-      relationRepository.drop();
-
-      headerRepository.create();
-      nodeRepository.create();
-      wayRepository.create();
-      relationRepository.create();
-
-      Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
-      Path nodes = Files.createDirectories(directory.resolve("nodes"));
-      Path referencesKeys = Files.createDirectories(directory.resolve("references_keys"));
-      Path referencesValues = Files.createDirectories(directory.resolve("references_values"));
-
-      LongDataMap<Coordinate> coordinates =
-          new LongSizedDataDenseMap<>(
-              new LonLatDataType(),
-              new OnDiskDirectoryMemory(nodes));
-      LongDataMap<List<Long>> references =
-          new LongDataSortedMap<>(
-              new AlignedDataList<>(
-                  new PairDataType<>(
-                      new LongDataType(),
-                      new LongDataType()),
-                  new OnDiskDirectoryMemory(referencesKeys)),
-              new com.baremaps.collection.DataStore<>(new LongListDataType(),
-                  new OnDiskDirectoryMemory(referencesValues)));
-
-      new ImportService(
-          file.toUri(),
-          blobStore,
-          coordinates,
-          references,
-          headerRepository,
-          nodeRepository,
-          wayRepository,
-          relationRepository,
-          config.getDatabase().getSrid())
-          .call();
-
-      FileUtils.deleteRecursively(directory);
-    } catch (Exception e) {
-      throw new PipelineException(e);
+    public Builder addStep(Step step) {
+      this.steps.add(step);
+      return this;
     }
-  }
 
-  private void importShapefile(Source source) {
-    try {
-      var file = filePath(source);
-      var aggregate = new ShapefileFeatureStore(file.toUri());
-      for (var resource : aggregate.components()) {
-        if (resource instanceof FeatureSet featureSet) {
-          importFeatureSet(featureSet);
-        }
-      }
-    } catch (Exception e) {
-      throw new PipelineException(e);
+    public Pipeline build() {
+      return new Pipeline(context, steps);
     }
-  }
 
-  private void importGeoJson(Source source) {
-    try {
-      var file = filePath(source);
-      var featureSet = (FeatureSet) DataStores.open(file.toUri().toURL());
-      importFeatureSet(featureSet);
-    } catch (Exception e) {
-      throw new PipelineException(e);
-    }
-  }
-
-  private void importGeoPackage(Source source) {
-    try {
-      var file = filePath(source);
-      var store = new GeoPackageStore(GeoPackageManager.open(file.toFile()));
-      for (Resource resource : store.components()) {
-        if (resource instanceof FeatureSet featureSet) {
-          importFeatureSet(featureSet);
-        }
-      }
-    } catch (Exception e) {
-      throw new PipelineException(e);
-    }
-  }
-
-  private void importFeatureSet(FeatureSet featureSet) {
-    try (PostgresStore dataStore = initDataStore()) {
-      var type = featureSet.getType();
-      var typeName = type.getName().toString();
-      try {
-        dataStore.deleteFeatureType(typeName);
-      } catch (Exception e) {
-        // do nothing
-      }
-      dataStore.createFeatureType(type);
-      var target = dataStore.findResource(type.getName().toString());
-      if (target instanceof WritableFeatureSet writableFeatureSet) {
-        try (var featureStream = featureSet.features(false)) {
-          writableFeatureSet.add(featureStream.map(this::reprojectFeature).iterator());
-        }
-      }
-    } catch (Exception e) {
-      throw new PipelineException(e);
-    }
-  }
-
-  private Feature reprojectFeature(Feature feature) {
-    for (var property : feature.getType().getProperties(false)) {
-      String name = property.getName().toString();
-      if (feature.getPropertyValue(name) instanceof Geometry geometry) {
-        Geometry value = new ProjectionTransformer(geometry.getSRID(), config.getDatabase().getSrid()).transform(
-            geometry);
-        feature.setPropertyValue(name, value);
-      }
-    }
-    return feature;
   }
 
 }

@@ -17,7 +17,7 @@ package com.baremaps.cli.pipeline;
 import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.cli.Options;
-import com.baremaps.pipeline.config.Config;
+import com.baremaps.pipeline.model.Config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.nio.file.Files;
@@ -47,8 +47,8 @@ public class Pipeline implements Callable<Integer> {
     ObjectMapper mapper = new ObjectMapper();
     Config value = mapper.readValue(blob.getInputStream(), Config.class);
     Path directory = Files.createDirectories(Paths.get("pipeline"));
-    com.baremaps.pipeline.Pipeline pipeline = new com.baremaps.pipeline.Pipeline(blobStore, directory, value);
-    pipeline.execute();
+    //com.baremaps.pipeline.Pipeline pipeline = new com.baremaps.pipeline.Pipeline(directory, blobStore, null value);
+    //pipeline.execute();
     return 0;
   }
 }

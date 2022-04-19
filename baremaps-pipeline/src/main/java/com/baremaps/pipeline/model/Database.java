@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.pipeline.config;
+package com.baremaps.pipeline.model;
 
 public class Database {
 

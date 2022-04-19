@@ -23,8 +23,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-/** An object for downloading and saving blobs in the local file system. */
-public class DownloadManager {
+/**
+ * A helper for fetching blobs.
+ */
+public class BlobFetcher {
 
   private final BlobStore blobStore;
 
@@ -33,47 +35,71 @@ public class DownloadManager {
    *
    * @param blobStore the blob store
    */
-  public DownloadManager(BlobStore blobStore) {
+  public BlobFetcher(BlobStore blobStore) {
     this.blobStore = blobStore;
   }
 
   /**
-   * Returns the temporary path of the downloaded blob.
+   * Fetches a blob and return its path on the file system.
+   * A temporary file may be created to store the content of the blob.
    *
    * @param blob the URI of the blob
-   * @return the path of the downloaded blob
+   * @return the path of the fetched blob
    * @throws BlobStoreException a blob store exception
    */
-  public Path download(URI blob) throws BlobStoreException {
+  public Path fetch(URI blob) throws BlobStoreException {
     if (blob.getScheme() == null || blob.getScheme().equals("file")) {
       return Paths.get(blob.getPath());
-    } else {
-      try {
-        File file = File.createTempFile("download_", ".blob", Paths.get(".").toFile());
-        file.deleteOnExit();
-        Path path = file.toPath().toAbsolutePath();
-        return download(blob, path);
-      } catch (IOException e) {
-        throw new BlobStoreException(e);
-      }
+    }
+    try {
+      File file = File.createTempFile("download_", ".blob", Paths.get(".").toFile());
+      file.deleteOnExit();
+      Path path = file.toPath().toAbsolutePath();
+      return fetch(blob, path);
+    } catch (IOException e) {
+      throw new BlobStoreException(e);
     }
   }
 
   /**
-   * Downloads and saves a blob in a file.
+   * Fetches a blob if it changed and returns its path on the file system.
    *
    * @param blob the URI of the blob
-   * @param file the path of the file
+   * @param hint a hint on where to store the blob
+   * @return the path of the fetched blob
+   * @throws BlobStoreException
+   */
+  public Path fetchIfChanged(URI blob, Path hint) throws BlobStoreException {
+    if (blob.getScheme() == null || blob.getScheme().equals("file")) {
+      return Paths.get(blob.getPath());
+    }
+    try {
+      Long oldSize = Files.size(hint);
+      Long newSize = blobStore.head(blob).getContentLength();
+      if (oldSize == newSize) {
+        return hint;
+      }
+      return fetch(blob, hint);
+    } catch (IOException e) {
+      throw new BlobStoreException(e);
+    }
+  }
+
+  /**
+   * Fetches a blob and returns its path on the file system.
+   *
+   * @param blob the URI of the blob
+   * @param hint a hint on where to store the blob
    * @return the path of the downloaded blob
    * @throws BlobStoreException a blob store exception
    */
-  public Path download(URI blob, Path file) throws BlobStoreException {
+  public Path fetch(URI blob, Path hint) throws BlobStoreException {
     if (blob.getScheme() == null || blob.getScheme().equals("file")) {
       return Paths.get(blob.getPath());
     }
     try (InputStream input = blobStore.get(blob).getInputStream()) {
-      Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING);
-      return file;
+      Files.copy(input, hint, StandardCopyOption.REPLACE_EXISTING);
+      return hint;
     } catch (IOException e) {
       throw new BlobStoreException(e);
     }
