@@ -46,7 +46,7 @@ public class Search implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    Geocoder geocoder = new GeonamesGeocoder(indexPath);
+    Geocoder geocoder = new GeonamesGeocoder(indexPath, null);
     geocoder.open();
 
     Request request = new Request(search, 20);

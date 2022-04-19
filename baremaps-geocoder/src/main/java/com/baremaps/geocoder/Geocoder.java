@@ -46,11 +46,15 @@ public abstract class Geocoder implements AutoCloseable {
     this.directory = MMapDirectory.open(index);
   }
 
+  public boolean indexExists() throws IOException {
+    return DirectoryReader.indexExists(directory);
+  }
+
   public void open() throws IOException {
-    if (!DirectoryReader.indexExists(this.directory)) {
+    if (!DirectoryReader.indexExists(directory)) {
       throw new IllegalStateException("Invalid Lucene index directory");
     }
-    this.searcherManager = new SearcherManager(directory, new SearcherFactory());
+    searcherManager = new SearcherManager(directory, new SearcherFactory());
   }
 
   public void build() throws IOException {
@@ -84,9 +88,9 @@ public abstract class Geocoder implements AutoCloseable {
 
   @Override
   public void close() throws Exception {
-    this.analyzer.close();
-    this.directory.close();
-    this.searcherManager.close();
+    analyzer.close();
+    directory.close();
+    searcherManager.close();
   }
 
   protected abstract Analyzer analyzer() throws IOException;

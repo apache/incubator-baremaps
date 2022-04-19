@@ -43,14 +43,13 @@ public class Index implements Callable<Integer> {
   @Option(
       names = {"--data-uri"},
       paramLabel = "DATA_URI",
-      description = "The URI to the geonames data.",
-      required = true)
-  private URI geonamesDataPath;
+      description = "The URI to the geonames data.")
+  private URI dataURI;
 
   @Override
   public Integer call() throws Exception {
     logger.info("Building the geocoder index");
-    Geocoder geocoder = new GeonamesGeocoder(indexPath, geonamesDataPath);
+    Geocoder geocoder = new GeonamesGeocoder(indexPath, dataURI);
     geocoder.build();
 
     logger.info("Index created successfully");
