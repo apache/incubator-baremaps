@@ -160,22 +160,22 @@ public class IpLoc {
     }
     // If there is a country that is follow the ISO format we use that country's actual name from
     // the iso country map to query the geocoder
-    // TODO : Case sensitiveness of country code
-    if (attributes.containsKey("country") && IsoCountriesUtils.containsCountry("country")) {
+    if (attributes.containsKey("country") && IsoCountriesUtils.containsCountry(attributes.get("country").toUpperCase())) {
+      String countryUppercase = attributes.get("country").toUpperCase();
       Optional<Location> location =
           findLocation(
               new Request(
-                  IsoCountriesUtils.getCountry(attributes.get("country")),
+                  IsoCountriesUtils.getCountry(countryUppercase),
                   1,
-                  attributes.get("country")));
+                  countryUppercase));
       if (location.isPresent()) {
         return Optional.of(
             new InetnumLocation(
-                IsoCountriesUtils.getCountry(attributes.get("country")),
+                IsoCountriesUtils.getCountry(countryUppercase),
                 ipRange,
                 location.get(),
                 network,
-                attributes.get("country")));
+                countryUppercase));
       }
     }
     // If there is a country that did not follow the ISO format we will query using the country has

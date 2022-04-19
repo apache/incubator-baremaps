@@ -23,6 +23,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteConfig;
@@ -198,7 +200,7 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
       stmt.setString(6, inetnumLocation.getNetwork());
       stmt.setString(7, inetnumLocation.getCountry());
       stmt.executeUpdate();
-      logger.debug("Data Added Successfully " + inetnumLocation);
+      logger.info(String.format("Data Added Successfully %s", inetnumLocation));
     } catch (SQLException e) {
       e.printStackTrace();
     } finally {
@@ -232,7 +234,7 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
       }
       stmt.executeBatch();
       connection.commit();
-      logger.debug("Batch executed Successfully " + inetnumLocations);
+      logger.info(String.format("Batch executed Successfully \n\t%s", inetnumLocations.stream().map(InetnumLocation::toString).collect(Collectors.joining("\n\t"))));
     } catch (SQLException e) {
       e.printStackTrace();
       // connection.rollback();
