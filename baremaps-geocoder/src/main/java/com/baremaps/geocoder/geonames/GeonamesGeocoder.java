@@ -118,14 +118,18 @@ public class GeonamesGeocoder extends Geocoder {
   @Override
   protected Query query(Analyzer analyzer, Request request) throws ParseException {
     BooleanQuery.Builder builder = new Builder();
-    String query = QueryParser.escape(request.query().replace("\r", "").replace("\n", ""));
+    String query = QueryParser.escape(request.query());
     if (!query.isBlank()) {
       QueryBuilder queryBuilder = new QueryBuilder(analyzer);
-      Query q1 = queryBuilder.createPhraseQuery("name", query);
-      Query q2 = queryBuilder.createPhraseQuery("country", query);
 
-      builder.add(q1, Occur.SHOULD);
-      builder.add(q2, Occur.SHOULD);
+        Query q1 = queryBuilder.createPhraseQuery("name", query);
+      if(q1 != null){
+          builder.add(q1, Occur.SHOULD);
+      }
+        Query q2 = queryBuilder.createPhraseQuery("country", query);
+      if(q2 != null){
+          builder.add(q2, Occur.SHOULD);
+      }
       if (request.countryCode() != null) {
         builder.add(
             new TermQuery(new Term("countryCode", QueryParser.escape(request.countryCode()))),
