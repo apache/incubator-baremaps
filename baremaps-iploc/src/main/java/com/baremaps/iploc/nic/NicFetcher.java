@@ -14,10 +14,6 @@
 
 package com.baremaps.iploc.nic;
 
-import com.baremaps.iploc.database.InetnumLocationDaoSqliteImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +24,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** A utility for fetching the data of Network Coordination Centers (NIC) in temporary files. */
 public class NicFetcher {
@@ -37,6 +35,28 @@ public class NicFetcher {
   /** A list of default urls. */
   public static final List<String> NIC_URLS =
       List.of(
+          "https://ftp.afrinic.net/pub/dbase/afrinic.db.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.as-block.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.as-set.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.domain.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.filter-set.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.inet-rtr.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.inet6num.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.inetnum.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.irt.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.key-cert.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.limerick.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.mntner.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.organisation.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.peering-set.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.role.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.route-set.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.route.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.route6.gz",
+          "https://ftp.apnic.net/apnic/whois/apnic.db.rtr-set.gz",
+          "https://ftp.arin.net/pub/rr/arin.db.gz",
+          "https://ftp.arin.net/pub/rr/arin-nonauth.db.gz",
+          "https://ftp.lacnic.net/lacnic/dbase/lacnic.db.gz",
           "https://ftp.ripe.net/ripe/dbase/ripe.db.gz");
 
   /**

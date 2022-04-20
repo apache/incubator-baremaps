@@ -111,6 +111,7 @@ public class Init implements Callable<Integer> {
     logger.info("Inserting the nic objects into the Iploc database");
     IpLoc ipLoc = new IpLoc(jdbcUrl, geocoder);
     ipLoc.insertNicObjects(fetchNicObjectStream);
+    IpLocStats ipLocStats = ipLoc.getIplocStats();
 
     logger.info(
         String.format(
@@ -122,12 +123,12 @@ public class Init implements Callable<Integer> {
                 + "inetnumInsertedByCountryCode : %s\n"
                 + "inetnumInsertedByGeoloc : %s\n"
                 + "inetnumNotInserted : %s\n",
-            IpLocStats.inetnumInsertedByAddress,
-            IpLocStats.inetnumInsertedByDescr,
-            IpLocStats.inetnumInsertedByCountry,
-            IpLocStats.inetnumInsertedByCountryCode,
-            IpLocStats.inetnumInsertedByGeoloc,
-            IpLocStats.inetnumNotInserted));
+            ipLocStats.getInsertedByAddressCount(),
+            ipLocStats.getInsertedByDescrCount(),
+            ipLocStats.getInsertedByCountryCount(),
+            ipLocStats.getInsertedByCountryCodeCount(),
+            ipLocStats.getInsertedByGeolocCount(),
+            ipLocStats.getNotInsertedCount()));
 
     logger.info("IpLoc database created successfully");
 

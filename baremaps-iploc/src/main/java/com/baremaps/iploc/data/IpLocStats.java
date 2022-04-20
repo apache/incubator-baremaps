@@ -14,12 +14,62 @@
 
 package com.baremaps.iploc.data;
 
-// TODO: this should be a package private class with non-static fields
+/** Store stats related to the geneation of the IpLoc database from the RIR's files */
 public class IpLocStats {
-  public static int inetnumInsertedByAddress = 0;
-  public static int inetnumInsertedByDescr = 0;
-  public static int inetnumInsertedByCountry = 0;
-  public static int inetnumInsertedByGeoloc = 0;
-  public static int inetnumNotInserted = 0;
-  public static int inetnumInsertedByCountryCode = 0;
+  int insertedByAddressCount = 0;
+  int insertedByDescrCount = 0;
+  int insertedByCountryCount = 0;
+  int insertedByGeolocCount = 0;
+  int notInsertedCount = 0;
+  int insertedByCountryCodeCount = 0;
+
+  public IpLocStats() {}
+
+  public void incrementInsertedByAddressCount() {
+    insertedByAddressCount++;
+  }
+
+  public void incrementInsertedByDescrCount() {
+    insertedByDescrCount++;
+  }
+
+  public void incrementInsertedByCountryCount() {
+    insertedByCountryCount++;
+  }
+
+  public void incrementInsertedByGeolocCount() {
+    insertedByGeolocCount++;
+  }
+
+  public void incrementInsertedByCountryCodeCount() {
+    insertedByCountryCodeCount++;
+  }
+
+  public void incrementNotInsertedCount() {
+    notInsertedCount++;
+  }
+
+  public int getInsertedByAddressCount() {
+    return insertedByAddressCount;
+  }
+
+  public int getInsertedByDescrCount() {
+    return insertedByDescrCount;
+  }
+
+  public int getInsertedByCountryCount() {
+    return insertedByCountryCount;
+  }
+
+  public int getInsertedByGeolocCount() {
+    return insertedByGeolocCount;
+  }
+
+  public int getNotInsertedCount() {
+    return notInsertedCount;
+  }
+
+  public int getInsertedByCountryCodeCount() {
+    return insertedByCountryCodeCount;
+  }
 }

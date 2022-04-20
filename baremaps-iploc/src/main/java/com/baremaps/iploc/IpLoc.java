@@ -44,6 +44,7 @@ public class IpLoc {
 
   private final InetnumLocationDao inetnumLocationDao;
   private final Geocoder geocoder;
+  private IpLocStats iplocStats;
 
   /**
    * Create a new IpLoc object
@@ -53,6 +54,7 @@ public class IpLoc {
    */
   public IpLoc(String databaseUrl, Geocoder geocoder) {
     inetnumLocationDao = new InetnumLocationDaoSqliteImpl(databaseUrl);
+    iplocStats = new IpLocStats();
     this.geocoder = geocoder;
   }
 
@@ -69,6 +71,7 @@ public class IpLoc {
                 .map(this::nicObjectToInetnumLocation)
                 // TODO: we should probably not filter, i.e., even in the worst case we should have
                 // the country
+                // Cache the list of country
                 .filter(Optional::isPresent)
                 .map(Optional::get),
             100)
@@ -110,7 +113,7 @@ public class IpLoc {
       if (attributes.containsKey("geoloc")) {
         Optional<Location> location = stringToLocation(attributes.get("geoloc"));
         if (location.isPresent()) {
-          IpLocStats.inetnumInsertedByGeoloc++;
+          iplocStats.incrementInsertedByGeolocCount();
           return Optional.of(
               new InetnumLocation(
                   attributes.get("geoloc"),
@@ -125,7 +128,7 @@ public class IpLoc {
         Optional<Location> location =
             findLocation(new Request(attributes.get("address"), 1, attributes.get("country")));
         if (location.isPresent()) {
-          IpLocStats.inetnumInsertedByAddress++;
+          iplocStats.incrementInsertedByAddressCount();
           return Optional.of(
               new InetnumLocation(
                   attributes.get("address"),
@@ -140,7 +143,7 @@ public class IpLoc {
         Optional<Location> location =
             findLocation(new Request(attributes.get("descr"), 1, attributes.get("country")));
         if (location.isPresent()) {
-          IpLocStats.inetnumInsertedByDescr++;
+          iplocStats.incrementInsertedByDescrCount();
           return Optional.of(
               new InetnumLocation(
                   attributes.get("descr"),
@@ -159,7 +162,7 @@ public class IpLoc {
             findLocation(
                 new Request(IsoCountriesUtils.getCountry(countryUppercase), 1, countryUppercase));
         if (location.isPresent()) {
-          IpLocStats.inetnumInsertedByCountryCode++;
+          iplocStats.incrementInsertedByCountryCodeCount();
           return Optional.of(
               new InetnumLocation(
                   IsoCountriesUtils.getCountry(countryUppercase),
@@ -175,7 +178,7 @@ public class IpLoc {
       if (attributes.containsKey("country")) {
         Optional<Location> location = findLocation(new Request(attributes.get("country"), 1));
         if (location.isPresent()) {
-          IpLocStats.inetnumInsertedByCountry++;
+          iplocStats.incrementInsertedByCountryCount();
           return Optional.of(
               new InetnumLocation(
                   attributes.get("country"),
@@ -186,7 +189,7 @@ public class IpLoc {
         }
       }
 
-      IpLocStats.inetnumNotInserted++;
+      iplocStats.incrementNotInsertedCount();
       return Optional.empty();
 
     } catch (IOException | ParseException e) {
@@ -232,5 +235,9 @@ public class IpLoc {
       return Optional.of(new Location(latitude, longitude));
     }
     return Optional.empty();
+  }
+
+  public IpLocStats getIplocStats() {
+    return iplocStats;
   }
 }
