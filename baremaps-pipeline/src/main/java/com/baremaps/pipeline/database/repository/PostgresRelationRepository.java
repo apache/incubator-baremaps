@@ -40,9 +40,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/**
- * Provides an implementation of the {@code Repository<Relation>} baked by PostgreSQL.
- */
+/** Provides an implementation of the {@code Repository<Relation>} baked by PostgreSQL. */
 public class PostgresRelationRepository implements Repository<Long, Relation> {
 
   private final DataSource dataSource;
@@ -62,7 +60,6 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
   private final String delete;
 
   private final String copy;
-
 
   /**
    * Constructs a {@code PostgresRelationRepository}.
@@ -116,7 +113,8 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
       String geometryColumn) {
     this.dataSource = dataSource;
     this.createTable =
-        String.format("""
+        String.format(
+            """
                 CREATE TABLE %1$s (
                   %2$s bigint PRIMARY KEY,
                   %3$s int,
@@ -171,7 +169,8 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
             memberRoles,
             geometryColumn);
     this.insert =
-        String.format("""
+        String.format(
+            """
                 INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s, %10$s, %11$s)
                 VALUES (?, ?, ?, ?, ?, cast (? AS jsonb), ?, ?, ?, ?)
                 ON CONFLICT (%2$s) DO UPDATE SET
@@ -212,10 +211,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
             geometryColumn);
   }
 
-
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void create() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -226,9 +222,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void drop() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -239,9 +233,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void truncate() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -252,9 +244,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Relation get(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -272,9 +262,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public List<Relation> get(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
@@ -296,9 +284,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void put(Relation value) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -310,9 +296,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void put(List<Relation> values) throws RepositoryException {
     if (values.isEmpty()) {
@@ -331,9 +315,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void delete(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -345,9 +327,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void delete(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
@@ -366,9 +346,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void copy(List<Relation> values) throws RepositoryException {
     if (values.isEmpty()) {

@@ -23,9 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-/**
- * A helper for fetching blobs.
- */
+/** A helper for fetching blobs. */
 public class BlobFetcher {
 
   private final BlobStore blobStore;
@@ -40,8 +38,8 @@ public class BlobFetcher {
   }
 
   /**
-   * Fetches a blob and return its path on the file system.
-   * A temporary file may be created to store the content of the blob.
+   * Fetches a blob and return its path on the file system. A temporary file may be created to store
+   * the content of the blob.
    *
    * @param blob the URI of the blob
    * @return the path of the fetched blob

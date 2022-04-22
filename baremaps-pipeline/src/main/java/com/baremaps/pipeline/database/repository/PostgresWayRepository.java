@@ -39,9 +39,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/**
- * Provides an implementation of the {@code Repository<Way>} baked by PostgreSQL.
- */
+/** Provides an implementation of the {@code Repository<Way>} baked by PostgreSQL. */
 public class PostgresWayRepository implements Repository<Long, Way> {
 
   private final DataSource dataSource;
@@ -108,7 +106,8 @@ public class PostgresWayRepository implements Repository<Long, Way> {
       String geometryColumn) {
     this.dataSource = dataSource;
     this.createTable =
-        String.format("""
+        String.format(
+            """
                 CREATE TABLE %1$s (
                   %2$s bigint PRIMARY KEY,
                   %3$s int,
@@ -155,10 +154,11 @@ public class PostgresWayRepository implements Repository<Long, Way> {
             nodesColumn,
             geometryColumn);
     this.insert =
-        String.format("""
+        String.format(
+            """
                 INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s)
                 VALUES (?, ?, ?, ?, ?, cast (? AS jsonb), ?, ?)
-                ON CONFLICT (%2$s) DO UPDATE SET 
+                ON CONFLICT (%2$s) DO UPDATE SET
                 %3$s = excluded.%3$s,
                 %4$s = excluded.%4$s,
                 %5$s = excluded.%5$s,
@@ -190,10 +190,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
             geometryColumn);
   }
 
-
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void create() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -204,9 +201,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void drop() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -217,9 +212,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void truncate() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -230,9 +223,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Way get(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -250,9 +241,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public List<Way> get(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
@@ -274,9 +263,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void put(Way value) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -288,9 +275,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void put(List<Way> values) throws RepositoryException {
     if (values.isEmpty()) {
@@ -309,9 +294,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void delete(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -323,9 +306,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void delete(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
@@ -344,9 +325,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   public void copy(List<Way> values) throws RepositoryException {
     if (values.isEmpty()) {
       return;

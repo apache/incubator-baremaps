@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.storage.geopackage;
 
 import java.util.Date;
@@ -50,11 +64,13 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
     FeatureTypeBuilder builder = new FeatureTypeBuilder().setName(featureDao.getTableName());
     for (FeatureColumn column : featureDao.getColumns()) {
       if (column.isGeometry()) {
-        builder.addAttribute(jtsType(column.getGeometryType()))
+        builder
+            .addAttribute(jtsType(column.getGeometryType()))
             .setName(column.getName())
             .setMinimumOccurs(column.isNotNull() ? 1 : 0);
       } else {
-        builder.addAttribute(sisType(column.getDataType()))
+        builder
+            .addAttribute(sisType(column.getDataType()))
             .setName(column.getName())
             .setMinimumOccurs(column.isNotNull() ? 1 : 0);
       }
@@ -79,9 +95,7 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
   }
 
   @Override
-  public void close() throws DataStoreException {
-
-  }
+  public void close() throws DataStoreException {}
 
   @Override
   public FeatureType getType() throws DataStoreException {
@@ -121,7 +135,8 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
       Feature feature = featureType.newInstance();
       for (FeatureColumn featureColumn : featureResultSet.getColumns().getColumns()) {
         if (featureColumn.isGeometry()) {
-          GeoPackageGeometryData value = (GeoPackageGeometryData) featureResultSet.getValue(featureColumn);
+          GeoPackageGeometryData value =
+              (GeoPackageGeometryData) featureResultSet.getValue(featureColumn);
           feature.setPropertyValue(featureColumn.getName(), jtsValue(value.getGeometry()));
         } else {
           Object value = featureResultSet.getValue(featureColumn);
@@ -154,7 +169,17 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
       case MULTILINESTRING -> MultiLineString.class;
       case MULTIPOLYGON -> MultiPolygon.class;
       case GEOMETRYCOLLECTION -> GeometryCollection.class;
-      case GEOMETRY, CIRCULARSTRING, COMPOUNDCURVE, CURVEPOLYGON, MULTICURVE, MULTISURFACE, CURVE, SURFACE, POLYHEDRALSURFACE, TIN, TRIANGLE -> Geometry.class;
+      case GEOMETRY,
+          CIRCULARSTRING,
+          COMPOUNDCURVE,
+          CURVEPOLYGON,
+          MULTICURVE,
+          MULTISURFACE,
+          CURVE,
+          SURFACE,
+          POLYHEDRALSURFACE,
+          TIN,
+          TRIANGLE -> Geometry.class;
     };
   }
 
@@ -179,52 +204,58 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
     }
   }
 
-  private GeometryCollection jstGeometryCollection(mil.nga.sf.GeometryCollection geometryCollection) {
+  private GeometryCollection jstGeometryCollection(
+      mil.nga.sf.GeometryCollection geometryCollection) {
     List<mil.nga.sf.Geometry> geometries = geometryCollection.getGeometries();
-    return geometryFactory.createGeometryCollection(geometries.stream()
-        .map(this::jtsValue)
-        .toArray(Geometry[]::new));
+    return geometryFactory.createGeometryCollection(
+        geometries.stream().map(this::jtsValue).toArray(Geometry[]::new));
   }
 
   private MultiPolygon jtsMultiPolygon(mil.nga.sf.MultiPolygon multiPolygon) {
-    return geometryFactory.createMultiPolygon(multiPolygon.getPolygons().stream()
-        .map(this::jtsPolygon)
-        .toArray(Polygon[]::new));
+    return geometryFactory.createMultiPolygon(
+        multiPolygon.getPolygons().stream().map(this::jtsPolygon).toArray(Polygon[]::new));
   }
 
   private MultiLineString jtsMultiLineString(mil.nga.sf.MultiLineString multiLineString) {
-    return geometryFactory.createMultiLineString(multiLineString.getLineStrings().stream()
-        .map(this::jtsLineString)
-        .toArray(LineString[]::new));
+    return geometryFactory.createMultiLineString(
+        multiLineString.getLineStrings().stream()
+            .map(this::jtsLineString)
+            .toArray(LineString[]::new));
   }
 
   private MultiPoint jtsMultiPoint(mil.nga.sf.MultiPoint multiPoint) {
-    return geometryFactory.createMultiPoint(multiPoint.getPoints().stream()
-        .map(this::jtsPoint)
-        .toArray(Point[]::new));
+    return geometryFactory.createMultiPoint(
+        multiPoint.getPoints().stream().map(this::jtsPoint).toArray(Point[]::new));
   }
 
   private Polygon jtsPolygon(mil.nga.sf.Polygon polygon) {
-    var shell = geometryFactory.createLinearRing(polygon.getExteriorRing().getPoints().stream()
-        .map(point -> new Coordinate(point.getX(), point.getY()))
-        .toArray(Coordinate[]::new));
-    var holes = polygon.getRings().stream().skip(1)
-        .map(lineString -> geometryFactory.createLinearRing(lineString.getPoints().stream()
-            .map(point -> new Coordinate(point.getX(), point.getY()))
-            .toArray(Coordinate[]::new)))
-        .toArray(LinearRing[]::new);
+    var shell =
+        geometryFactory.createLinearRing(
+            polygon.getExteriorRing().getPoints().stream()
+                .map(point -> new Coordinate(point.getX(), point.getY()))
+                .toArray(Coordinate[]::new));
+    var holes =
+        polygon.getRings().stream()
+            .skip(1)
+            .map(
+                lineString ->
+                    geometryFactory.createLinearRing(
+                        lineString.getPoints().stream()
+                            .map(point -> new Coordinate(point.getX(), point.getY()))
+                            .toArray(Coordinate[]::new)))
+            .toArray(LinearRing[]::new);
     return geometryFactory.createPolygon(shell, holes);
   }
 
   private LineString jtsLineString(mil.nga.sf.LineString lineString) {
-    var coordinates = lineString.getPoints().stream()
-        .map(point -> new Coordinate(point.getX(), point.getY()))
-        .toArray(Coordinate[]::new);
+    var coordinates =
+        lineString.getPoints().stream()
+            .map(point -> new Coordinate(point.getX(), point.getY()))
+            .toArray(Coordinate[]::new);
     return geometryFactory.createLineString(coordinates);
   }
 
   private Point jtsPoint(mil.nga.sf.Point point) {
     return geometryFactory.createPoint(new Coordinate(point.getX(), point.getY()));
   }
-
 }

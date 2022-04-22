@@ -36,9 +36,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-/**
- * Provides an implementation of the {@code Repository<Node>} baked by PostgreSQL.
- */
+/** Provides an implementation of the {@code Repository<Node>} baked by PostgreSQL. */
 public class PostgresNodeRepository implements Repository<Long, Node> {
 
   private final DataSource dataSource;
@@ -108,7 +106,8 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
       String geometryColumn) {
     this.dataSource = dataSource;
     this.createTable =
-        String.format("""
+        String.format(
+            """
                 CREATE TABLE %1$s
                 (
                     %2$s bigint PRIMARY KEY,
@@ -198,10 +197,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
             geometryColumn);
   }
 
-
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void create() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -212,9 +208,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void drop() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -225,9 +219,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void truncate() throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -238,9 +230,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Node get(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -258,9 +248,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public List<Node> get(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
@@ -282,9 +270,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void put(Node value) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -296,9 +282,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void put(List<Node> values) throws RepositoryException {
     if (values.isEmpty()) {
@@ -317,9 +301,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void delete(Long key) throws RepositoryException {
     try (Connection connection = dataSource.getConnection();
@@ -331,9 +313,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void delete(List<Long> keys) throws RepositoryException {
     if (keys.isEmpty()) {
@@ -352,9 +332,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void copy(List<Node> values) throws RepositoryException {
     if (values.isEmpty()) {

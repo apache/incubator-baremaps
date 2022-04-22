@@ -30,8 +30,7 @@ public class Database {
 
   private Integer srid = 3857;
 
-  public Database() {
-  }
+  public Database() {}
 
   public String getHost() {
     return host;

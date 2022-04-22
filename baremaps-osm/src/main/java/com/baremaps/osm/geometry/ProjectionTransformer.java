@@ -46,7 +46,7 @@ public class ProjectionTransformer extends GeometryTransformer {
    * @param inputSRID the input SRID
    * @param outputSRID the output SRID
    */
-  public  ProjectionTransformer(int inputSRID, int outputSRID) {
+  public ProjectionTransformer(Integer inputSRID, Integer outputSRID) {
     this.inputSRID = inputSRID;
     this.outputSRID = outputSRID;
     this.coordinateTransform = GeometryUtils.coordinateTransform(inputSRID, outputSRID);
@@ -73,7 +73,11 @@ public class ProjectionTransformer extends GeometryTransformer {
   }
 
   protected Geometry transformMultiPoint(MultiPoint geom, Geometry parent) {
-    return withTargetSRID(super.transformMultiPoint(geom, parent));
+    Geometry geometry = super.transformMultiPoint(geom, parent);
+    if (geometry instanceof Point point) {
+      geometry = factory.createMultiPoint(new Point[] {point});
+    }
+    return geometry;
   }
 
   protected Geometry transformLinearRing(LinearRing geom, Geometry parent) {
@@ -85,7 +89,11 @@ public class ProjectionTransformer extends GeometryTransformer {
   }
 
   protected Geometry transformMultiLineString(MultiLineString geom, Geometry parent) {
-    return withTargetSRID(super.transformMultiLineString(geom, parent));
+    Geometry geometry = super.transformMultiLineString(geom, parent);
+    if (geometry instanceof LineString lineString) {
+      geometry = factory.createMultiLineString(new LineString[] {lineString});
+    }
+    return geometry;
   }
 
   protected Geometry transformPolygon(Polygon geom, Geometry parent) {
@@ -93,7 +101,11 @@ public class ProjectionTransformer extends GeometryTransformer {
   }
 
   protected Geometry transformMultiPolygon(MultiPolygon geom, Geometry parent) {
-    return withTargetSRID(super.transformMultiPolygon(geom, parent));
+    Geometry geometry = super.transformMultiPolygon(geom, parent);
+    if (geometry instanceof Polygon polygon) {
+      geometry = factory.createMultiPolygon(new Polygon[] {polygon});
+    }
+    return withTargetSRID(geometry);
   }
 
   protected Geometry transformGeometryCollection(GeometryCollection geom, Geometry parent) {

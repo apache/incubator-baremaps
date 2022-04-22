@@ -47,8 +47,8 @@ public class Pipeline implements Callable<Integer> {
     ObjectMapper mapper = new ObjectMapper();
     Config value = mapper.readValue(blob.getInputStream(), Config.class);
     Path directory = Files.createDirectories(Paths.get("pipeline"));
-    //com.baremaps.pipeline.Pipeline pipeline = new com.baremaps.pipeline.Pipeline(directory, blobStore, null value);
-    //pipeline.execute();
+    // Pipeline pipeline = new Pipeline(directory, blobStore);
+    // pipeline.execute();
     return 0;
   }
 }

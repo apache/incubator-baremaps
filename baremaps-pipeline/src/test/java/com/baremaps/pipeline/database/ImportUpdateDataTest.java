@@ -83,6 +83,7 @@ class ImportUpdateDataTest extends PostgresBaseTest {
             nodeRepository,
             wayRepository,
             relationRepository,
+            4326,
             3857)
         .call();
 

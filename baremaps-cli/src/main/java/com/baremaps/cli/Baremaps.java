@@ -115,13 +115,13 @@ public class Baremaps implements Callable<Integer> {
     public String[] getVersion() throws Exception {
       URL url = getClass().getResource("/version.txt");
       if (url == null) {
-        return new String[]{"No version.txt file found in the classpath."};
+        return new String[] {"No version.txt file found in the classpath."};
       }
       try (InputStream inputStream = url.openStream()) {
         Properties properties = new Properties();
         properties.load(inputStream);
-        return new String[]{
-            properties.getProperty("application") + " v" + properties.getProperty("version"),
+        return new String[] {
+          properties.getProperty("application") + " v" + properties.getProperty("version"),
         };
       }
     }

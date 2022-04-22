@@ -118,6 +118,7 @@ public class Import implements Callable<Integer> {
             nodeRepository,
             wayRepository,
             relationRepository,
+            4326,
             srid)
         .call();
 

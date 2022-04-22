@@ -52,18 +52,20 @@ public class Pipeline {
       }
     }
     this.graph = graphBuilder.build();
-
-    Graphs.hasCycle(graph);
+    if (Graphs.hasCycle(graph)) {
+      throw new PipelineException("The pipeline has cycles in its execution graph");
+    }
 
     // Use postgresql instead of derby to store crs data
     Configuration.current().setDatabase(() -> context.dataSource());
   }
 
   public CompletableFuture<Void> execute() {
-    var endSteps = graph.nodes().stream()
-        .filter(this::isEndStep)
-        .map(this::getStep)
-        .toArray(CompletableFuture[]::new);
+    var endSteps =
+        graph.nodes().stream()
+            .filter(this::isEndStep)
+            .map(this::getStep)
+            .toArray(CompletableFuture[]::new);
     return CompletableFuture.allOf(endSteps);
   }
 
@@ -84,9 +86,9 @@ public class Pipeline {
       var previousStep = getStep(predecessors.stream().findFirst().get());
       return previousStep.thenRunAsync(step);
     } else {
-      var previousSteps = CompletableFuture.allOf(predecessors.stream()
-          .map(this::getStep)
-          .toArray(CompletableFuture[]::new));
+      var previousSteps =
+          CompletableFuture.allOf(
+              predecessors.stream().map(this::getStep).toArray(CompletableFuture[]::new));
       return previousSteps.thenRunAsync(step);
     }
   }
@@ -114,7 +116,5 @@ public class Pipeline {
     public Pipeline build() {
       return new Pipeline(context, steps);
     }
-
   }
-
 }

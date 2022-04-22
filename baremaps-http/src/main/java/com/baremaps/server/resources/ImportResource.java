@@ -14,7 +14,6 @@
 
 package com.baremaps.server.resources;
 
-import com.baremaps.model.Collection;
 import java.io.InputStream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -26,8 +25,6 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.qualifier.QualifiedType;
-import org.jdbi.v3.json.Json;
 
 @Singleton
 @Path("")

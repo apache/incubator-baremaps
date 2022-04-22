@@ -67,7 +67,8 @@ public class ImportService implements Callable<Void> {
       Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository,
       Repository<Long, Relation> relationRepository,
-      int srid) {
+      Integer sourceSRID,
+      Integer targetSRID) {
     this.uri = uri;
     this.blobStore = blobStore;
     this.coordinates = coordinates;
@@ -76,7 +77,7 @@ public class ImportService implements Callable<Void> {
     this.nodeRepository = nodeRepository;
     this.wayRepository = wayRepository;
     this.relationRepository = relationRepository;
-    this.srid = srid;
+    this.srid = targetSRID;
   }
 
   @Override
