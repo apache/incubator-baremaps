@@ -38,23 +38,8 @@ public final class SqliteUtils {
     try (Connection connection = DriverManager.getConnection(databaseUrl)) {
       URL resourceURL = Resources.getResource(resource);
       String queries = Resources.toString(resourceURL, StandardCharsets.UTF_8);
-      Statement stmt = null;
-      try {
-        stmt = connection.createStatement();
+      try (Statement stmt = connection.createStatement()) {
         stmt.executeUpdate(queries);
-      } catch (SQLException e) {
-        e.printStackTrace();
-      } finally {
-        try {
-          if (stmt != null) {
-            stmt.close();
-          }
-          if (connection != null) {
-            connection.close();
-          }
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
       }
     }
   }

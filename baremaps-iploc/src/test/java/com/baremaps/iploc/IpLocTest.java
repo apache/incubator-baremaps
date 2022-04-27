@@ -16,6 +16,7 @@ package com.baremaps.iploc;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.geocoder.Geocoder;
 import com.baremaps.geocoder.geonames.GeonamesGeocoder;
 import com.baremaps.iploc.data.InetnumLocation;
@@ -36,6 +37,7 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,10 +47,12 @@ import org.junit.jupiter.api.Test;
  * file and a geocoder from a sample Geonames txt file.
  */
 class IpLocTest {
-  private static final String databaseUrl = "JDBC:sqlite:test.db";
+
   private static List<NicObject> nicObjects;
   private static IpLoc ipLoc;
   private static InetnumLocationDao inetnumLocationDao;
+  private static Path directory;
+  private static String databaseUrl;
 
   @BeforeAll
   public static void beforeAll() throws IOException, URISyntaxException {
@@ -56,16 +60,22 @@ class IpLocTest {
     nicObjects = NicData.sample("simple_nic_sample.txt");
 
     // Init the geocoderservice
-    Path path = Files.createTempDirectory(Paths.get("."), "geocoder_");
+    directory = Files.createTempDirectory(Paths.get("."), "geocoder_");
     URI data = Resources.getResource("geocoder_sample.txt").toURI();
-    Geocoder geocoder = new GeonamesGeocoder(path, data);
+    Geocoder geocoder = new GeonamesGeocoder(directory, data);
     geocoder.build();
 
     // Create the IPLoc service
+    databaseUrl = String.format("JDBC:sqlite:%s", directory.resolve("test.db"));
     ipLoc = new IpLoc(databaseUrl, geocoder);
 
     // Accessor for the database
     inetnumLocationDao = new InetnumLocationDaoSqliteImpl(databaseUrl);
+  }
+
+  @AfterAll
+  public static void afterAll() throws IOException {
+    FileUtils.deleteRecursively(directory);
   }
 
   @BeforeEach
