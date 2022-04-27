@@ -77,7 +77,7 @@ class IpLocTest {
   void findAll() {
     ipLoc.insertNicObjects(nicObjects.stream());
     List<InetnumLocation> inetnumLocations = inetnumLocationDao.findAll();
-    assertEquals(6, inetnumLocations.size());
+    assertEquals(7, inetnumLocations.size());
   }
 
   @Test
@@ -97,7 +97,7 @@ class IpLocTest {
   }
 
   @Test
-  void save() throws SQLException {
+  void save() {
     inetnumLocationDao.save(
         new InetnumLocation(
             "Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1), "Test", null));
@@ -106,7 +106,7 @@ class IpLocTest {
   }
 
   @Test
-  void saveMultiple() throws SQLException {
+  void saveMultiple() {
     List<InetnumLocation> inetnumLocations = new ArrayList<>();
     for (int i = 0; i < 30; i++) {
       inetnumLocations.add(

@@ -36,6 +36,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.simple.SimpleQueryParser;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
@@ -121,16 +122,12 @@ public class GeonamesGeocoder extends Geocoder {
     BooleanQuery.Builder builder = new Builder();
     String query = QueryParser.escape(request.query());
     if (!query.isBlank()) {
-      QueryBuilder queryBuilder = new QueryBuilder(analyzer);
+        SimpleQueryParser nameQueryParser = new SimpleQueryParser(analyzer, "name");
+        builder.add(nameQueryParser.parse(query), Occur.SHOULD);
 
-      Query q1 = queryBuilder.createPhraseQuery("name", query);
-      if (q1 != null) {
-        builder.add(q1, Occur.SHOULD);
-      }
-      Query q2 = queryBuilder.createPhraseQuery("country", query);
-      if (q2 != null) {
-        builder.add(q2, Occur.SHOULD);
-      }
+        SimpleQueryParser countryQueryParser = new SimpleQueryParser(analyzer, "country");
+        builder.add(countryQueryParser.parse(query), Occur.SHOULD);
+
       if (request.countryCode() != null) {
         builder.add(
             new TermQuery(new Term("countryCode", QueryParser.escape(request.countryCode()))),

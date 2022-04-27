@@ -33,6 +33,11 @@ E.g. We have a city that has the same name in England and in the USA.
 
 Sometimes we will find no match for an entry and we could use the contientn as a last resort.
 
+## Using the network name in the search
+
+In africa and in other places, some entries don't contain any country or address fields but the country is written within the
+network name. E.g. "Telecom Congo".
+
 ## Using the organisation field 
 
 Many entries in the NIC files reference an organisation. Sometimes the only geographic information available concerning
@@ -57,3 +62,8 @@ We will create a GRPC service that serves the Iploc database inside the baremaps
 ## Insert into the database every item even if no location was found
 
 It can be useful for the client to at least know the metadata of an IP even if no geoloc is provided.
+
+## Using S3 to store files
+
+The library https://github.com/awslabs/aws-java-nio-spi-for-s3 could be used to interact with a S3 storage as if it was
+on the local filesystem. It could be useful for Geocoder index files and maybe SQLite?

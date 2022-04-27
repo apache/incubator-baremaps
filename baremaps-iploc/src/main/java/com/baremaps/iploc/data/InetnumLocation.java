@@ -16,22 +16,24 @@ package com.baremaps.iploc.data;
 
 /** Contains an IP range along with its position in the world */
 public class InetnumLocation {
-  private String address;
-  private Ipv4Range ipv4Range;
-  private Location location;
-  private String network;
-  private String country;
+  private final String address;
+  private final Ipv4Range ipv4Range;
+  private final Location location;
+  private final String network;
+  private final String country;
 
   /**
-   * Create new Inetnum location
+   * Create a new inetnum location
    *
-   * @param name
-   * @param ipv4Range
-   * @param location
+   * @param address geo-address of the inetnum
+   * @param ipv4Range ip range from start to end
+   * @param location location is lat/lon
+   * @param network name of the network
+   * @param country country code
    */
   public InetnumLocation(
-      String name, Ipv4Range ipv4Range, Location location, String network, String country) {
-    this.address = name;
+      String address, Ipv4Range ipv4Range, Location location, String network, String country) {
+    this.address = address;
     this.ipv4Range = ipv4Range;
     this.location = location;
     this.network = network;
@@ -87,9 +89,9 @@ public class InetnumLocation {
   @Override
   public String toString() {
     return "InetnumLocation{"
-        + "name='"
+        + "address='"
         + address
-        + ", ipv4Range="
+        + "', ipv4Range="
         + ipv4Range
         + ", location="
         + location
