@@ -53,3 +53,7 @@ be done to define what is the perfect threshold.
 ## Including the Iploc service in an example GRPC service
 
 We will create a GRPC service that serves the Iploc database inside the baremaps-grpc module.
+
+## Insert into the database every item even if no location was found
+
+It can be useful for the client to at least know the metadata of an IP even if no geoloc is provided.
