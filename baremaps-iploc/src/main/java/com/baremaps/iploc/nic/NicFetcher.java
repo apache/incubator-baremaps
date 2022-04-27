@@ -16,7 +16,6 @@ package com.baremaps.iploc.nic;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
@@ -63,7 +62,6 @@ public class NicFetcher {
    * Fetches the default urls.
    *
    * @return the fetched urls
-   * @throws IOException
    */
   public Stream<Path> fetch() {
     return fetch(NIC_URLS);
