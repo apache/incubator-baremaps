@@ -93,8 +93,7 @@ ipLoc.insertNicObjects(nicObjects.stream());
 
 ## Notes
 
-There are many improvements that need to be worked on to improve the Iploc module. The list is detailed in the
-[TODO.md](TODO.md) file.
+There are many improvements that need to be worked on to improve the Iploc module. The list is detailed in [TODO.md](TODO.md).
 
 ## References
 - [https://www.iana.org/numbers](https://www.iana.org/numbers)
