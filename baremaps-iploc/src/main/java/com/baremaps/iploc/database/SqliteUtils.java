@@ -23,33 +23,40 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/** A helper class for creating executing sql scripts onto a SQLite database */
+/**
+ * A helper class for creating executing sql scripts onto a SQLite database
+ */
 public final class SqliteUtils {
 
   /**
    * Executes the queries contained in a resource file.
    *
    * @param databaseUrl the JDBC url
-   * @param resource the path of the resource file
+   * @param resource    the path of the resource file
    * @throws SQLException
    */
   public static void executeResource(String databaseUrl, String resource)
       throws IOException, SQLException {
-    Connection connection = DriverManager.getConnection(databaseUrl);
-    URL resourceURL = Resources.getResource(resource);
-    String queries = Resources.toString(resourceURL, StandardCharsets.UTF_8);
-    Statement stmt = null;
-    try {
-      stmt = connection.createStatement();
-      stmt.executeUpdate(queries);
-    } catch (SQLException e) {
-      e.printStackTrace();
-    } finally {
+    try (Connection connection = DriverManager.getConnection(databaseUrl)) {
+      URL resourceURL = Resources.getResource(resource);
+      String queries = Resources.toString(resourceURL, StandardCharsets.UTF_8);
+      Statement stmt = null;
       try {
-        if (stmt != null) stmt.close();
-        if (connection != null) connection.close();
+        stmt = connection.createStatement();
+        stmt.executeUpdate(queries);
       } catch (SQLException e) {
         e.printStackTrace();
+      } finally {
+        try {
+          if (stmt != null) {
+            stmt.close();
+          }
+          if (connection != null) {
+            connection.close();
+          }
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
       }
     }
   }

@@ -28,9 +28,11 @@ import picocli.CommandLine.Option;
 
 @Command(name = "index", description = "Index geonames data.")
 public class Index implements Callable<Integer> {
+
   private static final Logger logger = LoggerFactory.getLogger(Index.class);
 
-  @Mixin private Options options;
+  @Mixin
+  private Options options;
 
   @Option(
       names = {"--index-path"},
@@ -48,9 +50,9 @@ public class Index implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     logger.info("Building the geocoder index");
-    Geocoder geocoder = new GeonamesGeocoder(indexPath, dataURI);
-    geocoder.build();
-
+    try (Geocoder geocoder = new GeonamesGeocoder(indexPath, dataURI)) {
+      geocoder.build();
+    }
     logger.info("Index created successfully");
     return 0;
   }

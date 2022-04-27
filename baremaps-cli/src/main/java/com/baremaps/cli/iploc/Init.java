@@ -27,10 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.SQLException;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
@@ -65,73 +63,74 @@ public class Init implements Callable<Integer> {
   private URI dataURI;
 
   @Override
-  public Integer call() throws IOException, SQLException, URISyntaxException {
-    String jdbcUrl = String.format("JDBC:sqlite:%s", databasePath.toString());
-    Geocoder geocoder = new GeonamesGeocoder(indexPath, dataURI);
+  public Integer call() throws Exception {
+    try (Geocoder geocoder = new GeonamesGeocoder(indexPath, dataURI)) {
 
-    if (!geocoder.indexExists()) {
-      logger.info("Building the geocoder index");
-      geocoder.build();
+      if (!geocoder.indexExists()) {
+        logger.info("Building the geocoder index");
+        geocoder.build();
+      }
+
+      logger.info("Loading the geocoder index");
+      geocoder.open();
+
+      logger.info("Fetching NIC datasets");
+      Stream<Path> nicPaths = new NicFetcher().fetch();
+
+      logger.info("Generating NIC objects stream");
+      Stream<NicObject> fetchNicObjectStream =
+          nicPaths.flatMap(
+              nicPath -> {
+                try {
+                  InputStream inputStream =
+                      new GZIPInputStream(new BufferedInputStream(Files.newInputStream(nicPath)));
+                  return NicParser.parse(inputStream)
+                      .onClose(
+                          () -> {
+                            try {
+                              inputStream.close();
+                            } catch (IOException e) {
+                              throw new UncheckedIOException(e);
+                            }
+                          });
+                } catch (IOException e) {
+                  throw new UncheckedIOException(e);
+                }
+              });
+
+      logger.info("Creating the Iploc database");
+      String jdbcUrl = String.format("JDBC:sqlite:%s", databasePath.toString());
+      try {
+        SqliteUtils.executeResource(jdbcUrl, "iploc_init.sql");
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+
+      logger.info("Inserting the nic objects into the Iploc database");
+      IpLoc ipLoc = new IpLoc(jdbcUrl, geocoder);
+      ipLoc.insertNicObjects(fetchNicObjectStream);
+      IpLocStats ipLocStats = ipLoc.getIplocStats();
+
+      logger.info(
+          String.format(
+              "IpLoc stats\n"
+                  + "-----------\n"
+                  + "inetnumInsertedByAddress : %s\n"
+                  + "inetnumInsertedByDescr : %s\n"
+                  + "inetnumInsertedByCountry : %s\n"
+                  + "inetnumInsertedByCountryCode : %s\n"
+                  + "inetnumInsertedByGeoloc : %s\n"
+                  + "inetnumNotInserted : %s\n",
+              ipLocStats.getInsertedByAddressCount(),
+              ipLocStats.getInsertedByDescrCount(),
+              ipLocStats.getInsertedByCountryCount(),
+              ipLocStats.getInsertedByCountryCodeCount(),
+              ipLocStats.getInsertedByGeolocCount(),
+              ipLocStats.getNotInsertedCount()));
+
+      logger.info("IpLoc database created successfully");
+
+      return 0;
     }
-
-    logger.info("Loading the geocoder index");
-    geocoder.open();
-
-    logger.info("Fetching NIC datasets");
-    Stream<Path> nicPaths = new NicFetcher().fetch();
-
-    logger.info("Generating NIC objects stream");
-    Stream<NicObject> fetchNicObjectStream =
-        nicPaths.flatMap(
-            nicPath -> {
-              try {
-                InputStream inputStream =
-                    new GZIPInputStream(new BufferedInputStream(Files.newInputStream(nicPath)));
-                return NicParser.parse(inputStream)
-                    .onClose(
-                        () -> {
-                          try {
-                            inputStream.close();
-                          } catch (IOException e) {
-                            throw new UncheckedIOException(e);
-                          }
-                        });
-              } catch (IOException e) {
-                throw new UncheckedIOException(e);
-              }
-            });
-
-    logger.info("Creating the Iploc database");
-    try {
-      SqliteUtils.executeResource(jdbcUrl, "iploc_init.sql");
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-
-    logger.info("Inserting the nic objects into the Iploc database");
-    IpLoc ipLoc = new IpLoc(jdbcUrl, geocoder);
-    ipLoc.insertNicObjects(fetchNicObjectStream);
-    IpLocStats ipLocStats = ipLoc.getIplocStats();
-
-    logger.info(
-        String.format(
-            "IpLoc stats\n"
-                + "-----------\n"
-                + "inetnumInsertedByAddress : %s\n"
-                + "inetnumInsertedByDescr : %s\n"
-                + "inetnumInsertedByCountry : %s\n"
-                + "inetnumInsertedByCountryCode : %s\n"
-                + "inetnumInsertedByGeoloc : %s\n"
-                + "inetnumNotInserted : %s\n",
-            ipLocStats.getInsertedByAddressCount(),
-            ipLocStats.getInsertedByDescrCount(),
-            ipLocStats.getInsertedByCountryCount(),
-            ipLocStats.getInsertedByCountryCodeCount(),
-            ipLocStats.getInsertedByGeolocCount(),
-            ipLocStats.getNotInsertedCount()));
-
-    logger.info("IpLoc database created successfully");
-
-    return 0;
   }
 }
