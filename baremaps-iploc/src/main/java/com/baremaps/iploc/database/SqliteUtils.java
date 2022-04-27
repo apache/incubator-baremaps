@@ -23,16 +23,14 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- * A helper class for creating executing sql scripts onto a SQLite database
- */
+/** A helper class for creating executing sql scripts onto a SQLite database */
 public final class SqliteUtils {
 
   /**
    * Executes the queries contained in a resource file.
    *
    * @param databaseUrl the JDBC url
-   * @param resource    the path of the resource file
+   * @param resource the path of the resource file
    * @throws SQLException
    */
   public static void executeResource(String databaseUrl, String resource)

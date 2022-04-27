@@ -31,8 +31,7 @@ public class Index implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Index.class);
 
-  @Mixin
-  private Options options;
+  @Mixin private Options options;
 
   @Option(
       names = {"--index-path"},
