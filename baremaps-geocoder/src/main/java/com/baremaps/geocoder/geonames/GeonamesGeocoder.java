@@ -42,7 +42,6 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.util.QueryBuilder;
 
 public class GeonamesGeocoder extends Geocoder {
 
@@ -122,11 +121,11 @@ public class GeonamesGeocoder extends Geocoder {
     BooleanQuery.Builder builder = new Builder();
     String query = QueryParser.escape(request.query());
     if (!query.isBlank()) {
-        SimpleQueryParser nameQueryParser = new SimpleQueryParser(analyzer, "name");
-        builder.add(nameQueryParser.parse(query), Occur.SHOULD);
+      SimpleQueryParser nameQueryParser = new SimpleQueryParser(analyzer, "name");
+      builder.add(nameQueryParser.parse(query), Occur.SHOULD);
 
-        SimpleQueryParser countryQueryParser = new SimpleQueryParser(analyzer, "country");
-        builder.add(countryQueryParser.parse(query), Occur.SHOULD);
+      SimpleQueryParser countryQueryParser = new SimpleQueryParser(analyzer, "country");
+      builder.add(countryQueryParser.parse(query), Occur.SHOULD);
 
       if (request.countryCode() != null) {
         builder.add(
