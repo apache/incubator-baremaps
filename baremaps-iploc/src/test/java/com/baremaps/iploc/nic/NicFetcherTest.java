@@ -12,30 +12,17 @@
  * the License.
  */
 
-package com.baremaps.geocoder;
+package com.baremaps.iploc.nic;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-public class IsoCountriesUtils {
+class NicFetcherTest {
 
-  private static Map<String, String> isoCountries = new HashMap<>();
-
-  static {
-    for (String iso : Locale.getISOCountries()) {
-      Locale l = new Locale("", iso);
-      isoCountries.put(iso, l.getDisplayCountry());
-    }
-  }
-
-  private IsoCountriesUtils() {}
-
-  public static String getCountry(String iso) {
-    return isoCountries.getOrDefault(iso, "");
-  }
-
-  public static Boolean containsCountry(String iso) {
-    return isoCountries.containsKey(iso);
+  @Test
+  @Disabled
+  void fetch() {
+    Assertions.assertEquals(NicFetcher.NIC_URLS.size(), new NicFetcher().fetch().count());
   }
 }

@@ -44,12 +44,12 @@ class GeocoderTest {
     Geocoder geocoder =
         new Geocoder(path) {
           @Override
-          protected Analyzer analyzer() throws IOException {
+          protected Analyzer analyzer() {
             return new StandardAnalyzer();
           }
 
           @Override
-          protected Stream<Document> documents() throws IOException {
+          protected Stream<Document> documents() {
             Document d1 = new Document();
             d1.add(new Field("value", v1, TextField.TYPE_STORED));
             Document d2 = new Document();

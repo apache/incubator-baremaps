@@ -12,30 +12,19 @@
  * the License.
  */
 
-package com.baremaps.geocoder;
+package com.baremaps.iploc.nic;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import com.google.common.io.Resources;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class IsoCountriesUtils {
+public class NicData {
 
-  private static Map<String, String> isoCountries = new HashMap<>();
-
-  static {
-    for (String iso : Locale.getISOCountries()) {
-      Locale l = new Locale("", iso);
-      isoCountries.put(iso, l.getDisplayCountry());
+  public static List<NicObject> sample(String resource) throws IOException {
+    try (InputStream input = Resources.getResource(resource).openStream()) {
+      return NicParser.parse(input).collect(Collectors.toList());
     }
-  }
-
-  private IsoCountriesUtils() {}
-
-  public static String getCountry(String iso) {
-    return isoCountries.getOrDefault(iso, "");
-  }
-
-  public static Boolean containsCountry(String iso) {
-    return isoCountries.containsKey(iso);
   }
 }

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>baremaps</artifactId>
+    <groupId>com.baremaps</groupId>
+    <version>0.6.6-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>baremaps-iploc</artifactId>
+  <properties>
+    <version.lib.sqlite>3.34.0</version.lib.sqlite>
+    <version.hikarycp>5.0.0</version.hikarycp>
+  </properties>
+  <dependencies>
+    <dependency>
+      <artifactId>sqlite-jdbc</artifactId>
+      <groupId>org.xerial</groupId>
+      <version>${version.lib.sqlite}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>${version.hikarycp}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-blob</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>com.baremaps</groupId>
+        <artifactId>baremaps-geocoder</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.ripe.ipresource</groupId>
+      <artifactId>ipresource</artifactId>
+    </dependency>
+  </dependencies>
+</project>

@@ -127,6 +127,12 @@
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-geocoder</artifactId>
     </dependency>
+      <dependency>
+          <groupId>com.baremaps</groupId>
+          <artifactId>baremaps-iploc</artifactId>
+          <version>0.6.6-SNAPSHOT</version>
+          <scope>compile</scope>
+      </dependency>
 
   </dependencies>
 

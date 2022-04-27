@@ -1,0 +1,4 @@
+1	HEIG	HEIG	Haute École d'ingénieurie et de gestion	1.111	1.111	T	PK	CH	CH					0	2600	2508	Europe/Test	16.02.19
+2	Yverdon-les-bains	Yverdon-les-bains	Yverdon-les-bains, Vaud	2.222	2.222	T	PK	CH	CH					0	2574	2534	Europe/Test	16.02.19
+3	Route de Cheseaux 1	Route de Cheseaux 1	Route de Cheseaux 1, Yverdon	3.333	3.333	S	PK	CH	CH					0	2108	2098	Europe/Test	18.07.10
+4	Switzerland	Switzerland	Switzerland	4.444	4.444	P	PK	CH	CH					0		570	Europe/Test	03.07.15

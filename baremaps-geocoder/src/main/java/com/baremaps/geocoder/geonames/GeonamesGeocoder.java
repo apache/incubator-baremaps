@@ -36,6 +36,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.simple.SimpleQueryParser;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanQuery.Builder;
@@ -44,7 +45,7 @@ import org.apache.lucene.search.TermQuery;
 
 public class GeonamesGeocoder extends Geocoder {
 
-  private final URI data;
+  private URI data;
 
   public GeonamesGeocoder(Path index, URI data) throws IOException {
     super(index);
@@ -81,7 +82,8 @@ public class GeonamesGeocoder extends Geocoder {
             .addColumn("timezone")
             .addColumn("modificationDate")
             .build()
-            .withColumnSeparator('\t');
+            .withColumnSeparator('\t')
+            .withoutQuoteChar();
     MappingIterator<GeonamesRecord> it =
         mapper.readerFor(GeonamesRecord.class).with(schema).readValues(data.toURL().openStream());
     return StreamSupport.stream(Spliterators.spliteratorUnknownSize(it, 0), false)
@@ -117,10 +119,19 @@ public class GeonamesGeocoder extends Geocoder {
   @Override
   protected Query query(Analyzer analyzer, Request request) throws ParseException {
     BooleanQuery.Builder builder = new Builder();
-    builder.add(new QueryParser("name", analyzer).parse(request.query()), Occur.SHOULD);
-    builder.add(new QueryParser("country", analyzer).parse(request.query()), Occur.SHOULD);
-    if(request.countryCode() != null){
-        builder.add(new TermQuery(new Term("countryCode", request.countryCode())), Occur.MUST);
+    String query = QueryParser.escape(request.query());
+    if (!query.isBlank()) {
+      SimpleQueryParser nameQueryParser = new SimpleQueryParser(analyzer, "name");
+      builder.add(nameQueryParser.parse(query), Occur.SHOULD);
+
+      SimpleQueryParser countryQueryParser = new SimpleQueryParser(analyzer, "country");
+      builder.add(countryQueryParser.parse(query), Occur.SHOULD);
+
+      if (request.countryCode() != null) {
+        builder.add(
+            new TermQuery(new Term("countryCode", QueryParser.escape(request.countryCode()))),
+            Occur.MUST);
+      }
     }
     return builder.build();
   }

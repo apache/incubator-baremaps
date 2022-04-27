@@ -96,6 +96,7 @@
     <version.lib.activation>1.2.2</version.lib.activation>
     <version.lib.servlet>3.1.0</version.lib.servlet>
     <version.lib.graalvm>22.0.0.2</version.lib.graalvm>
+    <version.lib.ipresource>1.49</version.lib.ipresource>
 
     <!-- testing -->
     <version.lib.testng>7.4.0</version.lib.testng>
@@ -128,7 +129,7 @@
     <module>baremaps-testing</module>
     <module>baremaps-collection</module>
     <module>baremaps-geocoder</module>
-    <module>baremaps-nic</module>
+    <module>baremaps-iploc</module>
     <module>baremaps-blob</module>
     <module>baremaps-stream</module>
   </modules>
@@ -398,6 +399,11 @@
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
+      <dependency>
+        <artifactId>baremaps-iploc</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
 
       <!-- External dependencies -->
       <dependency>
@@ -567,6 +573,11 @@
         <groupId>com.github.jsqlparser</groupId>
         <artifactId>jsqlparser</artifactId>
         <version>${version.lib.jsqlparser}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.ripe.ipresource</groupId>
+        <artifactId>ipresource</artifactId>
+        <version>${version.lib.ipresource}</version>
       </dependency>
 
       <!-- Logging libraries -->

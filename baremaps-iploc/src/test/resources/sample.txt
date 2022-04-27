@@ -1,0 +1,250 @@
+#
+# The contents of this file are subject to
+# RIPE Database Terms and Conditions
+#
+# http://www.ripe.net/db/support/db-terms-conditions.pdf
+#
+
+organisation: ORG-HEDI1-RIPE
+org-name: Haute ecole d ingenierie et de gestion du canton de Vaud
+org-type: LIR
+address: Dummy address for ORG-HEDI1-RIPE
+e-mail: unread@ripe.net
+abuse-c: AR35772-RIPE
+mnt-ref: ch-heig-vd-1-mnt
+mnt-by: RIPE-NCC-HM-MNT
+mnt-ref: RIPE-NCC-HM-MNT
+mnt-by: ch-heig-vd-1-mnt
+created: 2016-03-17T08:28:26Z
+last-modified: 2020-12-16T13:13:59Z
+source: RIPE
+remarks: ****************************
+remarks: * THIS OBJECT IS MODIFIED
+remarks: * Please note that all data that is generally regarded as personal
+remarks: * data has been removed from this object.
+remarks: * To view the original object, please query the RIPE Database at
+remarks: * http://www.ripe.net/whois
+remarks: ****************************
+geoloc: 46.5000000000000 6.000000000000000
+
+mntner: ch-heig-vd-1-mnt
+admin-c: DUMY-RIPE
+upd-to: unread@ripe.net
+auth: MD5-PW $1$SaltSalt$DummifiedMD5HashValue.   # Real value hidden for security
+mnt-by: ch-heig-vd-1-mnt
+created: 2016-03-17T08:28:26Z
+last-modified: 2016-03-17T08:28:26Z
+source: RIPE
+remarks: ****************************
+remarks: * THIS OBJECT IS MODIFIED
+remarks: * Please note that all data that is generally regarded as personal
+remarks: * data has been removed from this object.
+remarks: * To view the original object, please query the RIPE Database at:
+remarks: * http://www.ripe.net/whois
+remarks: ****************************
+
+organisation: ORG-VA29373-RIPE
+org-name: Commune de Ste-Croix
+org-type: OTHER
+address: Dummy address for ORG-VA29373-RIPE
+e-mail: unread@ripe.net
+abuse-c: AR35772-RIPE
+mnt-ref: ch-heig-vd-1-mnt
+mnt-by: ch-heig-vd-1-mnt
+created: 2018-11-09T07:38:19Z
+last-modified: 2018-11-09T14:07:32Z
+source: RIPE
+remarks: ****************************
+remarks: * THIS OBJECT IS MODIFIED
+remarks: * Please note that all data that is generally regarded as personal
+remarks: * data has been removed from this object.
+remarks: * To view the original object please query the RIPE Database at:
+remarks: * http://www.ripe.net/whois
+remarks: ****************************
+
+inetnum: 193.135.138.0 - 193.135.138.255
+netname: VILLE-DE-STE-CROIX
+descr: Commune de Ste-Croix
+descr: Ste-Croix
+descr: Switzerland
+country: CH
+org: ORG-VA29373-RIPE
+admin-c: DUMY-RIPE
+tech-c: DUMY-RIPE
+mnt-by: RIPE-NCC-END-MNT
+status: ASSIGNED PI
+mnt-by: ch-heig-vd-1-mnt
+created: 2004-11-30T10:47:47Z
+last-modified: 2018-11-09T15:48:31Z
+source: RIPE
+sponsoring-org: ORG-HEDI1-RIPE
+remarks: ****************************
+remarks: * THIS OBJECT IS MODIFIED
+remarks: * Please note that all data that is generally regarded as personal
+remarks: * data has been removed from this object.
+remarks: * To view the original object please query the RIPE Database at:
+remarks: * http://www.ripe.net/whois
+remarks: ****************************
+
+inetnum: 193.247.203.0 - 193.247.203.255
+mnt-domains: ch-heig-vd-1-mnt
+netname: EIVD
+descr: Ecole d Ingenieurs de l Etat de Vaud
+descr: Yverdon
+descr: Switzerland
+country: CH
+org: ORG-HEDI1-RIPE
+admin-c: DUMY-RIPE
+tech-c: DUMY-RIPE
+mnt-by: RIPE-NCC-END-MNT
+status: ASSIGNED PI
+mnt-by: ch-heig-vd-1-mnt
+mnt-routes: ch-heig-vd-1-mnt
+created: 1970-01-01T00:00:00Z
+last-modified: 2021-04-08T12:24:36Z
+source: RIPE
+remarks: ****************************
+remarks: * THIS OBJECT IS MODIFIED
+remarks: * Please note that all data that is generally regarded as personal
+remarks: * data has been removed from this object.
+remarks: * To view the original object please query the RIPE Database at:
+remarks: * http://www.ripe.net/whois
+remarks: ****************************
+
+inetnum: 185.144.36.0 - 185.144.39.255
+netname: CH-HEIG-VD-20160318
+country: CH
+geoloc: 46.779138 6.659382
+org: ORG-HEDI1-RIPE
+admin-c: DUMY-RIPE
+tech-c: DUMY-RIPE
+status: ALLOCATED PA
+mnt-by: RIPE-NCC-HM-MNT
+mnt-by: ch-heig-vd-1-mnt
+mnt-lower: ch-heig-vd-1-mnt
+mnt-routes: ch-heig-vd-1-mnt
+created: 2016-03-18T16:56:22Z
+last-modified: 2016-06-08T06:25:06Z
+source: RIPE
+remarks: ****************************
+remarks: * THIS OBJECT IS MODIFIED
+remarks: * Please note that all data that is generally regarded as personal
+remarks: * data has been removed from this object.
+remarks: * To view the original object, please query the RIPE Database at:
+remarks: * http://www.ripe.net/whois
+remarks: ****************************
+
+inetnum: 193.134.216.0 - 193.134.223.255
+netname: EINEV2
+descr: Haute Ecole d Ingenierie
+descr: et de Gestion du Canton de Vaud (HEIG-VD)
+descr: Yverdon-les-Bains
+descr: Switzerland
+org: ORG-HEDI1-RIPE
+country: CH
+admin-c: DUMY-RIPE
+tech-c: DUMY-RIPE
+mnt-by: RIPE-NCC-END-MNT
+status: ASSIGNED PI
+mnt-by: SWITCH-MNT
+mnt-by: ch-heig-vd-1-mnt
+mnt-irt: IRT-SWITCH-CERT
+mnt-routes: AS559-MNT
+mnt-routes: ch-heig-vd-1-mnt
+created: 1970-01-01T00:00:00Z
+last-modified: 2018-02-22T15:04:44Z
+source: RIPE
+remarks: ****************************
+remarks: * THIS OBJECT IS MODIFIED
+remarks: * Please note that all data that is generally regarded as personal
+remarks: * data has been removed from this object.
+remarks: * To view the original object, please query the RIPE Database at:
+remarks: * http://www.ripe.net/whois
+remarks: ****************************
+geoloc: 50.0000000000000 8.000000000000000
+
+organisation: ORG-VDN2-RIPE
+org-name: Ville de Nyon
+org-type: OTHER
+address: Dummy address for ORG-VDN2-RIPE
+abuse-c: AR35772-RIPE
+e-mail: unread@ripe.net
+mnt-ref: ch-heig-vd-1-mnt
+mnt-by: ch-heig-vd-1-mnt
+created: 2019-03-26T08:06:51Z
+last-modified: 2019-03-26T08:06:51Z
+source: RIPE
+remarks: ****************************
+remarks: * THIS OBJECT IS MODIFIED
+remarks: * Please note that all data that is generally regarded as personal
+remarks: * data has been removed from this object.
+remarks: * To view the original object, please query the RIPE Database at:
+remarks: * http://www.ripe.net/whois
+remarks: ****************************
+
+inetnum: 193.135.104.0 - 193.135.105.255
+netname: NYON
+descr: Ville de Nyon
+descr: Nyon
+descr: Switzerland
+country: CH
+org: ORG-VDN2-RIPE
+admin-c: DUMY-RIPE
+tech-c: DUMY-RIPE
+mnt-by: RIPE-NCC-END-MNT
+status: ASSIGNED PI
+mnt-by: ch-heig-vd-1-mnt
+created: 1970-01-01T00:00:00Z
+last-modified: 2019-03-26T15:33:23Z
+source: RIPE
+sponsoring-org: ORG-HEDI1-RIPE
+remarks: ****************************
+remarks: * THIS OBJECT IS MODIFIED
+remarks: * Please note that all data that is generally regarded as personal
+remarks: * data has been removed from this object.
+remarks: * To view the original object, please query the RIPE Database at:
+remarks: * http://www.ripe.net/whois
+remarks: ****************************
+
+organisation: ORG-CDM6-RIPE
+org-name: Commune de Moudon
+org-type: OTHER
+address: Dummy address for ORG-CDM6-RIPE
+e-mail: unread@ripe.net
+abuse-c: AR35772-RIPE
+mnt-ref: ch-heig-vd-1-mnt
+mnt-by: ch-heig-vd-1-mnt
+created: 2018-11-22T13:18:03Z
+last-modified: 2018-11-22T13:18:03Z
+source: RIPE
+remarks: ****************************
+remarks: * THIS OBJECT IS MODIFIED
+remarks: * Please note that all data that is generally regarded as personal
+remarks: * data has been removed from this object.
+remarks: * To view the original object, please query the RIPE Database at:
+remarks: * http://www.ripe.net/whois
+remarks: ****************************
+
+inetnum: 193.135.107.0 - 193.135.107.255
+netname: MOUDON-CH-NET
+descr: Commune de Moudon
+descr: Moudon
+descr: Switzerland
+country: CH
+org: ORG-CDM6-RIPE
+admin-c: DUMY-RIPE
+tech-c: DUMY-RIPE
+mnt-by: RIPE-NCC-END-MNT
+status: ASSIGNED PI
+mnt-by: ch-heig-vd-1-mnt
+created: 1970-01-01T00:00:00Z
+last-modified: 2018-11-23T09:17:23Z
+source: RIPE
+sponsoring-org: ORG-HEDI1-RIPE
+remarks: ****************************
+remarks: * THIS OBJECT IS MODIFIED
+remarks: * Please note that all data that is generally regarded as personal
+remarks: * data has been removed from this object.
+remarks: * To view the original object, please query the RIPE Database at:
+remarks: * http://www.ripe.net/whois
+remarks: ****************************

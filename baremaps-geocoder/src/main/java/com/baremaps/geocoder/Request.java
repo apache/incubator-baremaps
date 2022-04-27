@@ -30,7 +30,11 @@ public class Request {
   public Request(String query, int limit, String countryCode) {
     this.query = query;
     this.limit = limit;
-    this.countryCode = countryCode;
+    if (IsoCountriesUtils.containsCountry(countryCode)) {
+      this.countryCode = countryCode;
+    } else {
+      this.countryCode = null;
+    }
   }
 
   public String query() {

@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="geocoder init" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.baremaps.cli.Baremaps" />
+    <module name="baremaps-cli" />
+    <option name="PROGRAM_PARAMETERS" value="geocoder index --data-uri file://$USER_HOME$/Downloads/ALLGEONAMES.txt" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.baremaps.server.ogcapi.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

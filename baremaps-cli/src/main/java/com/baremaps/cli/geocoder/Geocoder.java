@@ -12,30 +12,24 @@
  * the License.
  */
 
-package com.baremaps.geocoder;
+package com.baremaps.cli.geocoder;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.sql.SQLException;
+import java.util.concurrent.Callable;
+import picocli.CommandLine;
+import picocli.CommandLine.Command;
 
-public class IsoCountriesUtils {
+@Command(
+    name = "geocoder",
+    subcommands = {Index.class, Search.class},
+    description = "Geocoder index generation.")
+public class Geocoder implements Callable<Integer> {
 
-  private static Map<String, String> isoCountries = new HashMap<>();
-
-  static {
-    for (String iso : Locale.getISOCountries()) {
-      Locale l = new Locale("", iso);
-      isoCountries.put(iso, l.getDisplayCountry());
-    }
-  }
-
-  private IsoCountriesUtils() {}
-
-  public static String getCountry(String iso) {
-    return isoCountries.getOrDefault(iso, "");
-  }
-
-  public static Boolean containsCountry(String iso) {
-    return isoCountries.containsKey(iso);
+  @Override
+  public Integer call() throws IOException, SQLException, URISyntaxException {
+    CommandLine.usage(this, System.out);
+    return 0;
   }
 }

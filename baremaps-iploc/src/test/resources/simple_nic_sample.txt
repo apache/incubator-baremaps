@@ -1,0 +1,68 @@
+inetnum: 0.0.0.0 - 0.0.0.255
+netname: Route de Cheseaux 1
+descr: Route de Cheseaux 1
+descr: Vaud
+descr: Suisse
+country: CH
+note: The most simple entry
+
+inetnum: 0.0.0.0 - 0.0.0.255
+netname: Route de Cheseaux 1
+descr: Route de Cheseaux 1
+descr: Vaud
+descr: Suisse
+country: LI
+note: Test with wrong country code should not be indexed
+
+inetnum: 0.0.0.0 - 0.0.0.255
+netname: Route de Cheseaux 1
+descr: Route de Cheseaux 1
+descr: Vaud
+descr: Suisse
+note: Entry without the country code should not filter on country
+
+inetnum: 0.0.0.0/24
+netname: Route de Cheseaux 1
+descr: Route de Cheseaux 1
+descr: Vaud
+descr: Suisse
+country: CH
+note: Simple test with a mask instead of ip range
+
+inetnum: 255.0.0.1 - 255.255.255.255
+netname: Route de Cheseaux 1
+descr: Route de Cheseaux 1
+descr: Vaud
+descr: Suisse
+country: CH
+note: Test with values that have the maximum byte value
+
+inetnum: 0.0.0.1 - 0.0.0.2
+netname: Yverdon-les-bains
+address: Yverdon-les-bains, Vaud
+country: CH
+note: Test with an address instead of descr
+
+inetnum: 0.0.0.3 - 0.0.0.10
+netname: Geoloc
+geoloc: 43.12 9.422212222
+note: Test with a geoloc
+
+inetnum: 0.0.0.11 - 0.0.0.20
+netname: Suisse
+country: CH
+note: Test with country code only
+
+organisation: ORG-VDN2-RIPE
+org-name: Organisation test
+org-type: OTHER
+address: Dummy address for ORG-VDN2-RIPE
+note: Test with a not found address
+
+inet6num: 2001:7fa:0:2::/64
+netname: Ipv6
+descr: 6KANet(IPv6 Korea Advanced Network)
+descr: IPv6 Internet eXchange Point
+descr: 168, Jukjon-Ri, Suji-Eub, Yongin-Si, Gyonggi-Do,
+descr: S. Korea 449-717
+note: IPV6 test

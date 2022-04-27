@@ -15,6 +15,8 @@
 package com.baremaps.cli.geocoder;
 
 import com.baremaps.cli.Options;
+import com.baremaps.geocoder.Geocoder;
+import com.baremaps.geocoder.geonames.GeonamesGeocoder;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
@@ -26,27 +28,31 @@ import picocli.CommandLine.Option;
 
 @Command(name = "index", description = "Index geonames data.")
 public class Index implements Callable<Integer> {
+
   private static final Logger logger = LoggerFactory.getLogger(Index.class);
 
   @Mixin private Options options;
 
   @Option(
-      names = {"--index"},
-      paramLabel = "INDEX",
+      names = {"--index-path"},
+      paramLabel = "INDEX_PATH",
       description = "The path to the lucene index.",
-      required = true)
+      defaultValue = "geocoder_index")
   private Path indexPath;
 
   @Option(
-      names = {"--data"},
-      paramLabel = "DATA",
-      description = "The path to the geonames data.",
-      required = true)
-  private URI geonamesDataPath;
+      names = {"--data-uri"},
+      paramLabel = "DATA_URI",
+      description = "The URI to the geonames data.")
+  private URI dataURI;
 
   @Override
   public Integer call() throws Exception {
-
+    logger.info("Building the geocoder index");
+    try (Geocoder geocoder = new GeonamesGeocoder(indexPath, dataURI)) {
+      geocoder.build();
+    }
+    logger.info("Index created successfully");
     return 0;
   }
 }

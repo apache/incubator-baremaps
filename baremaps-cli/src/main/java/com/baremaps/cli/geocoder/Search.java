@@ -14,6 +14,10 @@
 
 package com.baremaps.cli.geocoder;
 
+import com.baremaps.geocoder.Geocoder;
+import com.baremaps.geocoder.Request;
+import com.baremaps.geocoder.Response;
+import com.baremaps.geocoder.geonames.GeonamesGeocoder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
@@ -26,8 +30,8 @@ public class Search implements Callable<Integer> {
   private static final Logger logger = LoggerFactory.getLogger(Search.class);
 
   @Option(
-      names = {"--index"},
-      paramLabel = "INDEX",
+      names = {"--index-path"},
+      paramLabel = "INDEX_PATH",
       description = "The path to the lucene index.",
       required = true)
   private Path indexPath;
@@ -37,10 +41,17 @@ public class Search implements Callable<Integer> {
       paramLabel = "SEARCH",
       description = "The terms to search in the index.",
       required = true)
-  private String searchValue;
+  private String search;
 
   @Override
   public Integer call() throws Exception {
+    Geocoder geocoder = new GeonamesGeocoder(indexPath, null);
+    geocoder.open();
+
+    Request request = new Request(search, 20);
+    Response response = geocoder.search(request);
+
+    System.out.println(response);
 
     return 0;
   }
