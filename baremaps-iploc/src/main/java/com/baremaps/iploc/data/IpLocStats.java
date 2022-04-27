@@ -16,12 +16,12 @@ package com.baremaps.iploc.data;
 
 /** Store stats related to the geneation of the IpLoc database from the RIR's files */
 public class IpLocStats {
-  int insertedByAddressCount = 0;
-  int insertedByDescrCount = 0;
-  int insertedByCountryCount = 0;
-  int insertedByGeolocCount = 0;
-  int notInsertedCount = 0;
-  int insertedByCountryCodeCount = 0;
+  private int insertedByAddressCount = 0;
+  private int insertedByDescrCount = 0;
+  private int insertedByCountryCount = 0;
+  private int insertedByGeolocCount = 0;
+  private int notInsertedCount = 0;
+  private int insertedByCountryCodeCount = 0;
 
   public IpLocStats() {}
 

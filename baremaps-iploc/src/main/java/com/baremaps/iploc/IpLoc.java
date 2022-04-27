@@ -189,8 +189,7 @@ public class IpLoc {
       }
 
       // If there is a country that did not follow the ISO format we will query using the country
-      // has
-      // plain text
+      // has plain text
       if (attributes.containsKey("country")) {
         Optional<Location> location = findLocation(new Request(attributes.get("country"), 1));
         if (location.isPresent()) {
@@ -205,7 +204,6 @@ public class IpLoc {
         }
       }
 
-      System.out.println(nicObject);
       iplocStats.incrementNotInsertedCount();
       return Optional.empty();
 
