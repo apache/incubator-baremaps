@@ -31,7 +31,28 @@ geo-localisation information. However, we don't make use of that for now.
 The [structure of the RIPE database](https://www.ripe.net/manage-ips-and-asns/db/support/documentation/ripe-database-documentation/ripe-database-structure)
 should be applicable to all the RIRs.
 
-## Usage
+## Running the CLI
+
+In order the build the IpLoc database you will need a Lucene Geocoder index. 
+You can use the Geocoder CLI to create one with the command below. 
+
+*Note that the `allCountries.txt` file is a dump of the Geonames database available here https://download.geonames.org/export/dump/.*
+
+```
+geocoder index --index-path geocoder_index/ --data-uri file:///Users/antoinedrabble/Downloads/allCountries.txt 
+```
+
+With the Geocoder index that was generated you can now use the IpLoc command. This commands requires the path to the Geocoder index as well as
+the path to the target SQLite database file. This file will be generated automatically.
+
+```
+baremaps iploc init --index-path geocoder_index/ --database-path iploc.db
+```
+
+You can optionally give the geocoder *--data-uri* command parameter directly to the *iploc init* command. It will
+generate the geocoder index for you.
+
+## Code usage
 
 In order to generate the SQLite database that contains the geo-localised IP address ranges you must follow a few steps.
 
@@ -69,6 +90,11 @@ IpLoc ipLoc = new IpLoc(databaseUrl, geocoder);
 ```java
 ipLoc.insertNicObjects(nicObjects.stream());
 ```
+
+## Notes
+
+There are many improvements that need to be worked on to improve the Iploc module. The list is detailed in the
+[TODO.md](TODO.md) file.
 
 ## References
 - [https://www.iana.org/numbers](https://www.iana.org/numbers)

@@ -153,6 +153,21 @@ public class IpLoc {
                   attributes.get("country")));
         }
       }
+      // If there is a name we use that name to query the geocoder
+      if (attributes.containsKey("name")) {
+        Optional<Location> location =
+            findLocation(new Request(attributes.get("name"), 1, attributes.get("country")));
+        if (location.isPresent()) {
+          iplocStats.incrementInsertedByDescrCount();
+          return Optional.of(
+              new InetnumLocation(
+                  attributes.get("name"),
+                  ipRange,
+                  location.get(),
+                  network,
+                  attributes.get("country")));
+        }
+      }
       // If there is a country that is follow the ISO format we use that country's actual name from
       // the iso country map to query the geocoder
       if (attributes.containsKey("country")
@@ -172,6 +187,7 @@ public class IpLoc {
                   countryUppercase));
         }
       }
+
       // If there is a country that did not follow the ISO format we will query using the country
       // has
       // plain text
@@ -189,6 +205,7 @@ public class IpLoc {
         }
       }
 
+      System.out.println(nicObject);
       iplocStats.incrementNotInsertedCount();
       return Optional.empty();
 

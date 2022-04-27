@@ -82,7 +82,8 @@ public class GeonamesGeocoder extends Geocoder {
             .addColumn("timezone")
             .addColumn("modificationDate")
             .build()
-            .withColumnSeparator('\t');
+            .withColumnSeparator('\t')
+            .withoutQuoteChar();
     MappingIterator<GeonamesRecord> it =
         mapper.readerFor(GeonamesRecord.class).with(schema).readValues(data.toURL().openStream());
     return StreamSupport.stream(Spliterators.spliteratorUnknownSize(it, 0), false)
