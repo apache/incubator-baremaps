@@ -12,22 +12,30 @@
  * the License.
  */
 
-package com.baremaps.cli.pipeline;
+package com.baremaps.cli.database;
 
+import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
 import com.baremaps.blob.ConfigBlobStore;
 import com.baremaps.cli.Options;
+import com.baremaps.model.TileJSON;
 import com.baremaps.pipeline.postgres.PostgresUtils;
-import com.baremaps.server.resources.DevelopmentResources;
+import com.baremaps.pipeline.tile.PostgresQuery;
+import com.baremaps.pipeline.tile.PostgresTileStore;
+import com.baremaps.pipeline.tile.TileCache;
+import com.baremaps.pipeline.tile.TileStore;
+import com.baremaps.server.resources.ServerResources;
 import com.baremaps.server.utils.CorsFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
 import java.net.URI;
+import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -38,12 +46,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(
-    name = "editor",
-    description = "Start a development server for editing a map with maputnik.")
-public class Editor implements Callable<Integer> {
+@Command(name = "server", description = "Start a tile server with caching capabilities.")
+public class Server implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(Editor.class);
+  private static final Logger logger = LoggerFactory.getLogger(Server.class);
 
   @Mixin private Options options;
 
@@ -53,6 +59,12 @@ public class Editor implements Callable<Integer> {
       description = "The JDBC url of the Postgres database.",
       required = true)
   private String database;
+
+  @Option(
+      names = {"--cache"},
+      paramLabel = "CACHE",
+      description = "The caffeine cache directive.")
+  private String cache = "";
 
   @Option(
       names = {"--tileset"},
@@ -82,28 +94,31 @@ public class Editor implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    ConfigBlobStore blobStore = new ConfigBlobStore(options.blobStore());
-    DataSource dataSource = PostgresUtils.dataSource(database);
-
-    // Configure serialization
     ObjectMapper objectMapper = defaultObjectMapper();
+    ConfigBlobStore blobStore = new ConfigBlobStore(options.blobStore());
+    TileJSON tileJSON =
+        objectMapper.readValue(blobStore.get(this.tileset).getInputStream(), TileJSON.class);
+    CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
+    DataSource datasource = PostgresUtils.dataSource(database);
+
+    List<PostgresQuery> queries = asPostgresQuery(tileJSON);
+    TileStore tileStore = new PostgresTileStore(datasource, queries);
+    TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
     // Configure the application
     ResourceConfig application =
         new ResourceConfig()
             .register(CorsFilter.class)
-            .register(DevelopmentResources.class)
+            .register(ServerResources.class)
             .register(contextResolverFor(objectMapper))
             .register(
                 new AbstractBinder() {
                   @Override
                   protected void configure() {
-                    bind("editor").to(String.class).named("assets");
                     bind(tileset).to(URI.class).named("tileset");
                     bind(style).to(URI.class).named("style");
                     bind(blobStore).to(ConfigBlobStore.class);
-                    bind(dataSource).to(DataSource.class);
-                    bind(objectMapper).to(ObjectMapper.class);
+                    bind(tileCache).to(TileStore.class);
                   }
                 });
 
@@ -113,6 +128,7 @@ public class Editor implements Callable<Integer> {
         HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
     logger.info("Listening on {}", serverContext.listenAddress());
+
     serverContext.awaitShutdown();
 
     return 0;

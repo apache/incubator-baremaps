@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.cli.pipeline;
+package com.baremaps.cli.database;
 
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
@@ -38,10 +38,12 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "viewer", description = "Start a development server for live reloading a map.")
-public class Viewer implements Callable<Integer> {
+@Command(
+    name = "editor",
+    description = "Start a development server for editing a map with maputnik.")
+public class Editor implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(Viewer.class);
+  private static final Logger logger = LoggerFactory.getLogger(Editor.class);
 
   @Mixin private Options options;
 
@@ -51,12 +53,6 @@ public class Viewer implements Callable<Integer> {
       description = "The JDBC url of the Postgres database.",
       required = true)
   private String database;
-
-  @Option(
-      names = {"--cache"},
-      paramLabel = "CACHE",
-      description = "The caffeine cache directive.")
-  private String cache = "";
 
   @Option(
       names = {"--tileset"},
@@ -102,7 +98,7 @@ public class Viewer implements Callable<Integer> {
                 new AbstractBinder() {
                   @Override
                   protected void configure() {
-                    bind("viewer").to(String.class).named("assets");
+                    bind("editor").to(String.class).named("assets");
                     bind(tileset).to(URI.class).named("tileset");
                     bind(style).to(URI.class).named("style");
                     bind(blobStore).to(ConfigBlobStore.class);

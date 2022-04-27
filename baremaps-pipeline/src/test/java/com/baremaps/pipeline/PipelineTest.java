@@ -170,5 +170,5 @@ class PipelineTest extends PostgresBaseTest {
         .join();
     Files.walk(directory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
   }
-  
+
 }

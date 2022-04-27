@@ -12,25 +12,18 @@
  * the License.
  */
 
-package com.baremaps.cli.pipeline;
+package com.baremaps.cli.database;
 
+import com.baremaps.blob.Blob;
 import com.baremaps.blob.BlobStore;
 import com.baremaps.cli.Options;
-import com.baremaps.collection.AlignedDataList;
-import com.baremaps.collection.DataStore;
 import com.baremaps.collection.LongDataMap;
-import com.baremaps.collection.LongDataSortedMap;
-import com.baremaps.collection.LongSizedDataDenseMap;
-import com.baremaps.collection.memory.OnDiskDirectoryMemory;
-import com.baremaps.collection.type.LonLatDataType;
-import com.baremaps.collection.type.LongDataType;
-import com.baremaps.collection.type.LongListDataType;
-import com.baremaps.collection.type.PairDataType;
-import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.pipeline.database.ImportService;
+import com.baremaps.pipeline.database.DiffService;
+import com.baremaps.pipeline.database.collection.PostgresCoordinateMap;
+import com.baremaps.pipeline.database.collection.PostgresReferenceMap;
 import com.baremaps.pipeline.database.repository.HeaderRepository;
 import com.baremaps.pipeline.database.repository.PostgresHeaderRepository;
 import com.baremaps.pipeline.database.repository.PostgresNodeRepository;
@@ -38,6 +31,7 @@ import com.baremaps.pipeline.database.repository.PostgresRelationRepository;
 import com.baremaps.pipeline.database.repository.PostgresWayRepository;
 import com.baremaps.pipeline.database.repository.Repository;
 import com.baremaps.pipeline.postgres.PostgresUtils;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,19 +46,12 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "import", description = "Import OpenStreetMap data in the database.")
-public class Import implements Callable<Integer> {
+@Command(name = "diff", description = "List the tiles affected by changes (experimental).")
+public class Diff implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(Import.class);
+  private static final Logger logger = LoggerFactory.getLogger(Diff.class);
 
   @Mixin private Options options;
-
-  @Option(
-      names = {"--file"},
-      paramLabel = "FILE",
-      description = "The PBF file to import in the database.",
-      required = true)
-  private URI file;
 
   @Option(
       names = {"--database"},
@@ -74,10 +61,17 @@ public class Import implements Callable<Integer> {
   private String database;
 
   @Option(
-      names = {"--cache-directory"},
-      paramLabel = "CACHE_DIRECTORY",
-      description = "The directory used by the cache.")
-  private Path cacheDirectory;
+      names = {"--tiles"},
+      paramLabel = "TILES",
+      description = "The tiles affected by the update.",
+      required = true)
+  private URI tiles;
+
+  @Option(
+      names = {"--zoom"},
+      paramLabel = "ZOOM",
+      description = "The zoom level at which to compute the diff.")
+  private int zoom = 12;
 
   @Option(
       names = {"--srid"},
@@ -89,40 +83,35 @@ public class Import implements Callable<Integer> {
   public Integer call() throws Exception {
     BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.dataSource(database);
+    LongDataMap<Coordinate> coordinates = new PostgresCoordinateMap(datasource);
+    LongDataMap<List<Long>> references = new PostgresReferenceMap(datasource);
     HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
     Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
     Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
 
-    Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
-    Path nodes = Files.createDirectories(directory.resolve("nodes"));
-    Path referencesKeys = Files.createDirectories(directory.resolve("references_keys"));
-    Path referencesValues = Files.createDirectories(directory.resolve("references_values"));
-
-    LongDataMap<Coordinate> coordinates =
-        new LongSizedDataDenseMap<>(new LonLatDataType(), new OnDiskDirectoryMemory(nodes));
-    LongDataMap<List<Long>> references =
-        new LongDataSortedMap<>(
-            new AlignedDataList<>(
-                new PairDataType<>(new LongDataType(), new LongDataType()),
-                new OnDiskDirectoryMemory(referencesKeys)),
-            new DataStore<>(new LongListDataType(), new OnDiskDirectoryMemory(referencesValues)));
-
-    logger.info("Importing data");
-    new ImportService(
-            file,
-            blobStore,
-            coordinates,
-            references,
-            headerRepository,
-            nodeRepository,
-            wayRepository,
-            relationRepository,
-            4326,
-            srid)
-        .call();
-
-    FileUtils.deleteRecursively(directory);
+    logger.info("Saving diff");
+    Path tmpTiles = Files.createFile(Paths.get("diff.tmp"));
+    try (PrintWriter printWriter = new PrintWriter(Files.newBufferedWriter(tmpTiles))) {
+      new DiffService(
+              blobStore,
+              coordinates,
+              references,
+              headerRepository,
+              nodeRepository,
+              wayRepository,
+              relationRepository,
+              srid,
+              zoom)
+          .call();
+    }
+    blobStore.put(
+        this.tiles,
+        Blob.builder()
+            .withContentLength(Files.size(tmpTiles))
+            .withInputStream(Files.newInputStream(tmpTiles))
+            .build());
+    Files.deleteIfExists(tmpTiles);
 
     logger.info("Done");
 
