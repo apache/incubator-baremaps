@@ -26,8 +26,6 @@ import com.baremaps.pipeline.steps.ImportShapefile;
 import com.baremaps.pipeline.steps.UnzipFile;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,7 +33,6 @@ import java.util.Comparator;
 import java.util.List;
 import javax.sql.DataSource;
 import org.apache.sis.storage.DataStoreException;
-import org.geotoolkit.data.shapefile.ShapefileFeatureStore;
 import org.geotoolkit.db.postgres.PostgresStore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -170,5 +167,4 @@ class PipelineTest extends PostgresBaseTest {
         .join();
     Files.walk(directory).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
   }
-
 }

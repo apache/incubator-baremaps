@@ -15,9 +15,6 @@
 package com.baremaps.cli;
 
 import com.baremaps.cli.Baremaps.VersionProvider;
-import com.baremaps.cli.geocoder.Geocoder;
-import com.baremaps.cli.iploc.Iploc;
-import com.baremaps.cli.ogcapi.OgcApi;
 import com.baremaps.cli.database.Diff;
 import com.baremaps.cli.database.Editor;
 import com.baremaps.cli.database.Execute;
@@ -27,6 +24,9 @@ import com.baremaps.cli.database.Init;
 import com.baremaps.cli.database.Server;
 import com.baremaps.cli.database.Update;
 import com.baremaps.cli.database.Viewer;
+import com.baremaps.cli.geocoder.Geocoder;
+import com.baremaps.cli.iploc.Iploc;
+import com.baremaps.cli.ogcapi.OgcApi;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
@@ -50,7 +50,6 @@ import picocli.CommandLine.Option;
       Init.class,
       Execute.class,
       Import.class,
-      Pipeline.class,
       Update.class,
       Diff.class,
       Export.class,

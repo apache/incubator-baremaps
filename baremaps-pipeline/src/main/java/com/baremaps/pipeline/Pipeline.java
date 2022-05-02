@@ -26,9 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.apache.sis.setup.Configuration;
 
-/**
- * A class for building and executing data pipelines.
- */
+/** A class for building and executing data pipelines. */
 public class Pipeline {
 
   private final Context context;

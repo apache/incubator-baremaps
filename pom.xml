@@ -137,9 +137,7 @@
     <module>baremaps-collection</module>
     <module>baremaps-geocoder</module>
     <module>baremaps-iploc</module>
-    <module>baremaps-blob</module>
     <module>baremaps-http</module>
-    <module>baremaps-nic</module>
     <module>baremaps-osm</module>
     <module>baremaps-pipeline</module>
     <module>baremaps-storage</module>
