@@ -17,12 +17,12 @@ package com.baremaps.server.ogcapi;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 
 import com.baremaps.api.TilesetsApi;
+import com.baremaps.database.tile.PostgresQuery;
+import com.baremaps.database.tile.PostgresTileStore;
+import com.baremaps.database.tile.Tile;
+import com.baremaps.database.tile.TileStore;
+import com.baremaps.database.tile.TileStoreException;
 import com.baremaps.model.TileJSON;
-import com.baremaps.pipeline.tile.PostgresQuery;
-import com.baremaps.pipeline.tile.PostgresTileStore;
-import com.baremaps.pipeline.tile.Tile;
-import com.baremaps.pipeline.tile.TileStore;
-import com.baremaps.pipeline.tile.TileStoreException;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import java.net.URI;

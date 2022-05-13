@@ -17,8 +17,8 @@ package com.baremaps.server.resources;
 import static com.baremaps.testing.TestConstants.DATABASE_URL;
 import static org.junit.Assert.assertEquals;
 
-import com.baremaps.pipeline.postgres.PostgisPlugin;
-import com.baremaps.pipeline.postgres.PostgresUtils;
+import com.baremaps.database.postgres.PostgisPlugin;
+import com.baremaps.database.postgres.PostgresUtils;
 import com.google.common.io.Resources;
 import java.io.File;
 import java.net.URL;

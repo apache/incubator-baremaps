@@ -27,17 +27,17 @@ import com.baremaps.collection.type.LongDataType;
 import com.baremaps.collection.type.LongListDataType;
 import com.baremaps.collection.type.PairDataType;
 import com.baremaps.collection.utils.FileUtils;
+import com.baremaps.database.ImportService;
+import com.baremaps.database.postgres.PostgresUtils;
+import com.baremaps.database.repository.HeaderRepository;
+import com.baremaps.database.repository.PostgresHeaderRepository;
+import com.baremaps.database.repository.PostgresNodeRepository;
+import com.baremaps.database.repository.PostgresRelationRepository;
+import com.baremaps.database.repository.PostgresWayRepository;
+import com.baremaps.database.repository.Repository;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.pipeline.database.ImportService;
-import com.baremaps.pipeline.database.repository.HeaderRepository;
-import com.baremaps.pipeline.database.repository.PostgresHeaderRepository;
-import com.baremaps.pipeline.database.repository.PostgresNodeRepository;
-import com.baremaps.pipeline.database.repository.PostgresRelationRepository;
-import com.baremaps.pipeline.database.repository.PostgresWayRepository;
-import com.baremaps.pipeline.database.repository.Repository;
-import com.baremaps.pipeline.postgres.PostgresUtils;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -64,7 +64,7 @@ public class Import implements Callable<Integer> {
       paramLabel = "CONFIG",
       description = "The configuration file.",
       required = true)
-  private URI file;
+  private URI config;
 
   @Option(
       names = {"--database"},
@@ -110,7 +110,7 @@ public class Import implements Callable<Integer> {
 
     logger.info("Importing data");
     new ImportService(
-            file,
+            config,
             blobStore,
             coordinates,
             references,

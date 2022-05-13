@@ -145,7 +145,7 @@
   <dependencies>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-pipeline</artifactId>
+      <artifactId>baremaps-workflow</artifactId>
     </dependency>
 
     <!-- database -->

@@ -14,8 +14,8 @@
 
 package com.baremaps.server.ogcapi;
 
+import com.baremaps.database.tile.PostgresQuery;
 import com.baremaps.model.TileJSON;
-import com.baremaps.pipeline.tile.PostgresQuery;
 import java.util.List;
 import javax.inject.Singleton;
 
