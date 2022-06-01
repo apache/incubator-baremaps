@@ -91,7 +91,7 @@
     <version.lib.jdbi>3.24.1</version.lib.jdbi>
     <version.lib.awaitability>3.0.0</version.lib.awaitability>
     <version.lib.jsqlparser>4.2</version.lib.jsqlparser>
-    <version.lib.swagger-parser>2.0.24</version.lib.swagger-parser>
+    <version.lib.swagger-parser>2.0.33</version.lib.swagger-parser>
     <version.lib.jaxb-runtime>2.3.5</version.lib.jaxb-runtime>
     <version.lib.activation>1.2.2</version.lib.activation>
     <version.lib.servlet>3.1.0</version.lib.servlet>
