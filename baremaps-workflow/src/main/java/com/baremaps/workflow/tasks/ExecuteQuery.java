@@ -15,6 +15,7 @@
 package com.baremaps.workflow.tasks;
 
 import com.baremaps.workflow.Task;
+import com.baremaps.workflow.model.Database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.IOException;
@@ -36,7 +37,6 @@ public record ExecuteQuery(String id, List<String> needs, Database database, Str
             database.name(),
             database.username(),
             database.password());
-
     var config = new HikariConfig();
     config.setPoolName("BaremapsDataSource");
     config.setJdbcUrl(url);
@@ -44,7 +44,6 @@ public record ExecuteQuery(String id, List<String> needs, Database database, Str
 
     try (var dataSource = new HikariDataSource(config)) {
       Arrays.stream(Files.readString(Paths.get(file)).split(";")).forEach(query -> {});
-
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

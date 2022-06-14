@@ -54,8 +54,7 @@ public class ServerResources {
       @Named("tileset") URI tileset,
       @Named("style") URI style,
       ConfigBlobStore blobStore,
-      TileStore tileStore)
-      throws BlobStoreException, IOException {
+      TileStore tileStore) {
     this.tileset = tileset;
     this.style = style;
     this.blobStore = blobStore;

@@ -15,6 +15,7 @@
 package com.baremaps.workflow.tasks;
 
 import com.baremaps.workflow.WorkflowException;
+import com.baremaps.workflow.model.Database;
 import java.nio.file.Paths;
 import java.util.List;
 import org.apache.sis.storage.DataStores;

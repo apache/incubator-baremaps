@@ -40,6 +40,7 @@ import com.baremaps.osm.pbf.PbfBlockReader;
 import com.baremaps.osm.store.DataStoreConsumer;
 import com.baremaps.workflow.Task;
 import com.baremaps.workflow.WorkflowException;
+import com.baremaps.workflow.model.Database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.InputStream;

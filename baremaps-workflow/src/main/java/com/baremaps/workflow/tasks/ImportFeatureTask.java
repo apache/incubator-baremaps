@@ -17,6 +17,7 @@ package com.baremaps.workflow.tasks;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.workflow.Task;
 import com.baremaps.workflow.WorkflowException;
+import com.baremaps.workflow.model.Database;
 import org.apache.sis.storage.FeatureSet;
 import org.apache.sis.storage.WritableFeatureSet;
 import org.geotoolkit.db.postgres.PostgresStore;

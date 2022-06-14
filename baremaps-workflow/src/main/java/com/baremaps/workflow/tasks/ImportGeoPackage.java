@@ -16,6 +16,7 @@ package com.baremaps.workflow.tasks;
 
 import com.baremaps.storage.geopackage.GeoPackageStore;
 import com.baremaps.workflow.WorkflowException;
+import com.baremaps.workflow.model.Database;
 import java.nio.file.Paths;
 import java.util.List;
 import mil.nga.geopackage.GeoPackageManager;

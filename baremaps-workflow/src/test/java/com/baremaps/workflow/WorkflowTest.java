@@ -14,7 +14,7 @@
 
 package com.baremaps.workflow;
 
-import com.baremaps.workflow.tasks.Database;
+import com.baremaps.workflow.model.Database;
 import com.baremaps.workflow.tasks.DownloadUrl;
 import com.baremaps.workflow.tasks.ImportGeoPackage;
 import com.baremaps.workflow.tasks.ImportOsmPbf;
