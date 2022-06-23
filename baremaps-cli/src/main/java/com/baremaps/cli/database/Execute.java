@@ -16,14 +16,13 @@ package com.baremaps.cli.database;
 
 import static com.baremaps.database.tile.VariableUtils.interpolate;
 
-import com.baremaps.blob.BlobStore;
 import com.baremaps.cli.Options;
 import com.baremaps.database.postgres.PostgresUtils;
 import com.baremaps.stream.StreamException;
 import com.baremaps.stream.StreamUtils;
 import com.google.common.base.Splitter;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -55,7 +54,7 @@ public class Execute implements Callable<Integer> {
       paramLabel = "FILE",
       description = "The SQL file to execute in the database.",
       required = true)
-  private List<URI> files;
+  private List<Path> files;
 
   @Option(
       names = {"--parallel"},
@@ -67,12 +66,10 @@ public class Execute implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     DataSource datasource = PostgresUtils.dataSource(database);
-    BlobStore blobStore = options.blobStore();
 
-    for (URI file : files) {
+    for (Path file : files) {
       logger.info("Execute {}", file);
-      String blob =
-          new String(blobStore.get(file).getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+      String blob = Files.readString(file);
       blob = interpolate(System.getenv(), blob);
       StreamUtils.batch(Splitter.on(";").splitToStream(blob), 1)
           .forEach(

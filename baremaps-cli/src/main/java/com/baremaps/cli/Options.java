@@ -14,10 +14,6 @@
 
 package com.baremaps.cli;
 
-import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.BlobStoreRouter;
-import com.baremaps.blob.HttpBlobStore;
-import com.baremaps.blob.S3BlobStore;
 import picocli.CommandLine.Option;
 
 public class Options {
@@ -46,16 +42,4 @@ public class Options {
       paramLabel = "ENABLE_S3",
       description = "Enable Amazon S3 storage.")
   public boolean enableS3 = false;
-
-  public BlobStore blobStore() {
-    BlobStoreRouter blobStore = new BlobStoreRouter();
-    if (enableHTTP) {
-      blobStore.addScheme("http", new HttpBlobStore());
-      blobStore.addScheme("https", new HttpBlobStore());
-    }
-    if (enableS3) {
-      blobStore.addScheme("s3", new S3BlobStore());
-    }
-    return blobStore;
-  }
 }

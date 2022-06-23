@@ -14,7 +14,6 @@
 
 package com.baremaps.cli.database;
 
-import com.baremaps.blob.BlobStore;
 import com.baremaps.cli.Options;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.database.UpdateService;
@@ -62,7 +61,6 @@ public class Update implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.dataSource(database);
     LongDataMap<Coordinate> coordinates = new PostgresCoordinateMap(datasource);
     LongDataMap<List<Long>> references = new PostgresReferenceMap(datasource);
@@ -73,7 +71,6 @@ public class Update implements Callable<Integer> {
 
     logger.info("Importing changes");
     new UpdateService(
-            blobStore,
             coordinates,
             references,
             headerRepository,

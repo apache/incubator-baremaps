@@ -14,13 +14,11 @@
 
 package com.baremaps.database.tile;
 
-import com.baremaps.blob.Blob;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import com.github.benmanes.caffeine.cache.Weigher;
-import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 import org.checkerframework.checker.index.qual.NonNegative;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +30,7 @@ public class TileCache implements TileStore {
 
   private final TileStore tileStore;
 
-  private final Cache<Tile, Blob.Builder> cache;
+  private final Cache<Tile, ByteBuffer> cache;
 
   /**
    * Decorates the TileStore with a cache.
@@ -45,10 +43,10 @@ public class TileCache implements TileStore {
     this.cache =
         Caffeine.from(spec)
             .weigher(
-                new Weigher<Tile, Blob.Builder>() {
+                new Weigher<Tile, ByteBuffer>() {
                   @Override
-                  public @NonNegative int weigh(Tile tile, Blob.Builder blobBuilder) {
-                    return 28 + blobBuilder.getContentLength().intValue();
+                  public @NonNegative int weigh(Tile tile, ByteBuffer blob) {
+                    return 28 + blob.capacity();
                   }
                 })
             .build();
@@ -56,31 +54,22 @@ public class TileCache implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public Blob read(Tile tile) throws TileStoreException {
-    return cache
-        .get(
-            tile,
-            t -> {
-              try {
-                Blob blob = tileStore.read(t);
-                try (InputStream inputStream = blob.getInputStream()) {
-                  return Blob.builder()
-                      .withContentEncoding(blob.getContentEncoding())
-                      .withContentType(blob.getContentType())
-                      .withContentLength(blob.getContentLength())
-                      .withByteArray(inputStream.readAllBytes());
-                }
-              } catch (IOException | TileStoreException e) {
-                logger.error("Unable to read the tile.", e);
-                return null;
-              }
-            })
-        .build();
+  public ByteBuffer read(Tile tile) throws TileStoreException {
+    return cache.get(
+        tile,
+        t -> {
+          try {
+            return tileStore.read(t).duplicate();
+          } catch (TileStoreException e) {
+            logger.error("Unable to read the tile.", e);
+            return null;
+          }
+        });
   }
 
   /** {@inheritDoc} */
   @Override
-  public void write(Tile tile, Blob bytes) throws TileStoreException {
+  public void write(Tile tile, ByteBuffer bytes) throws TileStoreException {
     tileStore.write(tile, bytes);
     cache.invalidate(tile);
   }

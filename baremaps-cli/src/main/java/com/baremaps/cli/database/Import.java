@@ -14,7 +14,6 @@
 
 package com.baremaps.cli.database;
 
-import com.baremaps.blob.BlobStore;
 import com.baremaps.cli.Options;
 import com.baremaps.collection.AlignedDataList;
 import com.baremaps.collection.DataStore;
@@ -38,7 +37,6 @@ import com.baremaps.database.repository.Repository;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -64,7 +62,7 @@ public class Import implements Callable<Integer> {
       paramLabel = "CONFIG",
       description = "The configuration file.",
       required = true)
-  private URI config;
+  private Path config;
 
   @Option(
       names = {"--database"},
@@ -87,7 +85,6 @@ public class Import implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.dataSource(database);
     HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
     Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
@@ -111,7 +108,6 @@ public class Import implements Callable<Integer> {
     logger.info("Importing data");
     new ImportService(
             config,
-            blobStore,
             coordinates,
             references,
             headerRepository,

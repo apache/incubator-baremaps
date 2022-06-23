@@ -16,16 +16,14 @@ package com.baremaps.cli.database;
 
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 
-import com.baremaps.blob.Blob;
-import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.BlobStoreException;
 import com.baremaps.cli.Options;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.MbStyleSources;
 import com.baremaps.model.TileJSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -46,17 +44,16 @@ public class Init implements Callable<Integer> {
       names = {"--tileset"},
       paramLabel = "TILESET",
       description = "The tileset file.")
-  private URI tileset;
+  private Path tileset;
 
   @Option(
       names = {"--style"},
       paramLabel = "STYLE",
       description = "The style file.")
-  private URI style;
+  private Path style;
 
   @Override
-  public Integer call() throws BlobStoreException, IOException {
-    BlobStore blobStore = options.blobStore();
+  public Integer call() throws IOException {
     ObjectMapper mapper = defaultObjectMapper();
 
     if (style != null) {
@@ -66,11 +63,7 @@ public class Init implements Callable<Integer> {
       sources.setType("vector");
       sources.setUrl("http://localhost:9000/tiles.json");
       styleObject.setSources(Map.of("baremaps", sources));
-      blobStore.put(
-          style,
-          Blob.builder()
-              .withByteArray(mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(styleObject))
-              .build());
+      Files.write(style, mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(styleObject));
       logger.info("Style initialized: {}", style);
     }
 
@@ -79,12 +72,8 @@ public class Init implements Callable<Integer> {
       tilesetObject.setTilejson("2.2.0");
       tilesetObject.setName("Baremaps");
       tilesetObject.setTiles(Arrays.asList("http://localhost:9000/tiles.json"));
-      blobStore.put(
-          tileset,
-          Blob.builder()
-              .withByteArray(
-                  mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(tilesetObject))
-              .build());
+      Files.write(
+          tileset, mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(tilesetObject));
       logger.info("Tileset initialized: {}", tileset);
     }
 

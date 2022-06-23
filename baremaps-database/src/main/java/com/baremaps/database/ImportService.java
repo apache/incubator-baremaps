@@ -17,8 +17,6 @@ package com.baremaps.database;
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 import static com.baremaps.stream.StreamUtils.batch;
 
-import com.baremaps.blob.Blob;
-import com.baremaps.blob.BlobStore;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.database.repository.HeaderRepository;
 import com.baremaps.database.repository.Repository;
@@ -31,11 +29,10 @@ import com.baremaps.osm.function.BlockEntityConsumer;
 import com.baremaps.osm.function.CreateGeometryConsumer;
 import com.baremaps.osm.function.ReprojectEntityConsumer;
 import com.baremaps.osm.pbf.PbfBlockReader;
-import com.baremaps.osm.progress.InputStreamProgress;
-import com.baremaps.osm.progress.ProgressLogger;
 import com.baremaps.osm.store.DataStoreConsumer;
 import java.io.InputStream;
-import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
@@ -48,8 +45,7 @@ public class ImportService implements Callable<Void> {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportService.class);
 
-  private final URI uri;
-  private final BlobStore blobStore;
+  private final Path path;
   private final LongDataMap<Coordinate> coordinates;
   private final LongDataMap<List<Long>> references;
   private final HeaderRepository headerRepository;
@@ -59,8 +55,7 @@ public class ImportService implements Callable<Void> {
   private final int srid;
 
   public ImportService(
-      URI uri,
-      BlobStore blobStore,
+      Path path,
       LongDataMap<Coordinate> coordinates,
       LongDataMap<List<Long>> references,
       HeaderRepository headerRepository,
@@ -69,8 +64,7 @@ public class ImportService implements Callable<Void> {
       Repository<Long, Relation> relationRepository,
       Integer sourceSRID,
       Integer targetSRID) {
-    this.uri = uri;
-    this.blobStore = blobStore;
+    this.path = path;
     this.coordinates = coordinates;
     this.references = references;
     this.headerRepository = headerRepository;
@@ -90,9 +84,7 @@ public class ImportService implements Callable<Void> {
     Function<Block, Block> prepareBlock = consumeThenReturn(cacheBlock.andThen(prepareGeometries));
     Consumer<Block> saveBlock =
         new SaveBlockConsumer(headerRepository, nodeRepository, wayRepository, relationRepository);
-    Blob blob = blobStore.get(uri);
-    ProgressLogger progressLogger = new ProgressLogger(blob.getContentLength(), 5000);
-    try (InputStream inputStream = new InputStreamProgress(blob.getInputStream(), progressLogger)) {
+    try (InputStream inputStream = Files.newInputStream(path)) {
       batch(new PbfBlockReader().stream(inputStream).map(prepareBlock)).forEach(saveBlock);
     }
     return null;

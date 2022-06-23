@@ -17,8 +17,7 @@ package com.baremaps.database.tile;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.baremaps.blob.Blob;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -31,16 +30,14 @@ public abstract class TileStoreTest {
   void readWriteDeleteTile() throws Exception {
     TileStore tileStore = createTileStore();
     Tile tile = new Tile(1, 2, 3);
-    byte[] bytes = "tile_content".getBytes();
-    Blob blob = Blob.builder().withByteArray(bytes).build();
+    ByteBuffer blob = ByteBuffer.wrap("tile_content".getBytes());
 
     // Write data
     tileStore.write(tile, blob);
 
     // Read the data
-    try (InputStream inputStream = tileStore.read(tile).getInputStream()) {
-      assertArrayEquals(bytes, inputStream.readAllBytes());
-    }
+    ByteBuffer inputStream = tileStore.read(tile);
+    assertArrayEquals(blob.array(), inputStream.array());
 
     // Delete the data
     tileStore.delete(tile);

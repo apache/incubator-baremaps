@@ -17,16 +17,14 @@ package com.baremaps.cli.database;
 import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 
-import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.BlobStoreException;
 import com.baremaps.cli.Options;
 import com.baremaps.database.postgres.PostgresUtils;
+import com.baremaps.database.tile.FileTileStore;
 import com.baremaps.database.tile.MBTiles;
 import com.baremaps.database.tile.PostgresQuery;
 import com.baremaps.database.tile.PostgresTileStore;
 import com.baremaps.database.tile.Tile;
 import com.baremaps.database.tile.TileBatchPredicate;
-import com.baremaps.database.tile.TileBlobStore;
 import com.baremaps.database.tile.TileChannel;
 import com.baremaps.database.tile.TileStore;
 import com.baremaps.database.tile.TileStoreException;
@@ -36,11 +34,10 @@ import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.stream.StreamUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,20 +72,20 @@ public class Export implements Callable<Integer> {
       paramLabel = "TILESET",
       description = "The tileset file.",
       required = true)
-  private URI tileset;
+  private Path tileset;
 
   @Option(
       names = {"--repository"},
       paramLabel = "URL",
       description = "The tile repository URL.",
       required = true)
-  private URI repository;
+  private Path repository;
 
   @Option(
       names = {"--tiles"},
       paramLabel = "TILES",
       description = "The tiles to export.")
-  private URI tiles;
+  private Path tiles;
 
   @Option(
       names = {"--batch-array-size"},
@@ -109,15 +106,13 @@ public class Export implements Callable<Integer> {
   private boolean mbtiles = false;
 
   @Override
-  public Integer call() throws TileStoreException, BlobStoreException, IOException {
+  public Integer call() throws TileStoreException, IOException {
     ObjectMapper mapper = defaultObjectMapper();
     DataSource datasource = PostgresUtils.dataSource(database);
-    BlobStore blobStore = options.blobStore();
 
-    TileJSON source =
-        mapper.readValue(blobStore.get(this.tileset).getInputStream(), TileJSON.class);
+    TileJSON source = mapper.readValue(Files.readAllBytes(tileset), TileJSON.class);
     TileStore tileSource = sourceTileStore(source, datasource);
-    TileStore tileTarget = targetTileStore(source, blobStore);
+    TileStore tileTarget = targetTileStore(source);
 
     Stream<Tile> stream;
     if (tiles == null) {
@@ -130,22 +125,18 @@ public class Export implements Callable<Integer> {
           StreamUtils.stream(Tile.iterator(envelope, source.getMinzoom(), source.getMaxzoom()))
               .peek(new StreamProgress<>(count, 5000));
     } else {
-      try (BufferedReader reader =
-          new BufferedReader(new InputStreamReader(blobStore.get(tiles).getInputStream()))) {
-        stream =
-            reader
-                .lines()
-                .flatMap(
-                    line -> {
-                      String[] array = line.split(",");
-                      int x = Integer.parseInt(array[0]);
-                      int y = Integer.parseInt(array[1]);
-                      int z = Integer.parseInt(array[2]);
-                      Tile tile = new Tile(x, y, z);
-                      return StreamUtils.stream(
-                          Tile.iterator(tile.envelope(), source.getMinzoom(), source.getMaxzoom()));
-                    });
-      }
+      stream =
+          Files.lines(tiles)
+              .flatMap(
+                  line -> {
+                    String[] array = line.split(",");
+                    int x = Integer.parseInt(array[0]);
+                    int y = Integer.parseInt(array[1]);
+                    int z = Integer.parseInt(array[2]);
+                    Tile tile = new Tile(x, y, z);
+                    return StreamUtils.stream(
+                        Tile.iterator(tile.envelope(), source.getMinzoom(), source.getMaxzoom()));
+                  });
     }
 
     logger.info("Exporting tiles");
@@ -162,17 +153,16 @@ public class Export implements Callable<Integer> {
     return new PostgresTileStore(datasource, queries);
   }
 
-  private TileStore targetTileStore(TileJSON source, BlobStore blobStore)
-      throws TileStoreException, IOException {
+  private TileStore targetTileStore(TileJSON source) throws TileStoreException, IOException {
     if (mbtiles) {
       SQLiteDataSource dataSource = new SQLiteDataSource();
-      dataSource.setUrl("jdbc:sqlite:" + repository.getPath());
+      dataSource.setUrl("jdbc:sqlite:" + repository.toString());
       MBTiles tilesStore = new MBTiles(dataSource);
       tilesStore.initializeDatabase();
       tilesStore.writeMetadata(metadata(source));
       return tilesStore;
     } else {
-      return new TileBlobStore(blobStore, repository);
+      return new FileTileStore(repository);
     }
   }
 

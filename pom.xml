@@ -131,7 +131,6 @@
 
   <modules>
     <module>baremaps-benchmarks</module>
-    <module>baremaps-blob</module>
     <module>baremaps-cli</module>
     <module>baremaps-collection</module>
     <module>baremaps-database</module>
@@ -356,11 +355,6 @@
       <!-- Internal dependencies -->
       <dependency>
         <artifactId>baremaps-benchmarks</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
-        <artifactId>baremaps-blob</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>

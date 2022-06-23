@@ -14,9 +14,8 @@
 
 package com.baremaps.database.tile;
 
-import com.baremaps.blob.Blob;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -68,7 +67,7 @@ public class MBTiles implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public Blob read(Tile tile) throws TileStoreException {
+  public ByteBuffer read(Tile tile) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_TILE)) {
       statement.setInt(1, tile.z());
@@ -76,7 +75,7 @@ public class MBTiles implements TileStore {
       statement.setInt(3, reverseY(tile.y(), tile.z()));
       try (ResultSet resultSet = statement.executeQuery()) {
         if (resultSet.next()) {
-          return Blob.builder().withByteArray(resultSet.getBytes("tile_data")).build();
+          return ByteBuffer.wrap(resultSet.getBytes("tile_data"));
         } else {
           throw new SQLException("The tile does not exist");
         }
@@ -88,17 +87,15 @@ public class MBTiles implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public void write(Tile tile, Blob blob) throws TileStoreException {
+  public void write(Tile tile, ByteBuffer blob) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
       statement.setInt(1, tile.z());
       statement.setInt(2, tile.x());
       statement.setInt(3, reverseY(tile.y(), tile.z()));
-      try (InputStream inputStream = blob.getInputStream()) {
-        statement.setBytes(4, inputStream.readAllBytes());
-      }
+      statement.setBytes(4, blob.array());
       statement.executeUpdate();
-    } catch (SQLException | IOException e) {
+    } catch (SQLException e) {
       throw new TileStoreException(e);
     }
   }

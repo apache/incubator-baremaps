@@ -17,8 +17,6 @@ package com.baremaps.database.database;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.collection.DataStore;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.collection.LongDataOpenHashMap;
@@ -36,8 +34,9 @@ import com.baremaps.database.repository.PostgresWayRepository;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
+import com.google.common.io.Resources;
 import java.io.IOException;
-import java.net.URI;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,7 +49,6 @@ import org.locationtech.jts.geom.Coordinate;
 
 class ImportUpdateDataTest extends PostgresBaseTest {
 
-  public BlobStore blobStore;
   public DataSource dataSource;
   public PostgresHeaderRepository headerRepository;
   public PostgresNodeRepository nodeRepository;
@@ -60,7 +58,6 @@ class ImportUpdateDataTest extends PostgresBaseTest {
   @BeforeEach
   void createRepository() throws SQLException, IOException {
     dataSource = initDataSource();
-    blobStore = new ResourceBlobStore();
     headerRepository = new PostgresHeaderRepository(dataSource);
     nodeRepository = new PostgresNodeRepository(dataSource);
     wayRepository = new PostgresWayRepository(dataSource);
@@ -77,8 +74,7 @@ class ImportUpdateDataTest extends PostgresBaseTest {
 
     // Import data
     new ImportService(
-            new URI("res:///simple/data.osm.pbf"),
-            blobStore,
+            Paths.get(Resources.getResource("simple/data.osm.pbf").toURI()),
             coordinates,
             references,
             headerRepository,
@@ -120,7 +116,6 @@ class ImportUpdateDataTest extends PostgresBaseTest {
 
     // Update the database
     new UpdateService(
-            blobStore,
             new PostgresCoordinateMap(dataSource),
             new PostgresReferenceMap(dataSource),
             headerRepository,

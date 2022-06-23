@@ -14,7 +14,7 @@
 
 package com.baremaps.database.tile;
 
-import com.baremaps.blob.Blob;
+import java.nio.ByteBuffer;
 import java.util.function.Consumer;
 
 /** A channel that conveys tiles from a source to a target. */
@@ -53,7 +53,7 @@ public class TileChannel implements Consumer<Tile> {
   @Override
   public void accept(Tile tile) {
     try {
-      Blob blob = source.read(tile);
+      ByteBuffer blob = source.read(tile);
       if (blob != null) {
         target.write(tile, blob);
       } else if (deleteEmptyTiles) {

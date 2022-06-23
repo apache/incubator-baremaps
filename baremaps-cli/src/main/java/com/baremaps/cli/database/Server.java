@@ -18,7 +18,6 @@ import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
-import com.baremaps.blob.ConfigBlobStore;
 import com.baremaps.cli.Options;
 import com.baremaps.database.postgres.PostgresUtils;
 import com.baremaps.database.tile.PostgresQuery;
@@ -34,7 +33,8 @@ import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
-import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
@@ -71,14 +71,14 @@ public class Server implements Callable<Integer> {
       paramLabel = "TILESET",
       description = "The tileset file.",
       required = true)
-  private URI tileset;
+  private Path tileset;
 
   @Option(
       names = {"--style"},
       paramLabel = "STYLE",
       description = "The style file.",
       required = true)
-  private URI style;
+  private Path style;
 
   @Option(
       names = {"--host"},
@@ -95,9 +95,7 @@ public class Server implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     ObjectMapper objectMapper = defaultObjectMapper();
-    ConfigBlobStore blobStore = new ConfigBlobStore(options.blobStore());
-    TileJSON tileJSON =
-        objectMapper.readValue(blobStore.get(this.tileset).getInputStream(), TileJSON.class);
+    TileJSON tileJSON = objectMapper.readValue(Files.readAllBytes(tileset), TileJSON.class);
     CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
     DataSource datasource = PostgresUtils.dataSource(database);
 
@@ -115,9 +113,8 @@ public class Server implements Callable<Integer> {
                 new AbstractBinder() {
                   @Override
                   protected void configure() {
-                    bind(tileset).to(URI.class).named("tileset");
-                    bind(style).to(URI.class).named("style");
-                    bind(blobStore).to(ConfigBlobStore.class);
+                    bind(tileset).to(Path.class).named("tileset");
+                    bind(style).to(Path.class).named("style");
                     bind(tileCache).to(TileStore.class);
                   }
                 });

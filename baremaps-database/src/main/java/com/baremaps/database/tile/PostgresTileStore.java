@@ -14,9 +14,9 @@
 
 package com.baremaps.database.tile;
 
-import com.baremaps.blob.Blob;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -89,7 +89,7 @@ public class PostgresTileStore implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public Blob read(Tile tile) throws TileStoreException {
+  public ByteBuffer read(Tile tile) throws TileStoreException {
     try (Connection connection = datasource.getConnection();
         Statement statement = connection.createStatement();
         ByteArrayOutputStream data = new ByteArrayOutputStream()) {
@@ -108,13 +108,7 @@ public class PostgresTileStore implements TileStore {
       }
 
       if (length > 0) {
-        byte[] byteArray = data.toByteArray();
-        return Blob.builder()
-            .withContentEncoding(CONTENT_ENCODING)
-            .withContentType(CONTENT_TYPE)
-            .withContentLength(Long.valueOf(byteArray.length))
-            .withByteArray(byteArray)
-            .build();
+        return ByteBuffer.wrap(data.toByteArray());
       } else {
         return null;
       }
@@ -257,7 +251,7 @@ public class PostgresTileStore implements TileStore {
   }
 
   /** This operation is not supported. */
-  public void write(Tile tile, Blob blob) {
+  public void write(Tile tile, ByteBuffer blob) {
     throw new UnsupportedOperationException("The postgis tile store is read only");
   }
 

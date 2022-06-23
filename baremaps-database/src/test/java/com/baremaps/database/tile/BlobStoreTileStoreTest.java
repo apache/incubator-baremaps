@@ -14,11 +14,8 @@
 
 package com.baremaps.database.tile;
 
-import com.baremaps.blob.FileBlobStore;
 import com.baremaps.collection.utils.FileUtils;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,7 +37,7 @@ class BlobStoreTileStoreTest extends TileStoreTest {
   }
 
   @Override
-  TileStore createTileStore() throws IOException, URISyntaxException {
-    return new TileBlobStore(new FileBlobStore(), new URI(directory.toString()));
+  TileStore createTileStore() {
+    return new FileTileStore(directory);
   }
 }

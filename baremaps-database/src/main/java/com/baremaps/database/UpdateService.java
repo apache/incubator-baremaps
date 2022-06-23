@@ -14,40 +14,20 @@
 
 package com.baremaps.database;
 
-import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
-
-import com.baremaps.blob.Blob;
-import com.baremaps.blob.BlobStore;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.database.repository.HeaderRepository;
 import com.baremaps.database.repository.Repository;
-import com.baremaps.osm.domain.Change;
-import com.baremaps.osm.domain.Entity;
-import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.domain.State;
 import com.baremaps.osm.domain.Way;
-import com.baremaps.osm.function.ChangeEntityConsumer;
-import com.baremaps.osm.function.CreateGeometryConsumer;
-import com.baremaps.osm.function.ReprojectEntityConsumer;
-import com.baremaps.osm.progress.InputStreamProgress;
-import com.baremaps.osm.progress.ProgressLogger;
-import com.baremaps.osm.state.StateReader;
-import com.baremaps.osm.xml.XmlChangeReader;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.zip.GZIPInputStream;
 import org.locationtech.jts.geom.Coordinate;
 
 public class UpdateService implements Callable<Void> {
 
-  private final BlobStore blobStore;
   private final LongDataMap<Coordinate> coordinates;
   private final LongDataMap<List<Long>> references;
   private final HeaderRepository headerRepository;
@@ -57,7 +37,6 @@ public class UpdateService implements Callable<Void> {
   private final int srid;
 
   public UpdateService(
-      BlobStore blobStore,
       LongDataMap<Coordinate> coordinates,
       LongDataMap<List<Long>> references,
       HeaderRepository headerRepository,
@@ -65,7 +44,6 @@ public class UpdateService implements Callable<Void> {
       Repository<Long, Way> wayRepository,
       Repository<Long, Relation> relationRepository,
       int srid) {
-    this.blobStore = blobStore;
     this.coordinates = coordinates;
     this.references = references;
     this.headerRepository = headerRepository;
@@ -77,6 +55,7 @@ public class UpdateService implements Callable<Void> {
 
   @Override
   public Void call() throws Exception {
+    /* TODO: remove the use of the blob store
     Header header = headerRepository.selectLatest();
     String replicationUrl = header.getReplicationUrl();
     Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
@@ -110,7 +89,7 @@ public class UpdateService implements Callable<Void> {
               header.getSource(),
               header.getWritingProgram()));
     }
-
+    */
     return null;
   }
 

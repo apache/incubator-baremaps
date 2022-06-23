@@ -17,9 +17,6 @@ package com.baremaps.server.resources;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
-import com.baremaps.blob.Blob;
-import com.baremaps.blob.BlobStoreException;
-import com.baremaps.blob.ConfigBlobStore;
 import com.baremaps.database.tile.PostgresQuery;
 import com.baremaps.database.tile.PostgresTileStore;
 import com.baremaps.database.tile.Tile;
@@ -27,15 +24,14 @@ import com.baremaps.database.tile.TileStore;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileJSON;
 import com.baremaps.server.ogcapi.Conversions;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -67,11 +63,9 @@ public class DevelopmentResources {
 
   private final String assets;
 
-  private final URI style;
+  private final Path style;
 
-  private final URI tileset;
-
-  private final ConfigBlobStore blobStore;
+  private final Path tileset;
 
   private final DataSource dataSource;
 
@@ -83,19 +77,21 @@ public class DevelopmentResources {
 
   private final OutboundSseEvent.Builder sseEventBuilder;
 
+  public static final String TILE_ENCODING = "gzip";
+
+  public static final String TILE_TYPE = "application/vnd.mapbox-vector-tile";
+
   @Inject
   public DevelopmentResources(
       @Named("assets") String assets,
-      @Named("tileset") URI tileset,
-      @Named("style") URI style,
-      ConfigBlobStore blobStore,
+      @Named("tileset") Path tileset,
+      @Named("style") Path style,
       DataSource dataSource,
       ObjectMapper objectMapper,
       Sse sse) {
     this.assets = assets;
     this.tileset = tileset;
     this.style = style;
-    this.blobStore = blobStore;
     this.dataSource = dataSource;
     this.objectMapper = objectMapper;
     this.sse = sse;
@@ -106,25 +102,23 @@ public class DevelopmentResources {
     Set<Path> directories =
         new HashSet<>(
             Arrays.asList(
-                Paths.get(tileset.getPath()).toAbsolutePath().getParent(),
-                Paths.get(style.getPath()).toAbsolutePath().getParent()));
+                tileset.toAbsolutePath().getParent(), style.toAbsolutePath().getParent()));
     new Thread(new DirectoryWatcher(directories, this::broadcastChanges)).start();
   }
 
   public void broadcastChanges(Path path) {
-    try (InputStream styleInputStream = blobStore.get(style).getInputStream()) {
-      var styleObjectNode = objectMapper.readValue(styleInputStream, ObjectNode.class);
+    try {
+      var value = Files.readAllBytes(path);
+      var styleObjectNode = objectMapper.readValue(value, ObjectNode.class);
 
       // reload the page if changes affected the tileset
-      var tilesetPath = Paths.get(tileset.getPath()).toAbsolutePath();
+      var tilesetPath = tileset.toAbsolutePath();
       styleObjectNode.put("reload", path.endsWith(tilesetPath.getFileName()));
 
       // broadcast the changes
       sseBroadcaster.broadcast(sseEventBuilder.data(styleObjectNode.toString()).build());
     } catch (IOException e) {
-      logger.error(e.getMessage());
-    } catch (BlobStoreException e) {
-      logger.error(e.getMessage());
+      logger.error("Unable to broadcast change", e);
     }
   }
 
@@ -138,34 +132,30 @@ public class DevelopmentResources {
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @javax.ws.rs.Path("style.json")
-  public void putStyle(MbStyle json) throws JsonProcessingException, BlobStoreException {
+  public void putStyle(MbStyle json) throws IOException {
     byte[] value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(json);
-    blobStore.put(style, Blob.builder().withByteArray(value).build());
+    Files.write(style, value);
   }
 
   @PUT
   @javax.ws.rs.Path("tiles.json")
-  public void putTiles(JsonNode json) throws JsonProcessingException, BlobStoreException {
+  public void putTiles(JsonNode json) throws IOException {
     byte[] value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(json);
-    blobStore.put(tileset, Blob.builder().withByteArray(value).build());
+    Files.write(tileset, value);
   }
 
   @GET
   @javax.ws.rs.Path("style.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public MbStyle getStyle() throws BlobStoreException, IOException {
-    try (InputStream inputStream = blobStore.get(style).getInputStream()) {
-      return objectMapper.readValue(inputStream, MbStyle.class);
-    }
+  public MbStyle getStyle() throws IOException {
+    return objectMapper.readValue(Files.readAllBytes(style), MbStyle.class);
   }
 
   @GET
   @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public TileJSON getTileset() throws BlobStoreException, IOException {
-    try (InputStream inputStream = blobStore.get(tileset).getInputStream()) {
-      return objectMapper.readValue(inputStream, TileJSON.class);
-    }
+  public TileJSON getTileset() throws IOException {
+    return objectMapper.readValue(Files.readAllBytes(tileset), TileJSON.class);
   }
 
   @GET
@@ -175,12 +165,12 @@ public class DevelopmentResources {
       List<PostgresQuery> queries = Conversions.asPostgresQuery(getTileset());
       TileStore tileStore = new PostgresTileStore(dataSource, queries);
       Tile tile = new Tile(x, y, z);
-      Blob blob = tileStore.read(tile);
+      ByteBuffer blob = tileStore.read(tile);
       if (blob != null) {
         return Response.status(200)
-            .header(CONTENT_TYPE, blob.getContentType())
-            .header(CONTENT_ENCODING, blob.getContentEncoding())
-            .entity(blob.getInputStream())
+            .header(CONTENT_TYPE, TILE_TYPE)
+            .header(CONTENT_ENCODING, TILE_ENCODING)
+            .entity(blob.array())
             .build();
       } else {
         return Response.status(204).build();

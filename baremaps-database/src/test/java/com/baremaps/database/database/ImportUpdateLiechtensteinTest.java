@@ -16,8 +16,6 @@ package com.baremaps.database.database;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.baremaps.blob.BlobStore;
-import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.collection.DataStore;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.collection.LongDataOpenHashMap;
@@ -34,9 +32,10 @@ import com.baremaps.database.repository.PostgresNodeRepository;
 import com.baremaps.database.repository.PostgresRelationRepository;
 import com.baremaps.database.repository.PostgresWayRepository;
 import com.baremaps.osm.domain.Header;
+import com.google.common.io.Resources;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,7 +47,6 @@ import org.locationtech.jts.geom.Coordinate;
 
 class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
 
-  public BlobStore blobStore;
   public DataSource dataSource;
   public PostgresHeaderRepository headerRepository;
   public PostgresNodeRepository nodeRepository;
@@ -58,7 +56,6 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
   @BeforeEach
   void init() throws SQLException, IOException, URISyntaxException {
     dataSource = initDataSource();
-    blobStore = new ResourceBlobStore();
     headerRepository = new PostgresHeaderRepository(dataSource);
     nodeRepository = new PostgresNodeRepository(dataSource);
     wayRepository = new PostgresWayRepository(dataSource);
@@ -76,8 +73,7 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
 
     // Import data
     new ImportService(
-            new URI("res:///liechtenstein/liechtenstein.osm.pbf"),
-            blobStore,
+            Paths.get(Resources.getResource("liechtenstein/liechtenstein.osm.pbf").toURI()),
             coordinates,
             references,
             headerRepository,
@@ -100,7 +96,6 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
     assertEquals(
         0,
         new DiffService(
-                blobStore,
                 coordinates,
                 references,
                 headerRepository,
@@ -114,7 +109,6 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
 
     // Update the database
     new UpdateService(
-            blobStore,
             coordinates,
             references,
             headerRepository,
@@ -128,7 +122,6 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
     assertEquals(
         2,
         new DiffService(
-                blobStore,
                 coordinates,
                 references,
                 headerRepository,
@@ -141,7 +134,6 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
             .size());
 
     new UpdateService(
-            blobStore,
             coordinates,
             references,
             headerRepository,
@@ -155,7 +147,6 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
     assertEquals(
         0,
         new DiffService(
-                blobStore,
                 coordinates,
                 references,
                 headerRepository,
@@ -168,7 +159,6 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
             .size());
 
     new UpdateService(
-            blobStore,
             coordinates,
             references,
             headerRepository,

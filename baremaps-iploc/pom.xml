@@ -26,10 +26,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-blob</artifactId>
-    </dependency>
-    <dependency>
         <groupId>com.baremaps</groupId>
         <artifactId>baremaps-geocoder</artifactId>
     </dependency>

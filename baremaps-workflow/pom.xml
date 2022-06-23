@@ -18,10 +18,6 @@
     </dependency>
     <dependency>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-blob</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.baremaps</groupId>
       <artifactId>baremaps-database</artifactId>
     </dependency>
     <dependency>

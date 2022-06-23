@@ -17,7 +17,6 @@ package com.baremaps.cli.database;
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
-import com.baremaps.blob.ConfigBlobStore;
 import com.baremaps.cli.Options;
 import com.baremaps.database.postgres.PostgresUtils;
 import com.baremaps.server.resources.DevelopmentResources;
@@ -27,7 +26,7 @@ import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
-import java.net.URI;
+import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -63,14 +62,14 @@ public class Viewer implements Callable<Integer> {
       paramLabel = "TILESET",
       description = "The tileset file.",
       required = true)
-  private URI tileset;
+  private Path tileset;
 
   @Option(
       names = {"--style"},
       paramLabel = "STYLE",
       description = "The style file.",
       required = true)
-  private URI style;
+  private Path style;
 
   @Option(
       names = {"--host"},
@@ -86,7 +85,6 @@ public class Viewer implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    ConfigBlobStore blobStore = new ConfigBlobStore(options.blobStore());
     DataSource dataSource = PostgresUtils.dataSource(database);
 
     // Configure serialization
@@ -103,9 +101,8 @@ public class Viewer implements Callable<Integer> {
                   @Override
                   protected void configure() {
                     bind("viewer").to(String.class).named("assets");
-                    bind(tileset).to(URI.class).named("tileset");
-                    bind(style).to(URI.class).named("style");
-                    bind(blobStore).to(ConfigBlobStore.class);
+                    bind(tileset).to(Path.class).named("tileset");
+                    bind(style).to(Path.class).named("style");
                     bind(dataSource).to(DataSource.class);
                     bind(objectMapper).to(ObjectMapper.class);
                   }

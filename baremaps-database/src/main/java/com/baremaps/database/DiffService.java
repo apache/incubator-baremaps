@@ -16,8 +16,6 @@ package com.baremaps.database;
 
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
-import com.baremaps.blob.Blob;
-import com.baremaps.blob.BlobStore;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.database.repository.HeaderRepository;
 import com.baremaps.database.repository.Repository;
@@ -31,11 +29,6 @@ import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.CreateGeometryConsumer;
 import com.baremaps.osm.function.EntityFunction;
 import com.baremaps.osm.function.ExtractGeometryFunction;
-import com.baremaps.osm.geometry.ProjectionTransformer;
-import com.baremaps.osm.progress.InputStreamProgress;
-import com.baremaps.osm.progress.ProgressLogger;
-import com.baremaps.osm.xml.XmlChangeReader;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -45,7 +38,6 @@ import java.util.Spliterators;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import java.util.zip.GZIPInputStream;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
@@ -55,7 +47,6 @@ public class DiffService implements Callable<List<Tile>> {
 
   private static final Logger logger = LoggerFactory.getLogger(DiffService.class);
 
-  private final BlobStore blobStore;
   private final CreateGeometryConsumer createGeometryConsumer;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
@@ -65,7 +56,6 @@ public class DiffService implements Callable<List<Tile>> {
   private final int zoom;
 
   public DiffService(
-      BlobStore blobStore,
       LongDataMap<Coordinate> coordinates,
       LongDataMap<List<Long>> references,
       HeaderRepository headerRepository,
@@ -74,7 +64,6 @@ public class DiffService implements Callable<List<Tile>> {
       Repository<Long, Relation> relationRepository,
       int srid,
       int zoom) {
-    this.blobStore = blobStore;
     this.headerRepository = headerRepository;
     this.nodeRepository = nodeRepository;
     this.wayRepository = wayRepository;
@@ -86,6 +75,8 @@ public class DiffService implements Callable<List<Tile>> {
 
   @Override
   public List<Tile> call() throws Exception {
+    /*
+    TODO: remove the use of the blob store
     logger.info("Importing changes");
 
     Header header = headerRepository.selectLatest();
@@ -106,6 +97,8 @@ public class DiffService implements Callable<List<Tile>> {
               .distinct()
               .toList();
     }
+    */
+    return List.of();
   }
 
   private Stream<Tile> tilesForGeometry(Geometry geometry) {

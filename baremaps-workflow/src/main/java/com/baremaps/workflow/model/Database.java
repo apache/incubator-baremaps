@@ -15,9 +15,4 @@
 package com.baremaps.workflow.model;
 
 public record Database(
-    String host,
-    Integer port,
-    String name,
-    String schema,
-    String username,
-    String password) {}
+    String host, Integer port, String name, String schema, String username, String password) {}

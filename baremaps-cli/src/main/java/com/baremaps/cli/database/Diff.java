@@ -14,8 +14,6 @@
 
 package com.baremaps.cli.database;
 
-import com.baremaps.blob.Blob;
-import com.baremaps.blob.BlobStore;
 import com.baremaps.cli.Options;
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.database.DiffService;
@@ -32,7 +30,6 @@ import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
 import com.baremaps.osm.domain.Way;
 import java.io.PrintWriter;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -65,7 +62,7 @@ public class Diff implements Callable<Integer> {
       paramLabel = "TILES",
       description = "The tiles affected by the update.",
       required = true)
-  private URI tiles;
+  private Path tiles;
 
   @Option(
       names = {"--zoom"},
@@ -81,7 +78,6 @@ public class Diff implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    BlobStore blobStore = options.blobStore();
     DataSource datasource = PostgresUtils.dataSource(database);
     LongDataMap<Coordinate> coordinates = new PostgresCoordinateMap(datasource);
     LongDataMap<List<Long>> references = new PostgresReferenceMap(datasource);
@@ -94,7 +90,6 @@ public class Diff implements Callable<Integer> {
     Path tmpTiles = Files.createFile(Paths.get("diff.tmp"));
     try (PrintWriter printWriter = new PrintWriter(Files.newBufferedWriter(tmpTiles))) {
       new DiffService(
-              blobStore,
               coordinates,
               references,
               headerRepository,
@@ -105,12 +100,6 @@ public class Diff implements Callable<Integer> {
               zoom)
           .call();
     }
-    blobStore.put(
-        this.tiles,
-        Blob.builder()
-            .withContentLength(Files.size(tmpTiles))
-            .withInputStream(Files.newInputStream(tmpTiles))
-            .build());
     Files.deleteIfExists(tmpTiles);
 
     logger.info("Done");

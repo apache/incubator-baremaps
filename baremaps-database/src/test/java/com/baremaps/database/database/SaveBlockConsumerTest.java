@@ -18,8 +18,6 @@ import static com.baremaps.testing.TestConstants.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.baremaps.blob.BlobStoreException;
-import com.baremaps.blob.ResourceBlobStore;
 import com.baremaps.database.SaveBlockConsumer;
 import com.baremaps.database.postgres.PostgresUtils;
 import com.baremaps.database.repository.PostgresHeaderRepository;
@@ -30,11 +28,11 @@ import com.baremaps.database.repository.RepositoryException;
 import com.baremaps.osm.pbf.PbfBlockReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
+import org.apache.commons.codec.Resources;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -63,13 +61,12 @@ class SaveBlockConsumerTest {
 
   @Test
   @Tag("integration")
-  void test() throws BlobStoreException, RepositoryException, URISyntaxException {
+  void test() throws RepositoryException, URISyntaxException {
     // Import data
     SaveBlockConsumer dataImporter =
         new SaveBlockConsumer(
             headerRepository, nodeRepository, tableRepository, relationRepository);
-    InputStream inputStream =
-        new ResourceBlobStore().get(new URI("res:///simple/data.osm.pbf")).getInputStream();
+    InputStream inputStream = Resources.getInputStream("res:///simple/data.osm.pbf");
     new PbfBlockReader().stream(inputStream).forEach(dataImporter);
 
     // Check node importation
