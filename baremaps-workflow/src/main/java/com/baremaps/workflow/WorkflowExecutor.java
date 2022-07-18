@@ -21,6 +21,7 @@ import com.google.common.graph.ImmutableGraph;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -28,22 +29,22 @@ import java.util.stream.Collectors;
 /** A class for building and executing pipelines. */
 public class WorkflowExecutor {
 
-  private final Map<String, Task> steps;
+  private final Map<String, Task> tasks;
 
   private final Map<String, CompletableFuture<Void>> futures;
 
   private final Graph<String> graph;
 
-  public WorkflowExecutor(List<Task> steps) {
-    this.steps = steps.stream().collect(Collectors.toMap(s -> s.id(), s -> s));
+  public WorkflowExecutor(List<Task> tasks) {
+    this.tasks = tasks.stream().collect(Collectors.toMap(s -> s.id(), s -> s));
     this.futures = new ConcurrentHashMap<>();
 
     // Build the execution graph
     ImmutableGraph.Builder<String> graphBuilder = GraphBuilder.directed().immutable();
-    for (String id : this.steps.keySet()) {
+    for (String id : this.tasks.keySet()) {
       graphBuilder.addNode(id);
     }
-    for (Task step : this.steps.values()) {
+    for (Task step : this.tasks.values()) {
       for (String stepNeeded : step.needs()) {
         graphBuilder.putEdge(stepNeeded, step.id());
       }
@@ -72,7 +73,7 @@ public class WorkflowExecutor {
   }
 
   private CompletableFuture<Void> computeStep(String id) {
-    Runnable step = () -> steps.get(id).run();
+    Runnable step = () -> tasks.get(id);
     var predecessors = graph.predecessors(id).stream().toList();
     if (predecessors.isEmpty()) {
       return CompletableFuture.runAsync(step);

@@ -14,32 +14,44 @@
 
 package com.baremaps.testing;
 
-import com.google.common.io.Resources;
-import java.net.URL;
+import java.nio.file.Path;
 
 public class TestFiles {
 
-  public static URL get(String path) {
-    return Resources.getResource(path);
+  public static final Path DATA_OSM_PBF = resolve("data.osm.pbf");
+
+  public static final Path DATA_OSC_XML = resolve("data.osc.xml");
+
+  public static final Path DATA_OSM_XML = resolve("data.osm.xml");
+
+  public static final Path SIMPLE_DATA_DIR = resolve("simple");
+
+  public static final Path SIMPLE_DATA_OSM_PBF = resolve("simple/data.osm.pbf");
+
+  public static final Path DENSE_NODES_OSM_PBF = resolve("dense-nodes.osm.pbf");
+
+  public static final Path WAYS_OSM_PBF = resolve("ways.osm.pbf");
+
+  public static final Path RELATIONS_OSM_PBF = resolve("relations.osm.pbf");
+
+  public static final Path LIECHTENSTEIN_DIR = resolve("liechtenstein");
+
+  public static final Path LIECHTENSTEIN_OSM_PBF = resolve("liechtenstein/liechtenstein.osm.pbf");
+
+  public static final Path MONACO_DIR = resolve("monaco");
+
+  public static final Path MONACO_OSC_GZ = resolve("monaco/monaco.osc.gz");
+
+  public static final Path MONACO_OSM_BZ2 = resolve("monaco/monaco.osm.bz2");
+
+  public static final Path MONACO_OSM_PBF = resolve("monaco/monaco.osm.pbf");
+
+  public static final Path MONACO_STATE_TXT = resolve("monaco/monaco-state.txt");
+
+  public static Path resolve(String resource) {
+    Path cwd = Path.of("").toAbsolutePath();
+    Path pathFromRoot = Path.of("baremaps-testing", "src", "main", "resources", resource);
+    return cwd.resolveSibling(pathFromRoot);
   }
 
-  public static final URL DATA_OSC_XML = get("data.osc.xml");
-
-  public static final URL DATA_OSM_PBF = get("data.osm.pbf");
-
-  public static final URL DATA_OSM_XML = get("data.osm.xml");
-
-  public static final URL DENSE_NODES_OSM_PBF = get("dense-nodes.osm.pbf");
-
-  public static final URL WAYS_OSM_PBF = get("ways.osm.pbf");
-
-  public static final URL RELATIONS_OSM_PBF = get("relations.osm.pbf");
-
-  public static final URL MONACO_OSC_GZ = get("monaco/monaco.osc.gz");
-
-  public static final URL MONACO_OSM_BZ2 = get("monaco/monaco.osm.bz2");
-
-  public static final URL MONACO_OSM_PBF = get("monaco/monaco.osm.pbf");
-
-  public static final URL MONACO_STATE_TXT = get("monaco/monaco-state.txt");
 }

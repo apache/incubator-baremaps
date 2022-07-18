@@ -32,6 +32,7 @@ import com.baremaps.database.repository.PostgresNodeRepository;
 import com.baremaps.database.repository.PostgresRelationRepository;
 import com.baremaps.database.repository.PostgresWayRepository;
 import com.baremaps.osm.domain.Header;
+import com.baremaps.testing.TestFiles;
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -71,7 +72,7 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
 
     // Import data
     new ImportService(
-            Paths.get(Resources.getResource("monaco/monaco-210801.osm.pbf").toURI()),
+            TestFiles.resolve("monaco/monaco-210801.osm.pbf"),
             coordinates,
             references,
             headerRepository,
@@ -90,7 +91,7 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
         new Header(
             3047l,
             LocalDateTime.of(2021, 8, 01, 20, 21, 41, 0),
-            "res:///monaco/monaco-updates",
+            "file:///" + TestFiles.resolve("monaco"),
             "",
             ""));
 

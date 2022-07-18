@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-class BlobStoreTileStoreTest extends TileStoreTest {
+class FileTileStoreTest extends TileStoreTest {
 
   Path directory;
 

@@ -14,6 +14,8 @@
 
 package com.baremaps.database.database;
 
+import static com.baremaps.testing.TestFiles.LIECHTENSTEIN_DIR;
+import static com.baremaps.testing.TestFiles.LIECHTENSTEIN_OSM_PBF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.baremaps.collection.DataStore;
@@ -32,10 +34,8 @@ import com.baremaps.database.repository.PostgresNodeRepository;
 import com.baremaps.database.repository.PostgresRelationRepository;
 import com.baremaps.database.repository.PostgresWayRepository;
 import com.baremaps.osm.domain.Header;
-import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -73,22 +73,22 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
 
     // Import data
     new ImportService(
-            Paths.get(Resources.getResource("liechtenstein/liechtenstein.osm.pbf").toURI()),
-            coordinates,
-            references,
-            headerRepository,
-            nodeRepository,
-            wayRepository,
-            relationRepository,
-            4326,
-            3857)
+        LIECHTENSTEIN_OSM_PBF,
+        coordinates,
+        references,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        4326,
+        3857)
         .call();
     assertEquals(2434l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     // Fix the replicationUrl so that we can update the database with local files
     headerRepository.put(
         new Header(
-            2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), "res:///liechtenstein", "", ""));
+            2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0), "file:///" + LIECHTENSTEIN_DIR, "", ""));
 
     coordinates = new PostgresCoordinateMap(dataSource);
     references = new PostgresReferenceMap(dataSource);
@@ -96,76 +96,76 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
     assertEquals(
         0,
         new DiffService(
-                coordinates,
-                references,
-                headerRepository,
-                nodeRepository,
-                wayRepository,
-                relationRepository,
-                3857,
-                14)
-            .call()
-            .size());
-
-    // Update the database
-    new UpdateService(
             coordinates,
             references,
             headerRepository,
             nodeRepository,
             wayRepository,
             relationRepository,
-            3857)
+            3857,
+            14)
+            .call()
+            .size());
+
+    // Update the database
+    new UpdateService(
+        coordinates,
+        references,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        3857)
         .call();
     assertEquals(2435l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(
         2,
         new DiffService(
-                coordinates,
-                references,
-                headerRepository,
-                nodeRepository,
-                wayRepository,
-                relationRepository,
-                3857,
-                14)
-            .call()
-            .size());
-
-    new UpdateService(
             coordinates,
             references,
             headerRepository,
             nodeRepository,
             wayRepository,
             relationRepository,
-            3857)
+            3857,
+            14)
+            .call()
+            .size());
+
+    new UpdateService(
+        coordinates,
+        references,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        3857)
         .call();
     assertEquals(2436l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(
         0,
         new DiffService(
-                coordinates,
-                references,
-                headerRepository,
-                nodeRepository,
-                wayRepository,
-                relationRepository,
-                3857,
-                14)
-            .call()
-            .size());
-
-    new UpdateService(
             coordinates,
             references,
             headerRepository,
             nodeRepository,
             wayRepository,
             relationRepository,
-            3857)
+            3857,
+            14)
+            .call()
+            .size());
+
+    new UpdateService(
+        coordinates,
+        references,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        3857)
         .call();
     assertEquals(2437l, headerRepository.selectLatest().getReplicationSequenceNumber());
   }

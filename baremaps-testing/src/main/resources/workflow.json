@@ -1,0 +1,20 @@
+{
+  "tasks": [
+    {
+      "id": "osmpbf",
+      "uses": [],
+      "file": "file:///downloads/liechtenstein.osm.pbf",
+      "format": "geojson",
+      "database": {
+        "host": "%s",
+        "port": "%s",
+        "name":  "%s",
+        "schema": "%s",
+        "username":  "%s",
+        "password": "%s"
+      },
+      "sourceSRID": 4326,
+      "targetSRID": 3857
+    }
+  ]
+}

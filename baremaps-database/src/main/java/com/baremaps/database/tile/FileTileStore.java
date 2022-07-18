@@ -47,7 +47,9 @@ public class FileTileStore implements TileStore {
   @Override
   public void write(Tile tile, ByteBuffer blob) throws TileStoreException {
     try {
-      Files.write(resolve(tile), blob.array());
+      var file = resolve(tile);
+      Files.createDirectories(file.getParent());
+      Files.write(file, blob.array());
     } catch (IOException e) {
       throw new TileStoreException(e);
     }

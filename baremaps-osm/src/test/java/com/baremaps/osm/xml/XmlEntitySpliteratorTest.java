@@ -24,6 +24,7 @@ import com.baremaps.stream.AccumulatingConsumer;
 import com.baremaps.stream.HoldingConsumer;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Spliterator;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +32,7 @@ class XmlEntitySpliteratorTest {
 
   @Test
   void tryAdvance() throws IOException {
-    try (InputStream input = DATA_OSM_XML.openStream()) {
+    try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
       Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
       spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
       assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
@@ -40,7 +41,7 @@ class XmlEntitySpliteratorTest {
 
   @Test
   void forEachRemaining() throws IOException {
-    try (InputStream input = DATA_OSM_XML.openStream()) {
+    try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
       Spliterator<Entity> spliterator = new XmlEntitySpliterator(input);
       AccumulatingConsumer<Object> accumulator = new AccumulatingConsumer<>();
       spliterator.forEachRemaining(accumulator);

@@ -14,28 +14,20 @@
 
 package com.baremaps.cli.database;
 
-import static com.baremaps.database.tile.VariableUtils.interpolate;
-
 import com.baremaps.cli.Options;
-import com.baremaps.database.postgres.PostgresUtils;
-import com.baremaps.stream.StreamException;
-import com.baremaps.stream.StreamUtils;
-import com.google.common.base.Splitter;
-import java.nio.file.Files;
+import com.baremaps.workflow.Workflow;
+import com.baremaps.workflow.WorkflowExecutor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Path;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
-import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "execute", description = "Execute queries in the database.")
+@Command(name = "execute", description = "Execute a workflow.")
 public class Execute implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Execute.class);
@@ -43,48 +35,19 @@ public class Execute implements Callable<Integer> {
   @Mixin private Options options;
 
   @Option(
-      names = {"--database"},
-      paramLabel = "DATABASE",
-      description = "The JDBC url of the database.",
+      names = {"--workflow"},
+      paramLabel = "WORKFLOW",
+      description = "The workflow file.",
       required = true)
-  private String database;
-
-  @Option(
-      names = {"--file"},
-      paramLabel = "FILE",
-      description = "The SQL file to execute in the database.",
-      required = true)
-  private List<Path> files;
-
-  @Option(
-      names = {"--parallel"},
-      paramLabel = "PARALLEL",
-      negatable = true,
-      description = "Enable parallel execution of queries.")
-  public boolean parallel = true;
+  private Path config;
 
   @Override
   public Integer call() throws Exception {
-    DataSource datasource = PostgresUtils.dataSource(database);
-
-    for (Path file : files) {
-      logger.info("Execute {}", file);
-      String blob = Files.readString(file);
-      blob = interpolate(System.getenv(), blob);
-      StreamUtils.batch(Splitter.on(";").splitToStream(blob), 1)
-          .forEach(
-              query -> {
-                try (Connection connection = datasource.getConnection();
-                    Statement statement = connection.createStatement()) {
-                  statement.execute(query);
-                } catch (SQLException e) {
-                  throw new StreamException(e);
-                }
-              });
-    }
-
+    logger.info("Importing data");
+    var mapper = new ObjectMapper();
+    var workflow = mapper.readValue(config.toFile(), Workflow.class);
+    new WorkflowExecutor(Arrays.stream(workflow.tasks()).toList()).execute();
     logger.info("Done");
-
     return 0;
   }
 }

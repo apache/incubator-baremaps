@@ -26,9 +26,12 @@ import com.baremaps.database.repository.PostgresRelationRepository;
 import com.baremaps.database.repository.PostgresWayRepository;
 import com.baremaps.database.repository.RepositoryException;
 import com.baremaps.osm.pbf.PbfBlockReader;
+import com.baremaps.testing.TestFiles;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
@@ -61,29 +64,32 @@ class SaveBlockConsumerTest {
 
   @Test
   @Tag("integration")
-  void test() throws RepositoryException, URISyntaxException {
+  void test() throws RepositoryException, URISyntaxException, IOException {
     // Import data
     SaveBlockConsumer dataImporter =
         new SaveBlockConsumer(
             headerRepository, nodeRepository, tableRepository, relationRepository);
-    InputStream inputStream = Resources.getInputStream("res:///simple/data.osm.pbf");
-    new PbfBlockReader().stream(inputStream).forEach(dataImporter);
 
-    // Check node importation
-    assertNull(nodeRepository.get(0l));
-    assertNotNull(nodeRepository.get(1l));
-    assertNotNull(nodeRepository.get(2l));
-    assertNotNull(nodeRepository.get(3l));
-    assertNull(nodeRepository.get(4l));
+    try (InputStream inputStream = Files.newInputStream(TestFiles.resolve("simple/data.osm.pbf"))) {
 
-    // Check way importation
-    assertNull(tableRepository.get(0l));
-    assertNotNull(tableRepository.get(1l));
-    assertNull(tableRepository.get(2l));
+      new PbfBlockReader().stream(inputStream).forEach(dataImporter);
 
-    // Check relation importation
-    assertNull(relationRepository.get(0l));
-    assertNotNull(relationRepository.get(1l));
-    assertNull(relationRepository.get(2l));
+      // Check node importation
+      assertNull(nodeRepository.get(0l));
+      assertNotNull(nodeRepository.get(1l));
+      assertNotNull(nodeRepository.get(2l));
+      assertNotNull(nodeRepository.get(3l));
+      assertNull(nodeRepository.get(4l));
+
+      // Check way importation
+      assertNull(tableRepository.get(0l));
+      assertNotNull(tableRepository.get(1l));
+      assertNull(tableRepository.get(2l));
+
+      // Check relation importation
+      assertNull(relationRepository.get(0l));
+      assertNotNull(relationRepository.get(1l));
+      assertNull(relationRepository.get(2l));
+    }
   }
 }

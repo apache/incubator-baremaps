@@ -21,6 +21,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,13 +38,20 @@ public record ExecuteQuery(String id, List<String> needs, Database database, Str
             database.name(),
             database.username(),
             database.password());
+
     var config = new HikariConfig();
     config.setPoolName("BaremapsDataSource");
     config.setJdbcUrl(url);
     config.setMaximumPoolSize(Runtime.getRuntime().availableProcessors());
 
     try (var dataSource = new HikariDataSource(config)) {
-      Arrays.stream(Files.readString(Paths.get(file)).split(";")).forEach(query -> {});
+      Arrays.stream(Files.readString(Paths.get(file)).split(";")).forEach(query -> {
+        try(var connection = dataSource.getConnection()) {
+          connection.createStatement().execute(query);
+        } catch (SQLException e) {
+          throw new RuntimeException(e);
+        }
+      });
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

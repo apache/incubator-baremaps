@@ -14,6 +14,9 @@
 
 package com.baremaps.database.database;
 
+import static com.baremaps.testing.TestFiles.SIMPLE_DATA_DIR;
+import static com.baremaps.testing.TestFiles.DATA_OSM_PBF;
+import static com.baremaps.testing.TestFiles.SIMPLE_DATA_OSM_PBF;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -34,9 +37,7 @@ import com.baremaps.database.repository.PostgresWayRepository;
 import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Way;
-import com.google.common.io.Resources;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -74,19 +75,19 @@ class ImportUpdateDataTest extends PostgresBaseTest {
 
     // Import data
     new ImportService(
-            Paths.get(Resources.getResource("simple/data.osm.pbf").toURI()),
-            coordinates,
-            references,
-            headerRepository,
-            nodeRepository,
-            wayRepository,
-            relationRepository,
-            4326,
-            3857)
+        SIMPLE_DATA_OSM_PBF,
+        coordinates,
+        references,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        4326,
+        3857)
         .call();
 
     headerRepository.put(
-        new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), "res:///simple", "", ""));
+        new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), "file:///" + SIMPLE_DATA_DIR, "", ""));
 
     // Check node importation
     assertNull(nodeRepository.get(0l));
@@ -116,13 +117,13 @@ class ImportUpdateDataTest extends PostgresBaseTest {
 
     // Update the database
     new UpdateService(
-            new PostgresCoordinateMap(dataSource),
-            new PostgresReferenceMap(dataSource),
-            headerRepository,
-            nodeRepository,
-            wayRepository,
-            relationRepository,
-            3857)
+        new PostgresCoordinateMap(dataSource),
+        new PostgresReferenceMap(dataSource),
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        3857)
         .call();
 
     // Check deletions

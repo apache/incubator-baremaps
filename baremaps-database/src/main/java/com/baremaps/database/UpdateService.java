@@ -14,16 +14,34 @@
 
 package com.baremaps.database;
 
+import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
+
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.database.repository.HeaderRepository;
 import com.baremaps.database.repository.Repository;
+import com.baremaps.osm.domain.Change;
+import com.baremaps.osm.domain.Entity;
+import com.baremaps.osm.domain.Header;
 import com.baremaps.osm.domain.Node;
 import com.baremaps.osm.domain.Relation;
+import com.baremaps.osm.domain.State;
 import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.function.ChangeEntityConsumer;
+import com.baremaps.osm.function.CreateGeometryConsumer;
+import com.baremaps.osm.function.ReprojectEntityConsumer;
+import com.baremaps.osm.state.StateReader;
+import com.baremaps.osm.xml.XmlChangeReader;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.zip.GZIPInputStream;
 import org.locationtech.jts.geom.Coordinate;
 
 public class UpdateService implements Callable<Void> {
@@ -55,7 +73,6 @@ public class UpdateService implements Callable<Void> {
 
   @Override
   public Void call() throws Exception {
-    /* TODO: remove the use of the blob store
     Header header = headerRepository.selectLatest();
     String replicationUrl = header.getReplicationUrl();
     Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
@@ -68,18 +85,13 @@ public class UpdateService implements Callable<Void> {
     Consumer<Change> saveChange =
         new SaveChangeConsumer(nodeRepository, wayRepository, relationRepository);
 
-    URI changeUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
-    Blob changeBlob = blobStore.get(changeUri);
-    ProgressLogger progressLogger = new ProgressLogger(changeBlob.getContentLength(), 5000);
-    try (InputStream blobInputStream = changeBlob.getInputStream();
-        InputStream progressInputStream = new InputStreamProgress(blobInputStream, progressLogger);
-        InputStream gzipInputStream = new GZIPInputStream(progressInputStream)) {
-      new XmlChangeReader().stream(gzipInputStream).map(prepareChange).forEach(saveChange);
+    URL changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
+    try (InputStream changeInputStream = new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
+      new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(saveChange);
     }
 
-    URI stateUri = resolve(replicationUrl, sequenceNumber, "state.txt");
-    Blob stateBlob = blobStore.get(stateUri);
-    try (InputStream stateInputStream = stateBlob.getInputStream()) {
+    URL stateUrl = resolve(replicationUrl, sequenceNumber, "state.txt");
+    try (InputStream stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
       State state = new StateReader().state(stateInputStream);
       headerRepository.put(
           new Header(
@@ -89,16 +101,15 @@ public class UpdateService implements Callable<Void> {
               header.getSource(),
               header.getWritingProgram()));
     }
-    */
+
     return null;
   }
 
-  public URI resolve(String replicationUrl, Long sequenceNumber, String extension)
-      throws URISyntaxException {
+  public URL resolve(String replicationUrl, Long sequenceNumber, String extension) throws MalformedURLException {
     String s = String.format("%09d", sequenceNumber);
-    return new URI(
-        String.format(
-            "%s/%s/%s/%s.%s",
-            replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension));
+    String uri = String.format(
+        "%s/%s/%s/%s.%s",
+        replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension);
+    return URI.create(uri).toURL();
   }
 }

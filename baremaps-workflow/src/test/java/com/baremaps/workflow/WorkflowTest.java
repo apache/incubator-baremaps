@@ -117,5 +117,6 @@ class WorkflowTest extends PostgresBaseTest {
         .build()
         .execute()
         .join();
+
   }
 }

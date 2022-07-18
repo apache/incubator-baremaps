@@ -29,8 +29,15 @@ import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.CreateGeometryConsumer;
 import com.baremaps.osm.function.EntityFunction;
 import com.baremaps.osm.function.ExtractGeometryFunction;
+import com.baremaps.osm.geometry.ProjectionTransformer;
+import com.baremaps.osm.progress.InputStreamProgress;
+import com.baremaps.osm.xml.XmlChangeReader;
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
@@ -38,6 +45,7 @@ import java.util.Spliterators;
 import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import java.util.zip.GZIPInputStream;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
@@ -75,30 +83,23 @@ public class DiffService implements Callable<List<Tile>> {
 
   @Override
   public List<Tile> call() throws Exception {
-    /*
-    TODO: remove the use of the blob store
     logger.info("Importing changes");
 
     Header header = headerRepository.selectLatest();
     String replicationUrl = header.getReplicationUrl();
     Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
-    URI changeUri = resolve(replicationUrl, sequenceNumber, "osc.gz");
+    URL changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
 
-    Blob blob = blobStore.get(changeUri);
-    ProgressLogger progressLogger = new ProgressLogger(blob.getContentLength(), 5000);
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(srid, 4326);
-    try (InputStream changesInputStream =
-        new GZIPInputStream(new InputStreamProgress(blob.getInputStream(), progressLogger))) {
+    try (InputStream changeInputStream = new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
       return new XmlChangeReader()
-          .stream(changesInputStream)
+          .stream(changeInputStream)
               .flatMap(this::geometriesForChange)
               .map(projectionTransformer::transform)
               .flatMap(this::tilesForGeometry)
               .distinct()
               .toList();
     }
-    */
-    return List.of();
   }
 
   private Stream<Tile> tilesForGeometry(Geometry geometry) {
@@ -163,12 +164,11 @@ public class DiffService implements Callable<List<Tile>> {
         .flatMap(new ExtractGeometryFunction().andThen(Optional::stream));
   }
 
-  private URI resolve(String replicationUrl, Long sequenceNumber, String extension)
-      throws URISyntaxException {
+  public URL resolve(String replicationUrl, Long sequenceNumber, String extension) throws MalformedURLException {
     String s = String.format("%09d", sequenceNumber);
-    return new URI(
-        String.format(
-            "%s/%s/%s/%s.%s",
-            replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension));
+    String uri = String.format(
+        "%s/%s/%s/%s.%s",
+        replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension);
+    return URI.create(uri).toURL();
   }
 }
