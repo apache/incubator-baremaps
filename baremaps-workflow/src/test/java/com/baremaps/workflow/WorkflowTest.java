@@ -52,7 +52,6 @@ class WorkflowTest extends PostgresBaseTest {
                 List.of("fetch-osmpbf"),
                 "downloads/liechtenstein.osm.pbf",
                 getJdbcUrl(),
-                4326,
                 3857),
             new DownloadUrl(
                 "fetch-shapefile",
