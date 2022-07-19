@@ -12,12 +12,10 @@
  * the License.
  */
 
-package com.baremaps.cli.database;
+package com.baremaps.workflow.tasks;
 
 import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
-import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 
-import com.baremaps.cli.Options;
 import com.baremaps.database.postgres.PostgresUtils;
 import com.baremaps.database.tile.FileTileStore;
 import com.baremaps.database.tile.MBTiles;
@@ -32,120 +30,68 @@ import com.baremaps.model.Query;
 import com.baremaps.model.TileJSON;
 import com.baremaps.osm.progress.StreamProgress;
 import com.baremaps.stream.StreamUtils;
+import com.baremaps.workflow.Task;
+import com.baremaps.workflow.WorkflowException;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Envelope;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Mixin;
-import picocli.CommandLine.Option;
 
-@Command(name = "export", description = "Export vector tiles from the database.")
-public class Export implements Callable<Integer> {
-
-  private static final Logger logger = LoggerFactory.getLogger(Export.class);
-
-  @Mixin private Options options;
-
-  @Option(
-      names = {"--database"},
-      paramLabel = "DATABASE",
-      description = "The JDBC url of the Postgres database.",
-      required = true)
-  private String database;
-
-  @Option(
-      names = {"--tileset"},
-      paramLabel = "TILESET",
-      description = "The tileset file.",
-      required = true)
-  private Path tileset;
-
-  @Option(
-      names = {"--repository"},
-      paramLabel = "URL",
-      description = "The tile repository URL.",
-      required = true)
-  private Path repository;
-
-  @Option(
-      names = {"--tiles"},
-      paramLabel = "TILES",
-      description = "The tiles to export.")
-  private Path tiles;
-
-  @Option(
-      names = {"--batch-array-size"},
-      paramLabel = "BATCH_ARRAY_SIZE",
-      description = "The size of the batch array.")
-  private int batchArraySize = 1;
-
-  @Option(
-      names = {"--batch-array-index"},
-      paramLabel = "READER",
-      description = "The index of the batch in the array.")
-  private int batchArrayIndex = 0;
-
-  @Option(
-      names = {"--mbtiles"},
-      paramLabel = "MBTILES",
-      description = "The repository is in the MBTiles format.")
-  private boolean mbtiles = false;
+public record ExportVectorTiles(
+    String id,
+    List<String> needs,
+    String database,
+    String tileset,
+    String repository,
+    int batchArraySize,
+    int batchArrayIndex,
+    boolean mbtiles)
+    implements Task {
 
   @Override
-  public Integer call() throws TileStoreException, IOException {
-    ObjectMapper mapper = defaultObjectMapper();
-    DataSource datasource = PostgresUtils.dataSource(database);
+  public void run() {
+    try {
+      ObjectMapper mapper =
+          new ObjectMapper()
+              .configure(Feature.IGNORE_UNKNOWN, true)
+              .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+              .setSerializationInclusion(Include.NON_NULL)
+              .setSerializationInclusion(Include.NON_EMPTY);
 
-    TileJSON source = mapper.readValue(Files.readAllBytes(tileset), TileJSON.class);
-    TileStore tileSource = sourceTileStore(source, datasource);
-    TileStore tileTarget = targetTileStore(source);
+      DataSource datasource = PostgresUtils.dataSource(database);
 
-    Stream<Tile> stream;
-    if (tiles == null) {
+      TileJSON source = mapper.readValue(Files.readAllBytes(Paths.get(tileset)), TileJSON.class);
+      TileStore tileSource = sourceTileStore(source, datasource);
+      TileStore tileTarget = targetTileStore(source);
+
       Envelope envelope =
           new Envelope(
               source.getBounds().get(0), source.getBounds().get(2),
               source.getBounds().get(1), source.getBounds().get(3));
       long count = Tile.count(envelope, source.getMinzoom(), source.getMaxzoom());
-      stream =
+      Stream<Tile> stream =
           StreamUtils.stream(Tile.iterator(envelope, source.getMinzoom(), source.getMaxzoom()))
               .peek(new StreamProgress<>(count, 5000));
-    } else {
-      stream =
-          Files.lines(tiles)
-              .flatMap(
-                  line -> {
-                    String[] array = line.split(",");
-                    int x = Integer.parseInt(array[0]);
-                    int y = Integer.parseInt(array[1]);
-                    int z = Integer.parseInt(array[2]);
-                    Tile tile = new Tile(x, y, z);
-                    return StreamUtils.stream(
-                        Tile.iterator(tile.envelope(), source.getMinzoom(), source.getMaxzoom()));
-                  });
+
+      StreamUtils.batch(stream, 10)
+          .filter(new TileBatchPredicate(batchArraySize, batchArrayIndex))
+          .forEach(new TileChannel(tileSource, tileTarget));
+    } catch (Exception exception) {
+      throw new WorkflowException(exception);
     }
-
-    logger.info("Exporting tiles");
-    StreamUtils.batch(stream, 10)
-        .filter(new TileBatchPredicate(batchArraySize, batchArrayIndex))
-        .forEach(new TileChannel(tileSource, tileTarget));
-    logger.info("Done");
-
-    return 0;
   }
 
   private TileStore sourceTileStore(TileJSON tileset, DataSource datasource) {
@@ -156,13 +102,13 @@ public class Export implements Callable<Integer> {
   private TileStore targetTileStore(TileJSON source) throws TileStoreException, IOException {
     if (mbtiles) {
       SQLiteDataSource dataSource = new SQLiteDataSource();
-      dataSource.setUrl("jdbc:sqlite:" + repository.toString());
+      dataSource.setUrl("jdbc:sqlite:" + repository);
       MBTiles tilesStore = new MBTiles(dataSource);
       tilesStore.initializeDatabase();
       tilesStore.writeMetadata(metadata(source));
       return tilesStore;
     } else {
-      return new FileTileStore(repository);
+      return new FileTileStore(Paths.get(repository));
     }
   }
 

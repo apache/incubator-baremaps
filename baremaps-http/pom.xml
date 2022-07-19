@@ -143,11 +143,6 @@
   </build>
 
   <dependencies>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-workflow</artifactId>
-    </dependency>
-
     <!-- database -->
     <dependency>
       <artifactId>postgresql</artifactId>

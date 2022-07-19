@@ -66,6 +66,8 @@ public abstract class PostgresBaseTest {
   }
 
   public String getJdbcUrl() {
-    return String.format("%s&user=%s&password=%s&currentSchema=%s", container.getJdbcUrl(), container.getUsername(), container.getPassword(), "public");
+    return String.format(
+        "%s&user=%s&password=%s&currentSchema=%s",
+        container.getJdbcUrl(), container.getUsername(), container.getPassword(), "public");
   }
 }

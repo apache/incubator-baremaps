@@ -35,7 +35,6 @@ import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -86,7 +85,8 @@ public class UpdateService implements Callable<Void> {
         new SaveChangeConsumer(nodeRepository, wayRepository, relationRepository);
 
     URL changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
-    try (InputStream changeInputStream = new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
+    try (InputStream changeInputStream =
+        new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
       new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(saveChange);
     }
 
@@ -105,11 +105,13 @@ public class UpdateService implements Callable<Void> {
     return null;
   }
 
-  public URL resolve(String replicationUrl, Long sequenceNumber, String extension) throws MalformedURLException {
+  public URL resolve(String replicationUrl, Long sequenceNumber, String extension)
+      throws MalformedURLException {
     String s = String.format("%09d", sequenceNumber);
-    String uri = String.format(
-        "%s/%s/%s/%s.%s",
-        replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension);
+    String uri =
+        String.format(
+            "%s/%s/%s/%s.%s",
+            replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension);
     return URI.create(uri).toURL();
   }
 }

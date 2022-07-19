@@ -16,7 +16,6 @@ package com.baremaps.cli;
 
 import com.baremaps.cli.Baremaps.VersionProvider;
 import com.baremaps.cli.database.Editor;
-import com.baremaps.cli.database.Export;
 import com.baremaps.cli.database.Execute;
 import com.baremaps.cli.database.Init;
 import com.baremaps.cli.database.Server;
@@ -48,7 +47,6 @@ import picocli.CommandLine.Option;
       Init.class,
       Execute.class,
       Update.class,
-      Export.class,
       Editor.class,
       Viewer.class,
       Server.class,

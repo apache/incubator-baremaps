@@ -28,55 +28,54 @@ class WorkflowTest extends PostgresBaseTest {
   @Test
   @Disabled
   void execute() {
-    var workflow = new Workflow(
-        new DownloadUrl(
-            "fetch-geopackage",
-            List.of(),
-            "https://tiles.baremaps.com/samples/import_db.gpkg",
-            "downloads/import_db.gpkg"),
-        new ImportGeoPackage(
-            "import-geopackage",
-            List.of("fetch-geopackage"),
-            "downloads/import_db.gpkg",
-            getJdbcUrl(),
-            4326,
-            3857),
-        new DownloadUrl(
-            "fetch-osmpbf",
-            List.of(),
-            "https://tiles.baremaps.com/samples/liechtenstein.osm.pbf",
-            "downloads/liechtenstein.osm.pbf"),
-        new ImportOsmPbf(
-            "import-osmpbf",
-            List.of("fetch-osmpbf"),
-            "downloads/liechtenstein.osm.pbf",
-            getJdbcUrl(),
-            4326,
-            3857),
-        new DownloadUrl(
-            "fetch-shapefile",
-            List.of(),
-            "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
-            "downloads/simplified-water-polygons-split-3857.zip"),
-        new UnzipFile(
-            "unzip-shapefile",
-            List.of("fetch-shapefile"),
-            "downloads/simplified-water-polygons-split-3857.zip",
-            "archives"),
-        new DownloadUrl(
-            "fetch-projection",
-            List.of("unzip-shapefile"),
-            "https://spatialreference.org/ref/sr-org/epsg3857/prj/",
-            "archives/simplified-water-polygons-split-3857/simplified_water_polygons.prj"),
-        new ImportShapefile(
-            "import-shapefile",
-            List.of("fetch-projection"),
-            "archives/simplified-water-polygons-split-3857/simplified_water_polygons.shp",
-            getJdbcUrl(),
-            3857,
-            3857));
-    new WorkflowExecutor(workflow)
-        .execute()
-        .join();
+    var workflow =
+        new Workflow(
+            new DownloadUrl(
+                "fetch-geopackage",
+                List.of(),
+                "https://tiles.baremaps.com/samples/import_db.gpkg",
+                "downloads/import_db.gpkg"),
+            new ImportGeoPackage(
+                "import-geopackage",
+                List.of("fetch-geopackage"),
+                "downloads/import_db.gpkg",
+                getJdbcUrl(),
+                4326,
+                3857),
+            new DownloadUrl(
+                "fetch-osmpbf",
+                List.of(),
+                "https://tiles.baremaps.com/samples/liechtenstein.osm.pbf",
+                "downloads/liechtenstein.osm.pbf"),
+            new ImportOsmPbf(
+                "import-osmpbf",
+                List.of("fetch-osmpbf"),
+                "downloads/liechtenstein.osm.pbf",
+                getJdbcUrl(),
+                4326,
+                3857),
+            new DownloadUrl(
+                "fetch-shapefile",
+                List.of(),
+                "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
+                "downloads/simplified-water-polygons-split-3857.zip"),
+            new UnzipFile(
+                "unzip-shapefile",
+                List.of("fetch-shapefile"),
+                "downloads/simplified-water-polygons-split-3857.zip",
+                "archives"),
+            new DownloadUrl(
+                "fetch-projection",
+                List.of("unzip-shapefile"),
+                "https://spatialreference.org/ref/sr-org/epsg3857/prj/",
+                "archives/simplified-water-polygons-split-3857/simplified_water_polygons.prj"),
+            new ImportShapefile(
+                "import-shapefile",
+                List.of("fetch-projection"),
+                "archives/simplified-water-polygons-split-3857/simplified_water_polygons.shp",
+                getJdbcUrl(),
+                3857,
+                3857));
+    new WorkflowExecutor(workflow).execute().join();
   }
 }

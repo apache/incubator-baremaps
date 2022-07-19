@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 @JsonSerialize
 @JsonTypeInfo(use = Id.CLASS, property = "type")
@@ -29,5 +28,4 @@ public interface Task extends Runnable {
   String id();
 
   List<String> needs();
-
 }

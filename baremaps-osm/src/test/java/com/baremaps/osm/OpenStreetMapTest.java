@@ -144,7 +144,8 @@ class OpenStreetMapTest {
 
   @Test
   void monacoOsmBz2() throws IOException, URISyntaxException {
-    try (InputStream inputStream = new BZip2CompressorInputStream(Files.newInputStream(MONACO_OSM_BZ2))) {
+    try (InputStream inputStream =
+        new BZip2CompressorInputStream(Files.newInputStream(MONACO_OSM_BZ2))) {
       Stream<Entity> stream = new XmlEntityReader().stream(inputStream);
       process(stream, 1, 1, 24951, 4015, 243);
     }

@@ -15,7 +15,6 @@
 package com.baremaps.database.database;
 
 import static com.baremaps.testing.TestFiles.SIMPLE_DATA_DIR;
-import static com.baremaps.testing.TestFiles.DATA_OSM_PBF;
 import static com.baremaps.testing.TestFiles.SIMPLE_DATA_OSM_PBF;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -75,19 +74,20 @@ class ImportUpdateDataTest extends PostgresBaseTest {
 
     // Import data
     new ImportService(
-        SIMPLE_DATA_OSM_PBF,
-        coordinates,
-        references,
-        headerRepository,
-        nodeRepository,
-        wayRepository,
-        relationRepository,
-        4326,
-        3857)
+            SIMPLE_DATA_OSM_PBF,
+            coordinates,
+            references,
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
+            4326,
+            3857)
         .call();
 
     headerRepository.put(
-        new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), "file:///" + SIMPLE_DATA_DIR, "", ""));
+        new Header(
+            0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), "file:///" + SIMPLE_DATA_DIR, "", ""));
 
     // Check node importation
     assertNull(nodeRepository.get(0l));
@@ -117,13 +117,13 @@ class ImportUpdateDataTest extends PostgresBaseTest {
 
     // Update the database
     new UpdateService(
-        new PostgresCoordinateMap(dataSource),
-        new PostgresReferenceMap(dataSource),
-        headerRepository,
-        nodeRepository,
-        wayRepository,
-        relationRepository,
-        3857)
+            new PostgresCoordinateMap(dataSource),
+            new PostgresReferenceMap(dataSource),
+            headerRepository,
+            nodeRepository,
+            wayRepository,
+            relationRepository,
+            3857)
         .call();
 
     // Check deletions

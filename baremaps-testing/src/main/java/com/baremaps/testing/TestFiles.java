@@ -53,5 +53,4 @@ public class TestFiles {
     Path pathFromRoot = Path.of("baremaps-testing", "src", "main", "resources", resource);
     return cwd.resolveSibling(pathFromRoot);
   }
-
 }

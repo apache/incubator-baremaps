@@ -30,13 +30,11 @@ import com.baremaps.osm.function.CreateGeometryConsumer;
 import com.baremaps.osm.function.EntityFunction;
 import com.baremaps.osm.function.ExtractGeometryFunction;
 import com.baremaps.osm.geometry.ProjectionTransformer;
-import com.baremaps.osm.progress.InputStreamProgress;
 import com.baremaps.osm.xml.XmlChangeReader;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
@@ -91,7 +89,8 @@ public class DiffService implements Callable<List<Tile>> {
     URL changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
 
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(srid, 4326);
-    try (InputStream changeInputStream = new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
+    try (InputStream changeInputStream =
+        new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
       return new XmlChangeReader()
           .stream(changeInputStream)
               .flatMap(this::geometriesForChange)
@@ -164,11 +163,13 @@ public class DiffService implements Callable<List<Tile>> {
         .flatMap(new ExtractGeometryFunction().andThen(Optional::stream));
   }
 
-  public URL resolve(String replicationUrl, Long sequenceNumber, String extension) throws MalformedURLException {
+  public URL resolve(String replicationUrl, Long sequenceNumber, String extension)
+      throws MalformedURLException {
     String s = String.format("%09d", sequenceNumber);
-    String uri = String.format(
-        "%s/%s/%s/%s.%s",
-        replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension);
+    String uri =
+        String.format(
+            "%s/%s/%s/%s.%s",
+            replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension);
     return URI.create(uri).toURL();
   }
 }

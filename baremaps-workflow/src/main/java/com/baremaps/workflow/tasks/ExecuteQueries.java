@@ -36,13 +36,14 @@ public record ExecuteQueries(String id, List<String> needs, String database, Str
     config.setMaximumPoolSize(Runtime.getRuntime().availableProcessors());
     try (var dataSource = new HikariDataSource(config)) {
       Stream<String> queries = Arrays.stream(Files.readString(Paths.get(file)).split(";"));
-      queries.forEach(query -> {
-        try(var connection = dataSource.getConnection()) {
-          connection.createStatement().execute(query);
-        } catch (SQLException e) {
-          throw new WorkflowException(e);
-        }
-      });
+      queries.forEach(
+          query -> {
+            try (var connection = dataSource.getConnection()) {
+              connection.createStatement().execute(query);
+            } catch (SQLException e) {
+              throw new WorkflowException(e);
+            }
+          });
     } catch (Exception e) {
       throw new WorkflowException(e);
     }

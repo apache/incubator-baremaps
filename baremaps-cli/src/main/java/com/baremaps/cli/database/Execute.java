@@ -19,7 +19,6 @@ import com.baremaps.workflow.Workflow;
 import com.baremaps.workflow.WorkflowExecutor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +45,7 @@ public class Execute implements Callable<Integer> {
     logger.info("Importing data");
     var mapper = new ObjectMapper();
     var workflow = mapper.readValue(config.toFile(), Workflow.class);
-    new WorkflowExecutor(Arrays.stream(workflow.tasks()).toList()).execute();
+    new WorkflowExecutor(workflow).execute();
     logger.info("Done");
     return 0;
   }

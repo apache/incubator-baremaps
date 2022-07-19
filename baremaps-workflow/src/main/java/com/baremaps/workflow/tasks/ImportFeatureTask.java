@@ -42,11 +42,10 @@ public interface ImportFeatureTask extends Task {
       var host = uri.getHost();
       var port = uri.getPort();
       var database = uri.getPath().substring(1);
-      var params = Arrays.stream(uri.getQuery().split("&"))
-          .map(param -> param.split("=", 2))
-          .collect(Collectors.toMap(
-              param -> param[0],
-              param -> param[1]));
+      var params =
+          Arrays.stream(uri.getQuery().split("&"))
+              .map(param -> param.split("=", 2))
+              .collect(Collectors.toMap(param -> param[0], param -> param[1]));
       var user = params.get("user");
       var password = params.get("password");
       var schema = params.getOrDefault("currentSchema", "public");
@@ -71,7 +70,8 @@ public interface ImportFeatureTask extends Task {
             if (sourceSRID().equals(targetSRID())) {
               targetFeatureSet.add(sourceFeatureStream.iterator());
             } else {
-              var reprojectedFeatures = sourceFeatureStream.map(feature -> reprojectFeature(feature));
+              var reprojectedFeatures =
+                  sourceFeatureStream.map(feature -> reprojectFeature(feature));
               targetFeatureSet.add(reprojectedFeatures.iterator());
             }
           }
@@ -85,7 +85,8 @@ public interface ImportFeatureTask extends Task {
   default Feature reprojectFeature(Feature feature) {
     for (var property : feature.getType().getProperties(false)) {
       String name = property.getName().toString();
-      if (property instanceof AttributeType && feature.getPropertyValue(name) instanceof Geometry inputGeometry) {
+      if (property instanceof AttributeType
+          && feature.getPropertyValue(name) instanceof Geometry inputGeometry) {
         Geometry outputGeometry =
             new ProjectionTransformer(sourceSRID(), targetSRID()).transform(inputGeometry);
         feature.setPropertyValue(name, outputGeometry);

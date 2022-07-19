@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.workflow.tasks;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -5,11 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.testing.TestFiles;
 import com.baremaps.workflow.PostgresBaseTest;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Comparator;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +32,14 @@ class ImportShapefileTest extends PostgresBaseTest {
     var directory = Files.createTempDirectory("tmp_");
     var unzip = new UnzipFile("id", List.of(), zip.toString(), directory.toString());
     unzip.run();
-    var task = new ImportShapefile("id", List.of(), directory.resolve("gis_osm_buildings_a_free_1.shp").toString(), getJdbcUrl(), 4326, 3857);
+    var task =
+        new ImportShapefile(
+            "id",
+            List.of(),
+            directory.resolve("gis_osm_buildings_a_free_1.shp").toString(),
+            getJdbcUrl(),
+            4326,
+            3857);
     task.run();
     FileUtils.deleteRecursively(directory);
   }
