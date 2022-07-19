@@ -32,8 +32,6 @@ class DownloadUrlTest {
     file.deleteOnExit();
     var task =
         new DownloadUrl(
-            "id",
-            List.of(),
             "https://raw.githubusercontent.com/baremaps/baremaps/main/README.md",
             file.getAbsolutePath());
     task.run();

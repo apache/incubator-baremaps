@@ -25,7 +25,4 @@ import java.util.List;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public interface Task extends Runnable {
 
-  String id();
-
-  List<String> needs();
 }

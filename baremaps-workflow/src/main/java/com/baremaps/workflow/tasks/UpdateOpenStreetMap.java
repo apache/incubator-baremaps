@@ -41,8 +41,6 @@ import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
 
 public record UpdateOpenStreetMap(
-    String id,
-    List<String> needs,
     String database,
     Integer databaseSrid)
     implements Task {

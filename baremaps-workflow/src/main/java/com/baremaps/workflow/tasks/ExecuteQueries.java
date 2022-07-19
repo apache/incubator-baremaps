@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-public record ExecuteQueries(String id, List<String> needs, String database, String file)
+public record ExecuteQueries(String database, String file)
     implements Task {
 
   @Override

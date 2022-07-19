@@ -21,8 +21,6 @@ import org.apache.sis.storage.DataStores;
 import org.apache.sis.storage.FeatureSet;
 
 public record ImportGeoJson(
-    String id,
-    List<String> needs,
     String file,
     String database,
     Integer sourceSRID,

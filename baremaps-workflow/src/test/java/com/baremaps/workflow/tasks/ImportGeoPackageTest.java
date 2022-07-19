@@ -15,7 +15,6 @@
 package com.baremaps.workflow.tasks;
 
 import com.baremaps.testing.TestFiles;
-import com.baremaps.testing.PostgresContainerTest;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -24,8 +23,7 @@ class ImportGeoPackageTest extends PostgresContainerTest {
   @Test
   void run() {
     var task =
-        new ImportGeoPackage(
-            "id", List.of(), TestFiles.resolve("data.gpkg").toString(), getJdbcUrl(), 4326, 3857);
+        new ImportGeoPackage(TestFiles.resolve("data.gpkg").toString(), jdbcUrl(), 4326, 3857);
     task.run();
   }
 }

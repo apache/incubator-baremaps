@@ -27,22 +27,22 @@ import java.util.stream.Collectors;
 /** A class for building and executing pipelines. */
 public class WorkflowExecutor {
 
-  private final Map<String, Task> tasks;
+  private final Map<String, Step> steps;
 
   private final Map<String, CompletableFuture<Void>> futures;
 
   private final Graph<String> graph;
 
   public WorkflowExecutor(Workflow workflow) {
-    this.tasks = Arrays.stream(workflow.tasks()).collect(Collectors.toMap(s -> s.id(), s -> s));
+    this.steps = Arrays.stream(workflow.tasks()).collect(Collectors.toMap(s -> s.id(), s -> s));
     this.futures = new ConcurrentHashMap<>();
 
     // Build the execution graph
     ImmutableGraph.Builder<String> graphBuilder = GraphBuilder.directed().immutable();
-    for (String id : this.tasks.keySet()) {
+    for (String id : this.steps.keySet()) {
       graphBuilder.addNode(id);
     }
-    for (Task step : this.tasks.values()) {
+    for (Step step : this.steps.values()) {
       for (String stepNeeded : step.needs()) {
         graphBuilder.putEdge(stepNeeded, step.id());
       }
@@ -71,7 +71,7 @@ public class WorkflowExecutor {
   }
 
   private CompletableFuture<Void> computeStep(String id) {
-    Runnable step = () -> tasks.get(id);
+    Runnable step = () -> steps.get(id).task();
     var predecessors = graph.predecessors(id).stream().toList();
     if (predecessors.isEmpty()) {
       return CompletableFuture.runAsync(step);

@@ -29,7 +29,7 @@ class UnzipFileTest {
   void run() throws IOException {
     var zip = TestFiles.resolve("monaco-shapefile.zip");
     var directory = Files.createTempDirectory("tmp_");
-    var task = new UnzipFile("id", List.of(), zip.toString(), directory.toString());
+    var task = new UnzipFile(zip.toString(), directory.toString());
     task.run();
     FileUtils.deleteRecursively(directory);
   }

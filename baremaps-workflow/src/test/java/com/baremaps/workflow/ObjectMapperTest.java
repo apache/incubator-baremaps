@@ -14,6 +14,8 @@
 
 package com.baremaps.workflow;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import com.baremaps.workflow.tasks.DownloadUrl;
 import com.baremaps.workflow.tasks.UnzipFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,17 +29,22 @@ public class ObjectMapperTest {
   public void test() throws IOException {
     var mapper = new ObjectMapper();
 
+    // serialize the workflow
     var workflow1 =
         new Workflow(
-            new DownloadUrl(
-                "download", List.of(), "http://www.baremaps.com/download.zip", "download.zip"),
-            new UnzipFile("unzip", List.of("download"), "download.zip", "download"));
-
+            new Step(
+                "download", List.of(),
+                new DownloadUrl("http://www.baremaps.com/download.zip", "download.zip")),
+            new Step(
+                "unzip", List.of("download"),
+                new UnzipFile("download.zip", "download")));
     var json = mapper.writeValueAsString(workflow1);
-    System.out.println(json);
+    assertTrue(json.contains(DownloadUrl.class.getSimpleName()));
+    assertTrue(json.contains(UnzipFile.class.getSimpleName()));
 
+    // deserialize the workflow
     var workflow2 = mapper.readValue(json, Workflow.class);
-    System.out.println(workflow2.tasks()[0].getClass().getSimpleName());
-    System.out.println(workflow2.tasks()[1].getClass().getSimpleName());
+    assertTrue(workflow2.tasks()[0].task() instanceof DownloadUrl);
+    assertTrue(workflow2.tasks()[1].task() instanceof UnzipFile);
   }
 }

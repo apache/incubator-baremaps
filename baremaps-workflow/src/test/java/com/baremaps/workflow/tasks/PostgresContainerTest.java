@@ -12,16 +12,19 @@
  * the License.
  */
 
-package com.baremaps.database.database;
+package com.baremaps.workflow.tasks;
 
 import com.baremaps.database.postgres.PostgresUtils;
+import com.google.common.io.Resources;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.postgresql.ds.PGSimpleDataSource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -42,30 +45,10 @@ public abstract class PostgresContainerTest {
     container.stop();
   }
 
-  public DataSource initDataSource() throws SQLException, IOException {
-    DataSource dataSource = PostgresUtils.dataSource(getJdbcUrl(), 1);
-    try (Connection connection = dataSource.getConnection()) {
-      PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
-      PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
-      PostgresUtils.executeResource(connection, "osm_create_tables.sql");
-    }
-    return dataSource;
-  }
-
-  public DataSource postgresDataSource() throws SQLException, IOException {
-    var dataSource = new PGSimpleDataSource();
-    dataSource.setUrl(getJdbcUrl());
-    try (Connection connection = dataSource.getConnection()) {
-      PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
-      PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
-      PostgresUtils.executeResource(connection, "osm_create_tables.sql");
-    }
-    return dataSource;
-  }
-
-  public String getJdbcUrl() {
+  public String jdbcUrl() {
     return String.format(
         "%s&user=%s&password=%s&currentSchema=%s",
         container.getJdbcUrl(), container.getUsername(), container.getPassword(), "public");
   }
+
 }

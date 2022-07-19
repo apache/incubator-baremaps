@@ -50,8 +50,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public record ImportOpenStreetMap(
-    String id,
-    List<String> needs,
     String file,
     String database,
     Integer databaseSrid)

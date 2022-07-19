@@ -21,8 +21,6 @@ import org.apache.sis.storage.FeatureSet;
 import org.geotoolkit.data.shapefile.ShapefileFeatureStore;
 
 public record ImportShapefile(
-    String id,
-    List<String> needs,
     String file,
     String database,
     Integer sourceSRID,

@@ -15,7 +15,6 @@
 package com.baremaps.workflow.tasks;
 
 import com.baremaps.testing.TestFiles;
-import com.baremaps.testing.PostgresContainerTest;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
@@ -25,10 +24,8 @@ class ImportOpenStreetMapTest extends PostgresContainerTest {
   void run() {
     var task =
         new ImportOpenStreetMap(
-            "id",
-            List.of(),
             TestFiles.resolve("data.osm.pbf").toString(),
-            getJdbcUrl(),
+            jdbcUrl(),
             3857);
     task.run();
   }

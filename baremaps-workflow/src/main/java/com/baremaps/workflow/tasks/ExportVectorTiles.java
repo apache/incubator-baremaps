@@ -51,8 +51,6 @@ import org.locationtech.jts.geom.Envelope;
 import org.sqlite.SQLiteDataSource;
 
 public record ExportVectorTiles(
-    String id,
-    List<String> needs,
     String database,
     String tileset,
     String repository,

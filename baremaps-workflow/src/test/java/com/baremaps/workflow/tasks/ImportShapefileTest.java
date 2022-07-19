@@ -16,7 +16,6 @@ package com.baremaps.workflow.tasks;
 
 import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.testing.TestFiles;
-import com.baremaps.testing.PostgresContainerTest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
@@ -28,14 +27,12 @@ class ImportShapefileTest extends PostgresContainerTest {
   void run() throws IOException {
     var zip = TestFiles.resolve("monaco-shapefile.zip");
     var directory = Files.createTempDirectory("tmp_");
-    var unzip = new UnzipFile("id", List.of(), zip.toString(), directory.toString());
+    var unzip = new UnzipFile(zip.toString(), directory.toString());
     unzip.run();
     var task =
         new ImportShapefile(
-            "id",
-            List.of(),
             directory.resolve("gis_osm_buildings_a_free_1.shp").toString(),
-            getJdbcUrl(),
+            jdbcUrl(),
             4326,
             3857);
     task.run();

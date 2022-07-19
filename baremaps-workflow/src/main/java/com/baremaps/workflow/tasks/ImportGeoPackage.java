@@ -23,8 +23,6 @@ import org.apache.sis.storage.FeatureSet;
 import org.apache.sis.storage.Resource;
 
 public record ImportGeoPackage(
-    String id,
-    List<String> needs,
     String file,
     String database,
     Integer sourceSRID,

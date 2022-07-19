@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 
-public record DownloadUrl(String id, List<String> needs, String url, String path) implements Task {
+public record DownloadUrl(String url, String path) implements Task {
 
   @Override
   public void run() {
