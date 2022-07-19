@@ -24,7 +24,11 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public record UnzipFile(String id, List<String> needs, String file, String directory)
+public record UnzipFile(
+    String id,
+    List<String> needs,
+    String file,
+    String directory)
     implements Task {
 
   @Override

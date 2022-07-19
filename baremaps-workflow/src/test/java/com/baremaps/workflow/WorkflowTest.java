@@ -16,7 +16,7 @@ package com.baremaps.workflow;
 
 import com.baremaps.workflow.tasks.DownloadUrl;
 import com.baremaps.workflow.tasks.ImportGeoPackage;
-import com.baremaps.workflow.tasks.ImportOsmPbf;
+import com.baremaps.workflow.tasks.ImportOpenStreetMap;
 import com.baremaps.workflow.tasks.ImportShapefile;
 import com.baremaps.workflow.tasks.UnzipFile;
 import java.util.List;
@@ -47,7 +47,7 @@ class WorkflowTest extends PostgresBaseTest {
                 List.of(),
                 "https://tiles.baremaps.com/samples/liechtenstein.osm.pbf",
                 "downloads/liechtenstein.osm.pbf"),
-            new ImportOsmPbf(
+            new ImportOpenStreetMap(
                 "import-osmpbf",
                 List.of("fetch-osmpbf"),
                 "downloads/liechtenstein.osm.pbf",

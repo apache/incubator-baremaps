@@ -49,13 +49,12 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public record ImportOsmPbf(
+public record ImportOpenStreetMap(
     String id,
     List<String> needs,
     String file,
     String database,
-    Integer sourceSRID,
-    Integer targetSRID)
+    Integer databaseSrid)
     implements Task {
 
   @Override
@@ -102,7 +101,7 @@ public record ImportOsmPbf(
 
         Consumer<Block> cacheBlock = new DataStoreConsumer(coordinates, references);
         Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
-        Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(sourceSRID, targetSRID);
+        Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, databaseSrid);
         Consumer<Block> prepareGeometries =
             new BlockEntityConsumer(createGeometry.andThen(reprojectGeometry));
         Function<Block, Block> prepareBlock =
