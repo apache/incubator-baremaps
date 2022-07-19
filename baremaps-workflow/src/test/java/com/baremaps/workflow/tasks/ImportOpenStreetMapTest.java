@@ -15,11 +15,11 @@
 package com.baremaps.workflow.tasks;
 
 import com.baremaps.testing.TestFiles;
-import com.baremaps.workflow.PostgresBaseTest;
+import com.baremaps.testing.PostgresContainerTest;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class ImportOpenStreetMapTest extends PostgresBaseTest {
+class ImportOpenStreetMapTest extends PostgresContainerTest {
 
   @Test
   void run() {

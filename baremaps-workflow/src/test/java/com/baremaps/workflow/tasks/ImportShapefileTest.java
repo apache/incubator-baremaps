@@ -14,17 +14,15 @@
 
 package com.baremaps.workflow.tasks;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.testing.TestFiles;
-import com.baremaps.workflow.PostgresBaseTest;
+import com.baremaps.testing.PostgresContainerTest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class ImportShapefileTest extends PostgresBaseTest {
+class ImportShapefileTest extends PostgresContainerTest {
 
   @Test
   void run() throws IOException {

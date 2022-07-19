@@ -12,9 +12,7 @@
  * the License.
  */
 
-package com.baremaps.workflow;
-
-import static com.baremaps.testing.TestConstants.DATABASE_URL;
+package com.baremaps.database.database;
 
 import com.baremaps.database.postgres.PostgresUtils;
 import java.io.IOException;
@@ -27,7 +25,7 @@ import org.postgresql.ds.PGSimpleDataSource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
-public abstract class PostgresBaseTest {
+public abstract class PostgresContainerTest {
 
   private PostgreSQLContainer container;
 
@@ -45,7 +43,7 @@ public abstract class PostgresBaseTest {
   }
 
   public DataSource initDataSource() throws SQLException, IOException {
-    DataSource dataSource = PostgresUtils.dataSource(DATABASE_URL, 1);
+    DataSource dataSource = PostgresUtils.dataSource(getJdbcUrl(), 1);
     try (Connection connection = dataSource.getConnection()) {
       PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
       PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
@@ -56,7 +54,7 @@ public abstract class PostgresBaseTest {
 
   public DataSource postgresDataSource() throws SQLException, IOException {
     var dataSource = new PGSimpleDataSource();
-    dataSource.setUrl(DATABASE_URL);
+    dataSource.setUrl(getJdbcUrl());
     try (Connection connection = dataSource.getConnection()) {
       PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
       PostgresUtils.executeResource(connection, "osm_drop_tables.sql");

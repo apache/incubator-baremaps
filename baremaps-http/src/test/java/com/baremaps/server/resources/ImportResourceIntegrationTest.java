@@ -14,7 +14,6 @@
 
 package com.baremaps.server.resources;
 
-import static com.baremaps.testing.TestConstants.DATABASE_URL;
 import static org.junit.Assert.assertEquals;
 
 import com.baremaps.database.postgres.PostgisPlugin;
@@ -50,7 +49,7 @@ public class ImportResourceIntegrationTest extends JerseyTest {
     enable(TestProperties.DUMP_ENTITY);
 
     // Create a datasource to a throwaway postgis database
-    DataSource dataSource = PostgresUtils.dataSource(DATABASE_URL);
+    DataSource dataSource = PostgresUtils.dataSource("jdbc:tc:postgis:13-3.1:///baremaps");
 
     // Initialize the database
     jdbi =

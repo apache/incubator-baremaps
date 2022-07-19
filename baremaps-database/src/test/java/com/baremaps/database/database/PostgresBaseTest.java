@@ -14,8 +14,6 @@
 
 package com.baremaps.database.database;
 
-import static com.baremaps.testing.TestConstants.DATABASE_URL;
-
 import com.baremaps.database.postgres.PostgresUtils;
 import java.io.IOException;
 import java.sql.Connection;
@@ -24,6 +22,8 @@ import javax.sql.DataSource;
 import org.postgresql.ds.PGSimpleDataSource;
 
 public abstract class PostgresBaseTest {
+
+  public static final String DATABASE_URL = "jdbc:tc:postgis:13-3.1:///baremaps";
 
   public DataSource initDataSource() throws SQLException, IOException {
     DataSource dataSource = PostgresUtils.dataSource(DATABASE_URL, 1);

@@ -14,14 +14,12 @@
 
 package com.baremaps.workflow.tasks;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.baremaps.testing.TestFiles;
-import com.baremaps.workflow.PostgresBaseTest;
+import com.baremaps.testing.PostgresContainerTest;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-class ImportGeoPackageTest extends PostgresBaseTest {
+class ImportGeoPackageTest extends PostgresContainerTest {
 
   @Test
   void run() {

@@ -23,3 +23,6 @@ jmh-result.json
 _site/
 .sass-cache/
 Gemfile.lock
+
+# Logs
+*.log

@@ -14,7 +14,7 @@
 
 package com.baremaps.database.database;
 
-import static com.baremaps.testing.TestConstants.DATABASE_URL;
+import static com.baremaps.database.database.PostgresBaseTest.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.database.postgres.PostgresUtils;

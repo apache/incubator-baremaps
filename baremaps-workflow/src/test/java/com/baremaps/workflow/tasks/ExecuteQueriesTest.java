@@ -15,12 +15,12 @@
 package com.baremaps.workflow.tasks;
 
 import com.baremaps.testing.TestFiles;
-import com.baremaps.workflow.PostgresBaseTest;
+import com.baremaps.testing.PostgresContainerTest;
 import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class ExecuteQueriesTest extends PostgresBaseTest {
+class ExecuteQueriesTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
