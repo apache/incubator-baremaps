@@ -15,7 +15,6 @@
 package com.baremaps.workflow.tasks;
 
 import com.baremaps.workflow.WorkflowException;
-import com.baremaps.workflow.model.Database;
 import java.nio.file.Paths;
 import java.util.List;
 import org.apache.sis.storage.DataStores;
@@ -25,7 +24,7 @@ public record ImportGeoJson(
     String id,
     List<String> needs,
     String file,
-    Database database,
+    String database,
     Integer sourceSRID,
     Integer targetSRID)
     implements ImportFeatureTask {

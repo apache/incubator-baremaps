@@ -21,9 +21,28 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.postgresql.ds.PGSimpleDataSource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 public abstract class PostgresBaseTest {
+
+  private PostgreSQLContainer container;
+
+  @BeforeEach
+  public void before() {
+    var postgis =
+        DockerImageName.parse("postgis/postgis:13-3.1").asCompatibleSubstituteFor("postgres");
+    container = new PostgreSQLContainer(postgis);
+    container.start();
+  }
+
+  @AfterEach
+  public void after() {
+    container.stop();
+  }
 
   public DataSource initDataSource() throws SQLException, IOException {
     DataSource dataSource = PostgresUtils.dataSource(DATABASE_URL, 1);
@@ -44,5 +63,9 @@ public abstract class PostgresBaseTest {
       PostgresUtils.executeResource(connection, "osm_create_tables.sql");
     }
     return dataSource;
+  }
+
+  public String getJdbcUrl() {
+    return String.format("%s&user=%s&password=%s&currentSchema=%s", container.getJdbcUrl(), container.getUsername(), container.getPassword(), "public");
   }
 }

@@ -17,16 +17,19 @@ package com.baremaps.workflow.tasks;
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.workflow.Task;
 import com.baremaps.workflow.WorkflowException;
-import com.baremaps.workflow.model.Database;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.apache.sis.storage.FeatureSet;
 import org.apache.sis.storage.WritableFeatureSet;
 import org.geotoolkit.db.postgres.PostgresStore;
 import org.locationtech.jts.geom.Geometry;
+import org.opengis.feature.AttributeType;
 import org.opengis.feature.Feature;
 
 public interface ImportFeatureTask extends Task {
 
-  Database database();
+  String database();
 
   Integer sourceSRID();
 
@@ -34,35 +37,43 @@ public interface ImportFeatureTask extends Task {
 
   default void saveFeatureSet(FeatureSet sourceFeatureSet) {
     try {
-      var type = sourceFeatureSet.getType();
-      var typeName = type.getName().toString();
+      // Extract the connection parameters from the jdbc url.
+      var uri = URI.create(database().substring(5));
+      var host = uri.getHost();
+      var port = uri.getPort();
+      var database = uri.getPath().substring(1);
+      var params = Arrays.stream(uri.getQuery().split("&"))
+          .map(param -> param.split("=", 2))
+          .collect(Collectors.toMap(
+              param -> param[0],
+              param -> param[1]));
+      var user = params.get("user");
+      var password = params.get("password");
+      var schema = params.getOrDefault("currentSchema", "public");
 
-      var targetDataStore =
-          new PostgresStore(
-              database().host(),
-              database().port(),
-              database().name(),
-              database().schema(),
-              database().username(),
-              database().password());
+      // Create a postgres feature store.
+      try (var targetDataStore = new PostgresStore(host, port, database, schema, user, password)) {
+        var type = sourceFeatureSet.getType();
+        var typeName = type.getName().toString();
 
-      // clean the target store
-      try {
-        targetDataStore.deleteFeatureType(typeName);
-      } catch (Exception e) {
-        // do nothing
-      }
-      targetDataStore.createFeatureType(type);
+        // Try to clean the target store.
+        try {
+          targetDataStore.deleteFeatureType(typeName);
+        } catch (Exception e) {
+          // Fail silently as there is no feature type to delete.
+        }
+        targetDataStore.createFeatureType(type);
 
-      // transfer the features from the source to the target store
-      var targetResource = targetDataStore.findResource(typeName);
-      if (targetResource instanceof WritableFeatureSet targetFeatureSet) {
-        try (var sourceFeatureStream = sourceFeatureSet.features(false)) {
-          if (sourceSRID().equals(targetSRID())) {
-            targetFeatureSet.add(sourceFeatureStream.iterator());
-          } else {
-            targetFeatureSet.add(
-                sourceFeatureStream.map(feature -> reprojectFeature(feature)).iterator());
+        // Transfer the features from the source to the target store.
+        var targetResource = targetDataStore.findResource(typeName);
+        if (targetResource instanceof WritableFeatureSet targetFeatureSet) {
+          try (var sourceFeatureStream = sourceFeatureSet.features(false)) {
+            if (sourceSRID().equals(targetSRID())) {
+              targetFeatureSet.add(sourceFeatureStream.iterator());
+            } else {
+              var reprojectedFeatures = sourceFeatureStream.map(feature -> reprojectFeature(feature));
+              targetFeatureSet.add(reprojectedFeatures.iterator());
+            }
           }
         }
       }
@@ -74,7 +85,7 @@ public interface ImportFeatureTask extends Task {
   default Feature reprojectFeature(Feature feature) {
     for (var property : feature.getType().getProperties(false)) {
       String name = property.getName().toString();
-      if (feature.getPropertyValue(name) instanceof Geometry inputGeometry) {
+      if (property instanceof AttributeType && feature.getPropertyValue(name) instanceof Geometry inputGeometry) {
         Geometry outputGeometry =
             new ProjectionTransformer(sourceSRID(), targetSRID()).transform(inputGeometry);
         feature.setPropertyValue(name, outputGeometry);

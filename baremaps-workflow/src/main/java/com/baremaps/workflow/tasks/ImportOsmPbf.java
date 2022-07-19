@@ -40,7 +40,6 @@ import com.baremaps.osm.pbf.PbfBlockReader;
 import com.baremaps.osm.store.DataStoreConsumer;
 import com.baremaps.workflow.Task;
 import com.baremaps.workflow.WorkflowException;
-import com.baremaps.workflow.model.Database;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.io.InputStream;
@@ -54,7 +53,7 @@ public record ImportOsmPbf(
     String id,
     List<String> needs,
     String file,
-    Database database,
+    String database,
     Integer sourceSRID,
     Integer targetSRID)
     implements Task {
@@ -68,19 +67,11 @@ public record ImportOsmPbf(
       var referencesKeysDir = Files.createDirectories(cacheDir.resolve("references_keys"));
       var referencesValuesDir = Files.createDirectories(cacheDir.resolve("references_values"));
 
-      var url =
-          String.format(
-              "jdbc:postgresql://%s:%s/%s?&user=%s&password=%s",
-              database.host(),
-              database.port(),
-              database.name(),
-              database.username(),
-              database.password());
-
       var config = new HikariConfig();
       config.setPoolName("BaremapsDataSource");
-      config.setJdbcUrl(url);
+      config.setJdbcUrl(database);
       config.setMaximumPoolSize(Runtime.getRuntime().availableProcessors());
+      config.setSchema("public");
 
       try (var dataSource = new HikariDataSource(config)) {
         var headerRepository = new PostgresHeaderRepository(dataSource);

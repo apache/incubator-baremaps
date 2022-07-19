@@ -19,6 +19,7 @@ import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.Graphs;
 import com.google.common.graph.ImmutableGraph;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -35,8 +36,8 @@ public class WorkflowExecutor {
 
   private final Graph<String> graph;
 
-  public WorkflowExecutor(List<Task> tasks) {
-    this.tasks = tasks.stream().collect(Collectors.toMap(s -> s.id(), s -> s));
+  public WorkflowExecutor(Workflow workflow) {
+    this.tasks = Arrays.stream(workflow.tasks()).collect(Collectors.toMap(s -> s.id(), s -> s));
     this.futures = new ConcurrentHashMap<>();
 
     // Build the execution graph
@@ -85,24 +86,6 @@ public class WorkflowExecutor {
           CompletableFuture.allOf(
               predecessors.stream().map(this::getStep).toArray(CompletableFuture[]::new));
       return previousSteps.thenRunAsync(step);
-    }
-  }
-
-  public static Builder builder() {
-    return new Builder();
-  }
-
-  public static class Builder {
-
-    private List<Task> steps = new ArrayList<>();
-
-    public Builder addStep(Task step) {
-      this.steps.add(step);
-      return this;
-    }
-
-    public WorkflowExecutor build() {
-      return new WorkflowExecutor(steps);
     }
   }
 }

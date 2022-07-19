@@ -15,45 +15,36 @@
 package com.baremaps.workflow.tasks;
 
 import com.baremaps.workflow.Task;
-import com.baremaps.workflow.model.Database;
+import com.baremaps.workflow.WorkflowException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
-public record ExecuteQuery(String id, List<String> needs, Database database, String file)
+public record ExecuteQueries(String id, List<String> needs, String database, String file)
     implements Task {
 
   @Override
   public void run() {
-    var url =
-        String.format(
-            "jdbc:postgresql://%s:%s/%s?&user=%s&password=%s",
-            database.host(),
-            database.port(),
-            database.name(),
-            database.username(),
-            database.password());
-
     var config = new HikariConfig();
     config.setPoolName("BaremapsDataSource");
-    config.setJdbcUrl(url);
+    config.setJdbcUrl(database);
     config.setMaximumPoolSize(Runtime.getRuntime().availableProcessors());
-
     try (var dataSource = new HikariDataSource(config)) {
-      Arrays.stream(Files.readString(Paths.get(file)).split(";")).forEach(query -> {
+      Stream<String> queries = Arrays.stream(Files.readString(Paths.get(file)).split(";"));
+      queries.forEach(query -> {
         try(var connection = dataSource.getConnection()) {
           connection.createStatement().execute(query);
         } catch (SQLException e) {
-          throw new RuntimeException(e);
+          throw new WorkflowException(e);
         }
       });
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    } catch (Exception e) {
+      throw new WorkflowException(e);
     }
   }
 }
