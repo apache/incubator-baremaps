@@ -14,11 +14,11 @@
 
 package com.baremaps.workflow;
 
+import com.baremaps.testing.PostgresContainerTest;
 import com.baremaps.workflow.tasks.DownloadUrl;
 import com.baremaps.workflow.tasks.ImportGeoPackage;
 import com.baremaps.workflow.tasks.ImportOpenStreetMap;
 import com.baremaps.workflow.tasks.ImportShapefile;
-import com.baremaps.testing.PostgresContainerTest;
 import com.baremaps.workflow.tasks.UnzipFile;
 import java.util.List;
 import org.junit.jupiter.api.Disabled;

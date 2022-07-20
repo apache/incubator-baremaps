@@ -57,5 +57,4 @@ public abstract class PostgresContainerTest {
   public DataSource dataSource() {
     return dataSource;
   }
-
 }

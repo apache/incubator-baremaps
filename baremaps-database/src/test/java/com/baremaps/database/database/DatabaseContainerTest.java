@@ -33,5 +33,4 @@ public abstract class DatabaseContainerTest extends PostgresContainerTest {
       PostgresUtils.executeResource(connection, "osm_create_tables.sql");
     }
   }
-
 }

@@ -24,9 +24,8 @@ public record ImportShapefile(String file, String database, Integer sourceSRID, 
 
   @Override
   public void run() {
-    try {
-      var uri = Paths.get(file).toUri();
-      var shapefileStore = new ShapefileFeatureStore(uri);
+    var uri = Paths.get(file).toUri();
+    try (var shapefileStore = new ShapefileFeatureStore(uri)) {
       for (var resource : shapefileStore.components()) {
         if (resource instanceof FeatureSet featureSet) {
           saveFeatureSet(featureSet);

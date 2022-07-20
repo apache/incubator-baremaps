@@ -14,4 +14,6 @@
 
 package com.baremaps.workflow;
 
-public record Workflow(Step... steps) {}
+import java.util.List;
+
+public record Workflow(List<Step> steps) {}

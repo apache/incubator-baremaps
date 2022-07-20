@@ -26,9 +26,8 @@ public record ImportGeoPackage(String file, String database, Integer sourceSRID,
 
   @Override
   public void run() {
-    try {
-      var path = Paths.get(file);
-      var geoPackageStore = new GeoPackageStore(GeoPackageManager.open(path.toFile()));
+    var path = Paths.get(file);
+    try (var geoPackageStore = new GeoPackageStore(GeoPackageManager.open(path.toFile()))) {
       for (Resource resource : geoPackageStore.components()) {
         if (resource instanceof FeatureSet featureSet) {
           saveFeatureSet(featureSet);

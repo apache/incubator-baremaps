@@ -19,7 +19,6 @@ import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.Graphs;
 import com.google.common.graph.ImmutableGraph;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -72,16 +71,17 @@ public class WorkflowExecutor {
   }
 
   private CompletableFuture<Void> computeStep(String id) {
-    Runnable step = () -> {
-      for (Task task : steps.get(id).tasks()) {
-        task.run();
-      }
-    };
+    Runnable step =
+        () -> {
+          for (Task task : steps.get(id).tasks()) {
+            task.run();
+          }
+        };
     var predecessors = graph.predecessors(id).stream().toList();
     if (predecessors.isEmpty()) {
       return CompletableFuture.runAsync(step);
     } else if (predecessors.size() == 1) {
-      var previousStep = getStep(predecessors.stream().findFirst().get());
+      var previousStep = getStep(predecessors.get(0));
       return previousStep.thenRunAsync(step);
     } else {
       var previousSteps =
