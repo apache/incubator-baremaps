@@ -15,15 +15,13 @@
 package com.baremaps.workflow.tasks;
 
 import com.baremaps.testing.TestFiles;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class ImportGeoJsonTest extends PostgresContainerTest {
 
   @Test
   void run() {
-    var task =
-        new ImportGeoJson(TestFiles.resolve("data.json").toString(), jdbcUrl(), 4326, 3857);
+    var task = new ImportGeoJson(TestFiles.resolve("data.json").toString(), jdbcUrl(), 4326, 3857);
     task.run();
   }
 }

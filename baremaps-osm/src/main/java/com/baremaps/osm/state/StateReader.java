@@ -14,7 +14,7 @@
 
 package com.baremaps.osm.state;
 
-import com.baremaps.osm.domain.State;
+import com.baremaps.osm.model.State;
 import com.google.common.io.CharStreams;
 import java.io.IOException;
 import java.io.InputStream;

@@ -14,15 +14,6 @@
 
 package com.baremaps.workflow.tasks;
 
-import com.baremaps.database.postgres.PostgresUtils;
-import com.google.common.io.Resources;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -50,5 +41,4 @@ public abstract class PostgresContainerTest {
         "%s&user=%s&password=%s&currentSchema=%s",
         container.getJdbcUrl(), container.getUsername(), container.getPassword(), "public");
   }
-
 }

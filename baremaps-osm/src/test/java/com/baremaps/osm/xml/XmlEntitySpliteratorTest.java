@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.baremaps.osm.domain.Entity;
+import com.baremaps.osm.model.Entity;
 import com.baremaps.stream.AccumulatingConsumer;
 import com.baremaps.stream.HoldingConsumer;
 import java.io.IOException;

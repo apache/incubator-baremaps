@@ -33,7 +33,7 @@ import com.baremaps.database.repository.PostgresHeaderRepository;
 import com.baremaps.database.repository.PostgresNodeRepository;
 import com.baremaps.database.repository.PostgresRelationRepository;
 import com.baremaps.database.repository.PostgresWayRepository;
-import com.baremaps.osm.domain.Header;
+import com.baremaps.osm.model.Header;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
@@ -80,7 +80,7 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
             nodeRepository,
             wayRepository,
             relationRepository,
-        3857)
+            3857)
         .call();
     assertEquals(2434l, headerRepository.selectLatest().getReplicationSequenceNumber());
 

@@ -14,11 +14,11 @@
 
 package com.baremaps.osm.function;
 
-import com.baremaps.osm.domain.Element;
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.geometry.ProjectionTransformer;
+import com.baremaps.osm.model.Element;
+import com.baremaps.osm.model.Node;
+import com.baremaps.osm.model.Relation;
+import com.baremaps.osm.model.Way;
 import org.locationtech.jts.geom.Geometry;
 
 /** Changes the projection of the geometry of an entity via side-effects. */

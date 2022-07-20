@@ -20,7 +20,6 @@ import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.testing.TestFiles;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class UnzipFileTest {

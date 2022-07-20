@@ -15,7 +15,6 @@
 package com.baremaps.workflow.tasks;
 
 import com.baremaps.testing.TestFiles;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class ImportGeoPackageTest extends PostgresContainerTest {

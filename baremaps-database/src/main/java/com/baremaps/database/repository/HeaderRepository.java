@@ -14,7 +14,7 @@
 
 package com.baremaps.database.repository;
 
-import com.baremaps.osm.domain.Header;
+import com.baremaps.osm.model.Header;
 import java.util.List;
 
 /** Provides an interface to a repository storing OpenStreetMap headers. */

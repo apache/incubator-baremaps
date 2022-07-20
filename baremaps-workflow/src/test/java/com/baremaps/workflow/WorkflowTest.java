@@ -40,11 +40,7 @@ class WorkflowTest extends PostgresContainerTest {
             new Step(
                 "import-geopackage",
                 List.of("fetch-geopackage"),
-                new ImportGeoPackage(
-                    "downloads/import_db.gpkg",
-                    jdbcUrl(),
-                    4326,
-                    3857)),
+                new ImportGeoPackage("downloads/import_db.gpkg", jdbcUrl(), 4326, 3857)),
             new Step(
                 "fetch-osmpbf",
                 List.of(),
@@ -54,10 +50,7 @@ class WorkflowTest extends PostgresContainerTest {
             new Step(
                 "import-osmpbf",
                 List.of("fetch-osmpbf"),
-                new ImportOpenStreetMap(
-                    "downloads/liechtenstein.osm.pbf",
-                    jdbcUrl(),
-                    3857)),
+                new ImportOpenStreetMap("downloads/liechtenstein.osm.pbf", jdbcUrl(), 3857)),
             new Step(
                 "fetch-shapefile",
                 List.of(),
@@ -67,9 +60,7 @@ class WorkflowTest extends PostgresContainerTest {
             new Step(
                 "unzip-shapefile",
                 List.of("fetch-shapefile"),
-                new UnzipFile(
-                    "downloads/simplified-water-polygons-split-3857.zip",
-                    "archives")),
+                new UnzipFile("downloads/simplified-water-polygons-split-3857.zip", "archives")),
             new Step(
                 "fetch-projection",
                 List.of("unzip-shapefile"),

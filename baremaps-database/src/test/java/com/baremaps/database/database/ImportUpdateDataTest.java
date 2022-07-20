@@ -33,9 +33,9 @@ import com.baremaps.database.repository.PostgresHeaderRepository;
 import com.baremaps.database.repository.PostgresNodeRepository;
 import com.baremaps.database.repository.PostgresRelationRepository;
 import com.baremaps.database.repository.PostgresWayRepository;
-import com.baremaps.osm.domain.Header;
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.model.Header;
+import com.baremaps.osm.model.Node;
+import com.baremaps.osm.model.Way;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -81,7 +81,7 @@ class ImportUpdateDataTest extends PostgresBaseTest {
             nodeRepository,
             wayRepository,
             relationRepository,
-        3857)
+            3857)
         .call();
 
     headerRepository.put(

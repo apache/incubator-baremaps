@@ -22,11 +22,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Stream;
 
-public record ExecuteQueries(String database, String file)
-    implements Task {
+public record ExecuteQueries(String database, String file) implements Task {
 
   @Override
   public void run() {

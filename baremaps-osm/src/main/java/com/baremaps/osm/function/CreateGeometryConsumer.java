@@ -15,11 +15,11 @@
 package com.baremaps.osm.function;
 
 import com.baremaps.collection.LongDataMap;
-import com.baremaps.osm.domain.Member;
-import com.baremaps.osm.domain.Member.MemberType;
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.model.Member;
+import com.baremaps.osm.model.Member.MemberType;
+import com.baremaps.osm.model.Node;
+import com.baremaps.osm.model.Relation;
+import com.baremaps.osm.model.Way;
 import com.baremaps.stream.StreamException;
 import java.util.ArrayList;
 import java.util.HashSet;

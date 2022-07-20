@@ -15,7 +15,7 @@
 package com.baremaps.osm.xml;
 
 import com.baremaps.osm.OsmReader;
-import com.baremaps.osm.domain.Change;
+import com.baremaps.osm.model.Change;
 import java.io.InputStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;

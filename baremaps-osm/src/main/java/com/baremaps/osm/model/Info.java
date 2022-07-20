@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.domain;
+package com.baremaps.osm.model;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

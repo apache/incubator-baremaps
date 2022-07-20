@@ -15,13 +15,13 @@
 package com.baremaps.database;
 
 import com.baremaps.database.repository.Repository;
-import com.baremaps.osm.domain.DataBlock;
-import com.baremaps.osm.domain.Header;
-import com.baremaps.osm.domain.HeaderBlock;
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.BlockConsumerAdapter;
+import com.baremaps.osm.model.DataBlock;
+import com.baremaps.osm.model.Header;
+import com.baremaps.osm.model.HeaderBlock;
+import com.baremaps.osm.model.Node;
+import com.baremaps.osm.model.Relation;
+import com.baremaps.osm.model.Way;
 
 /** A consumer for saving OpenStreetMap blocks in a database. */
 public class SaveBlockConsumer implements BlockConsumerAdapter {

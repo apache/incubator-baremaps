@@ -18,7 +18,6 @@ import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.testing.TestFiles;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class ImportShapefileTest extends PostgresContainerTest {
@@ -31,10 +30,7 @@ class ImportShapefileTest extends PostgresContainerTest {
     unzip.run();
     var task =
         new ImportShapefile(
-            directory.resolve("gis_osm_buildings_a_free_1.shp").toString(),
-            jdbcUrl(),
-            4326,
-            3857);
+            directory.resolve("gis_osm_buildings_a_free_1.shp").toString(), jdbcUrl(), 4326, 3857);
     task.run();
     FileUtils.deleteRecursively(directory);
   }

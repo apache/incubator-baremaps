@@ -33,11 +33,10 @@ public class ObjectMapperTest {
     var workflow1 =
         new Workflow(
             new Step(
-                "download", List.of(),
+                "download",
+                List.of(),
                 new DownloadUrl("http://www.baremaps.com/download.zip", "download.zip")),
-            new Step(
-                "unzip", List.of("download"),
-                new UnzipFile("download.zip", "download")));
+            new Step("unzip", List.of("download"), new UnzipFile("download.zip", "download")));
     var json = mapper.writeValueAsString(workflow1);
     assertTrue(json.contains(DownloadUrl.class.getSimpleName()));
     assertTrue(json.contains(UnzipFile.class.getSimpleName()));

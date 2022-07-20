@@ -15,7 +15,6 @@
 package com.baremaps.workflow.tasks;
 
 import com.baremaps.testing.TestFiles;
-import java.util.List;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -24,8 +23,7 @@ class ExecuteQueriesTest extends PostgresContainerTest {
   @Test
   @Tag("integration")
   void run() {
-    var task =
-        new ExecuteQueries(jdbcUrl(), TestFiles.resolve("queries.sql").toString());
+    var task = new ExecuteQueries(jdbcUrl(), TestFiles.resolve("queries.sql").toString());
     task.run();
   }
 }

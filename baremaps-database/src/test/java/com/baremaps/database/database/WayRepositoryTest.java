@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.database.repository.PostgresWayRepository;
 import com.baremaps.database.repository.RepositoryException;
-import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.model.Way;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;

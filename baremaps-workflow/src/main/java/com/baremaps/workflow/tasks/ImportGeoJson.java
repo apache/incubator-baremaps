@@ -16,15 +16,10 @@ package com.baremaps.workflow.tasks;
 
 import com.baremaps.workflow.WorkflowException;
 import java.nio.file.Paths;
-import java.util.List;
 import org.apache.sis.storage.DataStores;
 import org.apache.sis.storage.FeatureSet;
 
-public record ImportGeoJson(
-    String file,
-    String database,
-    Integer sourceSRID,
-    Integer targetSRID)
+public record ImportGeoJson(String file, String database, Integer sourceSRID, Integer targetSRID)
     implements ImportFeatureTask {
 
   @Override

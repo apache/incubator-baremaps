@@ -16,15 +16,10 @@ package com.baremaps.workflow.tasks;
 
 import com.baremaps.workflow.WorkflowException;
 import java.nio.file.Paths;
-import java.util.List;
 import org.apache.sis.storage.FeatureSet;
 import org.geotoolkit.data.shapefile.ShapefileFeatureStore;
 
-public record ImportShapefile(
-    String file,
-    String database,
-    Integer sourceSRID,
-    Integer targetSRID)
+public record ImportShapefile(String file, String database, Integer sourceSRID, Integer targetSRID)
     implements ImportFeatureTask {
 
   @Override

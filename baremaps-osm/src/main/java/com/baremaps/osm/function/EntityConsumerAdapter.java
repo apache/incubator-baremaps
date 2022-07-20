@@ -14,11 +14,11 @@
 
 package com.baremaps.osm.function;
 
-import com.baremaps.osm.domain.Bound;
-import com.baremaps.osm.domain.Header;
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.model.Bound;
+import com.baremaps.osm.model.Header;
+import com.baremaps.osm.model.Node;
+import com.baremaps.osm.model.Relation;
+import com.baremaps.osm.model.Way;
 
 /** {@inheritDoc} */
 public interface EntityConsumerAdapter extends EntityConsumer {

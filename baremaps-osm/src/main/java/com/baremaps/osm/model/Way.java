@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.osm.domain;
+package com.baremaps.osm.model;
 
 import com.baremaps.osm.function.EntityConsumer;
 import com.baremaps.osm.function.EntityFunction;
@@ -22,46 +22,45 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
-/** Represents a relation element in an OpenStreetMap dataset. */
-public final class Relation extends Element {
+/** Represents a way element in an OpenStreetMap dataset. */
+public final class Way extends Element {
 
-  private final List<Member> members;
+  private final List<Long> nodes;
 
   /**
-   * Constructs an OpenStreetMap {@code Relation} with the specified parameters.
+   * Constructs an OpenStreetMap {@code Node} with the specified parameters.
    *
    * @param id the id
    * @param info the information
    * @param tags the tags
-   * @param members the members
+   * @param nodes the nodes
    */
-  public Relation(long id, Info info, Map<String, String> tags, List<Member> members) {
+  public Way(long id, Info info, Map<String, String> tags, List<Long> nodes) {
     super(id, info, tags);
-    this.members = members;
+    this.nodes = nodes;
   }
 
   /**
-   * Constructs an OpenStreetMap {@code Relation} with the specified parameters.
+   * Constructs an OpenStreetMap {@code Node} with the specified parameters.
    *
    * @param id the id
    * @param info the information
    * @param tags the tags
-   * @param members the members
+   * @param nodes the nodes
    * @param geometry the geometry
    */
-  public Relation(
-      long id, Info info, Map<String, String> tags, List<Member> members, Geometry geometry) {
+  public Way(long id, Info info, Map<String, String> tags, List<Long> nodes, Geometry geometry) {
     super(id, info, tags, geometry);
-    this.members = members;
+    this.nodes = nodes;
   }
 
   /**
-   * Returns the members.
+   * Returns the nodes.
    *
-   * @return the members
+   * @return the nodes
    */
-  public List<Member> getMembers() {
-    return members;
+  public List<Long> getNodes() {
+    return nodes;
   }
 
   /** {@inheritDoc} */
@@ -82,27 +81,27 @@ public final class Relation extends Element {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof Relation)) {
+    if (!(o instanceof Way)) {
       return false;
     }
     if (!super.equals(o)) {
       return false;
     }
-    Relation relation = (Relation) o;
-    return Objects.equals(members, relation.members);
+    Way way = (Way) o;
+    return Objects.equals(nodes, way.nodes);
   }
 
   /** {@inheritDoc} */
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), members);
+    return Objects.hash(super.hashCode(), nodes);
   }
 
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return new StringJoiner(", ", Relation.class.getSimpleName() + "[", "]")
-        .add("members=" + members)
+    return new StringJoiner(", ", Way.class.getSimpleName() + "[", "]")
+        .add("nodes=" + nodes)
         .add("id=" + id)
         .toString();
   }

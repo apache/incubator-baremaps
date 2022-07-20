@@ -20,14 +20,10 @@ import java.io.BufferedInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public record UnzipFile(
-    String file,
-    String directory)
-    implements Task {
+public record UnzipFile(String file, String directory) implements Task {
 
   @Override
   public void run() {

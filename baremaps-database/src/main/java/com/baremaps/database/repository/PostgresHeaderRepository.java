@@ -15,7 +15,7 @@
 package com.baremaps.database.repository;
 
 import com.baremaps.database.postgres.CopyWriter;
-import com.baremaps.osm.domain.Header;
+import com.baremaps.osm.model.Header;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

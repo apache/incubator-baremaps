@@ -14,9 +14,9 @@
 
 package com.baremaps.osm.function;
 
-import com.baremaps.osm.domain.DataBlock;
-import com.baremaps.osm.domain.Entity;
-import com.baremaps.osm.domain.HeaderBlock;
+import com.baremaps.osm.model.DataBlock;
+import com.baremaps.osm.model.Entity;
+import com.baremaps.osm.model.HeaderBlock;
 import java.util.function.Consumer;
 
 /** Represents an operation on the entities of blocks of different types. */

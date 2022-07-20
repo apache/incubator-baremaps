@@ -12,70 +12,56 @@
  * the License.
  */
 
-package com.baremaps.osm.domain;
+package com.baremaps.osm.model;
 
 import com.baremaps.osm.function.EntityConsumer;
 import com.baremaps.osm.function.EntityFunction;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
-/** Represents a node element in an OpenStreetMap dataset. */
-public final class Node extends Element {
+/** Represents a relation element in an OpenStreetMap dataset. */
+public final class Relation extends Element {
 
-  private final double lon;
-
-  private final double lat;
+  private final List<Member> members;
 
   /**
-   * Constructs an OpenStreetMap {@code Node} with the specified parameters.
+   * Constructs an OpenStreetMap {@code Relation} with the specified parameters.
    *
    * @param id the id
    * @param info the information
    * @param tags the tags
-   * @param lon the longitude
-   * @param lat the latitude
+   * @param members the members
    */
-  public Node(long id, Info info, Map<String, String> tags, double lon, double lat) {
+  public Relation(long id, Info info, Map<String, String> tags, List<Member> members) {
     super(id, info, tags);
-    this.lon = lon;
-    this.lat = lat;
+    this.members = members;
   }
 
   /**
-   * Constructs an OpenStreetMap {@code Node} with the specified parameters.
+   * Constructs an OpenStreetMap {@code Relation} with the specified parameters.
    *
    * @param id the id
    * @param info the information
    * @param tags the tags
-   * @param lon the longitude
-   * @param lat the latitude
+   * @param members the members
    * @param geometry the geometry
    */
-  public Node(
-      long id, Info info, Map<String, String> tags, double lon, double lat, Geometry geometry) {
+  public Relation(
+      long id, Info info, Map<String, String> tags, List<Member> members, Geometry geometry) {
     super(id, info, tags, geometry);
-    this.lon = lon;
-    this.lat = lat;
+    this.members = members;
   }
 
   /**
-   * Returns the longitude.
+   * Returns the members.
    *
-   * @return the longitude
+   * @return the members
    */
-  public double getLon() {
-    return lon;
-  }
-
-  /**
-   * Returns the latitude.
-   *
-   * @return the latitude
-   */
-  public double getLat() {
-    return lat;
+  public List<Member> getMembers() {
+    return members;
   }
 
   /** {@inheritDoc} */
@@ -96,28 +82,27 @@ public final class Node extends Element {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof Node)) {
+    if (!(o instanceof Relation)) {
       return false;
     }
     if (!super.equals(o)) {
       return false;
     }
-    Node node = (Node) o;
-    return Double.compare(node.lon, lon) == 0 && Double.compare(node.lat, lat) == 0;
+    Relation relation = (Relation) o;
+    return Objects.equals(members, relation.members);
   }
 
   /** {@inheritDoc} */
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), lon, lat);
+    return Objects.hash(super.hashCode(), members);
   }
 
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return new StringJoiner(", ", Node.class.getSimpleName() + "[", "]")
-        .add("lon=" + lon)
-        .add("lat=" + lat)
+    return new StringJoiner(", ", Relation.class.getSimpleName() + "[", "]")
+        .add("members=" + members)
         .add("id=" + id)
         .toString();
   }

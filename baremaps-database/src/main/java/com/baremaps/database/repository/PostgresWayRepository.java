@@ -15,9 +15,9 @@
 package com.baremaps.database.repository;
 
 import com.baremaps.database.postgres.CopyWriter;
-import com.baremaps.osm.domain.Info;
-import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.geometry.GeometryUtils;
+import com.baremaps.osm.model.Info;
+import com.baremaps.osm.model.Way;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.sql.Array;

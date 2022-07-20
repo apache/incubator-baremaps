@@ -17,16 +17,11 @@ package com.baremaps.workflow.tasks;
 import com.baremaps.storage.geopackage.GeoPackageStore;
 import com.baremaps.workflow.WorkflowException;
 import java.nio.file.Paths;
-import java.util.List;
 import mil.nga.geopackage.GeoPackageManager;
 import org.apache.sis.storage.FeatureSet;
 import org.apache.sis.storage.Resource;
 
-public record ImportGeoPackage(
-    String file,
-    String database,
-    Integer sourceSRID,
-    Integer targetSRID)
+public record ImportGeoPackage(String file, String database, Integer sourceSRID, Integer targetSRID)
     implements ImportFeatureTask {
 
   @Override

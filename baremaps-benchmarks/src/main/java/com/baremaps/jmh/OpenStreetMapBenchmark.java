@@ -14,10 +14,10 @@
 
 package com.baremaps.jmh;
 
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
+import com.baremaps.osm.model.Node;
+import com.baremaps.osm.model.Relation;
+import com.baremaps.osm.model.Way;
 import com.baremaps.osm.pbf.PbfBlockReader;
 import com.baremaps.osm.pbf.PbfEntityReader;
 import java.io.BufferedInputStream;

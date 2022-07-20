@@ -15,13 +15,13 @@
 package com.baremaps.database;
 
 import com.baremaps.database.repository.Repository;
-import com.baremaps.osm.domain.Change;
-import com.baremaps.osm.domain.Entity;
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.ChangeConsumer;
 import com.baremaps.osm.function.EntityConsumerAdapter;
+import com.baremaps.osm.model.Change;
+import com.baremaps.osm.model.Entity;
+import com.baremaps.osm.model.Node;
+import com.baremaps.osm.model.Relation;
+import com.baremaps.osm.model.Way;
 
 /** A consumer for saving OpenStreetMap changes in a database. */
 public class SaveChangeConsumer implements ChangeConsumer {

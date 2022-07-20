@@ -14,13 +14,13 @@
 
 package com.baremaps.database.database;
 
-import com.baremaps.osm.domain.Header;
-import com.baremaps.osm.domain.Info;
-import com.baremaps.osm.domain.Member;
-import com.baremaps.osm.domain.Member.MemberType;
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.domain.Way;
+import com.baremaps.osm.model.Header;
+import com.baremaps.osm.model.Info;
+import com.baremaps.osm.model.Member;
+import com.baremaps.osm.model.Member.MemberType;
+import com.baremaps.osm.model.Node;
+import com.baremaps.osm.model.Relation;
+import com.baremaps.osm.model.Way;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.time.LocalDateTime;

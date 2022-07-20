@@ -14,8 +14,6 @@
 
 package com.baremaps.workflow.tasks;
 
-import static com.baremaps.stream.StreamUtils.batch;
-
 import com.baremaps.collection.AlignedDataList;
 import com.baremaps.collection.LongDataSortedMap;
 import com.baremaps.collection.LongSizedDataDenseMap;
@@ -25,11 +23,11 @@ import com.baremaps.collection.type.LongDataType;
 import com.baremaps.collection.type.LongListDataType;
 import com.baremaps.collection.type.PairDataType;
 import com.baremaps.collection.utils.FileUtils;
+import com.baremaps.database.ImportService;
 import com.baremaps.database.repository.PostgresHeaderRepository;
 import com.baremaps.database.repository.PostgresNodeRepository;
 import com.baremaps.database.repository.PostgresRelationRepository;
 import com.baremaps.database.repository.PostgresWayRepository;
-import com.baremaps.database.ImportService;
 import com.baremaps.workflow.Task;
 import com.baremaps.workflow.WorkflowException;
 import com.zaxxer.hikari.HikariConfig;
@@ -37,10 +35,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public record ImportOpenStreetMap(
-    String file,
-    String database,
-    Integer databaseSrid)
+public record ImportOpenStreetMap(String file, String database, Integer databaseSrid)
     implements Task {
 
   @Override
@@ -85,8 +80,16 @@ public record ImportOpenStreetMap(
                 new com.baremaps.collection.DataStore<>(
                     new LongListDataType(), new OnDiskDirectoryMemory(referencesValuesDir)));
 
-        new ImportService(path, coordinates, references, headerRepository, nodeRepository, wayRepository, relationRepository,
-            databaseSrid).call();
+        new ImportService(
+                path,
+                coordinates,
+                references,
+                headerRepository,
+                nodeRepository,
+                wayRepository,
+                relationRepository,
+                databaseSrid)
+            .call();
 
         FileUtils.deleteRecursively(cacheDir);
       }

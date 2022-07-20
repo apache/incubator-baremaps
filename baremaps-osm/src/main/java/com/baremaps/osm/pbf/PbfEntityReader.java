@@ -15,8 +15,8 @@
 package com.baremaps.osm.pbf;
 
 import com.baremaps.osm.OsmReader;
-import com.baremaps.osm.domain.Entity;
 import com.baremaps.osm.function.BlockEntityConsumer;
+import com.baremaps.osm.model.Entity;
 import com.baremaps.stream.StreamException;
 import java.io.InputStream;
 import java.util.stream.Stream;
