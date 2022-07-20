@@ -20,11 +20,13 @@ import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.testing.TestFiles;
 import java.io.IOException;
 import java.nio.file.Files;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 class UnzipFileTest {
 
   @Test
+  @Tag("integration")
   void run() throws IOException {
     var zip = TestFiles.resolve("monaco-shapefile.zip");
     var directory = Files.createTempDirectory("tmp_");

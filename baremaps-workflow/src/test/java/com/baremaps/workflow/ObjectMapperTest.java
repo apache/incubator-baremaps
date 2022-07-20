@@ -43,7 +43,7 @@ public class ObjectMapperTest {
 
     // deserialize the workflow
     var workflow2 = mapper.readValue(json, Workflow.class);
-    assertTrue(workflow2.tasks()[0].task() instanceof DownloadUrl);
-    assertTrue(workflow2.tasks()[1].task() instanceof UnzipFile);
+    assertTrue(workflow2.steps()[0].task()[0] instanceof DownloadUrl);
+    assertTrue(workflow2.steps()[1].task()[0] instanceof UnzipFile);
   }
 }

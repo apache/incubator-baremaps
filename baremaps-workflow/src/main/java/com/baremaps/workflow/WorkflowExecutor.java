@@ -34,7 +34,7 @@ public class WorkflowExecutor {
   private final Graph<String> graph;
 
   public WorkflowExecutor(Workflow workflow) {
-    this.steps = Arrays.stream(workflow.tasks()).collect(Collectors.toMap(s -> s.id(), s -> s));
+    this.steps = Arrays.stream(workflow.steps()).collect(Collectors.toMap(s -> s.id(), s -> s));
     this.futures = new ConcurrentHashMap<>();
 
     // Build the execution graph

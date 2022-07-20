@@ -14,4 +14,4 @@
 
 package com.baremaps.workflow;
 
-public record Workflow(Step... tasks) {}
+public record Workflow(Step... steps) {}
