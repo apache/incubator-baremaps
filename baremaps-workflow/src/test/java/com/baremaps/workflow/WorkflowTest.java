@@ -31,50 +31,61 @@ class WorkflowTest extends PostgresContainerTest {
   void execute() {
     var workflow =
         new Workflow(
-            new Step(
-                "fetch-geopackage",
-                List.of(),
-                new DownloadUrl(
-                    "https://tiles.baremaps.com/samples/import_db.gpkg",
-                    "downloads/import_db.gpkg")),
-            new Step(
-                "import-geopackage",
-                List.of("fetch-geopackage"),
-                new ImportGeoPackage("downloads/import_db.gpkg", jdbcUrl(), 4326, 3857)),
-            new Step(
-                "fetch-osmpbf",
-                List.of(),
-                new DownloadUrl(
-                    "https://tiles.baremaps.com/samples/liechtenstein.osm.pbf",
-                    "downloads/liechtenstein.osm.pbf")),
-            new Step(
-                "import-osmpbf",
-                List.of("fetch-osmpbf"),
-                new ImportOpenStreetMap("downloads/liechtenstein.osm.pbf", jdbcUrl(), 3857)),
-            new Step(
-                "fetch-shapefile",
-                List.of(),
-                new DownloadUrl(
-                    "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
-                    "downloads/simplified-water-polygons-split-3857.zip")),
-            new Step(
-                "unzip-shapefile",
-                List.of("fetch-shapefile"),
-                new UnzipFile("downloads/simplified-water-polygons-split-3857.zip", "archives")),
-            new Step(
-                "fetch-projection",
-                List.of("unzip-shapefile"),
-                new DownloadUrl(
-                    "https://spatialreference.org/ref/sr-org/epsg3857/prj/",
-                    "archives/simplified-water-polygons-split-3857/simplified_water_polygons.prj")),
-            new Step(
-                "import-shapefile",
-                List.of("fetch-projection"),
-                new ImportShapefile(
-                    "archives/simplified-water-polygons-split-3857/simplified_water_polygons.shp",
-                    jdbcUrl(),
-                    3857,
-                    3857)));
+            List.of(
+                new Step(
+                    "fetch-geopackage",
+                    List.of(),
+                    List.of(
+                        new DownloadUrl(
+                            "https://tiles.baremaps.com/samples/import_db.gpkg",
+                            "downloads/import_db.gpkg"))),
+                new Step(
+                    "import-geopackage",
+                    List.of("fetch-geopackage"),
+                    List.of(
+                        new ImportGeoPackage("downloads/import_db.gpkg", jdbcUrl(), 4326, 3857))),
+                new Step(
+                    "fetch-osmpbf",
+                    List.of(),
+                    List.of(
+                        new DownloadUrl(
+                            "https://tiles.baremaps.com/samples/liechtenstein.osm.pbf",
+                            "downloads/liechtenstein.osm.pbf"))),
+                new Step(
+                    "import-osmpbf",
+                    List.of("fetch-osmpbf"),
+                    List.of(
+                        new ImportOpenStreetMap(
+                            "downloads/liechtenstein.osm.pbf", jdbcUrl(), 3857))),
+                new Step(
+                    "fetch-shapefile",
+                    List.of(),
+                    List.of(
+                        new DownloadUrl(
+                            "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
+                            "downloads/simplified-water-polygons-split-3857.zip"))),
+                new Step(
+                    "unzip-shapefile",
+                    List.of("fetch-shapefile"),
+                    List.of(
+                        new UnzipFile(
+                            "downloads/simplified-water-polygons-split-3857.zip", "archives"))),
+                new Step(
+                    "fetch-projection",
+                    List.of("unzip-shapefile"),
+                    List.of(
+                        new DownloadUrl(
+                            "https://spatialreference.org/ref/sr-org/epsg3857/prj/",
+                            "archives/simplified-water-polygons-split-3857/simplified_water_polygons.prj"))),
+                new Step(
+                    "import-shapefile",
+                    List.of("fetch-projection"),
+                    List.of(
+                        new ImportShapefile(
+                            "archives/simplified-water-polygons-split-3857/simplified_water_polygons.shp",
+                            jdbcUrl(),
+                            3857,
+                            3857)))));
     new WorkflowExecutor(workflow).execute().join();
   }
 }

@@ -18,7 +18,6 @@ import com.google.common.graph.Graph;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.Graphs;
 import com.google.common.graph.ImmutableGraph;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,7 +33,7 @@ public class WorkflowExecutor {
   private final Graph<String> graph;
 
   public WorkflowExecutor(Workflow workflow) {
-    this.steps = Arrays.stream(workflow.steps()).collect(Collectors.toMap(s -> s.id(), s -> s));
+    this.steps = workflow.steps().stream().collect(Collectors.toMap(s -> s.id(), s -> s));
     this.futures = new ConcurrentHashMap<>();
 
     // Build the execution graph
