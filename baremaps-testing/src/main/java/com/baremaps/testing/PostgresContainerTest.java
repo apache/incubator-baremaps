@@ -12,8 +12,11 @@
  * the License.
  */
 
-package com.baremaps.workflow.tasks;
+package com.baremaps.testing;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -23,16 +26,25 @@ public abstract class PostgresContainerTest {
 
   private PostgreSQLContainer container;
 
+  private DataSource dataSource;
+
   @BeforeEach
-  public void before() {
+  public void startContainer() {
+    // start the container
     var postgis =
         DockerImageName.parse("postgis/postgis:13-3.1").asCompatibleSubstituteFor("postgres");
     container = new PostgreSQLContainer(postgis);
     container.start();
+
+    // set the datasource
+    HikariConfig config = new HikariConfig();
+    config.setPoolName("BaremapsDataSource");
+    config.setJdbcUrl(jdbcUrl());
+    dataSource = new HikariDataSource(config);
   }
 
   @AfterEach
-  public void after() {
+  public void stopContainer() {
     container.stop();
   }
 
@@ -41,4 +53,9 @@ public abstract class PostgresContainerTest {
         "%s&user=%s&password=%s&currentSchema=%s",
         container.getJdbcUrl(), container.getUsername(), container.getPassword(), "public");
   }
+
+  public DataSource dataSource() {
+    return dataSource;
+  }
+
 }

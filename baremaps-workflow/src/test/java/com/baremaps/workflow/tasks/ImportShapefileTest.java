@@ -15,6 +15,7 @@
 package com.baremaps.workflow.tasks;
 
 import com.baremaps.collection.utils.FileUtils;
+import com.baremaps.testing.PostgresContainerTest;
 import com.baremaps.testing.TestFiles;
 import java.io.IOException;
 import java.nio.file.Files;

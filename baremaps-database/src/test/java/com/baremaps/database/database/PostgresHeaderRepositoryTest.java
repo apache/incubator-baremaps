@@ -34,16 +34,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgresHeaderRepositoryTest extends PostgresBaseTest {
-
-  DataSource dataSource;
+class PostgresHeaderRepositoryTest extends DatabaseContainerTest {
 
   PostgresHeaderRepository headerRepository;
 
   @BeforeEach
   void init() throws SQLException, IOException {
-    dataSource = initDataSource();
-    headerRepository = new PostgresHeaderRepository(dataSource);
+    headerRepository = new PostgresHeaderRepository(dataSource());
   }
 
   @Test

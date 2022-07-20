@@ -14,7 +14,6 @@
 
 package com.baremaps.database.database;
 
-import static com.baremaps.database.database.PostgresBaseTest.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -26,6 +25,7 @@ import com.baremaps.database.repository.PostgresRelationRepository;
 import com.baremaps.database.repository.PostgresWayRepository;
 import com.baremaps.database.repository.RepositoryException;
 import com.baremaps.osm.pbf.PbfBlockReader;
+import com.baremaps.testing.PostgresContainerTest;
 import com.baremaps.testing.TestFiles;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +38,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class SaveBlockConsumerTest {
+class SaveBlockConsumerTest extends PostgresContainerTest {
 
   public DataSource dataSource;
   public PostgresHeaderRepository headerRepository;
@@ -48,7 +48,7 @@ class SaveBlockConsumerTest {
 
   @BeforeEach
   void init() throws SQLException, IOException {
-    dataSource = PostgresUtils.dataSource(DATABASE_URL, 1);
+    dataSource = PostgresUtils.dataSource(jdbcUrl(), 1);
     headerRepository = new PostgresHeaderRepository(dataSource);
     nodeRepository = new PostgresNodeRepository(dataSource);
     tableRepository = new PostgresWayRepository(dataSource);

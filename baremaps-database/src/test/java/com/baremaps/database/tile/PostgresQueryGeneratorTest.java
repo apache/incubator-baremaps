@@ -14,34 +14,22 @@
 
 package com.baremaps.database.tile;
 
-import static com.baremaps.database.database.PostgresBaseTest.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.baremaps.database.postgres.PostgresUtils;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import com.baremaps.database.database.DatabaseContainerTest;
 import java.util.List;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgresQueryGeneratorTest {
+class PostgresQueryGeneratorTest extends DatabaseContainerTest {
 
   @Test
   @Tag("integration")
-  void generate() throws SQLException, IOException {
-    DataSource dataSource = PostgresUtils.dataSource(DATABASE_URL);
-
-    try (Connection connection = dataSource.getConnection()) {
-      PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
-      PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
-      PostgresUtils.executeResource(connection, "osm_create_tables.sql");
-    }
-
+  void generate() {
+    DataSource dataSource = dataSource();
     List<PostgresQuery> queries =
         new PostgresQueryGenerator(dataSource, null, "public", null, null, "TABLE").generate();
-
     assertEquals(3, queries.size());
     assertEquals(
         "SELECT id, hstore(array['version', version::text, 'uid', uid::text, 'timestamp', timestamp::text, 'changeset', changeset::text, 'tags', tags::text, 'lon', lon::text, 'lat', lat::text]), geom FROM osm_nodes",

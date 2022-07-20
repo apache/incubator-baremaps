@@ -31,16 +31,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgresWayRepositoryTest extends PostgresBaseTest {
-
-  DataSource dataSource;
+class PostgresWayRepositoryTest extends DatabaseContainerTest {
 
   PostgresWayRepository wayRepository;
 
   @BeforeEach
   void init() throws SQLException, IOException {
-    dataSource = initDataSource();
-    wayRepository = new PostgresWayRepository(dataSource);
+    wayRepository = new PostgresWayRepository(dataSource());
   }
 
   @Test

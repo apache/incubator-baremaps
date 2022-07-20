@@ -45,26 +45,15 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 
-class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
-
-  public DataSource dataSource;
-  public PostgresHeaderRepository headerRepository;
-  public PostgresNodeRepository nodeRepository;
-  public PostgresWayRepository wayRepository;
-  public PostgresRelationRepository relationRepository;
-
-  @BeforeEach
-  void init() throws SQLException, IOException, URISyntaxException {
-    dataSource = initDataSource();
-    headerRepository = new PostgresHeaderRepository(dataSource);
-    nodeRepository = new PostgresNodeRepository(dataSource);
-    wayRepository = new PostgresWayRepository(dataSource);
-    relationRepository = new PostgresRelationRepository(dataSource);
-  }
+class ImportUpdateLiechtensteinTest extends DatabaseContainerTest {
 
   @Test
   @Tag("integration")
   void liechtenstein() throws Exception {
+    PostgresHeaderRepository headerRepository = new PostgresHeaderRepository(dataSource());
+    PostgresNodeRepository nodeRepository = new PostgresNodeRepository(dataSource());
+    PostgresWayRepository wayRepository = new PostgresWayRepository(dataSource());
+    PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
 
     LongDataMap<Coordinate> coordinates =
         new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
@@ -93,8 +82,8 @@ class ImportUpdateLiechtensteinTest extends PostgresBaseTest {
             "",
             ""));
 
-    coordinates = new PostgresCoordinateMap(dataSource);
-    references = new PostgresReferenceMap(dataSource);
+    coordinates = new PostgresCoordinateMap(dataSource());
+    references = new PostgresReferenceMap(dataSource());
 
     assertEquals(
         0,

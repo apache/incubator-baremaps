@@ -14,10 +14,10 @@
 
 package com.baremaps.database.database;
 
-import static com.baremaps.database.database.PostgresBaseTest.DATABASE_URL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.database.postgres.PostgresUtils;
+import com.baremaps.testing.PostgresContainerTest;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -27,12 +27,12 @@ import java.sql.SQLException;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgresSchemaTest {
+class PostgresSchemaTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
   void resetDatabase() throws SQLException, IOException {
-    try (Connection connection = DriverManager.getConnection(DATABASE_URL)) {
+    try (Connection connection = DriverManager.getConnection(jdbcUrl())) {
       PostgresUtils.executeResource(connection, "osm_create_extensions.sql");
       PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
       PostgresUtils.executeResource(connection, "osm_drop_tables.sql");
@@ -45,7 +45,7 @@ class PostgresSchemaTest {
   }
 
   boolean tableExists(String table) throws SQLException {
-    try (Connection connection = DriverManager.getConnection(DATABASE_URL)) {
+    try (Connection connection = DriverManager.getConnection(jdbcUrl())) {
       DatabaseMetaData metadata = connection.getMetaData();
       ResultSet tables = metadata.getTables(null, null, table, null);
       return tables.next();

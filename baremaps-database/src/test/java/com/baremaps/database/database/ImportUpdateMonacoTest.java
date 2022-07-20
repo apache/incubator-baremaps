@@ -43,26 +43,16 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 
-class ImportUpdateMonacoTest extends PostgresBaseTest {
-
-  public DataSource dataSource;
-  public PostgresHeaderRepository headerRepository;
-  public PostgresNodeRepository nodeRepository;
-  public PostgresWayRepository wayRepository;
-  public PostgresRelationRepository relationRepository;
-
-  @BeforeEach
-  void init() throws SQLException, IOException {
-    dataSource = initDataSource();
-    headerRepository = new PostgresHeaderRepository(dataSource);
-    nodeRepository = new PostgresNodeRepository(dataSource);
-    wayRepository = new PostgresWayRepository(dataSource);
-    relationRepository = new PostgresRelationRepository(dataSource);
-  }
+class ImportUpdateMonacoTest extends DatabaseContainerTest {
 
   @Test
   @Tag("integration")
   void monaco() throws Exception {
+    PostgresHeaderRepository headerRepository = new PostgresHeaderRepository(dataSource());
+    PostgresNodeRepository nodeRepository = new PostgresNodeRepository(dataSource());
+    PostgresWayRepository wayRepository = new PostgresWayRepository(dataSource());
+    PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
+
     LongDataMap<Coordinate> coordinates =
         new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
     LongDataMap<List<Long>> references =
@@ -92,8 +82,8 @@ class ImportUpdateMonacoTest extends PostgresBaseTest {
             "",
             ""));
 
-    coordinates = new PostgresCoordinateMap(dataSource);
-    references = new PostgresReferenceMap(dataSource);
+    coordinates = new PostgresCoordinateMap(dataSource());
+    references = new PostgresReferenceMap(dataSource());
 
     // Generate the diff and update the database
     long replicationSequenceNumber = headerRepository.selectLatest().getReplicationSequenceNumber();

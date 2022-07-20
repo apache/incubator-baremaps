@@ -47,26 +47,16 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 
-class ImportUpdateDataTest extends PostgresBaseTest {
-
-  public DataSource dataSource;
-  public PostgresHeaderRepository headerRepository;
-  public PostgresNodeRepository nodeRepository;
-  public PostgresWayRepository wayRepository;
-  public PostgresRelationRepository relationRepository;
-
-  @BeforeEach
-  void createRepository() throws SQLException, IOException {
-    dataSource = initDataSource();
-    headerRepository = new PostgresHeaderRepository(dataSource);
-    nodeRepository = new PostgresNodeRepository(dataSource);
-    wayRepository = new PostgresWayRepository(dataSource);
-    relationRepository = new PostgresRelationRepository(dataSource);
-  }
+class ImportUpdateDataTest extends DatabaseContainerTest {
 
   @Test
   @Tag("integration")
   void data() throws Exception {
+    PostgresHeaderRepository headerRepository = new PostgresHeaderRepository(dataSource());
+    PostgresNodeRepository nodeRepository = new PostgresNodeRepository(dataSource());
+    PostgresWayRepository wayRepository = new PostgresWayRepository(dataSource());
+    PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
+
     LongDataMap<Coordinate> coordinates =
         new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
     LongDataMap<List<Long>> references =
@@ -116,8 +106,8 @@ class ImportUpdateDataTest extends PostgresBaseTest {
 
     // Update the database
     new UpdateService(
-            new PostgresCoordinateMap(dataSource),
-            new PostgresReferenceMap(dataSource),
+            new PostgresCoordinateMap(dataSource()),
+            new PostgresReferenceMap(dataSource()),
             headerRepository,
             nodeRepository,
             wayRepository,
