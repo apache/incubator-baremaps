@@ -17,6 +17,7 @@ package com.baremaps.database;
 import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import com.baremaps.collection.LongDataMap;
+import com.baremaps.database.SaveChangeConsumer;
 import com.baremaps.database.repository.HeaderRepository;
 import com.baremaps.database.repository.Repository;
 import com.baremaps.osm.domain.Change;

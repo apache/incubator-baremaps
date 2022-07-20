@@ -53,7 +53,8 @@ public class DiffService implements Callable<List<Tile>> {
 
   private static final Logger logger = LoggerFactory.getLogger(DiffService.class);
 
-  private final CreateGeometryConsumer createGeometryConsumer;
+  private final LongDataMap<Coordinate> coordinates;
+  private final LongDataMap<List<Long>> references;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
@@ -70,13 +71,14 @@ public class DiffService implements Callable<List<Tile>> {
       Repository<Long, Relation> relationRepository,
       int srid,
       int zoom) {
+    this.coordinates = coordinates;
+    this.references = references;
     this.headerRepository = headerRepository;
     this.nodeRepository = nodeRepository;
     this.wayRepository = wayRepository;
     this.relationRepository = relationRepository;
     this.srid = srid;
     this.zoom = zoom;
-    this.createGeometryConsumer = new CreateGeometryConsumer(coordinates, references);
   }
 
   @Override
@@ -159,7 +161,7 @@ public class DiffService implements Callable<List<Tile>> {
 
   private Stream<Geometry> geometriesForNextVersion(Change change) {
     return change.getEntities().stream()
-        .map(consumeThenReturn(createGeometryConsumer))
+        .map(consumeThenReturn(new CreateGeometryConsumer(coordinates, references)))
         .flatMap(new ExtractGeometryFunction().andThen(Optional::stream));
   }
 

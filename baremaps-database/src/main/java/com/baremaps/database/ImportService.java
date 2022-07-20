@@ -18,6 +18,7 @@ import static com.baremaps.stream.ConsumerUtils.consumeThenReturn;
 import static com.baremaps.stream.StreamUtils.batch;
 
 import com.baremaps.collection.LongDataMap;
+import com.baremaps.database.SaveBlockConsumer;
 import com.baremaps.database.repository.HeaderRepository;
 import com.baremaps.database.repository.Repository;
 import com.baremaps.osm.domain.Block;
@@ -38,12 +39,8 @@ import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import org.locationtech.jts.geom.Coordinate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ImportService implements Callable<Void> {
-
-  private static final Logger logger = LoggerFactory.getLogger(ImportService.class);
 
   private final Path path;
   private final LongDataMap<Coordinate> coordinates;
@@ -52,7 +49,7 @@ public class ImportService implements Callable<Void> {
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
   private final Repository<Long, Relation> relationRepository;
-  private final int srid;
+  private final int databaseSrid;
 
   public ImportService(
       Path path,
@@ -62,8 +59,7 @@ public class ImportService implements Callable<Void> {
       Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository,
       Repository<Long, Relation> relationRepository,
-      Integer sourceSRID,
-      Integer targetSRID) {
+      Integer databaseSrid) {
     this.path = path;
     this.coordinates = coordinates;
     this.references = references;
@@ -71,14 +67,14 @@ public class ImportService implements Callable<Void> {
     this.nodeRepository = nodeRepository;
     this.wayRepository = wayRepository;
     this.relationRepository = relationRepository;
-    this.srid = targetSRID;
+    this.databaseSrid = databaseSrid;
   }
 
   @Override
   public Void call() throws Exception {
     Consumer<Block> cacheBlock = new DataStoreConsumer(coordinates, references);
     Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
-    Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, srid);
+    Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, databaseSrid);
     Consumer<Block> prepareGeometries =
         new BlockEntityConsumer(createGeometry.andThen(reprojectGeometry));
     Function<Block, Block> prepareBlock = consumeThenReturn(cacheBlock.andThen(prepareGeometries));
