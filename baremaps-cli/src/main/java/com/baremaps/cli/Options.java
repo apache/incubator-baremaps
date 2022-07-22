@@ -31,15 +31,4 @@ public class Options {
       description = {"The log level."})
   public LogLevel logLevel = LogLevel.INFO;
 
-  @Option(
-      names = {"--enable-http"},
-      paramLabel = "ENABLE_HTTP",
-      description = "Enable Amazon HTTP storage.")
-  public boolean enableHTTP = false;
-
-  @Option(
-      names = {"--enable-s3"},
-      paramLabel = "ENABLE_S3",
-      description = "Enable Amazon S3 storage.")
-  public boolean enableS3 = false;
 }

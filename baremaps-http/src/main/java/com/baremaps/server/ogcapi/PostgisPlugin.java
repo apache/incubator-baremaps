@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.database.postgres;
+package com.baremaps.server.ogcapi;
 
 import com.baremaps.osm.geometry.GeometryUtils;
 import java.sql.ResultSet;

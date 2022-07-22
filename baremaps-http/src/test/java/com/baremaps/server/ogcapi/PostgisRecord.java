@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.database.postgres;
+package com.baremaps.server.ogcapi;
 
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;

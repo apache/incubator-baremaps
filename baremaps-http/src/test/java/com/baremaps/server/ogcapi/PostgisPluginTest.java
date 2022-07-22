@@ -12,12 +12,13 @@
  * the License.
  */
 
-package com.baremaps.database.postgres;
+package com.baremaps.server.ogcapi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import org.jdbi.v3.core.Jdbi;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -70,8 +71,8 @@ class PostgisPluginTest {
                   .list();
             });
 
-    assertEquals(record.getPoint(), result.get(0).getPoint());
-    assertEquals(record.getLineString(), result.get(0).getLineString());
-    assertEquals(record.getPolygon(), result.get(0).getPolygon());
+    Assertions.assertEquals(record.getPoint(), result.get(0).getPoint());
+    Assertions.assertEquals(record.getLineString(), result.get(0).getLineString());
+    Assertions.assertEquals(record.getPolygon(), result.get(0).getPolygon());
   }
 }

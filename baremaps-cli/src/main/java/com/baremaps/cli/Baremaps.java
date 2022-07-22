@@ -19,7 +19,6 @@ import com.baremaps.cli.database.Editor;
 import com.baremaps.cli.database.Execute;
 import com.baremaps.cli.database.Init;
 import com.baremaps.cli.database.Server;
-import com.baremaps.cli.database.Update;
 import com.baremaps.cli.database.Viewer;
 import com.baremaps.cli.geocoder.Geocoder;
 import com.baremaps.cli.iploc.Iploc;
@@ -46,7 +45,6 @@ import picocli.CommandLine.Option;
     subcommands = {
       Init.class,
       Execute.class,
-      Update.class,
       Editor.class,
       Viewer.class,
       Server.class,

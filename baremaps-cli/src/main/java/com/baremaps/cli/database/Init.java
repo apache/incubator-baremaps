@@ -20,11 +20,15 @@ import com.baremaps.cli.Options;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.MbStyleSources;
 import com.baremaps.model.TileJSON;
+import com.baremaps.workflow.Step;
+import com.baremaps.workflow.Workflow;
+import com.baremaps.workflow.tasks.LogMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
@@ -38,19 +42,26 @@ public class Init implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Init.class);
 
-  @Mixin private Options options;
-
-  @Option(
-      names = {"--tileset"},
-      paramLabel = "TILESET",
-      description = "The tileset file.")
-  private Path tileset;
+  @Mixin
+  private Options options;
 
   @Option(
       names = {"--style"},
       paramLabel = "STYLE",
-      description = "The style file.")
+      description = "A style file.")
   private Path style;
+
+  @Option(
+      names = {"--tileset"},
+      paramLabel = "TILESET",
+      description = "A tileset file.")
+  private Path tileset;
+
+  @Option(
+      names = {"--workflow"},
+      paramLabel = "WORKFLOW",
+      description = "A workflow file.")
+  private Path workflow;
 
   @Override
   public Integer call() throws IOException {
@@ -75,6 +86,14 @@ public class Init implements Callable<Integer> {
       Files.write(
           tileset, mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(tilesetObject));
       logger.info("Tileset initialized: {}", tileset);
+    }
+
+    if (workflow != null) {
+      Workflow workflowObject = new Workflow(
+          List.of(new Step("hello", List.of(), List.of(new LogMessage("Hello World!")))));
+      Files.write(
+          workflow, mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(workflowObject));
+      logger.info("Workflow initialized: {}", tileset);
     }
 
     return 0;

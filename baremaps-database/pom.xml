@@ -29,18 +29,6 @@
       <groupId>org.postgresql</groupId>
     </dependency>
     <dependency>
-      <groupId>org.jdbi</groupId>
-      <artifactId>jdbi3-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jdbi</groupId>
-      <artifactId>jdbi3-postgres</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jdbi</groupId>
-      <artifactId>jdbi3-jpa</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
     </dependency>
