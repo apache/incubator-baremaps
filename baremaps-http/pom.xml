@@ -64,31 +64,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>3.2.0</version>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/classes/editor</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${basedir}/editor/build/build</directory>
-                  <excludes>
-                    <exclude>bundle-stats.html</exclude>
-                    <exclude>bundle-stats.json</exclude>
-                  </excludes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 

@@ -37,8 +37,8 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "init", description = "Init the configuration files.")
-public class Init implements Callable<Integer> {
+@Command(name = "init", description = "Init configuration files.")
+public class Init implements Runnable {
 
   private static final Logger logger = LoggerFactory.getLogger(Init.class);
 
@@ -64,38 +64,48 @@ public class Init implements Callable<Integer> {
   private Path workflow;
 
   @Override
-  public Integer call() throws IOException {
+  public void run() {
     ObjectMapper mapper = defaultObjectMapper();
 
-    if (style != null) {
-      MbStyle styleObject = new MbStyle();
-      styleObject.setName("Baremaps");
-      MbStyleSources sources = new MbStyleSources();
-      sources.setType("vector");
-      sources.setUrl("http://localhost:9000/tiles.json");
-      styleObject.setSources(Map.of("baremaps", sources));
-      Files.write(style, mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(styleObject));
-      logger.info("Style initialized: {}", style);
+    try {
+      if (style != null) {
+        MbStyle styleObject = new MbStyle();
+        styleObject.setName("Baremaps");
+        MbStyleSources sources = new MbStyleSources();
+        sources.setType("vector");
+        sources.setUrl("http://localhost:9000/tiles.json");
+        styleObject.setSources(Map.of("baremaps", sources));
+        Files.write(style, mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(styleObject));
+        logger.info("Style initialized: {}", style);
+      }
+    } catch (IOException e) {
+      logger.error("Unable to create style", e);
     }
 
-    if (tileset != null) {
-      TileJSON tilesetObject = new TileJSON();
-      tilesetObject.setTilejson("2.2.0");
-      tilesetObject.setName("Baremaps");
-      tilesetObject.setTiles(Arrays.asList("http://localhost:9000/tiles.json"));
-      Files.write(
-          tileset, mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(tilesetObject));
-      logger.info("Tileset initialized: {}", tileset);
+    try {
+      if (tileset != null) {
+        TileJSON tilesetObject = new TileJSON();
+        tilesetObject.setTilejson("2.2.0");
+        tilesetObject.setName("Baremaps");
+        tilesetObject.setTiles(Arrays.asList("http://localhost:9000/tiles.json"));
+        Files.write(
+            tileset, mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(tilesetObject));
+        logger.info("Tileset initialized: {}", tileset);
+      }
+    } catch (IOException e) {
+      logger.error("Unable to create tileset", e);
     }
 
-    if (workflow != null) {
-      Workflow workflowObject = new Workflow(
-          List.of(new Step("hello", List.of(), List.of(new LogMessage("Hello World!")))));
-      Files.write(
-          workflow, mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(workflowObject));
-      logger.info("Workflow initialized: {}", tileset);
+    try {
+      if (workflow != null) {
+        Workflow workflowObject = new Workflow(
+            List.of(new Step("hello", List.of(), List.of(new LogMessage("Hello World!")))));
+        Files.write(
+            workflow, mapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(workflowObject));
+        logger.info("Workflow initialized: {}", tileset);
+      }
+    } catch (IOException e) {
+      logger.error("Unable to create workflow", e);
     }
-
-    return 0;
   }
 }

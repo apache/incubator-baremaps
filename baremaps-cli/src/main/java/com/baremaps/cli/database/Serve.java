@@ -27,12 +27,15 @@ import com.baremaps.database.tile.TileStore;
 import com.baremaps.model.TileJSON;
 import com.baremaps.server.resources.ServerResources;
 import com.baremaps.server.utils.CorsFilter;
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -46,17 +49,17 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "server", description = "Start a tile server with caching capabilities.")
-public class Server implements Callable<Integer> {
+@Command(name = "serve", description = "Start a tile server with caching capabilities.")
+public class Serve implements Runnable {
 
-  private static final Logger logger = LoggerFactory.getLogger(Server.class);
+  private static final Logger logger = LoggerFactory.getLogger(Serve.class);
 
   @Mixin private Options options;
 
   @Option(
       names = {"--database"},
       paramLabel = "DATABASE",
-      description = "The JDBC url of the Postgres database.",
+      description = "The JDBC url of Postgres.",
       required = true)
   private String database;
 
@@ -93,41 +96,46 @@ public class Server implements Callable<Integer> {
   private int port = 9000;
 
   @Override
-  public Integer call() throws Exception {
-    ObjectMapper objectMapper = defaultObjectMapper();
-    TileJSON tileJSON = objectMapper.readValue(Files.readAllBytes(tileset), TileJSON.class);
-    CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
-    DataSource datasource = PostgresUtils.dataSource(database);
+  public void run() {
+    try {
+      ObjectMapper objectMapper = defaultObjectMapper();
+      TileJSON tileJSON = objectMapper.readValue(Files.readAllBytes(tileset), TileJSON.class);
+      CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
+      DataSource datasource = PostgresUtils.dataSource(database);
 
-    List<PostgresQuery> queries = asPostgresQuery(tileJSON);
-    TileStore tileStore = new PostgresTileStore(datasource, queries);
-    TileStore tileCache = new TileCache(tileStore, caffeineSpec);
+      List<PostgresQuery> queries = asPostgresQuery(tileJSON);
+      TileStore tileStore = new PostgresTileStore(datasource, queries);
+      TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
-    // Configure the application
-    ResourceConfig application =
-        new ResourceConfig()
-            .register(CorsFilter.class)
-            .register(ServerResources.class)
-            .register(contextResolverFor(objectMapper))
-            .register(
-                new AbstractBinder() {
-                  @Override
-                  protected void configure() {
-                    bind(tileset).to(Path.class).named("tileset");
-                    bind(style).to(Path.class).named("style");
-                    bind(tileCache).to(TileStore.class);
-                  }
-                });
+      // Configure the application
+      ResourceConfig application =
+          new ResourceConfig()
+              .register(CorsFilter.class)
+              .register(ServerResources.class)
+              .register(contextResolverFor(objectMapper))
+              .register(
+                  new AbstractBinder() {
+                    @Override
+                    protected void configure() {
+                      bind(tileset).to(Path.class).named("tileset");
+                      bind(style).to(Path.class).named("style");
+                      bind(tileCache).to(TileStore.class);
+                    }
+                  });
 
-    BlockingStreamingHttpService httpService =
-        new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
-    ServerContext serverContext =
-        HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
+      BlockingStreamingHttpService httpService =
+          new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
+      ServerContext serverContext =
+          HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
-    logger.info("Listening on {}", serverContext.listenAddress());
+      logger.info("Listening on {}", serverContext.listenAddress());
 
-    serverContext.awaitShutdown();
-
-    return 0;
+      serverContext.awaitShutdown();
+    } catch (IOException e) {
+      logger.error("Unable to read tileset", e);
+    } catch (Exception e) {
+      logger.error("Unable to start server", e);
+      throw new RuntimeException(e);
+    }
   }
 }

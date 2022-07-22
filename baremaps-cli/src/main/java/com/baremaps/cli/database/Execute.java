@@ -14,39 +14,43 @@
 
 package com.baremaps.cli.database;
 
+
 import com.baremaps.cli.Options;
-import com.baremaps.workflow.Workflow;
-import com.baremaps.workflow.WorkflowExecutor;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.baremaps.workflow.tasks.ExecuteQueries;
 import java.nio.file.Path;
-import java.util.concurrent.Callable;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "execute", description = "Execute a workflow.")
-public class Execute implements Callable<Integer> {
+@Command(name = "execute", description = "Execute queries in the database.")
+public class Execute implements Runnable {
 
   private static final Logger logger = LoggerFactory.getLogger(Execute.class);
 
   @Mixin private Options options;
 
   @Option(
-      names = {"--workflow"},
-      paramLabel = "WORKFLOW",
-      description = "The workflow file.",
+      names = {"--database"},
+      paramLabel = "DATABASE",
+      description = "The JDBC url of the database.",
       required = true)
-  private Path config;
+  private String database;
+
+  @Option(
+      names = {"--file"},
+      paramLabel = "FILE",
+      description = "The SQL file to execute in the database.",
+      required = true)
+  private List<Path> files;
 
   @Override
-  public Integer call() throws Exception {
-    logger.info("Importing data");
-    var mapper = new ObjectMapper();
-    var workflow = mapper.readValue(config.toFile(), Workflow.class);
-    new WorkflowExecutor(workflow).execute();
-    logger.info("Done");
-    return 0;
+  public void run() {
+    for (Path file : files) {
+      new ExecuteQueries(database, file.toAbsolutePath().toString()).run();
+    }
   }
+
 }

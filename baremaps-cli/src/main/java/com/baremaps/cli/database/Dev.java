@@ -37,21 +37,26 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(
-    name = "editor",
-    description = "Start a development server for editing a map with maputnik.")
-public class Editor implements Callable<Integer> {
+@Command(name = "dev", description = "Start a development server with live reload.")
+public class Dev implements Runnable {
 
-  private static final Logger logger = LoggerFactory.getLogger(Editor.class);
+  private static final Logger logger = LoggerFactory.getLogger(Dev.class);
 
-  @Mixin private Options options;
+  @Mixin
+  private Options options;
 
   @Option(
       names = {"--database"},
       paramLabel = "DATABASE",
-      description = "The JDBC url of the Postgres database.",
+      description = "The JDBC url of Postgres.",
       required = true)
   private String database;
+
+  @Option(
+      names = {"--cache"},
+      paramLabel = "CACHE",
+      description = "The caffeine cache directive.")
+  private String cache = "";
 
   @Option(
       names = {"--tileset"},
@@ -80,38 +85,40 @@ public class Editor implements Callable<Integer> {
   private int port = 9000;
 
   @Override
-  public Integer call() throws Exception {
-    DataSource dataSource = PostgresUtils.dataSource(database);
+  public void run() {
+    try {
+      DataSource dataSource = PostgresUtils.dataSource(database);
 
-    // Configure serialization
-    ObjectMapper objectMapper = defaultObjectMapper();
+      // Configure serialization
+      ObjectMapper objectMapper = defaultObjectMapper();
 
-    // Configure the application
-    ResourceConfig application =
-        new ResourceConfig()
-            .register(CorsFilter.class)
-            .register(DevelopmentResources.class)
-            .register(contextResolverFor(objectMapper))
-            .register(
-                new AbstractBinder() {
-                  @Override
-                  protected void configure() {
-                    bind("editor").to(String.class).named("assets");
-                    bind(tileset).to(Path.class).named("tileset");
-                    bind(style).to(Path.class).named("style");
-                    bind(dataSource).to(DataSource.class);
-                    bind(objectMapper).to(ObjectMapper.class);
-                  }
-                });
+      // Configure the application
+      ResourceConfig application =
+          new ResourceConfig()
+              .register(CorsFilter.class)
+              .register(DevelopmentResources.class)
+              .register(contextResolverFor(objectMapper))
+              .register(
+                  new AbstractBinder() {
+                    @Override
+                    protected void configure() {
+                      bind("viewer").to(String.class).named("assets");
+                      bind(tileset).to(Path.class).named("tileset");
+                      bind(style).to(Path.class).named("style");
+                      bind(dataSource).to(DataSource.class);
+                      bind(objectMapper).to(ObjectMapper.class);
+                    }
+                  });
 
-    BlockingStreamingHttpService httpService =
-        new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
-    ServerContext serverContext =
-        HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
+      BlockingStreamingHttpService httpService =
+          new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
+      ServerContext serverContext =
+          HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
-    logger.info("Listening on {}", serverContext.listenAddress());
-    serverContext.awaitShutdown();
-
-    return 0;
+      logger.info("Listening on {}", serverContext.listenAddress());
+      serverContext.awaitShutdown();
+    } catch (Exception e) {
+      logger.error("Unable to start server", e);
+    }
   }
 }

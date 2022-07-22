@@ -15,11 +15,10 @@
 package com.baremaps.cli;
 
 import com.baremaps.cli.Baremaps.VersionProvider;
-import com.baremaps.cli.database.Editor;
-import com.baremaps.cli.database.Execute;
+import com.baremaps.cli.database.Workflow;
 import com.baremaps.cli.database.Init;
-import com.baremaps.cli.database.Server;
-import com.baremaps.cli.database.Viewer;
+import com.baremaps.cli.database.Serve;
+import com.baremaps.cli.database.Dev;
 import com.baremaps.cli.geocoder.Geocoder;
 import com.baremaps.cli.iploc.Iploc;
 import com.baremaps.cli.ogcapi.OgcApi;
@@ -44,10 +43,9 @@ import picocli.CommandLine.Option;
     versionProvider = VersionProvider.class,
     subcommands = {
       Init.class,
-      Execute.class,
-      Editor.class,
-      Viewer.class,
-      Server.class,
+      Workflow.class,
+      Dev.class,
+      Serve.class,
       OgcApi.class,
       Iploc.class,
       Geocoder.class

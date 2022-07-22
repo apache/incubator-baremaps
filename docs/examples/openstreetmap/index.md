@@ -85,7 +85,7 @@ It defines general style and rendering properties.
 Let's preview and edit the map with the sample configuration files by executing the following command in a terminal.
 
 ```
-baremaps edit \
+baremaps view \
   --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
   --tileset 'tileset.json' \
   --style 'style.json'
@@ -95,8 +95,6 @@ Well done, a local tile server should have started and you can open a map of Lie
 Baremaps dynamically generates a blueprint [Mapbox Style](https://docs.mapbox.com/mapbox-gl-js/style-spec/) from the json configuration file.
 It is aimed at quickly previsualizing the data and provides a foundation for creating more complex styles.
 Notice that the changes in the configuration files are automatically reloaded by the browser.
-
-![Maputnik editor](screenshot.png)
 
 ### Under the Hood (Optional)
 

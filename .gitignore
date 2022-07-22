@@ -10,7 +10,6 @@
 log/
 target/
 examples/output/
-baremaps-editor/node/
 
 # Release
 /baremaps/
