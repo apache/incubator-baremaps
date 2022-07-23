@@ -17,12 +17,9 @@ package com.baremaps.cli.database;
 import com.baremaps.cli.Options;
 import com.baremaps.workflow.WorkflowExecutor;
 import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -41,14 +38,14 @@ public class Workflow implements Runnable {
       paramLabel = "WORKFLOW",
       description = "The workflow file.",
       required = true)
-  private Path config;
+  private Path workflow;
 
   @Override
   public void run() {
     try {
       logger.info("Importing data");
       var mapper = new ObjectMapper();
-      var workflow = mapper.readValue(config.toFile(), com.baremaps.workflow.Workflow.class);
+      var workflow = mapper.readValue(this.workflow.toFile(), com.baremaps.workflow.Workflow.class);
       new WorkflowExecutor(workflow).execute().get();
       logger.info("Done");
     } catch (StreamReadException e) {
