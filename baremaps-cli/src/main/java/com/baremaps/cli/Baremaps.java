@@ -15,13 +15,19 @@
 package com.baremaps.cli;
 
 import com.baremaps.cli.Baremaps.VersionProvider;
-import com.baremaps.cli.database.Workflow;
-import com.baremaps.cli.database.Init;
-import com.baremaps.cli.database.Serve;
-import com.baremaps.cli.database.Dev;
+import com.baremaps.cli.database.Database;
+import com.baremaps.cli.database.ExecuteSql;
+import com.baremaps.cli.map.Init;
+import com.baremaps.cli.map.Map;
+import com.baremaps.cli.workflow.Execute;
+import com.baremaps.cli.map.Export;
+import com.baremaps.cli.database.ImportOpenStreetMap;
+import com.baremaps.cli.map.Serve;
+import com.baremaps.cli.map.Dev;
 import com.baremaps.cli.geocoder.Geocoder;
-import com.baremaps.cli.iploc.Iploc;
+import com.baremaps.cli.iploc.IpLoc;
 import com.baremaps.cli.ogcapi.OgcApi;
+import com.baremaps.cli.workflow.Workflow;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
@@ -42,14 +48,13 @@ import picocli.CommandLine.Option;
     description = "A toolkit for producing vector tiles.",
     versionProvider = VersionProvider.class,
     subcommands = {
-      Init.class,
-      Workflow.class,
-      Dev.class,
-      Serve.class,
-      OgcApi.class,
-      Iploc.class,
-      Geocoder.class
-    })
+        Workflow.class,
+        Database.class,
+        Map.class,
+        Geocoder.class,
+        IpLoc.class,
+        OgcApi.class,
+    }, sortOptions = false)
 public class Baremaps implements Callable<Integer> {
 
   static {
@@ -103,13 +108,13 @@ public class Baremaps implements Callable<Integer> {
     public String[] getVersion() throws Exception {
       URL url = getClass().getResource("/version.txt");
       if (url == null) {
-        return new String[] {"No version.txt file found in the classpath."};
+        return new String[]{"No version.txt file found in the classpath."};
       }
       try (InputStream inputStream = url.openStream()) {
         Properties properties = new Properties();
         properties.load(inputStream);
-        return new String[] {
-          properties.getProperty("application") + " v" + properties.getProperty("version"),
+        return new String[]{
+            properties.getProperty("application") + " v" + properties.getProperty("version"),
         };
       }
     }

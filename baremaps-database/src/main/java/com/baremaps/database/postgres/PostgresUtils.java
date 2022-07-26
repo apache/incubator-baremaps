@@ -30,7 +30,7 @@ public final class PostgresUtils {
 
   private PostgresUtils() {}
 
-  public static DataSource dataSource(
+  public static HikariDataSource dataSource(
       String host, Integer port, String database, String username, String password) {
     return dataSource(
         String.format(
@@ -45,7 +45,7 @@ public final class PostgresUtils {
    * @param url the JDBC url
    * @return the data source
    */
-  public static DataSource dataSource(String url) {
+  public static HikariDataSource dataSource(String url) {
     return dataSource(url, Runtime.getRuntime().availableProcessors());
   }
 
@@ -56,12 +56,11 @@ public final class PostgresUtils {
    * @param poolSize the pool size
    * @return the data source
    */
-  public static DataSource dataSource(String url, int poolSize) {
+  public static HikariDataSource dataSource(String url, int poolSize) {
     if (poolSize < 1) {
       throw new IllegalArgumentException("PoolSize cannot be inferior to 1");
     }
     HikariConfig config = new HikariConfig();
-    config.setPoolName("BaremapsDataSource");
     config.setJdbcUrl(url);
     config.setMaximumPoolSize(poolSize);
     return new HikariDataSource(config);

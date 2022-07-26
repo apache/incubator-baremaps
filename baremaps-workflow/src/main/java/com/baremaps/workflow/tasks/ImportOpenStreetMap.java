@@ -18,12 +18,14 @@ import com.baremaps.collection.AlignedDataList;
 import com.baremaps.collection.LongDataSortedMap;
 import com.baremaps.collection.LongSizedDataDenseMap;
 import com.baremaps.collection.memory.OnDiskDirectoryMemory;
+import com.baremaps.collection.memory.OnDiskFileMemory;
 import com.baremaps.collection.type.LonLatDataType;
 import com.baremaps.collection.type.LongDataType;
 import com.baremaps.collection.type.LongListDataType;
 import com.baremaps.collection.type.PairDataType;
 import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.database.ImportService;
+import com.baremaps.database.postgres.PostgresUtils;
 import com.baremaps.database.repository.PostgresHeaderRepository;
 import com.baremaps.database.repository.PostgresNodeRepository;
 import com.baremaps.database.repository.PostgresRelationRepository;
@@ -34,66 +36,69 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public record ImportOpenStreetMap(String file, String database, Integer databaseSrid)
     implements Task {
 
+  private static final Logger logger = LoggerFactory.getLogger(ImportOpenStreetMap.class);
+
   @Override
   public void run() {
-    try {
+    logger.info("Importing {} into {}", file, database);
+
+    try (var dataSource = PostgresUtils.dataSource(database)) {
+      var path = Paths.get(file).toAbsolutePath();
+
+      var headerRepository = new PostgresHeaderRepository(dataSource);
+      var nodeRepository = new PostgresNodeRepository(dataSource);
+      var wayRepository = new PostgresWayRepository(dataSource);
+      var relationRepository = new PostgresRelationRepository(dataSource);
+
+      headerRepository.drop();
+      nodeRepository.drop();
+      wayRepository.drop();
+      relationRepository.drop();
+
+      headerRepository.create();
+      nodeRepository.create();
+      wayRepository.create();
+      relationRepository.create();
+
       var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
-      var path = Paths.get(file);
       var coordinatesDir = Files.createDirectories(cacheDir.resolve("coordinates"));
       var referencesKeysDir = Files.createDirectories(cacheDir.resolve("references_keys"));
-      var referencesValuesDir = Files.createDirectories(cacheDir.resolve("references_values"));
+      var referencesValuesDir = Files.createDirectories(cacheDir.resolve("references_vals"));
 
-      var config = new HikariConfig();
-      config.setPoolName("BaremapsDataSource");
-      config.setJdbcUrl(database);
-      config.setMaximumPoolSize(Runtime.getRuntime().availableProcessors());
-      config.setSchema("public");
+      var coordinates =
+          new LongSizedDataDenseMap<>(
+              new LonLatDataType(), new OnDiskDirectoryMemory(coordinatesDir));
 
-      try (var dataSource = new HikariDataSource(config)) {
-        var headerRepository = new PostgresHeaderRepository(dataSource);
-        var nodeRepository = new PostgresNodeRepository(dataSource);
-        var wayRepository = new PostgresWayRepository(dataSource);
-        var relationRepository = new PostgresRelationRepository(dataSource);
+      var references =
+          new LongDataSortedMap<>(
+              new AlignedDataList<>(
+                  new PairDataType<>(new LongDataType(), new LongDataType()),
+                  new OnDiskDirectoryMemory(referencesKeysDir)),
+              new com.baremaps.collection.DataStore<>(
+                  new LongListDataType(), new OnDiskDirectoryMemory(referencesValuesDir)));
 
-        headerRepository.drop();
-        nodeRepository.drop();
-        wayRepository.drop();
-        relationRepository.drop();
+      new ImportService(
+          path,
+          coordinates,
+          references,
+          headerRepository,
+          nodeRepository,
+          wayRepository,
+          relationRepository,
+          databaseSrid)
+          .call();
 
-        headerRepository.create();
-        nodeRepository.create();
-        wayRepository.create();
-        relationRepository.create();
+      FileUtils.deleteRecursively(cacheDir);
 
-        var coordinates =
-            new LongSizedDataDenseMap<>(
-                new LonLatDataType(), new OnDiskDirectoryMemory(coordinatesDir));
-        var references =
-            new LongDataSortedMap<>(
-                new AlignedDataList<>(
-                    new PairDataType<>(new LongDataType(), new LongDataType()),
-                    new OnDiskDirectoryMemory(referencesKeysDir)),
-                new com.baremaps.collection.DataStore<>(
-                    new LongListDataType(), new OnDiskDirectoryMemory(referencesValuesDir)));
-
-        new ImportService(
-                path,
-                coordinates,
-                references,
-                headerRepository,
-                nodeRepository,
-                wayRepository,
-                relationRepository,
-                databaseSrid)
-            .call();
-
-        FileUtils.deleteRecursively(cacheDir);
-      }
+      logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {
+      logger.error("Failed importing {} into {}", file, database);
       throw new WorkflowException(e);
     }
   }

@@ -22,11 +22,16 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public record UnzipFile(String file, String directory) implements Task {
 
+  private static final Logger logger = LoggerFactory.getLogger(UnzipFile.class);
+
   @Override
   public void run() {
+    logger.info("Unzipping {} to {}", file, directory);
     var filePath = Paths.get(file);
     var directoryPath = Paths.get(directory);
     try (var zis = new ZipInputStream(new BufferedInputStream(Files.newInputStream(filePath)))) {
@@ -36,7 +41,9 @@ public record UnzipFile(String file, String directory) implements Task {
         Files.createDirectories(file.getParent());
         Files.copy(zis, file, StandardCopyOption.REPLACE_EXISTING);
       }
+      logger.info("Finished updating {} to {}", file, directory);
     } catch (Exception e) {
+      logger.error("Failed updating {} to {}", file, directory);
       throw new WorkflowException(e);
     }
   }

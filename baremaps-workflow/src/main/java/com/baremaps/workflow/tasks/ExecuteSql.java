@@ -14,35 +14,38 @@
 
 package com.baremaps.workflow.tasks;
 
+import com.baremaps.database.postgres.PostgresUtils;
 import com.baremaps.workflow.Task;
 import com.baremaps.workflow.WorkflowException;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public record ExecuteQueries(String database, String file) implements Task {
+public record ExecuteSql(String database, String file, boolean parallel) implements Task {
+
+  private static final Logger logger = LoggerFactory.getLogger(ExecuteSql.class);
 
   @Override
   public void run() {
-    var config = new HikariConfig();
-    config.setPoolName("BaremapsDataSource");
-    config.setJdbcUrl(database);
-    config.setMaximumPoolSize(Runtime.getRuntime().availableProcessors());
-    try (var dataSource = new HikariDataSource(config)) {
-      Stream<String> queries = Arrays.stream(Files.readString(Paths.get(file)).split(";"));
-      queries.forEach(
-          query -> {
-            try (var connection = dataSource.getConnection()) {
-              connection.createStatement().execute(query);
-            } catch (SQLException e) {
-              throw new WorkflowException(e);
-            }
-          });
+    logger.info("Executing {} into {}", file, database);
+    try (var dataSource = PostgresUtils.dataSource(database)) {
+      var queries = Arrays.stream(Files.readString(Paths.get(file)).split(";"));
+      if (parallel) {
+        queries = queries.parallel();
+      }
+      queries.forEach(query -> {
+        try (var connection = dataSource.getConnection()) {
+          connection.createStatement().execute(query);
+        } catch (SQLException e) {
+          throw new WorkflowException(e);
+        }
+      });
+      logger.info("Finished executing {} into {}", file, database);
     } catch (Exception e) {
+      logger.error("Failed executing {} into {}", file, database);
       throw new WorkflowException(e);
     }
   }

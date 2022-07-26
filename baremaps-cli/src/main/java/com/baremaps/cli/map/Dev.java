@@ -12,20 +12,18 @@
  * the License.
  */
 
-package com.baremaps.cli.database;
+package com.baremaps.cli.map;
 
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
 import com.baremaps.cli.Options;
 import com.baremaps.database.postgres.PostgresUtils;
-import com.baremaps.server.resources.DevelopmentResources;
+import com.baremaps.server.resources.DevResources;
 import com.baremaps.server.utils.CorsFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
-import io.servicetalk.transport.api.ServerContext;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
@@ -37,8 +35,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "dev", description = "Start a development server with live reload.")
-public class Dev implements Runnable {
+@Command(
+    name = "dev",
+    description = "Start a development server with live reload.")
+public class Dev implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Dev.class);
 
@@ -85,40 +85,38 @@ public class Dev implements Runnable {
   private int port = 9000;
 
   @Override
-  public void run() {
-    try {
-      DataSource dataSource = PostgresUtils.dataSource(database);
+  public Integer call() throws Exception {
+    try (var dataSource = PostgresUtils.dataSource(database)) {
 
       // Configure serialization
-      ObjectMapper objectMapper = defaultObjectMapper();
+      var objectMapper = defaultObjectMapper();
 
       // Configure the application
-      ResourceConfig application =
+      var application =
           new ResourceConfig()
               .register(CorsFilter.class)
-              .register(DevelopmentResources.class)
+              .register(DevResources.class)
               .register(contextResolverFor(objectMapper))
               .register(
                   new AbstractBinder() {
                     @Override
                     protected void configure() {
                       bind("viewer").to(String.class).named("assets");
-                      bind(tileset).to(Path.class).named("tileset");
-                      bind(style).to(Path.class).named("style");
+                      bind(tileset.toAbsolutePath()).to(Path.class).named("tileset");
+                      bind(style.toAbsolutePath()).to(Path.class).named("style");
                       bind(dataSource).to(DataSource.class);
                       bind(objectMapper).to(ObjectMapper.class);
                     }
                   });
 
-      BlockingStreamingHttpService httpService =
+      var httpService =
           new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
-      ServerContext serverContext =
+      var serverContext =
           HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
       logger.info("Listening on {}", serverContext.listenAddress());
       serverContext.awaitShutdown();
-    } catch (Exception e) {
-      logger.error("Unable to start server", e);
     }
+    return 0;
   }
 }

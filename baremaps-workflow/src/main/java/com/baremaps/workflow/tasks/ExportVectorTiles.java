@@ -47,47 +47,55 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
+import javax.ws.rs.DefaultValue;
 import org.locationtech.jts.geom.Envelope;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
 
 public record ExportVectorTiles(
     String database,
     String tileset,
     String repository,
-    int batchArraySize,
-    int batchArrayIndex,
-    boolean mbtiles)
+    @DefaultValue("1") int batchArraySize,
+    @DefaultValue("0") int batchArrayIndex,
+    @DefaultValue("false") boolean mbtiles)
     implements Task {
+
+  private static final Logger logger = LoggerFactory.getLogger(ExportVectorTiles.class);
 
   @Override
   public void run() {
-    try {
-      ObjectMapper mapper =
+    logger.info("Exporting vector tiles from {} to {}", database, repository);
+    try (var datasource = PostgresUtils.dataSource(database)) {
+      var mapper =
           new ObjectMapper()
               .configure(Feature.IGNORE_UNKNOWN, true)
               .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
               .setSerializationInclusion(Include.NON_NULL)
               .setSerializationInclusion(Include.NON_EMPTY);
 
-      DataSource datasource = PostgresUtils.dataSource(database);
+      var source = mapper.readValue(Files.readAllBytes(Paths.get(tileset)), TileJSON.class);
+      var tileSource = sourceTileStore(source, datasource);
+      var tileTarget = targetTileStore(source);
 
-      TileJSON source = mapper.readValue(Files.readAllBytes(Paths.get(tileset)), TileJSON.class);
-      TileStore tileSource = sourceTileStore(source, datasource);
-      TileStore tileTarget = targetTileStore(source);
-
-      Envelope envelope =
+      var envelope =
           new Envelope(
               source.getBounds().get(0), source.getBounds().get(2),
               source.getBounds().get(1), source.getBounds().get(3));
-      long count = Tile.count(envelope, source.getMinzoom(), source.getMaxzoom());
-      Stream<Tile> stream =
+
+      var count = Tile.count(envelope, source.getMinzoom(), source.getMaxzoom());
+
+      var stream =
           StreamUtils.stream(Tile.iterator(envelope, source.getMinzoom(), source.getMaxzoom()))
               .peek(new StreamProgress<>(count, 5000));
 
       StreamUtils.batch(stream, 10)
-          .filter(new TileBatchPredicate(batchArraySize, batchArrayIndex))
           .forEach(new TileChannel(tileSource, tileTarget));
+
+      logger.info("Finished exporting vector tiles from {} to {}", database, repository);
     } catch (Exception exception) {
+      logger.error("Failed exporting vector tiles from {} to {}", database, repository);
       throw new WorkflowException(exception);
     }
   }
@@ -99,11 +107,13 @@ public record ExportVectorTiles(
 
   private TileStore targetTileStore(TileJSON source) throws TileStoreException, IOException {
     if (mbtiles) {
-      SQLiteDataSource dataSource = new SQLiteDataSource();
+      var dataSource = new SQLiteDataSource();
       dataSource.setUrl("jdbc:sqlite:" + repository);
-      MBTiles tilesStore = new MBTiles(dataSource);
+
+      var tilesStore = new MBTiles(dataSource);
       tilesStore.initializeDatabase();
       tilesStore.writeMetadata(metadata(source));
+
       return tilesStore;
     } else {
       return new FileTileStore(Paths.get(repository));
@@ -111,7 +121,8 @@ public record ExportVectorTiles(
   }
 
   private Map<String, String> metadata(TileJSON tileset) throws JsonProcessingException {
-    Map<String, String> metadata = new HashMap<>();
+    var metadata = new HashMap<String, String>();
+
     metadata.put("name", tileset.getName());
     metadata.put("version", tileset.getVersion());
     metadata.put("description", tileset.getDescription());
@@ -126,7 +137,8 @@ public record ExportVectorTiles(
         tileset.getBounds().stream().map(Object::toString).collect(Collectors.joining(", ")));
     metadata.put("minzoom", Double.toString(tileset.getMinzoom()));
     metadata.put("maxzoom", Double.toString(tileset.getMaxzoom()));
-    List<Map<String, Object>> layers =
+
+    var layers =
         tileset.getVectorLayers().stream()
             .map(
                 layer -> {
@@ -142,7 +154,9 @@ public record ExportVectorTiles(
                   return map;
                 })
             .toList();
+
     metadata.put("json", new ObjectMapper().writeValueAsString(layers));
+
     return metadata;
   }
 }

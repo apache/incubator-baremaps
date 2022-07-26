@@ -21,10 +21,17 @@ import com.google.common.graph.ImmutableGraph;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
-/** A class for building and executing pipelines. */
-public class WorkflowExecutor {
+/**
+ * A class for building and executing pipelines.
+ */
+public class WorkflowExecutor implements AutoCloseable {
+
+  private final ExecutorService executorService;
 
   private final Map<String, Step> steps;
 
@@ -33,6 +40,11 @@ public class WorkflowExecutor {
   private final Graph<String> graph;
 
   public WorkflowExecutor(Workflow workflow) {
+    this(workflow, Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
+  }
+
+  public WorkflowExecutor(Workflow workflow, ExecutorService executorService) {
+    this.executorService = executorService;
     this.steps = workflow.steps().stream().collect(Collectors.toMap(s -> s.id(), s -> s));
     this.futures = new ConcurrentHashMap<>();
 
@@ -42,13 +54,15 @@ public class WorkflowExecutor {
       graphBuilder.addNode(id);
     }
     for (Step step : this.steps.values()) {
-      for (String stepNeeded : step.needs()) {
-        graphBuilder.putEdge(stepNeeded, step.id());
+      if (step.needs() != null) {
+        for (String stepNeeded : step.needs()) {
+          graphBuilder.putEdge(stepNeeded, step.id());
+        }
       }
     }
     this.graph = graphBuilder.build();
     if (Graphs.hasCycle(graph)) {
-      throw new WorkflowException("The pipeline has cycles in its execution graph");
+      throw new WorkflowException("The workflow must be a directed acyclic graph");
     }
   }
 
@@ -61,32 +75,38 @@ public class WorkflowExecutor {
     return CompletableFuture.allOf(endSteps);
   }
 
-  private boolean isEndStep(String id) {
-    return graph.successors(id).isEmpty();
+  private CompletableFuture<Void> getStep(String step) {
+    return futures.computeIfAbsent(step, this::initStep);
   }
 
-  private CompletableFuture<Void> getStep(String id) {
-    return futures.computeIfAbsent(id, this::computeStep);
-  }
-
-  private CompletableFuture<Void> computeStep(String id) {
-    Runnable step =
-        () -> {
-          for (Task task : steps.get(id).tasks()) {
-            task.run();
-          }
-        };
-    var predecessors = graph.predecessors(id).stream().toList();
-    if (predecessors.isEmpty()) {
-      return CompletableFuture.runAsync(step);
-    } else if (predecessors.size() == 1) {
-      var previousStep = getStep(predecessors.get(0));
-      return previousStep.thenRunAsync(step);
-    } else {
-      var previousSteps =
-          CompletableFuture.allOf(
-              predecessors.stream().map(this::getStep).toArray(CompletableFuture[]::new));
-      return previousSteps.thenRunAsync(step);
+  private CompletableFuture<Void> initStep(String step) {
+    var future = previousSteps(step);
+    for (Task task : steps.get(step).tasks()) {
+      future = future.thenRunAsync(task, executorService);
     }
+    return future;
+  }
+
+  private CompletableFuture<Void> previousSteps(String step) {
+    var predecessors = graph.predecessors(step).stream().toList();
+    if (predecessors.isEmpty()) {
+      return CompletableFuture.completedFuture(null);
+    } else if (predecessors.size() == 1) {
+      return getStep(predecessors.get(0));
+    } else {
+      return CompletableFuture.allOf(
+          predecessors.stream()
+              .map(this::getStep)
+              .toArray(CompletableFuture[]::new));
+    }
+  }
+
+  private boolean isEndStep(String step) {
+    return graph.successors(step).isEmpty();
+  }
+
+  @Override
+  public void close() throws Exception {
+    executorService.shutdown();
   }
 }

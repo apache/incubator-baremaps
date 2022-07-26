@@ -27,6 +27,7 @@ import com.baremaps.iploc.database.InetnumLocationDaoSqliteImpl;
 import com.baremaps.iploc.database.SqliteUtils;
 import com.baremaps.iploc.nic.NicData;
 import com.baremaps.iploc.nic.NicObject;
+import com.baremaps.testing.TestFiles;
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URI;
@@ -43,8 +44,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test the IPLoc SQLite database generation using a stream of NIC Objects from a sample NIC txt
- * file and a geocoder from a sample Geonames txt file.
+ * Test the IPLoc SQLite database generation using a stream of NIC Objects from a sample NIC txt file and a geocoder
+ * from a sample Geonames txt file.
  */
 class IpLocTest {
 
@@ -57,11 +58,12 @@ class IpLocTest {
   @BeforeAll
   public static void beforeAll() throws IOException, URISyntaxException {
     // Load the NIC sample objects
-    nicObjects = NicData.sample("simple_nic_sample.txt");
+    nicObjects = NicData.sample("ripe/simple_nic_sample.txt");
 
     // Init the geocoderservice
     directory = Files.createTempDirectory(Paths.get("."), "geocoder_");
-    URI data = Resources.getResource("geocoder_sample.txt").toURI();
+
+    var data = TestFiles.resolve("geonames/geocoder_sample.txt");
     Geocoder geocoder = new GeonamesGeocoder(directory, data);
     geocoder.build();
 

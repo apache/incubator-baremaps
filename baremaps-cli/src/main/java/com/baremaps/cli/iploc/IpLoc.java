@@ -23,13 +23,14 @@ import picocli.CommandLine.Command;
 
 @Command(
     name = "iploc",
-    subcommands = {Init.class},
-    description = "Iploc database generation.")
-public class Iploc implements Callable<Integer> {
+    subcommands = {
+        Init.class
+    },
+    description = "IP to location commands.")
+public class IpLoc implements Runnable {
 
   @Override
-  public Integer call() throws IOException, SQLException, URISyntaxException {
+  public void run() {
     CommandLine.usage(this, System.out);
-    return 0;
   }
 }

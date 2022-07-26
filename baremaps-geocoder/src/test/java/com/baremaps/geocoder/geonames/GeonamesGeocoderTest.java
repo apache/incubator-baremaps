@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.baremaps.geocoder.Geocoder;
 import com.baremaps.geocoder.Request;
 import com.baremaps.geocoder.Response;
+import com.baremaps.testing.TestFiles;
 import com.google.common.io.Resources;
 import java.io.File;
 import java.io.IOException;
@@ -35,12 +36,12 @@ class GeonamesGeocoderTest {
 
   @Test
   public void buildAndSearch() throws IOException, URISyntaxException, ParseException {
-    Path path = Files.createTempDirectory(Paths.get("."), "geocoder_");
-    URI data = Resources.getResource("LI.txt").toURI();
-    Geocoder geocoder = new GeonamesGeocoder(path, data);
+    var path = Files.createTempDirectory(Paths.get("."), "geocoder_");
+    var data = TestFiles.resolve("geonames/LI.txt");
+    var geocoder = new GeonamesGeocoder(path, data);
     geocoder.build();
 
-    Response response = geocoder.search(new Request("Bim Alta Schloss", 1));
+    var response = geocoder.search(new Request("Bim Alta Schloss", 1));
     assertEquals(1, response.results().size());
     assertEquals("Bim Alta Schloss", response.results().get(0).document().get("name"));
 
@@ -50,12 +51,12 @@ class GeonamesGeocoderTest {
   @Test
   public void buildAndSearchWithTheRightCountryCode()
       throws IOException, URISyntaxException, ParseException {
-    Path path = Files.createTempDirectory(Paths.get("."), "geocoder_");
-    URI data = Resources.getResource("LI.txt").toURI();
-    Geocoder geocoder = new GeonamesGeocoder(path, data);
+    var path = Files.createTempDirectory(Paths.get("."), "geocoder_");
+    var data = TestFiles.resolve("geonames/LI.txt");
+    var geocoder = new GeonamesGeocoder(path, data);
     geocoder.build();
 
-    Response response = geocoder.search(new Request("Bim Alta Schloss", 10, "LI"));
+    var response = geocoder.search(new Request("Bim Alta Schloss", 10, "LI"));
     assertEquals(10, response.results().size());
     assertEquals("Bim Alta Schloss", response.results().get(0).document().get("name"));
 
@@ -65,12 +66,12 @@ class GeonamesGeocoderTest {
   @Test
   public void buildAndSearchWithTheWrongCountryCode()
       throws IOException, URISyntaxException, ParseException {
-    Path path = Files.createTempDirectory(Paths.get("."), "geocoder_");
-    URI data = Resources.getResource("LI.txt").toURI();
-    Geocoder geocoder = new GeonamesGeocoder(path, data);
+    var path = Files.createTempDirectory(Paths.get("."), "geocoder_");
+    var data = TestFiles.resolve("geonames/LI.txt");
+    var geocoder = new GeonamesGeocoder(path, data);
     geocoder.build();
 
-    Response response = geocoder.search(new Request("Bim Alta Schloss", 10, "CH"));
+    var response = geocoder.search(new Request("Bim Alta Schloss", 10, "CH"));
     assertEquals(0, response.results().size());
 
     Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);

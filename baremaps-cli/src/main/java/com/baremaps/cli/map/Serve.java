@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.cli.database;
+package com.baremaps.cli.map;
 
 import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
@@ -27,8 +27,6 @@ import com.baremaps.database.tile.TileStore;
 import com.baremaps.model.TileJSON;
 import com.baremaps.server.resources.ServerResources;
 import com.baremaps.server.utils.CorsFilter;
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
@@ -50,7 +48,7 @@ import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
 @Command(name = "serve", description = "Start a tile server with caching capabilities.")
-public class Serve implements Runnable {
+public class Serve implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Serve.class);
 
@@ -96,46 +94,40 @@ public class Serve implements Runnable {
   private int port = 9000;
 
   @Override
-  public void run() {
-    try {
-      ObjectMapper objectMapper = defaultObjectMapper();
-      TileJSON tileJSON = objectMapper.readValue(Files.readAllBytes(tileset), TileJSON.class);
-      CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
-      DataSource datasource = PostgresUtils.dataSource(database);
+  public Integer call() throws Exception {
+    ObjectMapper objectMapper = defaultObjectMapper();
+    TileJSON tileJSON = objectMapper.readValue(Files.readAllBytes(tileset), TileJSON.class);
+    CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
+    DataSource datasource = PostgresUtils.dataSource(database);
 
-      List<PostgresQuery> queries = asPostgresQuery(tileJSON);
-      TileStore tileStore = new PostgresTileStore(datasource, queries);
-      TileStore tileCache = new TileCache(tileStore, caffeineSpec);
+    List<PostgresQuery> queries = asPostgresQuery(tileJSON);
+    TileStore tileStore = new PostgresTileStore(datasource, queries);
+    TileStore tileCache = new TileCache(tileStore, caffeineSpec);
 
-      // Configure the application
-      ResourceConfig application =
-          new ResourceConfig()
-              .register(CorsFilter.class)
-              .register(ServerResources.class)
-              .register(contextResolverFor(objectMapper))
-              .register(
-                  new AbstractBinder() {
-                    @Override
-                    protected void configure() {
-                      bind(tileset).to(Path.class).named("tileset");
-                      bind(style).to(Path.class).named("style");
-                      bind(tileCache).to(TileStore.class);
-                    }
-                  });
+    // Configure the application
+    ResourceConfig application =
+        new ResourceConfig()
+            .register(CorsFilter.class)
+            .register(ServerResources.class)
+            .register(contextResolverFor(objectMapper))
+            .register(
+                new AbstractBinder() {
+                  @Override
+                  protected void configure() {
+                    bind(tileset).to(Path.class).named("tileset");
+                    bind(style).to(Path.class).named("style");
+                    bind(tileCache).to(TileStore.class);
+                  }
+                });
 
-      BlockingStreamingHttpService httpService =
-          new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
-      ServerContext serverContext =
-          HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
+    BlockingStreamingHttpService httpService =
+        new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
+    ServerContext serverContext =
+        HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
-      logger.info("Listening on {}", serverContext.listenAddress());
+    logger.info("Listening on {}", serverContext.listenAddress());
 
-      serverContext.awaitShutdown();
-    } catch (IOException e) {
-      logger.error("Unable to read tileset", e);
-    } catch (Exception e) {
-      logger.error("Unable to start server", e);
-      throw new RuntimeException(e);
-    }
+    serverContext.awaitShutdown();
+    return 0;
   }
 }

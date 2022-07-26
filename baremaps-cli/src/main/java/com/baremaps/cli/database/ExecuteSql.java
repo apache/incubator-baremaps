@@ -16,19 +16,16 @@ package com.baremaps.cli.database;
 
 
 import com.baremaps.cli.Options;
-import com.baremaps.workflow.tasks.ExecuteQueries;
 import java.nio.file.Path;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.concurrent.Callable;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "execute", description = "Execute queries in the database.")
-public class Execute implements Runnable {
-
-  private static final Logger logger = LoggerFactory.getLogger(Execute.class);
+@Command(
+    name = "execute-sql",
+    description = "Execute SQL queries in the database.")
+public class ExecuteSql implements Callable<Integer> {
 
   @Mixin private Options options;
 
@@ -42,15 +39,18 @@ public class Execute implements Runnable {
   @Option(
       names = {"--file"},
       paramLabel = "FILE",
-      description = "The SQL file to execute in the database.",
-      required = true)
-  private List<Path> files;
+      description = "The SQL file to execute in the database.")
+  private Path file;
+
+  @Option(
+      names = {"--parallel"},
+      paramLabel = "PARALLEL",
+      description = "Executes the SQL queries in parallel.")
+  private boolean parallel;
 
   @Override
-  public void run() {
-    for (Path file : files) {
-      new ExecuteQueries(database, file.toAbsolutePath().toString()).run();
-    }
+  public Integer call() throws Exception {
+    new com.baremaps.workflow.tasks.ExecuteSql(database, file.toAbsolutePath().toString(), parallel).run();
+    return 0;
   }
-
 }

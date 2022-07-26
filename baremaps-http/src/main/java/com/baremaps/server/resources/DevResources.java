@@ -24,6 +24,7 @@ import com.baremaps.database.tile.TileStore;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileJSON;
 import com.baremaps.server.ogcapi.Conversions;
+import com.baremaps.server.utils.ConfigReader;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -57,11 +58,11 @@ import org.slf4j.LoggerFactory;
 
 @Singleton
 @javax.ws.rs.Path("/")
-public class DevelopmentResources {
+public class DevResources {
 
-  private static final Logger logger = LoggerFactory.getLogger(DevelopmentResources.class);
+  private static final Logger logger = LoggerFactory.getLogger(DevResources.class);
 
-  private final String assets;
+  private final ConfigReader configReader = new ConfigReader();
 
   private final Path style;
 
@@ -82,16 +83,14 @@ public class DevelopmentResources {
   public static final String TILE_TYPE = "application/vnd.mapbox-vector-tile";
 
   @Inject
-  public DevelopmentResources(
-      @Named("assets") String assets,
+  public DevResources(
       @Named("tileset") Path tileset,
       @Named("style") Path style,
       DataSource dataSource,
       ObjectMapper objectMapper,
       Sse sse) {
-    this.assets = assets;
-    this.tileset = tileset;
-    this.style = style;
+    this.tileset = tileset.toAbsolutePath();
+    this.style = style.toAbsolutePath();
     this.dataSource = dataSource;
     this.objectMapper = objectMapper;
     this.sse = sse;
@@ -100,20 +99,19 @@ public class DevelopmentResources {
 
     // Observe the file system for changes
     Set<Path> directories =
-        new HashSet<>(
-            Arrays.asList(
-                tileset.toAbsolutePath().getParent(), style.toAbsolutePath().getParent()));
+        new HashSet<>(Arrays.asList(
+            tileset.getParent(),
+            style.getParent()));
     new Thread(new DirectoryWatcher(directories, this::broadcastChanges)).start();
   }
 
   public void broadcastChanges(Path path) {
     try {
-      var value = Files.readAllBytes(path);
+      var value = configReader.read(style);
       var styleObjectNode = objectMapper.readValue(value, ObjectNode.class);
 
       // reload the page if changes affected the tileset
-      var tilesetPath = tileset.toAbsolutePath();
-      styleObjectNode.put("reload", path.endsWith(tilesetPath.getFileName()));
+      styleObjectNode.put("reload", path.endsWith(tileset.getFileName()));
 
       // broadcast the changes
       sseBroadcaster.broadcast(sseEventBuilder.data(styleObjectNode.toString()).build());
@@ -148,14 +146,16 @@ public class DevelopmentResources {
   @javax.ws.rs.Path("style.json")
   @Produces(MediaType.APPLICATION_JSON)
   public MbStyle getStyle() throws IOException {
-    return objectMapper.readValue(Files.readAllBytes(style), MbStyle.class);
+    var config = configReader.read(style);
+    return objectMapper.readValue(config, MbStyle.class);
   }
 
   @GET
   @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
   public TileJSON getTileset() throws IOException {
-    return objectMapper.readValue(Files.readAllBytes(tileset), TileJSON.class);
+    var config = configReader.read(tileset);
+    return objectMapper.readValue(config, TileJSON.class);
   }
 
   @GET
@@ -187,7 +187,7 @@ public class DevelopmentResources {
     if (path.equals("") || path.endsWith("/")) {
       path += "index.html";
     }
-    path = String.format("%s/%s", assets, path);
+    path = String.format("viewer/%s", path);
     try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
       var bytes = inputStream.readAllBytes();
       return Response.ok().entity(bytes).build();

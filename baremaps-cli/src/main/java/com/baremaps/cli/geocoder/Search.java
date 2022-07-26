@@ -18,20 +18,25 @@ import com.baremaps.geocoder.Geocoder;
 import com.baremaps.geocoder.Request;
 import com.baremaps.geocoder.Response;
 import com.baremaps.geocoder.geonames.GeonamesGeocoder;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "search", description = "Search geonames data.")
+@Command(
+    name = "search",
+    description = "Search geonames index.")
 public class Search implements Callable<Integer> {
+
   private static final Logger logger = LoggerFactory.getLogger(Search.class);
 
   @Option(
-      names = {"--index-path"},
-      paramLabel = "INDEX_PATH",
+      names = {"--index"},
+      paramLabel = "INDEX",
       description = "The path to the lucene index.",
       required = true)
   private Path indexPath;
@@ -45,14 +50,11 @@ public class Search implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    Geocoder geocoder = new GeonamesGeocoder(indexPath, null);
+    var geocoder = new GeonamesGeocoder(indexPath, null);
     geocoder.open();
-
-    Request request = new Request(search, 20);
-    Response response = geocoder.search(request);
-
-    System.out.println(response);
-
+    var request = new Request(search, 20);
+    var response = geocoder.search(request);
+    logger.info("{}", response);
     return 0;
   }
 }

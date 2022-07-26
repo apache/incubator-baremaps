@@ -33,5 +33,10 @@
       <groupId>net.ripe.ipresource</groupId>
       <artifactId>ipresource</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-testing</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

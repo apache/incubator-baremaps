@@ -18,12 +18,17 @@ import com.baremaps.workflow.WorkflowException;
 import java.nio.file.Paths;
 import org.apache.sis.storage.FeatureSet;
 import org.geotoolkit.data.shapefile.ShapefileFeatureStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public record ImportShapefile(String file, String database, Integer sourceSRID, Integer targetSRID)
     implements ImportFeatureTask {
 
+  private static final Logger logger = LoggerFactory.getLogger(ImportShapefile.class);
+
   @Override
   public void run() {
+    logger.info("Importing {} into {}", file, database);
     var uri = Paths.get(file).toUri();
     try (var shapefileStore = new ShapefileFeatureStore(uri)) {
       for (var resource : shapefileStore.components()) {
@@ -31,7 +36,9 @@ public record ImportShapefile(String file, String database, Integer sourceSRID, 
           saveFeatureSet(featureSet);
         }
       }
+      logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {
+      logger.error("Failed importing {} into {}", file, database);
       throw new WorkflowException(e);
     }
   }

@@ -1,4 +1,4 @@
-package com.baremaps.cli.database;
+package com.baremaps.cli.map;
 
 import com.baremaps.cli.Options;
 import com.baremaps.workflow.tasks.ExportVectorTiles;
@@ -12,7 +12,7 @@ import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
 @Command(name = "export", description = "Export vector tiles from the database.")
-public class Export implements Runnable {
+public class Export implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Export.class);
 
@@ -64,7 +64,7 @@ public class Export implements Runnable {
   private boolean mbtiles = false;
 
   @Override
-  public void run() {
+  public Integer call() throws Exception {
     new ExportVectorTiles(
         database,
         tileset.toAbsolutePath().toString(),
@@ -73,5 +73,6 @@ public class Export implements Runnable {
         batchArrayIndex,
         mbtiles
     ).run();
+    return 0;
   }
 }

@@ -17,6 +17,7 @@ package com.baremaps.workflow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.baremaps.workflow.tasks.DownloadUrl;
+import com.baremaps.workflow.tasks.ImportOpenStreetMap;
 import com.baremaps.workflow.tasks.UnzipFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -37,18 +38,21 @@ public class ObjectMapperTest {
                     "download",
                     List.of(),
                     List.of(
-                        new DownloadUrl("http://www.baremaps.com/download.zip", "download.zip"))),
+                        new DownloadUrl("https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
+                            "liechtenstein-latest.osm.pbf"))),
                 new Step(
-                    "unzip",
+                    "import",
                     List.of("download"),
-                    List.of(new UnzipFile("download.zip", "download")))));
+                    List.of(new ImportOpenStreetMap("liechtenstein-latest.osm.pbf",
+                        "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps", 3857)))));
     var json = mapper.writeValueAsString(workflow1);
+    System.out.println(json);
     assertTrue(json.contains(DownloadUrl.class.getSimpleName()));
-    assertTrue(json.contains(UnzipFile.class.getSimpleName()));
+    assertTrue(json.contains(ImportOpenStreetMap.class.getSimpleName()));
 
     // deserialize the workflow
     var workflow2 = mapper.readValue(json, Workflow.class);
     assertTrue(workflow2.steps().get(0).tasks().get(0) instanceof DownloadUrl);
-    assertTrue(workflow2.steps().get(1).tasks().get(0) instanceof UnzipFile);
+    assertTrue(workflow2.steps().get(1).tasks().get(0) instanceof ImportOpenStreetMap);
   }
 }

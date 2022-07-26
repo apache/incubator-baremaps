@@ -20,20 +20,27 @@ import java.nio.file.Paths;
 import mil.nga.geopackage.GeoPackageManager;
 import org.apache.sis.storage.FeatureSet;
 import org.apache.sis.storage.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public record ImportGeoPackage(String file, String database, Integer sourceSRID, Integer targetSRID)
     implements ImportFeatureTask {
 
+  private static final Logger logger = LoggerFactory.getLogger(ImportGeoPackage.class);
+
   @Override
   public void run() {
-    var path = Paths.get(file);
+    logger.info("Importing {} into {}", file, database);
+    var path = Paths.get(file).toAbsolutePath();
     try (var geoPackageStore = new GeoPackageStore(GeoPackageManager.open(path.toFile()))) {
-      for (Resource resource : geoPackageStore.components()) {
+      for (var resource : geoPackageStore.components()) {
         if (resource instanceof FeatureSet featureSet) {
           saveFeatureSet(featureSet);
         }
       }
+      logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {
+      logger.error("Failed importing {} into {}", file, database);
       throw new WorkflowException(e);
     }
   }

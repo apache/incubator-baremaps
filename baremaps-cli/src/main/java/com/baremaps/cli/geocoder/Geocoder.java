@@ -23,13 +23,16 @@ import picocli.CommandLine.Command;
 
 @Command(
     name = "geocoder",
-    subcommands = {Index.class, Search.class},
-    description = "Geocoder index generation.")
-public class Geocoder implements Callable<Integer> {
+    description = "Geocoder commands.",
+    subcommands = {
+        Index.class,
+        Search.class
+    },
+    sortOptions = false)
+public class Geocoder implements Runnable {
 
   @Override
-  public Integer call() throws IOException, SQLException, URISyntaxException {
+  public void run() {
     CommandLine.usage(this, System.out);
-    return 0;
   }
 }

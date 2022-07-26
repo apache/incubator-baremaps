@@ -19,12 +19,12 @@ import com.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class ExecuteQueriesTest extends PostgresContainerTest {
+class ExecuteSqlFileTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
   void run() {
-    var task = new ExecuteQueries(jdbcUrl(), TestFiles.resolve("queries.sql").toString());
+    var task = new ExecuteSql(jdbcUrl(), TestFiles.resolve("queries.sql").toString(), false);
     task.run();
   }
 }

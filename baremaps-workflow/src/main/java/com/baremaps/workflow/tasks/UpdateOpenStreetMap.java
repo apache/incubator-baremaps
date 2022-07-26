@@ -36,11 +36,16 @@ import java.net.URL;
 import java.util.List;
 import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public record UpdateOpenStreetMap(String database, Integer databaseSrid) implements Task {
 
+  private static final Logger logger = LoggerFactory.getLogger(UpdateOpenStreetMap.class);
+
   @Override
   public void run() {
+    logger.info("Updating {}", database);
     try {
       DataSource datasource = PostgresUtils.dataSource(database);
       LongDataMap<Coordinate> coordinates = new PostgresCoordinateMap(datasource);
@@ -59,7 +64,9 @@ public record UpdateOpenStreetMap(String database, Integer databaseSrid) impleme
               relationRepository,
               databaseSrid);
       action.call();
+      logger.info("Finished updating {}", database);
     } catch (Exception e) {
+      logger.error("Failed updating {}", database);
       throw new WorkflowException(e);
     }
   }

@@ -1,18 +1,18 @@
 package com.baremaps.cli.database;
 
 import com.baremaps.cli.Options;
-import com.baremaps.workflow.tasks.UpdateOpenStreetMap;
 import java.util.concurrent.Callable;
+import org.jdbi.v3.core.statement.Call;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "update", description = "Update OpenStreetMap data in Postgres.")
-public class Update implements Runnable {
-
-  private static final Logger logger = LoggerFactory.getLogger(Update.class);
+@Command(
+    name = "update-osm",
+    description = "Update OpenStreetMap data in Postgres.")
+public class UpdateOpenStreetMap implements Callable<Integer> {
 
   @Mixin private Options options;
 
@@ -30,10 +30,11 @@ public class Update implements Runnable {
   private int srid = 3857;
 
   @Override
-  public void run() {
-    new UpdateOpenStreetMap(
+  public Integer call() throws Exception {
+    new com.baremaps.workflow.tasks.UpdateOpenStreetMap(
         database,
         srid
     ).run();
+    return 0;
   }
 }

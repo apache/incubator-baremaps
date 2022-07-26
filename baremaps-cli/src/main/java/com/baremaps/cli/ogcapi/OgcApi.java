@@ -49,7 +49,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "ogcapi", description = "Start an OGC API server (experimental).")
+@Command(name = "ogcapi", description = "OGC API server (experimental).")
 public class OgcApi implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(OgcApi.class);
@@ -118,4 +118,5 @@ public class OgcApi implements Callable<Integer> {
 
     return 0;
   }
+
 }

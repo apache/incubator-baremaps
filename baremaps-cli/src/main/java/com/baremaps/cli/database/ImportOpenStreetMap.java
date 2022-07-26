@@ -1,18 +1,16 @@
 package com.baremaps.cli.database;
 
 import com.baremaps.cli.Options;
-import com.baremaps.workflow.tasks.ImportOpenStreetMap;
 import java.nio.file.Path;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.concurrent.Callable;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "import", description = "Import OpenStreetMap data in Postgres.")
-public class Import implements Runnable {
-
-  private static final Logger logger = LoggerFactory.getLogger(Import.class);
+@Command(
+    name = "import-osm",
+    description = "Import OpenStreetMap data in Postgres.")
+public class ImportOpenStreetMap implements Callable<Integer> {
 
   @Mixin
   private Options options;
@@ -38,11 +36,12 @@ public class Import implements Runnable {
   private int srid = 3857;
 
   @Override
-  public void run()  {
-    new ImportOpenStreetMap(
+  public Integer call() throws Exception {
+    new com.baremaps.workflow.tasks.ImportOpenStreetMap(
         file.toAbsolutePath().toString(),
         database,
         srid
     ).run();
+    return 0;
   }
 }

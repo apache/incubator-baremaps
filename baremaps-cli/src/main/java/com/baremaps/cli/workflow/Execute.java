@@ -12,7 +12,9 @@
  * the License.
  */
 
-package com.baremaps.cli.database;
+package com.baremaps.cli.workflow;
+
+import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 
 import com.baremaps.cli.Options;
 import com.baremaps.workflow.WorkflowExecutor;
@@ -20,42 +22,37 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "workflow", description = "Execute a workflow.")
-public class Workflow implements Runnable {
+@Command(name = "execute", description = "Execute a workflow.")
+public class Execute implements Callable<Integer> {
 
-  private static final Logger logger = LoggerFactory.getLogger(Workflow.class);
+  private static final Logger logger = LoggerFactory.getLogger(Execute.class);
 
-  @Mixin private Options options;
+  @Mixin
+  private Options options;
 
   @Option(
-      names = {"--workflow"},
-      paramLabel = "WORKFLOW",
+      names = {"--file"},
+      paramLabel = "FILE",
       description = "The workflow file.",
       required = true)
-  private Path workflow;
+  private Path file;
 
   @Override
-  public void run() {
-    try {
-      logger.info("Importing data");
-      var mapper = new ObjectMapper();
-      var workflow = mapper.readValue(this.workflow.toFile(), com.baremaps.workflow.Workflow.class);
-      new WorkflowExecutor(workflow).execute().get();
-      logger.info("Done");
-    } catch (StreamReadException e) {
-      throw new RuntimeException(e);
-    } catch (IOException e) {
-      logger.error("Unable to read workflow", e);
-      throw new RuntimeException(e);
-    } catch (Exception e) {
-      logger.error("Unable to execute workflow", e);
-      throw new RuntimeException(e);
+  public Integer call() throws Exception {
+    logger.info("Executing the workflow {}", file);
+    var mapper = defaultObjectMapper();
+    var workflow = mapper.readValue(file.toFile(), com.baremaps.workflow.Workflow.class);
+    try (var executor = new WorkflowExecutor(workflow)) {
+      executor.execute().get();
     }
+    logger.info("Finished executing the workflow {}", file);
+    return 0;
   }
 }
