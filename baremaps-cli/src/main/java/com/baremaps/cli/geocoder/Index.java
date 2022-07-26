@@ -17,7 +17,6 @@ package com.baremaps.cli.geocoder;
 import com.baremaps.cli.Options;
 import com.baremaps.geocoder.Geocoder;
 import com.baremaps.geocoder.geonames.GeonamesGeocoder;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
@@ -26,15 +25,12 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(
-    name = "index",
-    description = "Index geonames data.")
+@Command(name = "index", description = "Index geonames data.")
 public class Index implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Index.class);
 
-  @Mixin
-  private Options options;
+  @Mixin private Options options;
 
   @Option(
       names = {"--index"},

@@ -30,13 +30,10 @@ public record DownloadUrl(String url, String path) implements Task {
   @Override
   public void run() {
     logger.info("Downloading {} to {}", url, path);
-
     try (var inputStream = new URL(url).openStream()) {
       var downloadFile = Paths.get(path).toAbsolutePath();
-
       Files.createDirectories(downloadFile.getParent());
       Files.copy(inputStream, downloadFile, StandardCopyOption.REPLACE_EXISTING);
-
       logger.info("Finished downloading {} to {}", url, path);
     } catch (Exception e) {
       logger.error("Failed downloading {} to {}", url, path);

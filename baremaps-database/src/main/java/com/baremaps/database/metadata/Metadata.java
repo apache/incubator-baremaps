@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.database.metadata;
 
 import java.sql.SQLException;
@@ -21,10 +35,7 @@ public class Metadata {
   }
 
   public List<TableMetaData> getTableMetaData(
-      String catalog,
-      String schema,
-      String tableNamePattern,
-      String[] types) {
+      String catalog, String schema, String tableNamePattern, String[] types) {
     Map<String, Table> descriptions =
         getTables(catalog, schema, tableNamePattern, types).stream()
             .collect(Collectors.toMap(Table::tableName, Function.identity()));
@@ -45,25 +56,24 @@ public class Metadata {
   }
 
   private List<Table> getTables(
-      String catalog,
-      String schemaPattern,
-      String tableNamePattern,
-      String[] types) {
+      String catalog, String schemaPattern, String tableNamePattern, String[] types) {
     var tableDescriptions = new ArrayList<Table>();
     try (var connection = dataSource.getConnection();
-        var resultSet = connection.getMetaData().getTables(catalog, schemaPattern, tableNamePattern, types)) {
+        var resultSet =
+            connection.getMetaData().getTables(catalog, schemaPattern, tableNamePattern, types)) {
       while (resultSet.next()) {
-        tableDescriptions.add(new Table(
-            resultSet.getString("TABLE_CAT"),
-            resultSet.getString("TABLE_SCHEM"),
-            resultSet.getString("TABLE_NAME"),
-            resultSet.getString("TABLE_TYPE"),
-            resultSet.getString("REMARKS"),
-            resultSet.getString("TYPE_CAT"),
-            resultSet.getString("TYPE_SCHEM"),
-            resultSet.getString("TYPE_NAME"),
-            resultSet.getString("SELF_REFERENCING_COL_NAME"),
-            resultSet.getString("REF_GENERATION")));
+        tableDescriptions.add(
+            new Table(
+                resultSet.getString("TABLE_CAT"),
+                resultSet.getString("TABLE_SCHEM"),
+                resultSet.getString("TABLE_NAME"),
+                resultSet.getString("TABLE_TYPE"),
+                resultSet.getString("REMARKS"),
+                resultSet.getString("TYPE_CAT"),
+                resultSet.getString("TYPE_SCHEM"),
+                resultSet.getString("TYPE_NAME"),
+                resultSet.getString("SELF_REFERENCING_COL_NAME"),
+                resultSet.getString("REF_GENERATION")));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -72,39 +82,39 @@ public class Metadata {
   }
 
   private List<Column> getColumns(
-      String catalog,
-      String schemaPattern,
-      String tableNamePattern,
-      String columnNamePattern) {
+      String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) {
     var tableColumns = new ArrayList<Column>();
     try (var connection = dataSource.getConnection();
-        var resultSet = connection.getMetaData()
-            .getColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern)) {
+        var resultSet =
+            connection
+                .getMetaData()
+                .getColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern)) {
       while (resultSet.next()) {
-        tableColumns.add(new Column(
-            resultSet.getString("TABLE_CAT"),
-            resultSet.getString("TABLE_SCHEM"),
-            resultSet.getString("TABLE_NAME"),
-            resultSet.getString("COLUMN_NAME"),
-            resultSet.getInt("DATA_TYPE"),
-            resultSet.getString("TYPE_NAME"),
-            resultSet.getInt("COLUMN_SIZE"),
-            resultSet.getInt("DECIMAL_DIGITS"),
-            resultSet.getInt("NUM_PREC_RADIX"),
-            resultSet.getInt("NULLABLE"),
-            resultSet.getString("REMARKS"),
-            resultSet.getString("COLUMN_DEF"),
-            resultSet.getInt("SQL_DATA_TYPE"),
-            resultSet.getInt("SQL_DATETIME_SUB"),
-            resultSet.getInt("CHAR_OCTET_LENGTH"),
-            resultSet.getInt("ORDINAL_POSITION"),
-            resultSet.getString("IS_NULLABLE"),
-            resultSet.getString("SCOPE_CATALOG"),
-            resultSet.getString("SCOPE_SCHEMA"),
-            resultSet.getString("SCOPE_TABLE"),
-            resultSet.getShort("SOURCE_DATA_TYPE"),
-            resultSet.getString("IS_AUTOINCREMENT"),
-            resultSet.getString("IS_GENERATEDCOLUMN")));
+        tableColumns.add(
+            new Column(
+                resultSet.getString("TABLE_CAT"),
+                resultSet.getString("TABLE_SCHEM"),
+                resultSet.getString("TABLE_NAME"),
+                resultSet.getString("COLUMN_NAME"),
+                resultSet.getInt("DATA_TYPE"),
+                resultSet.getString("TYPE_NAME"),
+                resultSet.getInt("COLUMN_SIZE"),
+                resultSet.getInt("DECIMAL_DIGITS"),
+                resultSet.getInt("NUM_PREC_RADIX"),
+                resultSet.getInt("NULLABLE"),
+                resultSet.getString("REMARKS"),
+                resultSet.getString("COLUMN_DEF"),
+                resultSet.getInt("SQL_DATA_TYPE"),
+                resultSet.getInt("SQL_DATETIME_SUB"),
+                resultSet.getInt("CHAR_OCTET_LENGTH"),
+                resultSet.getInt("ORDINAL_POSITION"),
+                resultSet.getString("IS_NULLABLE"),
+                resultSet.getString("SCOPE_CATALOG"),
+                resultSet.getString("SCOPE_SCHEMA"),
+                resultSet.getString("SCOPE_TABLE"),
+                resultSet.getShort("SOURCE_DATA_TYPE"),
+                resultSet.getString("IS_AUTOINCREMENT"),
+                resultSet.getString("IS_GENERATEDCOLUMN")));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -112,26 +122,23 @@ public class Metadata {
     return tableColumns;
   }
 
-  private List<PrimaryKey> getPrimaryKeys(
-      String catalog,
-      String schemaPattern,
-      String table) {
+  private List<PrimaryKey> getPrimaryKeys(String catalog, String schemaPattern, String table) {
     var tablePrimaryKeyColumns = new ArrayList<PrimaryKey>();
     try (var connection = dataSource.getConnection();
         var resultSet = connection.getMetaData().getPrimaryKeys(catalog, schemaPattern, table)) {
       while (resultSet.next()) {
-        tablePrimaryKeyColumns.add(new PrimaryKey(
-            resultSet.getString("TABLE_CAT"),
-            resultSet.getString("TABLE_SCHEM"),
-            resultSet.getString("TABLE_NAME"),
-            resultSet.getString("COLUMN_NAME"),
-            resultSet.getShort("KEY_SEQ"),
-            resultSet.getString("PK_NAME")));
+        tablePrimaryKeyColumns.add(
+            new PrimaryKey(
+                resultSet.getString("TABLE_CAT"),
+                resultSet.getString("TABLE_SCHEM"),
+                resultSet.getString("TABLE_NAME"),
+                resultSet.getString("COLUMN_NAME"),
+                resultSet.getShort("KEY_SEQ"),
+                resultSet.getString("PK_NAME")));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
     return tablePrimaryKeyColumns;
   }
-
 }

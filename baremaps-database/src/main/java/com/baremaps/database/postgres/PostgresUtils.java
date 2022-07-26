@@ -23,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import javax.sql.DataSource;
 
 /** A helper class for creating data sources and executing queries. */
 public final class PostgresUtils {

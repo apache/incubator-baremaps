@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.cli.workflow;
 
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
@@ -28,12 +42,12 @@ public class Init implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    com.baremaps.workflow.Workflow workflowObject = new Workflow(
-        List.of(new Step("hello", List.of(), List.of(new LogMessage("Hello World!")))));
+    com.baremaps.workflow.Workflow workflowObject =
+        new Workflow(
+            List.of(new Step("hello", List.of(), List.of(new LogMessage("Hello World!")))));
     Files.write(
-        workflow, defaultObjectMapper()
-            .writerWithDefaultPrettyPrinter()
-            .writeValueAsBytes(workflowObject));
+        workflow,
+        defaultObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(workflowObject));
     logger.info("Workflow initialized");
     return 0;
   }

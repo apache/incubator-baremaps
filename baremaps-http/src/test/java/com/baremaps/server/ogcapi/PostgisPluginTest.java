@@ -14,8 +14,6 @@
 
 package com.baremaps.server.ogcapi;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.List;
 import org.jdbi.v3.core.Jdbi;
 import org.junit.jupiter.api.Assertions;

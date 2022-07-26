@@ -28,9 +28,7 @@ import com.baremaps.iploc.database.SqliteUtils;
 import com.baremaps.iploc.nic.NicData;
 import com.baremaps.iploc.nic.NicObject;
 import com.baremaps.testing.TestFiles;
-import com.google.common.io.Resources;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,8 +42,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test the IPLoc SQLite database generation using a stream of NIC Objects from a sample NIC txt file and a geocoder
- * from a sample Geonames txt file.
+ * Test the IPLoc SQLite database generation using a stream of NIC Objects from a sample NIC txt
+ * file and a geocoder from a sample Geonames txt file.
  */
 class IpLocTest {
 

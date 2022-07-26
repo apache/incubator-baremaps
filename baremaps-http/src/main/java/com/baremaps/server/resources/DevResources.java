@@ -98,10 +98,7 @@ public class DevResources {
     this.sseEventBuilder = sse.newEventBuilder();
 
     // Observe the file system for changes
-    Set<Path> directories =
-        new HashSet<>(Arrays.asList(
-            tileset.getParent(),
-            style.getParent()));
+    Set<Path> directories = new HashSet<>(Arrays.asList(tileset.getParent(), style.getParent()));
     new Thread(new DirectoryWatcher(directories, this::broadcastChanges)).start();
   }
 

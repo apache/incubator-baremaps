@@ -18,9 +18,6 @@ import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 
 import com.baremaps.cli.Options;
 import com.baremaps.workflow.WorkflowExecutor;
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
@@ -34,8 +31,7 @@ public class Execute implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Execute.class);
 
-  @Mixin
-  private Options options;
+  @Mixin private Options options;
 
   @Option(
       names = {"--file"},

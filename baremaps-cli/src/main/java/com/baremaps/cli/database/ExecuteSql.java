@@ -14,7 +14,6 @@
 
 package com.baremaps.cli.database;
 
-
 import com.baremaps.cli.Options;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
@@ -22,9 +21,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(
-    name = "execute-sql",
-    description = "Execute SQL queries in the database.")
+@Command(name = "execute-sql", description = "Execute SQL queries in the database.")
 public class ExecuteSql implements Callable<Integer> {
 
   @Mixin private Options options;
@@ -50,7 +47,8 @@ public class ExecuteSql implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    new com.baremaps.workflow.tasks.ExecuteSql(database, file.toAbsolutePath().toString(), parallel).run();
+    new com.baremaps.workflow.tasks.ExecuteSql(database, file.toAbsolutePath().toString(), parallel)
+        .run();
     return 0;
   }
 }

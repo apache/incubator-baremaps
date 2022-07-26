@@ -36,9 +36,7 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(
-    name = "init",
-    description = "Generate the IpLoc database.")
+@Command(name = "init", description = "Generate the IpLoc database.")
 public class Init implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Init.class);

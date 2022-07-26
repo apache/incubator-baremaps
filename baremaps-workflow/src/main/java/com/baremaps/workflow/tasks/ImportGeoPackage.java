@@ -19,7 +19,6 @@ import com.baremaps.workflow.WorkflowException;
 import java.nio.file.Paths;
 import mil.nga.geopackage.GeoPackageManager;
 import org.apache.sis.storage.FeatureSet;
-import org.apache.sis.storage.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

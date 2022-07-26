@@ -23,12 +23,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
 
-/**
- * A class for building and executing pipelines.
- */
+/** A class for building and executing pipelines. */
 public class WorkflowExecutor implements AutoCloseable {
 
   private final ExecutorService executorService;
@@ -95,9 +92,7 @@ public class WorkflowExecutor implements AutoCloseable {
       return getStep(predecessors.get(0));
     } else {
       return CompletableFuture.allOf(
-          predecessors.stream()
-              .map(this::getStep)
-              .toArray(CompletableFuture[]::new));
+          predecessors.stream().map(this::getStep).toArray(CompletableFuture[]::new));
     }
   }
 

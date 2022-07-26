@@ -18,7 +18,6 @@ import com.baremaps.collection.AlignedDataList;
 import com.baremaps.collection.LongDataSortedMap;
 import com.baremaps.collection.LongSizedDataDenseMap;
 import com.baremaps.collection.memory.OnDiskDirectoryMemory;
-import com.baremaps.collection.memory.OnDiskFileMemory;
 import com.baremaps.collection.type.LonLatDataType;
 import com.baremaps.collection.type.LongDataType;
 import com.baremaps.collection.type.LongListDataType;
@@ -32,8 +31,6 @@ import com.baremaps.database.repository.PostgresRelationRepository;
 import com.baremaps.database.repository.PostgresWayRepository;
 import com.baremaps.workflow.Task;
 import com.baremaps.workflow.WorkflowException;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import org.slf4j.Logger;
@@ -84,14 +81,14 @@ public record ImportOpenStreetMap(String file, String database, Integer database
                   new LongListDataType(), new OnDiskDirectoryMemory(referencesValuesDir)));
 
       new ImportService(
-          path,
-          coordinates,
-          references,
-          headerRepository,
-          nodeRepository,
-          wayRepository,
-          relationRepository,
-          databaseSrid)
+              path,
+              coordinates,
+              references,
+              headerRepository,
+              nodeRepository,
+              wayRepository,
+              relationRepository,
+              databaseSrid)
           .call();
 
       FileUtils.deleteRecursively(cacheDir);

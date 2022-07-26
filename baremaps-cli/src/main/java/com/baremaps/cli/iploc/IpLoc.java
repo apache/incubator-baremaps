@@ -14,18 +14,12 @@
 
 package com.baremaps.cli.iploc;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.sql.SQLException;
-import java.util.concurrent.Callable;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(
     name = "iploc",
-    subcommands = {
-        Init.class
-    },
+    subcommands = {Init.class},
     description = "IP to location commands.")
 public class IpLoc implements Runnable {
 

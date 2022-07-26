@@ -16,14 +16,10 @@ package com.baremaps.geocoder.geonames;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.baremaps.geocoder.Geocoder;
 import com.baremaps.geocoder.Request;
-import com.baremaps.geocoder.Response;
 import com.baremaps.testing.TestFiles;
-import com.google.common.io.Resources;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;

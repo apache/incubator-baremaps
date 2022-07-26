@@ -20,15 +20,9 @@ import com.baremaps.cli.Options;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.MbStyleSources;
 import com.baremaps.model.TileJSON;
-import com.baremaps.workflow.Step;
-import com.baremaps.workflow.Workflow;
-import com.baremaps.workflow.tasks.LogMessage;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
@@ -42,8 +36,7 @@ public class Init implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Init.class);
 
-  @Mixin
-  private Options options;
+  @Mixin private Options options;
 
   @Option(
       names = {"--style"},
@@ -66,7 +59,9 @@ public class Init implements Callable<Integer> {
       sources.setType("vector");
       sources.setUrl("http://localhost:9000/tiles.json");
       styleObject.setSources(Map.of("baremaps", sources));
-      Files.write(style, defaultObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(styleObject));
+      Files.write(
+          style,
+          defaultObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(styleObject));
       logger.info("Style initialized: {}", style);
     }
     if (tileset != null) {
@@ -75,7 +70,8 @@ public class Init implements Callable<Integer> {
       tilesetObject.setName("Baremaps");
       tilesetObject.setTiles(Arrays.asList("http://localhost:9000/tiles.json"));
       Files.write(
-          tileset, defaultObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(tilesetObject));
+          tileset,
+          defaultObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(tilesetObject));
       logger.info("Tileset initialized: {}", tileset);
     }
     return 0;

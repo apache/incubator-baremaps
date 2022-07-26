@@ -30,5 +30,4 @@ public class Options {
       paramLabel = "LOG_LEVEL",
       description = {"The log level."})
   public LogLevel logLevel = LogLevel.INFO;
-
 }

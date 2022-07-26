@@ -22,7 +22,6 @@ import com.baremaps.database.tile.MBTiles;
 import com.baremaps.database.tile.PostgresQuery;
 import com.baremaps.database.tile.PostgresTileStore;
 import com.baremaps.database.tile.Tile;
-import com.baremaps.database.tile.TileBatchPredicate;
 import com.baremaps.database.tile.TileChannel;
 import com.baremaps.database.tile.TileStore;
 import com.baremaps.database.tile.TileStoreException;
@@ -45,7 +44,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.sql.DataSource;
 import javax.ws.rs.DefaultValue;
 import org.locationtech.jts.geom.Envelope;
@@ -90,8 +88,7 @@ public record ExportVectorTiles(
           StreamUtils.stream(Tile.iterator(envelope, source.getMinzoom(), source.getMaxzoom()))
               .peek(new StreamProgress<>(count, 5000));
 
-      StreamUtils.batch(stream, 10)
-          .forEach(new TileChannel(tileSource, tileTarget));
+      StreamUtils.batch(stream, 10).forEach(new TileChannel(tileSource, tileTarget));
 
       logger.info("Finished exporting vector tiles from {} to {}", database, repository);
     } catch (Exception exception) {

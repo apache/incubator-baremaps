@@ -14,20 +14,13 @@
 
 package com.baremaps.cli.geocoder;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.sql.SQLException;
-import java.util.concurrent.Callable;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(
     name = "geocoder",
     description = "Geocoder commands.",
-    subcommands = {
-        Index.class,
-        Search.class
-    },
+    subcommands = {Index.class, Search.class},
     sortOptions = false)
 public class Geocoder implements Runnable {
 

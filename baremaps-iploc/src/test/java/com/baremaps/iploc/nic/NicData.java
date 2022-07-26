@@ -15,7 +15,6 @@
 package com.baremaps.iploc.nic;
 
 import com.baremaps.testing.TestFiles;
-import com.google.common.io.Resources;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;

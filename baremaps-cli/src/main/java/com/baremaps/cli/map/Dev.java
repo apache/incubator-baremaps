@@ -35,15 +35,12 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(
-    name = "dev",
-    description = "Start a development server with live reload.")
+@Command(name = "dev", description = "Start a development server with live reload.")
 public class Dev implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Dev.class);
 
-  @Mixin
-  private Options options;
+  @Mixin private Options options;
 
   @Option(
       names = {"--database"},
@@ -109,10 +106,8 @@ public class Dev implements Callable<Integer> {
                     }
                   });
 
-      var httpService =
-          new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
-      var serverContext =
-          HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
+      var httpService = new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
+      var serverContext = HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
       logger.info("Listening on {}", serverContext.listenAddress());
       serverContext.awaitShutdown();

@@ -16,8 +16,8 @@ package com.baremaps.server.resources;
 
 import static org.junit.Assert.assertEquals;
 
-import com.baremaps.server.ogcapi.PostgisPlugin;
 import com.baremaps.database.postgres.PostgresUtils;
+import com.baremaps.server.ogcapi.PostgisPlugin;
 import com.google.common.io.Resources;
 import java.io.File;
 import java.net.URL;

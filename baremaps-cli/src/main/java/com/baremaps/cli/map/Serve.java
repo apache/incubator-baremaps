@@ -33,7 +33,6 @@ import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;

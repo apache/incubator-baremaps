@@ -14,22 +14,16 @@
 
 package com.baremaps.cli.geocoder;
 
-import com.baremaps.geocoder.Geocoder;
 import com.baremaps.geocoder.Request;
-import com.baremaps.geocoder.Response;
 import com.baremaps.geocoder.geonames.GeonamesGeocoder;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(
-    name = "search",
-    description = "Search geonames index.")
+@Command(name = "search", description = "Search geonames index.")
 public class Search implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Search.class);
