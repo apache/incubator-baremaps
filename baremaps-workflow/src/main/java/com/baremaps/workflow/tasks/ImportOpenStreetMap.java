@@ -24,7 +24,7 @@ import com.baremaps.collection.type.LongListDataType;
 import com.baremaps.collection.type.PairDataType;
 import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.database.ImportService;
-import com.baremaps.database.postgres.PostgresUtils;
+import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.database.repository.PostgresHeaderRepository;
 import com.baremaps.database.repository.PostgresNodeRepository;
 import com.baremaps.database.repository.PostgresRelationRepository;

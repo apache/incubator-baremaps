@@ -14,7 +14,7 @@
 
 package com.baremaps.database.database;
 
-import com.baremaps.database.postgres.PostgresUtils;
+import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.testing.PostgresContainerTest;
 import java.io.IOException;
 import java.sql.Connection;

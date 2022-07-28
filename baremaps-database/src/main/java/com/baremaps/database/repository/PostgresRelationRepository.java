@@ -17,7 +17,7 @@ package com.baremaps.database.repository;
 import static com.baremaps.database.repository.PostgresJsonbMapper.toJson;
 import static com.baremaps.database.repository.PostgresJsonbMapper.toMap;
 
-import com.baremaps.database.postgres.CopyWriter;
+import com.baremaps.postgres.CopyWriter;
 import com.baremaps.osm.geometry.GeometryUtils;
 import com.baremaps.osm.model.Info;
 import com.baremaps.osm.model.Member;
@@ -371,9 +371,9 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
                   .map(Member::getType)
                   .map(MemberType::ordinal)
                   .collect(Collectors.toList()));
-          writer.writeStringList(
+          writer.write(
               value.getMembers().stream().map(Member::getRole).collect(Collectors.toList()));
-          writer.writeGeometry(value.getGeometry());
+          writer.writePostgisGeometry(value.getGeometry());
         }
       }
     } catch (IOException | SQLException ex) {

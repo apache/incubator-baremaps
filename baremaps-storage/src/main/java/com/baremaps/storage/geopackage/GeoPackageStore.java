@@ -49,7 +49,7 @@ public class GeoPackageStore extends DataStore implements Aggregate {
   @Override
   public Collection<? extends Resource> components() throws DataStoreException {
     return geoPackage.getFeatureTables().stream()
-        .map(table -> new GeoPackageTableStore(geoPackage.getFeatureDao(table)))
+        .map(table -> new GeoPackageTable(geoPackage.getFeatureDao(table)))
         .collect(Collectors.toList());
   }
 }

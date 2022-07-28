@@ -142,6 +142,7 @@
     <module>baremaps-stream</module>
     <module>baremaps-testing</module>
     <module>baremaps-workflow</module>
+    <module>baremaps-postgres</module>
   </modules>
 
   <profiles>
@@ -384,17 +385,17 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-nic</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
-      </dependency>
-      <dependency>
         <artifactId>baremaps-osm</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <artifactId>baremaps-workflow</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-postgres</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>

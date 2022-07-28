@@ -21,6 +21,18 @@
       <artifactId>sis-feature</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.sis.core</groupId>
+      <artifactId>sis-referencing</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sis.non-free</groupId>
+      <artifactId>sis-epsg</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.sis.non-free</groupId>
+      <artifactId>sis-embedded-data</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.sis.storage</groupId>
       <artifactId>sis-storage</artifactId>
     </dependency>

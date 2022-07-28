@@ -14,7 +14,7 @@
 
 package com.baremaps.workflow.tasks;
 
-import com.baremaps.database.postgres.PostgresUtils;
+import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.workflow.Task;
 import com.baremaps.workflow.WorkflowException;
 import java.nio.file.Files;

@@ -16,7 +16,7 @@ package com.baremaps.workflow.tasks;
 
 import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
 
-import com.baremaps.database.postgres.PostgresUtils;
+import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.database.tile.FileTileStore;
 import com.baremaps.database.tile.MBTiles;
 import com.baremaps.database.tile.PostgresQuery;

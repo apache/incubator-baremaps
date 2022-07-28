@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.database.postgres;
+package com.baremaps.postgres;
 
 import com.google.common.io.Resources;
 import com.zaxxer.hikari.HikariConfig;

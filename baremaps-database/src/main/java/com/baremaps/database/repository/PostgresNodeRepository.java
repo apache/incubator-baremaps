@@ -14,7 +14,7 @@
 
 package com.baremaps.database.repository;
 
-import com.baremaps.database.postgres.CopyWriter;
+import com.baremaps.postgres.CopyWriter;
 import com.baremaps.osm.geometry.GeometryUtils;
 import com.baremaps.osm.model.Info;
 import com.baremaps.osm.model.Node;
@@ -349,7 +349,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
           writer.writeJsonb(PostgresJsonbMapper.toJson(value.getTags()));
           writer.writeDouble(value.getLon());
           writer.writeDouble(value.getLat());
-          writer.writeGeometry(value.getGeometry());
+          writer.writePostgisGeometry(value.getGeometry());
         }
       }
     } catch (IOException | SQLException e) {

@@ -28,6 +28,56 @@ class WorkflowTest extends PostgresContainerTest {
 
   @Test
   @Disabled
+  void naturalearthGeoPackage() {
+    var workflow =
+        new Workflow(
+            List.of(
+                new Step(
+                    "fetch-geopackage",
+                    List.of(),
+                    List.of(
+                        /*
+                        new DownloadUrl(
+                            "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
+                            "natural_earth_vector.gpkg.zip"),
+                        new UnzipFile(
+                            "natural_earth_vector.gpkg.zip",
+                            "natural_earth_vector"
+                        ),
+                         */
+                        new ImportGeoPackage(
+                            "natural_earth_vector/packages/natural_earth_vector.gpkg",
+                            jdbcUrl(),
+                            4326,
+                            3857)
+                    ))));
+    new WorkflowExecutor(workflow).execute().join();
+  }
+
+  @Test
+  @Disabled
+  void workflow() {
+    var workflow =
+        new Workflow(
+            List.of(
+                new Step(
+                    "fetch-geopackage",
+                    List.of(),
+                    List.of(
+                        new DownloadUrl(
+                            "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
+                            "downloads/import_db.gpkg"),
+                        new ImportShapefile(
+                            "downloads/import_db.gpkg",
+                            jdbcUrl(),
+                            4326,
+                            3857)))));
+    new WorkflowExecutor(workflow).execute().join();
+  }
+
+
+  @Test
+  @Disabled
   void execute() {
     var workflow =
         new Workflow(
@@ -88,4 +138,5 @@ class WorkflowTest extends PostgresContainerTest {
                             3857)))));
     new WorkflowExecutor(workflow).execute().join();
   }
+
 }

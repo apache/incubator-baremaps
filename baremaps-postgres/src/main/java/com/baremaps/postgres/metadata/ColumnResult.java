@@ -12,9 +12,9 @@
  * the License.
  */
 
-package com.baremaps.database.metadata;
+package com.baremaps.postgres.metadata;
 
-public record Column(
+public record ColumnResult(
     String tableCat,
     String tableSchem,
     String tableName,

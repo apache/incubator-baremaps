@@ -18,7 +18,7 @@ import com.baremaps.collection.LongDataMap;
 import com.baremaps.database.UpdateService;
 import com.baremaps.database.collection.PostgresCoordinateMap;
 import com.baremaps.database.collection.PostgresReferenceMap;
-import com.baremaps.database.postgres.PostgresUtils;
+import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.database.repository.HeaderRepository;
 import com.baremaps.database.repository.PostgresHeaderRepository;
 import com.baremaps.database.repository.PostgresNodeRepository;

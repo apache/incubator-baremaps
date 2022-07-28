@@ -16,7 +16,7 @@ package com.baremaps.server.ogcapi;
 
 import static org.junit.Assert.assertEquals;
 
-import com.baremaps.database.postgres.PostgresUtils;
+import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.model.TileJSON;
 import com.fasterxml.jackson.core.util.JacksonFeature;
 import java.util.List;

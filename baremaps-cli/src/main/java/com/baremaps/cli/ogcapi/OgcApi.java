@@ -18,7 +18,7 @@ import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
 import com.baremaps.cli.Options;
-import com.baremaps.database.postgres.PostgresUtils;
+import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.server.ogcapi.ApiResource;
 import com.baremaps.server.ogcapi.CollectionsResource;
 import com.baremaps.server.ogcapi.ConformanceResource;

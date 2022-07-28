@@ -14,7 +14,7 @@
 
 package com.baremaps.database.repository;
 
-import com.baremaps.database.postgres.CopyWriter;
+import com.baremaps.postgres.CopyWriter;
 import com.baremaps.osm.model.Header;
 import java.io.IOException;
 import java.sql.Connection;
@@ -337,9 +337,9 @@ public class PostgresHeaderRepository implements HeaderRepository {
           writer.startRow(5);
           writer.writeLong(value.getReplicationSequenceNumber());
           writer.writeLocalDateTime(value.getReplicationTimestamp());
-          writer.writeString(value.getReplicationUrl());
-          writer.writeString(value.getSource());
-          writer.writeString(value.getWritingProgram());
+          writer.write(value.getReplicationUrl());
+          writer.write(value.getSource());
+          writer.write(value.getWritingProgram());
         }
       }
     } catch (IOException | SQLException e) {

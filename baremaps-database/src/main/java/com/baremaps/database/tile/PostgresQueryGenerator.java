@@ -14,8 +14,8 @@
 
 package com.baremaps.database.tile;
 
-import com.baremaps.database.metadata.Metadata;
-import com.baremaps.database.metadata.TableMetaData;
+import com.baremaps.postgres.metadata.DatabaseMetadata;
+import com.baremaps.postgres.metadata.TableMetaData;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
@@ -82,7 +82,7 @@ public class PostgresQueryGenerator {
    * @return the queries
    */
   public List<PostgresQuery> generate() {
-    return new Metadata(dataSource)
+    return new DatabaseMetadata(dataSource)
         .getTableMetaData(catalog, schemaPattern, tableNamePattern, types).stream()
             .filter(table -> table.primaryKeys().size() == 1)
             .filter(table -> table.getGeometryColumns().size() == 1)

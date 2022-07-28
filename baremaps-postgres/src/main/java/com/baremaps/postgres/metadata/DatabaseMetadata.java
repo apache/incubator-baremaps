@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.baremaps.database.metadata;
+package com.baremaps.postgres.metadata;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -22,11 +22,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
-public class Metadata {
+public class DatabaseMetadata {
 
   private final DataSource dataSource;
 
-  public Metadata(DataSource dataSource) {
+  public DatabaseMetadata(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
@@ -36,15 +36,15 @@ public class Metadata {
 
   public List<TableMetaData> getTableMetaData(
       String catalog, String schema, String tableNamePattern, String[] types) {
-    Map<String, Table> descriptions =
+    Map<String, TableResult> descriptions =
         getTables(catalog, schema, tableNamePattern, types).stream()
-            .collect(Collectors.toMap(Table::tableName, Function.identity()));
-    Map<String, List<Column>> columns =
+            .collect(Collectors.toMap(TableResult::tableName, Function.identity()));
+    Map<String, List<ColumnResult>> columns =
         getColumns(catalog, schema, tableNamePattern, null).stream()
-            .collect(Collectors.groupingBy(Column::tableName));
-    Map<String, List<PrimaryKey>> primaryKeys =
+            .collect(Collectors.groupingBy(ColumnResult::tableName));
+    Map<String, List<PrimaryKeyResult>> primaryKeys =
         getPrimaryKeys(catalog, schema, tableNamePattern).stream()
-            .collect(Collectors.groupingBy(PrimaryKey::tableName));
+            .collect(Collectors.groupingBy(PrimaryKeyResult::tableName));
     return descriptions.entrySet().stream()
         .map(
             entry ->
@@ -55,15 +55,15 @@ public class Metadata {
         .toList();
   }
 
-  private List<Table> getTables(
+  private List<TableResult> getTables(
       String catalog, String schemaPattern, String tableNamePattern, String[] types) {
-    var tableDescriptions = new ArrayList<Table>();
+    var tableDescriptions = new ArrayList<TableResult>();
     try (var connection = dataSource.getConnection();
         var resultSet =
             connection.getMetaData().getTables(catalog, schemaPattern, tableNamePattern, types)) {
       while (resultSet.next()) {
         tableDescriptions.add(
-            new Table(
+            new TableResult(
                 resultSet.getString("TABLE_CAT"),
                 resultSet.getString("TABLE_SCHEM"),
                 resultSet.getString("TABLE_NAME"),
@@ -81,9 +81,9 @@ public class Metadata {
     return tableDescriptions;
   }
 
-  private List<Column> getColumns(
+  private List<ColumnResult> getColumns(
       String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) {
-    var tableColumns = new ArrayList<Column>();
+    var tableColumns = new ArrayList<ColumnResult>();
     try (var connection = dataSource.getConnection();
         var resultSet =
             connection
@@ -91,7 +91,7 @@ public class Metadata {
                 .getColumns(catalog, schemaPattern, tableNamePattern, columnNamePattern)) {
       while (resultSet.next()) {
         tableColumns.add(
-            new Column(
+            new ColumnResult(
                 resultSet.getString("TABLE_CAT"),
                 resultSet.getString("TABLE_SCHEM"),
                 resultSet.getString("TABLE_NAME"),
@@ -122,13 +122,13 @@ public class Metadata {
     return tableColumns;
   }
 
-  private List<PrimaryKey> getPrimaryKeys(String catalog, String schemaPattern, String table) {
-    var tablePrimaryKeyColumns = new ArrayList<PrimaryKey>();
+  private List<PrimaryKeyResult> getPrimaryKeys(String catalog, String schemaPattern, String table) {
+    var tablePrimaryKeyColumns = new ArrayList<PrimaryKeyResult>();
     try (var connection = dataSource.getConnection();
         var resultSet = connection.getMetaData().getPrimaryKeys(catalog, schemaPattern, table)) {
       while (resultSet.next()) {
         tablePrimaryKeyColumns.add(
-            new PrimaryKey(
+            new PrimaryKeyResult(
                 resultSet.getString("TABLE_CAT"),
                 resultSet.getString("TABLE_SCHEM"),
                 resultSet.getString("TABLE_NAME"),

@@ -12,12 +12,16 @@
  * the License.
  */
 
-package com.baremaps.database.metadata;
+package com.baremaps.postgres.metadata;
 
-public record PrimaryKey(
+public record TableResult(
     String tableCat,
     String tableSchem,
     String tableName,
-    String columnName,
-    short keySeq,
-    String pkName) {}
+    String tableType,
+    String remarks,
+    String typeCat,
+    String typeSchem,
+    String typeName,
+    String selfReferencingColName,
+    String refGeneration) {}

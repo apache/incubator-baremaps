@@ -12,13 +12,13 @@
  * the License.
  */
 
-package com.baremaps.database.metadata;
+package com.baremaps.postgres.metadata;
 
 import java.util.List;
 
-public record TableMetaData(Table table, List<PrimaryKey> primaryKeys, List<Column> columns) {
+public record TableMetaData(TableResult table, List<PrimaryKeyResult> primaryKeys, List<ColumnResult> columns) {
 
-  public List<Column> getGeometryColumns() {
+  public List<ColumnResult> getGeometryColumns() {
     return columns.stream().filter(column -> "geometry".equals(column.typeName())).toList();
   }
 }

@@ -23,12 +23,10 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import mil.nga.crs.common.DateTime;
-import mil.nga.geopackage.db.GeoPackageDataType;
 import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
-import mil.nga.geopackage.geom.GeoPackageGeometryData;
-import mil.nga.sf.GeometryType;
+import org.apache.sis.feature.builder.AttributeRole;
 import org.apache.sis.feature.builder.FeatureTypeBuilder;
 import org.apache.sis.storage.DataStore;
 import org.apache.sis.storage.DataStoreException;
@@ -51,7 +49,7 @@ import org.opengis.geometry.Envelope;
 import org.opengis.metadata.Metadata;
 import org.opengis.parameter.ParameterValueGroup;
 
-public class GeoPackageTableStore extends DataStore implements FeatureSet {
+public class GeoPackageTable extends DataStore implements FeatureSet {
 
   private final FeatureDao featureDao;
 
@@ -59,24 +57,28 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
 
   private final GeometryFactory geometryFactory;
 
-  public GeoPackageTableStore(FeatureDao featureDao) {
+  protected GeoPackageTable(FeatureDao featureDao) {
     this.featureDao = featureDao;
-    FeatureTypeBuilder builder = new FeatureTypeBuilder().setName(featureDao.getTableName());
+    var typeBuilder = new FeatureTypeBuilder().setName(featureDao.getTableName());
     for (FeatureColumn column : featureDao.getColumns()) {
-      if (column.isGeometry()) {
-        builder
-            .addAttribute(jtsType(column.getGeometryType()))
-            .setName(column.getName())
-            .setMinimumOccurs(column.isNotNull() ? 1 : 0);
-      } else {
-        builder
-            .addAttribute(sisType(column.getDataType()))
-            .setName(column.getName())
-            .setMinimumOccurs(column.isNotNull() ? 1 : 0);
+      var attributeBuilder = typeBuilder
+          .addAttribute(classType(column))
+          .setName(column.getName())
+          .setMinimumOccurs(column.isNotNull() ? 1 : 0);
+      if (column.isPrimaryKey()) {
+        attributeBuilder.addRole(AttributeRole.IDENTIFIER_COMPONENT);
       }
     }
-    featureType = builder.build();
+    featureType = typeBuilder.build();
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
+  }
+
+  private Class<?> classType(FeatureColumn column) {
+    if (column.isGeometry()) {
+      return Geometry.class;
+    } else {
+      return column.getDataType().getClassType();
+    }
   }
 
   @Override
@@ -95,7 +97,8 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
   }
 
   @Override
-  public void close() throws DataStoreException {}
+  public void close() throws DataStoreException {
+  }
 
   @Override
   public FeatureType getType() throws DataStoreException {
@@ -135,21 +138,20 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
       Feature feature = featureType.newInstance();
       for (FeatureColumn featureColumn : featureResultSet.getColumns().getColumns()) {
         if (featureColumn.isGeometry()) {
-          GeoPackageGeometryData value =
-              (GeoPackageGeometryData) featureResultSet.getValue(featureColumn);
-          feature.setPropertyValue(featureColumn.getName(), jtsValue(value.getGeometry()));
+          var value = featureResultSet.getGeometry();
+          if (value != null) {
+            feature.setPropertyValue(featureColumn.getName(), jtsValue(value.getGeometry()));
+          }
         } else {
-          Object value = featureResultSet.getValue(featureColumn);
-          feature.setPropertyValue(featureColumn.getName(), sisValue(value));
+          var value = featureResultSet.getValue(featureColumn);
+          if (value != null) {
+            feature.setPropertyValue(featureColumn.getName(), sisValue(value));
+          }
         }
       }
       hasNext = featureResultSet.moveToNext();
       return feature;
     }
-  }
-
-  private Class<?> sisType(GeoPackageDataType dataType) {
-    return dataType.getClassType();
   }
 
   private Object sisValue(Object value) {
@@ -158,29 +160,6 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
     } else {
       return value;
     }
-  }
-
-  private Class<?> jtsType(GeometryType type) {
-    return switch (type) {
-      case POINT -> Point.class;
-      case LINESTRING -> LineString.class;
-      case POLYGON -> Polygon.class;
-      case MULTIPOINT -> MultiPoint.class;
-      case MULTILINESTRING -> MultiLineString.class;
-      case MULTIPOLYGON -> MultiPolygon.class;
-      case GEOMETRYCOLLECTION -> GeometryCollection.class;
-      case GEOMETRY,
-          CIRCULARSTRING,
-          COMPOUNDCURVE,
-          CURVEPOLYGON,
-          MULTICURVE,
-          MULTISURFACE,
-          CURVE,
-          SURFACE,
-          POLYHEDRALSURFACE,
-          TIN,
-          TRIANGLE -> Geometry.class;
-    };
   }
 
   private Geometry jtsValue(mil.nga.sf.Geometry geometry) {
@@ -200,7 +179,7 @@ public class GeoPackageTableStore extends DataStore implements FeatureSet {
       return jstGeometryCollection(geometryCollection);
     } else {
       // Unknown geometries are discarded
-      return geometryFactory.createEmpty(0);
+      return null;
     }
   }
 

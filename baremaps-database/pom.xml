@@ -21,8 +21,8 @@
       <artifactId>baremaps-osm</artifactId>
     </dependency>
     <dependency>
+      <artifactId>baremaps-postgres</artifactId>
       <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-storage</artifactId>
     </dependency>
     <dependency>
       <artifactId>postgresql</artifactId>

@@ -24,14 +24,10 @@ import org.locationtech.jts.geom.PrecisionModel;
 
 class ProjectionTransformerTest {
 
-  private static final GeometryFactory FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
-
-  private static final ProjectionTransformer TRANSFORMER = new ProjectionTransformer(4326, 3857);
-
   @Test
   public void testPoint() {
-    var inputGeom = FACTORY.createPoint(new Coordinate(1, 1));
-    var outputGeom = (Point) TRANSFORMER.transform(inputGeom);
+    var inputGeom = new GeometryFactory(new PrecisionModel(), 4326).createPoint(new Coordinate(1, 1));
+    var outputGeom = (Point) new ProjectionTransformer(4326, 3857).transform(inputGeom);
     assertEquals(3857, outputGeom.getSRID());
     assertEquals(111319.49079327357, outputGeom.getX());
     assertEquals(111325.14286638486, outputGeom.getY());
