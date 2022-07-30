@@ -47,7 +47,35 @@ class WorkflowTest extends PostgresContainerTest {
                          */
                         new ImportGeoPackage(
                             "natural_earth_vector/packages/natural_earth_vector.gpkg",
-                            jdbcUrl(),
+                            "jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps",
+                            4326,
+                            3857)
+                    ))));
+    new WorkflowExecutor(workflow).execute().join();
+  }
+
+  @Test
+  @Disabled
+  void coastlineShapefile() {
+    var workflow =
+        new Workflow(
+            List.of(
+                new Step(
+                    "fetch-geopackage",
+                    List.of(),
+                    List.of(
+                        /*
+                        new DownloadUrl(
+                            "https://osmdata.openstreetmap.de/download/coastlines-split-4326.zip",
+                            "coastlines-split-4326.zip"),
+                        new UnzipFile(
+                            "coastlines-split-4326.zip",
+                            "coastlines-split-4326"
+                        ),
+                         */
+                        new ImportShapefile(
+                            "coastlines-split-4326/coastlines-split-4326/lines.shp",
+                            "jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps",
                             4326,
                             3857)
                     ))));

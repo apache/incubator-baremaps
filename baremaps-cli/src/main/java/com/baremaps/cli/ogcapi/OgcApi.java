@@ -29,6 +29,7 @@ import com.baremaps.server.ogcapi.TilesetsResource;
 import com.baremaps.server.resources.ImportResource;
 import com.baremaps.server.resources.StudioResource;
 import com.baremaps.server.utils.CorsFilter;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
@@ -73,6 +74,7 @@ public class OgcApi implements Callable<Integer> {
   public Integer call() throws Exception {
     // Configure serialization
     ObjectMapper mapper = defaultObjectMapper();
+    mapper.readValue("", JsonNode.class);
 
     // Configure jdbi and set the ObjectMapper
     DataSource datasource = PostgresUtils.dataSource(this.database);

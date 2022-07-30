@@ -14,28 +14,28 @@
 
 package com.baremaps.workflow.tasks;
 
+import com.baremaps.postgres.PostgresUtils;
+import com.baremaps.storage.postgres.PostgresDatabase;
+import com.baremaps.storage.shapefile.ShapefileFile;
+import com.baremaps.workflow.Task;
 import com.baremaps.workflow.WorkflowException;
 import java.nio.file.Paths;
-import org.apache.sis.storage.FeatureSet;
-import org.geotoolkit.data.shapefile.ShapefileFeatureStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public record ImportShapefile(String file, String database, Integer sourceSRID, Integer targetSRID)
-    implements ImportFeatureTask {
+    implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportShapefile.class);
 
   @Override
   public void run() {
     logger.info("Importing {} into {}", file, database);
-    var uri = Paths.get(file).toUri();
-    try (var shapefileStore = new ShapefileFeatureStore(uri)) {
-      for (var resource : shapefileStore.components()) {
-        if (resource instanceof FeatureSet featureSet) {
-          saveFeatureSet(featureSet);
-        }
-      }
+    var path = Paths.get(file);
+    try (var shapefileFile = new ShapefileFile(path);
+        var dataSource = PostgresUtils.dataSource(database);
+        var postgresDatabase = new PostgresDatabase(dataSource)) {
+      postgresDatabase.add(shapefileFile);
       logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {
       logger.error("Failed importing {} into {}", file, database);

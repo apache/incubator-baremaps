@@ -31,6 +31,7 @@ import com.baremaps.postgres.handlers.LongValueHandler;
 import com.baremaps.postgres.handlers.PostgisGeometryValueHandler;
 import com.baremaps.postgres.handlers.ShortValueHandler;
 import com.baremaps.postgres.handlers.StringValueHandler;
+import com.baremaps.postgres.handlers.ValueHandler;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -91,6 +92,24 @@ public class CopyWriter implements AutoCloseable {
     data.writeInt(0);
     // 32 bit header extension area length
     data.writeInt(0);
+  }
+
+  /**
+   * Writes a null value.
+   *
+   * @throws IOException
+   */
+  public void writeNull() throws IOException {
+    data.writeInt(-1);
+  }
+
+  /**
+   * Writes a null value.
+   *
+   * @throws IOException
+   */
+  public <T> void write(ValueHandler<T> handler, T value) throws IOException {
+    handler.handle(data, value);
   }
 
   /**
@@ -187,7 +206,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeShortList(List<Short> value) throws IOException {
-    new CollectionValueHandler<>(Oid.INT2_ARRAY, new ShortValueHandler<Short>())
+    new CollectionValueHandler<>(Oid.INT2, new ShortValueHandler<Short>())
         .handle(data, value);
   }
 
@@ -209,7 +228,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeIntegerList(List<Integer> value) throws IOException {
-    new CollectionValueHandler<>(Oid.INT4_ARRAY, new IntegerValueHandler<Integer>())
+    new CollectionValueHandler<>(Oid.INT4, new IntegerValueHandler<Integer>())
         .handle(data, value);
   }
 
@@ -231,7 +250,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeLongList(List<Long> value) throws IOException {
-    new CollectionValueHandler<>(Oid.INT8_ARRAY, new LongValueHandler<Long>())
+    new CollectionValueHandler<>(Oid.INT8, new LongValueHandler<Long>())
         .handle(data, value);
   }
 
@@ -253,7 +272,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeFloatList(List<Float> value) throws IOException {
-    new CollectionValueHandler<>(Oid.FLOAT4_ARRAY, new FloatValueHandler<Float>())
+    new CollectionValueHandler<>(Oid.FLOAT4, new FloatValueHandler<Float>())
         .handle(data, value);
   }
 
@@ -275,7 +294,7 @@ public class CopyWriter implements AutoCloseable {
    * @throws IOException
    */
   public void writeDoubleArray(List<Double> value) throws IOException {
-    new CollectionValueHandler<>(Oid.FLOAT8_ARRAY, new DoubleValueHandler<Double>())
+    new CollectionValueHandler<>(Oid.FLOAT8, new DoubleValueHandler<Double>())
         .handle(data, value);
   }
 

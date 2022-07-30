@@ -14,7 +14,7 @@
 
 package com.baremaps.storage.geopackage;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -22,15 +22,17 @@ import java.util.Optional;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import mil.nga.crs.common.DateTime;
 import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
+import mil.nga.geopackage.geom.GeoPackageGeometryData;
 import org.apache.sis.feature.builder.AttributeRole;
 import org.apache.sis.feature.builder.FeatureTypeBuilder;
 import org.apache.sis.storage.DataStore;
 import org.apache.sis.storage.DataStoreException;
 import org.apache.sis.storage.FeatureSet;
+import org.apache.sis.storage.event.StoreEvent;
+import org.apache.sis.storage.event.StoreListener;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
@@ -48,8 +50,9 @@ import org.opengis.feature.FeatureType;
 import org.opengis.geometry.Envelope;
 import org.opengis.metadata.Metadata;
 import org.opengis.parameter.ParameterValueGroup;
+import org.opengis.util.GenericName;
 
-public class GeoPackageTable extends DataStore implements FeatureSet {
+public class GeoPackageTable implements FeatureSet {
 
   private final FeatureDao featureDao;
 
@@ -83,12 +86,12 @@ public class GeoPackageTable extends DataStore implements FeatureSet {
 
   @Override
   public Optional<Envelope> getEnvelope() throws DataStoreException {
-    throw new UnsupportedOperationException();
+    return Optional.empty();
   }
 
   @Override
-  public Optional<ParameterValueGroup> getOpenParameters() {
-    throw new UnsupportedOperationException();
+  public Optional<GenericName> getIdentifier() throws DataStoreException {
+    return Optional.empty();
   }
 
   @Override
@@ -97,7 +100,13 @@ public class GeoPackageTable extends DataStore implements FeatureSet {
   }
 
   @Override
-  public void close() throws DataStoreException {
+  public <T extends StoreEvent> void addListener(Class<T> eventType, StoreListener<? super T> listener) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public <T extends StoreEvent> void removeListener(Class<T> eventType, StoreListener<? super T> listener) {
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -137,16 +146,9 @@ public class GeoPackageTable extends DataStore implements FeatureSet {
       }
       Feature feature = featureType.newInstance();
       for (FeatureColumn featureColumn : featureResultSet.getColumns().getColumns()) {
-        if (featureColumn.isGeometry()) {
-          var value = featureResultSet.getGeometry();
-          if (value != null) {
-            feature.setPropertyValue(featureColumn.getName(), jtsValue(value.getGeometry()));
-          }
-        } else {
-          var value = featureResultSet.getValue(featureColumn);
-          if (value != null) {
-            feature.setPropertyValue(featureColumn.getName(), sisValue(value));
-          }
+        var value = featureResultSet.getValue(featureColumn);
+        if (value != null) {
+          feature.setPropertyValue(featureColumn.getName(), asValue(value));
         }
       }
       hasNext = featureResultSet.moveToNext();
@@ -154,60 +156,74 @@ public class GeoPackageTable extends DataStore implements FeatureSet {
     }
   }
 
-  private Object sisValue(Object value) {
-    if (value instanceof Date || value instanceof DateTime) {
-      return value.toString();
+  private Object asValue(Object value) {
+    if (value instanceof GeoPackageGeometryData geometry) {
+      return asJtsGeometry(geometry.getGeometry());
+    } else if (value instanceof mil.nga.crs.common.DateTime dateTime) {
+      return asLocalDateTime(dateTime);
     } else {
       return value;
     }
   }
 
-  private Geometry jtsValue(mil.nga.sf.Geometry geometry) {
+  private LocalDateTime asLocalDateTime(mil.nga.crs.common.DateTime dateTime) {
+    // TODO: take the time zone into account
+    // .atZone(ZoneId.of(String.format("%s%02d:%02d", dateTime.getTimeZoneHour() >= 0 ? "+" : "-", Math.abs(dateTime.getTimeZoneHour()), dateTime.getTimeZoneMinute())));
+    return LocalDateTime.of(
+        dateTime.getYear(),
+        dateTime.getMonth(),
+        dateTime.getDay(),
+        dateTime.getHour(),
+        dateTime.getMinute(),
+        dateTime.getSecond());
+  }
+
+  private Geometry asJtsGeometry(mil.nga.sf.Geometry geometry) {
     if (geometry instanceof mil.nga.sf.Point point) {
-      return jtsPoint(point);
+      return asJtsPoint(point);
     } else if (geometry instanceof mil.nga.sf.LineString lineString) {
-      return jtsLineString(lineString);
+      return asJtsLineString(lineString);
     } else if (geometry instanceof mil.nga.sf.Polygon polygon) {
-      return jtsPolygon(polygon);
+      return asJtsPolygon(polygon);
     } else if (geometry instanceof mil.nga.sf.MultiPoint multiPoint) {
-      return jtsMultiPoint(multiPoint);
+      return asJtsMultiPoint(multiPoint);
     } else if (geometry instanceof mil.nga.sf.MultiLineString multiLineString) {
-      return jtsMultiLineString(multiLineString);
+      return asJtsMultiLineString(multiLineString);
     } else if (geometry instanceof mil.nga.sf.MultiPolygon multiPolygon) {
-      return jtsMultiPolygon(multiPolygon);
+      return asJtsMultiPolygon(multiPolygon);
     } else if (geometry instanceof mil.nga.sf.GeometryCollection geometryCollection) {
-      return jstGeometryCollection(geometryCollection);
+      return asJstGeometryCollection(geometryCollection);
     } else {
       // Unknown geometries are discarded
       return null;
     }
   }
 
-  private GeometryCollection jstGeometryCollection(
+  private GeometryCollection asJstGeometryCollection(
       mil.nga.sf.GeometryCollection geometryCollection) {
     List<mil.nga.sf.Geometry> geometries = geometryCollection.getGeometries();
     return geometryFactory.createGeometryCollection(
-        geometries.stream().map(this::jtsValue).toArray(Geometry[]::new));
+        geometries.stream().map(this::asJtsGeometry).toArray(Geometry[]::new));
   }
 
-  private MultiPolygon jtsMultiPolygon(mil.nga.sf.MultiPolygon multiPolygon) {
+  private MultiPolygon asJtsMultiPolygon(mil.nga.sf.MultiPolygon multiPolygon) {
     return geometryFactory.createMultiPolygon(
-        multiPolygon.getPolygons().stream().map(this::jtsPolygon).toArray(Polygon[]::new));
+        multiPolygon.getPolygons().stream().map(this::asJtsPolygon).toArray(Polygon[]::new));
   }
 
-  private MultiLineString jtsMultiLineString(mil.nga.sf.MultiLineString multiLineString) {
+  private MultiLineString asJtsMultiLineString(mil.nga.sf.MultiLineString multiLineString) {
     return geometryFactory.createMultiLineString(
         multiLineString.getLineStrings().stream()
-            .map(this::jtsLineString)
+            .map(this::asJtsLineString)
             .toArray(LineString[]::new));
   }
 
-  private MultiPoint jtsMultiPoint(mil.nga.sf.MultiPoint multiPoint) {
+  private MultiPoint asJtsMultiPoint(mil.nga.sf.MultiPoint multiPoint) {
     return geometryFactory.createMultiPoint(
-        multiPoint.getPoints().stream().map(this::jtsPoint).toArray(Point[]::new));
+        multiPoint.getPoints().stream().map(this::asJtsPoint).toArray(Point[]::new));
   }
 
-  private Polygon jtsPolygon(mil.nga.sf.Polygon polygon) {
+  private Polygon asJtsPolygon(mil.nga.sf.Polygon polygon) {
     var shell =
         geometryFactory.createLinearRing(
             polygon.getExteriorRing().getPoints().stream()
@@ -226,7 +242,7 @@ public class GeoPackageTable extends DataStore implements FeatureSet {
     return geometryFactory.createPolygon(shell, holes);
   }
 
-  private LineString jtsLineString(mil.nga.sf.LineString lineString) {
+  private LineString asJtsLineString(mil.nga.sf.LineString lineString) {
     var coordinates =
         lineString.getPoints().stream()
             .map(point -> new Coordinate(point.getX(), point.getY()))
@@ -234,7 +250,7 @@ public class GeoPackageTable extends DataStore implements FeatureSet {
     return geometryFactory.createLineString(coordinates);
   }
 
-  private Point jtsPoint(mil.nga.sf.Point point) {
+  private Point asJtsPoint(mil.nga.sf.Point point) {
     return geometryFactory.createPoint(new Coordinate(point.getX(), point.getY()));
   }
 }

@@ -73,9 +73,13 @@ public enum DataType {
   MACADDR8(774),
   TSVECTOR(3614),
   TSQUERY(3615);
-  int oid;
-  DataType(int oid) {
-    this.oid = oid;
+  Integer dataType;
+  Class javaType;
+
+  DataType(Integer dataType) {
+    this.dataType = dataType;
   }
+
+
 
 }

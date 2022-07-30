@@ -365,14 +365,18 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
           writer.writeLong(value.getInfo().getChangeset());
           writer.writeJsonb(toJson(value.getTags()));
           writer.writeLongList(
-              value.getMembers().stream().map(Member::getRef).collect(Collectors.toList()));
+              value.getMembers().stream()
+                  .map(Member::getRef)
+                  .collect(Collectors.toList()));
           writer.writeIntegerList(
               value.getMembers().stream()
                   .map(Member::getType)
                   .map(MemberType::ordinal)
                   .collect(Collectors.toList()));
           writer.write(
-              value.getMembers().stream().map(Member::getRole).collect(Collectors.toList()));
+              value.getMembers().stream()
+                  .map(Member::getRole)
+                  .collect(Collectors.toList()));
           writer.writePostgisGeometry(value.getGeometry());
         }
       }

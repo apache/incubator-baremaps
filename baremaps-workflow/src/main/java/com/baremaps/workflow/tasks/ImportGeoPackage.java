@@ -14,7 +14,10 @@
 
 package com.baremaps.workflow.tasks;
 
-import com.baremaps.storage.geopackage.GeoPackageStore;
+import com.baremaps.postgres.PostgresUtils;
+import com.baremaps.storage.geopackage.GeoPackageDatabase;
+import com.baremaps.storage.postgres.PostgresDatabase;
+import com.baremaps.workflow.Task;
 import com.baremaps.workflow.WorkflowException;
 import java.nio.file.Paths;
 import mil.nga.geopackage.GeoPackageManager;
@@ -23,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public record ImportGeoPackage(String file, String database, Integer sourceSRID, Integer targetSRID)
-    implements ImportFeatureTask {
+    implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportGeoPackage.class);
 
@@ -31,10 +34,12 @@ public record ImportGeoPackage(String file, String database, Integer sourceSRID,
   public void run() {
     logger.info("Importing {} into {}", file, database);
     var path = Paths.get(file).toAbsolutePath();
-    try (var geoPackageStore = new GeoPackageStore(GeoPackageManager.open(path.toFile()))) {
+    try (var geoPackageStore = new GeoPackageDatabase(path);
+        var dataSource = PostgresUtils.dataSource(database);
+        var postgresDatabase = new PostgresDatabase(dataSource)) {
       for (var resource : geoPackageStore.components()) {
         if (resource instanceof FeatureSet featureSet) {
-          saveFeatureSet(featureSet);
+          postgresDatabase.add(featureSet);
         }
       }
       logger.info("Finished importing {} into {}", file, database);

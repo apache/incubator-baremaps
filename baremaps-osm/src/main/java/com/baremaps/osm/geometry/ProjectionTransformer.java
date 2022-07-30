@@ -63,6 +63,7 @@ public class ProjectionTransformer extends GeometryTransformer {
     this.inputSRID = sourceSrid;
     this.outputSRID = targetSrid;
     this.transform = GeometryUtils.coordinateTransform(sourceSrid, targetSrid);
+    // TODO: replace this with proj4
     try {
       var crs = CRS.forCode(String.format("EPSG:%s", targetSrid));
       var envelope = CRS.getDomainOfValidity(crs);

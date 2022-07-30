@@ -14,28 +14,31 @@
 
 package com.baremaps.storage.geopackage;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import mil.nga.geopackage.GeoPackage;
+import mil.nga.geopackage.GeoPackageManager;
 import org.apache.sis.storage.Aggregate;
-import org.apache.sis.storage.DataStore;
 import org.apache.sis.storage.DataStoreException;
 import org.apache.sis.storage.Resource;
+import org.apache.sis.storage.event.StoreEvent;
+import org.apache.sis.storage.event.StoreListener;
 import org.opengis.metadata.Metadata;
-import org.opengis.parameter.ParameterValueGroup;
+import org.opengis.util.GenericName;
 
-public class GeoPackageStore extends DataStore implements Aggregate {
+public class GeoPackageDatabase implements Aggregate, AutoCloseable {
 
   private final GeoPackage geoPackage;
 
-  public GeoPackageStore(GeoPackage geoPackage) {
-    this.geoPackage = geoPackage;
+  public GeoPackageDatabase(Path path) {
+    this.geoPackage = GeoPackageManager.open(path.toFile());
   }
 
   @Override
-  public Optional<ParameterValueGroup> getOpenParameters() {
-    throw new UnsupportedOperationException();
+  public Optional<GenericName> getIdentifier() throws DataStoreException {
+    return Optional.empty();
   }
 
   @Override
@@ -44,12 +47,24 @@ public class GeoPackageStore extends DataStore implements Aggregate {
   }
 
   @Override
-  public void close() throws DataStoreException {}
+  public <T extends StoreEvent> void addListener(Class<T> eventType, StoreListener<? super T> listener) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public <T extends StoreEvent> void removeListener(Class<T> eventType, StoreListener<? super T> listener) {
+    throw new UnsupportedOperationException();
+  }
 
   @Override
   public Collection<? extends Resource> components() throws DataStoreException {
     return geoPackage.getFeatureTables().stream()
         .map(table -> new GeoPackageTable(geoPackage.getFeatureDao(table)))
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public void close() throws Exception {
+    geoPackage.close();
   }
 }
