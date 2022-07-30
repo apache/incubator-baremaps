@@ -19,7 +19,7 @@ package org.apache.sis.internal.shapefile;
 import java.io.IOException;
 
 /**
- * Thrown when the DBF file format seems to be invalid.
+ * Thrown when the DBF file seems to be invalid.
  *
  * @author  Marc Le Bihan
  */

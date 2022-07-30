@@ -74,6 +74,9 @@ public class ShapefileByteReader extends CommonByteReader {
    */
   private ArrayList<Integer> recordsLengths;
 
+  /**
+   * JTS geometry factory.
+   */
   private GeometryFactory geometryFactory = new GeometryFactory();
 
   /**

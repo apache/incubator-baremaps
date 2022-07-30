@@ -28,7 +28,7 @@ import org.apache.sis.feature.AbstractFeature;
 
 
 /**
- * Reader of a Database Binary content by the way of a {@link java.nio.MappedByteBuffer}
+ * Reader of a Database Binary content.
  *
  * @author Marc Le Bihan
  */
@@ -264,7 +264,7 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
   /**
    * Loading the database file content from binary .dbf file.
    *
-   * @throws Dbase3Exception if descriptor is not readable.
+   * @throws IOException if descriptor is not readable.
    */
   private void loadDescriptor() throws IOException {
     try {
@@ -325,35 +325,6 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
    */
   public List<DBase3FieldDescriptor> getFieldsDescriptors() {
     return this.fieldsDescriptors;
-  }
-
-  /**
-   * Return a field name.
-   *
-   * @param columnIndex Column index.
-   * @param sql         For information, the SQL statement that is attempted.
-   * @return Field Name.
-   */
-  public String getFieldName(int columnIndex, String sql) {
-    return getField(columnIndex, sql).getName();
-  }
-
-  /**
-   * @see Dbase3ByteReader#getColumnCount()
-   */
-  public int getColumnCount() {
-    return this.fieldsDescriptors.size();
-  }
-
-  /**
-   * Returns the field descriptor of a given ResultSet column index.
-   *
-   * @param columnIndex Column index, first column is 1, second is 2, etc.
-   * @param sql         For information, the SQL statement that is attempted.
-   * @return Field Descriptor.
-   */
-  private DBase3FieldDescriptor getField(int columnIndex, String sql) {
-    return this.fieldsDescriptors.get(columnIndex - 1);
   }
 
   /**

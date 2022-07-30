@@ -20,7 +20,7 @@ import java.io.IOException;
 
 
 /**
- * Thrown when a shapefile has not been found.
+ * Thrown when the shapefile seems to be invalid.
  *
  * @author  Marc Le Bihan
  */
