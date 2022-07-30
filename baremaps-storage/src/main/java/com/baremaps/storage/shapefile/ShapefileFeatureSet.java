@@ -10,30 +10,38 @@ import org.apache.sis.storage.DataStoreException;
 import org.apache.sis.storage.FeatureSet;
 import org.apache.sis.storage.event.StoreEvent;
 import org.apache.sis.storage.event.StoreListener;
-import org.apache.sis.storage.shapefile.InputFeatureStream;
-import org.apache.sis.storage.shapefile.ShapeFile;
+import org.apache.sis.internal.shapefile.InputFeatureStream;
+import org.apache.sis.internal.shapefile.Shapefile;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureType;
 import org.opengis.geometry.Envelope;
 import org.opengis.metadata.Metadata;
 import org.opengis.util.GenericName;
 
-public class ShapefileFile implements FeatureSet, AutoCloseable {
+public class ShapefileFeatureSet implements FeatureSet, AutoCloseable {
 
-  private final ShapeFile shapeFile;
+  private final Shapefile shapeFile;
 
-  public ShapefileFile(Path file) {
-    this.shapeFile = new ShapeFile(file.toString());
+  public ShapefileFeatureSet(Path file) {
+    this.shapeFile = new Shapefile(file.toString());
   }
 
   @Override
   public FeatureType getType() throws DataStoreException {
-    return shapeFile.findAll().getFeaturesType();
+    try {
+      return shapeFile.findAll().getFeaturesType();
+    } catch (Exception e) {
+      throw new DataStoreException(e);
+    }
   }
 
   @Override
   public Stream<Feature> features(boolean parallel) throws DataStoreException {
-    return StreamSupport.stream(new FeatureSpliterator(shapeFile.findAll()), false);
+    try {
+      return StreamSupport.stream(new FeatureSpliterator(shapeFile.findAll()), false);
+    } catch (Exception e) {
+      throw new DataStoreException(e);
+    }
   }
 
   @Override

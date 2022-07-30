@@ -14,15 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sis.storage.shapefile;
+package org.apache.sis.internal.shapefile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
 import org.apache.sis.feature.DefaultFeatureType;
-import org.apache.sis.internal.shapefile.ShapefileDescriptor;
-import org.apache.sis.internal.shapefile.DBase3FieldDescriptor;
 
 /**
  * Provides a ShapeFile Reader.
@@ -31,15 +30,11 @@ import org.apache.sis.internal.shapefile.DBase3FieldDescriptor;
  * not yet target for any Apache SIS release at this time.</div>
  *
  * @author  Travis L. Pinney
- * @version 0.5
  *
  * @see <a href="http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf">ESRI Shapefile Specification</a>
  * @see <a href="http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm">dBASE III File Structure</a>
- *
- * @since 0.5
- * @module
  */
-public class ShapeFile {
+public class Shapefile {
     /** Shapefile. */
     private File shapeFile;
 
@@ -62,7 +57,7 @@ public class ShapeFile {
      * Construct a Shapefile from a file.
      * @param shpfile file to read.
      */
-    public ShapeFile(String shpfile) {
+    public Shapefile(String shpfile) {
         Objects.requireNonNull(shpfile, "The shapefile to load cannot be null.");
 
         this.shapeFile = new File(shpfile);
@@ -97,10 +92,9 @@ public class ShapeFile {
      * @param shpfile file to read.
      * @param dbasefile Associated DBase file.
      */
-    public ShapeFile(String shpfile, String dbasefile) {
+    public Shapefile(String shpfile, String dbasefile) {
         Objects.requireNonNull(shpfile, "The shapefile to load cannot be null.");
         Objects.requireNonNull(dbasefile, "The DBase III file to load cannot be null.");
-
         this.shapeFile = new File(shpfile);
         this.databaseFile = new File(dbasefile);
     }
@@ -111,7 +105,7 @@ public class ShapeFile {
      * @param dbasefile Associated DBase file.
      * @param shpfileIndex Associated Shapefile index, may be null.
      */
-    public ShapeFile(String shpfile, String dbasefile, String shpfileIndex) {
+    public Shapefile(String shpfile, String dbasefile, String shpfileIndex) {
         this(shpfile, dbasefile);
         this.shapeFileIndex = new File(shpfileIndex);
     }
@@ -167,26 +161,9 @@ public class ShapeFile {
     /**
      * Find features corresponding to an SQL request SELECT * FROM database.
      * @return Features
-     * @throws DbaseFileNotFoundException if the database file has not been found.
-     * @throws ShapefileNotFoundException if the shapefile has not been found.
-     * @throws InvalidDbaseFileFormatException if the database file format is invalid.
-     * @throws InvalidShapefileFormatException if the shapefile format is invalid.
      */
-    public InputFeatureStream findAll() throws InvalidDbaseFileFormatException, ShapefileNotFoundException, DbaseFileNotFoundException, InvalidShapefileFormatException {
-        return find(null);
-    }
-
-    /**
-     * Find features corresponding to an SQL request SELECT * FROM database.
-     * @param sqlStatement SQL Statement to run, if null, will default to SELECT * FROM database.
-     * @return Features
-     * @throws DbaseFileNotFoundException if the database file has not been found.
-     * @throws ShapefileNotFoundException if the shapefile has not been found.
-     * @throws InvalidDbaseFileFormatException if the database file format is invalid.
-     * @throws InvalidShapefileFormatException if the shapefile format is invalid.
-     */
-    public InputFeatureStream find(String sqlStatement) throws InvalidDbaseFileFormatException, ShapefileNotFoundException, DbaseFileNotFoundException, InvalidShapefileFormatException {
-        InputFeatureStream is = new InputFeatureStream(this.shapeFile, this.databaseFile, this.shapeFileIndex, sqlStatement);
+    public InputFeatureStream findAll() throws IOException {
+        InputFeatureStream is = new InputFeatureStream(this.shapeFile, this.databaseFile, this.shapeFileIndex);
         this.featuresType = is.getFeaturesType();
         this.shapefileDescriptor = is.getShapefileDescriptor();
         this.databaseFieldsDescriptors = is.getDatabaseFieldsDescriptors();
@@ -196,12 +173,8 @@ public class ShapeFile {
     /**
      * Load shapefile descriptors : features types, shapefileDescriptor, database field descriptors :
      * this is also automatically done when executing a query on it, by findAll.
-     * @throws DbaseFileNotFoundException if the database file has not been found.
-     * @throws ShapefileNotFoundException if the shapefile has not been found.
-     * @throws InvalidDbaseFileFormatException if the database file format is invalid.
-     * @throws InvalidShapefileFormatException if the shapefile format is invalid.
      */
-    public void loadDescriptors() throws InvalidDbaseFileFormatException, InvalidShapefileFormatException, ShapefileNotFoundException, DbaseFileNotFoundException {
+    public void loadDescriptors() throws IOException {
         // Doing an simple query will init the internal descriptors.
         // It prepares a SELECT * FROM <DBase> but don't read a record by itself.
         try(InputFeatureStream is = findAll()) {

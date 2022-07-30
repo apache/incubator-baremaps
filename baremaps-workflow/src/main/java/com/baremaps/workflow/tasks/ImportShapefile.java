@@ -16,7 +16,7 @@ package com.baremaps.workflow.tasks;
 
 import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.storage.postgres.PostgresDatabase;
-import com.baremaps.storage.shapefile.ShapefileFile;
+import com.baremaps.storage.shapefile.ShapefileFeatureSet;
 import com.baremaps.workflow.Task;
 import com.baremaps.workflow.WorkflowException;
 import java.nio.file.Paths;
@@ -32,7 +32,7 @@ public record ImportShapefile(String file, String database, Integer sourceSRID, 
   public void run() {
     logger.info("Importing {} into {}", file, database);
     var path = Paths.get(file);
-    try (var shapefileFile = new ShapefileFile(path);
+    try (var shapefileFile = new ShapefileFeatureSet(path);
         var dataSource = PostgresUtils.dataSource(database);
         var postgresDatabase = new PostgresDatabase(dataSource)) {
       postgresDatabase.add(shapefileFile);

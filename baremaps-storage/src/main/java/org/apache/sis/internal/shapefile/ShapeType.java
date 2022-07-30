@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sis.storage.shapefile;
+package org.apache.sis.internal.shapefile;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -28,14 +28,10 @@ import java.util.Map;
  * not yet target for any Apache SIS release at this time.</div>
  *
  * @author  Travis L. Pinney
- * @version 0.5
  *
  * @see <a href="http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf">ESRI Shapefile Specification</a>
- *
- * @since 0.5
- * @module
  */
-public enum ShapeTypeEnum  {
+public enum ShapeType {
 
     NullShape (0),
     Point(1),
@@ -55,7 +51,7 @@ public enum ShapeTypeEnum  {
     // used for initializing the enumeration
     private int value;
 
-    private ShapeTypeEnum (int value ) {
+    private ShapeType(int value ) {
         this.value = value;
     }
 
@@ -63,15 +59,15 @@ public enum ShapeTypeEnum  {
         return value;
     }
 
-    private static final Map<Integer, ShapeTypeEnum> lookup = new HashMap<Integer, ShapeTypeEnum>();
+    private static final Map<Integer, ShapeType> lookup = new HashMap<Integer, ShapeType>();
 
     static {
-        for (ShapeTypeEnum ste : EnumSet.allOf(ShapeTypeEnum.class)) {
+        for (ShapeType ste : EnumSet.allOf(ShapeType.class)) {
             lookup.put(ste.getValue(), ste);
         }
     }
 
-    public static ShapeTypeEnum get(int value) {
+    public static ShapeType get(int value) {
         return lookup.get(value);
     }
 }

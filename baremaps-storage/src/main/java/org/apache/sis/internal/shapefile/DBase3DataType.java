@@ -21,14 +21,10 @@ package org.apache.sis.internal.shapefile;
  * Provides a simple DataType class.
  *
  * @author  Travis L. Pinney
- * @version 0.5
  *
  * @see <a href="http://www.clicketyclick.dk/databases/xbase/format/data_types.html">Xbase Data Types</a>
- *
- * @since 0.5
- * @module
  */
-public enum DBaseDataType {
+public enum DBase3DataType {
     /** Character (less than 254 characters). */
     Character('C'),
 
@@ -83,7 +79,7 @@ public enum DBaseDataType {
      * Construct a datatype.
      * @param type Data type.
      */
-    DBaseDataType(char type) {
+    DBase3DataType(char type) {
         this.datatype = type;
     }
 
@@ -92,8 +88,8 @@ public enum DBaseDataType {
      * @param code Character code describing the dbf datatype.
      * @return Datatype.
      */
-    public static DBaseDataType valueOfDataType(char code) {
-        for (DBaseDataType v : values()) {
+    public static DBase3DataType valueOfDataType(char code) {
+        for (DBase3DataType v : values()) {
             if (v.datatype == code) {
                 return v;
             }

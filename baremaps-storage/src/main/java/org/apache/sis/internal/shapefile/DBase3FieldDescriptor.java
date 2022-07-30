@@ -23,9 +23,6 @@ import java.nio.MappedByteBuffer;
  * Field descriptor.
  *
  * @author  Travis L. Pinney
- * @version 0.5
- * @since   0.5
- * @module
  */
 public class DBase3FieldDescriptor {
     /** Field name. */
@@ -35,7 +32,7 @@ public class DBase3FieldDescriptor {
     private String stringFieldName;
 
     /** Field type. */
-    private DBaseDataType fieldType;
+    private DBase3DataType fieldType;
 
     /** Field address (Field data address (address is set in memory; not useful on disk). */
     private byte[] fieldAddress = new byte[4];
@@ -70,7 +67,7 @@ public class DBase3FieldDescriptor {
 
         // Field type.
         char dt = (char)byteBuffer.get();
-        this.fieldType = DBaseDataType.valueOfDataType(dt);
+        this.fieldType = DBase3DataType.valueOfDataType(dt);
 
         // Field address.
         byteBuffer.get(this.fieldAddress);
@@ -133,7 +130,7 @@ public class DBase3FieldDescriptor {
      * Return the field data type.
      * @return Data type.
      */
-    public DBaseDataType getType() {
+    public DBase3DataType getType() {
         return(this.fieldType);
     }
 

@@ -14,31 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sis.storage.shapefile;
+package org.apache.sis.internal.shapefile;
 
-import org.apache.sis.storage.DataStoreException;
-
+import java.io.IOException;
 
 /**
- * Thrown when a DBF file has not been found.
- *
- * <div class="warning">This is an experimental class,
- * not yet target for any Apache SIS release at this time.</div>
+ * Thrown when the DBF file format seems to be invalid.
  *
  * @author  Marc Le Bihan
- * @version 0.6
- * @since   0.6
- * @module
  */
-public class DbaseFileNotFoundException extends DataStoreException {
-    /** Serial UID. */
-    private static final long serialVersionUID = 5930300852780537859L;
+public class Dbase3Exception extends IOException {
 
     /**
      * Construct an exception.
      * @param message Message of the exception.
      */
-    public DbaseFileNotFoundException(String message) {
+    public Dbase3Exception(String message) {
         super(message);
     }
 
@@ -47,7 +38,7 @@ public class DbaseFileNotFoundException extends DataStoreException {
      * @param message Message of the exception.
      * @param cause Root cause of the exception.
      */
-    public DbaseFileNotFoundException(String message, Throwable cause) {
+    public Dbase3Exception(String message, Throwable cause) {
         super(message, cause);
     }
 }

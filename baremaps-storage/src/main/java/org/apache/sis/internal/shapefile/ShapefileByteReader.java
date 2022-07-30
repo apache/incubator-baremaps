@@ -20,13 +20,10 @@ import java.io.*;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.text.MessageFormat;
 import java.util.*;
 
 import org.apache.sis.feature.DefaultAttributeType;
 import org.apache.sis.feature.DefaultFeatureType;
-import org.apache.sis.storage.shapefile.InvalidShapefileFormatException;
-import org.apache.sis.storage.shapefile.ShapeTypeEnum;
 import org.apache.sis.feature.AbstractFeature;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
@@ -39,12 +36,8 @@ import org.locationtech.jts.geom.Polygon;
  * Reader of a Shapefile Binary content by the way of a {@link java.nio.MappedByteBuffer}
  *
  * @author Marc Le Bihan
- * @version 0.5
- * @module
- * @since 0.5
  */
-public class ShapefileByteReader extends
-    CommonByteReader<InvalidShapefileFormatException, SQLShapefileNotFoundException> {
+public class ShapefileByteReader extends CommonByteReader {
 
   /**
    * Name of the Geometry field.
@@ -89,14 +82,11 @@ public class ShapefileByteReader extends
    * @param shapefile      Shapefile.
    * @param dbaseFile      underlying database file name.
    * @param shapefileIndex Shapefile index, if any. Null else.
-   * @throws InvalidShapefileFormatException    if the shapefile format is invalid.
-   * @throws SQLInvalidDbaseFileFormatException if the database file format is invalid.
-   * @throws SQLShapefileNotFoundException      if the shapefile has not been found.
-   * @throws SQLDbaseFileNotFoundException      if the database file has not been found.
+   * @throws Dbase3Exception    if the database file format is invalid.
+   * @throws ShapefileException if the shapefile has not been found.
    */
-  public ShapefileByteReader(File shapefile, File dbaseFile, File shapefileIndex)
-      throws InvalidShapefileFormatException, SQLInvalidDbaseFileFormatException, SQLShapefileNotFoundException, SQLDbaseFileNotFoundException {
-    super(shapefile, InvalidShapefileFormatException.class, SQLShapefileNotFoundException.class);
+  public ShapefileByteReader(File shapefile, File dbaseFile, File shapefileIndex) throws IOException {
+    super(shapefile);
     this.shapeFileIndex = shapefileIndex;
 
     loadDatabaseFieldDescriptors(dbaseFile);
@@ -157,7 +147,7 @@ public class ShapefileByteReader extends
       // TODO: move somewhere else
       Class type = switch (fieldDescriptor.getType()) {
         case Character -> String.class;
-        case Number -> fieldDescriptor.getDecimalCount() == 0 ? Long.class: Double.class;
+        case Number -> fieldDescriptor.getDecimalCount() == 0 ? Long.class : Double.class;
         case Currency -> Double.class;
         case Integer -> Integer.class;
         case Double -> Double.class;
@@ -236,15 +226,12 @@ public class ShapefileByteReader extends
    * Load database field descriptors.
    *
    * @param dbaseFile Database file.
-   * @throws SQLInvalidDbaseFileFormatException if the database format is incorrect.
-   * @throws SQLDbaseFileNotFoundException      if the database file cannot be found.
+   * @throws Dbase3Exception if the database format is incorrect.
    */
-  private void loadDatabaseFieldDescriptors(File dbaseFile)
-      throws SQLInvalidDbaseFileFormatException, SQLDbaseFileNotFoundException {
-    MappedByteReader databaseReader = null;
-
+  private void loadDatabaseFieldDescriptors(File dbaseFile) throws IOException {
+    Dbase3ByteReader databaseReader = null;
     try {
-      databaseReader = new MappedByteReader(dbaseFile, null);
+      databaseReader = new Dbase3ByteReader(dbaseFile, null);
       this.databaseFieldsDescriptors = databaseReader.getFieldsDescriptors();
     } finally {
       if (databaseReader != null) {
@@ -260,34 +247,29 @@ public class ShapefileByteReader extends
    * Direct access to a feature by its record number.
    *
    * @param recordNumber Record number.
-   * @throws SQLNoDirectAccessAvailableException            if this shape file doesn't allow direct acces, because it
-   *                                                        has no index.
-   * @throws SQLInvalidRecordNumberForDirectAccessException if the record number asked for is invalid (below the start,
-   *                                                        after the end).
    */
-  public void setRowNum(int recordNumber)
-      throws SQLNoDirectAccessAvailableException, SQLInvalidRecordNumberForDirectAccessException {
+  public void setRowNum(int recordNumber) throws ShapefileException {
     // Check that the asked record number is not before the first.
     if (recordNumber < 1) {
-      throw new SQLInvalidRecordNumberForDirectAccessException(recordNumber, "Wrong direct access before start");
+      throw new IllegalArgumentException("Wrong direct access before start");
     }
 
     // Check that the shapefile allows direct access : it won't if it has no index.
     if (this.shapeFileIndex == null) {
-      throw new SQLNoDirectAccessAvailableException("No direct access");
+      throw new ShapefileException("No direct access");
     }
 
     int position = this.indexes.get(recordNumber - 1) * 2; // Indexes unit are words (16 bits).
 
     // Check that the asked record number is not after the last.
     if (position >= this.getByteBuffer().capacity()) {
-      throw new SQLInvalidRecordNumberForDirectAccessException(recordNumber, "Wrong direct access after last");
+      throw new ShapefileException("Wrong direct access after last");
     }
 
     try {
       getByteBuffer().position(position);
     } catch (IllegalArgumentException e) {
-      throw new RuntimeException("Wrong position", e);
+      throw new ShapefileException("Wrong position", e);
     }
   }
 
@@ -295,9 +277,8 @@ public class ShapefileByteReader extends
    * Complete a feature with shapefile content.
    *
    * @param feature Feature to complete.
-   * @throws InvalidShapefileFormatException if a validation problem occurs.
    */
-  public void completeFeature(AbstractFeature feature) throws InvalidShapefileFormatException {
+  public void completeFeature(AbstractFeature feature) throws ShapefileException {
     // insert points into some type of list
     int RecordNumber = getByteBuffer().getInt();
     @SuppressWarnings("unused")
@@ -306,12 +287,10 @@ public class ShapefileByteReader extends
     getByteBuffer().order(ByteOrder.LITTLE_ENDIAN);
     int iShapeType = getByteBuffer().getInt();
 
-    ShapeTypeEnum type = ShapeTypeEnum.get(iShapeType);
+    ShapeType type = ShapeType.get(iShapeType);
 
     if (type == null) {
-      throw new InvalidShapefileFormatException(
-          MessageFormat.format("The shapefile feature type {0} doesn''t match to any known feature type.",
-              this.featuresType));
+      throw new ShapefileException("The shapefile feature type doesn''t match to any known feature type.");
     }
 
     switch (type) {
@@ -328,7 +307,7 @@ public class ShapefileByteReader extends
         break;
 
       default:
-        throw new InvalidShapefileFormatException("Unsupported shapefile type: " + iShapeType);
+        throw new ShapefileException("Unsupported shapefile type: " + iShapeType);
     }
 
     getByteBuffer().order(ByteOrder.BIG_ENDIAN);

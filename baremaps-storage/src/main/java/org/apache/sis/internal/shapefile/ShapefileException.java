@@ -16,26 +16,21 @@
  */
 package org.apache.sis.internal.shapefile;
 
-import java.sql.SQLNonTransientException;
+import java.io.IOException;
 
 
 /**
  * Thrown when a shapefile has not been found.
  *
  * @author  Marc Le Bihan
- * @version 0.5
- * @since   0.5
- * @module
  */
-public class SQLShapefileNotFoundException extends SQLNonTransientException {
-    /** Serial UID. */
-    private static final long serialVersionUID = -3235671561698931817L;
+public class ShapefileException extends IOException {
 
     /**
      * Construct an exception.
      * @param message Message of the exception.
      */
-    public SQLShapefileNotFoundException(String message) {
+    public ShapefileException(String message) {
         super(message);
     }
 
@@ -44,7 +39,7 @@ public class SQLShapefileNotFoundException extends SQLNonTransientException {
      * @param message Message of the exception.
      * @param cause Root cause of the exception.
      */
-    public SQLShapefileNotFoundException(String message, Throwable cause) {
+    public ShapefileException(String message, Throwable cause) {
         super(message, cause);
     }
 }

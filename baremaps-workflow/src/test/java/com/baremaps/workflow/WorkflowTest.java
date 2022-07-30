@@ -72,6 +72,7 @@ class WorkflowTest extends PostgresContainerTest {
                             "coastlines-split-4326.zip",
                             "coastlines-split-4326"
                         ),
+
                          */
                         new ImportShapefile(
                             "coastlines-split-4326/coastlines-split-4326/lines.shp",

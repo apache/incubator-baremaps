@@ -27,7 +27,7 @@ public class ShapefileDirectory implements Aggregate {
     try {
       return Files.list(directory)
           .filter(file -> file.toString().toLowerCase().endsWith(".shp"))
-          .map(file -> new ShapefileFile(file))
+          .map(file -> new ShapefileFeatureSet(file))
           .collect(Collectors.toList());
     } catch (IOException e) {
       throw new DataStoreException(e);

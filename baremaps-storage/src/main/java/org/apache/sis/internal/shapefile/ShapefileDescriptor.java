@@ -19,14 +19,9 @@ package org.apache.sis.internal.shapefile;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 
-import org.apache.sis.storage.shapefile.ShapeTypeEnum;
-
 /**
  * Shapefile Descriptor.
  * @author  Marc Le Bihan
- * @version 0.5
- * @since   0.5
- * @module
  */
 public class ShapefileDescriptor {
     /** File code. */
@@ -39,7 +34,7 @@ public class ShapefileDescriptor {
     private int version; // little
 
     /** Shapefile type. */
-    private ShapeTypeEnum shapeType; // little
+    private ShapeType shapeType; // little
 
     /** X Min. */
     private double xmin; // little
@@ -80,7 +75,7 @@ public class ShapefileDescriptor {
 
         byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
         this.version = byteBuffer.getInt();
-        this.shapeType = ShapeTypeEnum.get(byteBuffer.getInt());
+        this.shapeType = ShapeType.get(byteBuffer.getInt());
         this.xmin = byteBuffer.getDouble();
         this.ymin = byteBuffer.getDouble();
         this.xmax = byteBuffer.getDouble();
@@ -106,7 +101,7 @@ public class ShapefileDescriptor {
      * Returns the ESRI shape type in the shapefile.
      * @return Shape type.
      */
-    public ShapeTypeEnum getShapeType() {
+    public ShapeType getShapeType() {
         return this.shapeType;
     }
 

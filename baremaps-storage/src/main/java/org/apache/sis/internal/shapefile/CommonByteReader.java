@@ -20,108 +20,93 @@ import java.io.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.Objects;
-import java.util.logging.Level;
 
 /**
  * Common byte reader.
- * @author  Marc Le Bihan
- * @version 0.5
- * @param <InvalidFormatException> Invalid format Exception to throw in case of trouble.
- * @param <FNFException> File not found Exception to throw in case of missing file.
- * @since   0.5
- * @module
+ *
+ * @author Marc Le Bihan
  */
-public abstract class CommonByteReader<InvalidFormatException extends Exception, FNFException extends Exception> implements AutoCloseable  {
-    /** The File. */
-    private File file;
+public abstract class CommonByteReader implements AutoCloseable {
 
-    /** Input Stream on the DBF. */
-    private FileInputStream fis;
+  /**
+   * The File.
+   */
+  private File file;
 
-    /** File channel on the file. */
-    private FileChannel fc;
+  /**
+   * Input Stream on the DBF.
+   */
+  private FileInputStream fis;
 
-    /** Buffer reader. */
-    private MappedByteBuffer byteBuffer;
+  /**
+   * File channel on the file.
+   */
+  private FileChannel fc;
 
-    /** Indicates if the byte buffer is closed. */
-    private boolean isClosed = false;
+  /**
+   * Buffer reader.
+   */
+  private MappedByteBuffer byteBuffer;
 
-    /** Invalid Exception to throw in case of invalid file format. */
-    private Class<InvalidFormatException> classInvalidFormatException;
+  /**
+   * Indicates if the byte buffer is closed.
+   */
+  private boolean isClosed = false;
 
-    /** Invalid Exception to throw in case of file not found exception. */
-    private Class<FNFException> classFNFException;
+  /**
+   * Create and open a byte reader based on a file.
+   *
+   * @param f File.
+   */
+  public CommonByteReader(File f) throws IOException {
+    Objects.requireNonNull(f, "The file cannot be null.");
+    this.file = f;
+    this.fis = new FileInputStream(this.file);
+    this.fc = this.fis.getChannel();
+    int fsize = (int) this.fc.size();
+    this.byteBuffer = this.fc.map(FileChannel.MapMode.READ_ONLY, 0, fsize);
+  }
 
-    /**
-     * Create and open a byte reader based on a file.
-     * @param f File.
-     * @param invalidFormatException Invalid Exception to throw in case of invalid file format.
-     * @param fileNotFoundException Invalid Exception to throw in case of file not found exception.
-     * @throws FNFException if the file cannot be opened.
-     * @throws InvalidFormatException if the file format is invalid.
-     */
-    public CommonByteReader(File f, Class<InvalidFormatException> invalidFormatException, Class<FNFException> fileNotFoundException) throws FNFException, InvalidFormatException {
-        Objects.requireNonNull(f, "The file cannot be null.");
-        this.classInvalidFormatException = invalidFormatException;
-        this.classFNFException = fileNotFoundException;
-
-        this.file = f;
-
-        try {
-            this.fis = new FileInputStream(this.file);
-        }
-        catch(FileNotFoundException e) {
-            throw new RuntimeException("this place should not be reached.");
-        }
-
-        this.fc = this.fis.getChannel();
-
-        try {
-            int fsize = (int)this.fc.size();
-            this.byteBuffer = this.fc.map(FileChannel.MapMode.READ_ONLY, 0, fsize);
-        }
-        catch(IOException e) {
-            throw new RuntimeException("this place should not be reached.");
-        }
-   }
-
-    /**
-     * Close the MappedByteReader.
-     * @throws IOException if the close operation fails.
-     */
-    @Override
-    public void close() throws IOException {
-        if (this.fc != null)
-            this.fc.close();
-
-        if (this.fis != null)
-            this.fis.close();
-
-        this.isClosed = true;
+  /**
+   * Close the MappedByteReader.
+   *
+   * @throws IOException if the close operation fails.
+   */
+  @Override
+  public void close() throws IOException {
+    if (this.fc != null) {
+      this.fc.close();
     }
-
-    /**
-     * Returns the closed state of this binary reader.
-     * @return true if it is closed.
-     */
-    public boolean isClosed() {
-        return this.isClosed;
+    if (this.fis != null) {
+      this.fis.close();
     }
+    this.isClosed = true;
+  }
 
-    /**
-     * Returns the byte buffer.
-     * @return Byte Buffer.
-     */
-    public MappedByteBuffer getByteBuffer() {
-        return this.byteBuffer;
-    }
+  /**
+   * Returns the closed state of this binary reader.
+   *
+   * @return true if it is closed.
+   */
+  public boolean isClosed() {
+    return this.isClosed;
+  }
 
-    /**
-     * Return the file mapped.
-     * @return File.
-     */
-    public File getFile() {
-        return this.file;
-    }
+  /**
+   * Returns the byte buffer.
+   *
+   * @return Byte Buffer.
+   */
+  public MappedByteBuffer getByteBuffer() {
+    return this.byteBuffer;
+  }
+
+  /**
+   * Return the file mapped.
+   *
+   * @return File.
+   */
+  public File getFile() {
+    return this.file;
+  }
 }
