@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sis.internal.shapefile.jdbc;
+package org.apache.sis.internal.shapefile;
 
 import java.io.File;
 import java.sql.SQLException;

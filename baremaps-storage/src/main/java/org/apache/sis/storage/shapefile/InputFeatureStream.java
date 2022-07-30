@@ -19,20 +19,11 @@ package org.apache.sis.storage.shapefile;
 import java.io.File;
 import java.io.InputStream;
 import java.sql.SQLFeatureNotSupportedException;
-import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.List;
 
 import org.apache.sis.feature.DefaultFeatureType;
 import org.apache.sis.internal.shapefile.*;
-import org.apache.sis.internal.shapefile.jdbc.*;
-import org.apache.sis.internal.shapefile.jdbc.connection.DBFConnection;
-import org.apache.sis.internal.shapefile.jdbc.metadata.DBFDatabaseMetaData;
-import org.apache.sis.internal.shapefile.jdbc.resultset.*;
-import org.apache.sis.internal.shapefile.jdbc.sql.SQLIllegalParameterException;
-import org.apache.sis.internal.shapefile.jdbc.sql.SQLInvalidStatementException;
-import org.apache.sis.internal.shapefile.jdbc.sql.SQLUnsupportedParsingFeatureException;
-import org.apache.sis.internal.shapefile.jdbc.statement.DBFStatement;
 import org.apache.sis.storage.DataStoreClosedException;
 import org.apache.sis.feature.AbstractFeature;
 
@@ -49,22 +40,7 @@ import org.apache.sis.feature.AbstractFeature;
  */
 public class InputFeatureStream extends InputStream {
 
-  /**
-   * Dedicated connection to DBF.
-   */
-  private DBFConnection connection;
-
   private MappedByteReader reader;
-
-  /**
-   * Statement.
-   */
-  private DBFStatement stmt;
-
-  /**
-   * ResultSet.
-   */
-  private DBFRecordBasedResultSet rs;
 
   /**
    * SQL Statement executed.
@@ -121,7 +97,6 @@ public class InputFeatureStream extends InputStream {
   public InputFeatureStream(File shpfile, File dbaseFile, File shpfileIndex, String sqlStatement)
       throws InvalidDbaseFileFormatException, InvalidShapefileFormatException, ShapefileNotFoundException, DbaseFileNotFoundException {
     try {
-      this.connection = (DBFConnection) new DBFDriver().connect(dbaseFile.getAbsolutePath(), null);
       this.reader = new MappedByteReader(dbaseFile, null);
 
       if (sqlStatement == null) {
@@ -142,16 +117,6 @@ public class InputFeatureStream extends InputStream {
 
       this.shapefileReader = new ShapefileByteReader(this.shapefile, this.databaseFile, this.shapefileIndex);
       this.featuresType = this.shapefileReader.getFeaturesType();
-
-      try {
-        executeQuery();
-      } catch (SQLConnectionClosedException e) {
-        // This would be an internal trouble because in this function (at least) it should be open.
-        throw new RuntimeException(e.getMessage(), e);
-      } catch (SQLInvalidStatementException e) {
-        // This would be an internal trouble because if any SQL statement is executed for the dbase file initialization, it should has a correct syntax or grammar.
-        throw new RuntimeException(e.getMessage(), e);
-      }
     } catch (SQLInvalidDbaseFileFormatException ex) {
       // Promote this exception to an DataStoreException compatible exception.
       throw new InvalidDbaseFileFormatException(ex.getMessage(), ex);
@@ -218,9 +183,6 @@ public class InputFeatureStream extends InputStream {
    */
   @Override
   public void close() {
-    this.rs.close();
-    this.stmt.close();
-    this.connection.close();
   }
 
   /**
@@ -234,16 +196,13 @@ public class InputFeatureStream extends InputStream {
    * @throws InvalidShapefileFormatException if the shapefile structure shows a problem.
    */
   public AbstractFeature readFeature()
-      throws DataStoreClosedException, DataStoreQueryException, DataStoreQueryResultException, InvalidShapefileFormatException {
+      throws DataStoreClosedException, DataStoreQueryException, InvalidShapefileFormatException {
     try {
       return internalReadFeature();
     } catch (SQLConnectionClosedException e) {
       throw new DataStoreClosedException(e.getMessage(), e);
-    } catch (SQLInvalidStatementException | SQLIllegalParameterException | SQLNoSuchFieldException |
-             SQLUnsupportedParsingFeatureException | SQLFeatureNotSupportedException e) {
+    } catch (SQLFeatureNotSupportedException e) {
       throw new DataStoreQueryException(e.getMessage(), e);
-    } catch (SQLNotNumericException | SQLNotDateException e) {
-      throw new DataStoreQueryResultException(e.getMessage(), e);
     } catch (SQLNoDirectAccessAvailableException e) {
       throw new DataStoreQueryException(e.getMessage(), e);
     }
@@ -289,20 +248,14 @@ public class InputFeatureStream extends InputStream {
    * Read next feature responding to the SQL query.
    *
    * @return Feature, null if no more feature is available.
-   * @throws SQLNotNumericException                if a field expected numeric isn't.
-   * @throws SQLNotDateException                   if a field expected of date kind, isn't.
-   * @throws SQLNoSuchFieldException               if a field doesn't exist.
-   * @throws SQLIllegalParameterException          if a parameter is illegal in the query.
-   * @throws SQLInvalidStatementException          if the SQL statement is invalid.
    * @throws SQLConnectionClosedException          if the connection is closed.
-   * @throws SQLUnsupportedParsingFeatureException if a SQL ability is not currently available through this driver.
    * @throws SQLFeatureNotSupportedException       if a SQL ability is not currently available through this driver.
    * @throws InvalidShapefileFormatException       if the shapefile format is invalid.
    * @throws SQLNoDirectAccessAvailableException   if the underlying SQL statement requires a direct access in the
    *                                               shapefile, but the shapefile cannot allow it.
    */
   private AbstractFeature internalReadFeature()
-      throws SQLConnectionClosedException, SQLInvalidStatementException, SQLIllegalParameterException, SQLNoSuchFieldException, SQLUnsupportedParsingFeatureException, SQLNotNumericException, SQLNotDateException, SQLFeatureNotSupportedException, InvalidShapefileFormatException, SQLNoDirectAccessAvailableException {
+      throws SQLConnectionClosedException, SQLFeatureNotSupportedException, InvalidShapefileFormatException, SQLNoDirectAccessAvailableException {
     try {
       if (!this.reader.nextRowAvailable()) {
         return null;
@@ -316,91 +269,6 @@ public class InputFeatureStream extends InputStream {
     } catch (SQLInvalidRecordNumberForDirectAccessException e) {
       throw new RuntimeException(e);
     }
-
-      /*
-    try {
-
-      if (this.endOfFile) {
-        return null;
-      }
-
-      int previousRecordNumber = this.rs.getRowNum();
-
-      if (this.rs.next() == false) {
-        this.endOfFile = true;
-        return null;
-      }
-
-      int currentRecordNumber = this.rs.getRowNum();
-
-      // On the shapefile, only jump in another place if a direct access is needed.
-      boolean directAccesRequired = currentRecordNumber != (previousRecordNumber + 1);
-
-      if (directAccesRequired) {
-        try {
-          this.shapefileReader.setRowNum(currentRecordNumber);
-        } catch (SQLInvalidRecordNumberForDirectAccessException e) {
-          // This would be an internal API problem, because as soon as we handle a shapefile index, we shall go through its relative shape feature file correctly.
-          throw new RuntimeException(e.getMessage(), e);
-        }
-      }
-
-      AbstractFeature feature = (AbstractFeature) this.featuresType.newInstance();
-      this.shapefileReader.completeFeature(feature);
-      DBFDatabaseMetaData metadata = (DBFDatabaseMetaData) this.connection.getMetaData();
-
-      try (DBFBuiltInMemoryResultSetForColumnsListing rsDatabase = (DBFBuiltInMemoryResultSetForColumnsListing) metadata.getColumns(
-          null, null, null, null)) {
-        while (rsDatabase.next()) {
-          String fieldName = rsDatabase.getString("COLUMN_NAME");
-          Object fieldValue = this.rs.getObject(fieldName);
-
-          // FIXME To allow features to be filled again, the values are converted to String again : feature should allow any kind of data.
-          String stringValue;
-
-          if (fieldValue == null) {
-            stringValue = null;
-          } else {
-            if (fieldValue instanceof Integer || fieldValue instanceof Long) {
-              stringValue = MessageFormat.format("{0,number,#0}", fieldValue); // Avoid thousand separator.
-            } else {
-              if (fieldValue instanceof Double || fieldValue instanceof Float) {
-                // Avoid thousand separator.
-                DecimalFormat df = new DecimalFormat();
-                df.setGroupingUsed(false);
-                stringValue = df.format(fieldValue);
-              } else {
-                stringValue = fieldValue.toString();
-              }
-            }
-          }
-
-          feature.setPropertyValue(fieldName, stringValue);
-        }
-
-
-
-        return feature;
-      } catch (SQLNoResultException e) {
-        // This an internal trouble, if it occurs.
-        throw new RuntimeException(e.getMessage(), e);
-      }
-
-    } catch (SQLNoResultException e) {
-      // We are trying to prevent this. If it occurs, we have an internal problem.
-      throw new RuntimeException(e.getMessage(), e);
-    }
-    */
   }
 
-  /**
-   * Execute the wished SQL query.
-   *
-   * @throws SQLConnectionClosedException if the connection is closed.
-   * @throws SQLInvalidStatementException if the given SQL Statement is invalid.
-   */
-  private void executeQuery() throws SQLConnectionClosedException, SQLInvalidStatementException {
-    this.stmt = (DBFStatement) this.connection.createStatement();
-    this.rs = (DBFRecordBasedResultSet) this.stmt.executeQuery(this.sql);
-  }
 }

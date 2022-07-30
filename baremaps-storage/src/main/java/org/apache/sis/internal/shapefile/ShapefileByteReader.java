@@ -25,7 +25,6 @@ import java.util.*;
 
 import org.apache.sis.feature.DefaultAttributeType;
 import org.apache.sis.feature.DefaultFeatureType;
-import org.apache.sis.internal.shapefile.jdbc.*;
 import org.apache.sis.storage.shapefile.InvalidShapefileFormatException;
 import org.apache.sis.storage.shapefile.ShapeTypeEnum;
 import org.apache.sis.feature.AbstractFeature;

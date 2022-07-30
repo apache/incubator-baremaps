@@ -14,36 +14,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.sis.internal.shapefile.jdbc.resultset;
+package org.apache.sis.internal.shapefile;
 
-import org.apache.sis.internal.shapefile.jdbc.statement.DBFStatement;
+import java.sql.SQLNonTransientException;
 
 
 /**
- * Special ResultSet listing tables types contained in this DBase 3 (none).
- * @author Marc LE BIHAN
+ * Thrown when the DBF file format seems to be invalid.
+ *
+ * @author  Marc Le Bihan
+ * @version 0.5
+ * @since   0.5
+ * @module
  */
-public class DBFBuiltInMemoryResultSetForCatalogNamesListing extends BuiltInMemoryResultSet {
+public class SQLInvalidDbaseFileFormatException extends SQLNonTransientException {
+    /** Serial UID. */
+    private static final long serialVersionUID = 3924612615300490837L;
+
     /**
-     * Construct a ResultSet listing the catalog names of a database.
-     * @param stmt Statement.
+     * Construct an exception.
+     * @param message Message of the exception.
      */
-    public DBFBuiltInMemoryResultSetForCatalogNamesListing(DBFStatement stmt) {
-        super(stmt, "driver list catalog names");
+    public SQLInvalidDbaseFileFormatException(String message) {
+        super(message);
     }
 
     /**
-     * @see java.sql.ResultSet#next()
+     * Construct an exception.
+     * @param message Message of the exception.
+     * @param cause Root cause of the exception.
      */
-    @Override public boolean next() {
-        return false;
-    }
-
-    /**
-     * @see java.sql.ResultSet#wasNull()
-     */
-    @Override
-    public boolean wasNull() {
-        return true;
+    public SQLInvalidDbaseFileFormatException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

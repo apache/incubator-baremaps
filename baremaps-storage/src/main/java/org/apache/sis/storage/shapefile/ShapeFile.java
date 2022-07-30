@@ -22,7 +22,7 @@ import java.util.Objects;
 
 import org.apache.sis.feature.DefaultFeatureType;
 import org.apache.sis.internal.shapefile.ShapefileDescriptor;
-import org.apache.sis.internal.shapefile.jdbc.DBase3FieldDescriptor;
+import org.apache.sis.internal.shapefile.DBase3FieldDescriptor;
 
 /**
  * Provides a ShapeFile Reader.
