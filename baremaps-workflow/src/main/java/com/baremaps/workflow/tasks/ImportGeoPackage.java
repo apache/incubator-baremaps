@@ -20,7 +20,6 @@ import com.baremaps.storage.postgres.PostgresDatabase;
 import com.baremaps.workflow.Task;
 import com.baremaps.workflow.WorkflowException;
 import java.nio.file.Paths;
-import mil.nga.geopackage.GeoPackageManager;
 import org.apache.sis.storage.FeatureSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

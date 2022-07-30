@@ -31,14 +31,11 @@ import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.ProjCoordinate;
-import org.opengis.geometry.Envelope;
 import org.opengis.util.FactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * A transformer that reprojects geometries and sets the correct output SRIDs.
- */
+/** A transformer that reprojects geometries and sets the correct output SRIDs. */
 public class ProjectionTransformer extends GeometryTransformer {
 
   private static final Logger logger = LoggerFactory.getLogger(ProjectionTransformer.class);
@@ -68,12 +65,14 @@ public class ProjectionTransformer extends GeometryTransformer {
       var crs = CRS.forCode(String.format("EPSG:%s", targetSrid));
       var envelope = CRS.getDomainOfValidity(crs);
       var inverseTransform = GeometryUtils.coordinateTransform(targetSrid, sourceSrid);
-      min = inverseTransform.transform(
-          new ProjCoordinate(envelope.getMinimum(0), envelope.getMinimum(1)),
-          new ProjCoordinate());
-      max = inverseTransform.transform(
-          new ProjCoordinate(envelope.getMaximum(0), envelope.getMaximum(1)),
-          new ProjCoordinate());
+      min =
+          inverseTransform.transform(
+              new ProjCoordinate(envelope.getMinimum(0), envelope.getMinimum(1)),
+              new ProjCoordinate());
+      max =
+          inverseTransform.transform(
+              new ProjCoordinate(envelope.getMaximum(0), envelope.getMaximum(1)),
+              new ProjCoordinate());
     } catch (FactoryException e) {
       throw new RuntimeException(e);
     }
@@ -110,7 +109,7 @@ public class ProjectionTransformer extends GeometryTransformer {
     try {
       Geometry geometry = super.transformMultiPoint(geom, parent);
       if (geometry instanceof Point point) {
-        geometry = factory.createMultiPoint(new Point[]{point});
+        geometry = factory.createMultiPoint(new Point[] {point});
       }
       return geometry;
     } catch (Exception e) {
@@ -141,7 +140,7 @@ public class ProjectionTransformer extends GeometryTransformer {
     try {
       Geometry geometry = super.transformMultiLineString(geom, parent);
       if (geometry instanceof LineString lineString) {
-        geometry = factory.createMultiLineString(new LineString[]{lineString});
+        geometry = factory.createMultiLineString(new LineString[] {lineString});
       }
       return geometry;
     } catch (Exception e) {
@@ -163,7 +162,7 @@ public class ProjectionTransformer extends GeometryTransformer {
     try {
       Geometry geometry = super.transformMultiPolygon(geom, parent);
       if (geometry instanceof Polygon polygon) {
-        geometry = factory.createMultiPolygon(new Polygon[]{polygon});
+        geometry = factory.createMultiPolygon(new Polygon[] {polygon});
       }
       return withTargetSRID(geometry);
     } catch (Exception e) {

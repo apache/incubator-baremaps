@@ -49,8 +49,7 @@ class WorkflowTest extends PostgresContainerTest {
                             "natural_earth_vector/packages/natural_earth_vector.gpkg",
                             "jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps",
                             4326,
-                            3857)
-                    ))));
+                            3857)))));
     new WorkflowExecutor(workflow).execute().join();
   }
 
@@ -78,8 +77,7 @@ class WorkflowTest extends PostgresContainerTest {
                             "coastlines-split-4326/coastlines-split-4326/lines.shp",
                             "jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps",
                             4326,
-                            3857)
-                    ))));
+                            3857)))));
     new WorkflowExecutor(workflow).execute().join();
   }
 
@@ -96,14 +94,9 @@ class WorkflowTest extends PostgresContainerTest {
                         new DownloadUrl(
                             "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
                             "downloads/import_db.gpkg"),
-                        new ImportShapefile(
-                            "downloads/import_db.gpkg",
-                            jdbcUrl(),
-                            4326,
-                            3857)))));
+                        new ImportShapefile("downloads/import_db.gpkg", jdbcUrl(), 4326, 3857)))));
     new WorkflowExecutor(workflow).execute().join();
   }
-
 
   @Test
   @Disabled
@@ -167,5 +160,4 @@ class WorkflowTest extends PostgresContainerTest {
                             3857)))));
     new WorkflowExecutor(workflow).execute().join();
   }
-
 }

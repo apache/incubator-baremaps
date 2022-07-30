@@ -1,30 +1,27 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Copyright (C) 2020 The Baremaps Authors
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
-package org.apache.sis.internal.shapefile;
+
+package com.baremaps.storage.shapefile.internal;
 
 import java.io.*;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.*;
-
+import org.apache.sis.feature.AbstractFeature;
 import org.apache.sis.feature.DefaultAttributeType;
 import org.apache.sis.feature.DefaultFeatureType;
-import org.apache.sis.feature.AbstractFeature;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
@@ -39,56 +36,41 @@ import org.locationtech.jts.geom.Polygon;
  */
 public class ShapefileByteReader extends CommonByteReader {
 
-  /**
-   * Name of the Geometry field.
-   */
+  /** Name of the Geometry field. */
   private static final String GEOMETRY_NAME = "geometry";
 
-  /**
-   * Shapefile descriptor.
-   */
+  /** Shapefile descriptor. */
   private ShapefileDescriptor shapefileDescriptor;
 
-  /**
-   * Database Field descriptors.
-   */
+  /** Database Field descriptors. */
   private List<DBase3FieldDescriptor> databaseFieldsDescriptors;
 
-  /**
-   * Type of the features contained in this shapefile.
-   */
+  /** Type of the features contained in this shapefile. */
   private DefaultFeatureType featuresType;
 
-  /**
-   * Shapefile index.
-   */
+  /** Shapefile index. */
   private File shapeFileIndex;
 
-  /**
-   * Shapefile indexes (loaded from .SHX file, if any found).
-   */
+  /** Shapefile indexes (loaded from .SHX file, if any found). */
   private ArrayList<Integer> indexes;
 
-  /**
-   * Shapefile records lengths (loaded from .SHX file, if any found).
-   */
+  /** Shapefile records lengths (loaded from .SHX file, if any found). */
   private ArrayList<Integer> recordsLengths;
 
-  /**
-   * JTS geometry factory.
-   */
+  /** JTS geometry factory. */
   private GeometryFactory geometryFactory = new GeometryFactory();
 
   /**
    * Construct a shapefile byte reader.
    *
-   * @param shapefile      Shapefile.
-   * @param dbaseFile      underlying database file name.
+   * @param shapefile Shapefile.
+   * @param dbaseFile underlying database file name.
    * @param shapefileIndex Shapefile index, if any. Null else.
-   * @throws Dbase3Exception    if the database file format is invalid.
+   * @throws Dbase3Exception if the database file format is invalid.
    * @throws ShapefileException if the shapefile has not been found.
    */
-  public ShapefileByteReader(File shapefile, File dbaseFile, File shapefileIndex) throws IOException {
+  public ShapefileByteReader(File shapefile, File dbaseFile, File shapefileIndex)
+      throws IOException {
     super(shapefile);
     this.shapeFileIndex = shapefileIndex;
 
@@ -148,23 +130,24 @@ public class ShapefileByteReader extends CommonByteReader {
       properties.put(DefaultAttributeType.NAME_KEY, fieldDescriptor.getName());
 
       // TODO: move somewhere else
-      Class type = switch (fieldDescriptor.getType()) {
-        case Character -> String.class;
-        case Number -> fieldDescriptor.getDecimalCount() == 0 ? Long.class : Double.class;
-        case Currency -> Double.class;
-        case Integer -> Integer.class;
-        case Double -> Double.class;
-        case AutoIncrement -> Integer.class;
-        case Logical -> String.class;
-        case Date -> String.class;
-        case Memo -> String.class;
-        case FloatingPoint -> String.class;
-        case Picture -> String.class;
-        case VariField -> String.class;
-        case Variant -> String.class;
-        case TimeStamp -> String.class;
-        case DateTime -> String.class;
-      };
+      Class type =
+          switch (fieldDescriptor.getType()) {
+            case Character -> String.class;
+            case Number -> fieldDescriptor.getDecimalCount() == 0 ? Long.class : Double.class;
+            case Currency -> Double.class;
+            case Integer -> Integer.class;
+            case Double -> Double.class;
+            case AutoIncrement -> Integer.class;
+            case Logical -> String.class;
+            case Date -> String.class;
+            case Memo -> String.class;
+            case FloatingPoint -> String.class;
+            case Picture -> String.class;
+            case VariField -> String.class;
+            case Variant -> String.class;
+            case TimeStamp -> String.class;
+            case DateTime -> String.class;
+          };
 
       attributes[i] = new DefaultAttributeType<>(properties, type, 1, 1, null);
     }
@@ -178,9 +161,7 @@ public class ShapefileByteReader extends CommonByteReader {
     return new DefaultFeatureType(properties, false, null, attributes);
   }
 
-  /**
-   * Load shapefile descriptor.
-   */
+  /** Load shapefile descriptor. */
   private void loadDescriptor() {
     this.shapefileDescriptor = new ShapefileDescriptor(getByteBuffer());
   }
@@ -188,14 +169,16 @@ public class ShapefileByteReader extends CommonByteReader {
   /**
    * Load shapefile indexes.
    *
-   * @return true if shapefile indexes has been read, false if none where available or a problem occured.
+   * @return true if shapefile indexes has been read, false if none where available or a problem
+   *     occured.
    */
   private boolean loadShapefileIndexes() {
     if (this.shapeFileIndex == null) {
       return false;
     }
 
-    try (FileInputStream fis = new FileInputStream(this.shapeFileIndex); FileChannel fc = fis.getChannel()) {
+    try (FileInputStream fis = new FileInputStream(this.shapeFileIndex);
+        FileChannel fc = fis.getChannel()) {
       try {
         int fsize = (int) fc.size();
         MappedByteBuffer indexesByteBuffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fsize);
@@ -208,7 +191,9 @@ public class ShapefileByteReader extends CommonByteReader {
 
         while (indexesByteBuffer.hasRemaining()) {
           this.indexes.add(
-              indexesByteBuffer.getInt());        // Data offset : the position of the record in the main shapefile, expressed in words (16 bits).
+              indexesByteBuffer
+                  .getInt()); // Data offset : the position of the record in the main shapefile,
+          // expressed in words (16 bits).
           this.recordsLengths.add(indexesByteBuffer.getInt()); // Length of this shapefile record.
         }
         return true;
@@ -293,7 +278,8 @@ public class ShapefileByteReader extends CommonByteReader {
     ShapeType type = ShapeType.get(iShapeType);
 
     if (type == null) {
-      throw new ShapefileException("The shapefile feature type doesn''t match to any known feature type.");
+      throw new ShapefileException(
+          "The shapefile feature type doesn''t match to any known feature type.");
     }
 
     switch (type) {
@@ -334,14 +320,10 @@ public class ShapefileByteReader extends CommonByteReader {
    * @param feature Feature to fill.
    */
   private void loadPolygonFeature(AbstractFeature feature) {
-    /* double xmin = */
-    getByteBuffer().getDouble();
-    /* double ymin = */
-    getByteBuffer().getDouble();
-    /* double xmax = */
-    getByteBuffer().getDouble();
-    /* double ymax = */
-    getByteBuffer().getDouble();
+    /* double xmin = */ getByteBuffer().getDouble();
+    /* double ymin = */ getByteBuffer().getDouble();
+    /* double xmax = */ getByteBuffer().getDouble();
+    /* double ymax = */ getByteBuffer().getDouble();
     int numParts = getByteBuffer().getInt();
     int numPoints = getByteBuffer().getInt();
 
@@ -365,10 +347,10 @@ public class ShapefileByteReader extends CommonByteReader {
    * @return Polygon.
    */
   @Deprecated
-  // As soon as the readMultiplePolygonParts method proofs working well, this readUniquePolygonPart method can be removed and all calls be deferred to readMultiplePolygonParts.
+  // As soon as the readMultiplePolygonParts method proofs working well, this readUniquePolygonPart
+  // method can be removed and all calls be deferred to readMultiplePolygonParts.
   private Polygon readUniquePolygonPart(int numPoints) {
-    /*int part = */
-    getByteBuffer().getInt();
+    /*int part = */ getByteBuffer().getInt();
 
     var coordinates = new CoordinateList();
 
@@ -390,23 +372,19 @@ public class ShapefileByteReader extends CommonByteReader {
   /**
    * Read a polygon that has multiple parts.
    *
-   * @param numParts  Number of parts of this polygon.
+   * @param numParts Number of parts of this polygon.
    * @param numPoints Total number of points of this polygon, all parts considered.
    * @return a multiple part polygon.
    */
   private Polygon readMultiplePolygonParts(int numParts, int numPoints) {
     /**
-     * From ESRI Specification :
-     * Parts : 0 5  (meaning : 0 designs the first v1, 5 designs the first v5 on the points list below).
-     * Points : v1 v2 v3 v4 v1 v5 v8 v7 v6 v5
+     * From ESRI Specification : Parts : 0 5 (meaning : 0 designs the first v1, 5 designs the first
+     * v5 on the points list below). Points : v1 v2 v3 v4 v1 v5 v8 v7 v6 v5
      *
-     * POSITION  FIELD       VALUE      TYPE      NUMBER     ORDER
-     * Byte 0    Shape Type  5          Integer   1          Little
-     * Byte 4    Box         Box        Double    4          Little
-     * Byte 36   NumParts    NumParts   Integer   1          Little
-     * Byte 40   NumPoints   NumPoints  Integer   1          Little
-     * Byte 44   Parts       Parts      Integer   NumParts   Little
-     * Byte X    Points      Points     Point     NumPoints  Little
+     * <p>POSITION FIELD VALUE TYPE NUMBER ORDER Byte 0 Shape Type 5 Integer 1 Little Byte 4 Box Box
+     * Double 4 Little Byte 36 NumParts NumParts Integer 1 Little Byte 40 NumPoints NumPoints
+     * Integer 1 Little Byte 44 Parts Parts Integer NumParts Little Byte X Points Points Point
+     * NumPoints Little
      */
     int[] partsIndexes = new int[numParts];
 
@@ -455,14 +433,10 @@ public class ShapefileByteReader extends CommonByteReader {
    * @param feature Feature to fill.
    */
   private void loadPolylineFeature(AbstractFeature feature) {
-    /* double xmin = */
-    getByteBuffer().getDouble();
-    /* double ymin = */
-    getByteBuffer().getDouble();
-    /* double xmax = */
-    getByteBuffer().getDouble();
-    /* double ymax = */
-    getByteBuffer().getDouble();
+    /* double xmin = */ getByteBuffer().getDouble();
+    /* double ymin = */ getByteBuffer().getDouble();
+    /* double xmax = */ getByteBuffer().getDouble();
+    /* double ymax = */ getByteBuffer().getDouble();
 
     int NumParts = getByteBuffer().getInt();
     int NumPoints = getByteBuffer().getInt();
@@ -490,6 +464,7 @@ public class ShapefileByteReader extends CommonByteReader {
       }
     }
 
-    feature.setPropertyValue(GEOMETRY_NAME, geometryFactory.createLineString(coordinates.toCoordinateArray()));
+    feature.setPropertyValue(
+        GEOMETRY_NAME, geometryFactory.createLineString(coordinates.toCoordinateArray()));
   }
 }

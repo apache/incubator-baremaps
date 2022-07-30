@@ -28,7 +28,6 @@ import mil.nga.geopackage.features.user.FeatureResultSet;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
 import org.apache.sis.feature.builder.AttributeRole;
 import org.apache.sis.feature.builder.FeatureTypeBuilder;
-import org.apache.sis.storage.DataStore;
 import org.apache.sis.storage.DataStoreException;
 import org.apache.sis.storage.FeatureSet;
 import org.apache.sis.storage.event.StoreEvent;
@@ -49,7 +48,6 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureType;
 import org.opengis.geometry.Envelope;
 import org.opengis.metadata.Metadata;
-import org.opengis.parameter.ParameterValueGroup;
 import org.opengis.util.GenericName;
 
 public class GeoPackageTable implements FeatureSet {
@@ -64,10 +62,11 @@ public class GeoPackageTable implements FeatureSet {
     this.featureDao = featureDao;
     var typeBuilder = new FeatureTypeBuilder().setName(featureDao.getTableName());
     for (FeatureColumn column : featureDao.getColumns()) {
-      var attributeBuilder = typeBuilder
-          .addAttribute(classType(column))
-          .setName(column.getName())
-          .setMinimumOccurs(column.isNotNull() ? 1 : 0);
+      var attributeBuilder =
+          typeBuilder
+              .addAttribute(classType(column))
+              .setName(column.getName())
+              .setMinimumOccurs(column.isNotNull() ? 1 : 0);
       if (column.isPrimaryKey()) {
         attributeBuilder.addRole(AttributeRole.IDENTIFIER_COMPONENT);
       }
@@ -100,12 +99,14 @@ public class GeoPackageTable implements FeatureSet {
   }
 
   @Override
-  public <T extends StoreEvent> void addListener(Class<T> eventType, StoreListener<? super T> listener) {
+  public <T extends StoreEvent> void addListener(
+      Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public <T extends StoreEvent> void removeListener(Class<T> eventType, StoreListener<? super T> listener) {
+  public <T extends StoreEvent> void removeListener(
+      Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 
@@ -168,7 +169,8 @@ public class GeoPackageTable implements FeatureSet {
 
   private LocalDateTime asLocalDateTime(mil.nga.crs.common.DateTime dateTime) {
     // TODO: take the time zone into account
-    // .atZone(ZoneId.of(String.format("%s%02d:%02d", dateTime.getTimeZoneHour() >= 0 ? "+" : "-", Math.abs(dateTime.getTimeZoneHour()), dateTime.getTimeZoneMinute())));
+    // .atZone(ZoneId.of(String.format("%s%02d:%02d", dateTime.getTimeZoneHour() >= 0 ? "+" : "-",
+    // Math.abs(dateTime.getTimeZoneHour()), dateTime.getTimeZoneMinute())));
     return LocalDateTime.of(
         dateTime.getYear(),
         dateTime.getMonth(),

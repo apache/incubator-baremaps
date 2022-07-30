@@ -18,13 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.baremaps.database.SaveBlockConsumer;
-import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.database.repository.PostgresHeaderRepository;
 import com.baremaps.database.repository.PostgresNodeRepository;
 import com.baremaps.database.repository.PostgresRelationRepository;
 import com.baremaps.database.repository.PostgresWayRepository;
 import com.baremaps.database.repository.RepositoryException;
 import com.baremaps.osm.pbf.PbfBlockReader;
+import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.testing.PostgresContainerTest;
 import com.baremaps.testing.TestFiles;
 import java.io.IOException;

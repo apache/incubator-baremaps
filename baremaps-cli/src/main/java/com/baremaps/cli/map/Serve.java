@@ -19,12 +19,12 @@ import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
 import com.baremaps.cli.Options;
-import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.database.tile.PostgresQuery;
 import com.baremaps.database.tile.PostgresTileStore;
 import com.baremaps.database.tile.TileCache;
 import com.baremaps.database.tile.TileStore;
 import com.baremaps.model.TileJSON;
+import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.server.resources.ServerResources;
 import com.baremaps.server.utils.CorsFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;

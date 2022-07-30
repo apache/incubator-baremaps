@@ -1,3 +1,17 @@
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package com.baremaps.storage.postgres;
 
 import com.baremaps.postgres.CopyWriter;
@@ -49,49 +63,55 @@ import org.postgresql.copy.PGCopyOutputStream;
 
 public class PostgresDatabase implements WritableAggregate, AutoCloseable {
 
-  private static Map<Class, String> typeToName = new HashMap<>() {{
-    put(String.class, "varchar");
-    put(Short.class, "int2");
-    put(Integer.class, "int4");
-    put(Long.class, "int8");
-    put(Float.class, "float4");
-    put(Double.class, "float8");
-    put(Geometry.class, "geometry");
-    put(Point.class, "geometry");
-    put(MultiPoint.class, "geometry");
-    put(Point.class, "geometry");
-    put(LineString.class, "geometry");
-    put(MultiLineString.class, "geometry");
-    put(Polygon.class, "geometry");
-    put(MultiPolygon.class, "geometry");
-    put(LinearRing.class, "geometry");
-    put(GeometryCollection.class, "geometry");
-    put(LocalDate.class, "date");
-    put(LocalTime.class, "time");
-    put(LocalDateTime.class, "timestamp");
-  }};
+  private static Map<Class, String> typeToName =
+      new HashMap<>() {
+        {
+          put(String.class, "varchar");
+          put(Short.class, "int2");
+          put(Integer.class, "int4");
+          put(Long.class, "int8");
+          put(Float.class, "float4");
+          put(Double.class, "float8");
+          put(Geometry.class, "geometry");
+          put(Point.class, "geometry");
+          put(MultiPoint.class, "geometry");
+          put(Point.class, "geometry");
+          put(LineString.class, "geometry");
+          put(MultiLineString.class, "geometry");
+          put(Polygon.class, "geometry");
+          put(MultiPolygon.class, "geometry");
+          put(LinearRing.class, "geometry");
+          put(GeometryCollection.class, "geometry");
+          put(LocalDate.class, "date");
+          put(LocalTime.class, "time");
+          put(LocalDateTime.class, "timestamp");
+        }
+      };
 
-  private static Map<Class, ValueHandler> typeToHandler = new HashMap<>() {{
-    put(String.class, new StringValueHandler());
-    put(Short.class, new ShortValueHandler());
-    put(Integer.class, new IntegerValueHandler());
-    put(Long.class, new LongValueHandler());
-    put(Float.class, new FloatValueHandler());
-    put(Double.class, new DoubleValueHandler());
-    put(Geometry.class, new PostgisGeometryValueHandler());
-    put(Point.class, new PostgisGeometryValueHandler());
-    put(MultiPoint.class, new PostgisGeometryValueHandler());
-    put(Point.class, new PostgisGeometryValueHandler());
-    put(LineString.class, new PostgisGeometryValueHandler());
-    put(MultiLineString.class, new PostgisGeometryValueHandler());
-    put(Polygon.class, new PostgisGeometryValueHandler());
-    put(MultiPolygon.class, new PostgisGeometryValueHandler());
-    put(LinearRing.class, new PostgisGeometryValueHandler());
-    put(GeometryCollection.class, new PostgisGeometryValueHandler());
-    put(LocalDate.class, new LocalDateValueHandler());
-    put(LocalTime.class, new LocalTimeValueHandler());
-    put(LocalDateTime.class, new LocalDateTimeValueHandler());
-  }};
+  private static Map<Class, ValueHandler> typeToHandler =
+      new HashMap<>() {
+        {
+          put(String.class, new StringValueHandler());
+          put(Short.class, new ShortValueHandler());
+          put(Integer.class, new IntegerValueHandler());
+          put(Long.class, new LongValueHandler());
+          put(Float.class, new FloatValueHandler());
+          put(Double.class, new DoubleValueHandler());
+          put(Geometry.class, new PostgisGeometryValueHandler());
+          put(Point.class, new PostgisGeometryValueHandler());
+          put(MultiPoint.class, new PostgisGeometryValueHandler());
+          put(Point.class, new PostgisGeometryValueHandler());
+          put(LineString.class, new PostgisGeometryValueHandler());
+          put(MultiLineString.class, new PostgisGeometryValueHandler());
+          put(Polygon.class, new PostgisGeometryValueHandler());
+          put(MultiPolygon.class, new PostgisGeometryValueHandler());
+          put(LinearRing.class, new PostgisGeometryValueHandler());
+          put(GeometryCollection.class, new PostgisGeometryValueHandler());
+          put(LocalDate.class, new LocalDateValueHandler());
+          put(LocalTime.class, new LocalTimeValueHandler());
+          put(LocalDateTime.class, new LocalDateTimeValueHandler());
+        }
+      };
 
   private final DataSource dataSource;
 
@@ -115,12 +135,14 @@ public class PostgresDatabase implements WritableAggregate, AutoCloseable {
   }
 
   @Override
-  public <T extends StoreEvent> void addListener(Class<T> eventType, StoreListener<? super T> listener) {
+  public <T extends StoreEvent> void addListener(
+      Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public <T extends StoreEvent> void removeListener(Class<T> eventType, StoreListener<? super T> listener) {
+  public <T extends StoreEvent> void removeListener(
+      Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 
@@ -128,10 +150,9 @@ public class PostgresDatabase implements WritableAggregate, AutoCloseable {
     var featureTypeBuilder = new FeatureTypeBuilder();
     featureTypeBuilder.setName(featureType.getName().toString().replaceAll("[^a-zA-Z0-9]", "_"));
     for (var attribute : featureType.getProperties(false)) {
-      if (attribute instanceof AttributeType attributeType && typeToName.containsKey(attributeType.getValueClass())) {
-        featureTypeBuilder
-            .addAttribute(attributeType.getValueClass())
-            .setName(attribute.getName());
+      if (attribute instanceof AttributeType attributeType
+          && typeToName.containsKey(attributeType.getValueClass())) {
+        featureTypeBuilder.addAttribute(attributeType.getValueClass()).setName(attribute.getName());
       }
     }
     return featureTypeBuilder.build();
@@ -212,11 +233,16 @@ public class PostgresDatabase implements WritableAggregate, AutoCloseable {
     builder.append("CREATE TABLE ");
     builder.append(featureType.getName());
     builder.append(" (");
-    builder.append(featureType.getProperties(false).stream()
-        .filter(AttributeType.class::isInstance)
-        .map(AttributeType.class::cast)
-        .map(attributeType -> attributeType.getName().toString() + " " + typeToName.get(attributeType.getValueClass()))
-        .collect(Collectors.joining(", ")));
+    builder.append(
+        featureType.getProperties(false).stream()
+            .filter(AttributeType.class::isInstance)
+            .map(AttributeType.class::cast)
+            .map(
+                attributeType ->
+                    attributeType.getName().toString()
+                        + " "
+                        + typeToName.get(attributeType.getValueClass()))
+            .collect(Collectors.joining(", ")));
     builder.append(")");
     return builder.toString();
   }
@@ -226,11 +252,12 @@ public class PostgresDatabase implements WritableAggregate, AutoCloseable {
     builder.append("COPY ");
     builder.append(featureType.getName());
     builder.append(" (");
-    builder.append(featureType.getProperties(false).stream()
-        .filter(AttributeType.class::isInstance)
-        .map(AttributeType.class::cast)
-        .map(attributeType -> attributeType.getName().toString())
-        .collect(Collectors.joining(", ")));
+    builder.append(
+        featureType.getProperties(false).stream()
+            .filter(AttributeType.class::isInstance)
+            .map(AttributeType.class::cast)
+            .map(attributeType -> attributeType.getName().toString())
+            .collect(Collectors.joining(", ")));
     builder.append(") FROM STDIN BINARY");
     return builder.toString();
   }
@@ -240,7 +267,9 @@ public class PostgresDatabase implements WritableAggregate, AutoCloseable {
     if (resource instanceof FeatureSet featureSet) {
       var type = featureSet.getType();
       try (var connection = dataSource.getConnection()) {
-        connection.createStatement().executeQuery(String.format("DROP TABLE IF EXISTS %s", type.getName()));
+        connection
+            .createStatement()
+            .executeQuery(String.format("DROP TABLE IF EXISTS %s", type.getName()));
       } catch (SQLException e) {
         throw new RuntimeException(e);
       }

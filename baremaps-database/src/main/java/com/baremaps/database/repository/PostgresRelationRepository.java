@@ -17,12 +17,12 @@ package com.baremaps.database.repository;
 import static com.baremaps.database.repository.PostgresJsonbMapper.toJson;
 import static com.baremaps.database.repository.PostgresJsonbMapper.toMap;
 
-import com.baremaps.postgres.CopyWriter;
 import com.baremaps.osm.geometry.GeometryUtils;
 import com.baremaps.osm.model.Info;
 import com.baremaps.osm.model.Member;
 import com.baremaps.osm.model.Member.MemberType;
 import com.baremaps.osm.model.Relation;
+import com.baremaps.postgres.CopyWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.sql.Connection;
@@ -365,18 +365,14 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
           writer.writeLong(value.getInfo().getChangeset());
           writer.writeJsonb(toJson(value.getTags()));
           writer.writeLongList(
-              value.getMembers().stream()
-                  .map(Member::getRef)
-                  .collect(Collectors.toList()));
+              value.getMembers().stream().map(Member::getRef).collect(Collectors.toList()));
           writer.writeIntegerList(
               value.getMembers().stream()
                   .map(Member::getType)
                   .map(MemberType::ordinal)
                   .collect(Collectors.toList()));
           writer.write(
-              value.getMembers().stream()
-                  .map(Member::getRole)
-                  .collect(Collectors.toList()));
+              value.getMembers().stream().map(Member::getRole).collect(Collectors.toList()));
           writer.writePostgisGeometry(value.getGeometry());
         }
       }

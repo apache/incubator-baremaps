@@ -70,7 +70,8 @@ public interface ImportFeatureTask extends Task {
             if (sourceSRID().equals(targetSRID())) {
               targetFeatureSet.add(sourceFeatureStream.iterator());
             } else {
-              var reprojectedFeatures = sourceFeatureStream.map(feature -> reprojectFeature(feature));
+              var reprojectedFeatures =
+                  sourceFeatureStream.map(feature -> reprojectFeature(feature));
               targetFeatureSet.add(reprojectedFeatures.iterator());
             }
           }

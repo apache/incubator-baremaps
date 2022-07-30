@@ -14,10 +14,10 @@
 
 package com.baremaps.database.repository;
 
-import com.baremaps.postgres.CopyWriter;
 import com.baremaps.osm.geometry.GeometryUtils;
 import com.baremaps.osm.model.Info;
 import com.baremaps.osm.model.Way;
+import com.baremaps.postgres.CopyWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.sql.Array;

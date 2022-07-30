@@ -16,7 +16,6 @@ package com.baremaps.workflow.tasks;
 
 import static com.baremaps.server.ogcapi.Conversions.asPostgresQuery;
 
-import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.database.tile.FileTileStore;
 import com.baremaps.database.tile.MBTiles;
 import com.baremaps.database.tile.PostgresQuery;
@@ -28,6 +27,7 @@ import com.baremaps.database.tile.TileStoreException;
 import com.baremaps.model.Query;
 import com.baremaps.model.TileJSON;
 import com.baremaps.osm.progress.StreamProgress;
+import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.stream.StreamUtils;
 import com.baremaps.workflow.Task;
 import com.baremaps.workflow.WorkflowException;

@@ -47,12 +47,14 @@ public class GeoPackageDatabase implements Aggregate, AutoCloseable {
   }
 
   @Override
-  public <T extends StoreEvent> void addListener(Class<T> eventType, StoreListener<? super T> listener) {
+  public <T extends StoreEvent> void addListener(
+      Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public <T extends StoreEvent> void removeListener(Class<T> eventType, StoreListener<? super T> listener) {
+  public <T extends StoreEvent> void removeListener(
+      Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 

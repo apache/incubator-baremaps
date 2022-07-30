@@ -12,29 +12,33 @@
  * the License.
  */
 
-package com.baremaps.postgres.model;
+package com.baremaps.storage.shapefile.internal;
 
-public class Box {
+import java.io.IOException;
 
-  private final Point high;
-  private final Point low;
+/**
+ * Thrown when the shapefile seems to be invalid.
+ *
+ * @author Marc Le Bihan
+ */
+public class ShapefileException extends IOException {
 
-  public Box(Point high, Point low) {
-    if (high == null) {
-      throw new IllegalArgumentException("high");
-    }
-    if (low == null) {
-      throw new IllegalArgumentException("low");
-    }
-    this.high = high;
-    this.low = low;
+  /**
+   * Construct an exception.
+   *
+   * @param message Message of the exception.
+   */
+  public ShapefileException(String message) {
+    super(message);
   }
 
-  public Point getHigh() {
-    return high;
-  }
-
-  public Point getLow() {
-    return low;
+  /**
+   * Construct an exception.
+   *
+   * @param message Message of the exception.
+   * @param cause Root cause of the exception.
+   */
+  public ShapefileException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

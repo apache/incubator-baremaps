@@ -1,20 +1,18 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Copyright (C) 2020 The Baremaps Authors
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  */
-package org.apache.sis.internal.shapefile;
+
+package com.baremaps.storage.shapefile.internal;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +24,6 @@ import java.text.MessageFormat;
 import java.util.*;
 import org.apache.sis.feature.AbstractFeature;
 
-
 /**
  * Reader of a Database Binary content.
  *
@@ -34,80 +31,49 @@ import org.apache.sis.feature.AbstractFeature;
  */
 public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable {
 
-  /**
-   * First data record position, in bytes.
-   */
+  /** First data record position, in bytes. */
   protected short firstRecordPosition;
-  /**
-   * Size of one record, in bytes.
-   */
+  /** Size of one record, in bytes. */
   protected short recordLength;
-  /**
-   * Reserved (dBASE IV) Filled with 00h.
-   */
+  /** Reserved (dBASE IV) Filled with 00h. */
   protected byte[] reservedFiller1 = new byte[2];
   /**
-   * Reserved : Incomplete transaction (dBASE IV). 00h : Transaction ended (or rolled back). 01h : Transaction started.
+   * Reserved : Incomplete transaction (dBASE IV). 00h : Transaction ended (or rolled back). 01h :
+   * Transaction started.
    */
   protected byte reservedIncompleteTransaction;
-  /**
-   * Reserved : Encryption flag (dBASE IV). 00h : Not encrypted. 01h : Data encrypted.
-   */
+  /** Reserved : Encryption flag (dBASE IV). 00h : Not encrypted. 01h : Data encrypted. */
   protected byte reservedEncryptionFlag;
-  /**
-   * Reserved : Free record thread (for LAN only).
-   */
+  /** Reserved : Free record thread (for LAN only). */
   protected byte[] reservedFreeRecordThread = new byte[4];
-  /**
-   * Reserved : For multi-user (DBase 3+).
-   */
+  /** Reserved : For multi-user (DBase 3+). */
   protected byte[] reservedMultiUser = new byte[8];
-  /**
-   * Reserved : MDX flag (dBASE IV).
-   */
+  /** Reserved : MDX flag (dBASE IV). */
   protected byte reservedMDXFlag;
-  /**
-   * Binary code page value.
-   */
+  /** Binary code page value. */
   protected byte codePage;
-  /**
-   * Reserved (dBASE IV) Filled with 00h.
-   */
+  /** Reserved (dBASE IV) Filled with 00h. */
   protected byte[] reservedFiller2 = new byte[2];
-  /**
-   * Marks the end of the descriptor : must be 0x0D.
-   */
+  /** Marks the end of the descriptor : must be 0x0D. */
   protected byte descriptorTerminator;
-  /**
-   * Valid dBASE III PLUS table file (03h without a memo .DBT file; 83h with a memo).
-   */
+  /** Valid dBASE III PLUS table file (03h without a memo .DBT file; 83h with a memo). */
   protected byte dbaseVersion;
-  /**
-   * Number of records in the table.
-   */
+  /** Number of records in the table. */
   protected int rowCount;
-  /**
-   * Database charset.
-   */
+  /** Database charset. */
   protected Charset charset;
-  /**
-   * Date of last update; in YYMMDD format.
-   */
+  /** Date of last update; in YYMMDD format. */
   protected byte[] dbaseLastUpdate = new byte[3];
-  /**
-   * List of field descriptors.
-   */
+  /** List of field descriptors. */
   private List<DBase3FieldDescriptor> fieldsDescriptors = new ArrayList<>();
 
-  /**
-   * Connection properties.
-   */
+  /** Connection properties. */
   private Properties info;
 
   /**
    * Construct a mapped byte reader on a file.
    *
-   * @param dbase3File      File.
+   * @param dbase3File File.
    * @param connectionInfos Connection properties, maybe null.
    * @throws Dbase3Exception if the database seems to be invalid.
    */
@@ -117,7 +83,8 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
 
     // React to special features asked.
     if (this.info != null) {
-      // Sometimes, DBF files have a wrong charset, or more often : none, and you have to specify it.
+      // Sometimes, DBF files have a wrong charset, or more often : none, and you have to specify
+      // it.
       String recordCharset = (String) this.info.get("record_charset");
 
       if (recordCharset != null) {
@@ -153,23 +120,24 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
       String value = new String(data, 0, length);
 
       // TODO: move somewhere else
-      Object object = switch (fd.getType()) {
-        case Character -> value;
-        case Number -> getNumber(fd, value);
-        case Currency -> Double.parseDouble(value.trim());
-        case Integer -> Integer.parseInt(value.trim());
-        case Double -> Double.parseDouble(value.trim());
-        case AutoIncrement -> Integer.parseInt(value.trim());
-        case Logical -> value;
-        case Date -> value;
-        case Memo -> value;
-        case FloatingPoint -> value;
-        case Picture -> value;
-        case VariField -> value;
-        case Variant -> value;
-        case TimeStamp -> value;
-        case DateTime -> value;
-      };
+      Object object =
+          switch (fd.getType()) {
+            case Character -> value;
+            case Number -> getNumber(fd, value);
+            case Currency -> Double.parseDouble(value.trim());
+            case Integer -> Integer.parseInt(value.trim());
+            case Double -> Double.parseDouble(value.trim());
+            case AutoIncrement -> Integer.parseInt(value.trim());
+            case Logical -> value;
+            case Date -> value;
+            case Memo -> value;
+            case FloatingPoint -> value;
+            case Picture -> value;
+            case VariField -> value;
+            case Variant -> value;
+            case TimeStamp -> value;
+            case DateTime -> value;
+          };
 
       feature.setPropertyValue(fd.getName(), object);
     }
@@ -217,7 +185,8 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
   public int getRowNum() {
     int position = getByteBuffer().position();
     int recordNumber =
-        (position - Short.toUnsignedInt(this.firstRecordPosition)) / Short.toUnsignedInt(this.recordLength);
+        (position - Short.toUnsignedInt(this.firstRecordPosition))
+            / Short.toUnsignedInt(this.recordLength);
     return recordNumber;
   }
 
@@ -228,8 +197,7 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
    */
   public Map<String, byte[]> readNextRowAsObjects() {
     // TODO: ignore deleted records
-    /* byte isDeleted = */
-    getByteBuffer().get(); // denotes whether deleted or current
+    /* byte isDeleted = */ getByteBuffer().get(); // denotes whether deleted or current
 
     // read first part of record
     HashMap<String, byte[]> fieldsValues = new HashMap<>();
@@ -305,14 +273,17 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
 
       this.descriptorTerminator = getByteBuffer().get();
 
-      // If the last character read after the field descriptor isn't 0x0D, the expected mark has not been found and the DBF is corrupted.
+      // If the last character read after the field descriptor isn't 0x0D, the expected mark has not
+      // been found and the DBF is corrupted.
       if (this.descriptorTerminator != 0x0D) {
         throw new Dbase3Exception("File descriptor problem");
       }
     } catch (BufferUnderflowException e) {
-      // This exception doesn't denote a trouble of file opening because the file has been checked before
+      // This exception doesn't denote a trouble of file opening because the file has been checked
+      // before
       // the calling of this private function.
-      // Therefore, an internal structure problem cause maybe a premature End of file or anything else, but the only thing
+      // Therefore, an internal structure problem cause maybe a premature End of file or anything
+      // else, but the only thing
       // we can conclude is : we are not before a device trouble, but a file format trouble.
       throw new Dbase3Exception("File descriptor problem");
     }
@@ -377,14 +348,15 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
    *
    * @param codePageBinaryValue page code binary value.
    * @return Charset.
-   * @throws UnsupportedCharsetException if the code page as no representation in recents Charset (legacy DOS or
-   *                                     macintosh charsets).
+   * @throws UnsupportedCharsetException if the code page as no representation in recents Charset
+   *     (legacy DOS or macintosh charsets).
    */
   protected Charset toCharset(byte codePageBinaryValue) throws UnsupportedCharsetException {
     // Attempt to find a known conversion.
     String dbfCodePage = toCodePage(codePageBinaryValue);
 
-    // If no conversion has been found, decide if the cause is an unsupported value or an illegal value to choose the good exception to return.
+    // If no conversion has been found, decide if the cause is an unsupported value or an illegal
+    // value to choose the good exception to return.
     if (dbfCodePage == null) {
       switch (Byte.toUnsignedInt(codePageBinaryValue)) {
         case 0x04:
@@ -416,7 +388,8 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
 
     assert dbfCodePage != null;
 
-    // If the code page cannot find a match for a more recent Charset, we wont be able to handle this DBF.
+    // If the code page cannot find a match for a more recent Charset, we wont be able to handle
+    // this DBF.
     if (dbfCodePage.equals("unsupported")) {
       throw new UnsupportedCharsetException("Unsupported codepage");
     }
@@ -521,7 +494,8 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
 
     if (yymmdd.length != 3) {
       throw new IllegalArgumentException(
-          MessageFormat.format("Database:toDate() works only on a 3 bytes YY MM DD date. this array has {0} length",
+          MessageFormat.format(
+              "Database:toDate() works only on a 3 bytes YY MM DD date. this array has {0} length",
               yymmdd.length));
     }
 

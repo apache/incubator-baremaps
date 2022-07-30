@@ -122,7 +122,8 @@ public class DatabaseMetadata {
     return tableColumns;
   }
 
-  private List<PrimaryKeyResult> getPrimaryKeys(String catalog, String schemaPattern, String table) {
+  private List<PrimaryKeyResult> getPrimaryKeys(
+      String catalog, String schemaPattern, String table) {
     var tablePrimaryKeyColumns = new ArrayList<PrimaryKeyResult>();
     try (var connection = dataSource.getConnection();
         var resultSet = connection.getMetaData().getPrimaryKeys(catalog, schemaPattern, table)) {

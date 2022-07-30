@@ -1,4 +1,16 @@
-// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+/*
+ * Copyright (C) 2020 The Baremaps Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
 package com.baremaps.postgres.model;
 
@@ -8,34 +20,34 @@ import java.util.stream.IntStream;
 
 public class MacAddress {
 
-    private final byte[] addressBytes;
+  private final byte[] addressBytes;
 
-    public MacAddress(byte[] addressBytes) {
+  public MacAddress(byte[] addressBytes) {
 
-        if(addressBytes == null) {
-            throw new IllegalArgumentException("addressBytes");
-        }
-
-        if(addressBytes.length != 6) {
-            throw new IllegalArgumentException("addressBytes");
-        }
-
-        this.addressBytes = addressBytes;
+    if (addressBytes == null) {
+      throw new IllegalArgumentException("addressBytes");
     }
 
-    public byte[] getAddressBytes() {
-        return addressBytes;
+    if (addressBytes.length != 6) {
+      throw new IllegalArgumentException("addressBytes");
     }
 
-    @Override
-    public String toString() {
+    this.addressBytes = addressBytes;
+  }
 
-        List<String> bytesAsHexString = IntStream
-                .range(0, addressBytes.length)
-                .map(idx -> addressBytes[idx])
-                .mapToObj(value -> String.format("0x%x", value))
-                .collect(Collectors.toList());
+  public byte[] getAddressBytes() {
+    return addressBytes;
+  }
 
-        return String.join("-", bytesAsHexString);
-    }
+  @Override
+  public String toString() {
+
+    List<String> bytesAsHexString =
+        IntStream.range(0, addressBytes.length)
+            .map(idx -> addressBytes[idx])
+            .mapToObj(value -> String.format("0x%x", value))
+            .collect(Collectors.toList());
+
+    return String.join("-", bytesAsHexString);
+  }
 }
