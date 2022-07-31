@@ -14,7 +14,10 @@
 
 package com.baremaps.storage.geopackage;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -22,6 +25,7 @@ import java.util.Optional;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import javax.xml.crypto.Data;
 import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
@@ -160,24 +164,11 @@ public class GeoPackageTable implements FeatureSet {
   private Object asValue(Object value) {
     if (value instanceof GeoPackageGeometryData geometry) {
       return asJtsGeometry(geometry.getGeometry());
-    } else if (value instanceof mil.nga.crs.common.DateTime dateTime) {
-      return asLocalDateTime(dateTime);
-    } else {
+    } else if (value instanceof Date date){
+      return value.toString();
+    }  else {
       return value;
     }
-  }
-
-  private LocalDateTime asLocalDateTime(mil.nga.crs.common.DateTime dateTime) {
-    // TODO: take the time zone into account
-    // .atZone(ZoneId.of(String.format("%s%02d:%02d", dateTime.getTimeZoneHour() >= 0 ? "+" : "-",
-    // Math.abs(dateTime.getTimeZoneHour()), dateTime.getTimeZoneMinute())));
-    return LocalDateTime.of(
-        dateTime.getYear(),
-        dateTime.getMonth(),
-        dateTime.getDay(),
-        dateTime.getHour(),
-        dateTime.getMinute(),
-        dateTime.getSecond());
   }
 
   private Geometry asJtsGeometry(mil.nga.sf.Geometry geometry) {
