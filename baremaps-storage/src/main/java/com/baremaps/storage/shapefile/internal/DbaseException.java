@@ -21,14 +21,14 @@ import java.io.IOException;
  *
  * @author Marc Le Bihan
  */
-public class Dbase3Exception extends IOException {
+public class DbaseException extends IOException {
 
   /**
    * Construct an exception.
    *
    * @param message Message of the exception.
    */
-  public Dbase3Exception(String message) {
+  public DbaseException(String message) {
     super(message);
   }
 
@@ -38,7 +38,7 @@ public class Dbase3Exception extends IOException {
    * @param message Message of the exception.
    * @param cause Root cause of the exception.
    */
-  public Dbase3Exception(String message, Throwable cause) {
+  public DbaseException(String message, Throwable cause) {
     super(message, cause);
   }
 }

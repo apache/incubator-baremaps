@@ -15,7 +15,7 @@
 package com.baremaps.storage.shapefile;
 
 import com.baremaps.storage.shapefile.internal.InputFeatureStream;
-import com.baremaps.storage.shapefile.internal.Shapefile;
+import com.baremaps.storage.shapefile.internal.ShapefileReader;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.Spliterator;
@@ -34,10 +34,10 @@ import org.opengis.util.GenericName;
 
 public class ShapefileFeatureSet implements FeatureSet, AutoCloseable {
 
-  private final Shapefile shapeFile;
+  private final ShapefileReader shapeFile;
 
   public ShapefileFeatureSet(Path file) {
-    this.shapeFile = new Shapefile(file.toString());
+    this.shapeFile = new ShapefileReader(file.toString());
   }
 
   @Override

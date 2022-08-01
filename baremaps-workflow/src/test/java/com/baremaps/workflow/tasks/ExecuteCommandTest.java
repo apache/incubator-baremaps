@@ -19,11 +19,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ExecuteCommandTest {
 
   @Test
+  @Disabled
   void run() throws IOException {
     var path = Paths.get("test.txt").toAbsolutePath();
     new ExecuteCommand(String.format("echo test > %s", path)).run();

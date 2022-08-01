@@ -43,7 +43,7 @@ public class ShapefileByteReader extends CommonByteReader {
   private ShapefileDescriptor shapefileDescriptor;
 
   /** Database Field descriptors. */
-  private List<DBase3FieldDescriptor> databaseFieldsDescriptors;
+  private List<DBaseFieldDescriptor> databaseFieldsDescriptors;
 
   /** Type of the features contained in this shapefile. */
   private DefaultFeatureType featuresType;
@@ -66,7 +66,7 @@ public class ShapefileByteReader extends CommonByteReader {
    * @param shapefile Shapefile.
    * @param dbaseFile underlying database file name.
    * @param shapefileIndex Shapefile index, if any. Null else.
-   * @throws Dbase3Exception if the database file format is invalid.
+   * @throws DbaseException if the database file format is invalid.
    * @throws ShapefileException if the shapefile has not been found.
    */
   public ShapefileByteReader(File shapefile, File dbaseFile, File shapefileIndex)
@@ -89,7 +89,7 @@ public class ShapefileByteReader extends CommonByteReader {
    *
    * @return Fields descriptors.
    */
-  public List<DBase3FieldDescriptor> getFieldsDescriptors() {
+  public List<DBaseFieldDescriptor> getFieldsDescriptors() {
     return this.databaseFieldsDescriptors;
   }
 
@@ -138,6 +138,8 @@ public class ShapefileByteReader extends CommonByteReader {
             case Integer -> Integer.class;
             case Double -> Double.class;
             case AutoIncrement -> Integer.class;
+
+              // TODO: Implement the following types
             case Logical -> String.class;
             case Date -> String.class;
             case Memo -> String.class;
@@ -214,12 +216,12 @@ public class ShapefileByteReader extends CommonByteReader {
    * Load database field descriptors.
    *
    * @param dbaseFile Database file.
-   * @throws Dbase3Exception if the database format is incorrect.
+   * @throws DbaseException if the database format is incorrect.
    */
   private void loadDatabaseFieldDescriptors(File dbaseFile) throws IOException {
-    Dbase3ByteReader databaseReader = null;
+    DbaseByteReader databaseReader = null;
     try {
-      databaseReader = new Dbase3ByteReader(dbaseFile, null);
+      databaseReader = new DbaseByteReader(dbaseFile, null);
       this.databaseFieldsDescriptors = databaseReader.getFieldsDescriptors();
     } finally {
       if (databaseReader != null) {

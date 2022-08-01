@@ -21,7 +21,7 @@ package com.baremaps.storage.shapefile.internal;
  * @see <a href="http://www.clicketyclick.dk/databases/xbase/format/data_types.html">Xbase Data
  *     Types</a>
  */
-public enum DBase3DataType {
+public enum DBaseDataType {
   /** Character (less than 254 characters). */
   Character('C'),
 
@@ -80,7 +80,7 @@ public enum DBase3DataType {
    *
    * @param type Data type.
    */
-  DBase3DataType(char type) {
+  DBaseDataType(char type) {
     this.datatype = type;
   }
 
@@ -90,8 +90,8 @@ public enum DBase3DataType {
    * @param code Character code describing the dbf datatype.
    * @return Datatype.
    */
-  public static DBase3DataType valueOfDataType(char code) {
-    for (DBase3DataType v : values()) {
+  public static DBaseDataType valueOfDataType(char code) {
+    for (DBaseDataType v : values()) {
       if (v.datatype == code) {
         return v;
       }

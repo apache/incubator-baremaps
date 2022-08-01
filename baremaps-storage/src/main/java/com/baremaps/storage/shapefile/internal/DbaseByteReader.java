@@ -29,7 +29,7 @@ import org.apache.sis.feature.AbstractFeature;
  *
  * @author Marc Le Bihan
  */
-public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable {
+public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
 
   /** First data record position, in bytes. */
   protected short firstRecordPosition;
@@ -65,7 +65,7 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
   /** Date of last update; in YYMMDD format. */
   protected byte[] dbaseLastUpdate = new byte[3];
   /** List of field descriptors. */
-  private List<DBase3FieldDescriptor> fieldsDescriptors = new ArrayList<>();
+  private List<DBaseFieldDescriptor> fieldsDescriptors = new ArrayList<>();
 
   /** Connection properties. */
   private Properties info;
@@ -75,9 +75,9 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
    *
    * @param dbase3File File.
    * @param connectionInfos Connection properties, maybe null.
-   * @throws Dbase3Exception if the database seems to be invalid.
+   * @throws DbaseException if the database seems to be invalid.
    */
-  public Dbase3ByteReader(File dbase3File, Properties connectionInfos) throws IOException {
+  public DbaseByteReader(File dbase3File, Properties connectionInfos) throws IOException {
     super(dbase3File);
     this.info = connectionInfos;
 
@@ -108,7 +108,7 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
 
     var check = nextRowAvailable();
 
-    for (DBase3FieldDescriptor fd : this.fieldsDescriptors) {
+    for (DBaseFieldDescriptor fd : this.fieldsDescriptors) {
       byte[] data = new byte[fd.getLength()];
       getByteBuffer().get(data);
 
@@ -143,7 +143,7 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
     }
   }
 
-  private Object getNumber(DBase3FieldDescriptor fd, String value) {
+  private Object getNumber(DBaseFieldDescriptor fd, String value) {
     if (fd.getDecimalCount() == 0) {
       return Long.parseLong(value.trim());
     } else {
@@ -202,7 +202,7 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
     // read first part of record
     HashMap<String, byte[]> fieldsValues = new HashMap<>();
 
-    for (DBase3FieldDescriptor fd : this.fieldsDescriptors) {
+    for (DBaseFieldDescriptor fd : this.fieldsDescriptors) {
       byte[] data = new byte[fd.getLength()];
       getByteBuffer().get(data);
 
@@ -266,7 +266,7 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
       getByteBuffer().get(this.reservedFiller2);
 
       while (getByteBuffer().position() < this.firstRecordPosition - 1) {
-        DBase3FieldDescriptor fd = new DBase3FieldDescriptor(getByteBuffer());
+        DBaseFieldDescriptor fd = new DBaseFieldDescriptor(getByteBuffer());
         this.fieldsDescriptors.add(fd);
         // loop until you hit the 0Dh field terminator
       }
@@ -276,7 +276,7 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
       // If the last character read after the field descriptor isn't 0x0D, the expected mark has not
       // been found and the DBF is corrupted.
       if (this.descriptorTerminator != 0x0D) {
-        throw new Dbase3Exception("File descriptor problem");
+        throw new DbaseException("File descriptor problem");
       }
     } catch (BufferUnderflowException e) {
       // This exception doesn't denote a trouble of file opening because the file has been checked
@@ -285,7 +285,7 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
       // Therefore, an internal structure problem cause maybe a premature End of file or anything
       // else, but the only thing
       // we can conclude is : we are not before a device trouble, but a file format trouble.
-      throw new Dbase3Exception("File descriptor problem");
+      throw new DbaseException("File descriptor problem");
     }
   }
 
@@ -294,7 +294,7 @@ public class Dbase3ByteReader extends CommonByteReader implements AutoCloseable 
    *
    * @return Fields descriptors.
    */
-  public List<DBase3FieldDescriptor> getFieldsDescriptors() {
+  public List<DBaseFieldDescriptor> getFieldsDescriptors() {
     return this.fieldsDescriptors;
   }
 

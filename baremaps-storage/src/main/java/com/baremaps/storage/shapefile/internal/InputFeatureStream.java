@@ -33,7 +33,7 @@ import org.apache.sis.storage.DataStoreClosedException;
  */
 public class InputFeatureStream extends InputStream {
 
-  private Dbase3ByteReader dbaseReader;
+  private DbaseByteReader dbaseReader;
 
   /** Shapefile. */
   private File shapefile;
@@ -63,7 +63,7 @@ public class InputFeatureStream extends InputStream {
   public InputFeatureStream(File shapefile, File dbaseFile, File shpfileIndex) throws IOException {
     this.shapefile = shapefile;
     this.databaseFile = dbaseFile;
-    this.dbaseReader = new Dbase3ByteReader(dbaseFile, null);
+    this.dbaseReader = new DbaseByteReader(dbaseFile, null);
 
     if (shpfileIndex != null && (shpfileIndex.exists() && shpfileIndex.isFile())) {
       this.shapefileIndex = shpfileIndex;
@@ -140,7 +140,7 @@ public class InputFeatureStream extends InputStream {
    *
    * @return List of fields descriptors.
    */
-  public List<DBase3FieldDescriptor> getDatabaseFieldsDescriptors() {
+  public List<DBaseFieldDescriptor> getDatabaseFieldsDescriptors() {
     return this.shapefileReader.getFieldsDescriptors();
   }
 

@@ -32,7 +32,7 @@ import org.apache.sis.feature.DefaultFeatureType;
  * @see <a href="http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm">dBASE III File
  *     Structure</a>
  */
-public class Shapefile {
+public class ShapefileReader {
   /** Shapefile. */
   private File shapefile;
 
@@ -49,14 +49,14 @@ public class Shapefile {
   private ShapefileDescriptor shapefileDescriptor;
 
   /** Database field descriptors. */
-  private List<DBase3FieldDescriptor> databaseFieldsDescriptors;
+  private List<DBaseFieldDescriptor> databaseFieldsDescriptors;
 
   /**
    * Construct a Shapefile from a file.
    *
    * @param shapefile file to read.
    */
-  public Shapefile(String shapefile) {
+  public ShapefileReader(String shapefile) {
     Objects.requireNonNull(shapefile, "The shapefile to load cannot be null.");
 
     this.shapefile = new File(shapefile);
@@ -92,7 +92,7 @@ public class Shapefile {
    * @param shpfile file to read.
    * @param dbasefile Associated DBase file.
    */
-  public Shapefile(String shpfile, String dbasefile) {
+  public ShapefileReader(String shpfile, String dbasefile) {
     Objects.requireNonNull(shpfile, "The shapefile to load cannot be null.");
     Objects.requireNonNull(dbasefile, "The DBase III file to load cannot be null.");
     this.shapefile = new File(shpfile);
@@ -106,7 +106,7 @@ public class Shapefile {
    * @param dbasefile Associated DBase file.
    * @param shpfileIndex Associated Shapefile index, may be null.
    */
-  public Shapefile(String shpfile, String dbasefile, String shpfileIndex) {
+  public ShapefileReader(String shpfile, String dbasefile, String shpfileIndex) {
     this(shpfile, dbasefile);
     this.shapeFileIndex = new File(shpfileIndex);
   }
@@ -134,7 +134,7 @@ public class Shapefile {
    *
    * @return List of fields descriptors.
    */
-  public List<DBase3FieldDescriptor> getDatabaseFieldsDescriptors() {
+  public List<DBaseFieldDescriptor> getDatabaseFieldsDescriptors() {
     return this.databaseFieldsDescriptors;
   }
 
