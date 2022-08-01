@@ -14,9 +14,6 @@
 
 package com.baremaps.storage.geopackage;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -25,7 +22,6 @@ import java.util.Optional;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import javax.xml.crypto.Data;
 import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
@@ -164,9 +160,9 @@ public class GeoPackageTable implements FeatureSet {
   private Object asValue(Object value) {
     if (value instanceof GeoPackageGeometryData geometry) {
       return asJtsGeometry(geometry.getGeometry());
-    } else if (value instanceof Date date){
+    } else if (value instanceof Date date) {
       return value.toString();
-    }  else {
+    } else {
       return value;
     }
   }
