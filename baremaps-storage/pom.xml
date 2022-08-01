@@ -36,28 +36,6 @@
       <groupId>mil.nga.geopackage</groupId>
       <artifactId>geopackage</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derby</artifactId>
-    </dependency>
-
-    <!-- TODO: remove these LGPL dependencies once alternatives are available in Apache SIS -->
-    <dependency>
-      <groupId>org.apache.sis.non-free</groupId>
-      <artifactId>sis-epsg</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.sis.non-free</groupId>
-      <artifactId>sis-embedded-data</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geotoolkit</groupId>
-      <artifactId>geotk-feature-geojson</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.geotoolkit</groupId>
-      <artifactId>geotk-feature-postgres</artifactId>
-    </dependency>
 
     <!-- testing dependencies -->
     <dependency>

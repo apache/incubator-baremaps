@@ -110,7 +110,7 @@ public class InputFeatureStream extends InputStream {
    * Read next feature responding to the SQL query.
    *
    * @return Feature, null if no more feature is available.
-   * @throws DataStoreClosedException if the current connection used to query the shapefile has been
+   * @throws ShapefileException if the current connection used to query the shapefile has been
    *     closed.
    */
   public AbstractFeature readFeature() throws ShapefileException {

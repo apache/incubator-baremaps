@@ -104,8 +104,6 @@
     <version.lib.ipresource>1.49</version.lib.ipresource>
     <version.lib.geoapi>4.0-M19</version.lib.geoapi>
     <version.lib.sis>2.0-M0115</version.lib.sis>
-    <version.lib.sis-non-free>1.1</version.lib.sis-non-free>
-    <version.lib.geotk>22.05.16</version.lib.geotk>
 
     <!-- testing -->
     <version.lib.junit>5.7.1</version.lib.junit>
@@ -482,36 +480,9 @@
         <version>${version.lib.sis}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.sis.non-free</groupId>
-        <artifactId>sis-epsg</artifactId>
-        <version>${version.lib.sis-non-free}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.sis.non-free</groupId>
-        <artifactId>sis-embedded-data</artifactId>
-        <version>${version.lib.sis-non-free}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.derby</groupId>
-        <artifactId>derby</artifactId>
-        <version>${version.lib.derby}</version>
-      </dependency>
-      <dependency>
         <groupId>mil.nga.geopackage</groupId>
         <artifactId>geopackage</artifactId>
         <version>${version.lib.geopackage}</version>
-      </dependency>
-
-      <!-- TODO: remove LGPL dependencies -->
-      <dependency>
-        <groupId>org.geotoolkit</groupId>
-        <artifactId>geotk-feature-geojson</artifactId>
-        <version>${version.lib.geotk}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.geotoolkit</groupId>
-        <artifactId>geotk-feature-postgres</artifactId>
-        <version>${version.lib.geotk}</version>
       </dependency>
 
       <!-- External dependencies -->
