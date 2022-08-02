@@ -26,7 +26,6 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
@@ -43,29 +42,28 @@ public class Init implements Callable<Integer> {
   private static final Logger logger = LoggerFactory.getLogger(Init.class);
 
   @Option(
-      names = {"--index-path"},
-      paramLabel = "INDEX_PATH",
-      description = "The path to the geocoder Lucene index.",
+      names = {"--index"},
+      paramLabel = "INDEX",
+      description = "The path to the lucene index.",
       defaultValue = "geocoder_index")
-  private Path indexPath;
+  private Path index;
 
   @Option(
-      names = {"--database-path"},
-      paramLabel = "DATABASE_PATH",
-      description = "The path to the output SQLite database.",
+      names = {"--geonames"},
+      paramLabel = "GEONAMES",
+      description = "The path of the geonames file.")
+  private Path geonames;
+
+  @Option(
+      names = {"--database"},
+      paramLabel = "DATABASE",
+      description = "The path of the output SQLite database.",
       defaultValue = "iploc.db")
-  private Path databasePath;
-
-  @Option(
-      names = {"--data-uri"},
-      paramLabel = "DATA_URI",
-      description = "The URI to the geonames data.")
-  private URI dataURI;
+  private Path database;
 
   @Override
   public Integer call() throws Exception {
-    try (Geocoder geocoder = new GeonamesGeocoder(indexPath, dataURI)) {
-
+    try (Geocoder geocoder = new GeonamesGeocoder(index, geonames)) {
       if (!geocoder.indexExists()) {
         logger.info("Building the geocoder index");
         geocoder.build();
@@ -99,7 +97,7 @@ public class Init implements Callable<Integer> {
               });
 
       logger.info("Creating the Iploc database");
-      String jdbcUrl = String.format("JDBC:sqlite:%s", databasePath.toString());
+      String jdbcUrl = String.format("JDBC:sqlite:%s", database.toString());
       try {
         SqliteUtils.executeResource(jdbcUrl, "iploc_init.sql");
       } catch (Exception e) {
@@ -129,8 +127,7 @@ public class Init implements Callable<Integer> {
               ipLocStats.getNotInsertedCount()));
 
       logger.info("IpLoc database created successfully");
-
-      return 0;
     }
+    return 0;
   }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <groupId>com.baremaps</groupId>
   <artifactId>baremaps</artifactId>
@@ -50,30 +51,34 @@
 
   <repositories>
     <repository>
-      <id>osgeo</id>
-      <name>OSGeo Release Repository</name>
-      <url>https://repo.osgeo.org/repository/release/</url>
-      <snapshots><enabled>false</enabled></snapshots>
-      <releases><enabled>true</enabled></releases>
+      <id>geotoolkit.org</id>
+      <name>Geotoolkit.org repository</name>
+      <url>https://maven.geotoolkit.org</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
     <repository>
-      <id>osgeo-snapshot</id>
-      <name>OSGeo Snapshot Repository</name>
-      <url>https://repo.osgeo.org/repository/snapshot/</url>
-      <snapshots><enabled>true</enabled></snapshots>
-      <releases><enabled>false</enabled></releases>
+      <id>geomatys</id>
+      <name>Geomatys public repository</name>
+      <url>https://nexus.geomatys.com/repository/maven-public</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
   </repositories>
 
   <properties>
     <!-- project -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
 
     <!-- libraries -->
     <version.lib.caffeine>3.0.4</version.lib.caffeine>
+    <version.lib.derby>10.14.2.0</version.lib.derby>
     <version.lib.commons-compress>1.21</version.lib.commons-compress>
+    <version.lib.geopackage>6.2.1</version.lib.geopackage>
     <version.lib.guava>31.0.1-jre</version.lib.guava>
     <version.lib.jersey>2.34</version.lib.jersey>
     <version.lib.jts>1.18.2</version.lib.jts>
@@ -97,15 +102,13 @@
     <version.lib.servlet>3.1.0</version.lib.servlet>
     <version.lib.graalvm>22.0.0.2</version.lib.graalvm>
     <version.lib.ipresource>1.49</version.lib.ipresource>
+    <version.lib.geoapi>4.0-M19</version.lib.geoapi>
+    <version.lib.sis>2.0-M0115</version.lib.sis>
 
     <!-- testing -->
-    <version.lib.testng>7.4.0</version.lib.testng>
-    <version.lib.selenium>3.141.59</version.lib.selenium>
-    <version.lib.s3mock>2.2.3</version.lib.s3mock>
-    <version.lib.testcontainers>1.16.0</version.lib.testcontainers>
-    <version.lib.junit-vintage>5.7.2</version.lib.junit-vintage>
-    <version.lib.mockito>1.10.19</version.lib.mockito>
     <version.lib.junit>5.7.1</version.lib.junit>
+    <version.lib.junit-vintage>5.7.2</version.lib.junit-vintage>
+    <version.lib.testcontainers>1.16.0</version.lib.testcontainers>
 
     <!-- plugins -->
     <version.plugin.compiler>3.8.1</version.plugin.compiler>
@@ -118,20 +121,23 @@
     <sonar.organization>baremaps</sonar.organization>
     <sonar.projectKey>baremaps_baremaps</sonar.projectKey>
     <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
+    <version.lib.hikari>5.0.0</version.lib.hikari>
   </properties>
 
   <modules>
     <module>baremaps-benchmarks</module>
     <module>baremaps-cli</module>
-    <module>baremaps-core</module>
-    <module>baremaps-osm</module>
-    <module>baremaps-http</module>
-    <module>baremaps-testing</module>
     <module>baremaps-collection</module>
+    <module>baremaps-database</module>
     <module>baremaps-geocoder</module>
     <module>baremaps-iploc</module>
-    <module>baremaps-blob</module>
+    <module>baremaps-http</module>
+    <module>baremaps-osm</module>
+    <module>baremaps-storage</module>
     <module>baremaps-stream</module>
+    <module>baremaps-testing</module>
+    <module>baremaps-workflow</module>
+    <module>baremaps-postgres</module>
   </modules>
 
   <profiles>
@@ -315,7 +321,7 @@
             <googleJavaFormat>
               <version>1.13.0</version>
             </googleJavaFormat>
-            <removeUnusedImports />
+            <removeUnusedImports/>
             <licenseHeader>
               <file>${maven.multiModuleProjectDirectory}/LICENSE.header</file>
             </licenseHeader>
@@ -349,7 +355,7 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-blob</artifactId>
+        <artifactId>baremaps-cli</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -359,12 +365,22 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-core</artifactId>
+        <artifactId>baremaps-geocoder</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-cli</artifactId>
+        <artifactId>baremaps-http</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-iploc</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-database</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -374,12 +390,17 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-stream</artifactId>
+        <artifactId>baremaps-postgres</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-http</artifactId>
+        <artifactId>baremaps-storage</artifactId>
+        <groupId>com.baremaps</groupId>
+        <version>${project.parent.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>baremaps-stream</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
@@ -390,19 +411,78 @@
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-geonames</artifactId>
+        <artifactId>baremaps-workflow</artifactId>
         <groupId>com.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
+
+      <!-- JTS -->
       <dependency>
-        <artifactId>baremaps-geocoder</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
+        <artifactId>jts-core</artifactId>
+        <groupId>org.locationtech.jts</groupId>
+        <version>${version.lib.jts}</version>
       </dependency>
       <dependency>
-        <artifactId>baremaps-iploc</artifactId>
-        <groupId>com.baremaps</groupId>
-        <version>${project.parent.version}</version>
+        <artifactId>jts-io-common</artifactId>
+        <groupId>org.locationtech.jts.io</groupId>
+        <version>${version.lib.jts}</version>
+      </dependency>
+      <dependency>
+        <artifactId>proj4j</artifactId>
+        <groupId>org.locationtech.proj4j</groupId>
+        <version>${version.lib.proj4j}</version>
+      </dependency>
+
+      <!-- Apache SIS -->
+      <dependency>
+        <groupId>org.apache.sis.core</groupId>
+        <artifactId>sis-feature</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.core</groupId>
+        <artifactId>sis-utility</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.core</groupId>
+        <artifactId>sis-referencing</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-storage</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-earth-observation</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-geotiff</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-xmlstore</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-sqlstore</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.sis.storage</groupId>
+        <artifactId>sis-netcdf</artifactId>
+        <version>${version.lib.sis}</version>
+      </dependency>
+      <dependency>
+        <groupId>mil.nga.geopackage</groupId>
+        <artifactId>geopackage</artifactId>
+        <version>${version.lib.geopackage}</version>
       </dependency>
 
       <!-- External dependencies -->
@@ -432,29 +512,9 @@
         <version>${version.lib.postgresql}</version>
       </dependency>
       <dependency>
-        <artifactId>commons-dbcp2</artifactId>
-        <groupId>org.apache.commons</groupId>
-        <version>${version.lib.dbcp2}</version>
-      </dependency>
-      <dependency>
         <artifactId>commons-compress</artifactId>
         <groupId>org.apache.commons</groupId>
         <version>${version.lib.commons-compress}</version>
-      </dependency>
-      <dependency>
-        <artifactId>jts-core</artifactId>
-        <groupId>org.locationtech.jts</groupId>
-        <version>${version.lib.jts}</version>
-      </dependency>
-      <dependency>
-        <artifactId>jts-io-common</artifactId>
-        <groupId>org.locationtech.jts.io</groupId>
-        <version>${version.lib.jts}</version>
-      </dependency>
-      <dependency>
-        <artifactId>proj4j</artifactId>
-        <groupId>org.locationtech.proj4j</groupId>
-        <version>${version.lib.proj4j}</version>
       </dependency>
       <dependency>
         <artifactId>protobuf-java</artifactId>
@@ -579,6 +639,18 @@
         <artifactId>ipresource</artifactId>
         <version>${version.lib.ipresource}</version>
       </dependency>
+      <dependency>
+        <groupId>com.zaxxer</groupId>
+        <artifactId>HikariCP</artifactId>
+        <version>${version.lib.hikari}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jersey</groupId>
+        <artifactId>jersey-bom</artifactId>
+        <version>${version.lib.jersey}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
 
       <!-- Logging libraries -->
       <dependency>
@@ -602,11 +674,9 @@
         <version>${version.lib.log4j}</version>
       </dependency>
       <dependency>
-        <groupId>org.glassfish.jersey</groupId>
-        <artifactId>jersey-bom</artifactId>
-        <version>${version.lib.jersey}</version>
-        <type>pom</type>
-        <scope>import</scope>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${version.lib.slf4j}</version>
       </dependency>
 
       <!-- Testing libraries -->
@@ -647,58 +717,6 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <artifactId>selenium-java</artifactId>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <scope>test</scope>
-        <version>${version.lib.selenium}</version>
-      </dependency>
-      <dependency>
-        <artifactId>selenium-server</artifactId>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <scope>test</scope>
-        <version>${version.lib.selenium}</version>
-      </dependency>
-      <dependency>
-        <artifactId>selenium-chrome-driver</artifactId>
-        <groupId>org.seleniumhq.selenium</groupId>
-        <scope>test</scope>
-        <version>${version.lib.selenium}</version>
-      </dependency>
-      <dependency>
-        <artifactId>testng</artifactId>
-        <groupId>org.testng</groupId>
-        <scope>test</scope>
-        <version>${version.lib.testng}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.adobe.testing</groupId>
-        <artifactId>s3mock</artifactId>
-        <version>${version.lib.s3mock}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-to-slf4j</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.adobe.testing</groupId>
-        <artifactId>s3mock-testsupport-common</artifactId>
-        <version>${version.lib.s3mock}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.adobe.testing</groupId>
-        <artifactId>s3mock-junit5</artifactId>
-        <version>${version.lib.s3mock}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-xml</artifactId>
         <version>${version.lib.jackson}</version>
@@ -714,12 +732,6 @@
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
         <version>${version.lib.awaitability}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-all</artifactId>
-        <version>${version.lib.mockito}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -793,29 +805,12 @@
       <artifactId>postgresql</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.adobe.testing</groupId>
-      <artifactId>s3mock</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.adobe.testing</groupId>
-      <artifactId>s3mock-testsupport-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.adobe.testing</groupId>
-      <artifactId>s3mock-junit5</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-xml</artifactId>
     </dependency>
     <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

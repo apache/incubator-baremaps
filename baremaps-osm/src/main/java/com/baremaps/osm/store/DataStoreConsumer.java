@@ -15,8 +15,8 @@
 package com.baremaps.osm.store;
 
 import com.baremaps.collection.LongDataMap;
-import com.baremaps.osm.domain.DataBlock;
 import com.baremaps.osm.function.BlockConsumerAdapter;
+import com.baremaps.osm.model.DataBlock;
 import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 

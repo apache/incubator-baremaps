@@ -22,11 +22,12 @@ import com.baremaps.collection.memory.OnHeapMemory;
 import com.baremaps.collection.type.CoordinateDataType;
 import com.baremaps.collection.type.LongListDataType;
 import com.baremaps.collection.utils.FileUtils;
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.EntityConsumerAdapter;
-import com.baremaps.osm.pbf.OsmPbfParser;
+import com.baremaps.osm.model.Node;
+import com.baremaps.osm.model.Relation;
+import com.baremaps.osm.model.Way;
+import com.baremaps.osm.pbf.PbfBlockReader;
+import com.baremaps.osm.pbf.PbfEntityReader;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,28 +87,26 @@ public class OpenStreetMapGeometriesBenchmark {
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      new OsmPbfParser()
-          .coordinates(coordinates)
-          .references(references)
-          .projection(4326)
-          .entities(inputStream)
-          .forEach(
-              new EntityConsumerAdapter() {
-                @Override
-                public void match(Node node) {
-                  nodes.incrementAndGet();
-                }
+      new PbfEntityReader(
+              new PbfBlockReader().coordinates(coordinates).references(references).projection(4326))
+          .stream(inputStream)
+              .forEach(
+                  new EntityConsumerAdapter() {
+                    @Override
+                    public void match(Node node) {
+                      nodes.incrementAndGet();
+                    }
 
-                @Override
-                public void match(Way way) {
-                  ways.incrementAndGet();
-                }
+                    @Override
+                    public void match(Way way) {
+                      ways.incrementAndGet();
+                    }
 
-                @Override
-                public void match(Relation relation) {
-                  relations.incrementAndGet();
-                }
-              });
+                    @Override
+                    public void match(Relation relation) {
+                      relations.incrementAndGet();
+                    }
+                  });
     }
     FileUtils.deleteRecursively(directory);
   }

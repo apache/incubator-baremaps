@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Path;
 import java.util.Spliterators;
 import java.util.stream.Stream;
@@ -45,9 +44,9 @@ import org.apache.lucene.search.TermQuery;
 
 public class GeonamesGeocoder extends Geocoder {
 
-  private URI data;
+  private Path data;
 
-  public GeonamesGeocoder(Path index, URI data) throws IOException {
+  public GeonamesGeocoder(Path index, Path data) throws IOException {
     super(index);
     this.data = data;
   }
@@ -85,7 +84,7 @@ public class GeonamesGeocoder extends Geocoder {
             .withColumnSeparator('\t')
             .withoutQuoteChar();
     MappingIterator<GeonamesRecord> it =
-        mapper.readerFor(GeonamesRecord.class).with(schema).readValues(data.toURL().openStream());
+        mapper.readerFor(GeonamesRecord.class).with(schema).readValues(data.toFile());
     return StreamSupport.stream(Spliterators.spliteratorUnknownSize(it, 0), false)
         .map(
             record -> {

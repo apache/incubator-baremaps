@@ -29,18 +29,16 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ExternalMergeSortTest {
 
   List<String> strings = List.of("a", "b", "k", "c", "d", "a", "i", "j", "e", "e", "h", "f", "g");
-  List<String> stringsAsc =
-      strings.stream().sorted(Comparator.naturalOrder()).collect(Collectors.toList());
-  List<String> stringsDsc =
-      strings.stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
-  List<String> stringsDistinct = stringsAsc.stream().distinct().collect(Collectors.toList());
+  List<String> stringsAsc = strings.stream().sorted(Comparator.naturalOrder()).toList();
+  List<String> stringsDsc = strings.stream().sorted(Comparator.reverseOrder()).toList();
+  ;
+  List<String> stringsDistinct = stringsAsc.stream().distinct().toList();
   DataList<String> input;
   DataList<String> output;
   Supplier<DataList<String>> supplier;

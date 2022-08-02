@@ -18,76 +18,71 @@ import static com.google.common.net.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 
-import com.baremaps.blob.Blob;
-import com.baremaps.blob.BlobStoreException;
-import com.baremaps.blob.ConfigBlobStore;
-import com.baremaps.core.tile.Tile;
-import com.baremaps.core.tile.TileStore;
-import com.baremaps.core.tile.TileStoreException;
+import com.baremaps.database.tile.Tile;
+import com.baremaps.database.tile.TileStore;
+import com.baremaps.database.tile.TileStoreException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @Singleton
-@Path("/")
+@javax.ws.rs.Path("/")
 public class ServerResources {
 
-  private final URI style;
+  private final Path style;
 
-  private final URI tileset;
-
-  private final ConfigBlobStore blobStore;
+  private final Path tileset;
 
   private final TileStore tileStore;
 
+  public static final String TILE_ENCODING = "gzip";
+
+  public static final String TILE_TYPE = "application/vnd.mapbox-vector-tile";
+
   @Inject
   public ServerResources(
-      @Named("tileset") URI tileset,
-      @Named("style") URI style,
-      ConfigBlobStore blobStore,
-      TileStore tileStore)
-      throws BlobStoreException, IOException {
+      @Named("tileset") Path tileset, @Named("style") Path style, TileStore tileStore) {
     this.tileset = tileset;
     this.style = style;
-    this.blobStore = blobStore;
     this.tileStore = tileStore;
   }
 
   @GET
-  @Path("style.json")
+  @javax.ws.rs.Path("style.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getStyle() throws BlobStoreException, IOException {
-    return Response.ok(blobStore.get(style).getInputStream().readAllBytes()).build();
+  public Response getStyle() throws IOException {
+    return Response.ok(Files.readAllBytes(style)).build();
   }
 
   @GET
-  @Path("tiles.json")
+  @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getTileset() throws BlobStoreException, IOException {
-    return Response.ok(blobStore.get(tileset).getInputStream().readAllBytes()).build();
+  public Response getTileset() throws IOException {
+    return Response.ok(Files.readAllBytes(tileset)).build();
   }
 
   @GET
-  @Path("/tiles/{z}/{x}/{y}.mvt")
+  @javax.ws.rs.Path("/tiles/{z}/{x}/{y}.mvt")
   public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
     Tile tile = new Tile(x, y, z);
     try {
-      Blob blob = tileStore.read(tile);
+      ByteBuffer blob = tileStore.read(tile);
       if (blob != null) {
         return Response.status(200) // lgtm [java/xss]
             .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-            .header(CONTENT_TYPE, blob.getContentType())
-            .header(CONTENT_ENCODING, blob.getContentEncoding())
-            .entity(blob.getInputStream())
+            .header(CONTENT_TYPE, TILE_TYPE)
+            .header(CONTENT_ENCODING, TILE_ENCODING)
+            .entity(blob.array())
             .build();
       } else {
         return Response.status(204).build();
@@ -98,7 +93,7 @@ public class ServerResources {
   }
 
   @GET
-  @Path("{path:.*}")
+  @javax.ws.rs.Path("{path:.*}")
   public Response get(@PathParam("path") String path) throws IOException {
     if (path.equals("") || path.endsWith("/")) {
       path += "index.html";

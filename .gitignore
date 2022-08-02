@@ -10,7 +10,6 @@
 log/
 target/
 examples/output/
-baremaps-editor/node/
 
 # Release
 /baremaps/
@@ -23,3 +22,6 @@ jmh-result.json
 _site/
 .sass-cache/
 Gemfile.lock
+
+# Logs
+*.log

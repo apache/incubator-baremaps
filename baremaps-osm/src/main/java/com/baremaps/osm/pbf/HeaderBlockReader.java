@@ -16,10 +16,10 @@ package com.baremaps.osm.pbf;
 
 import com.baremaps.osm.binary.Osmformat;
 import com.baremaps.osm.binary.Osmformat.HeaderBBox;
-import com.baremaps.osm.domain.Blob;
-import com.baremaps.osm.domain.Bound;
-import com.baremaps.osm.domain.Header;
-import com.baremaps.osm.domain.HeaderBlock;
+import com.baremaps.osm.model.Blob;
+import com.baremaps.osm.model.Bound;
+import com.baremaps.osm.model.Header;
+import com.baremaps.osm.model.HeaderBlock;
 import com.baremaps.stream.StreamException;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.time.LocalDateTime;
@@ -28,7 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.zip.DataFormatException;
 
 /** A reader that extracts header blocks and entities from OpenStreetMap header blobs. */
-public class HeaderBlockReader {
+class HeaderBlockReader {
 
   public static final DateTimeFormatter format =
       DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");

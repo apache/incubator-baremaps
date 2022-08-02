@@ -14,8 +14,8 @@
 
 package com.baremaps.osm.function;
 
-import com.baremaps.osm.domain.DataBlock;
-import com.baremaps.osm.domain.HeaderBlock;
+import com.baremaps.osm.model.DataBlock;
+import com.baremaps.osm.model.HeaderBlock;
 
 /** {@inheritDoc} */
 public interface BlockConsumerAdapter extends BlockConsumer {

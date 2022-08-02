@@ -60,5 +60,10 @@
       <artifactId>jackson-dataformat-csv</artifactId>
       <version>${version.lib.jackson}</version>
     </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-testing</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

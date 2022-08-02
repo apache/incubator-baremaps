@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 public class DirectoryWatcher implements Runnable {
 
-  private static final Logger logger = LoggerFactory.getLogger(DevelopmentResources.class);
+  private static final Logger logger = LoggerFactory.getLogger(DevResources.class);
 
   private final Set<Path> directories;
 

@@ -14,11 +14,10 @@
 
 package com.baremaps.server.resources;
 
-import static com.baremaps.testing.TestConstants.DATABASE_URL;
 import static org.junit.Assert.assertEquals;
 
-import com.baremaps.core.postgres.PostgisPlugin;
-import com.baremaps.core.postgres.PostgresUtils;
+import com.baremaps.postgres.PostgresUtils;
+import com.baremaps.server.ogcapi.PostgisPlugin;
 import com.google.common.io.Resources;
 import java.io.File;
 import java.net.URL;
@@ -37,6 +36,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ImportResourceIntegrationTest extends JerseyTest {
@@ -49,7 +49,7 @@ public class ImportResourceIntegrationTest extends JerseyTest {
     enable(TestProperties.DUMP_ENTITY);
 
     // Create a datasource to a throwaway postgis database
-    DataSource dataSource = PostgresUtils.datasource(DATABASE_URL);
+    DataSource dataSource = PostgresUtils.dataSource("jdbc:tc:postgis:13-3.1:///baremaps");
 
     // Initialize the database
     jdbi =
@@ -80,6 +80,7 @@ public class ImportResourceIntegrationTest extends JerseyTest {
   }
 
   @Test
+  @Ignore("Geotools has been replaced with Apache SIS")
   public void test() {
     String FILE = "features.geojson";
     URL url = Resources.getResource(FILE);

@@ -1,0 +1,22 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="map-export" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.baremaps.cli.Baremaps" />
+    <module name="baremaps-cli" />
+    <option name="PROGRAM_PARAMETERS" value="map export --database jdbc:postgresql://localhost:5432/baremaps?user=baremaps&amp;password=baremaps --tileset tileset.json --repository tiles/" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/docs/examples/openstreetmap" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.baremaps.server.ogcapi.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

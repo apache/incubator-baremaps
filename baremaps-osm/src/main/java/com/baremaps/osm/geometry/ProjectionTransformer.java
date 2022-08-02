@@ -28,28 +28,52 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.geom.util.GeometryTransformer;
+import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.ProjCoordinate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** A transformer that reprojects geometries and sets the correct output SRIDs. */
 public class ProjectionTransformer extends GeometryTransformer {
+
+  private static final Logger logger = LoggerFactory.getLogger(ProjectionTransformer.class);
 
   private final int inputSRID;
 
   private final int outputSRID;
 
-  private final CoordinateTransform coordinateTransform;
+  private final CoordinateTransform transform;
+
+  private ProjCoordinate min;
+
+  private ProjCoordinate max;
 
   /**
    * Creates a transformer that reprojects geometries with the provided SRIDs.
    *
-   * @param inputSRID the input SRID
-   * @param outputSRID the output SRID
+   * @param sourceSrid the source SRID
+   * @param targetSrid the target SRID
    */
-  public ProjectionTransformer(int inputSRID, int outputSRID) {
-    this.inputSRID = inputSRID;
-    this.outputSRID = outputSRID;
-    this.coordinateTransform = GeometryUtils.coordinateTransform(inputSRID, outputSRID);
+  public ProjectionTransformer(Integer sourceSrid, Integer targetSrid) {
+    this.inputSRID = sourceSrid;
+    this.outputSRID = targetSrid;
+    this.transform = GeometryUtils.coordinateTransform(sourceSrid, targetSrid);
+
+    var targetCRS = new CRSFactory().createFromName(String.format("EPSG:%s", targetSrid));
+    var lonlatTranform = GeometryUtils.coordinateTransform(4326, sourceSrid);
+    min =
+        lonlatTranform.transform(
+            new ProjCoordinate(
+                Math.toDegrees(targetCRS.getProjection().getMinLongitude()),
+                Math.toDegrees(targetCRS.getProjection().getMinLatitude())),
+            new ProjCoordinate());
+    max =
+        lonlatTranform.transform(
+            new ProjCoordinate(
+                Math.toDegrees(targetCRS.getProjection().getMaxLongitude()),
+                Math.toDegrees(targetCRS.getProjection().getMaxLatitude())),
+            new ProjCoordinate());
   }
 
   @Override
@@ -63,41 +87,95 @@ public class ProjectionTransformer extends GeometryTransformer {
   }
 
   private Coordinate transformCoordinate(Coordinate coordinate) {
-    ProjCoordinate c1 = new ProjCoordinate(coordinate.x, coordinate.y);
-    ProjCoordinate c2 = coordinateTransform.transform(c1, new ProjCoordinate());
+    var x = Math.max(Math.min(coordinate.x, max.x), min.x);
+    var y = Math.max(Math.min(coordinate.y, max.y), min.y);
+    ProjCoordinate c1 = new ProjCoordinate(x, y);
+    ProjCoordinate c2 = transform.transform(c1, new ProjCoordinate());
     return new Coordinate(c2.x, c2.y);
   }
 
   protected Geometry transformPoint(Point geom, Geometry parent) {
-    return withTargetSRID(super.transformPoint(geom, parent));
+    try {
+      return withTargetSRID(super.transformPoint(geom, parent));
+    } catch (Exception e) {
+      logger.error("Point cannot be reprojected", e);
+      return parent.getFactory().createEmpty(0);
+    }
   }
 
   protected Geometry transformMultiPoint(MultiPoint geom, Geometry parent) {
-    return withTargetSRID(super.transformMultiPoint(geom, parent));
+    try {
+      Geometry geometry = super.transformMultiPoint(geom, parent);
+      if (geometry instanceof Point point) {
+        geometry = factory.createMultiPoint(new Point[] {point});
+      }
+      return geometry;
+    } catch (Exception e) {
+      logger.error("MultiPoint cannot be reprojected", e);
+      return parent.getFactory().createEmpty(0);
+    }
   }
 
   protected Geometry transformLinearRing(LinearRing geom, Geometry parent) {
-    return withTargetSRID(super.transformLinearRing(geom, parent));
+    try {
+      return withTargetSRID(super.transformLinearRing(geom, parent));
+    } catch (Exception e) {
+      logger.error("LinearRing cannot be reprojected", e);
+      return parent.getFactory().createEmpty(0);
+    }
   }
 
   protected Geometry transformLineString(LineString geom, Geometry parent) {
-    return withTargetSRID(super.transformLineString(geom, parent));
+    try {
+      return withTargetSRID(super.transformLineString(geom, parent));
+    } catch (Exception e) {
+      logger.error("LineString cannot be reprojected", e);
+      return parent.getFactory().createEmpty(0);
+    }
   }
 
   protected Geometry transformMultiLineString(MultiLineString geom, Geometry parent) {
-    return withTargetSRID(super.transformMultiLineString(geom, parent));
+    try {
+      Geometry geometry = super.transformMultiLineString(geom, parent);
+      if (geometry instanceof LineString lineString) {
+        geometry = factory.createMultiLineString(new LineString[] {lineString});
+      }
+      return geometry;
+    } catch (Exception e) {
+      logger.error("MultiLineString cannot be reprojected", e);
+      return parent.getFactory().createEmpty(0);
+    }
   }
 
   protected Geometry transformPolygon(Polygon geom, Geometry parent) {
-    return withTargetSRID(super.transformPolygon(geom, parent));
+    try {
+      return withTargetSRID(super.transformPolygon(geom, parent));
+    } catch (Exception e) {
+      logger.error("Polygon cannot be reprojected", e);
+      return parent.getFactory().createEmpty(0);
+    }
   }
 
   protected Geometry transformMultiPolygon(MultiPolygon geom, Geometry parent) {
-    return withTargetSRID(super.transformMultiPolygon(geom, parent));
+    try {
+      Geometry geometry = super.transformMultiPolygon(geom, parent);
+      if (geometry instanceof Polygon polygon) {
+        geometry = factory.createMultiPolygon(new Polygon[] {polygon});
+      }
+      return withTargetSRID(geometry);
+    } catch (Exception e) {
+      logger.error("MultiPolygon cannot be reprojected", e);
+      return parent.getFactory().createEmpty(0);
+    }
   }
 
   protected Geometry transformGeometryCollection(GeometryCollection geom, Geometry parent) {
-    return withTargetSRID(super.transformGeometryCollection(geom, parent));
+    try {
+      return withTargetSRID(super.transformGeometryCollection(geom, parent));
+    } catch (Exception e) {
+      logger.error("GeometryCollection cannot be reprojected", e);
+      return parent.getFactory().createEmpty(0);
+    }
   }
 
   private Geometry withTargetSRID(Geometry outputGeom) {

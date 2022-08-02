@@ -16,8 +16,8 @@ package com.baremaps.server.ogcapi;
 
 import static org.junit.Assert.assertEquals;
 
-import com.baremaps.core.postgres.PostgresUtils;
 import com.baremaps.model.TileJSON;
+import com.baremaps.postgres.PostgresUtils;
 import com.fasterxml.jackson.core.util.JacksonFeature;
 import java.util.List;
 import java.util.UUID;
@@ -44,7 +44,7 @@ public class TilesetsResourceIntegrationTest extends JerseyTest {
     enable(TestProperties.DUMP_ENTITY);
 
     // Create a data source with a throwaway postgres database
-    DataSource dataSource = PostgresUtils.datasource("jdbc:tc:postgresql:13:///test");
+    DataSource dataSource = PostgresUtils.dataSource("jdbc:tc:postgresql:13:///test");
     jdbi = Jdbi.create(dataSource).installPlugin(new Jackson2Plugin());
     jdbi.useHandle(
         handle -> handle.execute("create table tilesets (id uuid primary key, tileset jsonb)"));

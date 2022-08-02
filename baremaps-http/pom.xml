@@ -13,56 +13,6 @@
   <name>baremaps-http</name>
   <packaging>jar</packaging>
 
-  <profiles>
-    <profile>
-      <id>maputnik</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <version>1.11.3</version>
-            <configuration>
-              <workingDirectory>editor</workingDirectory>
-            </configuration>
-            <executions>
-              <execution>
-                <id>install node and npm</id>
-                <goals>
-                  <goal>install-node-and-npm</goal>
-                </goals>
-                <configuration>
-                  <nodeVersion>v14.16.1</nodeVersion>
-                  <npmVersion>6.14.12</npmVersion>
-                </configuration>
-              </execution>
-              <execution>
-                <id>npm install</id>
-                <goals>
-                  <goal>npm</goal>
-                </goals>
-                <configuration>
-                  <arguments>install</arguments>
-                </configuration>
-              </execution>
-              <execution>
-                <id>npm run build</id>
-                <goals>
-                  <goal>npm</goal>
-                </goals>
-                <configuration>
-                  <arguments>run build</arguments>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-      <modules>
-      </modules>
-    </profile>
-  </profiles>
-
   <build>
     <resources>
       <resource>
@@ -114,40 +64,10 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>3.2.0</version>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/target/classes/editor</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${basedir}/editor/build/build</directory>
-                  <excludes>
-                    <exclude>bundle-stats.html</exclude>
-                    <exclude>bundle-stats.json</exclude>
-                  </excludes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 
   <dependencies>
-    <dependency>
-      <groupId>com.baremaps</groupId>
-      <artifactId>baremaps-core</artifactId>
-    </dependency>
-
     <!-- database -->
     <dependency>
       <artifactId>postgresql</artifactId>
@@ -184,27 +104,22 @@
       <artifactId>jaxb-runtime</artifactId>
     </dependency>
 
-    <!-- geotools -->
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-main</artifactId>
-      <version>25.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools</groupId>
-      <artifactId>gt-geojson</artifactId>
-      <version>25.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.geotools.jdbc</groupId>
-      <artifactId>gt-jdbc-postgis</artifactId>
-      <version>25.2</version>
-    </dependency>
-
     <!-- openapi -->
     <dependency>
       <groupId>io.swagger.parser.v3</groupId>
       <artifactId>swagger-parser</artifactId>
+    </dependency>
+
+    <!-- graalvm -->
+    <dependency>
+      <groupId>org.graalvm.js</groupId>
+      <artifactId>js</artifactId>
+      <version>${version.lib.graalvm}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.graalvm.js</groupId>
+      <artifactId>js-scriptengine</artifactId>
+      <version>${version.lib.graalvm}</version>
     </dependency>
 
     <!-- logging -->
@@ -242,6 +157,10 @@
       <groupId>com.baremaps</groupId>
       <artifactId>baremaps-testing</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.baremaps</groupId>
+      <artifactId>baremaps-database</artifactId>
     </dependency>
   </dependencies>
 

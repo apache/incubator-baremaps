@@ -17,18 +17,17 @@ package com.baremaps.server.ogcapi;
 import static com.google.common.net.HttpHeaders.CONTENT_ENCODING;
 
 import com.baremaps.api.TilesetsApi;
-import com.baremaps.core.tile.PostgresQuery;
-import com.baremaps.core.tile.PostgresTileStore;
-import com.baremaps.core.tile.Tile;
-import com.baremaps.core.tile.TileStore;
-import com.baremaps.core.tile.TileStoreException;
+import com.baremaps.database.tile.PostgresQuery;
+import com.baremaps.database.tile.PostgresTileStore;
+import com.baremaps.database.tile.Tile;
+import com.baremaps.database.tile.TileStore;
+import com.baremaps.database.tile.TileStoreException;
 import com.baremaps.model.TileJSON;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
@@ -81,7 +80,7 @@ public class TilesetsResource implements TilesetsApi {
                                     query.getMinzoom(),
                                     query.getMaxzoom(),
                                     query.getSql())))
-            .collect(Collectors.toList());
+            .toList();
     return new PostgresTileStore(dataSource, queries);
   }
 

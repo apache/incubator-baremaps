@@ -14,17 +14,19 @@
 
 package com.baremaps.iploc.nic;
 
-import com.google.common.io.Resources;
+import com.baremaps.testing.TestFiles;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class NicData {
 
+  private static final String SAMPLE = "sample.txt";
+
   public static List<NicObject> sample(String resource) throws IOException {
-    try (InputStream input = Resources.getResource(resource).openStream()) {
-      return NicParser.parse(input).collect(Collectors.toList());
+    try (InputStream input = Files.newInputStream(TestFiles.resolve(resource))) {
+      return NicParser.parse(input).toList();
     }
   }
 }

@@ -15,18 +15,12 @@
 package com.baremaps.cli;
 
 import com.baremaps.cli.Baremaps.VersionProvider;
+import com.baremaps.cli.database.Database;
 import com.baremaps.cli.geocoder.Geocoder;
-import com.baremaps.cli.iploc.Iploc;
+import com.baremaps.cli.iploc.IpLoc;
+import com.baremaps.cli.map.Map;
 import com.baremaps.cli.ogcapi.OgcApi;
-import com.baremaps.cli.pipeline.Diff;
-import com.baremaps.cli.pipeline.Editor;
-import com.baremaps.cli.pipeline.Execute;
-import com.baremaps.cli.pipeline.Export;
-import com.baremaps.cli.pipeline.Import;
-import com.baremaps.cli.pipeline.Init;
-import com.baremaps.cli.pipeline.Server;
-import com.baremaps.cli.pipeline.Update;
-import com.baremaps.cli.pipeline.Viewer;
+import com.baremaps.cli.workflow.Workflow;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
@@ -36,6 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.IVersionProvider;
@@ -46,20 +41,22 @@ import picocli.CommandLine.Option;
     description = "A toolkit for producing vector tiles.",
     versionProvider = VersionProvider.class,
     subcommands = {
-      Init.class,
-      Execute.class,
-      Import.class,
-      Update.class,
-      Diff.class,
-      Export.class,
-      Editor.class,
-      Viewer.class,
-      Server.class,
+      Workflow.class,
+      Database.class,
+      Map.class,
+      Geocoder.class,
+      IpLoc.class,
       OgcApi.class,
-      Iploc.class,
-      Geocoder.class
-    })
+    },
+    sortOptions = false)
 public class Baremaps implements Callable<Integer> {
+
+  static {
+    // Apache SIS uses java.util.logging, therefore, we need to remove
+    // the existing handlers and to replace them with a bridge to slf4j.
+    SLF4JBridgeHandler.removeHandlersForRootLogger();
+    SLF4JBridgeHandler.install();
+  }
 
   @Option(
       names = {"-V", "--version"},

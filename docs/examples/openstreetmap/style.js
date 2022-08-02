@@ -1,4 +1,4 @@
-export default JSON.stringify({
+export default {
   "version" : 8,
   "sources" : {
     "baremaps" : {
@@ -23,4 +23,4 @@ export default JSON.stringify({
     "maputnik:renderer" : "mbgljs"
   },
   "zoom" : 14
-});
+};

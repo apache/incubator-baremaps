@@ -17,13 +17,13 @@ package com.baremaps.osm.geometry;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.baremaps.collection.LongDataMap;
-import com.baremaps.osm.domain.Entity;
-import com.baremaps.osm.domain.Node;
-import com.baremaps.osm.domain.Relation;
-import com.baremaps.osm.domain.Way;
 import com.baremaps.osm.function.CreateGeometryConsumer;
+import com.baremaps.osm.model.Entity;
+import com.baremaps.osm.model.Node;
+import com.baremaps.osm.model.Relation;
+import com.baremaps.osm.model.Way;
 import com.baremaps.osm.store.MockLongDataMap;
-import com.baremaps.osm.xml.OsmXmlParser;
+import com.baremaps.osm.xml.XmlEntityReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -38,7 +38,7 @@ class RelationGeometryTest {
 
   Geometry handleRelation(String file) throws IOException {
     InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
-    List<Entity> entities = new OsmXmlParser().entities(input).collect(Collectors.toList());
+    List<Entity> entities = new XmlEntityReader().stream(input).toList();
     LongDataMap<Coordinate> coordinates =
         new MockLongDataMap<>(
             entities.stream()

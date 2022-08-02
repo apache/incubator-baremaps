@@ -85,7 +85,7 @@ public abstract class Geocoder implements AutoCloseable {
   }
 
   @Override
-  public void close() throws Exception {
+  public void close() throws IOException {
     analyzer.close();
     directory.close();
     searcherManager.close();

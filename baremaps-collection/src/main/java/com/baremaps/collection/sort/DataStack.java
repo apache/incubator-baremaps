@@ -15,13 +15,14 @@
 package com.baremaps.collection.sort;
 
 import com.baremaps.collection.DataList;
+import java.io.IOException;
 
 /**
  * A wrapper on top of a {@link DataList} which keeps the last data record in memory.
  *
  * @param <T>
  */
-final class DataStack<T> {
+final class DataStack<T> implements AutoCloseable {
 
   private DataList<T> list;
 
@@ -34,8 +35,8 @@ final class DataStack<T> {
     reload();
   }
 
-  public void close() {
-    // do nothing
+  public void close() throws IOException {
+    list.close();
   }
 
   public boolean empty() {

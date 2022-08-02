@@ -17,7 +17,6 @@ package com.baremaps.cli.geocoder;
 import com.baremaps.cli.Options;
 import com.baremaps.geocoder.Geocoder;
 import com.baremaps.geocoder.geonames.GeonamesGeocoder;
-import java.net.URI;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
@@ -34,22 +33,22 @@ public class Index implements Callable<Integer> {
   @Mixin private Options options;
 
   @Option(
-      names = {"--index-path"},
-      paramLabel = "INDEX_PATH",
+      names = {"--index"},
+      paramLabel = "INDEX",
       description = "The path to the lucene index.",
       defaultValue = "geocoder_index")
-  private Path indexPath;
+  private Path index;
 
   @Option(
-      names = {"--data-uri"},
-      paramLabel = "DATA_URI",
-      description = "The URI to the geonames data.")
-  private URI dataURI;
+      names = {"--geonames"},
+      paramLabel = "GEONAMES",
+      description = "The path of the geonames file.")
+  private Path geonames;
 
   @Override
   public Integer call() throws Exception {
-    logger.info("Building the geocoder index");
-    try (Geocoder geocoder = new GeonamesGeocoder(indexPath, dataURI)) {
+    logger.info("Creating the index");
+    try (Geocoder geocoder = new GeonamesGeocoder(index, geonames)) {
       geocoder.build();
     }
     logger.info("Index created successfully");

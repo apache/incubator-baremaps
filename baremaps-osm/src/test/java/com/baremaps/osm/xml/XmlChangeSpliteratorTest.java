@@ -19,12 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.baremaps.osm.change.OsmChangeSpliterator;
-import com.baremaps.osm.domain.Change;
+import com.baremaps.osm.model.Change;
 import com.baremaps.stream.AccumulatingConsumer;
 import com.baremaps.stream.HoldingConsumer;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Spliterator;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
@@ -33,8 +33,8 @@ class XmlChangeSpliteratorTest {
 
   @Test
   void tryAdvance() throws IOException {
-    try (InputStream input = DATA_OSC_XML.openStream()) {
-      Spliterator<Change> spliterator = new OsmChangeSpliterator(input);
+    try (InputStream input = Files.newInputStream(DATA_OSC_XML)) {
+      Spliterator<Change> spliterator = new XmlChangeSpliterator(input);
       spliterator.forEachRemaining(fileBlock -> assertNotNull(fileBlock));
       assertFalse(spliterator.tryAdvance(new HoldingConsumer<>()));
     }
@@ -42,8 +42,8 @@ class XmlChangeSpliteratorTest {
 
   @Test
   void forEachRemaining() throws IOException {
-    try (InputStream input = DATA_OSC_XML.openStream()) {
-      Spliterator<Change> spliterator = new OsmChangeSpliterator(input);
+    try (InputStream input = Files.newInputStream(DATA_OSC_XML)) {
+      Spliterator<Change> spliterator = new XmlChangeSpliterator(input);
       AccumulatingConsumer<Change> accumulator = new AccumulatingConsumer<>();
       spliterator.forEachRemaining(accumulator);
       assertEquals(accumulator.values().size(), 7);

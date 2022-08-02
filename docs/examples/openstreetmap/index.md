@@ -1,11 +1,11 @@
 ---
 layout: default
-title: NaturalEarth Example
+title: OpenStreetMap Example
 ---
 
 # OpenStreetMap Example
 
-Baremaps is aimed at being the most productive toolkit for creating custom vector tiles from OpenStreetMap data.
+Baremaps aims at being the most productive toolkit for creating custom vector tiles from OpenStreetMap data.
 
 In this tutorial, we'll learn how to use Baremaps to import OpenStreetMap data in a Postgis database and how to create vector tiles from this data.
 Notice that the following steps assume that Baremaps and Postgis are [installed](https://www.baremaps.com/installation/).
@@ -21,37 +21,35 @@ In this example we will use a tiny extract of OSM for [Liechtenstein](https://en
 
 ## Importing OpenStreetMap Data
 
-To begin with the tutorial, prepare the database by executing the following command.
-Hereafter, the command executes resources (`res:///`) located in the Java classpath sequentially, but the queries they contain are executed in parallel.
+A workflow is a directed acyclic graph of steps executed by Baremaps. 
+To download and import the sample OSM data in Postgres, execute the following [workflow](https://raw.githubusercontent.com/baremaps/baremaps/main/docs/examples/openstreetmap/workflow.json). 
 
 ```
-baremaps execute \
-  --database 'jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps' \
-  --file 'res:///osm_create_extensions.sql' \
-  --file 'res:///osm_drop_tables.sql' \
-  --file 'res:///osm_create_tables.sql' \
-  --file 'res:///osm_create_gist_indexes.sql' \
-  --file 'res:///osm_create_gin_indexes.sql'
+baremaps workflow execute --file workflow.json
 ```
 
-To import the sample OSM data (`liechtenstein-latest.osm.pbf`) in Postgis with Baremaps, execute the following command in a terminal.
-
-```
-baremaps import \
-  --database 'jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps' \
-  --file 'https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf' \
-  --enable-http
-```
-
-Depending on the size of the PBF file, the execution of this command may take some time.
+Depending on the size of the OpenStreetMap file, the execution of this command may take some time.
 Eventually, the output produced by the command should look as follows.
 
 ```
-[INFO ] 2021-09-19 11:43:59.902 [main] HikariDataSource - HikariPool-1 - Starting...
-[INFO ] 2021-09-19 11:44:00.036 [main] HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5c48c0c0
-[INFO ] 2021-09-19 11:44:00.038 [main] HikariDataSource - HikariPool-1 - Start completed.
-[INFO ] 2021-09-19 11:44:00.591 [main] Import - Importing data
-[INFO ] 2021-09-19 11:44:06.460 [main] Import - Done
+[INFO ] 2022-07-26 09:47:40.906 [main] Workflow - Executing workflow workflow.json
+[INFO ] 2022-07-26 09:47:41.208 [pool-2-thread-1] DownloadUrl - Downloading https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf to liechtenstein-latest.osm.pbf
+[INFO ] 2022-07-26 09:48:14.496 [pool-2-thread-1] DownloadUrl - Finished downloading https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf to liechtenstein-latest.osm.pbf
+[INFO ] 2022-07-26 09:48:14.497 [pool-2-thread-2] ImportOpenStreetMap - Importing liechtenstein-latest.osm.pbf into jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps
+[INFO ] 2022-07-26 09:48:14.504 [pool-2-thread-2] HikariDataSource - HikariPool-1 - Starting...
+[INFO ] 2022-07-26 09:48:14.669 [pool-2-thread-2] HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@13d835e3
+[INFO ] 2022-07-26 09:48:14.671 [pool-2-thread-2] HikariDataSource - HikariPool-1 - Start completed.
+[INFO ] 2022-07-26 09:48:19.172 [pool-2-thread-2] ImportOpenStreetMap - Finished importing liechtenstein-latest.osm.pbf into jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps
+[INFO ] 2022-07-26 09:48:19.172 [pool-2-thread-2] HikariDataSource - HikariPool-1 - Shutdown initiated...
+[INFO ] 2022-07-26 09:48:19.177 [pool-2-thread-2] HikariDataSource - HikariPool-1 - Shutdown completed.
+[INFO ] 2022-07-26 09:48:19.178 [pool-2-thread-3] ExecuteSqlFile - Executing indexes.sql into jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps
+[INFO ] 2022-07-26 09:48:19.179 [pool-2-thread-3] HikariDataSource - HikariPool-2 - Starting...
+[INFO ] 2022-07-26 09:48:19.213 [pool-2-thread-3] HikariPool - HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@25c4ab89
+[INFO ] 2022-07-26 09:48:19.213 [pool-2-thread-3] HikariDataSource - HikariPool-2 - Start completed.
+[INFO ] 2022-07-26 09:48:21.365 [pool-2-thread-3] ExecuteSqlFile - Finished executing indexes.sql into jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps
+[INFO ] 2022-07-26 09:48:21.365 [pool-2-thread-3] HikariDataSource - HikariPool-2 - Shutdown initiated...
+[INFO ] 2022-07-26 09:48:21.367 [pool-2-thread-3] HikariDataSource - HikariPool-2 - Shutdown completed.
+[INFO ] 2022-07-26 09:48:21.368 [main] Workflow - Finished executing workflow workflow.json
 ```
 
 ### Under the Hood (Optional)
@@ -85,7 +83,7 @@ It defines general style and rendering properties.
 Let's preview and edit the map with the sample configuration files by executing the following command in a terminal.
 
 ```
-baremaps edit \
+baremaps map dev \
   --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
   --tileset 'tileset.json' \
   --style 'style.json'
@@ -95,8 +93,6 @@ Well done, a local tile server should have started and you can open a map of Lie
 Baremaps dynamically generates a blueprint [Mapbox Style](https://docs.mapbox.com/mapbox-gl-js/style-spec/) from the json configuration file.
 It is aimed at quickly previsualizing the data and provides a foundation for creating more complex styles.
 Notice that the changes in the configuration files are automatically reloaded by the browser.
-
-![Maputnik editor](screenshot.png)
 
 ### Under the Hood (Optional)
 
@@ -135,16 +131,11 @@ The following command produces a local directory containing precomputed static t
 These tiles can be served with Apache, Nginx, or Caddy, but also copied in a blob store behind a content delivery network, such as Cloudflare, Stackpath, or Fastly.
 
 ```
-baremaps export \
+baremaps map export \
   --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
   --tileset 'tileset.json' \
   --repository 'tiles/'
 ```
-
-Notice that Baremaps has the ability to publish tiles directly on AWS.
-To do so, install the [AWS Command Line Interface](https://aws.amazon.com/cli/) on your computer and run the `aws configure` command in the terminal.
-Then, add the `--enable-aws` flag to the previous command and replace the `tiles/` directory with an S3 URL, Baremaps will take care of the rest.
-
 
 ## Conclusion
 

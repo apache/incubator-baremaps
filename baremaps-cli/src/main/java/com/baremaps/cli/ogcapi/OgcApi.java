@@ -18,7 +18,7 @@ import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
 import com.baremaps.cli.Options;
-import com.baremaps.core.postgres.PostgresUtils;
+import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.server.ogcapi.ApiResource;
 import com.baremaps.server.ogcapi.CollectionsResource;
 import com.baremaps.server.ogcapi.ConformanceResource;
@@ -29,6 +29,7 @@ import com.baremaps.server.ogcapi.TilesetsResource;
 import com.baremaps.server.resources.ImportResource;
 import com.baremaps.server.resources.StudioResource;
 import com.baremaps.server.utils.CorsFilter;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
@@ -49,7 +50,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-@Command(name = "ogcapi", description = "Start an OGC API server (experimental).")
+@Command(name = "ogcapi", description = "OGC API server (experimental).")
 public class OgcApi implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(OgcApi.class);
@@ -73,9 +74,10 @@ public class OgcApi implements Callable<Integer> {
   public Integer call() throws Exception {
     // Configure serialization
     ObjectMapper mapper = defaultObjectMapper();
+    mapper.readValue("", JsonNode.class);
 
     // Configure jdbi and set the ObjectMapper
-    DataSource datasource = PostgresUtils.datasource(this.database);
+    DataSource datasource = PostgresUtils.dataSource(this.database);
     Jdbi jdbi =
         Jdbi.create(datasource)
             .installPlugin(new PostgresPlugin())
