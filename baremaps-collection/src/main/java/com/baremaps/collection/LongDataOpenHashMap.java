@@ -18,12 +18,13 @@ import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.Map;
 
 /**
- * A map of data backed by a {@link DataStore} and whose keys are stored in an {@link
- * Long2LongOpenHashMap}.
+ * A map of data backed by a {@link DataStore} and whose keys are stored in an {@link Long2LongOpenHashMap}.
  *
- * <p>This code has been adapted from Planetiler (Apache license).
+ * <p>
+ * This code has been adapted from Planetiler (Apache license).
  *
- * <p>Copyright (c) Planetiler.
+ * <p>
+ * Copyright (c) Planetiler.
  */
 public class LongDataOpenHashMap<T> implements LongDataMap<T> {
 

@@ -48,8 +48,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 /**
- * An object for traversing an OpenStreetMap XML file describing changes (osc.xml) and creating a
- * stream.
+ * An object for traversing an OpenStreetMap XML file describing changes (osc.xml) and creating a stream.
  */
 public class XmlChangeSpliterator implements Spliterator<Change> {
 
@@ -76,7 +75,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
   private static final String ATTRIBUTE_NAME_TYPE = "type";
   private static final String ATTRIBUTE_NAME_ROLE = "role";
   public static final DateTimeFormatter format =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   private final XMLStreamReader reader;
 
@@ -234,8 +233,8 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
   private void readRelationMember(List<Member> members) throws XMLStreamException {
     long id = Long.parseLong(reader.getAttributeValue(null, ATTRIBUTE_NAME_REF));
     MemberType type =
-        Member.MemberType.valueOf(
-            reader.getAttributeValue(null, ATTRIBUTE_NAME_TYPE).toUpperCase());
+      Member.MemberType.valueOf(
+        reader.getAttributeValue(null, ATTRIBUTE_NAME_TYPE).toUpperCase());
     String role = reader.getAttributeValue(null, ATTRIBUTE_NAME_ROLE);
     members.add(new Member(id, type, role));
     reader.nextTag();
@@ -245,7 +244,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
   private Info readInfo() {
     int version = Integer.parseInt(reader.getAttributeValue(null, ATTRIBUTE_NAME_VERSION));
     LocalDateTime timestamp =
-        LocalDateTime.parse(reader.getAttributeValue(null, ATTRIBUTE_NAME_TIMESTAMP), format);
+      LocalDateTime.parse(reader.getAttributeValue(null, ATTRIBUTE_NAME_TIMESTAMP), format);
     String changesetValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_CHANGESET_ID);
     long changeset = changesetValue != null ? Long.parseLong(changesetValue) : -1;
     String uidValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_USER_ID);

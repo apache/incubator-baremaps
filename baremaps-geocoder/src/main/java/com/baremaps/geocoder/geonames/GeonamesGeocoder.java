@@ -60,59 +60,59 @@ public class GeonamesGeocoder extends Geocoder {
   protected Stream<Document> documents() throws IOException {
     CsvMapper mapper = new CsvMapper();
     CsvSchema schema =
-        CsvSchema.builder()
-            .addColumn("geonameid")
-            .addColumn("name")
-            .addColumn("asciiname")
-            .addColumn("alternatenames")
-            .addColumn("latitude")
-            .addColumn("longitude")
-            .addColumn("featureClass")
-            .addColumn("featureCode")
-            .addColumn("countryCode")
-            .addColumn("cc2")
-            .addColumn("admin1Code")
-            .addColumn("admin2Code")
-            .addColumn("admin3Code")
-            .addColumn("admin4Code")
-            .addColumn("population")
-            .addColumn("elevation")
-            .addColumn("dem")
-            .addColumn("timezone")
-            .addColumn("modificationDate")
-            .build()
-            .withColumnSeparator('\t')
-            .withoutQuoteChar();
+      CsvSchema.builder()
+        .addColumn("geonameid")
+        .addColumn("name")
+        .addColumn("asciiname")
+        .addColumn("alternatenames")
+        .addColumn("latitude")
+        .addColumn("longitude")
+        .addColumn("featureClass")
+        .addColumn("featureCode")
+        .addColumn("countryCode")
+        .addColumn("cc2")
+        .addColumn("admin1Code")
+        .addColumn("admin2Code")
+        .addColumn("admin3Code")
+        .addColumn("admin4Code")
+        .addColumn("population")
+        .addColumn("elevation")
+        .addColumn("dem")
+        .addColumn("timezone")
+        .addColumn("modificationDate")
+        .build()
+        .withColumnSeparator('\t')
+        .withoutQuoteChar();
     MappingIterator<GeonamesRecord> it =
-        mapper.readerFor(GeonamesRecord.class).with(schema).readValues(data.toFile());
+      mapper.readerFor(GeonamesRecord.class).with(schema).readValues(data.toFile());
     return StreamSupport.stream(Spliterators.spliteratorUnknownSize(it, 0), false)
-        .map(
-            record -> {
-              Document document = new Document();
-              document.add(new TextField("name", record.getName(), Store.YES));
-              document.add(
-                  new TextField(
-                      "country", IsoCountriesUtils.getCountry(record.getCountryCode()), Store.YES));
-              document.add(new StringField("countryCode", record.getCountryCode(), Store.YES));
-              document.add(new StoredField("longitude", record.getLongitude()));
-              document.add(new StoredField("latitude", record.getLatitude()));
-              document.add(new StoredField("asciiname", record.getLatitude()));
-              document.add(new StoredField("alternatenames", record.getLatitude()));
-              document.add(new StoredField("featureClass", record.getLatitude()));
-              document.add(new StoredField("featureCode", record.getLatitude()));
-              document.add(new StoredField("cc2", record.getLatitude()));
-              document.add(new StoredField("cc2", record.getLatitude()));
-              document.add(new StoredField("admin1Code", record.getLatitude()));
-              document.add(new StoredField("admin2Code", record.getLatitude()));
-              document.add(new StoredField("admin3Code", record.getLatitude()));
-              document.add(new StoredField("admin4Code", record.getLatitude()));
-              document.add(new StoredField("population", record.getLatitude()));
-              document.add(new StoredField("elevation", record.getLatitude()));
-              document.add(new StoredField("dem", record.getLatitude()));
-              document.add(new StoredField("timezone", record.getLatitude()));
-              document.add(new StoredField("modificationDate", record.getLatitude()));
-              return document;
-            });
+      .map(
+        record -> {
+          Document document = new Document();
+          document.add(new TextField("name", record.getName(), Store.YES));
+          document.add(
+            new TextField(
+              "country", IsoCountriesUtils.getCountry(record.getCountryCode()), Store.YES));
+          document.add(new StringField("countryCode", record.getCountryCode(), Store.YES));
+          document.add(new StoredField("longitude", record.getLongitude()));
+          document.add(new StoredField("latitude", record.getLatitude()));
+          document.add(new StoredField("asciiname", record.getLatitude()));
+          document.add(new StoredField("alternatenames", record.getLatitude()));
+          document.add(new StoredField("featureClass", record.getLatitude()));
+          document.add(new StoredField("featureCode", record.getLatitude()));
+          document.add(new StoredField("cc2", record.getLatitude()));
+          document.add(new StoredField("cc2", record.getLatitude()));
+          document.add(new StoredField("admin1Code", record.getLatitude()));
+          document.add(new StoredField("admin2Code", record.getLatitude()));
+          document.add(new StoredField("admin3Code", record.getLatitude()));
+          document.add(new StoredField("admin4Code", record.getLatitude()));
+          document.add(new StoredField("population", record.getLatitude()));
+          document.add(new StoredField("elevation", record.getLatitude()));
+          document.add(new StoredField("dem", record.getLatitude()));
+          document.add(new StoredField("timezone", record.getLatitude()));
+          document.add(new StoredField("modificationDate", record.getLatitude()));
+          return document;
+        });
   }
 
   @Override
@@ -128,8 +128,8 @@ public class GeonamesGeocoder extends Geocoder {
 
       if (request.countryCode() != null) {
         builder.add(
-            new TermQuery(new Term("countryCode", QueryParser.escape(request.countryCode()))),
-            Occur.MUST);
+          new TermQuery(new Term("countryCode", QueryParser.escape(request.countryCode()))),
+          Occur.MUST);
       }
     }
     return builder.build();

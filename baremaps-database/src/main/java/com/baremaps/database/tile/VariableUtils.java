@@ -26,7 +26,7 @@ public class VariableUtils {
    * Interpolates variables prefixed with '$' in a template string.
    *
    * @param variables the variables
-   * @param template the template
+   * @param template  the template
    * @return the result
    */
   public static String interpolate(Map<String, String> variables, String template) {

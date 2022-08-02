@@ -48,21 +48,21 @@ public class GeoPackageDatabase implements Aggregate, AutoCloseable {
 
   @Override
   public <T extends StoreEvent> void addListener(
-      Class<T> eventType, StoreListener<? super T> listener) {
+    Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public <T extends StoreEvent> void removeListener(
-      Class<T> eventType, StoreListener<? super T> listener) {
+    Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public Collection<? extends Resource> components() throws DataStoreException {
     return geoPackage.getFeatureTables().stream()
-        .map(table -> new GeoPackageTable(geoPackage.getFeatureDao(table)))
-        .collect(Collectors.toList());
+      .map(table -> new GeoPackageTable(geoPackage.getFeatureDao(table)))
+      .collect(Collectors.toList());
   }
 
   @Override

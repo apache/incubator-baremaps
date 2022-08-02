@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public record ImportShapefile(String file, String database, Integer sourceSRID, Integer targetSRID)
-    implements Task {
+  implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportShapefile.class);
 
@@ -33,12 +33,14 @@ public record ImportShapefile(String file, String database, Integer sourceSRID, 
   public void run() {
     logger.info("Importing {} into {}", file, database);
     var path = Paths.get(file);
-    try (var featureSet = new ShapefileFeatureSet(path);
-        var dataSource = PostgresUtils.dataSource(database);
-        var postgresDatabase = new PostgresDatabase(dataSource)) {
+    try (
+      var featureSet = new ShapefileFeatureSet(path);
+      var dataSource = PostgresUtils.dataSource(database);
+      var postgresDatabase = new PostgresDatabase(dataSource)
+    ) {
       postgresDatabase.add(
-          new FeatureProjectionTransform(
-              featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
+        new FeatureProjectionTransform(
+          featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
       logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {
       logger.error("Failed importing {} into {}", file, database);

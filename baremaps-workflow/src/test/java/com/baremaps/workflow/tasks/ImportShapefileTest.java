@@ -32,8 +32,8 @@ class ImportShapefileTest extends PostgresContainerTest {
     var unzip = new UnzipFile(zip.toString(), directory.toString());
     unzip.run();
     var task =
-        new ImportShapefile(
-            directory.resolve("gis_osm_buildings_a_free_1.shp").toString(), jdbcUrl(), 4326, 3857);
+      new ImportShapefile(
+        directory.resolve("gis_osm_buildings_a_free_1.shp").toString(), jdbcUrl(), 4326, 3857);
     task.run();
     FileUtils.deleteRecursively(directory);
   }

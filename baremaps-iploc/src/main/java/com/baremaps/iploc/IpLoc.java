@@ -50,7 +50,7 @@ public class IpLoc {
    * Create a new IpLoc object
    *
    * @param databaseUrl the jdbc url to the sqlite database
-   * @param geocoder the geocoder that will be used to find the locations of the objects
+   * @param geocoder    the geocoder that will be used to find the locations of the objects
    */
   public IpLoc(String databaseUrl, Geocoder geocoder) {
     inetnumLocationDao = new InetnumLocationDaoSqliteImpl(databaseUrl);
@@ -59,24 +59,24 @@ public class IpLoc {
   }
 
   /**
-   * Insert the nic objects into the Iploc database. Only inetnum NIC Objects are supported for now.
-   * The type of the object is defined by the key of the first attribute in the NIC object.
+   * Insert the nic objects into the Iploc database. Only inetnum NIC Objects are supported for now. The type of the
+   * object is defined by the key of the first attribute in the NIC object.
    *
    * @param nicObjects the stream of nic objects to import
    */
   public void insertNicObjects(Stream<NicObject> nicObjects) {
     StreamUtils.partition(
-            nicObjects
-                .filter(this::isInetnum)
-                .map(this::nicObjectToInetnumLocation)
-                // TODO: we should probably not filter, i.e., even in the worst case we should have
-                // the country
-                // Cache the list of country
-                .filter(Optional::isPresent)
-                .map(Optional::get),
-            100)
-        .map(partition -> partition.collect(Collectors.toList()))
-        .forEach(inetnumLocationDao::save);
+      nicObjects
+        .filter(this::isInetnum)
+        .map(this::nicObjectToInetnumLocation)
+        // TODO: we should probably not filter, i.e., even in the worst case we should have
+        // the country
+        // Cache the list of country
+        .filter(Optional::isPresent)
+        .map(Optional::get),
+      100)
+      .map(partition -> partition.collect(Collectors.toList()))
+      .forEach(inetnumLocationDao::save);
   }
 
   private boolean isInetnum(NicObject nicObject) {
@@ -115,76 +115,76 @@ public class IpLoc {
         if (location.isPresent()) {
           iplocStats.incrementInsertedByGeolocCount();
           return Optional.of(
-              new InetnumLocation(
-                  attributes.get("geoloc"),
-                  ipRange,
-                  location.get(),
-                  network,
-                  attributes.get("country")));
+            new InetnumLocation(
+              attributes.get("geoloc"),
+              ipRange,
+              location.get(),
+              network,
+              attributes.get("country")));
         }
       }
       // If there is an address we use that address to query the geocoder
       if (attributes.containsKey("address")) {
         Optional<Location> location =
-            findLocation(new Request(attributes.get("address"), 1, attributes.get("country")));
+          findLocation(new Request(attributes.get("address"), 1, attributes.get("country")));
         if (location.isPresent()) {
           iplocStats.incrementInsertedByAddressCount();
           return Optional.of(
-              new InetnumLocation(
-                  attributes.get("address"),
-                  ipRange,
-                  location.get(),
-                  network,
-                  attributes.get("country")));
+            new InetnumLocation(
+              attributes.get("address"),
+              ipRange,
+              location.get(),
+              network,
+              attributes.get("country")));
         }
       }
       // If there is a description we use that description to query the geocoder
       if (attributes.containsKey("descr")) {
         Optional<Location> location =
-            findLocation(new Request(attributes.get("descr"), 1, attributes.get("country")));
+          findLocation(new Request(attributes.get("descr"), 1, attributes.get("country")));
         if (location.isPresent()) {
           iplocStats.incrementInsertedByDescrCount();
           return Optional.of(
-              new InetnumLocation(
-                  attributes.get("descr"),
-                  ipRange,
-                  location.get(),
-                  network,
-                  attributes.get("country")));
+            new InetnumLocation(
+              attributes.get("descr"),
+              ipRange,
+              location.get(),
+              network,
+              attributes.get("country")));
         }
       }
       // If there is a name we use that name to query the geocoder
       if (attributes.containsKey("name")) {
         Optional<Location> location =
-            findLocation(new Request(attributes.get("name"), 1, attributes.get("country")));
+          findLocation(new Request(attributes.get("name"), 1, attributes.get("country")));
         if (location.isPresent()) {
           iplocStats.incrementInsertedByDescrCount();
           return Optional.of(
-              new InetnumLocation(
-                  attributes.get("name"),
-                  ipRange,
-                  location.get(),
-                  network,
-                  attributes.get("country")));
+            new InetnumLocation(
+              attributes.get("name"),
+              ipRange,
+              location.get(),
+              network,
+              attributes.get("country")));
         }
       }
       // If there is a country that is follow the ISO format we use that country's actual name from
       // the iso country map to query the geocoder
-      if (attributes.containsKey("country")
-          && IsoCountriesUtils.containsCountry(attributes.get("country").toUpperCase())) {
+      if (attributes.containsKey("country") &&
+        IsoCountriesUtils.containsCountry(attributes.get("country").toUpperCase())) {
         String countryUppercase = attributes.get("country").toUpperCase();
         Optional<Location> location =
-            findLocation(
-                new Request(IsoCountriesUtils.getCountry(countryUppercase), 1, countryUppercase));
+          findLocation(
+            new Request(IsoCountriesUtils.getCountry(countryUppercase), 1, countryUppercase));
         if (location.isPresent()) {
           iplocStats.incrementInsertedByCountryCodeCount();
           return Optional.of(
-              new InetnumLocation(
-                  IsoCountriesUtils.getCountry(countryUppercase),
-                  ipRange,
-                  location.get(),
-                  network,
-                  countryUppercase));
+            new InetnumLocation(
+              IsoCountriesUtils.getCountry(countryUppercase),
+              ipRange,
+              location.get(),
+              network,
+              countryUppercase));
         }
       }
 
@@ -195,12 +195,12 @@ public class IpLoc {
         if (location.isPresent()) {
           iplocStats.incrementInsertedByCountryCount();
           return Optional.of(
-              new InetnumLocation(
-                  attributes.get("country"),
-                  ipRange,
-                  location.get(),
-                  network,
-                  attributes.get("country")));
+            new InetnumLocation(
+              attributes.get("country"),
+              ipRange,
+              location.get(),
+              network,
+              attributes.get("country")));
         }
       }
 
@@ -226,7 +226,7 @@ public class IpLoc {
       if (response.topDocs().scoreDocs[0].score > SCORE_THRESHOLD) {
         double latitude = Double.parseDouble(response.results().get(0).document().get("latitude"));
         double longitude =
-            Double.parseDouble(response.results().get(0).document().get("longitude"));
+          Double.parseDouble(response.results().get(0).document().get("longitude"));
         return Optional.of(new Location(latitude, longitude));
       }
     }
@@ -234,8 +234,8 @@ public class IpLoc {
   }
 
   /**
-   * Parse the geoloc in the given string and insert it in the database. The given geoloc is
-   * represented by two doubles split by a space.
+   * Parse the geoloc in the given string and insert it in the database. The given geoloc is represented by two doubles
+   * split by a space.
    *
    * @param geoloc the latitude/longitude coordinates in a string
    * @return an optional containing the location

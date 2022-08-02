@@ -87,6 +87,7 @@ public enum DataType {
   MACADDR8(774),
   TSVECTOR(3614),
   TSQUERY(3615);
+
   Integer dataType;
   Class javaType;
 

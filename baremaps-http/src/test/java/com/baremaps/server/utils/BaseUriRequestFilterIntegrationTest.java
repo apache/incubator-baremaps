@@ -45,13 +45,13 @@ public class BaseUriRequestFilterIntegrationTest extends JerseyTest {
   @Test
   public void testBaseUri() {
     String baseUriStr =
-        target()
-            .path("")
-            .request()
-            .header("X-Forwarded-Host", "test.com")
-            .header("X-Forwarded-Proto", "https")
-            .header("X-Forwarded-Port", "443")
-            .get(String.class);
+      target()
+        .path("")
+        .request()
+        .header("X-Forwarded-Host", "test.com")
+        .header("X-Forwarded-Proto", "https")
+        .header("X-Forwarded-Port", "443")
+        .get(String.class);
     assertEquals("https://test.com:443/", baseUriStr);
   }
 }

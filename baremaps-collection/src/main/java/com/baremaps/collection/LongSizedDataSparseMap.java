@@ -21,9 +21,11 @@ import java.util.List;
 /**
  * A sparse map of data backed by a {@link AlignedDataList} for storing values.
  *
- * <p>This code has been adapted from Planetiler (Apache license).
+ * <p>
+ * This code has been adapted from Planetiler (Apache license).
  *
- * <p>Copyright (c) Planetiler.
+ * <p>
+ * Copyright (c) Planetiler.
  */
 public class LongSizedDataSparseMap<T> implements LongDataMap<T> {
 
@@ -81,9 +83,8 @@ public class LongSizedDataSparseMap<T> implements LongDataMap<T> {
 
     long lo = offsets.get(chunk);
     long hi =
-        Math.min(
-                values.size(), chunk >= offsets.size() - 1 ? values.size() : offsets.get(chunk + 1))
-            - 1;
+      Math.min(
+        values.size(), chunk >= offsets.size() - 1 ? values.size() : offsets.get(chunk + 1)) - 1;
     int startPad = offsetStartPad.getByte(chunk) & 255;
 
     long index = lo + offset - startPad;

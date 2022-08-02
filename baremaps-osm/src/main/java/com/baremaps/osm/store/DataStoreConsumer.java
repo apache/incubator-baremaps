@@ -30,10 +30,10 @@ public class DataStoreConsumer implements BlockConsumerAdapter {
    * Constructs a {@code CacheBlockConsumer} with the provided caches.
    *
    * @param coordinates the map of coordinates
-   * @param references the map of references
+   * @param references  the map of references
    */
   public DataStoreConsumer(
-      LongDataMap<Coordinate> coordinates, LongDataMap<List<Long>> references) {
+    LongDataMap<Coordinate> coordinates, LongDataMap<List<Long>> references) {
     this.coordinates = coordinates;
     this.references = references;
   }
@@ -42,11 +42,11 @@ public class DataStoreConsumer implements BlockConsumerAdapter {
   @Override
   public void match(DataBlock dataBlock) throws Exception {
     dataBlock.getDenseNodes().stream()
-        .forEach(
-            node -> coordinates.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
+      .forEach(
+        node -> coordinates.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
     dataBlock.getNodes().stream()
-        .forEach(
-            node -> coordinates.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
+      .forEach(
+        node -> coordinates.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
     dataBlock.getWays().stream().forEach(way -> references.put(way.getId(), way.getNodes()));
   }
 }

@@ -23,7 +23,7 @@ public class LineSegmentValueHandler extends BaseValueHandler<LineSegment> {
 
   @Override
   protected void internalHandle(DataOutputStream buffer, final LineSegment value)
-      throws IOException {
+    throws IOException {
     buffer.writeInt(32);
 
     GeometricUtils.writePoint(buffer, value.getP1());

@@ -79,44 +79,44 @@ public class OpenStreetMapGeometriesBenchmark {
   public void store() throws IOException {
     Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
     LongDataMap<Coordinate> coordinates =
-        new LongDataOpenHashMap<>(
-            new DataStore<>(new CoordinateDataType(), new OnDiskDirectoryMemory(directory)));
+      new LongDataOpenHashMap<>(
+        new DataStore<>(new CoordinateDataType(), new OnDiskDirectoryMemory(directory)));
     LongDataMap<List<Long>> references =
-        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
+      new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
       new PbfEntityReader(
-              new PbfBlockReader().coordinates(coordinates).references(references).projection(4326))
+        new PbfBlockReader().coordinates(coordinates).references(references).projection(4326))
           .stream(inputStream)
-              .forEach(
-                  new EntityConsumerAdapter() {
-                    @Override
-                    public void match(Node node) {
-                      nodes.incrementAndGet();
-                    }
+          .forEach(
+            new EntityConsumerAdapter() {
+              @Override
+              public void match(Node node) {
+                nodes.incrementAndGet();
+              }
 
-                    @Override
-                    public void match(Way way) {
-                      ways.incrementAndGet();
-                    }
+              @Override
+              public void match(Way way) {
+                ways.incrementAndGet();
+              }
 
-                    @Override
-                    public void match(Relation relation) {
-                      relations.incrementAndGet();
-                    }
-                  });
+              @Override
+              public void match(Relation relation) {
+                relations.incrementAndGet();
+              }
+            });
     }
     FileUtils.deleteRecursively(directory);
   }
 
   public static void main(String[] args) throws RunnerException {
     Options opt =
-        new OptionsBuilder()
-            .include(OpenStreetMapGeometriesBenchmark.class.getSimpleName())
-            .forks(1)
-            .build();
+      new OptionsBuilder()
+        .include(OpenStreetMapGeometriesBenchmark.class.getSimpleName())
+        .forks(1)
+        .build();
     new Runner(opt).run();
   }
 }

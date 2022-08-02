@@ -54,13 +54,13 @@ public class UpdateService implements Callable<Void> {
   private final int srid;
 
   public UpdateService(
-      LongDataMap<Coordinate> coordinates,
-      LongDataMap<List<Long>> references,
-      HeaderRepository headerRepository,
-      Repository<Long, Node> nodeRepository,
-      Repository<Long, Way> wayRepository,
-      Repository<Long, Relation> relationRepository,
-      int srid) {
+    LongDataMap<Coordinate> coordinates,
+    LongDataMap<List<Long>> references,
+    HeaderRepository headerRepository,
+    Repository<Long, Node> nodeRepository,
+    Repository<Long, Way> wayRepository,
+    Repository<Long, Relation> relationRepository,
+    int srid) {
     this.coordinates = coordinates;
     this.references = references;
     this.headerRepository = headerRepository;
@@ -79,14 +79,16 @@ public class UpdateService implements Callable<Void> {
     Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
     Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, srid);
     Consumer<Change> prepareGeometries =
-        new ChangeEntityConsumer(createGeometry.andThen(reprojectGeometry));
+      new ChangeEntityConsumer(createGeometry.andThen(reprojectGeometry));
     Function<Change, Change> prepareChange = consumeThenReturn(prepareGeometries);
     Consumer<Change> saveChange =
-        new SaveChangeConsumer(nodeRepository, wayRepository, relationRepository);
+      new SaveChangeConsumer(nodeRepository, wayRepository, relationRepository);
 
     URL changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
-    try (InputStream changeInputStream =
-        new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
+    try (
+      InputStream changeInputStream =
+        new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))
+    ) {
       new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(saveChange);
     }
 
@@ -94,24 +96,24 @@ public class UpdateService implements Callable<Void> {
     try (InputStream stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
       State state = new StateReader().state(stateInputStream);
       headerRepository.put(
-          new Header(
-              state.getSequenceNumber(),
-              state.getTimestamp(),
-              header.getReplicationUrl(),
-              header.getSource(),
-              header.getWritingProgram()));
+        new Header(
+          state.getSequenceNumber(),
+          state.getTimestamp(),
+          header.getReplicationUrl(),
+          header.getSource(),
+          header.getWritingProgram()));
     }
 
     return null;
   }
 
   public URL resolve(String replicationUrl, Long sequenceNumber, String extension)
-      throws MalformedURLException {
+    throws MalformedURLException {
     String s = String.format("%09d", sequenceNumber);
     String uri =
-        String.format(
-            "%s/%s/%s/%s.%s",
-            replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension);
+      String.format(
+        "%s/%s/%s/%s.%s",
+        replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension);
     return URI.create(uri).toURL();
   }
 }

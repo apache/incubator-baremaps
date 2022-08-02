@@ -55,23 +55,23 @@ class GeometryHandlerTest {
   static final CoordinateReferenceSystem EPSG_4326 = CRS_FACTORY.createFromName("EPSG:4326");
 
   static final CoordinateTransform COORDINATE_TRANSFORM =
-      new CoordinateTransform() {
-        @Override
-        public CoordinateReferenceSystem getSourceCRS() {
-          return EPSG_4326;
-        }
+    new CoordinateTransform() {
+      @Override
+      public CoordinateReferenceSystem getSourceCRS() {
+        return EPSG_4326;
+      }
 
-        @Override
-        public CoordinateReferenceSystem getTargetCRS() {
-          return EPSG_4326;
-        }
+      @Override
+      public CoordinateReferenceSystem getTargetCRS() {
+        return EPSG_4326;
+      }
 
-        @Override
-        public ProjCoordinate transform(ProjCoordinate src, ProjCoordinate tgt)
-            throws Proj4jException {
-          return src;
-        }
-      };
+      @Override
+      public ProjCoordinate transform(ProjCoordinate src, ProjCoordinate tgt)
+        throws Proj4jException {
+        return src;
+      }
+    };
 
   static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
 
@@ -112,77 +112,77 @@ class GeometryHandlerTest {
   static final Node NODE_15 = new Node(15, INFO, ImmutableMap.of(), 3, 1);
 
   static final LongDataMap<Coordinate> COORDINATE_CACHE =
-      new MockLongDataMap(
-          Arrays.asList(
-                  NODE_0, NODE_1, NODE_2, NODE_3, NODE_4, NODE_5, NODE_6, NODE_7, NODE_8, NODE_9,
-                  NODE_10, NODE_11, NODE_12, NODE_13, NODE_14, NODE_15)
-              .stream()
-              .collect(
-                  Collectors.toMap(n -> n.getId(), n -> new Coordinate(n.getLon(), n.getLat()))));
+    new MockLongDataMap(
+      Arrays.asList(
+        NODE_0, NODE_1, NODE_2, NODE_3, NODE_4, NODE_5, NODE_6, NODE_7, NODE_8, NODE_9,
+        NODE_10, NODE_11, NODE_12, NODE_13, NODE_14, NODE_15)
+        .stream()
+        .collect(
+          Collectors.toMap(n -> n.getId(), n -> new Coordinate(n.getLon(), n.getLat()))));
 
   static final Way WAY_0 = new Way(0, INFO, ImmutableMap.of(), ImmutableList.of());
 
   static final Way WAY_1 = new Way(1, INFO, ImmutableMap.of(), ImmutableList.of(0l, 1l, 2l, 3l));
 
   static final Way WAY_2 =
-      new Way(2, INFO, ImmutableMap.of(), ImmutableList.of(0l, 1l, 2l, 3l, 0l));
+    new Way(2, INFO, ImmutableMap.of(), ImmutableList.of(0l, 1l, 2l, 3l, 0l));
 
   static final Way WAY_3 =
-      new Way(3, INFO, ImmutableMap.of(), ImmutableList.of(8l, 9l, 10l, 11l, 8l));
+    new Way(3, INFO, ImmutableMap.of(), ImmutableList.of(8l, 9l, 10l, 11l, 8l));
 
   static final Way WAY_4 =
-      new Way(4, INFO, ImmutableMap.of(), ImmutableList.of(4l, 5l, 6l, 7l, 4l));
+    new Way(4, INFO, ImmutableMap.of(), ImmutableList.of(4l, 5l, 6l, 7l, 4l));
 
   static final Way WAY_5 =
-      new Way(5, INFO, ImmutableMap.of(), ImmutableList.of(12l, 13l, 14l, 15l, 12l));
+    new Way(5, INFO, ImmutableMap.of(), ImmutableList.of(12l, 13l, 14l, 15l, 12l));
 
   static final LongDataMap<List<Long>> REFERENCE_CACHE =
-      new MockLongDataMap(
-          Arrays.asList(WAY_0, WAY_1, WAY_2, WAY_3, WAY_4, WAY_5).stream()
-              .collect(Collectors.toMap(w -> w.getId(), w -> w.getNodes())));
+    new MockLongDataMap(
+      Arrays.asList(WAY_0, WAY_1, WAY_2, WAY_3, WAY_4, WAY_5).stream()
+        .collect(Collectors.toMap(w -> w.getId(), w -> w.getNodes())));
 
   static final Relation RELATION_0 = new Relation(0, INFO, ImmutableMap.of(), Arrays.asList());
 
   static final Relation RELATION_1 =
-      new Relation(1, INFO, ImmutableMap.of("type", "multipolygon"), Arrays.asList());
+    new Relation(1, INFO, ImmutableMap.of("type", "multipolygon"), Arrays.asList());
 
   static final Relation RELATION_2 =
-      new Relation(
-          2,
-          INFO,
-          ImmutableMap.of("type", "multipolygon"),
-          Arrays.asList(new Member(2l, MemberType.WAY, "outer")));
+    new Relation(
+      2,
+      INFO,
+      ImmutableMap.of("type", "multipolygon"),
+      Arrays.asList(new Member(2l, MemberType.WAY, "outer")));
 
   static final Relation RELATION_3 =
-      new Relation(
-          3,
-          INFO,
-          ImmutableMap.of("type", "multipolygon"),
-          Arrays.asList(
-              new Member(2l, MemberType.WAY, "outer"), new Member(3l, MemberType.WAY, "inner")));
+    new Relation(
+      3,
+      INFO,
+      ImmutableMap.of("type", "multipolygon"),
+      Arrays.asList(
+        new Member(2l, MemberType.WAY, "outer"), new Member(3l, MemberType.WAY, "inner")));
 
   static final Relation RELATION_4 =
-      new Relation(
-          4,
-          INFO,
-          ImmutableMap.of("type", "multipolygon"),
-          Arrays.asList(
-              new Member(2l, MemberType.WAY, "outer"),
-              new Member(3l, MemberType.WAY, "inner"),
-              new Member(4l, MemberType.WAY, "outer")));
+    new Relation(
+      4,
+      INFO,
+      ImmutableMap.of("type", "multipolygon"),
+      Arrays.asList(
+        new Member(2l, MemberType.WAY, "outer"),
+        new Member(3l, MemberType.WAY, "inner"),
+        new Member(4l, MemberType.WAY, "outer")));
 
   static final Relation RELATION_5 =
-      new Relation(
-          5,
-          INFO,
-          ImmutableMap.of("type", "multipolygon"),
-          Arrays.asList(
-              new Member(2l, MemberType.WAY, "outer"),
-              new Member(4l, MemberType.WAY, "inner"),
-              new Member(5l, MemberType.WAY, "inner")));
+    new Relation(
+      5,
+      INFO,
+      ImmutableMap.of("type", "multipolygon"),
+      Arrays.asList(
+        new Member(2l, MemberType.WAY, "outer"),
+        new Member(4l, MemberType.WAY, "inner"),
+        new Member(5l, MemberType.WAY, "inner")));
 
   static final CreateGeometryConsumer GEOMETRY_BUILDER =
-      new CreateGeometryConsumer(COORDINATE_CACHE, REFERENCE_CACHE);
+    new CreateGeometryConsumer(COORDINATE_CACHE, REFERENCE_CACHE);
 
   @Test
   void handleNode() {

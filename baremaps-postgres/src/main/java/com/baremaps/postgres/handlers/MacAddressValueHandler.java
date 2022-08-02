@@ -22,7 +22,7 @@ public class MacAddressValueHandler extends BaseValueHandler<MacAddress> {
 
   @Override
   protected void internalHandle(DataOutputStream buffer, final MacAddress value)
-      throws IOException {
+    throws IOException {
     buffer.writeInt(6);
     buffer.write(value.getAddressBytes());
   }

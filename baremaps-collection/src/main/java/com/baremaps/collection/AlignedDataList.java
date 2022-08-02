@@ -23,9 +23,11 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * A list of data backed by a {@link SizedDataType} and a {@link Memory}.
  *
- * <p>This code has been adapted from Planetiler (Apache license).
+ * <p>
+ * This code has been adapted from Planetiler (Apache license).
  *
- * <p>Copyright (c) Planetiler.
+ * <p>
+ * Copyright (c) Planetiler.
  *
  * @param <T>
  */
@@ -47,7 +49,7 @@ public class AlignedDataList<T> implements DataList<T> {
    * Constructs a list.
    *
    * @param dataType the data type
-   * @param memory the memory
+   * @param memory   the memory
    */
   public AlignedDataList(SizedDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {

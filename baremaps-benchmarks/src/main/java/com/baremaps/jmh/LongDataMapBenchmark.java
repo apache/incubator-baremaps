@@ -82,7 +82,7 @@ public class LongDataMapBenchmark {
 
   public static void main(String[] args) throws RunnerException {
     org.openjdk.jmh.runner.options.Options opt =
-        new OptionsBuilder().include(LongDataMapBenchmark.class.getSimpleName()).forks(1).build();
+      new OptionsBuilder().include(LongDataMapBenchmark.class.getSimpleName()).forks(1).build();
     new Runner(opt).run();
   }
 }

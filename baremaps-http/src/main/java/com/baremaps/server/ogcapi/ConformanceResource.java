@@ -27,14 +27,14 @@ public class ConformanceResource implements ConformanceApi {
   public Response getConformanceDeclaration() {
     ConfClasses confClasses = new ConfClasses();
     confClasses.setConformsTo(
-        Arrays.asList(
-            "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
-            "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/core",
-            "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/json",
-            "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/manage-styles",
-            "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/mapbox-styles",
-            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core",
-            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset"));
+      Arrays.asList(
+        "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
+        "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/core",
+        "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/json",
+        "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/manage-styles",
+        "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/mapbox-styles",
+        "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core",
+        "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset"));
 
     return Response.ok().entity(confClasses).build();
   }

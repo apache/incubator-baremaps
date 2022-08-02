@@ -253,7 +253,7 @@ class DataBlockReader {
 
   private LocalDateTime getTimestamp(long timestamp) {
     return LocalDateTime.ofInstant(
-        Instant.ofEpochMilli(dateGranularity * timestamp), TimeZone.getDefault().toZoneId());
+      Instant.ofEpochMilli(dateGranularity * timestamp), TimeZone.getDefault().toZoneId());
   }
 
   private Map<String, String> getTags(List<Integer> keys, List<Integer> vals) {

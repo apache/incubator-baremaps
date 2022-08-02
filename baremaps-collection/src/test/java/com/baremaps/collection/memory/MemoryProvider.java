@@ -26,13 +26,13 @@ public class MemoryProvider {
 
   public static Stream<Arguments> memories() throws IOException {
     return Stream.of(
-        Arguments.of(new OnHeapMemory(SEGMENT_BYTES)),
-        Arguments.of(new OffHeapMemory(SEGMENT_BYTES)),
-        Arguments.of(
-            new OnDiskFileMemory(
-                Files.createTempFile(Paths.get("."), "baremaps_", ".tmp"), SEGMENT_BYTES)),
-        Arguments.of(
-            new OnDiskDirectoryMemory(
-                Files.createTempDirectory(Paths.get("."), "baremaps_"), SEGMENT_BYTES)));
+      Arguments.of(new OnHeapMemory(SEGMENT_BYTES)),
+      Arguments.of(new OffHeapMemory(SEGMENT_BYTES)),
+      Arguments.of(
+        new OnDiskFileMemory(
+          Files.createTempFile(Paths.get("."), "baremaps_", ".tmp"), SEGMENT_BYTES)),
+      Arguments.of(
+        new OnDiskDirectoryMemory(
+          Files.createTempDirectory(Paths.get("."), "baremaps_"), SEGMENT_BYTES)));
   }
 }

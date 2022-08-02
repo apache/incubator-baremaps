@@ -29,7 +29,7 @@ public class SmallLongDataType implements SizedDataType<Long> {
   public SmallLongDataType(int n) {
     if (n < 1 || n > 8) {
       throw new IllegalArgumentException(
-          "The number of bytes used to store small longs must be comprised between 1 and 8");
+        "The number of bytes used to store small longs must be comprised between 1 and 8");
     }
     this.n = n;
   }

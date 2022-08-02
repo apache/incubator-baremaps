@@ -52,7 +52,7 @@ class PostgresNodeRepositoryTest extends DatabaseContainerTest {
     List<Node> nodes = Arrays.asList(Constants.NODE_0, Constants.NODE_1, Constants.NODE_2);
     nodeRepository.put(nodes);
     assertIterableEquals(
-        nodes, nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+      nodes, nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
@@ -70,8 +70,8 @@ class PostgresNodeRepositoryTest extends DatabaseContainerTest {
     nodeRepository.put(nodes);
     nodeRepository.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
-        Arrays.asList(null, null, null),
-        nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+      Arrays.asList(null, null, null),
+      nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
@@ -80,6 +80,6 @@ class PostgresNodeRepositoryTest extends DatabaseContainerTest {
     List<Node> nodes = Arrays.asList(Constants.NODE_0, Constants.NODE_1, Constants.NODE_2);
     nodeRepository.copy(nodes);
     assertIterableEquals(
-        nodes, nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+      nodes, nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

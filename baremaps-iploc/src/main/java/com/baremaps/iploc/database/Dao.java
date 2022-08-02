@@ -49,7 +49,7 @@ public interface Dao<T> {
   /**
    * Update the given element
    *
-   * @param t the element to update
+   * @param t      the element to update
    * @param params the list of fields to update
    */
   void update(T t, String[] params);

@@ -51,45 +51,46 @@ public class Serve implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Serve.class);
 
-  @Mixin private Options options;
+  @Mixin
+  private Options options;
 
   @Option(
-      names = {"--database"},
-      paramLabel = "DATABASE",
-      description = "The JDBC url of Postgres.",
-      required = true)
+    names = {"--database"},
+    paramLabel = "DATABASE",
+    description = "The JDBC url of Postgres.",
+    required = true)
   private String database;
 
   @Option(
-      names = {"--cache"},
-      paramLabel = "CACHE",
-      description = "The caffeine cache directive.")
+    names = {"--cache"},
+    paramLabel = "CACHE",
+    description = "The caffeine cache directive.")
   private String cache = "";
 
   @Option(
-      names = {"--tileset"},
-      paramLabel = "TILESET",
-      description = "The tileset file.",
-      required = true)
+    names = {"--tileset"},
+    paramLabel = "TILESET",
+    description = "The tileset file.",
+    required = true)
   private Path tileset;
 
   @Option(
-      names = {"--style"},
-      paramLabel = "STYLE",
-      description = "The style file.",
-      required = true)
+    names = {"--style"},
+    paramLabel = "STYLE",
+    description = "The style file.",
+    required = true)
   private Path style;
 
   @Option(
-      names = {"--host"},
-      paramLabel = "HOST",
-      description = "The host of the server.")
+    names = {"--host"},
+    paramLabel = "HOST",
+    description = "The host of the server.")
   private String host = "localhost";
 
   @Option(
-      names = {"--port"},
-      paramLabel = "PORT",
-      description = "The port of the server.")
+    names = {"--port"},
+    paramLabel = "PORT",
+    description = "The port of the server.")
   private int port = 9000;
 
   @Override
@@ -105,24 +106,24 @@ public class Serve implements Callable<Integer> {
 
     // Configure the application
     ResourceConfig application =
-        new ResourceConfig()
-            .register(CorsFilter.class)
-            .register(ServerResources.class)
-            .register(contextResolverFor(objectMapper))
-            .register(
-                new AbstractBinder() {
-                  @Override
-                  protected void configure() {
-                    bind(tileset).to(Path.class).named("tileset");
-                    bind(style).to(Path.class).named("style");
-                    bind(tileCache).to(TileStore.class);
-                  }
-                });
+      new ResourceConfig()
+        .register(CorsFilter.class)
+        .register(ServerResources.class)
+        .register(contextResolverFor(objectMapper))
+        .register(
+          new AbstractBinder() {
+            @Override
+            protected void configure() {
+              bind(tileset).to(Path.class).named("tileset");
+              bind(style).to(Path.class).named("style");
+              bind(tileCache).to(TileStore.class);
+            }
+          });
 
     BlockingStreamingHttpService httpService =
-        new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
+      new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
     ServerContext serverContext =
-        HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
+      HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
     logger.info("Listening on {}", serverContext.listenAddress());
 

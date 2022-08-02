@@ -50,12 +50,12 @@ class PostgresRelationRepositoryTest extends DatabaseContainerTest {
   @Tag("integration")
   void insertAll() throws RepositoryException {
     List<Relation> relations =
-        Arrays.asList(Constants.RELATION_2, Constants.RELATION_3, Constants.RELATION_4);
+      Arrays.asList(Constants.RELATION_2, Constants.RELATION_3, Constants.RELATION_4);
     relationRepository.put(relations);
     assertIterableEquals(
-        relations,
-        relationRepository.get(
-            relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
+      relations,
+      relationRepository.get(
+        relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
@@ -70,24 +70,24 @@ class PostgresRelationRepositoryTest extends DatabaseContainerTest {
   @Tag("integration")
   void deleteAll() throws RepositoryException {
     List<Relation> relations =
-        Arrays.asList(Constants.RELATION_2, Constants.RELATION_3, Constants.RELATION_4);
+      Arrays.asList(Constants.RELATION_2, Constants.RELATION_3, Constants.RELATION_4);
     relationRepository.put(relations);
     relationRepository.delete(relations.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
-        Arrays.asList(null, null, null),
-        relationRepository.get(
-            relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
+      Arrays.asList(null, null, null),
+      relationRepository.get(
+        relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   void copy() throws RepositoryException {
     List<Relation> relations =
-        Arrays.asList(Constants.RELATION_2, Constants.RELATION_3, Constants.RELATION_4);
+      Arrays.asList(Constants.RELATION_2, Constants.RELATION_3, Constants.RELATION_4);
     relationRepository.copy(relations);
     assertIterableEquals(
-        relations,
-        relationRepository.get(
-            relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
+      relations,
+      relationRepository.get(
+        relations.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

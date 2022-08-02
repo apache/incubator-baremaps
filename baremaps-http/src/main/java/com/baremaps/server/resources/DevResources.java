@@ -84,11 +84,11 @@ public class DevResources {
 
   @Inject
   public DevResources(
-      @Named("tileset") Path tileset,
-      @Named("style") Path style,
-      DataSource dataSource,
-      ObjectMapper objectMapper,
-      Sse sse) {
+    @Named("tileset") Path tileset,
+    @Named("style") Path style,
+    DataSource dataSource,
+    ObjectMapper objectMapper,
+    Sse sse) {
     this.tileset = tileset.toAbsolutePath();
     this.style = style.toAbsolutePath();
     this.dataSource = dataSource;
@@ -165,10 +165,10 @@ public class DevResources {
       ByteBuffer blob = tileStore.read(tile);
       if (blob != null) {
         return Response.status(200)
-            .header(CONTENT_TYPE, TILE_TYPE)
-            .header(CONTENT_ENCODING, TILE_ENCODING)
-            .entity(blob.array())
-            .build();
+          .header(CONTENT_TYPE, TILE_TYPE)
+          .header(CONTENT_ENCODING, TILE_ENCODING)
+          .entity(blob.array())
+          .build();
       } else {
         return Response.status(204).build();
       }

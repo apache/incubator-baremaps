@@ -40,8 +40,8 @@ public class ShapefileDirectory implements Aggregate {
   public Collection<? extends Resource> components() throws DataStoreException {
     try (var list = Files.list(directory)) {
       return list.filter(file -> file.toString().toLowerCase().endsWith(".shp"))
-          .map(file -> new ShapefileFeatureSet(file))
-          .collect(Collectors.toList());
+        .map(file -> new ShapefileFeatureSet(file))
+        .collect(Collectors.toList());
     } catch (IOException e) {
       throw new DataStoreException(e);
     }
@@ -59,13 +59,13 @@ public class ShapefileDirectory implements Aggregate {
 
   @Override
   public <T extends StoreEvent> void addListener(
-      Class<T> eventType, StoreListener<? super T> listener) {
+    Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public <T extends StoreEvent> void removeListener(
-      Class<T> eventType, StoreListener<? super T> listener) {
+    Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 }

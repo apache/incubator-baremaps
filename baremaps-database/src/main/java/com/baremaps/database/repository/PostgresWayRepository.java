@@ -64,16 +64,16 @@ public class PostgresWayRepository implements Repository<Long, Way> {
    */
   public PostgresWayRepository(DataSource dataSource) {
     this(
-        dataSource,
-        "osm_ways",
-        "id",
-        "version",
-        "uid",
-        "timestamp",
-        "changeset",
-        "tags",
-        "nodes",
-        "geom");
+      dataSource,
+      "osm_ways",
+      "id",
+      "version",
+      "uid",
+      "timestamp",
+      "changeset",
+      "tags",
+      "nodes",
+      "geom");
   }
 
   /**
@@ -91,107 +91,109 @@ public class PostgresWayRepository implements Repository<Long, Way> {
    * @param geometryColumn
    */
   public PostgresWayRepository(
-      DataSource dataSource,
-      String tableName,
-      String idColumn,
-      String versionColumn,
-      String uidColumn,
-      String timestampColumn,
-      String changesetColumn,
-      String tagsColumn,
-      String nodesColumn,
-      String geometryColumn) {
+    DataSource dataSource,
+    String tableName,
+    String idColumn,
+    String versionColumn,
+    String uidColumn,
+    String timestampColumn,
+    String changesetColumn,
+    String tagsColumn,
+    String nodesColumn,
+    String geometryColumn) {
     this.dataSource = dataSource;
     this.createTable =
-        String.format(
-            """
-                CREATE TABLE %1$s (
-                  %2$s bigint PRIMARY KEY,
-                  %3$s int,
-                  %4$s int,
-                  %5$s timestamp without time zone,
-                  %6$s bigint,
-                  %7$s jsonb,
-                  %8$s bigint[],
-                  %9$s geometry
-                )""",
-            tableName,
-            idColumn,
-            versionColumn,
-            uidColumn,
-            timestampColumn,
-            changesetColumn,
-            tagsColumn,
-            nodesColumn,
-            geometryColumn);
+      String.format(
+        """
+          CREATE TABLE %1$s (
+            %2$s bigint PRIMARY KEY,
+            %3$s int,
+            %4$s int,
+            %5$s timestamp without time zone,
+            %6$s bigint,
+            %7$s jsonb,
+            %8$s bigint[],
+            %9$s geometry
+          )""",
+        tableName,
+        idColumn,
+        versionColumn,
+        uidColumn,
+        timestampColumn,
+        changesetColumn,
+        tagsColumn,
+        nodesColumn,
+        geometryColumn);
     this.dropTable = String.format("DROP TABLE IF EXISTS %1$s", tableName);
     this.truncateTable = String.format("TRUNCATE TABLE %1$s", tableName);
     this.select =
-        String.format(
-            "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, st_asbinary(%9$s) FROM %1$s WHERE %2$s = ?",
-            tableName,
-            idColumn,
-            versionColumn,
-            uidColumn,
-            timestampColumn,
-            changesetColumn,
-            tagsColumn,
-            nodesColumn,
-            geometryColumn);
+      String.format(
+        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, st_asbinary(%9$s) FROM %1$s WHERE %2$s = ?",
+        tableName,
+        idColumn,
+        versionColumn,
+        uidColumn,
+        timestampColumn,
+        changesetColumn,
+        tagsColumn,
+        nodesColumn,
+        geometryColumn);
     this.selectIn =
-        String.format(
-            "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, st_asbinary(%9$s) FROM %1$s WHERE %2$s = ANY (?)",
-            tableName,
-            idColumn,
-            versionColumn,
-            uidColumn,
-            timestampColumn,
-            changesetColumn,
-            tagsColumn,
-            nodesColumn,
-            geometryColumn);
+      String.format(
+        "SELECT %2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, st_asbinary(%9$s) FROM %1$s WHERE %2$s = ANY (?)",
+        tableName,
+        idColumn,
+        versionColumn,
+        uidColumn,
+        timestampColumn,
+        changesetColumn,
+        tagsColumn,
+        nodesColumn,
+        geometryColumn);
     this.insert =
-        String.format(
-            """
-                INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s)
-                VALUES (?, ?, ?, ?, ?, cast (? AS jsonb), ?, ?)
-                ON CONFLICT (%2$s) DO UPDATE SET
-                %3$s = excluded.%3$s,
-                %4$s = excluded.%4$s,
-                %5$s = excluded.%5$s,
-                %6$s = excluded.%6$s,
-                %7$s = excluded.%7$s,
-                %8$s = excluded.%8$s,
-                %9$s = excluded.%9$s""",
-            tableName,
-            idColumn,
-            versionColumn,
-            uidColumn,
-            timestampColumn,
-            changesetColumn,
-            tagsColumn,
-            nodesColumn,
-            geometryColumn);
+      String.format(
+        """
+          INSERT INTO %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s)
+          VALUES (?, ?, ?, ?, ?, cast (? AS jsonb), ?, ?)
+          ON CONFLICT (%2$s) DO UPDATE SET
+          %3$s = excluded.%3$s,
+          %4$s = excluded.%4$s,
+          %5$s = excluded.%5$s,
+          %6$s = excluded.%6$s,
+          %7$s = excluded.%7$s,
+          %8$s = excluded.%8$s,
+          %9$s = excluded.%9$s""",
+        tableName,
+        idColumn,
+        versionColumn,
+        uidColumn,
+        timestampColumn,
+        changesetColumn,
+        tagsColumn,
+        nodesColumn,
+        geometryColumn);
     this.delete = String.format("DELETE FROM %1$s WHERE %2$s = ?", tableName, idColumn);
     this.copy =
-        String.format(
-            "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s) FROM STDIN BINARY",
-            tableName,
-            idColumn,
-            versionColumn,
-            uidColumn,
-            timestampColumn,
-            changesetColumn,
-            tagsColumn,
-            nodesColumn,
-            geometryColumn);
+      String.format(
+        "COPY %1$s (%2$s, %3$s, %4$s, %5$s, %6$s, %7$s, %8$s, %9$s) FROM STDIN BINARY",
+        tableName,
+        idColumn,
+        versionColumn,
+        uidColumn,
+        timestampColumn,
+        changesetColumn,
+        tagsColumn,
+        nodesColumn,
+        geometryColumn);
   }
 
   /** {@inheritDoc} */
   @Override
   public void create() throws RepositoryException {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(createTable)) {
+    try (
+      Connection connection = dataSource.getConnection();
+      PreparedStatement statement = connection.prepareStatement(createTable)
+    ) {
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
@@ -201,8 +203,10 @@ public class PostgresWayRepository implements Repository<Long, Way> {
   /** {@inheritDoc} */
   @Override
   public void drop() throws RepositoryException {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(dropTable)) {
+    try (
+      Connection connection = dataSource.getConnection();
+      PreparedStatement statement = connection.prepareStatement(dropTable)
+    ) {
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
@@ -212,8 +216,10 @@ public class PostgresWayRepository implements Repository<Long, Way> {
   /** {@inheritDoc} */
   @Override
   public void truncate() throws RepositoryException {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(truncateTable)) {
+    try (
+      Connection connection = dataSource.getConnection();
+      PreparedStatement statement = connection.prepareStatement(truncateTable)
+    ) {
       statement.execute();
     } catch (SQLException e) {
       throw new RepositoryException(e);
@@ -223,8 +229,10 @@ public class PostgresWayRepository implements Repository<Long, Way> {
   /** {@inheritDoc} */
   @Override
   public Way get(Long key) throws RepositoryException {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(select)) {
+    try (
+      Connection connection = dataSource.getConnection();
+      PreparedStatement statement = connection.prepareStatement(select)
+    ) {
       statement.setObject(1, key);
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
@@ -244,8 +252,10 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     if (keys.isEmpty()) {
       return List.of();
     }
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(selectIn)) {
+    try (
+      Connection connection = dataSource.getConnection();
+      PreparedStatement statement = connection.prepareStatement(selectIn)
+    ) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       try (ResultSet result = statement.executeQuery()) {
         Map<Long, Way> values = new HashMap<>();
@@ -263,8 +273,10 @@ public class PostgresWayRepository implements Repository<Long, Way> {
   /** {@inheritDoc} */
   @Override
   public void put(Way value) throws RepositoryException {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(insert)) {
+    try (
+      Connection connection = dataSource.getConnection();
+      PreparedStatement statement = connection.prepareStatement(insert)
+    ) {
       setValue(statement, value);
       statement.execute();
     } catch (SQLException | JsonProcessingException e) {
@@ -278,8 +290,10 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     if (values.isEmpty()) {
       return;
     }
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(insert)) {
+    try (
+      Connection connection = dataSource.getConnection();
+      PreparedStatement statement = connection.prepareStatement(insert)
+    ) {
       for (Way value : values) {
         statement.clearParameters();
         setValue(statement, value);
@@ -294,8 +308,10 @@ public class PostgresWayRepository implements Repository<Long, Way> {
   /** {@inheritDoc} */
   @Override
   public void delete(Long key) throws RepositoryException {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(delete)) {
+    try (
+      Connection connection = dataSource.getConnection();
+      PreparedStatement statement = connection.prepareStatement(delete)
+    ) {
       statement.setObject(1, key);
       statement.execute();
     } catch (SQLException e) {
@@ -309,8 +325,10 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     if (keys.isEmpty()) {
       return;
     }
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(delete)) {
+    try (
+      Connection connection = dataSource.getConnection();
+      PreparedStatement statement = connection.prepareStatement(delete)
+    ) {
       for (Long key : keys) {
         statement.clearParameters();
         statement.setObject(1, key);
@@ -366,7 +384,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
   }
 
   private void setValue(PreparedStatement statement, Way value)
-      throws SQLException, JsonProcessingException {
+    throws SQLException, JsonProcessingException {
     statement.setObject(1, value.getId());
     statement.setObject(2, value.getInfo().getVersion());
     statement.setObject(3, value.getInfo().getUid());

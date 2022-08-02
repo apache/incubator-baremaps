@@ -27,7 +27,7 @@ public final class User {
   /**
    * Constructs an OpenStreetMap {@code User} with the specified parameters.
    *
-   * @param id the id
+   * @param id   the id
    * @param name the name
    */
   public User(int id, String name) {

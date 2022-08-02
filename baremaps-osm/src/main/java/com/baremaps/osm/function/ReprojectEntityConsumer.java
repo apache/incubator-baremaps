@@ -29,7 +29,7 @@ public class ReprojectEntityConsumer implements EntityConsumerAdapter {
   /**
    * Creates a consumer that reproject geometries with the provided SRIDs.
    *
-   * @param inputSRID the input SRID
+   * @param inputSRID  the input SRID
    * @param outputSRID the output SRID
    */
   public ReprojectEntityConsumer(int inputSRID, int outputSRID) {

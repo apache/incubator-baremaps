@@ -30,7 +30,7 @@ public class TimeStampUtils {
   private static final LocalDateTime PostgresEpoch = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
 
   private static final long DaysBetweenJavaAndPostgresEpochs =
-      ChronoUnit.DAYS.between(JavaEpoch, PostgresEpoch);
+    ChronoUnit.DAYS.between(JavaEpoch, PostgresEpoch);
 
   public static long convertToPostgresTimeStamp(LocalDateTime localDateTime) {
 
@@ -46,14 +46,12 @@ public class TimeStampUtils {
     // Now Calculate the Postgres Timestamp:
     if (localDateTime.isBefore(PostgresEpoch)) {
       long dateInMicroseconds =
-          (localDateTime.toLocalDate().toEpochDay() - DaysBetweenJavaAndPostgresEpochs)
-              * 86400000000L;
+        (localDateTime.toLocalDate().toEpochDay() - DaysBetweenJavaAndPostgresEpochs) * 86400000000L;
 
       return dateInMicroseconds + timeInMicroseconds;
     } else {
       long dateInMicroseconds =
-          (DaysBetweenJavaAndPostgresEpochs - localDateTime.toLocalDate().toEpochDay())
-              * 86400000000L;
+        (DaysBetweenJavaAndPostgresEpochs - localDateTime.toLocalDate().toEpochDay()) * 86400000000L;
 
       return -(dateInMicroseconds - timeInMicroseconds);
     }
@@ -85,10 +83,10 @@ public class TimeStampUtils {
   }
 
   /**
-   * Converts the given java seconds to postgresql seconds. The conversion is valid for any year 100
-   * BC onwards.
+   * Converts the given java seconds to postgresql seconds. The conversion is valid for any year 100 BC onwards.
    *
-   * <p>from /org/postgresql/jdbc2/TimestampUtils.java
+   * <p>
+   * from /org/postgresql/jdbc2/TimestampUtils.java
    *
    * @param seconds Postgresql seconds.
    * @return Java seconds.

@@ -34,20 +34,20 @@ public class Init implements Callable<Integer> {
   private static final Logger logger = LoggerFactory.getLogger(Init.class);
 
   @Option(
-      names = {"--file"},
-      paramLabel = "FILE",
-      description = "A workflow file.",
-      required = true)
+    names = {"--file"},
+    paramLabel = "FILE",
+    description = "A workflow file.",
+    required = true)
   private Path workflow;
 
   @Override
   public Integer call() throws Exception {
     com.baremaps.workflow.Workflow workflowObject =
-        new Workflow(
-            List.of(new Step("hello", List.of(), List.of(new LogMessage("Hello World!")))));
+      new Workflow(
+        List.of(new Step("hello", List.of(), List.of(new LogMessage("Hello World!")))));
     Files.write(
-        workflow,
-        defaultObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(workflowObject));
+      workflow,
+      defaultObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(workflowObject));
     logger.info("Workflow initialized");
     return 0;
   }

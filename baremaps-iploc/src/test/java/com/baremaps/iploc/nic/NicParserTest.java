@@ -31,10 +31,10 @@ class NicParserTest {
   @Test
   void parseAttributes() throws IOException {
     List<NicAttribute> nicAttributes =
-        NicData.sample("ripe/sample.txt").stream()
-            .map(NicObject::attributes)
-            .flatMap(List::stream)
-            .toList();
+      NicData.sample("ripe/sample.txt").stream()
+        .map(NicObject::attributes)
+        .flatMap(List::stream)
+        .toList();
     assertEquals(233, nicAttributes.size());
   }
 }

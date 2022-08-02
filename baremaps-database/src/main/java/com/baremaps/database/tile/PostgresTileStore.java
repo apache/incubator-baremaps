@@ -37,9 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A read-only {@code TileStore} implementation that uses the PostgreSQL to generate vector tiles.
- * This {@code TileStore} combines the input queries, identifies common table expressions (CTE), and
- * generates a single optimized query that hits the database.
+ * A read-only {@code TileStore} implementation that uses the PostgreSQL to generate vector tiles. This
+ * {@code TileStore} combines the input queries, identifies common table expressions (CTE), and generates a single
+ * optimized query that hits the database.
  */
 public class PostgresTileStore implements TileStore {
 
@@ -50,19 +50,17 @@ public class PostgresTileStore implements TileStore {
   private static final String WITH_QUERY = "with %1$s %2$s";
 
   private static final String CTE_QUERY =
-      "%1$s as (select * from %3$s%4$s where %5$s st_intersects(%2$s, $envelope))";
+    "%1$s as (select * from %3$s%4$s where %5$s st_intersects(%2$s, $envelope))";
 
   private static final String CTE_WHERE = "(%s) and";
 
   private static final String STATEMENT_QUERY =
-      "select st_asmvt(target, '%1$s', 4096, 'geom', 'id') from (%2$s) as target";
+    "select st_asmvt(target, '%1$s', 4096, 'geom', 'id') from (%2$s) as target";
 
   private static final String STATEMENT_LAYER_QUERY =
-      "select "
-          + "%1$s as id, "
-          + "(%2$s ||  jsonb_build_object('geometry', lower(replace(st_geometrytype(%3$s), 'ST_', '')))) as tags, "
-          + "st_asmvtgeom(%3$s, $envelope, 4096, 256, true) as geom "
-          + "from %4$s %5$s";
+    "select " + "%1$s as id, " +
+      "(%2$s ||  jsonb_build_object('geometry', lower(replace(st_geometrytype(%3$s), 'ST_', '')))) as tags, " +
+      "st_asmvtgeom(%3$s, $envelope, 4096, 256, true) as geom " + "from %4$s %5$s";
 
   private static final String STATEMENT_WHERE = "where %s";
 
@@ -90,16 +88,20 @@ public class PostgresTileStore implements TileStore {
   /** {@inheritDoc} */
   @Override
   public ByteBuffer read(Tile tile) throws TileStoreException {
-    try (Connection connection = datasource.getConnection();
-        Statement statement = connection.createStatement();
-        ByteArrayOutputStream data = new ByteArrayOutputStream()) {
+    try (
+      Connection connection = datasource.getConnection();
+      Statement statement = connection.createStatement();
+      ByteArrayOutputStream data = new ByteArrayOutputStream()
+    ) {
 
       String sql = withQuery(tile);
       logger.debug("Executing query: {}", sql);
 
       int length = 0;
-      try (GZIPOutputStream gzip = new GZIPOutputStream(data);
-          ResultSet resultSet = statement.executeQuery(sql)) {
+      try (
+        GZIPOutputStream gzip = new GZIPOutputStream(data);
+        ResultSet resultSet = statement.executeQuery(sql)
+      ) {
         while (resultSet.next()) {
           byte[] bytes = resultSet.getBytes(1);
           length += bytes.length;
@@ -129,9 +131,9 @@ public class PostgresTileStore implements TileStore {
     String targetQueries = statements(queries, zoom);
     String withQuery = String.format(WITH_QUERY, sourceQueries, targetQueries);
     Map<String, String> variables =
-        Map.of(
-            "envelope", tileEnvelope(tile),
-            "zoom", String.valueOf(zoom));
+      Map.of(
+        "envelope", tileEnvelope(tile),
+        "zoom", String.valueOf(zoom));
     return VariableUtils.interpolate(variables, withQuery);
   }
 
@@ -139,26 +141,26 @@ public class PostgresTileStore implements TileStore {
    * Returns the common table expressions for a list of input queries at a specified zoom level.
    *
    * @param queries the queries
-   * @param zoom the zoom level
+   * @param zoom    the zoom level
    * @return the common table expressions
    */
   protected String ctes(List<PostgresQuery> queries, int zoom) {
     return queries.stream()
-        .filter(query -> zoomPredicate(query, zoom))
-        .collect(
-            Collectors.groupingBy(
-                this::commonTableExpression, LinkedHashMap::new, Collectors.toList()))
-        .entrySet()
-        .stream()
-        .map(entry -> cte(entry.getKey(), entry.getValue()))
-        .distinct()
-        .collect(Collectors.joining(COMMA));
+      .filter(query -> zoomPredicate(query, zoom))
+      .collect(
+        Collectors.groupingBy(
+          this::commonTableExpression, LinkedHashMap::new, Collectors.toList()))
+      .entrySet()
+      .stream()
+      .map(entry -> cte(entry.getKey(), entry.getValue()))
+      .distinct()
+      .collect(Collectors.joining(COMMA));
   }
 
   /**
    * Returns the common table expression for a group of queries.
    *
-   * @param group the common table expression
+   * @param group   the common table expression
    * @param queries the input queries associated with the provided group
    * @return the common table expression
    */
@@ -167,20 +169,20 @@ public class PostgresTileStore implements TileStore {
     String geom = group.getSelectItems().get(2).toString();
     String from = group.getFromItem().toString();
     String joins =
-        Optional.ofNullable(group.getJoins()).stream()
-            .flatMap(List::stream)
-            .map(Join::toString)
-            .collect(Collectors.joining(SPACE));
+      Optional.ofNullable(group.getJoins()).stream()
+        .flatMap(List::stream)
+        .map(Join::toString)
+        .collect(Collectors.joining(SPACE));
     String where =
-        queries.stream()
-            .map(query -> query.getAst().getWhere())
-            .map(Optional::ofNullable)
-            .map(o -> o.orElse(new Column("true")))
-            .map(Parenthesis::new)
-            .map(Expression.class::cast)
-            .reduce(OrExpression::new)
-            .map(expression -> String.format(CTE_WHERE, expression))
-            .orElse(EMPTY);
+      queries.stream()
+        .map(query -> query.getAst().getWhere())
+        .map(Optional::ofNullable)
+        .map(o -> o.orElse(new Column("true")))
+        .map(Parenthesis::new)
+        .map(Expression.class::cast)
+        .reduce(OrExpression::new)
+        .map(expression -> String.format(CTE_WHERE, expression))
+        .orElse(EMPTY);
     return String.format(CTE_QUERY, alias, geom, from, joins, where);
   }
 
@@ -188,34 +190,34 @@ public class PostgresTileStore implements TileStore {
    * Returns the statements for a list of input queries at a specified zoom level.
    *
    * @param queries the queries
-   * @param zoom the zoom level
+   * @param zoom    the zoom level
    * @return the statements
    */
   protected String statements(List<PostgresQuery> queries, int zoom) {
     return queries.stream()
-        .filter(query -> zoomPredicate(query, zoom))
-        .collect(
-            Collectors.groupingBy(PostgresQuery::getLayer, LinkedHashMap::new, Collectors.toList()))
-        .entrySet()
-        .stream()
-        .map(entry -> layerStatements(entry.getValue(), entry.getKey()))
-        .collect(Collectors.joining(UNION));
+      .filter(query -> zoomPredicate(query, zoom))
+      .collect(
+        Collectors.groupingBy(PostgresQuery::getLayer, LinkedHashMap::new, Collectors.toList()))
+      .entrySet()
+      .stream()
+      .map(entry -> layerStatements(entry.getValue(), entry.getKey()))
+      .collect(Collectors.joining(UNION));
   }
 
   /**
    * Returns the statements for a list of input queries corresponding to a layer.
    *
    * @param queries the queries
-   * @param layer the layer name
+   * @param layer   the layer name
    * @return the statements
    */
   protected String layerStatements(List<PostgresQuery> queries, String layer) {
     return String.format(
-        STATEMENT_QUERY,
-        layer,
-        queries.stream()
-            .map(queryValue -> layerStatement(queryValue))
-            .collect(Collectors.joining(UNION)));
+      STATEMENT_QUERY,
+      layer,
+      queries.stream()
+        .map(queryValue -> layerStatement(queryValue))
+        .collect(Collectors.joining(UNION)));
   }
 
   /**
@@ -231,9 +233,9 @@ public class PostgresTileStore implements TileStore {
     String tags = ast.getSelectItems().get(1).toString();
     String geom = ast.getSelectItems().get(2).toString();
     String where =
-        Optional.ofNullable(query.getAst().getWhere())
-            .map(expression -> String.format(STATEMENT_WHERE, expression))
-            .orElse(EMPTY);
+      Optional.ofNullable(query.getAst().getWhere())
+        .map(expression -> String.format(STATEMENT_WHERE, expression))
+        .orElse(EMPTY);
     return String.format(STATEMENT_LAYER_QUERY, id, tags, geom, alias, where);
   }
 
@@ -243,7 +245,7 @@ public class PostgresTileStore implements TileStore {
 
   protected PostgresGroup commonTableExpression(PostgresQuery query) {
     return new PostgresGroup(
-        query.getAst().getSelectItems(), query.getAst().getFromItem(), query.getAst().getJoins());
+      query.getAst().getSelectItems(), query.getAst().getFromItem(), query.getAst().getJoins());
   }
 
   protected String tileEnvelope(Tile tile) {

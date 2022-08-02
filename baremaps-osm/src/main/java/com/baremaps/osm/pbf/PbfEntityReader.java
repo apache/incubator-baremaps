@@ -43,15 +43,15 @@ public class PbfEntityReader implements OsmReader<Entity> {
    */
   public Stream<Entity> stream(InputStream inputStream) {
     return reader.stream(inputStream)
-        .flatMap(
-            block -> {
-              try {
-                Stream.Builder<Entity> entities = Stream.builder();
-                block.visit(new BlockEntityConsumer(entities::add));
-                return entities.build();
-              } catch (Exception e) {
-                throw new StreamException(e);
-              }
-            });
+      .flatMap(
+        block -> {
+          try {
+            Stream.Builder<Entity> entities = Stream.builder();
+            block.visit(new BlockEntityConsumer(entities::add));
+            return entities.build();
+          } catch (Exception e) {
+            throw new StreamException(e);
+          }
+        });
   }
 }

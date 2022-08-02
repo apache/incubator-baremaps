@@ -26,24 +26,22 @@ public interface LongDataMap<T> {
   /**
    * Associates the specified value with the specified key in this map.
    *
-   * @param key the key with which the specified value is to be associated
+   * @param key   the key with which the specified value is to be associated
    * @param value the value to be associated with the specified key
    */
   void put(long key, T value);
 
   /**
-   * Returns the value to which the specified key is mapped, or null if this map contains no mapping
-   * for the key.
+   * Returns the value to which the specified key is mapped, or null if this map contains no mapping for the key.
    *
    * @param key the key whose associated value is to be returned
-   * @return the value to which the specified key is mapped, or null if this map contains no mapping
-   *     for the key
+   * @return the value to which the specified key is mapped, or null if this map contains no mapping for the key
    */
   T get(long key);
 
   /**
-   * Returns the list of values to which the specified keys are mapped, or null if this map contains
-   * no mapping for the key.
+   * Returns the list of values to which the specified keys are mapped, or null if this map contains no mapping for the
+   * key.
    *
    * @param keys the keys whose associated value are to be returned
    * @return the values to which the specified keys are mapped

@@ -154,10 +154,10 @@ public class PbfBlockReader implements OsmReader<Block> {
    */
   public Stream<Block> stream(InputStream inputStream) {
     Stream<Block> blocks =
-        StreamUtils.bufferInSourceOrder(
-            StreamUtils.stream(new BlobIterator(inputStream)),
-            this::read,
-            Runtime.getRuntime().availableProcessors());
+      StreamUtils.bufferInSourceOrder(
+        StreamUtils.stream(new BlobIterator(inputStream)),
+        this::read,
+        Runtime.getRuntime().availableProcessors());
     if (geometry) {
       Consumer<Block> cacheBlock = new DataStoreConsumer(coordinates, references);
       Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
@@ -167,7 +167,7 @@ public class PbfBlockReader implements OsmReader<Block> {
       }
       Consumer<Block> prepareGeometries = new BlockEntityConsumer(createGeometry);
       Function<Block, Block> prepareBlock =
-          consumeThenReturn(cacheBlock.andThen(prepareGeometries));
+        consumeThenReturn(cacheBlock.andThen(prepareGeometries));
       blocks = blocks.map(prepareBlock);
     }
     return blocks;

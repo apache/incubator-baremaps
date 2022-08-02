@@ -55,14 +55,14 @@ public record UpdateOpenStreetMap(String database, Integer databaseSrid) impleme
       Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
       Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
       var action =
-          new UpdateService(
-              coordinates,
-              references,
-              headerRepository,
-              nodeRepository,
-              wayRepository,
-              relationRepository,
-              databaseSrid);
+        new UpdateService(
+          coordinates,
+          references,
+          headerRepository,
+          nodeRepository,
+          wayRepository,
+          relationRepository,
+          databaseSrid);
       action.call();
       logger.info("Finished updating {}", database);
     } catch (Exception e) {
@@ -72,12 +72,12 @@ public record UpdateOpenStreetMap(String database, Integer databaseSrid) impleme
   }
 
   public URL resolve(String replicationUrl, Long sequenceNumber, String extension)
-      throws MalformedURLException {
+    throws MalformedURLException {
     String s = String.format("%09d", sequenceNumber);
     String uri =
-        String.format(
-            "%s/%s/%s/%s.%s",
-            replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension);
+      String.format(
+        "%s/%s/%s/%s.%s",
+        replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension);
     return URI.create(uri).toURL();
   }
 }

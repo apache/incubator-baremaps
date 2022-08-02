@@ -43,10 +43,10 @@ public class MacAddress {
   public String toString() {
 
     List<String> bytesAsHexString =
-        IntStream.range(0, addressBytes.length)
-            .map(idx -> addressBytes[idx])
-            .mapToObj(value -> String.format("0x%x", value))
-            .collect(Collectors.toList());
+      IntStream.range(0, addressBytes.length)
+        .map(idx -> addressBytes[idx])
+        .mapToObj(value -> String.format("0x%x", value))
+        .collect(Collectors.toList());
 
     return String.join("-", bytesAsHexString);
   }

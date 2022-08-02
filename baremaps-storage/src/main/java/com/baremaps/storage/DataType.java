@@ -57,8 +57,8 @@ public enum DataType {
   }
 
   private static Map<Class, DataType> lookup =
-      Arrays.stream(DataType.values())
-          .collect(Collectors.toMap(dataType -> dataType.type, dataType -> dataType));
+    Arrays.stream(DataType.values())
+      .collect(Collectors.toMap(dataType -> dataType.type, dataType -> dataType));
 
   public static boolean exists(Class type) {
     return lookup.containsKey(type);

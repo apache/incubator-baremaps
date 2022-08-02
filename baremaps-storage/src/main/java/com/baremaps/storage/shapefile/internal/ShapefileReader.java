@@ -23,14 +23,12 @@ import org.apache.sis.feature.DefaultFeatureType;
 /**
  * Provides a ShapeFile Reader.
  *
- * <p><div class="warning">This is an experimental class, not yet target for any Apache SIS release
- * at this time.</div>
+ * <p>
+ * <div class="warning">This is an experimental class, not yet target for any Apache SIS release at this time.</div>
  *
  * @author Travis L. Pinney
- * @see <a href="http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf">ESRI Shapefile
- *     Specification</a>
- * @see <a href="http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm">dBASE III File
- *     Structure</a>
+ * @see <a href="http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf">ESRI Shapefile Specification</a>
+ * @see <a href="http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm">dBASE III File Structure</a>
  */
 public class ShapefileReader {
   /** Shapefile. */
@@ -89,7 +87,7 @@ public class ShapefileReader {
   /**
    * Construct a Shapefile from a file.
    *
-   * @param shpfile file to read.
+   * @param shpfile   file to read.
    * @param dbasefile Associated DBase file.
    */
   public ShapefileReader(String shpfile, String dbasefile) {
@@ -102,8 +100,8 @@ public class ShapefileReader {
   /**
    * Construct a Shapefile from a file.
    *
-   * @param shpfile file to read.
-   * @param dbasefile Associated DBase file.
+   * @param shpfile      file to read.
+   * @param dbasefile    Associated DBase file.
    * @param shpfileIndex Associated Shapefile index, may be null.
    */
   public ShapefileReader(String shpfile, String dbasefile, String shpfileIndex) {
@@ -172,7 +170,7 @@ public class ShapefileReader {
    */
   public InputFeatureStream read() throws IOException {
     InputFeatureStream is =
-        new InputFeatureStream(this.shapefile, this.databaseFile, this.shapeFileIndex);
+      new InputFeatureStream(this.shapefile, this.databaseFile, this.shapeFileIndex);
     this.featuresType = is.getFeaturesType();
     this.shapefileDescriptor = is.getShapefileDescriptor();
     this.databaseFieldsDescriptors = is.getDatabaseFieldsDescriptors();
@@ -180,11 +178,12 @@ public class ShapefileReader {
   }
 
   /**
-   * Load shapefile descriptors : features types, shapefileDescriptor, database field descriptors :
-   * this is also automatically done when executing a query on it, by findAll.
+   * Load shapefile descriptors : features types, shapefileDescriptor, database field descriptors : this is also
+   * automatically done when executing a query on it, by findAll.
    */
   public void loadDescriptors() throws IOException {
     // Doing a simple query will init the internal descriptors.
-    try (InputFeatureStream is = read()) {}
+    try (InputFeatureStream is = read()) {
+    }
   }
 }

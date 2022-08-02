@@ -52,7 +52,7 @@ public abstract class Block {
    * Applies the specified block function.
    *
    * @param function the function
-   * @param <T> the return type of the function
+   * @param <T>      the return type of the function
    * @return the function result
    * @throws Exception
    */

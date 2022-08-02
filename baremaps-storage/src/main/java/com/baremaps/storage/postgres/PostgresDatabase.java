@@ -134,13 +134,13 @@ public class PostgresDatabase implements WritableAggregate, AutoCloseable {
 
   @Override
   public <T extends StoreEvent> void addListener(
-      Class<T> eventType, StoreListener<? super T> listener) {
+    Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public <T extends StoreEvent> void removeListener(
-      Class<T> eventType, StoreListener<? super T> listener) {
+    Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 
@@ -148,8 +148,7 @@ public class PostgresDatabase implements WritableAggregate, AutoCloseable {
     var featureTypeBuilder = new FeatureTypeBuilder();
     featureTypeBuilder.setName(featureType.getName().toString().replaceAll("[^a-zA-Z0-9]", "_"));
     for (var attribute : featureType.getProperties(false)) {
-      if (attribute instanceof AttributeType attributeType
-          && typeToName.containsKey(attributeType.getValueClass())) {
+      if (attribute instanceof AttributeType attributeType && typeToName.containsKey(attributeType.getValueClass())) {
         featureTypeBuilder.addAttribute(attributeType.getValueClass()).setName(attribute.getName());
       }
     }
@@ -208,10 +207,10 @@ public class PostgresDatabase implements WritableAggregate, AutoCloseable {
 
   private List<AttributeType> getAttributes(FeatureType featureType) {
     return featureType.getProperties(false).stream()
-        .filter(this::isAttribute)
-        .map(this::asAttribute)
-        .filter(this::isSupported)
-        .collect(Collectors.toList());
+      .filter(this::isAttribute)
+      .map(this::asAttribute)
+      .filter(this::isSupported)
+      .collect(Collectors.toList());
   }
 
   private boolean isAttribute(PropertyType propertyType) {
@@ -232,15 +231,12 @@ public class PostgresDatabase implements WritableAggregate, AutoCloseable {
     builder.append(featureType.getName());
     builder.append(" (");
     builder.append(
-        featureType.getProperties(false).stream()
-            .filter(AttributeType.class::isInstance)
-            .map(AttributeType.class::cast)
-            .map(
-                attributeType ->
-                    attributeType.getName().toString()
-                        + " "
-                        + typeToName.get(attributeType.getValueClass()))
-            .collect(Collectors.joining(", ")));
+      featureType.getProperties(false).stream()
+        .filter(AttributeType.class::isInstance)
+        .map(AttributeType.class::cast)
+        .map(
+          attributeType -> attributeType.getName().toString() + " " + typeToName.get(attributeType.getValueClass()))
+        .collect(Collectors.joining(", ")));
     builder.append(")");
     return builder.toString();
   }
@@ -251,11 +247,11 @@ public class PostgresDatabase implements WritableAggregate, AutoCloseable {
     builder.append(featureType.getName());
     builder.append(" (");
     builder.append(
-        featureType.getProperties(false).stream()
-            .filter(AttributeType.class::isInstance)
-            .map(AttributeType.class::cast)
-            .map(attributeType -> attributeType.getName().toString())
-            .collect(Collectors.joining(", ")));
+      featureType.getProperties(false).stream()
+        .filter(AttributeType.class::isInstance)
+        .map(AttributeType.class::cast)
+        .map(attributeType -> attributeType.getName().toString())
+        .collect(Collectors.joining(", ")));
     builder.append(") FROM STDIN BINARY");
     return builder.toString();
   }
@@ -264,8 +260,10 @@ public class PostgresDatabase implements WritableAggregate, AutoCloseable {
   public void remove(Resource resource) throws DataStoreException {
     if (resource instanceof FeatureSet featureSet) {
       var type = featureSet.getType();
-      try (var connection = dataSource.getConnection();
-          var statement = connection.createStatement()) {
+      try (
+        var connection = dataSource.getConnection();
+        var statement = connection.createStatement()
+      ) {
         statement.executeQuery(String.format("DROP TABLE IF EXISTS %s", type.getName()));
       } catch (SQLException e) {
         throw new RuntimeException(e);

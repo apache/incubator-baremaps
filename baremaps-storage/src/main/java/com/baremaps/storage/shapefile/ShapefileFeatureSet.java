@@ -54,7 +54,7 @@ public class ShapefileFeatureSet implements FeatureSet, AutoCloseable {
     try {
       var input = shapeFile.read();
       return StreamSupport.stream(new FeatureSpliterator(shapeFile.read()), false)
-          .onClose(() -> input.close());
+        .onClose(() -> input.close());
     } catch (Exception e) {
       throw new DataStoreException(e);
     }
@@ -77,13 +77,13 @@ public class ShapefileFeatureSet implements FeatureSet, AutoCloseable {
 
   @Override
   public <T extends StoreEvent> void addListener(
-      Class<T> eventType, StoreListener<? super T> listener) {
+    Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public <T extends StoreEvent> void removeListener(
-      Class<T> eventType, StoreListener<? super T> listener) {
+    Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 

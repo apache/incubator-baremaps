@@ -33,12 +33,12 @@ public final class Tile implements Comparable<Tile> {
   private static final int[] sides = IntStream.range(0, 30).map(i -> IntMath.pow(2, i)).toArray();
 
   private static final long[] squares =
-      LongStream.range(0, 30).map(i -> LongMath.pow(IntMath.pow(2, (int) i), 2)).toArray();
+    LongStream.range(0, 30).map(i -> LongMath.pow(IntMath.pow(2, (int) i), 2)).toArray();
 
   private static final long[] offsets =
-      LongStream.range(0, 30)
-          .map(i -> LongStream.range(0, i).map(j -> LongMath.pow(IntMath.pow(2, (int) j), 2)).sum())
-          .toArray();
+    LongStream.range(0, 30)
+      .map(i -> LongStream.range(0, i).map(j -> LongMath.pow(IntMath.pow(2, (int) j), 2)).sum())
+      .toArray();
 
   private final int x;
 
@@ -83,8 +83,8 @@ public final class Tile implements Comparable<Tile> {
    * Return an iterator for the tiles that overlap with an envelope.
    *
    * @param envelope the envelope
-   * @param minzoom the minimum zoom level
-   * @param maxzoom the maximum zoom level
+   * @param minzoom  the minimum zoom level
+   * @param maxzoom  the maximum zoom level
    * @return the iterator
    */
   public static Iterator<Tile> iterator(Envelope envelope, int minzoom, int maxzoom) {
@@ -95,8 +95,8 @@ public final class Tile implements Comparable<Tile> {
    * Return a list for the tiles that overlap with an envelope.
    *
    * @param envelope the envelope
-   * @param minzoom the minimum zoom level
-   * @param maxzoom the maximum zoom level
+   * @param minzoom  the minimum zoom level
+   * @param maxzoom  the maximum zoom level
    * @return the iterator
    */
   public static List<Tile> list(Envelope envelope, int minzoom, int maxzoom) {
@@ -107,8 +107,8 @@ public final class Tile implements Comparable<Tile> {
    * Counts the tiles that overlap with an envelope.
    *
    * @param envelope the envelope
-   * @param minzoom the minimum zoom level
-   * @param maxzoom the maximum zoom level
+   * @param minzoom  the minimum zoom level
+   * @param maxzoom  the maximum zoom level
    * @return the count
    */
   public static long count(Envelope envelope, int minzoom, int maxzoom) {
@@ -126,18 +126,14 @@ public final class Tile implements Comparable<Tile> {
    *
    * @param lon the longitude
    * @param lat the latitude
-   * @param z the zoom level
+   * @param z   the zoom level
    * @return the tile
    */
   public static Tile fromLonLat(double lon, double lat, int z) {
     int x = (int) ((lon + 180.0) / 360.0 * (1 << z));
     int y =
-        (int)
-            ((1
-                    - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat)))
-                        / Math.PI)
-                / 2.0
-                * (1 << z));
+      (int) ((1 - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat))) / Math.PI) / 2.0 *
+        (1 << z));
     return new Tile(x, y, z);
   }
 

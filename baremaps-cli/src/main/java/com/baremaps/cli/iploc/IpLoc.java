@@ -18,9 +18,9 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(
-    name = "iploc",
-    subcommands = {Init.class},
-    description = "IP to location commands.")
+  name = "iploc",
+  subcommands = {Init.class},
+  description = "IP to location commands.")
 public class IpLoc implements Runnable {
 
   @Override

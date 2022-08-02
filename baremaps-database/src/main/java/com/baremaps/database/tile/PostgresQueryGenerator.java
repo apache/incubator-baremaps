@@ -24,13 +24,12 @@ import javax.sql.DataSource;
  * A generator that uses PostgreSQL metadata to generate input queries for a {@code
  * PostgresTileStore}. It can be used to accelerate the creation of a tile set.
  *
- * <p>As in <a
- * href="https://docs.oracle.com/javase/7/docs/api/java/sql/DatabaseMetaData.html">JDBC</a>, some
- * methods take arguments that are String patterns. These arguments all have names such as *
- * fooPattern. Within a pattern String, "%" means match any substring of 0 or more characters, and
- * "_" means match any * one character. Only metadata entries matching the search pattern are
- * returned. If a search pattern argument is set * to null, that argument's criterion will be
- * dropped from the search.
+ * <p>
+ * As in <a href="https://docs.oracle.com/javase/7/docs/api/java/sql/DatabaseMetaData.html">JDBC</a>, some methods take
+ * arguments that are String patterns. These arguments all have names such as * fooPattern. Within a pattern String, "%"
+ * means match any substring of 0 or more characters, and "_" means match any * one character. Only metadata entries
+ * matching the search pattern are returned. If a search pattern argument is set * to null, that argument's criterion
+ * will be dropped from the search.
  */
 public class PostgresQueryGenerator {
 
@@ -54,20 +53,20 @@ public class PostgresQueryGenerator {
   /**
    * Constructs a {@code PostgresQueryGenerator}.
    *
-   * @param dataSource the data source
-   * @param catalog the catalog
-   * @param schemaPattern the schema pattern
-   * @param typeNamePattern the type name pattern
+   * @param dataSource        the data source
+   * @param catalog           the catalog
+   * @param schemaPattern     the schema pattern
+   * @param typeNamePattern   the type name pattern
    * @param columnNamePattern the column name pattern
-   * @param types the types
+   * @param types             the types
    */
   public PostgresQueryGenerator(
-      DataSource dataSource,
-      String catalog,
-      String schemaPattern,
-      String typeNamePattern,
-      String columnNamePattern,
-      String... types) {
+    DataSource dataSource,
+    String catalog,
+    String schemaPattern,
+    String typeNamePattern,
+    String columnNamePattern,
+    String... types) {
     this.dataSource = dataSource;
     this.catalog = catalog;
     this.schemaPattern = schemaPattern;
@@ -83,11 +82,11 @@ public class PostgresQueryGenerator {
    */
   public List<PostgresQuery> generate() {
     return new DatabaseMetadata(dataSource)
-        .getTableMetaData(catalog, schemaPattern, tableNamePattern, types).stream()
-            .filter(table -> table.primaryKeys().size() == 1)
-            .filter(table -> table.getGeometryColumns().size() == 1)
-            .map(this::getLayer)
-            .toList();
+      .getTableMetaData(catalog, schemaPattern, tableNamePattern, types).stream()
+      .filter(table -> table.primaryKeys().size() == 1)
+      .filter(table -> table.getGeometryColumns().size() == 1)
+      .map(this::getLayer)
+      .toList();
   }
 
   private PostgresQuery getLayer(TableMetaData table) {
@@ -97,14 +96,14 @@ public class PostgresQueryGenerator {
     String idColumn = table.primaryKeys().get(0).columnName();
     String geometryColumn = table.getGeometryColumns().get(0).columnName();
     String tagsColumns =
-        table.columns().stream()
-            .filter(column -> !idColumn.equals(column.columnName()))
-            .filter(column -> !geometryColumn.equals(column.columnName()))
-            .map(column -> String.format("'%1$s', %1$s::text", column.columnName()))
-            .collect(Collectors.joining(", ", "hstore(array[", "])"));
+      table.columns().stream()
+        .filter(column -> !idColumn.equals(column.columnName()))
+        .filter(column -> !geometryColumn.equals(column.columnName()))
+        .map(column -> String.format("'%1$s', %1$s::text", column.columnName()))
+        .collect(Collectors.joining(", ", "hstore(array[", "])"));
     String sql =
-        String.format(
-            "SELECT %s, %s, %s FROM %s", idColumn, tagsColumns, geometryColumn, tableName);
+      String.format(
+        "SELECT %s, %s, %s FROM %s", idColumn, tagsColumns, geometryColumn, tableName);
     return new PostgresQuery(layer, 0, 20, sql);
   }
 }

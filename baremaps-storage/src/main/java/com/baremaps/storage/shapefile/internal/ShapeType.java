@@ -21,12 +21,11 @@ import java.util.Map;
 /**
  * Provides a ShapefileType Enumeration
  *
- * <p><div class="warning">This is an experimental class, not yet target for any Apache SIS release
- * at this time.</div>
+ * <p>
+ * <div class="warning">This is an experimental class, not yet target for any Apache SIS release at this time.</div>
  *
  * @author Travis L. Pinney
- * @see <a href="http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf">ESRI Shapefile
- *     Specification</a>
+ * @see <a href="http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf">ESRI Shapefile Specification</a>
  */
 public enum ShapeType {
   NullShape(0),

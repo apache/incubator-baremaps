@@ -37,13 +37,13 @@ public record ExecuteSql(String database, String file, boolean parallel) impleme
         queries = queries.parallel();
       }
       queries.forEach(
-          query -> {
-            try (var connection = dataSource.getConnection()) {
-              connection.createStatement().execute(query);
-            } catch (SQLException e) {
-              throw new WorkflowException(e);
-            }
-          });
+        query -> {
+          try (var connection = dataSource.getConnection()) {
+            connection.createStatement().execute(query);
+          } catch (SQLException e) {
+            throw new WorkflowException(e);
+          }
+        });
       logger.info("Finished executing {} into {}", file, database);
     } catch (Exception e) {
       logger.error("Failed executing {} into {}", file, database);

@@ -26,7 +26,7 @@ public class Inet6AddressValueHandler extends BaseValueHandler<Inet6Address> {
 
   @Override
   protected void internalHandle(DataOutputStream buffer, final Inet6Address value)
-      throws IOException {
+    throws IOException {
     buffer.writeInt(20);
 
     buffer.writeByte(IPv6);

@@ -26,56 +26,57 @@ import java.util.stream.Stream;
 /**
  * External merge sort algorithm adapted
  *
- * <p>This code has been adapted from <a
- * href="https://github.com/lemire/externalsortinginjava">externalsortinginjava</a> (public domain).
+ * <p>
+ * This code has been adapted from <a href="https://github.com/lemire/externalsortinginjava">externalsortinginjava</a>
+ * (public domain).
  */
 public class ExternalMergeSort {
 
   /**
    * Sorts an input list to an output list.
    *
-   * @param <T> The type of the list
-   * @param input The input list to sort
-   * @param output The output list
+   * @param <T>        The type of the list
+   * @param input      The input list to sort
+   * @param output     The output list
    * @param comparator The comparator that tells how to sort the lines
-   * @param tempLists The supplier of temporary lists
-   * @param batchSize The batch size
-   * @param distinct The flag indicating if duplicates should be discarded
-   * @param parallel The flag indicating if parallelism should be used
+   * @param tempLists  The supplier of temporary lists
+   * @param batchSize  The batch size
+   * @param distinct   The flag indicating if duplicates should be discarded
+   * @param parallel   The flag indicating if parallelism should be used
    * @throws IOException
    */
   public static <T> void sort(
-      DataList<T> input,
-      DataList<T> output,
-      final Comparator<T> comparator,
-      Supplier<DataList<T>> tempLists,
-      long batchSize,
-      boolean distinct,
-      boolean parallel)
-      throws IOException {
+    DataList<T> input,
+    DataList<T> output,
+    final Comparator<T> comparator,
+    Supplier<DataList<T>> tempLists,
+    long batchSize,
+    boolean distinct,
+    boolean parallel)
+    throws IOException {
     mergeSortedBatches(
-        sortInBatch(input, comparator, tempLists, batchSize, distinct, parallel),
-        output,
-        comparator,
-        distinct);
+      sortInBatch(input, comparator, tempLists, batchSize, distinct, parallel),
+      output,
+      comparator,
+      distinct);
   }
 
   /**
    * Merges several batches to an output list.
    *
-   * @param <T> The type of the list
-   * @param batches The input batches to merge
-   * @param output The output list
+   * @param <T>        The type of the list
+   * @param batches    The input batches to merge
+   * @param output     The output list
    * @param comparator The comparator that tells how to sort the lines
-   * @param distinct The flag indicating if duplicates should be discarded
+   * @param distinct   The flag indicating if duplicates should be discarded
    * @return the number of data sorted
    * @throws IOException
    */
   private static <T> long mergeSortedBatches(
-      List<DataList<T>> batches, DataList<T> output, Comparator<T> comparator, boolean distinct)
-      throws IOException {
+    List<DataList<T>> batches, DataList<T> output, Comparator<T> comparator, boolean distinct)
+    throws IOException {
     PriorityQueue<DataStack<T>> queue =
-        new PriorityQueue<>(batches.size(), (i, j) -> comparator.compare(i.peek(), j.peek()));
+      new PriorityQueue<>(batches.size(), (i, j) -> comparator.compare(i.peek(), j.peek()));
     for (DataList<T> input : batches) {
       if (input.size() == 0) {
         continue;
@@ -139,24 +140,24 @@ public class ExternalMergeSort {
   /**
    * Sorts a list in several batches that fit in memory.
    *
-   * @param input The input list to sort
+   * @param input      The input list to sort
    * @param comparator The comparator that tells how to sort the lines
-   * @param supplier The supplier that creates temporary lists
-   * @param batchSize The batch size
-   * @param distinct The flag indicating if duplicates should be discarded
-   * @param parallel The flag indicating if parallelism should be used
+   * @param supplier   The supplier that creates temporary lists
+   * @param batchSize  The batch size
+   * @param distinct   The flag indicating if duplicates should be discarded
+   * @param parallel   The flag indicating if parallelism should be used
    * @param <T>
    * @return the sorted batches
    * @throws IOException
    */
   public static <T> List<DataList<T>> sortInBatch(
-      final DataList<T> input,
-      final Comparator<T> comparator,
-      Supplier<DataList<T>> supplier,
-      long batchSize,
-      final boolean distinct,
-      final boolean parallel)
-      throws IOException {
+    final DataList<T> input,
+    final Comparator<T> comparator,
+    Supplier<DataList<T>> supplier,
+    long batchSize,
+    final boolean distinct,
+    final boolean parallel)
+    throws IOException {
     List<DataList<T>> lists = new ArrayList<>();
     List<T> batch = new ArrayList<>();
     long inputIndex = 0;
@@ -176,22 +177,22 @@ public class ExternalMergeSort {
   /**
    * Sorts a batch.
    *
-   * @param batch The batch to sort
+   * @param batch      The batch to sort
    * @param comparator The comparator that tells how to sort the lines
-   * @param supplier The supplier that creates temporary lists
-   * @param distinct The flag indicating if duplicates should be discarded
-   * @param parallel The flag indicating if parallelism should be used
+   * @param supplier   The supplier that creates temporary lists
+   * @param distinct   The flag indicating if duplicates should be discarded
+   * @param parallel   The flag indicating if parallelism should be used
    * @param <T>
    * @return the sorted batch
    * @throws IOException
    */
   public static <T> DataList<T> sortBatch(
-      List<T> batch,
-      Comparator<T> comparator,
-      Supplier<DataList<T>> supplier,
-      boolean distinct,
-      boolean parallel)
-      throws IOException {
+    List<T> batch,
+    Comparator<T> comparator,
+    Supplier<DataList<T>> supplier,
+    boolean distinct,
+    boolean parallel)
+    throws IOException {
     DataList<T> output = supplier.get();
     Stream<T> tmpStream = batch.stream().sorted(comparator);
     if (parallel) {

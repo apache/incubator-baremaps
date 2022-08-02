@@ -27,8 +27,7 @@ import javax.sql.DataSource;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- * A read-only {@link LongDataMap} for coordinates baked by OpenStreetMap nodes stored in
- * PostgreSQL.
+ * A read-only {@link LongDataMap} for coordinates baked by OpenStreetMap nodes stored in PostgreSQL.
  */
 public class PostgresCoordinateMap implements LongDataMap<Coordinate> {
 
@@ -46,8 +45,10 @@ public class PostgresCoordinateMap implements LongDataMap<Coordinate> {
   /** {@inheritDoc} */
   @Override
   public Coordinate get(long key) {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT)) {
+    try (
+      Connection connection = dataSource.getConnection();
+      PreparedStatement statement = connection.prepareStatement(SELECT)
+    ) {
       statement.setLong(1, key);
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
@@ -66,8 +67,10 @@ public class PostgresCoordinateMap implements LongDataMap<Coordinate> {
   /** {@inheritDoc} */
   @Override
   public List<Coordinate> get(List<Long> keys) {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
+    try (
+      Connection connection = dataSource.getConnection();
+      PreparedStatement statement = connection.prepareStatement(SELECT_IN)
+    ) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       try (ResultSet result = statement.executeQuery()) {
         Map<Long, Coordinate> nodes = new HashMap<>();

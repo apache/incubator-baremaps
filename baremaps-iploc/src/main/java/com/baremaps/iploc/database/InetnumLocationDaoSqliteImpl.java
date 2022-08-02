@@ -36,30 +36,15 @@ import org.sqlite.SQLiteDataSource;
 public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
 
   private static final String INSERT_SQL =
-      "INSERT INTO inetnum_locations(address, ip_start, ip_end, latitude, longitude, network, country) VALUES(?,?,?,?,?,?,?)";
+    "INSERT INTO inetnum_locations(address, ip_start, ip_end, latitude, longitude, network, country) VALUES(?,?,?,?,?,?,?)";
 
   private static final String SELECT_ALL_SQL =
-      "SELECT "
-          + "id, \n"
-          + "address, \n"
-          + "ip_start, \n"
-          + "ip_end, \n"
-          + "latitude, \n"
-          + "longitude, \n"
-          + "network, \n"
-          + "country \n"
-          + " FROM inetnum_locations;";
+    "SELECT " + "id, \n" + "address, \n" + "ip_start, \n" + "ip_end, \n" + "latitude, \n" + "longitude, \n" +
+      "network, \n" + "country \n" + " FROM inetnum_locations;";
 
   private static final String SELECT_ALL_BY_IP_SQL =
-      "SELECT "
-          + "id, \n"
-          + "address, \n"
-          + "ip_start, \n"
-          + "ip_end, \n"
-          + "latitude, \n"
-          + "longitude, \n"
-          + "network, \n"
-          + "country FROM inetnum_locations WHERE ip_start <= ? AND ip_end >= ?;";
+    "SELECT " + "id, \n" + "address, \n" + "ip_start, \n" + "ip_end, \n" + "latitude, \n" + "longitude, \n" +
+      "network, \n" + "country FROM inetnum_locations WHERE ip_start <= ? AND ip_end >= ?;";
 
   private static final Logger logger = LoggerFactory.getLogger(InetnumLocationDaoSqliteImpl.class);
 
@@ -121,18 +106,20 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
   @Override
   public List<InetnumLocation> findAll() {
     List<InetnumLocation> results = new ArrayList<>();
-    try (Connection connection = getReadConnection();
-        PreparedStatement stmt = connection.prepareStatement(SELECT_ALL_SQL);
-        ResultSet rs = stmt.executeQuery()) {
+    try (
+      Connection connection = getReadConnection();
+      PreparedStatement stmt = connection.prepareStatement(SELECT_ALL_SQL);
+      ResultSet rs = stmt.executeQuery()
+    ) {
       // loop through the result set
       while (rs.next()) {
         results.add(
-            new InetnumLocation(
-                rs.getString("address"),
-                new Ipv4Range(rs.getBytes("ip_start"), rs.getBytes("ip_end")),
-                new Location(rs.getDouble("latitude"), rs.getDouble("longitude")),
-                rs.getString("network"),
-                rs.getString("country")));
+          new InetnumLocation(
+            rs.getString("address"),
+            new Ipv4Range(rs.getBytes("ip_start"), rs.getBytes("ip_end")),
+            new Location(rs.getDouble("latitude"), rs.getDouble("longitude")),
+            rs.getString("network"),
+            rs.getString("country")));
       }
     } catch (SQLException e) {
       logger.error("Unable to select inetnum locations", e);
@@ -144,19 +131,21 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
   @Override
   public List<InetnumLocation> findByIp(byte[] ip) {
     List<InetnumLocation> results = new ArrayList<>();
-    try (Connection connection = getReadConnection();
-        PreparedStatement stmt = connection.prepareStatement(SELECT_ALL_BY_IP_SQL)) {
+    try (
+      Connection connection = getReadConnection();
+      PreparedStatement stmt = connection.prepareStatement(SELECT_ALL_BY_IP_SQL)
+    ) {
       stmt.setBytes(1, ip);
       stmt.setBytes(2, ip);
-      try (ResultSet rs = stmt.executeQuery(); ) {
+      try (ResultSet rs = stmt.executeQuery();) {
         while (rs.next()) {
           results.add(
-              new InetnumLocation(
-                  rs.getString("address"),
-                  new Ipv4Range(rs.getBytes("ip_start"), rs.getBytes("ip_end")),
-                  new Location(rs.getDouble("latitude"), rs.getDouble("longitude")),
-                  rs.getString("network"),
-                  rs.getString("country")));
+            new InetnumLocation(
+              rs.getString("address"),
+              new Ipv4Range(rs.getBytes("ip_start"), rs.getBytes("ip_end")),
+              new Location(rs.getDouble("latitude"), rs.getDouble("longitude")),
+              rs.getString("network"),
+              rs.getString("country")));
         }
       }
     } catch (SQLException e) {
@@ -168,8 +157,10 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
   /** {@inheritDoc} */
   @Override
   public void save(InetnumLocation inetnumLocation) {
-    try (Connection connection = getWriteConnection();
-        PreparedStatement stmt = connection.prepareStatement(INSERT_SQL)) {
+    try (
+      Connection connection = getWriteConnection();
+      PreparedStatement stmt = connection.prepareStatement(INSERT_SQL)
+    ) {
       stmt.setString(1, inetnumLocation.getAddress());
       stmt.setBytes(2, inetnumLocation.getIpv4Range().getStart());
       stmt.setBytes(3, inetnumLocation.getIpv4Range().getEnd());
@@ -187,8 +178,10 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
   /** {@inheritDoc} */
   @Override
   public void save(List<InetnumLocation> inetnumLocations) {
-    try (Connection connection = getWriteConnection();
-        PreparedStatement stmt = connection.prepareStatement(INSERT_SQL); ) {
+    try (
+      Connection connection = getWriteConnection();
+      PreparedStatement stmt = connection.prepareStatement(INSERT_SQL);
+    ) {
       connection.setAutoCommit(false);
       for (InetnumLocation inetnumLocation : inetnumLocations) {
         stmt.setString(1, inetnumLocation.getAddress());
@@ -203,11 +196,11 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
       stmt.executeBatch();
       connection.commit();
       logger.info(
-          String.format(
-              "Batch executed Successfully \n\t%s",
-              inetnumLocations.stream()
-                  .map(InetnumLocation::toString)
-                  .collect(Collectors.joining("\n\t"))));
+        String.format(
+          "Batch executed Successfully \n\t%s",
+          inetnumLocations.stream()
+            .map(InetnumLocation::toString)
+            .collect(Collectors.joining("\n\t"))));
     } catch (SQLException e) {
       logger.error("Unable to save data", e);
     }

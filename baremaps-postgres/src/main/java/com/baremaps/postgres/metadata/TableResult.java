@@ -15,13 +15,13 @@
 package com.baremaps.postgres.metadata;
 
 public record TableResult(
-    String tableCat,
-    String tableSchem,
-    String tableName,
-    String tableType,
-    String remarks,
-    String typeCat,
-    String typeSchem,
-    String typeName,
-    String selfReferencingColName,
-    String refGeneration) {}
+  String tableCat,
+  String tableSchem,
+  String tableName,
+  String tableType,
+  String remarks,
+  String typeCat,
+  String typeSchem,
+  String typeName,
+  String selfReferencingColName,
+  String refGeneration) {}
