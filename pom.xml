@@ -92,7 +92,7 @@
     <version.lib.sqlite>3.36.0.3</version.lib.sqlite>
     <version.lib.swagger>1.6.3</version.lib.swagger>
     <version.lib.validation>2.0.1.Final</version.lib.validation>
-    <version.lib.jackson>2.13.0</version.lib.jackson>
+    <version.lib.jackson>2.13.3</version.lib.jackson>
     <version.lib.jdbi>3.24.1</version.lib.jdbi>
     <version.lib.awaitability>3.0.0</version.lib.awaitability>
     <version.lib.jsqlparser>4.2</version.lib.jsqlparser>
@@ -314,19 +314,29 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.20.2</version>
+        <version>2.22.1</version>
         <configuration>
-          <configLocation>google_checks.xml</configLocation>
           <java>
-            <googleJavaFormat>
-              <version>1.13.0</version>
-            </googleJavaFormat>
+            <importOrder/>
             <removeUnusedImports/>
+            <eclipse>
+              <version>4.21.0</version>
+              <!--suppress UnresolvedMavenProperty -->
+              <file>${maven.multiModuleProjectDirectory}/eclipse-format.xml</file>
+            </eclipse>
             <licenseHeader>
               <file>${maven.multiModuleProjectDirectory}/LICENSE.header</file>
             </licenseHeader>
           </java>
         </configuration>
+        <!-- bind to "mvn verify" -->
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
