@@ -103,10 +103,8 @@ public class Bound implements Entity {
       return false;
     }
     Bound bound = (Bound) o;
-    return Double.compare(bound.maxLat, maxLat) == 0
-        && Double.compare(bound.maxLon, maxLon) == 0
-        && Double.compare(bound.minLat, minLat) == 0
-        && Double.compare(bound.minLon, minLon) == 0;
+    return Double.compare(bound.maxLat, maxLat) == 0 && Double.compare(bound.maxLon, maxLon) == 0 &&
+      Double.compare(bound.minLat, minLat) == 0 && Double.compare(bound.minLon, minLon) == 0;
   }
 
   /** {@inheritDoc} */
@@ -119,10 +117,10 @@ public class Bound implements Entity {
   @Override
   public String toString() {
     return new StringJoiner(", ", Bound.class.getSimpleName() + "[", "]")
-        .add("maxLat=" + maxLat)
-        .add("maxLon=" + maxLon)
-        .add("minLat=" + minLat)
-        .add("minLon=" + minLon)
-        .toString();
+      .add("maxLat=" + maxLat)
+      .add("maxLon=" + maxLon)
+      .add("minLat=" + minLat)
+      .add("minLon=" + minLon)
+      .toString();
   }
 }

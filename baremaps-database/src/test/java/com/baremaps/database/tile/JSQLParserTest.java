@@ -27,8 +27,8 @@ class JSQLParserTest {
   @Test
   void parseArray() throws JSQLParserException {
     Statement statement =
-        CCJSqlParserUtil.parse(
-            "SELECT id, hstore(array['tag1', 'tag2'], array[tag1, tag2]), geom FROM table");
+      CCJSqlParserUtil.parse(
+        "SELECT id, hstore(array['tag1', 'tag2'], array[tag1, tag2]), geom FROM table");
     assertNotNull(statement);
   }
 

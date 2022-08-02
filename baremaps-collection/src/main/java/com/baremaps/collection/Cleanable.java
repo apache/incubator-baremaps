@@ -17,8 +17,8 @@ package com.baremaps.collection;
 import java.io.IOException;
 
 /**
- * A {@link Cleanable} is a data object that can be cleaned. The clean method is invoked to delete
- * resources that the object is using.
+ * A {@link Cleanable} is a data object that can be cleaned. The clean method is invoked to delete resources that the
+ * object is using.
  */
 public interface Cleanable {
 

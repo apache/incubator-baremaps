@@ -41,7 +41,7 @@ public class StoreException extends RuntimeException {
    * Constructs a {@code StoreException} with the specified detail message and cause.
    *
    * @param message the message
-   * @param cause the cause
+   * @param cause   the cause
    */
   public StoreException(String message, Throwable cause) {
     super(message, cause);

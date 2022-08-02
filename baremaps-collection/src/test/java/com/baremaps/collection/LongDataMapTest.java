@@ -39,21 +39,21 @@ class LongDataMapTest {
 
   static Stream<Arguments> mapProvider() {
     return Stream.of(
-        Arguments.of(
-            new LongDataOpenHashMap<>(new DataStore<>(new LongDataType(), new OffHeapMemory()))),
-        Arguments.of(
-            new LongSizedDataSortedMap<>(
-                new AlignedDataList<>(new LongDataType(), new OffHeapMemory()),
-                new AlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
-        Arguments.of(
-            new LongDataSortedMap<>(
-                new AlignedDataList<>(
-                    new PairDataType<>(new LongDataType(), new LongDataType()),
-                    new OffHeapMemory()),
-                new DataStore<>(new LongDataType(), new OffHeapMemory()))),
-        Arguments.of(
-            new LongSizedDataSparseMap<>(
-                new AlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
-        Arguments.of(new LongSizedDataDenseMap<>(new LongDataType(), new OffHeapMemory())));
+      Arguments.of(
+        new LongDataOpenHashMap<>(new DataStore<>(new LongDataType(), new OffHeapMemory()))),
+      Arguments.of(
+        new LongSizedDataSortedMap<>(
+          new AlignedDataList<>(new LongDataType(), new OffHeapMemory()),
+          new AlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
+      Arguments.of(
+        new LongDataSortedMap<>(
+          new AlignedDataList<>(
+            new PairDataType<>(new LongDataType(), new LongDataType()),
+            new OffHeapMemory()),
+          new DataStore<>(new LongDataType(), new OffHeapMemory()))),
+      Arguments.of(
+        new LongSizedDataSparseMap<>(
+          new AlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
+      Arguments.of(new LongSizedDataDenseMap<>(new LongDataType(), new OffHeapMemory())));
   }
 }

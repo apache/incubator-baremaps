@@ -18,10 +18,10 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(
-    name = "geocoder",
-    description = "Geocoder commands.",
-    subcommands = {Index.class, Search.class},
-    sortOptions = false)
+  name = "geocoder",
+  description = "Geocoder commands.",
+  subcommands = {Index.class, Search.class},
+  sortOptions = false)
 public class Geocoder implements Runnable {
 
   @Override

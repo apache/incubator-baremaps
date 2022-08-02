@@ -33,10 +33,11 @@ import org.jdbi.v3.json.Json;
 @Singleton
 public class CollectionsResource implements CollectionsApi {
 
-  @Context UriInfo uriInfo;
+  @Context
+  UriInfo uriInfo;
 
   private static final QualifiedType<Collection> COLLECTION =
-      QualifiedType.of(Collection.class).with(Json.class);
+    QualifiedType.of(Collection.class).with(Json.class);
 
   private final Jdbi jdbi;
 
@@ -49,37 +50,34 @@ public class CollectionsResource implements CollectionsApi {
   public Response addCollection(Collection collection) {
     collection.setId(UUID.randomUUID());
     jdbi.useHandle(
-        handle ->
-            handle
-                .createUpdate("insert into collections (id, collection) values (:id, :collection)")
-                .bind("id", collection.getId())
-                .bindByType("collection", collection, COLLECTION)
-                .execute());
+      handle -> handle
+        .createUpdate("insert into collections (id, collection) values (:id, :collection)")
+        .bind("id", collection.getId())
+        .bindByType("collection", collection, COLLECTION)
+        .execute());
     return Response.created(URI.create("collections/" + collection.getId())).build();
   }
 
   @Override
   public Response deleteCollection(UUID collectionId) {
     jdbi.useHandle(
-        handle ->
-            handle.execute(
-                String.format(
-                    "drop table if exists \"%s\"; delete from collections where id = (?)",
-                    collectionId),
-                collectionId));
+      handle -> handle.execute(
+        String.format(
+          "drop table if exists \"%s\"; delete from collections where id = (?)",
+          collectionId),
+        collectionId));
     return Response.noContent().build();
   }
 
   @Override
   public Response getCollection(UUID collectionId) {
     Collection collection =
-        jdbi.withHandle(
-            handle ->
-                handle
-                    .createQuery("select collection from collections where id = :id")
-                    .bind("id", collectionId)
-                    .mapTo(COLLECTION)
-                    .one());
+      jdbi.withHandle(
+        handle -> handle
+          .createQuery("select collection from collections where id = :id")
+          .bind("id", collectionId)
+          .mapTo(COLLECTION)
+          .one());
     collection.getLinks().add(new Link().href(uriInfo.getRequestUri().toString()).rel("self"));
     return Response.ok(collection).build();
   }
@@ -87,17 +85,15 @@ public class CollectionsResource implements CollectionsApi {
   @Override
   public Response getCollections() {
     List<Collection> collectionList =
-        jdbi.withHandle(
-            handle ->
-                handle.createQuery("select collection from collections").mapTo(COLLECTION).list());
+      jdbi.withHandle(
+        handle -> handle.createQuery("select collection from collections").mapTo(COLLECTION).list());
     collectionList.forEach(
-        collection ->
-            collection
-                .getLinks()
-                .add(
-                    new Link()
-                        .href(uriInfo.getRequestUri().toString() + "/" + collection.getId())
-                        .rel("self")));
+      collection -> collection
+        .getLinks()
+        .add(
+          new Link()
+            .href(uriInfo.getRequestUri().toString() + "/" + collection.getId())
+            .rel("self")));
     Collections collections = new Collections().collections(collectionList);
     collections.getLinks().add(new Link().href(uriInfo.getRequestUri().toString()).rel("self"));
     return Response.ok(collections).build();
@@ -106,12 +102,11 @@ public class CollectionsResource implements CollectionsApi {
   @Override
   public Response updateCollection(UUID collectionId, Collection collection) {
     jdbi.useHandle(
-        handle ->
-            handle
-                .createUpdate("update collections set collection = :collection where id = :id")
-                .bind("id", collectionId)
-                .bindByType("collection", collection, COLLECTION)
-                .execute());
+      handle -> handle
+        .createUpdate("update collections set collection = :collection where id = :id")
+        .bind("id", collectionId)
+        .bindByType("collection", collection, COLLECTION)
+        .execute());
     return Response.noContent().build();
   }
 }

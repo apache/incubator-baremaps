@@ -32,9 +32,9 @@ public class Blob {
   /**
    * Constructs a OpenStreetMap {@code Blob}.
    *
-   * @param header the header
+   * @param header  the header
    * @param rawData the raw data
-   * @param size the size
+   * @param size    the size
    */
   public Blob(BlobHeader header, byte[] rawData, int size) {
     this.header = header;
@@ -87,8 +87,8 @@ public class Blob {
   @Override
   public String toString() {
     return new StringJoiner(", ", Blob.class.getSimpleName() + "[", "]")
-        .add("header=" + header)
-        .add("size=" + size)
-        .toString();
+      .add("header=" + header)
+      .add("size=" + size)
+      .toString();
   }
 }

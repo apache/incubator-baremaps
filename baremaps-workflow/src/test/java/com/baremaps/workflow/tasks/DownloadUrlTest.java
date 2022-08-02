@@ -30,9 +30,9 @@ class DownloadUrlTest {
     var file = File.createTempFile("test", ".tmp");
     file.deleteOnExit();
     var task =
-        new DownloadUrl(
-            "https://raw.githubusercontent.com/baremaps/baremaps/main/README.md",
-            file.getAbsolutePath());
+      new DownloadUrl(
+        "https://raw.githubusercontent.com/baremaps/baremaps/main/README.md",
+        file.getAbsolutePath());
     task.run();
     assertTrue(Files.readString(file.toPath()).contains("Baremaps"));
   }

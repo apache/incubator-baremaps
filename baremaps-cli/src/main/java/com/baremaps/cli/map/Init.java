@@ -36,18 +36,19 @@ public class Init implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Init.class);
 
-  @Mixin private Options options;
+  @Mixin
+  private Options options;
 
   @Option(
-      names = {"--style"},
-      paramLabel = "STYLE",
-      description = "A style file.")
+    names = {"--style"},
+    paramLabel = "STYLE",
+    description = "A style file.")
   private Path style;
 
   @Option(
-      names = {"--tileset"},
-      paramLabel = "TILESET",
-      description = "A tileset file.")
+    names = {"--tileset"},
+    paramLabel = "TILESET",
+    description = "A tileset file.")
   private Path tileset;
 
   @Override
@@ -60,8 +61,8 @@ public class Init implements Callable<Integer> {
       sources.setUrl("http://localhost:9000/tiles.json");
       styleObject.setSources(Map.of("baremaps", sources));
       Files.write(
-          style,
-          defaultObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(styleObject));
+        style,
+        defaultObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(styleObject));
       logger.info("Style initialized: {}", style);
     }
     if (tileset != null) {
@@ -70,8 +71,8 @@ public class Init implements Callable<Integer> {
       tilesetObject.setName("Baremaps");
       tilesetObject.setTiles(Arrays.asList("http://localhost:9000/tiles.json"));
       Files.write(
-          tileset,
-          defaultObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(tilesetObject));
+        tileset,
+        defaultObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(tilesetObject));
       logger.info("Tileset initialized: {}", tileset);
     }
     return 0;

@@ -35,7 +35,7 @@ public class FeatureProjectionTransform implements FeatureSet {
   private final ProjectionTransformer projectionTransformer;
 
   public FeatureProjectionTransform(
-      FeatureSet featureSet, ProjectionTransformer projectionTransformer) {
+    FeatureSet featureSet, ProjectionTransformer projectionTransformer) {
     this.featureSet = featureSet;
     this.projectionTransformer = projectionTransformer;
   }
@@ -79,13 +79,13 @@ public class FeatureProjectionTransform implements FeatureSet {
 
   @Override
   public <T extends StoreEvent> void addListener(
-      Class<T> eventType, StoreListener<? super T> listener) {
+    Class<T> eventType, StoreListener<? super T> listener) {
     featureSet.addListener(eventType, listener);
   }
 
   @Override
   public <T extends StoreEvent> void removeListener(
-      Class<T> eventType, StoreListener<? super T> listener) {
+    Class<T> eventType, StoreListener<? super T> listener) {
     featureSet.removeListener(eventType, listener);
   }
 }

@@ -39,8 +39,8 @@ public class TileChannel implements Consumer<Tile> {
   /**
    * Constructs a {@code TileChannel}.
    *
-   * @param source the source
-   * @param target the target
+   * @param source           the source
+   * @param target           the target
    * @param deleteEmptyTiles deletes empty tiles
    */
   public TileChannel(TileStore source, TileStore target, boolean deleteEmptyTiles) {

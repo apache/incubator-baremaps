@@ -37,7 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public record ImportOpenStreetMap(String file, String database, Integer databaseSrid)
-    implements Task {
+  implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportOpenStreetMap.class);
 
@@ -69,26 +69,26 @@ public record ImportOpenStreetMap(String file, String database, Integer database
       var referencesValuesDir = Files.createDirectories(cacheDir.resolve("references_vals"));
 
       var coordinates =
-          new LongSizedDataDenseMap<>(
-              new LonLatDataType(), new OnDiskDirectoryMemory(coordinatesDir));
+        new LongSizedDataDenseMap<>(
+          new LonLatDataType(), new OnDiskDirectoryMemory(coordinatesDir));
 
       var references =
-          new LongDataSortedMap<>(
-              new AlignedDataList<>(
-                  new PairDataType<>(new LongDataType(), new LongDataType()),
-                  new OnDiskDirectoryMemory(referencesKeysDir)),
-              new com.baremaps.collection.DataStore<>(
-                  new LongListDataType(), new OnDiskDirectoryMemory(referencesValuesDir)));
+        new LongDataSortedMap<>(
+          new AlignedDataList<>(
+            new PairDataType<>(new LongDataType(), new LongDataType()),
+            new OnDiskDirectoryMemory(referencesKeysDir)),
+          new com.baremaps.collection.DataStore<>(
+            new LongListDataType(), new OnDiskDirectoryMemory(referencesValuesDir)));
 
       new ImportService(
-              path,
-              coordinates,
-              references,
-              headerRepository,
-              nodeRepository,
-              wayRepository,
-              relationRepository,
-              databaseSrid)
+        path,
+        coordinates,
+        references,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        databaseSrid)
           .call();
 
       FileUtils.deleteRecursively(cacheDir);

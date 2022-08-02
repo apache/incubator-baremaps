@@ -41,14 +41,14 @@ public class ImportResource {
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Path("studio/import")
   public Response uploadData(
-      @FormDataParam("file") InputStream fileInputStream,
-      @FormDataParam("file") FormDataContentDisposition fileMetaData) {
+    @FormDataParam("file") InputStream fileInputStream,
+    @FormDataParam("file") FormDataContentDisposition fileMetaData) {
     /*
     TODO: replace GeoTools with Apache SIS
     // Read FeatureCollection
     FeatureJSON fjson = new FeatureJSON();
     var fc = fjson.readFeatureCollection(fileInputStream);
-
+    
     // Setup Collection
     String fileName = fileMetaData.getFileName();
     Collection collection =
@@ -70,7 +70,7 @@ public class ImportResource {
             .created(new Date())
             .geometryType(
                 fc.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName());
-
+    
     // Load data
     jdbi.useTransaction(
         handle -> {
@@ -108,7 +108,7 @@ public class ImportResource {
                 .execute();
           }
         });
-
+    
     return Response.created(URI.create("collections/" + collection.getId())).build();
     */
     return Response.ok().build();

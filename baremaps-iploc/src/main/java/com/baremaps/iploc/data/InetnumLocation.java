@@ -25,14 +25,14 @@ public class InetnumLocation {
   /**
    * Create a new inetnum location
    *
-   * @param address geo-address of the inetnum
+   * @param address   geo-address of the inetnum
    * @param ipv4Range ip range from start to end
-   * @param location location is lat/lon
-   * @param network name of the network
-   * @param country country code
+   * @param location  location is lat/lon
+   * @param network   name of the network
+   * @param country   country code
    */
   public InetnumLocation(
-      String address, Ipv4Range ipv4Range, Location location, String network, String country) {
+    String address, Ipv4Range ipv4Range, Location location, String network, String country) {
     this.address = address;
     this.ipv4Range = ipv4Range;
     this.location = location;
@@ -88,15 +88,7 @@ public class InetnumLocation {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return "InetnumLocation{"
-        + "address='"
-        + address
-        + "', ipv4Range="
-        + ipv4Range
-        + ", location="
-        + location
-        + ", network="
-        + network
-        + "}";
+    return "InetnumLocation{" + "address='" + address + "', ipv4Range=" + ipv4Range + ", location=" + location +
+      ", network=" + network + "}";
   }
 }

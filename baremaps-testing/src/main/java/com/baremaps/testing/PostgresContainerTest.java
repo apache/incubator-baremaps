@@ -32,7 +32,7 @@ public abstract class PostgresContainerTest {
   public void startContainer() {
     // start the container
     var postgis =
-        DockerImageName.parse("postgis/postgis:13-3.1").asCompatibleSubstituteFor("postgres");
+      DockerImageName.parse("postgis/postgis:13-3.1").asCompatibleSubstituteFor("postgres");
     container = new PostgreSQLContainer(postgis);
     container.start();
 
@@ -50,8 +50,8 @@ public abstract class PostgresContainerTest {
 
   public String jdbcUrl() {
     return String.format(
-        "%s&user=%s&password=%s&currentSchema=%s",
-        container.getJdbcUrl(), container.getUsername(), container.getPassword(), "public");
+      "%s&user=%s&password=%s&currentSchema=%s",
+      container.getJdbcUrl(), container.getUsername(), container.getPassword(), "public");
   }
 
   public DataSource dataSource() {

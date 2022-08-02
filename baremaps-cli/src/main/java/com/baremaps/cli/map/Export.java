@@ -30,62 +30,63 @@ public class Export implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Export.class);
 
-  @Mixin private Options options;
+  @Mixin
+  private Options options;
 
   @Option(
-      names = {"--database"},
-      paramLabel = "DATABASE",
-      description = "The JDBC url of Postgres.",
-      required = true)
+    names = {"--database"},
+    paramLabel = "DATABASE",
+    description = "The JDBC url of Postgres.",
+    required = true)
   private String database;
 
   @Option(
-      names = {"--tileset"},
-      paramLabel = "TILESET",
-      description = "The tileset file.",
-      required = true)
+    names = {"--tileset"},
+    paramLabel = "TILESET",
+    description = "The tileset file.",
+    required = true)
   private Path tileset;
 
   @Option(
-      names = {"--repository"},
-      paramLabel = "REPOSITORY",
-      description = "The tile repository.",
-      required = true)
+    names = {"--repository"},
+    paramLabel = "REPOSITORY",
+    description = "The tile repository.",
+    required = true)
   private Path repository;
 
   @Option(
-      names = {"--tiles"},
-      paramLabel = "TILES",
-      description = "The tiles to export.")
+    names = {"--tiles"},
+    paramLabel = "TILES",
+    description = "The tiles to export.")
   private URI tiles;
 
   @Option(
-      names = {"--batch-array-size"},
-      paramLabel = "BATCH_ARRAY_SIZE",
-      description = "The size of the batch array.")
+    names = {"--batch-array-size"},
+    paramLabel = "BATCH_ARRAY_SIZE",
+    description = "The size of the batch array.")
   private int batchArraySize = 1;
 
   @Option(
-      names = {"--batch-array-index"},
-      paramLabel = "READER",
-      description = "The index of the batch in the array.")
+    names = {"--batch-array-index"},
+    paramLabel = "READER",
+    description = "The index of the batch in the array.")
   private int batchArrayIndex = 0;
 
   @Option(
-      names = {"--mbtiles"},
-      paramLabel = "MBTILES",
-      description = "The repository is in the MBTiles format.")
+    names = {"--mbtiles"},
+    paramLabel = "MBTILES",
+    description = "The repository is in the MBTiles format.")
   private boolean mbtiles = false;
 
   @Override
   public Integer call() throws Exception {
     new ExportVectorTiles(
-            database,
-            tileset.toAbsolutePath().toString(),
-            repository.toAbsolutePath().toString(),
-            batchArraySize,
-            batchArrayIndex,
-            mbtiles)
+      database,
+      tileset.toAbsolutePath().toString(),
+      repository.toAbsolutePath().toString(),
+      batchArraySize,
+      batchArrayIndex,
+      mbtiles)
         .run();
     return 0;
   }

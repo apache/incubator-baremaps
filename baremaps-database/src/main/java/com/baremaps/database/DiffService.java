@@ -63,14 +63,14 @@ public class DiffService implements Callable<List<Tile>> {
   private final int zoom;
 
   public DiffService(
-      LongDataMap<Coordinate> coordinates,
-      LongDataMap<List<Long>> references,
-      HeaderRepository headerRepository,
-      Repository<Long, Node> nodeRepository,
-      Repository<Long, Way> wayRepository,
-      Repository<Long, Relation> relationRepository,
-      int srid,
-      int zoom) {
+    LongDataMap<Coordinate> coordinates,
+    LongDataMap<List<Long>> references,
+    HeaderRepository headerRepository,
+    Repository<Long, Node> nodeRepository,
+    Repository<Long, Way> wayRepository,
+    Repository<Long, Relation> relationRepository,
+    int srid,
+    int zoom) {
     this.coordinates = coordinates;
     this.references = references;
     this.headerRepository = headerRepository;
@@ -91,23 +91,25 @@ public class DiffService implements Callable<List<Tile>> {
     URL changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
 
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(srid, 4326);
-    try (InputStream changeInputStream =
-        new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
+    try (
+      InputStream changeInputStream =
+        new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))
+    ) {
       return new XmlChangeReader()
-          .stream(changeInputStream)
-              .flatMap(this::geometriesForChange)
-              .map(projectionTransformer::transform)
-              .flatMap(this::tilesForGeometry)
-              .distinct()
-              .toList();
+        .stream(changeInputStream)
+        .flatMap(this::geometriesForChange)
+        .map(projectionTransformer::transform)
+        .flatMap(this::tilesForGeometry)
+        .distinct()
+        .toList();
     }
   }
 
   private Stream<Tile> tilesForGeometry(Geometry geometry) {
     return StreamSupport.stream(
-        Spliterators.spliteratorUnknownSize(
-            Tile.iterator(geometry.getEnvelopeInternal(), zoom, zoom), Spliterator.IMMUTABLE),
-        false);
+      Spliterators.spliteratorUnknownSize(
+        Tile.iterator(geometry.getEnvelopeInternal(), zoom, zoom), Spliterator.IMMUTABLE),
+      false);
   }
 
   private Stream<Geometry> geometriesForChange(Change change) {
@@ -118,7 +120,7 @@ public class DiffService implements Callable<List<Tile>> {
         return geometriesForPreviousVersion(change);
       case MODIFY:
         return Stream.concat(
-            geometriesForPreviousVersion(change), geometriesForNextVersion(change));
+          geometriesForPreviousVersion(change), geometriesForNextVersion(change));
       default:
         return Stream.empty();
     }
@@ -126,52 +128,52 @@ public class DiffService implements Callable<List<Tile>> {
 
   private Stream<Geometry> geometriesForPreviousVersion(Change change) {
     return change.getEntities().stream()
-        .map(
-            new EntityFunction<Optional<Geometry>>() {
-              @Override
-              public Optional<Geometry> match(Header header) {
-                return Optional.empty();
-              }
+      .map(
+        new EntityFunction<Optional<Geometry>>() {
+          @Override
+          public Optional<Geometry> match(Header header) {
+            return Optional.empty();
+          }
 
-              @Override
-              public Optional<Geometry> match(Bound bound) {
-                return Optional.empty();
-              }
+          @Override
+          public Optional<Geometry> match(Bound bound) {
+            return Optional.empty();
+          }
 
-              @Override
-              public Optional<Geometry> match(Node node) throws Exception {
-                Node previousNode = nodeRepository.get(node.getId());
-                return Optional.ofNullable(previousNode).map(Node::getGeometry);
-              }
+          @Override
+          public Optional<Geometry> match(Node node) throws Exception {
+            Node previousNode = nodeRepository.get(node.getId());
+            return Optional.ofNullable(previousNode).map(Node::getGeometry);
+          }
 
-              @Override
-              public Optional<Geometry> match(Way way) throws Exception {
-                Way previousWay = wayRepository.get(way.getId());
-                return Optional.ofNullable(previousWay).map(Way::getGeometry);
-              }
+          @Override
+          public Optional<Geometry> match(Way way) throws Exception {
+            Way previousWay = wayRepository.get(way.getId());
+            return Optional.ofNullable(previousWay).map(Way::getGeometry);
+          }
 
-              @Override
-              public Optional<Geometry> match(Relation relation) throws Exception {
-                Relation previousRelation = relationRepository.get(relation.getId());
-                return Optional.ofNullable(previousRelation).map(Relation::getGeometry);
-              }
-            })
-        .flatMap(Optional::stream);
+          @Override
+          public Optional<Geometry> match(Relation relation) throws Exception {
+            Relation previousRelation = relationRepository.get(relation.getId());
+            return Optional.ofNullable(previousRelation).map(Relation::getGeometry);
+          }
+        })
+      .flatMap(Optional::stream);
   }
 
   private Stream<Geometry> geometriesForNextVersion(Change change) {
     return change.getEntities().stream()
-        .map(consumeThenReturn(new CreateGeometryConsumer(coordinates, references)))
-        .flatMap(new ExtractGeometryFunction().andThen(Optional::stream));
+      .map(consumeThenReturn(new CreateGeometryConsumer(coordinates, references)))
+      .flatMap(new ExtractGeometryFunction().andThen(Optional::stream));
   }
 
   public URL resolve(String replicationUrl, Long sequenceNumber, String extension)
-      throws MalformedURLException {
+    throws MalformedURLException {
     String s = String.format("%09d", sequenceNumber);
     String uri =
-        String.format(
-            "%s/%s/%s/%s.%s",
-            replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension);
+      String.format(
+        "%s/%s/%s/%s.%s",
+        replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension);
     return URI.create(uri).toURL();
   }
 }

@@ -41,7 +41,7 @@ public class OnDiskFileMemory extends Memory<MappedByteBuffer> {
   /**
    * Constructs an {@link OnDiskFileMemory} with a custom file and a custom segment size.
    *
-   * @param file the file that stores the data
+   * @param file         the file that stores the data
    * @param segmentBytes the size of the segments in bytes
    */
   public OnDiskFileMemory(Path file, int segmentBytes) {
@@ -53,9 +53,11 @@ public class OnDiskFileMemory extends Memory<MappedByteBuffer> {
   @Override
   protected MappedByteBuffer allocate(int index, int size) {
     try {
-      try (FileChannel channel =
+      try (
+        FileChannel channel =
           FileChannel.open(
-              file, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+            file, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE)
+      ) {
         return channel.map(MapMode.READ_WRITE, (long) index * size, size);
       }
     } catch (IOException e) {

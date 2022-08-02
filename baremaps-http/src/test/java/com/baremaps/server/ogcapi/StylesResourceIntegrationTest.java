@@ -51,18 +51,18 @@ public class StylesResourceIntegrationTest extends JerseyTest {
     // Initialize the database
     jdbi = Jdbi.create(connection).installPlugin(new Jackson2Plugin());
     jdbi.useHandle(
-        handle -> handle.execute("create table styles (id uuid primary key, style jsonb)"));
+      handle -> handle.execute("create table styles (id uuid primary key, style jsonb)"));
 
     // Configure the service
     return new ResourceConfig()
-        .register(StylesResource.class)
-        .register(
-            new AbstractBinder() {
-              @Override
-              protected void configure() {
-                bind(jdbi).to(Jdbi.class);
-              }
-            });
+      .register(StylesResource.class)
+      .register(
+        new AbstractBinder() {
+          @Override
+          protected void configure() {
+            bind(jdbi).to(Jdbi.class);
+          }
+        });
   }
 
   @Test
@@ -75,9 +75,9 @@ public class StylesResourceIntegrationTest extends JerseyTest {
     MbStyle style = new MbStyle();
     style.setName("test");
     target()
-        .path("/styles")
-        .request(MediaType.APPLICATION_JSON)
-        .post(Entity.entity(style, MediaType.valueOf("application/vnd.mapbox.style+json")));
+      .path("/styles")
+      .request(MediaType.APPLICATION_JSON)
+      .post(Entity.entity(style, MediaType.valueOf("application/vnd.mapbox.style+json")));
 
     // List the styles
     styles = target().path("/styles").request().get(StyleSet.class);

@@ -38,8 +38,7 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
   /** Reserved (dBASE IV) Filled with 00h. */
   protected byte[] reservedFiller1 = new byte[2];
   /**
-   * Reserved : Incomplete transaction (dBASE IV). 00h : Transaction ended (or rolled back). 01h :
-   * Transaction started.
+   * Reserved : Incomplete transaction (dBASE IV). 00h : Transaction ended (or rolled back). 01h : Transaction started.
    */
   protected byte reservedIncompleteTransaction;
   /** Reserved : Encryption flag (dBASE IV). 00h : Not encrypted. 01h : Data encrypted. */
@@ -73,7 +72,7 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
   /**
    * Construct a mapped byte reader on a file.
    *
-   * @param dbase3File File.
+   * @param dbase3File      File.
    * @param connectionInfos Connection properties, maybe null.
    * @throws DbaseException if the database seems to be invalid.
    */
@@ -121,23 +120,23 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
 
       // TODO: move somewhere else
       Object object =
-          switch (fd.getType()) {
-            case Character -> value;
-            case Number -> getNumber(fd, value);
-            case Currency -> Double.parseDouble(value.trim());
-            case Integer -> Integer.parseInt(value.trim());
-            case Double -> Double.parseDouble(value.trim());
-            case AutoIncrement -> Integer.parseInt(value.trim());
-            case Logical -> value;
-            case Date -> value;
-            case Memo -> value;
-            case FloatingPoint -> value;
-            case Picture -> value;
-            case VariField -> value;
-            case Variant -> value;
-            case TimeStamp -> value;
-            case DateTime -> value;
-          };
+        switch (fd.getType()) {
+        case Character -> value;
+        case Number -> getNumber(fd, value);
+        case Currency -> Double.parseDouble(value.trim());
+        case Integer -> Integer.parseInt(value.trim());
+        case Double -> Double.parseDouble(value.trim());
+        case AutoIncrement -> Integer.parseInt(value.trim());
+        case Logical -> value;
+        case Date -> value;
+        case Memo -> value;
+        case FloatingPoint -> value;
+        case Picture -> value;
+        case VariField -> value;
+        case Variant -> value;
+        case TimeStamp -> value;
+        case DateTime -> value;
+        };
 
       feature.setPropertyValue(fd.getName(), object);
     }
@@ -185,8 +184,7 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
   public int getRowNum() {
     int position = getByteBuffer().position();
     int recordNumber =
-        (position - Short.toUnsignedInt(this.firstRecordPosition))
-            / Short.toUnsignedInt(this.recordLength);
+      (position - Short.toUnsignedInt(this.firstRecordPosition)) / Short.toUnsignedInt(this.recordLength);
     return recordNumber;
   }
 
@@ -348,8 +346,8 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
    *
    * @param codePageBinaryValue page code binary value.
    * @return Charset.
-   * @throws UnsupportedCharsetException if the code page as no representation in recents Charset
-   *     (legacy DOS or macintosh charsets).
+   * @throws UnsupportedCharsetException if the code page as no representation in recents Charset (legacy DOS or
+   *                                     macintosh charsets).
    */
   protected Charset toCharset(byte codePageBinaryValue) throws UnsupportedCharsetException {
     // Attempt to find a known conversion.
@@ -461,9 +459,9 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
 
     if (yymmdd.length != 3) {
       throw new IllegalArgumentException(
-          MessageFormat.format(
-              "Database:toDate() works only on a 3 bytes YY MM DD date. this array has {0} length",
-              yymmdd.length));
+        MessageFormat.format(
+          "Database:toDate() works only on a 3 bytes YY MM DD date. this array has {0} length",
+          yymmdd.length));
     }
 
     Objects.requireNonNull(yymmdd[0], "the year byte cannot be null");

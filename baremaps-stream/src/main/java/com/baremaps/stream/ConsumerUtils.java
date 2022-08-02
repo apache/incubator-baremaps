@@ -26,7 +26,7 @@ public class ConsumerUtils {
    * Transforms a consumer into a function.
    *
    * @param consumer the consumer
-   * @param <T> the type
+   * @param <T>      the type
    * @return the function
    */
   public static <T> Function<T, T> consumeThenReturn(Consumer<T> consumer) {

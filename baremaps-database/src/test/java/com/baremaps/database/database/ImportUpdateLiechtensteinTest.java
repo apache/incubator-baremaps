@@ -51,108 +51,108 @@ class ImportUpdateLiechtensteinTest extends DatabaseContainerTest {
     PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
 
     LongDataMap<Coordinate> coordinates =
-        new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
+      new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
     LongDataMap<List<Long>> references =
-        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
+      new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
     new ImportService(
-            LIECHTENSTEIN_OSM_PBF,
-            coordinates,
-            references,
-            headerRepository,
-            nodeRepository,
-            wayRepository,
-            relationRepository,
-            3857)
+      LIECHTENSTEIN_OSM_PBF,
+      coordinates,
+      references,
+      headerRepository,
+      nodeRepository,
+      wayRepository,
+      relationRepository,
+      3857)
         .call();
     assertEquals(2434l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     // Fix the replicationUrl so that we can update the database with local files
     headerRepository.put(
-        new Header(
-            2434l,
-            LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0),
-            "file:///" + LIECHTENSTEIN_DIR,
-            "",
-            ""));
+      new Header(
+        2434l,
+        LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0),
+        "file:///" + LIECHTENSTEIN_DIR,
+        "",
+        ""));
 
     coordinates = new PostgresCoordinateMap(dataSource());
     references = new PostgresReferenceMap(dataSource());
 
     assertEquals(
-        0,
-        new DiffService(
-                coordinates,
-                references,
-                headerRepository,
-                nodeRepository,
-                wayRepository,
-                relationRepository,
-                3857,
-                14)
-            .call()
-            .size());
+      0,
+      new DiffService(
+        coordinates,
+        references,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        3857,
+        14)
+          .call()
+          .size());
 
     // Update the database
     new UpdateService(
-            coordinates,
-            references,
-            headerRepository,
-            nodeRepository,
-            wayRepository,
-            relationRepository,
-            3857)
+      coordinates,
+      references,
+      headerRepository,
+      nodeRepository,
+      wayRepository,
+      relationRepository,
+      3857)
         .call();
     assertEquals(2435l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(
-        2,
-        new DiffService(
-                coordinates,
-                references,
-                headerRepository,
-                nodeRepository,
-                wayRepository,
-                relationRepository,
-                3857,
-                14)
-            .call()
-            .size());
+      2,
+      new DiffService(
+        coordinates,
+        references,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        3857,
+        14)
+          .call()
+          .size());
 
     new UpdateService(
-            coordinates,
-            references,
-            headerRepository,
-            nodeRepository,
-            wayRepository,
-            relationRepository,
-            3857)
+      coordinates,
+      references,
+      headerRepository,
+      nodeRepository,
+      wayRepository,
+      relationRepository,
+      3857)
         .call();
     assertEquals(2436l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     assertEquals(
-        0,
-        new DiffService(
-                coordinates,
-                references,
-                headerRepository,
-                nodeRepository,
-                wayRepository,
-                relationRepository,
-                3857,
-                14)
-            .call()
-            .size());
+      0,
+      new DiffService(
+        coordinates,
+        references,
+        headerRepository,
+        nodeRepository,
+        wayRepository,
+        relationRepository,
+        3857,
+        14)
+          .call()
+          .size());
 
     new UpdateService(
-            coordinates,
-            references,
-            headerRepository,
-            nodeRepository,
-            wayRepository,
-            relationRepository,
-            3857)
+      coordinates,
+      references,
+      headerRepository,
+      nodeRepository,
+      wayRepository,
+      relationRepository,
+      3857)
         .call();
     assertEquals(2437l, headerRepository.selectLatest().getReplicationSequenceNumber());
   }

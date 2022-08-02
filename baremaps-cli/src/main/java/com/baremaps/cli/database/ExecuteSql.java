@@ -24,31 +24,32 @@ import picocli.CommandLine.Option;
 @Command(name = "execute-sql", description = "Execute SQL queries in the database.")
 public class ExecuteSql implements Callable<Integer> {
 
-  @Mixin private Options options;
+  @Mixin
+  private Options options;
 
   @Option(
-      names = {"--database"},
-      paramLabel = "DATABASE",
-      description = "The JDBC url of the database.",
-      required = true)
+    names = {"--database"},
+    paramLabel = "DATABASE",
+    description = "The JDBC url of the database.",
+    required = true)
   private String database;
 
   @Option(
-      names = {"--file"},
-      paramLabel = "FILE",
-      description = "The SQL file to execute in the database.")
+    names = {"--file"},
+    paramLabel = "FILE",
+    description = "The SQL file to execute in the database.")
   private Path file;
 
   @Option(
-      names = {"--parallel"},
-      paramLabel = "PARALLEL",
-      description = "Executes the SQL queries in parallel.")
+    names = {"--parallel"},
+    paramLabel = "PARALLEL",
+    description = "Executes the SQL queries in parallel.")
   private boolean parallel;
 
   @Override
   public Integer call() throws Exception {
     new com.baremaps.workflow.tasks.ExecuteSql(database, file.toAbsolutePath().toString(), parallel)
-        .run();
+      .run();
     return 0;
   }
 }

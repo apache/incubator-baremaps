@@ -73,30 +73,30 @@ public class OpenStreetMapBenchmark {
 
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
       new PbfEntityReader(new PbfBlockReader())
-          .stream(inputStream)
-              .forEach(
-                  new EntityConsumerAdapter() {
-                    @Override
-                    public void match(Node node) {
-                      nodes.incrementAndGet();
-                    }
+        .stream(inputStream)
+        .forEach(
+          new EntityConsumerAdapter() {
+            @Override
+            public void match(Node node) {
+              nodes.incrementAndGet();
+            }
 
-                    @Override
-                    public void match(Way way) {
-                      ways.incrementAndGet();
-                    }
+            @Override
+            public void match(Way way) {
+              ways.incrementAndGet();
+            }
 
-                    @Override
-                    public void match(Relation relation) {
-                      relations.incrementAndGet();
-                    }
-                  });
+            @Override
+            public void match(Relation relation) {
+              relations.incrementAndGet();
+            }
+          });
     }
   }
 
   public static void main(String[] args) throws RunnerException {
     Options opt =
-        new OptionsBuilder().include(OpenStreetMapBenchmark.class.getSimpleName()).forks(1).build();
+      new OptionsBuilder().include(OpenStreetMapBenchmark.class.getSimpleName()).forks(1).build();
     new Runner(opt).run();
   }
 }

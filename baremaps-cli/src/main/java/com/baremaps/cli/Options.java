@@ -26,8 +26,8 @@ public class Options {
   }
 
   @Option(
-      names = {"--log-level"},
-      paramLabel = "LOG_LEVEL",
-      description = {"The log level."})
+    names = {"--log-level"},
+    paramLabel = "LOG_LEVEL",
+    description = {"The log level."})
   public LogLevel logLevel = LogLevel.INFO;
 }

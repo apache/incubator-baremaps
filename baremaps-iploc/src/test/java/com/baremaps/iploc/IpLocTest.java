@@ -42,8 +42,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test the IPLoc SQLite database generation using a stream of NIC Objects from a sample NIC txt
- * file and a geocoder from a sample Geonames txt file.
+ * Test the IPLoc SQLite database generation using a stream of NIC Objects from a sample NIC txt file and a geocoder
+ * from a sample Geonames txt file.
  */
 class IpLocTest {
 
@@ -94,7 +94,7 @@ class IpLocTest {
   void findByIpWithZeroes() {
     ipLoc.insertNicObjects(nicObjects.stream());
     List<InetnumLocation> inetnumLocations =
-        inetnumLocationDao.findByIp(new Ipv4Range("0.0.0.5/32").getStart());
+      inetnumLocationDao.findByIp(new Ipv4Range("0.0.0.5/32").getStart());
     assertEquals(4, inetnumLocations.size());
   }
 
@@ -102,15 +102,15 @@ class IpLocTest {
   void findByIp() {
     ipLoc.insertNicObjects(nicObjects.stream());
     List<InetnumLocation> inetnumLocations =
-        inetnumLocationDao.findByIp(new Ipv4Range("255.22.22.2/32").getStart());
+      inetnumLocationDao.findByIp(new Ipv4Range("255.22.22.2/32").getStart());
     assertEquals(1, inetnumLocations.size());
   }
 
   @Test
   void save() {
     inetnumLocationDao.save(
-        new InetnumLocation(
-            "Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1), "Test", null));
+      new InetnumLocation(
+        "Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1), "Test", null));
     List<InetnumLocation> getAllInetnumLocations = inetnumLocationDao.findAll();
     assertEquals(1, getAllInetnumLocations.size());
   }
@@ -120,8 +120,8 @@ class IpLocTest {
     List<InetnumLocation> inetnumLocations = new ArrayList<>();
     for (int i = 0; i < 30; i++) {
       inetnumLocations.add(
-          new InetnumLocation(
-              "Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1), "Test", null));
+        new InetnumLocation(
+          "Test", new Ipv4Range("192.168.0.0/24"), new Location(1, 1), "Test", null));
     }
     inetnumLocationDao.save(inetnumLocations);
     List<InetnumLocation> getAllInetnumLocations = inetnumLocationDao.findAll();

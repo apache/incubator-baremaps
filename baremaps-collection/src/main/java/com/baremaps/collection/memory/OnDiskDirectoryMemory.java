@@ -30,8 +30,7 @@ public class OnDiskDirectoryMemory extends Memory<MappedByteBuffer> {
   private final Path directory;
 
   /**
-   * Constructs an {@link OnDiskDirectoryMemory} with a custom directory and a default segment size
-   * of 1gb.
+   * Constructs an {@link OnDiskDirectoryMemory} with a custom directory and a default segment size of 1gb.
    *
    * @param directory the directory that stores the data
    */
@@ -42,7 +41,7 @@ public class OnDiskDirectoryMemory extends Memory<MappedByteBuffer> {
   /**
    * Constructs an {@link OnDiskDirectoryMemory} with a custom directory and a custom segment size.
    *
-   * @param directory the directory that stores the data
+   * @param directory    the directory that stores the data
    * @param segmentBytes the size of the segments in bytes
    */
   public OnDiskDirectoryMemory(Path directory, int segmentBytes) {
@@ -55,9 +54,11 @@ public class OnDiskDirectoryMemory extends Memory<MappedByteBuffer> {
   protected MappedByteBuffer allocate(int index, int size) {
     try {
       Path file = directory.resolve(String.format("%s.part", index));
-      try (FileChannel channel =
+      try (
+        FileChannel channel =
           FileChannel.open(
-              file, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE)) {
+            file, StandardOpenOption.CREATE, StandardOpenOption.READ, StandardOpenOption.WRITE)
+      ) {
         return channel.map(MapMode.READ_WRITE, 0, size);
       }
     } catch (IOException e) {

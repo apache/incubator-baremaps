@@ -31,13 +31,14 @@ public class Execute implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Execute.class);
 
-  @Mixin private Options options;
+  @Mixin
+  private Options options;
 
   @Option(
-      names = {"--file"},
-      paramLabel = "FILE",
-      description = "The workflow file.",
-      required = true)
+    names = {"--file"},
+    paramLabel = "FILE",
+    description = "The workflow file.",
+    required = true)
   private Path file;
 
   @Override

@@ -42,7 +42,7 @@ public class WorkflowException extends RuntimeException {
    * Constructs a {@code WorkflowException} with the specified detail message and cause.
    *
    * @param message the message
-   * @param cause the cause
+   * @param cause   the cause
    */
   public WorkflowException(String message, Throwable cause) {
     super(message, cause);

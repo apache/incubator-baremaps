@@ -18,9 +18,9 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(
-    name = "workflow",
-    subcommands = {Init.class, Execute.class},
-    description = "Manage a workflow.")
+  name = "workflow",
+  subcommands = {Init.class, Execute.class},
+  description = "Manage a workflow.")
 public class Workflow implements Runnable {
 
   @Override

@@ -24,7 +24,7 @@ public class HstoreValueHandler extends BaseValueHandler<Map<String, String>> {
 
   @Override
   protected void internalHandle(DataOutputStream buffer, final Map<String, String> value)
-      throws IOException {
+    throws IOException {
 
     // Write into a Temporary ByteArrayOutputStream:
     ByteArrayOutputStream byteArrayOutput = new ByteArrayOutputStream();

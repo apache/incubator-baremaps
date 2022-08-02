@@ -29,17 +29,17 @@ public class Search implements Callable<Integer> {
   private static final Logger logger = LoggerFactory.getLogger(Search.class);
 
   @Option(
-      names = {"--index"},
-      paramLabel = "INDEX",
-      description = "The path to the lucene index.",
-      required = true)
+    names = {"--index"},
+    paramLabel = "INDEX",
+    description = "The path to the lucene index.",
+    required = true)
   private Path indexPath;
 
   @Option(
-      names = {"--search"},
-      paramLabel = "SEARCH",
-      description = "The terms to search in the index.",
-      required = true)
+    names = {"--search"},
+    paramLabel = "SEARCH",
+    description = "The terms to search in the index.",
+    required = true)
   private String search;
 
   @Override

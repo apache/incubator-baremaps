@@ -36,7 +36,7 @@ public class DbaseException extends IOException {
    * Construct an exception.
    *
    * @param message Message of the exception.
-   * @param cause Root cause of the exception.
+   * @param cause   Root cause of the exception.
    */
   public DbaseException(String message, Throwable cause) {
     super(message, cause);

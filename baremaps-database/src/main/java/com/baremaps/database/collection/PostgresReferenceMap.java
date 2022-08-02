@@ -36,7 +36,7 @@ public class PostgresReferenceMap implements LongDataMap<List<Long>> {
   private static final String SELECT = "SELECT nodes FROM osm_ways WHERE id = ?";
 
   private static final String SELECT_IN =
-      "SELECT id, nodes FROM osm_ways WHERE id WHERE id = ANY (?)";
+    "SELECT id, nodes FROM osm_ways WHERE id WHERE id = ANY (?)";
 
   private final DataSource dataSource;
 
@@ -48,8 +48,10 @@ public class PostgresReferenceMap implements LongDataMap<List<Long>> {
   /** {@inheritDoc} */
   @Override
   public List<Long> get(long key) {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT)) {
+    try (
+      Connection connection = dataSource.getConnection();
+      PreparedStatement statement = connection.prepareStatement(SELECT)
+    ) {
       statement.setLong(1, key);
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
@@ -71,8 +73,10 @@ public class PostgresReferenceMap implements LongDataMap<List<Long>> {
   /** {@inheritDoc} */
   @Override
   public List<List<Long>> get(List<Long> keys) {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
+    try (
+      Connection connection = dataSource.getConnection();
+      PreparedStatement statement = connection.prepareStatement(SELECT_IN)
+    ) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       try (ResultSet result = statement.executeQuery()) {
         Map<Long, List<Long>> references = new HashMap<>();

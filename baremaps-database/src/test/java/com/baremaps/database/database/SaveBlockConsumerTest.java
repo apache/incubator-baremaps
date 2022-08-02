@@ -65,8 +65,8 @@ class SaveBlockConsumerTest extends PostgresContainerTest {
   void test() throws RepositoryException, URISyntaxException, IOException {
     // Import data
     SaveBlockConsumer dataImporter =
-        new SaveBlockConsumer(
-            headerRepository, nodeRepository, tableRepository, relationRepository);
+      new SaveBlockConsumer(
+        headerRepository, nodeRepository, tableRepository, relationRepository);
 
     try (InputStream inputStream = Files.newInputStream(TestFiles.resolve("simple/data.osm.pbf"))) {
 

@@ -65,10 +65,10 @@ public class WorkflowExecutor implements AutoCloseable {
 
   public CompletableFuture<Void> execute() {
     var endSteps =
-        graph.nodes().stream()
-            .filter(this::isEndStep)
-            .map(this::getStep)
-            .toArray(CompletableFuture[]::new);
+      graph.nodes().stream()
+        .filter(this::isEndStep)
+        .map(this::getStep)
+        .toArray(CompletableFuture[]::new);
     return CompletableFuture.allOf(endSteps);
   }
 
@@ -92,7 +92,7 @@ public class WorkflowExecutor implements AutoCloseable {
       return getStep(predecessors.get(0));
     } else {
       return CompletableFuture.allOf(
-          predecessors.stream().map(this::getStep).toArray(CompletableFuture[]::new));
+        predecessors.stream().map(this::getStep).toArray(CompletableFuture[]::new));
     }
   }
 

@@ -52,7 +52,7 @@ class PostgresWayRepositoryTest extends DatabaseContainerTest {
     List<Way> ways = Arrays.asList(Constants.WAY_0, Constants.WAY_1, Constants.WAY_2);
     wayRepository.put(ways);
     assertIterableEquals(
-        ways, wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+      ways, wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
@@ -70,8 +70,8 @@ class PostgresWayRepositoryTest extends DatabaseContainerTest {
     wayRepository.put(ways);
     wayRepository.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
     assertIterableEquals(
-        Arrays.asList(null, null, null),
-        wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+      Arrays.asList(null, null, null),
+      wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
@@ -80,6 +80,6 @@ class PostgresWayRepositoryTest extends DatabaseContainerTest {
     List<Way> ways = Arrays.asList(Constants.WAY_0, Constants.WAY_1, Constants.WAY_2);
     wayRepository.copy(ways);
     assertIterableEquals(
-        ways, wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+      ways, wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

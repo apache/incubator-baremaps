@@ -39,7 +39,7 @@ import org.jdbi.v3.json.Json;
 public class StudioResource {
 
   private static final QualifiedType<ObjectNode> ENTITY =
-      QualifiedType.of(ObjectNode.class).with(Json.class);
+    QualifiedType.of(ObjectNode.class).with(Json.class);
 
   private final Jdbi jdbi;
 
@@ -53,13 +53,12 @@ public class StudioResource {
   @Path("studio/{kind}")
   public Response getEntities(@PathParam("kind") String kind) {
     List<ObjectNode> entityList =
-        jdbi.withHandle(
-            handle ->
-                handle
-                    .createQuery("select entity from studio.entities where kind = :kind")
-                    .bind("kind", kind)
-                    .mapTo(ENTITY)
-                    .list());
+      jdbi.withHandle(
+        handle -> handle
+          .createQuery("select entity from studio.entities where kind = :kind")
+          .bind("kind", kind)
+          .mapTo(ENTITY)
+          .list());
     return Response.ok(entityList).build();
   }
 
@@ -77,14 +76,13 @@ public class StudioResource {
 
     UUID finalId = id;
     jdbi.useHandle(
-        handle ->
-            handle
-                .createUpdate(
-                    "insert into studio.entities (id, entity, kind) values (:id, CAST(:entity AS jsonb), :kind)")
-                .bind("id", finalId)
-                .bindByType("entity", entity, ENTITY)
-                .bind("kind", kind)
-                .execute());
+      handle -> handle
+        .createUpdate(
+          "insert into studio.entities (id, entity, kind) values (:id, CAST(:entity AS jsonb), :kind)")
+        .bind("id", finalId)
+        .bindByType("entity", entity, ENTITY)
+        .bind("kind", kind)
+        .execute());
     return Response.created(URI.create("studio/" + kind + "/" + id)).build();
   }
 
@@ -93,15 +91,14 @@ public class StudioResource {
   @Path("studio/{kind}/{id}")
   public Response getEntity(@PathParam("id") UUID id, @PathParam("kind") String kind) {
     ObjectNode entity =
-        jdbi.withHandle(
-            handle ->
-                handle
-                    .createQuery(
-                        "select entity from studio.entities where id = :id and kind = :kind")
-                    .bind("id", id)
-                    .bind("kind", kind)
-                    .mapTo(ENTITY)
-                    .one());
+      jdbi.withHandle(
+        handle -> handle
+          .createQuery(
+            "select entity from studio.entities where id = :id and kind = :kind")
+          .bind("id", id)
+          .bind("kind", kind)
+          .mapTo(ENTITY)
+          .one());
     return Response.ok(entity).build();
   }
 
@@ -109,16 +106,15 @@ public class StudioResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @Path("studio/{kind}/{id}")
   public Response updateEntity(
-      ObjectNode entity, @PathParam("id") UUID id, @PathParam("kind") String kind) {
+    ObjectNode entity, @PathParam("id") UUID id, @PathParam("kind") String kind) {
     jdbi.useHandle(
-        handle ->
-            handle
-                .createUpdate(
-                    "update studio.entities set map = CAST(:entity AS jsonb) where id = :id and kind = :kind")
-                .bind("id", id)
-                .bindByType("entity", entity, ENTITY)
-                .bind("kind", kind)
-                .execute());
+      handle -> handle
+        .createUpdate(
+          "update studio.entities set map = CAST(:entity AS jsonb) where id = :id and kind = :kind")
+        .bind("id", id)
+        .bindByType("entity", entity, ENTITY)
+        .bind("kind", kind)
+        .execute());
     return Response.noContent().build();
   }
 
@@ -127,8 +123,7 @@ public class StudioResource {
   @Path("studio/{kind}/{id}")
   public Response deleteEntity(@PathParam("id") UUID id, @PathParam("kind") String kind) {
     jdbi.useHandle(
-        handle ->
-            handle.execute("delete from studio.entities where id = (?) and kind = (?)", id, kind));
+      handle -> handle.execute("delete from studio.entities where id = (?) and kind = (?)", id, kind));
     return Response.noContent().build();
   }
 }

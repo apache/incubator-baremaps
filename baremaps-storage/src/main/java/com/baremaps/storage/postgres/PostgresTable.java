@@ -52,7 +52,7 @@ public class PostgresTable implements WritableFeatureSet {
 
   @Override
   public void replaceIf(Predicate<? super Feature> filter, UnaryOperator<Feature> updater)
-      throws DataStoreException {}
+    throws DataStoreException {}
 
   @Override
   public FeatureType getType() throws DataStoreException {
@@ -81,13 +81,13 @@ public class PostgresTable implements WritableFeatureSet {
 
   @Override
   public <T extends StoreEvent> void addListener(
-      Class<T> eventType, StoreListener<? super T> listener) {
+    Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public <T extends StoreEvent> void removeListener(
-      Class<T> eventType, StoreListener<? super T> listener) {
+    Class<T> eventType, StoreListener<? super T> listener) {
     throw new UnsupportedOperationException();
   }
 }

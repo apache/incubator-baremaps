@@ -57,11 +57,10 @@ public final class PostgreSqlUtils {
 
   @SuppressWarnings("NullAway")
   public static String getFullyQualifiedTableName(
-      @Nullable String schemaName, String tableName, boolean usePostgresQuoting) {
+    @Nullable String schemaName, String tableName, boolean usePostgresQuoting) {
     if (usePostgresQuoting) {
-      return StringUtils.isNullOrWhiteSpace(schemaName)
-          ? quoteIdentifier(tableName)
-          : String.format("%s.%s", quoteIdentifier(schemaName), quoteIdentifier(tableName));
+      return StringUtils.isNullOrWhiteSpace(schemaName) ? quoteIdentifier(tableName) :
+        String.format("%s.%s", quoteIdentifier(schemaName), quoteIdentifier(tableName));
     }
 
     if (StringUtils.isNullOrWhiteSpace(schemaName)) {

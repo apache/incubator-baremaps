@@ -26,7 +26,7 @@ public class TileBatchPredicate implements Predicate<Tile> {
   /**
    * Constructs a {@code TileBatchPredicate}.
    *
-   * @param batchArraySize the size of the batch array
+   * @param batchArraySize  the size of the batch array
    * @param batchArrayIndex the index of the batch in the array
    */
   public TileBatchPredicate(int batchArraySize, int batchArrayIndex) {

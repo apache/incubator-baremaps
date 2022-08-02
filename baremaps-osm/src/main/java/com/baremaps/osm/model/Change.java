@@ -35,7 +35,7 @@ public final class Change {
   /**
    * Constructs an OpenStreetMap change.
    *
-   * @param type the type of the change
+   * @param type     the type of the change
    * @param entities the entities affected by the change
    */
   public Change(ChangeType type, List<Entity> entities) {
@@ -75,8 +75,8 @@ public final class Change {
   @Override
   public String toString() {
     return new StringJoiner(", ", Change.class.getSimpleName() + "[", "]")
-        .add("type=" + type)
-        .add("elements=" + entities)
-        .toString();
+      .add("type=" + type)
+      .add("elements=" + entities)
+      .toString();
   }
 }

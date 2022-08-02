@@ -29,10 +29,10 @@ class PostgresQueryGeneratorTest extends DatabaseContainerTest {
   void generate() {
     DataSource dataSource = dataSource();
     List<PostgresQuery> queries =
-        new PostgresQueryGenerator(dataSource, null, "public", null, null, "TABLE").generate();
+      new PostgresQueryGenerator(dataSource, null, "public", null, null, "TABLE").generate();
     assertEquals(3, queries.size());
     assertEquals(
-        "SELECT id, hstore(array['version', version::text, 'uid', uid::text, 'timestamp', timestamp::text, 'changeset', changeset::text, 'tags', tags::text, 'lon', lon::text, 'lat', lat::text]), geom FROM osm_nodes",
-        queries.get(0).getSql());
+      "SELECT id, hstore(array['version', version::text, 'uid', uid::text, 'timestamp', timestamp::text, 'changeset', changeset::text, 'tags', tags::text, 'lon', lon::text, 'lat', lat::text]), geom FROM osm_nodes",
+      queries.get(0).getSql());
   }
 }

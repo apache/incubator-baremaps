@@ -22,34 +22,36 @@ public class Range<T> {
 
   private int flags;
 
-  @Nullable private T lowerBound;
+  @Nullable
+  private T lowerBound;
 
-  @Nullable private T upperBound;
+  @Nullable
+  private T upperBound;
 
   public Range(@Nullable T lowerBound, @Nullable T upperBound) {
     this(lowerBound, true, false, upperBound, true, false);
   }
 
   public Range(
-      @Nullable T lowerBound,
-      boolean lowerBoundIsInclusive,
-      @Nullable T upperBound,
-      boolean upperBoundIsInclusive) {
+    @Nullable T lowerBound,
+    boolean lowerBoundIsInclusive,
+    @Nullable T upperBound,
+    boolean upperBoundIsInclusive) {
     this(lowerBound, lowerBoundIsInclusive, false, upperBound, upperBoundIsInclusive, false);
   }
 
   public Range(
-      @Nullable T lowerBound,
-      boolean lowerBoundIsInclusive,
-      boolean lowerBoundInfinite,
-      @Nullable T upperBound,
-      boolean upperBoundIsInclusive,
-      boolean upperBoundInfinite) {
+    @Nullable T lowerBound,
+    boolean lowerBoundIsInclusive,
+    boolean lowerBoundInfinite,
+    @Nullable T upperBound,
+    boolean upperBoundIsInclusive,
+    boolean upperBoundInfinite) {
     this(
-        lowerBound,
-        upperBound,
-        evaluateBoundaryFlags(
-            lowerBoundIsInclusive, upperBoundIsInclusive, lowerBoundInfinite, upperBoundInfinite));
+      lowerBound,
+      upperBound,
+      evaluateBoundaryFlags(
+        lowerBoundIsInclusive, upperBoundIsInclusive, lowerBoundInfinite, upperBoundInfinite));
   }
 
   private Range(@Nullable T lowerBound, @Nullable T upperBound, int flags) {
@@ -86,28 +88,35 @@ public class Range<T> {
     //  - https://github.com/npgsql/npgsql/issues/1943
     // ---------------------------------------------------------------------------------
 
-    if ((flags & RangeFlags.Empty) == RangeFlags.Empty) return true;
+    if ((flags & RangeFlags.Empty) == RangeFlags.Empty)
+      return true;
 
-    if ((flags & RangeFlags.Infinite) == RangeFlags.Infinite) return false;
+    if ((flags & RangeFlags.Infinite) == RangeFlags.Infinite)
+      return false;
 
-    if ((flags & RangeFlags.Inclusive) == RangeFlags.Inclusive) return false;
+    if ((flags & RangeFlags.Inclusive) == RangeFlags.Inclusive)
+      return false;
 
     return Objects.equals(lowerBound, upperBound);
   }
 
   private static int evaluateBoundaryFlags(
-      boolean lowerBoundIsInclusive,
-      boolean upperBoundIsInclusive,
-      boolean lowerBoundInfinite,
-      boolean upperBoundInfinite) {
+    boolean lowerBoundIsInclusive,
+    boolean upperBoundIsInclusive,
+    boolean lowerBoundInfinite,
+    boolean upperBoundInfinite) {
 
     int result = RangeFlags.None;
 
     // This is the only place flags are calculated.
-    if (lowerBoundIsInclusive) result |= RangeFlags.LowerBoundInclusive;
-    if (upperBoundIsInclusive) result |= RangeFlags.UpperBoundInclusive;
-    if (lowerBoundInfinite) result |= RangeFlags.LowerBoundInfinite;
-    if (upperBoundInfinite) result |= RangeFlags.UpperBoundInfinite;
+    if (lowerBoundIsInclusive)
+      result |= RangeFlags.LowerBoundInclusive;
+    if (upperBoundIsInclusive)
+      result |= RangeFlags.UpperBoundInclusive;
+    if (lowerBoundInfinite)
+      result |= RangeFlags.LowerBoundInfinite;
+    if (upperBoundInfinite)
+      result |= RangeFlags.UpperBoundInfinite;
 
     // PostgreSQL automatically converts inclusive-infinities.
     // See: https://www.postgresql.org/docs/current/static/rangetypes.html#RANGETYPES-INFINITE

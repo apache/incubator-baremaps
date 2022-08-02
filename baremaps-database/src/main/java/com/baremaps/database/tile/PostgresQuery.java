@@ -33,10 +33,10 @@ public class PostgresQuery {
   /**
    * Constructs a {@code PostgresQuery}.
    *
-   * @param layer the layer name
+   * @param layer   the layer name
    * @param minzoom the min zoom
    * @param maxzoom the max zoom
-   * @param sql the sql query
+   * @param sql     the sql query
    */
   public PostgresQuery(String layer, Integer minzoom, Integer maxzoom, String sql) {
     this.layer = layer;
@@ -104,23 +104,23 @@ public class PostgresQuery {
     // Check the number of columns
     if (plainSelect.getSelectItems().size() != 3) {
       String message =
-          String.format(
-              "The query is malformed.\n"
-                  + "\tExpected format:\n\t\tSELECT c1::bigint, c2::jsonb, c3::geometry FROM t WHERE c\n"
-                  + "\tActual query:\n\t\t%s",
-              query);
+        String.format(
+          "The query is malformed.\n" +
+            "\tExpected format:\n\t\tSELECT c1::bigint, c2::jsonb, c3::geometry FROM t WHERE c\n" +
+            "\tActual query:\n\t\t%s",
+          query);
       throw new IllegalArgumentException(message);
     }
 
     // Remove all the aliases
     for (SelectItem selectItem : plainSelect.getSelectItems()) {
       selectItem.accept(
-          new SelectItemVisitorAdapter() {
-            @Override
-            public void visit(SelectExpressionItem selectExpressionItem) {
-              selectExpressionItem.setAlias(null);
-            }
-          });
+        new SelectItemVisitorAdapter() {
+          @Override
+          public void visit(SelectExpressionItem selectExpressionItem) {
+            selectExpressionItem.setAlias(null);
+          }
+        });
     }
 
     return plainSelect;

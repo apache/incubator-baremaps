@@ -36,8 +36,7 @@ class ExternalMergeSortTest {
 
   List<String> strings = List.of("a", "b", "k", "c", "d", "a", "i", "j", "e", "e", "h", "f", "g");
   List<String> stringsAsc = strings.stream().sorted(Comparator.naturalOrder()).toList();
-  List<String> stringsDsc = strings.stream().sorted(Comparator.reverseOrder()).toList();
-  ;
+  List<String> stringsDsc = strings.stream().sorted(Comparator.reverseOrder()).toList();;
   List<String> stringsDistinct = stringsAsc.stream().distinct().toList();
   DataList<String> input;
   DataList<String> output;
@@ -46,18 +45,17 @@ class ExternalMergeSortTest {
   @BeforeEach
   void before() {
     input =
-        new IndexedDataList<>(
-            new LongList(new OnHeapMemory()),
-            new DataStore<>(new StringDataType(), new OnHeapMemory()));
+      new IndexedDataList<>(
+        new LongList(new OnHeapMemory()),
+        new DataStore<>(new StringDataType(), new OnHeapMemory()));
     output =
-        new IndexedDataList<>(
-            new LongList(new OnHeapMemory()),
-            new DataStore<>(new StringDataType(), new OnHeapMemory()));
+      new IndexedDataList<>(
+        new LongList(new OnHeapMemory()),
+        new DataStore<>(new StringDataType(), new OnHeapMemory()));
     supplier =
-        () ->
-            new IndexedDataList<>(
-                new LongList(new OnHeapMemory()),
-                new DataStore<>(new StringDataType(), new OnHeapMemory()));
+      () -> new IndexedDataList<>(
+        new LongList(new OnHeapMemory()),
+        new DataStore<>(new StringDataType(), new OnHeapMemory()));
     for (var string : strings) {
       input.add(string);
     }
@@ -108,7 +106,7 @@ class ExternalMergeSortTest {
       input.add(randomString(random));
     }
     ExternalMergeSort.sort(
-        input, output, Comparator.naturalOrder(), supplier, 100_000, false, true);
+      input, output, Comparator.naturalOrder(), supplier, 100_000, false, true);
     for (int i = 1; i < 1_000_000; i++) {
       assertTrue(output.get(i - 1).compareTo(output.get(i)) <= 0);
     }

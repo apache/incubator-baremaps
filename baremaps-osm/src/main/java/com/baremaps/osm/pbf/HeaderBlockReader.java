@@ -31,7 +31,7 @@ import java.util.zip.DataFormatException;
 class HeaderBlockReader {
 
   public static final DateTimeFormatter format =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   private final Blob blob;
 
@@ -56,15 +56,15 @@ class HeaderBlockReader {
    */
   public HeaderBlock read() {
     LocalDateTime timestamp =
-        LocalDateTime.ofEpochSecond(
-            headerBlock.getOsmosisReplicationTimestamp(), 0, ZoneOffset.UTC);
+      LocalDateTime.ofEpochSecond(
+        headerBlock.getOsmosisReplicationTimestamp(), 0, ZoneOffset.UTC);
     Long replicationSequenceNumber = headerBlock.getOsmosisReplicationSequenceNumber();
     String replicationBaseUrl = headerBlock.getOsmosisReplicationBaseUrl();
     String source = headerBlock.getSource();
     String writingProgram = headerBlock.getWritingprogram();
     Header header =
-        new Header(
-            replicationSequenceNumber, timestamp, replicationBaseUrl, source, writingProgram);
+      new Header(
+        replicationSequenceNumber, timestamp, replicationBaseUrl, source, writingProgram);
 
     HeaderBBox headerBBox = headerBlock.getBbox();
     double minLon = headerBBox.getLeft() * .000000001;

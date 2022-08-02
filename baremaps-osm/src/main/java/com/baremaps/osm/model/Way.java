@@ -30,9 +30,9 @@ public final class Way extends Element {
   /**
    * Constructs an OpenStreetMap {@code Node} with the specified parameters.
    *
-   * @param id the id
-   * @param info the information
-   * @param tags the tags
+   * @param id    the id
+   * @param info  the information
+   * @param tags  the tags
    * @param nodes the nodes
    */
   public Way(long id, Info info, Map<String, String> tags, List<Long> nodes) {
@@ -43,10 +43,10 @@ public final class Way extends Element {
   /**
    * Constructs an OpenStreetMap {@code Node} with the specified parameters.
    *
-   * @param id the id
-   * @param info the information
-   * @param tags the tags
-   * @param nodes the nodes
+   * @param id       the id
+   * @param info     the information
+   * @param tags     the tags
+   * @param nodes    the nodes
    * @param geometry the geometry
    */
   public Way(long id, Info info, Map<String, String> tags, List<Long> nodes, Geometry geometry) {
@@ -101,8 +101,8 @@ public final class Way extends Element {
   @Override
   public String toString() {
     return new StringJoiner(", ", Way.class.getSimpleName() + "[", "]")
-        .add("nodes=" + nodes)
-        .add("id=" + id)
-        .toString();
+      .add("nodes=" + nodes)
+      .add("id=" + id)
+      .toString();
   }
 }

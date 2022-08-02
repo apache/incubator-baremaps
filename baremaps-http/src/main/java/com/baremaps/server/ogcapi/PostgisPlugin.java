@@ -70,8 +70,7 @@ public class PostgisPlugin extends JdbiPlugin.Singleton {
 
     @Override
     public Argument build(T value, ConfigRegistry config) {
-      return (position, statement, ctx) ->
-          statement.setBytes(position, GeometryUtils.serialize(value));
+      return (position, statement, ctx) -> statement.setBytes(position, GeometryUtils.serialize(value));
     }
   }
 
@@ -88,7 +87,7 @@ public class PostgisPlugin extends JdbiPlugin.Singleton {
       byte[] data = new byte[len / 2];
       for (int i = 0; i < len; i += 2) {
         data[i / 2] =
-            (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
+          (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
       }
       return data;
     }
@@ -97,7 +96,7 @@ public class PostgisPlugin extends JdbiPlugin.Singleton {
   static final class GeometryArgumentFactory extends BaseArgumentFactory<Geometry> {}
 
   static final class GeometryCollectionArgumentFactory
-      extends BaseArgumentFactory<GeometryCollection> {}
+    extends BaseArgumentFactory<GeometryCollection> {}
 
   static final class GeometryCollectionColumnMapper extends BaseColumnMapper<GeometryCollection> {}
 

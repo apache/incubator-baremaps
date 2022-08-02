@@ -21,9 +21,11 @@ import java.nio.ByteBuffer;
 /**
  * A dense map of data backed by a {@link SizedDataType} and a {@link Memory}.
  *
- * <p>This code has been adapted from Planetiler (Apache license).
+ * <p>
+ * This code has been adapted from Planetiler (Apache license).
  *
- * <p>Copyright (c) Planetiler.
+ * <p>
+ * Copyright (c) Planetiler.
  */
 public class LongSizedDataDenseMap<T> implements LongDataMap<T> {
 
@@ -41,7 +43,7 @@ public class LongSizedDataDenseMap<T> implements LongDataMap<T> {
    * Constructs a map.
    *
    * @param dataType the data type
-   * @param memory the memory
+   * @param memory   the memory
    */
   public LongSizedDataDenseMap(SizedDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {

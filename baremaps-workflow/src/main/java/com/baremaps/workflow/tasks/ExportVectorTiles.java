@@ -52,13 +52,13 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
 
 public record ExportVectorTiles(
-    String database,
-    String tileset,
-    String repository,
-    @DefaultValue("1") int batchArraySize,
-    @DefaultValue("0") int batchArrayIndex,
-    @DefaultValue("false") boolean mbtiles)
-    implements Task {
+  String database,
+  String tileset,
+  String repository,
+  @DefaultValue("1") int batchArraySize,
+  @DefaultValue("0") int batchArrayIndex,
+  @DefaultValue("false") boolean mbtiles)
+  implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ExportVectorTiles.class);
 
@@ -67,26 +67,26 @@ public record ExportVectorTiles(
     logger.info("Exporting vector tiles from {} to {}", database, repository);
     try (var datasource = PostgresUtils.dataSource(database)) {
       var mapper =
-          new ObjectMapper()
-              .configure(Feature.IGNORE_UNKNOWN, true)
-              .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-              .setSerializationInclusion(Include.NON_NULL)
-              .setSerializationInclusion(Include.NON_EMPTY);
+        new ObjectMapper()
+          .configure(Feature.IGNORE_UNKNOWN, true)
+          .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+          .setSerializationInclusion(Include.NON_NULL)
+          .setSerializationInclusion(Include.NON_EMPTY);
 
       var source = mapper.readValue(Files.readAllBytes(Paths.get(tileset)), TileJSON.class);
       var tileSource = sourceTileStore(source, datasource);
       var tileTarget = targetTileStore(source);
 
       var envelope =
-          new Envelope(
-              source.getBounds().get(0), source.getBounds().get(2),
-              source.getBounds().get(1), source.getBounds().get(3));
+        new Envelope(
+          source.getBounds().get(0), source.getBounds().get(2),
+          source.getBounds().get(1), source.getBounds().get(3));
 
       var count = Tile.count(envelope, source.getMinzoom(), source.getMaxzoom());
 
       var stream =
-          StreamUtils.stream(Tile.iterator(envelope, source.getMinzoom(), source.getMaxzoom()))
-              .peek(new StreamProgress<>(count, 5000));
+        StreamUtils.stream(Tile.iterator(envelope, source.getMinzoom(), source.getMaxzoom()))
+          .peek(new StreamProgress<>(count, 5000));
 
       StreamUtils.batch(stream, 10).forEach(new TileChannel(tileSource, tileTarget));
 
@@ -127,30 +127,30 @@ public record ExportVectorTiles(
     metadata.put("type", "baselayer");
     metadata.put("format", "pbf");
     metadata.put(
-        "center",
-        tileset.getCenter().stream().map(BigDecimal::toString).collect(Collectors.joining(", ")));
+      "center",
+      tileset.getCenter().stream().map(BigDecimal::toString).collect(Collectors.joining(", ")));
     metadata.put(
-        "bounds",
-        tileset.getBounds().stream().map(Object::toString).collect(Collectors.joining(", ")));
+      "bounds",
+      tileset.getBounds().stream().map(Object::toString).collect(Collectors.joining(", ")));
     metadata.put("minzoom", Double.toString(tileset.getMinzoom()));
     metadata.put("maxzoom", Double.toString(tileset.getMaxzoom()));
 
     var layers =
-        tileset.getVectorLayers().stream()
-            .map(
-                layer -> {
-                  Map<String, Object> map = new HashMap<>();
-                  map.put("id", layer.getId());
-                  map.put("description", layer.getDescription());
-                  map.put(
-                      "minzoom",
-                      layer.getQueries().stream().mapToInt(Query::getMinzoom).min().getAsInt());
-                  map.put(
-                      "maxzoom",
-                      layer.getQueries().stream().mapToInt(Query::getMaxzoom).max().getAsInt());
-                  return map;
-                })
-            .toList();
+      tileset.getVectorLayers().stream()
+        .map(
+          layer -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", layer.getId());
+            map.put("description", layer.getDescription());
+            map.put(
+              "minzoom",
+              layer.getQueries().stream().mapToInt(Query::getMinzoom).min().getAsInt());
+            map.put(
+              "maxzoom",
+              layer.getQueries().stream().mapToInt(Query::getMaxzoom).max().getAsInt());
+            return map;
+          })
+        .toList();
 
     metadata.put("json", new ObjectMapper().writeValueAsString(layers));
 

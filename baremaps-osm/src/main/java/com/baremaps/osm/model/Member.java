@@ -50,7 +50,7 @@ public final class Member {
   /**
    * Constructs a {@code Member} of an OpenStreetMap relation.
    *
-   * @param ref the relation id
+   * @param ref  the relation id
    * @param type the member type
    * @param role the member role
    */
@@ -99,9 +99,7 @@ public final class Member {
       return false;
     }
     Member member = (Member) o;
-    return ref == member.ref
-        && Objects.equal(type, member.type)
-        && Objects.equal(role, member.role);
+    return ref == member.ref && Objects.equal(type, member.type) && Objects.equal(role, member.role);
   }
 
   /** {@inheritDoc} */
@@ -114,9 +112,9 @@ public final class Member {
   @Override
   public String toString() {
     return new StringJoiner(", ", Member.class.getSimpleName() + "[", "]")
-        .add("ref=" + ref)
-        .add("type='" + type.name() + "'")
-        .add("role='" + role + "'")
-        .toString();
+      .add("ref=" + ref)
+      .add("type='" + type.name() + "'")
+      .add("role='" + role + "'")
+      .toString();
   }
 }
