@@ -87,7 +87,7 @@
     <version.lib.postgresql>42.3.1</version.lib.postgresql>
     <version.lib.proj4j>1.1.4</version.lib.proj4j>
     <version.lib.protobuf>3.19.1</version.lib.protobuf>
-    <version.lib.servicetalk>0.41.11</version.lib.servicetalk>
+    <version.lib.servicetalk>0.42.13</version.lib.servicetalk>
     <version.lib.slf4j>1.7.32</version.lib.slf4j>
     <version.lib.sqlite>3.36.0.3</version.lib.sqlite>
     <version.lib.swagger>1.6.3</version.lib.swagger>
@@ -314,19 +314,29 @@
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.20.2</version>
+        <version>2.22.1</version>
         <configuration>
-          <configLocation>google_checks.xml</configLocation>
           <java>
-            <googleJavaFormat>
-              <version>1.13.0</version>
-            </googleJavaFormat>
+            <importOrder/>
             <removeUnusedImports/>
+            <eclipse>
+              <version>4.21.0</version>
+              <!--suppress UnresolvedMavenProperty -->
+              <file>${maven.multiModuleProjectDirectory}/eclipse-format.xml</file>
+            </eclipse>
             <licenseHeader>
               <file>${maven.multiModuleProjectDirectory}/LICENSE.header</file>
             </licenseHeader>
           </java>
         </configuration>
+        <!-- bind to "mvn verify" -->
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
