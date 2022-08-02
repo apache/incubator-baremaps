@@ -14,6 +14,7 @@
 
 package com.baremaps.workflow.tasks;
 
+import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.storage.geopackage.GeoPackageDatabase;
 import com.baremaps.storage.postgres.PostgresDatabase;
@@ -38,7 +39,9 @@ public record ImportGeoPackage(String file, String database, Integer sourceSRID,
         var postgresDatabase = new PostgresDatabase(dataSource)) {
       for (var resource : geoPackageStore.components()) {
         if (resource instanceof FeatureSet featureSet) {
-          postgresDatabase.add(featureSet);
+          postgresDatabase.add(
+              new FeatureProjectionTransform(
+                  featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
         }
       }
       logger.info("Finished importing {} into {}", file, database);

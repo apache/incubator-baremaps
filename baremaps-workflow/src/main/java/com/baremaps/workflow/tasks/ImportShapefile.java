@@ -14,6 +14,7 @@
 
 package com.baremaps.workflow.tasks;
 
+import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.storage.postgres.PostgresDatabase;
 import com.baremaps.storage.shapefile.ShapefileFeatureSet;
@@ -32,10 +33,12 @@ public record ImportShapefile(String file, String database, Integer sourceSRID, 
   public void run() {
     logger.info("Importing {} into {}", file, database);
     var path = Paths.get(file);
-    try (var shapefileFile = new ShapefileFeatureSet(path);
+    try (var featureSet = new ShapefileFeatureSet(path);
         var dataSource = PostgresUtils.dataSource(database);
         var postgresDatabase = new PostgresDatabase(dataSource)) {
-      postgresDatabase.add(shapefileFile);
+      postgresDatabase.add(
+          new FeatureProjectionTransform(
+              featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
       logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {
       logger.error("Failed importing {} into {}", file, database);

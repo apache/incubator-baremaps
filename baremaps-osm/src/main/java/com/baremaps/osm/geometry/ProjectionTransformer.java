@@ -15,7 +15,6 @@
 package com.baremaps.osm.geometry;
 
 import java.util.stream.Stream;
-import org.apache.sis.referencing.CRS;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
@@ -29,9 +28,9 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.geom.util.GeometryTransformer;
+import org.locationtech.proj4j.CRSFactory;
 import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.ProjCoordinate;
-import org.opengis.util.FactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,9 +45,9 @@ public class ProjectionTransformer extends GeometryTransformer {
 
   private final CoordinateTransform transform;
 
-  private final ProjCoordinate min;
+  private ProjCoordinate min;
 
-  private final ProjCoordinate max;
+  private ProjCoordinate max;
 
   /**
    * Creates a transformer that reprojects geometries with the provided SRIDs.
@@ -60,22 +59,21 @@ public class ProjectionTransformer extends GeometryTransformer {
     this.inputSRID = sourceSrid;
     this.outputSRID = targetSrid;
     this.transform = GeometryUtils.coordinateTransform(sourceSrid, targetSrid);
-    // TODO: replace this with proj4
-    try {
-      var crs = CRS.forCode(String.format("EPSG:%s", targetSrid));
-      var envelope = CRS.getDomainOfValidity(crs);
-      var inverseTransform = GeometryUtils.coordinateTransform(targetSrid, sourceSrid);
-      min =
-          inverseTransform.transform(
-              new ProjCoordinate(envelope.getMinimum(0), envelope.getMinimum(1)),
-              new ProjCoordinate());
-      max =
-          inverseTransform.transform(
-              new ProjCoordinate(envelope.getMaximum(0), envelope.getMaximum(1)),
-              new ProjCoordinate());
-    } catch (FactoryException e) {
-      throw new RuntimeException(e);
-    }
+
+    var targetCRS = new CRSFactory().createFromName(String.format("EPSG:%s", targetSrid));
+    var lonlatTranform = GeometryUtils.coordinateTransform(4326, sourceSrid);
+    min =
+        lonlatTranform.transform(
+            new ProjCoordinate(
+                Math.toDegrees(targetCRS.getProjection().getMinLongitude()),
+                Math.toDegrees(targetCRS.getProjection().getMinLatitude())),
+            new ProjCoordinate());
+    max =
+        lonlatTranform.transform(
+            new ProjCoordinate(
+                Math.toDegrees(targetCRS.getProjection().getMaxLongitude()),
+                Math.toDegrees(targetCRS.getProjection().getMaxLatitude())),
+            new ProjCoordinate());
   }
 
   @Override

@@ -36,7 +36,6 @@ class WorkflowTest extends PostgresContainerTest {
                     "fetch-geopackage",
                     List.of(),
                     List.of(
-                        /*
                         new DownloadUrl(
                             "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
                             "natural_earth_vector.gpkg.zip"),
@@ -44,10 +43,9 @@ class WorkflowTest extends PostgresContainerTest {
                             "natural_earth_vector.gpkg.zip",
                             "natural_earth_vector"
                         ),
-                         */
                         new ImportGeoPackage(
                             "natural_earth_vector/packages/natural_earth_vector.gpkg",
-                            "jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps",
+                            jdbcUrl(),
                             4326,
                             3857)))));
     new WorkflowExecutor(workflow).execute().join();
@@ -63,19 +61,13 @@ class WorkflowTest extends PostgresContainerTest {
                     "fetch-geopackage",
                     List.of(),
                     List.of(
-                        /*
                         new DownloadUrl(
                             "https://osmdata.openstreetmap.de/download/coastlines-split-4326.zip",
                             "coastlines-split-4326.zip"),
-                        new UnzipFile(
-                            "coastlines-split-4326.zip",
-                            "coastlines-split-4326"
-                        ),
-
-                         */
+                        new UnzipFile("coastlines-split-4326.zip", "coastlines-split-4326"),
                         new ImportShapefile(
                             "coastlines-split-4326/coastlines-split-4326/lines.shp",
-                            "jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps",
+                            jdbcUrl(),
                             4326,
                             3857)))));
     new WorkflowExecutor(workflow).execute().join();

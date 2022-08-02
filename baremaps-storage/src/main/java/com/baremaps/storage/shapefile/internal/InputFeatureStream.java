@@ -21,7 +21,6 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.List;
 import org.apache.sis.feature.AbstractFeature;
 import org.apache.sis.feature.DefaultFeatureType;
-import org.apache.sis.storage.DataStoreClosedException;
 
 /**
  * Input Stream of features.
