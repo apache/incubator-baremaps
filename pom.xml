@@ -106,7 +106,7 @@
     <version.lib.sis>2.0-M0115</version.lib.sis>
 
     <!-- testing -->
-    <version.lib.junit>5.7.1</version.lib.junit>
+    <version.lib.junit>5.9.0</version.lib.junit>
     <version.lib.junit-vintage>5.7.2</version.lib.junit-vintage>
     <version.lib.testcontainers>1.16.0</version.lib.testcontainers>
 
