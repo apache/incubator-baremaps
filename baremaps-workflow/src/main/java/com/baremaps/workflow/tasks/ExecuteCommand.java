@@ -30,7 +30,8 @@ public record ExecuteCommand(String command) implements Task {
     } catch (IOException e) {
       throw new RuntimeException(e);
     } catch (InterruptedException e) {
-      throw new RuntimeException(e);
+      logger.error("Failed to execute process", e);
+      Thread.currentThread().interrupt();
     }
   }
 }

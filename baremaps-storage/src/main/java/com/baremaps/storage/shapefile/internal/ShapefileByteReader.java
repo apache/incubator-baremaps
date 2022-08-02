@@ -409,21 +409,7 @@ public class ShapefileByteReader extends CommonByteReader {
 
     // create a line from the points
     for (int index = 0; index < numPoints; index++) {
-      // Check if this index is one that begins a new part.
-      boolean newPolygon = false;
-
-      for (int j = 0; j < partsIndexes.length; j++) {
-        if (partsIndexes[j] == index) {
-          newPolygon = true;
-          break;
-        }
-      }
-
-      if (newPolygon) {
-        coordinates.add(new Coordinate(xPoints[index], yPoints[index]));
-      } else {
-        coordinates.add(new Coordinate(xPoints[index], yPoints[index]));
-      }
+      coordinates.add(new Coordinate(xPoints[index], yPoints[index]));
     }
 
     return geometryFactory.createPolygon(coordinates.toCoordinateArray());

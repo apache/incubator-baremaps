@@ -355,42 +355,9 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
     // Attempt to find a known conversion.
     String dbfCodePage = toCodePage(codePageBinaryValue);
 
-    // If no conversion has been found, decide if the cause is an unsupported value or an illegal
-    // value to choose the good exception to return.
-    if (dbfCodePage == null) {
-      switch (Byte.toUnsignedInt(codePageBinaryValue)) {
-        case 0x04:
-          dbfCodePage = "unsupported";
-          break;
-        case 0x68:
-          dbfCodePage = "unsupported";
-          break; // Kamenicky (Czech) MS-DOS
-        case 0x69:
-          dbfCodePage = "unsupported";
-          break; // Mazovia (Polish) MS-DOS
-        case 0x96:
-          dbfCodePage = "unsupported";
-          break; // russian mac
-        case 0x97:
-          dbfCodePage = "unsupported";
-          break; // eastern european macintosh
-        case 0x98:
-          dbfCodePage = "unsupported";
-          break; // greek macintosh
-        case 0xC8:
-          dbfCodePage = "unsupported";
-          break; // windows ee
-        default:
-          dbfCodePage = "unsupported";
-          break;
-      }
-    }
-
-    assert dbfCodePage != null;
-
     // If the code page cannot find a match for a more recent Charset, we wont be able to handle
     // this DBF.
-    if (dbfCodePage.equals("unsupported")) {
+    if (dbfCodePage == null) {
       throw new UnsupportedCharsetException("Unsupported codepage");
     }
 

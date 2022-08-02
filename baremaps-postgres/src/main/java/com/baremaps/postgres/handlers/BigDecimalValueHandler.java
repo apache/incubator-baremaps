@@ -82,7 +82,8 @@ public class BigDecimalValueHandler<T extends Number> extends BaseValueHandler<T
     if (scaleRemainder != 0) {
       final BigInteger[] result =
           unscaledValue.divideAndRemainder(BigInteger.TEN.pow(scaleRemainder));
-      final int digit = result[1].intValue() * (int) Math.pow(10, DECIMAL_DIGITS - scaleRemainder);
+      final int digit =
+          result[1].intValue() * (int) Math.pow(10, (double) DECIMAL_DIGITS - scaleRemainder);
       digits.add(digit);
       unscaledValue = result[0];
     }

@@ -38,9 +38,8 @@ public class ShapefileDirectory implements Aggregate {
 
   @Override
   public Collection<? extends Resource> components() throws DataStoreException {
-    try {
-      return Files.list(directory)
-          .filter(file -> file.toString().toLowerCase().endsWith(".shp"))
+    try (var list = Files.list(directory)) {
+      return list.filter(file -> file.toString().toLowerCase().endsWith(".shp"))
           .map(file -> new ShapefileFeatureSet(file))
           .collect(Collectors.toList());
     } catch (IOException e) {

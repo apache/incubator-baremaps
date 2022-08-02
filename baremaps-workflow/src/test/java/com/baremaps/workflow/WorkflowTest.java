@@ -39,10 +39,7 @@ class WorkflowTest extends PostgresContainerTest {
                         new DownloadUrl(
                             "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
                             "natural_earth_vector.gpkg.zip"),
-                        new UnzipFile(
-                            "natural_earth_vector.gpkg.zip",
-                            "natural_earth_vector"
-                        ),
+                        new UnzipFile("natural_earth_vector.gpkg.zip", "natural_earth_vector"),
                         new ImportGeoPackage(
                             "natural_earth_vector/packages/natural_earth_vector.gpkg",
                             jdbcUrl(),

@@ -63,55 +63,53 @@ import org.postgresql.copy.PGCopyOutputStream;
 
 public class PostgresDatabase implements WritableAggregate, AutoCloseable {
 
-  private static Map<Class, String> typeToName =
-      new HashMap<>() {
-        {
-          put(String.class, "varchar");
-          put(Short.class, "int2");
-          put(Integer.class, "int4");
-          put(Long.class, "int8");
-          put(Float.class, "float4");
-          put(Double.class, "float8");
-          put(Geometry.class, "geometry");
-          put(Point.class, "geometry");
-          put(MultiPoint.class, "geometry");
-          put(Point.class, "geometry");
-          put(LineString.class, "geometry");
-          put(MultiLineString.class, "geometry");
-          put(Polygon.class, "geometry");
-          put(MultiPolygon.class, "geometry");
-          put(LinearRing.class, "geometry");
-          put(GeometryCollection.class, "geometry");
-          put(LocalDate.class, "date");
-          put(LocalTime.class, "time");
-          put(LocalDateTime.class, "timestamp");
-        }
-      };
+  private static Map<Class, String> typeToName = new HashMap<>();
 
-  private static Map<Class, ValueHandler> typeToHandler =
-      new HashMap<>() {
-        {
-          put(String.class, new StringValueHandler());
-          put(Short.class, new ShortValueHandler());
-          put(Integer.class, new IntegerValueHandler());
-          put(Long.class, new LongValueHandler());
-          put(Float.class, new FloatValueHandler());
-          put(Double.class, new DoubleValueHandler());
-          put(Geometry.class, new PostgisGeometryValueHandler());
-          put(Point.class, new PostgisGeometryValueHandler());
-          put(MultiPoint.class, new PostgisGeometryValueHandler());
-          put(Point.class, new PostgisGeometryValueHandler());
-          put(LineString.class, new PostgisGeometryValueHandler());
-          put(MultiLineString.class, new PostgisGeometryValueHandler());
-          put(Polygon.class, new PostgisGeometryValueHandler());
-          put(MultiPolygon.class, new PostgisGeometryValueHandler());
-          put(LinearRing.class, new PostgisGeometryValueHandler());
-          put(GeometryCollection.class, new PostgisGeometryValueHandler());
-          put(LocalDate.class, new LocalDateValueHandler());
-          put(LocalTime.class, new LocalTimeValueHandler());
-          put(LocalDateTime.class, new LocalDateTimeValueHandler());
-        }
-      };
+  static {
+    typeToName.put(String.class, "varchar");
+    typeToName.put(Short.class, "int2");
+    typeToName.put(Integer.class, "int4");
+    typeToName.put(Long.class, "int8");
+    typeToName.put(Float.class, "float4");
+    typeToName.put(Double.class, "float8");
+    typeToName.put(Geometry.class, "geometry");
+    typeToName.put(Point.class, "geometry");
+    typeToName.put(MultiPoint.class, "geometry");
+    typeToName.put(Point.class, "geometry");
+    typeToName.put(LineString.class, "geometry");
+    typeToName.put(MultiLineString.class, "geometry");
+    typeToName.put(Polygon.class, "geometry");
+    typeToName.put(MultiPolygon.class, "geometry");
+    typeToName.put(LinearRing.class, "geometry");
+    typeToName.put(GeometryCollection.class, "geometry");
+    typeToName.put(LocalDate.class, "date");
+    typeToName.put(LocalTime.class, "time");
+    typeToName.put(LocalDateTime.class, "timestamp");
+  }
+
+  private static Map<Class, ValueHandler> typeToHandler = new HashMap<>();
+
+  static {
+    typeToHandler.put(String.class, new StringValueHandler());
+    typeToHandler.put(Short.class, new ShortValueHandler());
+    typeToHandler.put(Integer.class, new IntegerValueHandler());
+    typeToHandler.put(Long.class, new LongValueHandler());
+    typeToHandler.put(Float.class, new FloatValueHandler());
+    typeToHandler.put(Double.class, new DoubleValueHandler());
+    typeToHandler.put(Geometry.class, new PostgisGeometryValueHandler());
+    typeToHandler.put(Point.class, new PostgisGeometryValueHandler());
+    typeToHandler.put(MultiPoint.class, new PostgisGeometryValueHandler());
+    typeToHandler.put(Point.class, new PostgisGeometryValueHandler());
+    typeToHandler.put(LineString.class, new PostgisGeometryValueHandler());
+    typeToHandler.put(MultiLineString.class, new PostgisGeometryValueHandler());
+    typeToHandler.put(Polygon.class, new PostgisGeometryValueHandler());
+    typeToHandler.put(MultiPolygon.class, new PostgisGeometryValueHandler());
+    typeToHandler.put(LinearRing.class, new PostgisGeometryValueHandler());
+    typeToHandler.put(GeometryCollection.class, new PostgisGeometryValueHandler());
+    typeToHandler.put(LocalDate.class, new LocalDateValueHandler());
+    typeToHandler.put(LocalTime.class, new LocalTimeValueHandler());
+    typeToHandler.put(LocalDateTime.class, new LocalDateTimeValueHandler());
+  }
 
   private final DataSource dataSource;
 
@@ -266,10 +264,9 @@ public class PostgresDatabase implements WritableAggregate, AutoCloseable {
   public void remove(Resource resource) throws DataStoreException {
     if (resource instanceof FeatureSet featureSet) {
       var type = featureSet.getType();
-      try (var connection = dataSource.getConnection()) {
-        connection
-            .createStatement()
-            .executeQuery(String.format("DROP TABLE IF EXISTS %s", type.getName()));
+      try (var connection = dataSource.getConnection();
+          var statement = connection.createStatement()) {
+        statement.executeQuery(String.format("DROP TABLE IF EXISTS %s", type.getName()));
       } catch (SQLException e) {
         throw new RuntimeException(e);
       }
