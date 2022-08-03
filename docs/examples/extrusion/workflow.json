@@ -1,0 +1,42 @@
+{
+  "steps": [
+    {
+      "id": "download",
+      "needs": [],
+      "tasks": [
+        {
+          "type": "com.baremaps.workflow.tasks.DownloadUrl",
+          "url": "https://download.geofabrik.de/europe/great-britain/england/greater-london-latest.osm.pbf",
+          "path": "greater-london-latest.osm.pbf"
+        }
+      ]
+    },
+    {
+      "id": "import",
+      "needs": [
+        "download"
+      ],
+      "tasks": [
+        {
+          "type": "com.baremaps.workflow.tasks.ImportOpenStreetMap",
+          "file": "greater-london-latest.osm.pbf",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+          "databaseSrid": 3857
+        }
+      ]
+    },
+    {
+      "id": "index",
+      "needs": [
+        "import"
+      ],
+      "tasks": [
+        {
+          "type": "com.baremaps.workflow.tasks.ExecuteSql",
+          "file": "indexes.sql",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps"
+        }
+      ]
+    }
+  ]
+}

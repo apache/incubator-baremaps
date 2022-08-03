@@ -43,7 +43,7 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS geoadmin_traffic_noise_day_gix ON geoadm
 To preview and edit the map in the browser, run the tile server with the following command:
 
 ```bash
-baremaps edit \
+baremaps map dev \
   --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
   --config 'tileset.json' \
   --style 'style.json'

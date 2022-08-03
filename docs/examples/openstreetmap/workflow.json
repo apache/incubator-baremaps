@@ -32,7 +32,7 @@
       ],
       "tasks": [
         {
-          "type": "com.baremaps.workflow.tasks.ExecuteSqlFile",
+          "type": "com.baremaps.workflow.tasks.ExecuteSql",
           "file": "indexes.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps"
         }

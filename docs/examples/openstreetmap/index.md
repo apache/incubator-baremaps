@@ -57,7 +57,7 @@ Eventually, the output produced by the command should look as follows.
 What can we learn from this output?
 First, we notice that Baremaps uses a connection pool to parallelize the import procedure.
 Then it imports the OSM data, populating the tables previously created.
-In our case, the input is a remote file hosted by Geofabrik, however it could also be an local file or an S3 url.
+In our case, the input is a file provided by Geofabrik.
 
 OSM's [conceptual model](https://wiki.openstreetmap.org/wiki/Elements) builds upon the notions of nodes, ways and relations.
 In this normalized data model, a line (or way) is formed by a sequence of points (nodes) referenced by their id.
@@ -89,9 +89,8 @@ baremaps map dev \
   --style 'style.json'
 ```
 
-Well done, a local tile server should have started and you can open a map of Liechtenstein in your browser ([http://localhost:9000/](http://localhost:9000/))!
-Baremaps dynamically generates a blueprint [Mapbox Style](https://docs.mapbox.com/mapbox-gl-js/style-spec/) from the json configuration file.
-It is aimed at quickly previsualizing the data and provides a foundation for creating more complex styles.
+Well done, a local development server should have started. 
+You can now visualize a map of Liechtenstein in your browser ([http://localhost:9000/](http://localhost:9000/))!
 Notice that the changes in the configuration files are automatically reloaded by the browser.
 
 ### Under the Hood (Optional)

@@ -12,7 +12,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_admin_0_boundary_lines_land AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_boundary_lines_land AS t"
         }
       ]
     },
@@ -22,7 +22,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_admin_0_countries AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_countries AS t"
         }
       ]
     },
@@ -32,7 +32,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_admin_0_countries_lakes AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_countries_lakes AS t"
         }
       ]
     },
@@ -42,7 +42,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_admin_0_map_units AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_map_units AS t"
         }
       ]
     },
@@ -52,7 +52,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_admin_0_pacific_groupings AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_pacific_groupings AS t"
         }
       ]
     },
@@ -62,7 +62,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_admin_0_scale_rank AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_scale_rank AS t"
         }
       ]
     },
@@ -72,7 +72,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_admin_0_sovereignty AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_sovereignty AS t"
         }
       ]
     },
@@ -82,7 +82,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_admin_0_tiny_countries AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_tiny_countries AS t"
         }
       ]
     },
@@ -92,7 +92,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_admin_1_states_provinces AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_1_states_provinces AS t"
         }
       ]
     },
@@ -102,7 +102,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_admin_1_states_provinces_lakes AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_1_states_provinces_lakes AS t"
         }
       ]
     },
@@ -112,7 +112,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_admin_1_states_provinces_lines AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_1_states_provinces_lines AS t"
         }
       ]
     },
@@ -122,7 +122,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_admin_1_states_provinces_scale_rank AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_1_states_provinces_scale_rank AS t"
         }
       ]
     },
@@ -132,7 +132,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_coastline AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_coastline AS t"
         }
       ]
     },
@@ -142,7 +142,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_geographic_lines AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_geographic_lines AS t"
         }
       ]
     },
@@ -152,7 +152,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_geography_marine_polys AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_geography_marine_polys AS t"
         }
       ]
     },
@@ -162,7 +162,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_geography_regions_elevation_points AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_geography_regions_elevation_points AS t"
         }
       ]
     },
@@ -172,7 +172,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_geography_regions_points AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_geography_regions_points AS t"
         }
       ]
     },
@@ -182,7 +182,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_geography_regions_polys AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_geography_regions_polys AS t"
         }
       ]
     },
@@ -192,7 +192,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_glaciated_areas AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_glaciated_areas AS t"
         }
       ]
     },
@@ -202,7 +202,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_lakes AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_lakes AS t"
         }
       ]
     },
@@ -212,7 +212,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_land AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_land AS t"
         }
       ]
     },
@@ -222,7 +222,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_ocean AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_ocean AS t"
         }
       ]
     },
@@ -232,7 +232,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_populated_places AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_populated_places AS t"
         }
       ]
     },
@@ -242,7 +242,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_populated_places_simple AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_populated_places_simple AS t"
         }
       ]
     },
@@ -252,7 +252,7 @@
         {
           "minzoom": 0,
           "maxzoom": 2,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_110m_rivers_lake_centerlines AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_rivers_lake_centerlines AS t"
         }
       ]
     },
@@ -262,7 +262,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_boundary_lines_disputed_areas AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_boundary_lines_disputed_areas AS t"
         }
       ]
     },
@@ -272,7 +272,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_boundary_lines_land AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_boundary_lines_land AS t"
         }
       ]
     },
@@ -282,7 +282,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_boundary_lines_maritime_indicator AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_boundary_lines_maritime_indicator AS t"
         }
       ]
     },
@@ -292,7 +292,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_boundary_map_units AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_boundary_map_units AS t"
         }
       ]
     },
@@ -302,7 +302,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_breakaway_disputed_areas AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_breakaway_disputed_areas AS t"
         }
       ]
     },
@@ -312,7 +312,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_breakaway_disputed_areas_scale_rank AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_breakaway_disputed_areas_scale_rank AS t"
         }
       ]
     },
@@ -322,7 +322,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_countries AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_countries AS t"
         }
       ]
     },
@@ -332,7 +332,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_countries_lakes AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_countries_lakes AS t"
         }
       ]
     },
@@ -342,7 +342,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_map_subunits AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_map_subunits AS t"
         }
       ]
     },
@@ -352,7 +352,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_map_units AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_map_units AS t"
         }
       ]
     },
@@ -362,7 +362,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_pacific_groupings AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_pacific_groupings AS t"
         }
       ]
     },
@@ -372,7 +372,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_scale_rank AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_scale_rank AS t"
         }
       ]
     },
@@ -382,7 +382,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_sovereignty AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_sovereignty AS t"
         }
       ]
     },
@@ -392,7 +392,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_tiny_countries AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_tiny_countries AS t"
         }
       ]
     },
@@ -402,7 +402,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_0_tiny_countries_scale_rank AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_tiny_countries_scale_rank AS t"
         }
       ]
     },
@@ -412,7 +412,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_1_states_provinces AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_1_states_provinces AS t"
         }
       ]
     },
@@ -422,7 +422,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_1_states_provinces_lakes AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_1_states_provinces_lakes AS t"
         }
       ]
     },
@@ -432,7 +432,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_1_states_provinces_lines AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_1_states_provinces_lines AS t"
         }
       ]
     },
@@ -442,7 +442,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_admin_1_states_provinces_scale_rank AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_1_states_provinces_scale_rank AS t"
         }
       ]
     },
@@ -452,7 +452,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_airports AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_airports AS t"
         }
       ]
     },
@@ -462,7 +462,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_antarctic_ice_shelves_lines AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_antarctic_ice_shelves_lines AS t"
         }
       ]
     },
@@ -472,7 +472,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_antarctic_ice_shelves_polys AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_antarctic_ice_shelves_polys AS t"
         }
       ]
     },
@@ -482,7 +482,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_coastline AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_coastline AS t"
         }
       ]
     },
@@ -492,7 +492,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_geographic_lines AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_geographic_lines AS t"
         }
       ]
     },
@@ -502,7 +502,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_geography_marine_polys AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_geography_marine_polys AS t"
         }
       ]
     },
@@ -512,7 +512,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_geography_regions_elevation_points AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_geography_regions_elevation_points AS t"
         }
       ]
     },
@@ -522,7 +522,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_geography_regions_points AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_geography_regions_points AS t"
         }
       ]
     },
@@ -532,7 +532,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_geography_regions_polys AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_geography_regions_polys AS t"
         }
       ]
     },
@@ -542,7 +542,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_glaciated_areas AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_glaciated_areas AS t"
         }
       ]
     },
@@ -552,7 +552,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_lakes AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_lakes AS t"
         }
       ]
     },
@@ -562,7 +562,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_lakes_historic AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_lakes_historic AS t"
         }
       ]
     },
@@ -572,7 +572,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_land AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_land AS t"
         }
       ]
     },
@@ -582,7 +582,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_ocean AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_ocean AS t"
         }
       ]
     },
@@ -592,7 +592,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_playas AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_playas AS t"
         }
       ]
     },
@@ -602,7 +602,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_populated_places AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_populated_places AS t"
         }
       ]
     },
@@ -612,7 +612,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_populated_places_simple AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_populated_places_simple AS t"
         }
       ]
     },
@@ -622,7 +622,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_ports AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_ports AS t"
         }
       ]
     },
@@ -632,7 +632,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_rivers_lake_centerlines AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_rivers_lake_centerlines AS t"
         }
       ]
     },
@@ -642,7 +642,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_rivers_lake_centerlines_scale_rank AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_rivers_lake_centerlines_scale_rank AS t"
         }
       ]
     },
@@ -652,7 +652,7 @@
         {
           "minzoom": 2,
           "maxzoom": 5,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_50m_urban_areas AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_urban_areas AS t"
         }
       ]
     },
@@ -662,7 +662,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_antarctic_claim_limit_lines AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_antarctic_claim_limit_lines AS t"
         }
       ]
     },
@@ -672,7 +672,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_antarctic_claims AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_antarctic_claims AS t"
         }
       ]
     },
@@ -682,7 +682,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_boundary_lines_disputed_areas AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_boundary_lines_disputed_areas AS t"
         }
       ]
     },
@@ -692,7 +692,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_boundary_lines_land AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_boundary_lines_land AS t"
         }
       ]
     },
@@ -702,7 +702,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_boundary_lines_map_units AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_boundary_lines_map_units AS t"
         }
       ]
     },
@@ -712,7 +712,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_boundary_lines_maritime_indicator AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_boundary_lines_maritime_indicator AS t"
         }
       ]
     },
@@ -722,7 +722,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_countries AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_countries AS t"
         }
       ]
     },
@@ -732,7 +732,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_countries_lakes AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_countries_lakes AS t"
         }
       ]
     },
@@ -742,7 +742,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_disputed_areas AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_disputed_areas AS t"
         }
       ]
     },
@@ -752,7 +752,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_disputed_areas_scale_rank_minor_islands AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_disputed_areas_scale_rank_minor_islands AS t"
         }
       ]
     },
@@ -762,7 +762,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_label_points AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_label_points AS t"
         }
       ]
     },
@@ -772,7 +772,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_map_subunits AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_map_subunits AS t"
         }
       ]
     },
@@ -782,7 +782,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_map_units AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_map_units AS t"
         }
       ]
     },
@@ -792,7 +792,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_pacific_groupings AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_pacific_groupings AS t"
         }
       ]
     },
@@ -802,7 +802,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_scale_rank AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_scale_rank AS t"
         }
       ]
     },
@@ -812,7 +812,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_scale_rank_minor_islands AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_scale_rank_minor_islands AS t"
         }
       ]
     },
@@ -822,7 +822,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_seams AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_seams AS t"
         }
       ]
     },
@@ -832,7 +832,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_0_sovereignty AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_sovereignty AS t"
         }
       ]
     },
@@ -842,7 +842,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_1_label_points AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_label_points AS t"
         }
       ]
     },
@@ -852,7 +852,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_1_label_points_details AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_label_points_details AS t"
         }
       ]
     },
@@ -862,7 +862,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_1_seams AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_seams AS t"
         }
       ]
     },
@@ -872,7 +872,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_1_states_provinces AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_states_provinces AS t"
         }
       ]
     },
@@ -882,7 +882,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_1_states_provinces_lakes AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_states_provinces_lakes AS t"
         }
       ]
     },
@@ -892,7 +892,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_1_states_provinces_lines AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_states_provinces_lines AS t"
         }
       ]
     },
@@ -902,7 +902,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_1_states_provinces_scale_rank AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_states_provinces_scale_rank AS t"
         }
       ]
     },
@@ -912,7 +912,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_admin_1_states_provinces_scale_rank_minor_islands AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_states_provinces_scale_rank_minor_islands AS t"
         }
       ]
     },
@@ -922,7 +922,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_airports AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_airports AS t"
         }
       ]
     },
@@ -932,7 +932,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_antarctic_ice_shelves_lines AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_antarctic_ice_shelves_lines AS t"
         }
       ]
     },
@@ -942,7 +942,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_antarctic_ice_shelves_polys AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_antarctic_ice_shelves_polys AS t"
         }
       ]
     },
@@ -952,7 +952,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_coastline AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_coastline AS t"
         }
       ]
     },
@@ -962,7 +962,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_geographic_lines AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_geographic_lines AS t"
         }
       ]
     },
@@ -972,7 +972,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_geography_marine_polys AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_geography_marine_polys AS t"
         }
       ]
     },
@@ -982,7 +982,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_geography_regions_elevation_points AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_geography_regions_elevation_points AS t"
         }
       ]
     },
@@ -992,7 +992,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_geography_regions_points AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_geography_regions_points AS t"
         }
       ]
     },
@@ -1002,7 +1002,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_geography_regions_polys AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_geography_regions_polys AS t"
         }
       ]
     },
@@ -1012,7 +1012,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_glaciated_areas AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_glaciated_areas AS t"
         }
       ]
     },
@@ -1022,7 +1022,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_lakes AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_lakes AS t"
         }
       ]
     },
@@ -1032,7 +1032,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_lakes_europe AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_lakes_europe AS t"
         }
       ]
     },
@@ -1042,7 +1042,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_lakes_historic AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_lakes_historic AS t"
         }
       ]
     },
@@ -1052,7 +1052,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_lakes_north_america AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_lakes_north_america AS t"
         }
       ]
     },
@@ -1062,7 +1062,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_lakes_pluvial AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_lakes_pluvial AS t"
         }
       ]
     },
@@ -1072,7 +1072,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_land AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_land AS t"
         }
       ]
     },
@@ -1082,7 +1082,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_land_ocean_label_points AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_land_ocean_label_points AS t"
         }
       ]
     },
@@ -1092,7 +1092,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_land_ocean_seams AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_land_ocean_seams AS t"
         }
       ]
     },
@@ -1102,7 +1102,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_land_scale_rank AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_land_scale_rank AS t"
         }
       ]
     },
@@ -1112,7 +1112,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_minor_islands AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_minor_islands AS t"
         }
       ]
     },
@@ -1122,7 +1122,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_minor_islands_coastline AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_minor_islands_coastline AS t"
         }
       ]
     },
@@ -1132,7 +1132,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_minor_islands_label_points AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_minor_islands_label_points AS t"
         }
       ]
     },
@@ -1142,7 +1142,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_ocean AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_ocean AS t"
         }
       ]
     },
@@ -1152,7 +1152,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_ocean_scale_rank AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_ocean_scale_rank AS t"
         }
       ]
     },
@@ -1162,7 +1162,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_parks_and_protected_lands_area AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_parks_and_protected_lands_area AS t"
         }
       ]
     },
@@ -1172,7 +1172,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_parks_and_protected_lands_line AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_parks_and_protected_lands_line AS t"
         }
       ]
     },
@@ -1182,7 +1182,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_parks_and_protected_lands_point AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_parks_and_protected_lands_point AS t"
         }
       ]
     },
@@ -1192,7 +1192,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_parks_and_protected_lands_scale_rank AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_parks_and_protected_lands_scale_rank AS t"
         }
       ]
     },
@@ -1202,7 +1202,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_playas AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_playas AS t"
         }
       ]
     },
@@ -1212,7 +1212,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_populated_places AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_populated_places AS t"
         }
       ]
     },
@@ -1222,7 +1222,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_populated_places_simple AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_populated_places_simple AS t"
         }
       ]
     },
@@ -1232,7 +1232,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_ports AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_ports AS t"
         }
       ]
     },
@@ -1242,7 +1242,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_railroads AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_railroads AS t"
         }
       ]
     },
@@ -1252,7 +1252,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_railroads_north_america AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_railroads_north_america AS t"
         }
       ]
     },
@@ -1262,7 +1262,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_reefs AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_reefs AS t"
         }
       ]
     },
@@ -1272,7 +1272,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_rivers_europe AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_rivers_europe AS t"
         }
       ]
     },
@@ -1282,7 +1282,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_rivers_lake_centerlines AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_rivers_lake_centerlines AS t"
         }
       ]
     },
@@ -1292,7 +1292,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_rivers_lake_centerlines_scale_rank AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_rivers_lake_centerlines_scale_rank AS t"
         }
       ]
     },
@@ -1302,7 +1302,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_rivers_north_america AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_rivers_north_america AS t"
         }
       ]
     },
@@ -1312,7 +1312,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_roads AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_roads AS t"
         }
       ]
     },
@@ -1322,7 +1322,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_roads_north_america AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_roads_north_america AS t"
         }
       ]
     },
@@ -1332,7 +1332,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_time_zones AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_time_zones AS t"
         }
       ]
     },
@@ -1342,7 +1342,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_urban_areas AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_urban_areas AS t"
         }
       ]
     },
@@ -1352,7 +1352,7 @@
         {
           "minzoom": 5,
           "maxzoom": 12,
-          "sql": "SELECT ogc_fid as id, '{}'::jsonb as tags, geometry FROM ne_10m_urban_areas_landscan AS t"
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_urban_areas_landscan AS t"
         }
       ]
     }
