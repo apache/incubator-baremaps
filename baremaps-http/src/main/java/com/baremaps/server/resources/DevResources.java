@@ -125,7 +125,8 @@ public class DevResources {
   @Produces(MediaType.APPLICATION_JSON)
   public MbStyle getStyle() throws IOException {
     var config = configReader.read(style);
-    return objectMapper.readValue(config, MbStyle.class);
+    var object = objectMapper.readValue(config, MbStyle.class);
+    return object;
   }
 
   @GET
@@ -133,7 +134,8 @@ public class DevResources {
   @Produces(MediaType.APPLICATION_JSON)
   public TileJSON getTileset() throws IOException {
     var config = configReader.read(tileset);
-    return objectMapper.readValue(config, TileJSON.class);
+    var object = objectMapper.readValue(config, TileJSON.class);
+    return object;
   }
 
   @GET

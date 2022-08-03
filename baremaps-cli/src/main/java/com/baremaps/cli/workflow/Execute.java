@@ -17,6 +17,7 @@ package com.baremaps.cli.workflow;
 import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 
 import com.baremaps.cli.Options;
+import com.baremaps.server.utils.ConfigReader;
 import com.baremaps.workflow.WorkflowExecutor;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
@@ -45,7 +46,8 @@ public class Execute implements Callable<Integer> {
   public Integer call() throws Exception {
     logger.info("Executing the workflow {}", file);
     var mapper = defaultObjectMapper();
-    var workflow = mapper.readValue(file.toFile(), com.baremaps.workflow.Workflow.class);
+    var configReader = new ConfigReader();
+    var workflow = mapper.readValue(configReader.read(file), com.baremaps.workflow.Workflow.class);
     try (var executor = new WorkflowExecutor(workflow)) {
       executor.execute().get();
     }
