@@ -412,6 +412,13 @@ public class ShapefileByteReader extends CommonByteReader {
       coordinates.add(new Coordinate(xPoints[index], yPoints[index]));
     }
 
+    // close the line
+    var head = coordinates.get(0);
+    var tail = coordinates.get(coordinates.size() - 1);
+    if (!head.equals(tail)) {
+      coordinates.add(head);
+    }
+
     return geometryFactory.createPolygon(coordinates.toCoordinateArray());
   }
 
