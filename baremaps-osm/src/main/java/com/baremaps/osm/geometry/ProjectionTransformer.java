@@ -96,7 +96,8 @@ public class ProjectionTransformer extends GeometryTransformer {
 
   protected Geometry transformPoint(Point geom, Geometry parent) {
     try {
-      return withTargetSRID(super.transformPoint(geom, parent));
+      var geometry = super.transformPoint(geom, parent);
+      return withTargetSRID(geometry);
     } catch (Exception e) {
       logger.error("Point cannot be reprojected", e);
       return parent.getFactory().createEmpty(0);
@@ -105,11 +106,11 @@ public class ProjectionTransformer extends GeometryTransformer {
 
   protected Geometry transformMultiPoint(MultiPoint geom, Geometry parent) {
     try {
-      Geometry geometry = super.transformMultiPoint(geom, parent);
+      var geometry = super.transformMultiPoint(geom, parent);
       if (geometry instanceof Point point) {
         geometry = factory.createMultiPoint(new Point[]{point});
       }
-      return geometry;
+      return withTargetSRID(geometry);
     } catch (Exception e) {
       logger.error("MultiPoint cannot be reprojected", e);
       return parent.getFactory().createEmpty(0);
@@ -118,7 +119,8 @@ public class ProjectionTransformer extends GeometryTransformer {
 
   protected Geometry transformLinearRing(LinearRing geom, Geometry parent) {
     try {
-      return withTargetSRID(super.transformLinearRing(geom, parent));
+      var geometry = super.transformLinearRing(geom, parent);
+      return withTargetSRID(geometry);
     } catch (Exception e) {
       logger.error("LinearRing cannot be reprojected", e);
       return parent.getFactory().createEmpty(0);
@@ -127,7 +129,8 @@ public class ProjectionTransformer extends GeometryTransformer {
 
   protected Geometry transformLineString(LineString geom, Geometry parent) {
     try {
-      return withTargetSRID(super.transformLineString(geom, parent));
+      var geometry = super.transformLineString(geom, parent);
+      return withTargetSRID(geometry);
     } catch (Exception e) {
       logger.error("LineString cannot be reprojected", e);
       return parent.getFactory().createEmpty(0);
@@ -136,11 +139,11 @@ public class ProjectionTransformer extends GeometryTransformer {
 
   protected Geometry transformMultiLineString(MultiLineString geom, Geometry parent) {
     try {
-      Geometry geometry = super.transformMultiLineString(geom, parent);
+      var geometry = super.transformMultiLineString(geom, parent);
       if (geometry instanceof LineString lineString) {
         geometry = factory.createMultiLineString(new LineString[]{lineString});
       }
-      return geometry;
+      return withTargetSRID(geometry);
     } catch (Exception e) {
       logger.error("MultiLineString cannot be reprojected", e);
       return parent.getFactory().createEmpty(0);
@@ -149,7 +152,8 @@ public class ProjectionTransformer extends GeometryTransformer {
 
   protected Geometry transformPolygon(Polygon geom, Geometry parent) {
     try {
-      return withTargetSRID(super.transformPolygon(geom, parent));
+      var geometry = super.transformPolygon(geom, parent);
+      return withTargetSRID(geometry);
     } catch (Exception e) {
       logger.error("Polygon cannot be reprojected", e);
       return parent.getFactory().createEmpty(0);
@@ -158,7 +162,7 @@ public class ProjectionTransformer extends GeometryTransformer {
 
   protected Geometry transformMultiPolygon(MultiPolygon geom, Geometry parent) {
     try {
-      Geometry geometry = super.transformMultiPolygon(geom, parent);
+      var geometry = super.transformMultiPolygon(geom, parent);
       if (geometry instanceof Polygon polygon) {
         geometry = factory.createMultiPolygon(new Polygon[]{polygon});
       }
@@ -171,7 +175,8 @@ public class ProjectionTransformer extends GeometryTransformer {
 
   protected Geometry transformGeometryCollection(GeometryCollection geom, Geometry parent) {
     try {
-      return withTargetSRID(super.transformGeometryCollection(geom, parent));
+      var geometry = super.transformGeometryCollection(geom, parent);
+      return withTargetSRID(geometry);
     } catch (Exception e) {
       logger.error("GeometryCollection cannot be reprojected", e);
       return parent.getFactory().createEmpty(0);

@@ -7,25 +7,10 @@ layout: default title: Extrusion Example
 This example builds upon the [OpenStreetMap example](https://www.baremaps.com/examples/openstreetmap/) and shows how 3d
 buildings can be extruded with Maplibre. First, start by downloading the OSM data for London in the current directory.
 
-To begin with the tutorial, prepare the database by executing the following command.
-
-```shell
-baremaps execute \
-  --database 'jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps' \
-  --file 'res:///osm_create_extensions.sql' \
-  --file 'res:///osm_drop_tables.sql' \
-  --file 'res:///osm_create_tables.sql' \
-  --file 'res:///osm_create_gist_indexes.sql' \
-  --file 'res:///osm_create_gin_indexes.sql'
-```
-
 To import London data in the database.
 
-```shell
-baremaps import \
-  --database 'jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps' \
-  --file 'https://download.geofabrik.de/europe/great-britain/england/greater-london-latest.osm.pbf' \
-  --enable-http
+```
+baremaps workflow execute --file workflow.json
 ```
 
 In the [tileset.json](https://raw.githubusercontent.com/baremaps/baremaps/main/docs/examples/extrusion/tileset.json)
@@ -76,11 +61,10 @@ a [caffeine specification](https://www.javadoc.io/doc/com.github.ben-manes.caffe
 for a 100MB tile cache.
 
 ```shell
-baremaps view \
+baremaps map dev \
   --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
   --tileset 'tileset.json' \
-  --style 'style.json' \
-  --cache 'maximumWeight=100000000'
+  --style 'style.json'
 ```
 
 Well done, a map of London with extruded buildings should now appear in your [browser](http://localhost:9000/)!
