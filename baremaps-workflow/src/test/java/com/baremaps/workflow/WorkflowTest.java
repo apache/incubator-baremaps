@@ -72,6 +72,31 @@ class WorkflowTest extends PostgresContainerTest {
 
   @Test
   @Disabled
+  void simplifiedWaterPolygonsShapefile() {
+    var workflow =
+      new Workflow(
+        List.of(
+          new Step(
+            "simplified-water-polygons",
+            List.of(),
+            List.of(
+              /*
+              new DownloadUrl(
+                  "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
+                  "simplified-water-polygons-split-3857.zip"),
+              new UnzipFile(
+                  "simplified-water-polygons-split-3857.zip",
+                  "simplified-water-polygons-split-3857"),*/
+              new ImportShapefile(
+                "simplified-water-polygons-split-3857/simplified-water-polygons-split-3857/simplified_water_polygons.shp",
+                "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+                3857,
+                3857)))));
+    new WorkflowExecutor(workflow).execute().join();
+  }
+
+  @Test
+  @Disabled
   void workflow() {
     var workflow =
       new Workflow(
