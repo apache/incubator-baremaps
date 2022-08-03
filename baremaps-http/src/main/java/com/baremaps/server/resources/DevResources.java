@@ -25,13 +25,11 @@ import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileJSON;
 import com.baremaps.server.ogcapi.Conversions;
 import com.baremaps.server.utils.ConfigReader;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -41,9 +39,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.sql.DataSource;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -122,21 +118,6 @@ public class DevResources {
   @Produces("text/event-stream")
   public void changes(@Context SseEventSink sseEventSink) {
     sseBroadcaster.register(sseEventSink);
-  }
-
-  @PUT
-  @Consumes(MediaType.APPLICATION_JSON)
-  @javax.ws.rs.Path("style.json")
-  public void putStyle(MbStyle json) throws IOException {
-    byte[] value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(json);
-    Files.write(style, value);
-  }
-
-  @PUT
-  @javax.ws.rs.Path("tiles.json")
-  public void putTiles(JsonNode json) throws IOException {
-    byte[] value = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsBytes(json);
-    Files.write(tileset, value);
   }
 
   @GET
