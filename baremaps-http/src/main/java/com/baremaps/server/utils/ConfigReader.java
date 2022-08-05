@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Function;
 import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.Source;
 
 public class ConfigReader {
@@ -44,6 +46,7 @@ public class ConfigReader {
       var context =
         Context.newBuilder("js")
           .option("js.esm-eval-returns-exports", "true")
+          .option("js.scripting", "true")
           .allowExperimentalOptions(true)
           .allowIO(true)
           .build()
