@@ -38,12 +38,8 @@ public record ImportShapefile(String file, String database, Integer sourceSRID, 
       var dataSource = PostgresUtils.dataSource(database);
       var postgresDatabase = new PostgresDatabase(dataSource)
     ) {
-      if (sourceSRID.equals(targetSRID)) {
-        postgresDatabase.add(featureSet);
-      } else {
-        postgresDatabase.add(new FeatureProjectionTransform(
-          featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
-      }
+      postgresDatabase.add(new FeatureProjectionTransform(
+        featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
       logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {
       logger.error("Failed importing {} into {}", file, database);

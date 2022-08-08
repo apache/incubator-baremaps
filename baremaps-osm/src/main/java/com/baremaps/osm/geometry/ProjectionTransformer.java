@@ -39,9 +39,9 @@ public class ProjectionTransformer extends GeometryTransformer {
 
   private static final Logger logger = LoggerFactory.getLogger(ProjectionTransformer.class);
 
-  private final int inputSRID;
+  private final int sourceSrid;
 
-  private final int outputSRID;
+  private final int targetSrid;
 
   private final CoordinateTransform transform;
 
@@ -55,9 +55,9 @@ public class ProjectionTransformer extends GeometryTransformer {
    * @param sourceSrid the source SRID
    * @param targetSrid the target SRID
    */
-  public ProjectionTransformer(Integer sourceSrid, Integer targetSrid) {
-    this.inputSRID = sourceSrid;
-    this.outputSRID = targetSrid;
+  public ProjectionTransformer(int sourceSrid, int targetSrid) {
+    this.sourceSrid = sourceSrid;
+    this.targetSrid = targetSrid;
     this.transform = GeometryUtils.coordinateTransform(sourceSrid, targetSrid);
 
     var targetCRS = new CRSFactory().createFromName(String.format("EPSG:%s", targetSrid));
@@ -87,6 +87,9 @@ public class ProjectionTransformer extends GeometryTransformer {
   }
 
   private Coordinate transformCoordinate(Coordinate coordinate) {
+    if (sourceSrid == targetSrid) {
+      return coordinate;
+    }
     var x = Math.max(Math.min(coordinate.x, max.x), min.x);
     var y = Math.max(Math.min(coordinate.y, max.y), min.y);
     ProjCoordinate c1 = new ProjCoordinate(x, y);
@@ -184,7 +187,7 @@ public class ProjectionTransformer extends GeometryTransformer {
   }
 
   private Geometry withTargetSRID(Geometry outputGeom) {
-    outputGeom.setSRID(outputSRID);
+    outputGeom.setSRID(targetSrid);
     return outputGeom;
   }
 }

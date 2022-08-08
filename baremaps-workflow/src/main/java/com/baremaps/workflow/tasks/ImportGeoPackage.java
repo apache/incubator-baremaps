@@ -41,12 +41,8 @@ public record ImportGeoPackage(String file, String database, Integer sourceSRID,
     ) {
       for (var resource : geoPackageStore.components()) {
         if (resource instanceof FeatureSet featureSet) {
-          if (sourceSRID.equals(targetSRID)) {
-            postgresDatabase.add(featureSet);
-          } else {
-            postgresDatabase.add(new FeatureProjectionTransform(
-              featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
-          }
+          postgresDatabase.add(new FeatureProjectionTransform(
+            featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
         }
       }
       logger.info("Finished importing {} into {}", file, database);

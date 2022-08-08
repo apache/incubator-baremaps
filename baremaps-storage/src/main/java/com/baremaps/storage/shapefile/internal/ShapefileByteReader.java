@@ -22,10 +22,13 @@ import java.util.*;
 import org.apache.sis.feature.AbstractFeature;
 import org.apache.sis.feature.DefaultAttributeType;
 import org.apache.sis.feature.DefaultFeatureType;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
@@ -272,7 +275,7 @@ public class ShapefileByteReader extends CommonByteReader {
   public void completeFeature(AbstractFeature feature) throws ShapefileException {
     // insert points into some type of list
     int RecordNumber = getByteBuffer().getInt();
-    @SuppressWarnings("unused") int ContentLength = getByteBuffer().getInt();
+    int ContentLength = getByteBuffer().getInt();
 
     getByteBuffer().order(ByteOrder.LITTLE_ENDIAN);
     int iShapeType = getByteBuffer().getInt();
@@ -322,53 +325,17 @@ public class ShapefileByteReader extends CommonByteReader {
    * @param feature Feature to fill.
    */
   private void loadPolygonFeature(AbstractFeature feature) {
-    /* double xmin = */ getByteBuffer().getDouble();
-    /* double ymin = */ getByteBuffer().getDouble();
-    /* double xmax = */ getByteBuffer().getDouble();
-    /* double ymax = */ getByteBuffer().getDouble();
+    double xmin = getByteBuffer().getDouble();
+    double ymin = getByteBuffer().getDouble();
+    double xmax = getByteBuffer().getDouble();
+    double ymax = getByteBuffer().getDouble();
+
     int numParts = getByteBuffer().getInt();
     int numPoints = getByteBuffer().getInt();
 
-    Polygon poly;
+    MultiPolygon multiPolygon = readMultiplePolygon(numParts, numPoints);
 
-    // Handle multiple polygon parts.
-    if (numParts > 1) {
-      poly = readMultiplePolygonParts(numParts, numPoints);
-    } else {
-      // Polygon with an unique part.
-      poly = readUniquePolygonPart(numPoints);
-    }
-
-    feature.setPropertyValue(GEOMETRY_NAME, poly);
-  }
-
-  /**
-   * Read a polygon that has a unique part.
-   *
-   * @param numPoints Number of the points of the polygon.
-   * @return Polygon.
-   */
-  @Deprecated
-  // As soon as the readMultiplePolygonParts method proofs working well, this readUniquePolygonPart
-  // method can be removed and all calls be deferred to readMultiplePolygonParts.
-  private Polygon readUniquePolygonPart(int numPoints) {
-    /*int part = */ getByteBuffer().getInt();
-
-    var coordinates = new CoordinateList();
-
-    // create a line from the points
-    double xpnt = getByteBuffer().getDouble();
-    double ypnt = getByteBuffer().getDouble();
-
-    coordinates.add(new Coordinate(xpnt, ypnt));
-
-    for (int j = 0; j < numPoints - 1; j++) {
-      xpnt = getByteBuffer().getDouble();
-      ypnt = getByteBuffer().getDouble();
-      coordinates.add(new Coordinate(xpnt, ypnt));
-    }
-
-    return geometryFactory.createPolygon(coordinates.toCoordinateArray());
+    feature.setPropertyValue(GEOMETRY_NAME, multiPolygon);
   }
 
   /**
@@ -378,7 +345,7 @@ public class ShapefileByteReader extends CommonByteReader {
    * @param numPoints Total number of points of this polygon, all parts considered.
    * @return a multiple part polygon.
    */
-  private Polygon readMultiplePolygonParts(int numParts, int numPoints) {
+  private MultiPolygon readMultiplePolygon(int numParts, int numPoints) {
     /**
      * From ESRI Specification : Parts : 0 5 (meaning : 0 designs the first v1, 5 designs the first v5 on the points
      * list below). Points : v1 v2 v3 v4 v1 v5 v8 v7 v6 v5
@@ -388,38 +355,44 @@ public class ShapefileByteReader extends CommonByteReader {
      * 36 NumParts NumParts Integer 1 Little Byte 40 NumPoints NumPoints Integer 1 Little Byte 44 Parts Parts Integer
      * NumParts Little Byte X Points Points Point NumPoints Little
      */
-    int[] partsIndexes = new int[numParts];
 
     // Read all the parts indexes (starting at byte 44).
+    var partsIndexes = new int[numParts];
     for (int index = 0; index < numParts; index++) {
       partsIndexes[index] = getByteBuffer().getInt();
     }
 
-    // Read all the points.
-    double[] xPoints = new double[numPoints];
-    double[] yPoints = new double[numPoints];
-
-    for (int index = 0; index < numPoints; index++) {
-      xPoints[index] = getByteBuffer().getDouble();
-      yPoints[index] = getByteBuffer().getDouble();
+    // Read all the coordinates.
+    var coordinates = new Coordinate[numPoints];
+    for (var i = 0; i < numPoints; i++) {
+      var x = getByteBuffer().getDouble();
+      var y = getByteBuffer().getDouble();
+      var coordinate = new Coordinate(x, y);
+      coordinates[i] = coordinate;
     }
 
-    // Create the polygon from the points.
-    var coordinates = new CoordinateList();
-
-    // create a line from the points
-    for (int index = 0; index < numPoints; index++) {
-      coordinates.add(new Coordinate(xPoints[index], yPoints[index]));
+    // Create the linear rings from the points.
+    var linearRings = new LinearRing[partsIndexes.length];
+    for (var i = 0; i < partsIndexes.length; i++) {
+      var from = partsIndexes[i];
+      var to = i < partsIndexes.length - 1 ? partsIndexes[i + 1] : coordinates.length;
+      var array = Arrays.copyOfRange(coordinates, from, to);
+      var linearRing = geometryFactory.createLinearRing(array);
+      linearRings[i] = linearRing;
     }
 
-    // close the line
-    var head = coordinates.get(0);
-    var tail = coordinates.get(coordinates.size() - 1);
-    if (!head.equals(tail)) {
-      coordinates.add(head);
-    }
+    // Create the polygons from the linear rings
+    var polygons = Arrays.stream(linearRings)
+      .filter(polygon -> !Orientation.isCCW(polygon.getCoordinates()))
+      .map(shell -> {
+        var holes = Arrays.stream(linearRings)
+          .filter(polygon -> Orientation.isCCW(polygon.getCoordinates()))
+          .filter(hole -> shell.contains(hole))
+          .toArray(size -> new LinearRing[size]);
+        return geometryFactory.createPolygon(shell, holes);
+      });
 
-    return geometryFactory.createPolygon(coordinates.toCoordinateArray());
+    return geometryFactory.createMultiPolygon(polygons.toArray(size -> new Polygon[size]));
   }
 
   /**

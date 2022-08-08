@@ -157,7 +157,6 @@ public class InputFeatureStream extends InputStream {
    * @throws SQLFeatureNotSupportedException if a SQL ability is not currently available through this driver.
    */
   private AbstractFeature internalReadFeature() throws ShapefileException {
-    this.dbaseReader.readNextRowAsObjects();
     if (!this.dbaseReader.nextRowAvailable()) {
       return null;
     }
