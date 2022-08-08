@@ -27,8 +27,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
@@ -333,7 +331,7 @@ public class ShapefileByteReader extends CommonByteReader {
     int numParts = getByteBuffer().getInt();
     int numPoints = getByteBuffer().getInt();
 
-    MultiPolygon multiPolygon = readMultiplePolygon(numParts, numPoints);
+    Geometry multiPolygon = readMultiplePolygon(numParts, numPoints);
 
     feature.setPropertyValue(GEOMETRY_NAME, multiPolygon);
   }
@@ -345,7 +343,7 @@ public class ShapefileByteReader extends CommonByteReader {
    * @param numPoints Total number of points of this polygon, all parts considered.
    * @return a multiple part polygon.
    */
-  private MultiPolygon readMultiplePolygon(int numParts, int numPoints) {
+  private Geometry readMultiplePolygon(int numParts, int numPoints) {
     /**
      * From ESRI Specification : Parts : 0 5 (meaning : 0 designs the first v1, 5 designs the first v5 on the points
      * list below). Points : v1 v2 v3 v4 v1 v5 v8 v7 v6 v5
@@ -371,28 +369,25 @@ public class ShapefileByteReader extends CommonByteReader {
       coordinates[i] = coordinate;
     }
 
-    // Create the linear rings from the points.
-    var linearRings = new LinearRing[partsIndexes.length];
+    // Create the shells and holes.
+    var shells = new ArrayList<Polygon>();
+    var holes = new LinkedList<Polygon>();
     for (var i = 0; i < partsIndexes.length; i++) {
       var from = partsIndexes[i];
       var to = i < partsIndexes.length - 1 ? partsIndexes[i + 1] : coordinates.length;
       var array = Arrays.copyOfRange(coordinates, from, to);
-      var linearRing = geometryFactory.createLinearRing(array);
-      linearRings[i] = linearRing;
+      var linearRing = geometryFactory.createPolygon(array);
+      if (!Orientation.isCCW(linearRing.getCoordinates())) {
+        shells.add(linearRing);
+      } else {
+        holes.add(linearRing);
+      }
     }
 
-    // Create the polygons from the linear rings
-    var polygons = Arrays.stream(linearRings)
-      .filter(polygon -> !Orientation.isCCW(polygon.getCoordinates()))
-      .map(shell -> {
-        var holes = Arrays.stream(linearRings)
-          .filter(polygon -> Orientation.isCCW(polygon.getCoordinates()))
-          .filter(hole -> shell.contains(hole))
-          .toArray(size -> new LinearRing[size]);
-        return geometryFactory.createPolygon(shell, holes);
-      });
-
-    return geometryFactory.createMultiPolygon(polygons.toArray(size -> new Polygon[size]));
+    // Compute the difference between shells and holes
+    var shellsMultiPolygon = geometryFactory.createMultiPolygon(shells.toArray(size -> new Polygon[size]));
+    var holesMultiPolygon = geometryFactory.createMultiPolygon(holes.toArray(size -> new Polygon[size]));
+    return shellsMultiPolygon.difference(holesMultiPolygon);
   }
 
   /**
