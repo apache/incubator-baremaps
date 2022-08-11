@@ -105,7 +105,7 @@ public class PostgresHeaderRepository implements HeaderRepository {
         replicationUrlColumn,
         sourceColumn,
         writingProgramColumn);
-    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s", tableName);
+    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s CASCADE", tableName);
     this.truncateTable = String.format("TRUNCATE TABLE %1$s", tableName);
     this.selectLatest =
       String.format(

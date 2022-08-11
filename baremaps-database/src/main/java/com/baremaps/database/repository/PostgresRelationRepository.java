@@ -138,7 +138,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
         memberTypes,
         memberRoles,
         geometryColumn);
-    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s", tableName);
+    this.dropTable = String.format("DROP TABLE IF EXISTS %1$s CASCADE", tableName);
     this.truncateTable = String.format("TRUNCATE TABLE %1$s", tableName);
     this.select =
       String.format(
