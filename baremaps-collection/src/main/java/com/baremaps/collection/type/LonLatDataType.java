@@ -23,20 +23,26 @@ import org.locationtech.jts.geom.Coordinate;
  */
 public class LonLatDataType implements SizedDataType<Coordinate> {
 
-  private static final long LOWER_32_BIT_MASK = (1L << 32) - 1L;
-
-  public static double decodeLat(long encoded) {
-    return (double) (encoded & LOWER_32_BIT_MASK) / 10000000;
-  }
-
-  public static double decodeLon(long encoded) {
-    return (double) (encoded >>> 32) / 10000000;
-  }
+  private static final double BITS = Math.pow(2, 31);
+  private static final long SHIFT = 32;
+  private static final long MASK = (1L << 32) - 1L;
 
   public static long encodeLonLat(double lon, double lat) {
-    long x = (long) (lon * 10000000);
-    long y = (long) (lat * 10000000);
-    return (x << 32) | (y & LOWER_32_BIT_MASK);
+    long x = (long) (((lon + 180) / 360) * BITS);
+    long y = (long) (((lat + 90) / 180) * BITS);
+    long l = (x << SHIFT);
+    long r = (y & MASK);
+    return l | r;
+  }
+
+  public static double decodeLon(long value) {
+    double l = (value >>> 32);
+    return (l / BITS) * 360 - 180;
+  }
+
+  public static double decodeLat(long value) {
+    long r = (value & MASK);
+    return (r / BITS) * 180 - 90;
   }
 
   /** {@inheritDoc} */
