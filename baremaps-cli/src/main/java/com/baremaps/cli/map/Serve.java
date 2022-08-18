@@ -19,25 +19,20 @@ import static com.baremaps.server.utils.DefaultObjectMapper.defaultObjectMapper;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 
 import com.baremaps.cli.Options;
-import com.baremaps.database.tile.PostgresQuery;
 import com.baremaps.database.tile.PostgresTileStore;
 import com.baremaps.database.tile.TileCache;
 import com.baremaps.database.tile.TileStore;
 import com.baremaps.model.TileJSON;
 import com.baremaps.postgres.PostgresUtils;
 import com.baremaps.server.resources.ServerResources;
+import com.baremaps.server.utils.ConfigReader;
 import com.baremaps.server.utils.CorsFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
-import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
-import io.servicetalk.transport.api.ServerContext;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.Callable;
-import javax.sql.DataSource;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -95,17 +90,18 @@ public class Serve implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    ObjectMapper objectMapper = defaultObjectMapper();
-    TileJSON tileJSON = objectMapper.readValue(Files.readAllBytes(tileset), TileJSON.class);
-    CaffeineSpec caffeineSpec = CaffeineSpec.parse(cache);
-    DataSource datasource = PostgresUtils.dataSource(database);
+    var objectMapper = defaultObjectMapper();
+    var configReader = new ConfigReader();
+    var tileJSON = objectMapper.readValue(configReader.read(tileset), TileJSON.class);
+    var caffeineSpec = CaffeineSpec.parse(cache);
+    var datasource = PostgresUtils.dataSource(database);
 
-    List<PostgresQuery> queries = asPostgresQuery(tileJSON);
-    TileStore tileStore = new PostgresTileStore(datasource, queries);
-    TileStore tileCache = new TileCache(tileStore, caffeineSpec);
+    var queries = asPostgresQuery(tileJSON);
+    var tileStore = new PostgresTileStore(datasource, queries);
+    var tileCache = new TileCache(tileStore, caffeineSpec);
 
     // Configure the application
-    ResourceConfig application =
+    var application =
       new ResourceConfig()
         .register(CorsFilter.class)
         .register(ServerResources.class)
@@ -117,12 +113,13 @@ public class Serve implements Callable<Integer> {
               bind(tileset).to(Path.class).named("tileset");
               bind(style).to(Path.class).named("style");
               bind(tileCache).to(TileStore.class);
+              bind(objectMapper).to(ObjectMapper.class);
             }
           });
 
-    BlockingStreamingHttpService httpService =
+    var httpService =
       new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
-    ServerContext serverContext =
+    var serverContext =
       HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
     logger.info("Listening on {}", serverContext.listenAddress());

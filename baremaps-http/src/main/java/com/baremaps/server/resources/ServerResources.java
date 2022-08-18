@@ -21,10 +21,13 @@ import static com.google.common.net.HttpHeaders.CONTENT_TYPE;
 import com.baremaps.database.tile.Tile;
 import com.baremaps.database.tile.TileStore;
 import com.baremaps.database.tile.TileStoreException;
+import com.baremaps.model.MbStyle;
+import com.baremaps.model.TileJSON;
+import com.baremaps.server.utils.ConfigReader;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,9 +42,9 @@ import javax.ws.rs.core.Response;
 @javax.ws.rs.Path("/")
 public class ServerResources {
 
-  private final Path style;
+  private final MbStyle style;
 
-  private final Path tileset;
+  private final TileJSON tileset;
 
   private final TileStore tileStore;
 
@@ -51,24 +54,28 @@ public class ServerResources {
 
   @Inject
   public ServerResources(
-    @Named("tileset") Path tileset, @Named("style") Path style, TileStore tileStore) {
-    this.tileset = tileset;
-    this.style = style;
+    @Named("tileset") Path tileset,
+    @Named("style") Path style,
+    TileStore tileStore,
+    ObjectMapper objectMapper) throws IOException {
     this.tileStore = tileStore;
+    var configReader = new ConfigReader();
+    this.style = objectMapper.readValue(configReader.read(style), MbStyle.class);
+    this.tileset = objectMapper.readValue(configReader.read(tileset), TileJSON.class);
   }
 
   @GET
   @javax.ws.rs.Path("style.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getStyle() throws IOException {
-    return Response.ok(Files.readAllBytes(style)).build();
+  public MbStyle getStyle() {
+    return style;
   }
 
   @GET
   @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getTileset() throws IOException {
-    return Response.ok(Files.readAllBytes(tileset)).build();
+  public TileJSON getTileset() {
+    return tileset;
   }
 
   @GET
