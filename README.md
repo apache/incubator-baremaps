@@ -42,6 +42,6 @@ On the longer run, the aim of the project is to work with a variety of data sour
 * `cd baremaps-cli && mvn package -P maputnik -B`. This creates a `.zip` in the `target` folder.
 * alternatively you can build a docker image with `mvn jib:dockerBuild -DskipTests`.
 
-To help you starts without worring too much a "starter" [openstreetmap](https://github.com/baremaps/openstreetmap-vecto) project is avaiblable
+To help you start without worring too much a "starter" [openstreetmap](https://github.com/baremaps/openstreetmap-vecto) project is available
 
 
