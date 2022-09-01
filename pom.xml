@@ -88,7 +88,7 @@
     <version.lib.proj4j>1.1.4</version.lib.proj4j>
     <version.lib.protobuf>3.19.1</version.lib.protobuf>
     <version.lib.servicetalk>0.41.11</version.lib.servicetalk>
-    <version.lib.slf4j>1.7.32</version.lib.slf4j>
+    <version.lib.slf4j>2.0.0</version.lib.slf4j>
     <version.lib.sqlite>3.36.0.3</version.lib.sqlite>
     <version.lib.swagger>1.6.3</version.lib.swagger>
     <version.lib.validation>2.0.1.Final</version.lib.validation>
