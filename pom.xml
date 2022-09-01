@@ -103,7 +103,7 @@
     <version.lib.graalvm>22.0.0.2</version.lib.graalvm>
     <version.lib.ipresource>1.49</version.lib.ipresource>
     <version.lib.geoapi>4.0-M19</version.lib.geoapi>
-    <version.lib.sis>2.0-M0115</version.lib.sis>
+    <version.lib.sis>2.0-M0116</version.lib.sis>
 
     <!-- testing -->
     <version.lib.junit>5.7.1</version.lib.junit>
