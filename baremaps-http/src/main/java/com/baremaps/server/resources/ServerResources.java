@@ -23,6 +23,7 @@ import com.baremaps.database.tile.TileStore;
 import com.baremaps.database.tile.TileStoreException;
 import com.baremaps.model.MbStyle;
 import com.baremaps.model.TileJSON;
+import com.baremaps.model.VectorLayer;
 import com.baremaps.server.utils.ConfigReader;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -62,6 +63,11 @@ public class ServerResources {
     var configReader = new ConfigReader();
     this.style = objectMapper.readValue(configReader.read(style), MbStyle.class);
     this.tileset = objectMapper.readValue(configReader.read(tileset), TileJSON.class);
+
+    // Hide the SQL queries in production
+    for (VectorLayer layer : this.tileset.getVectorLayers()) {
+      layer.setQueries(null);
+    }
   }
 
   @GET
