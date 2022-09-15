@@ -41,7 +41,7 @@ corrected!
 
 ## Development Environment
 
-Baremaps is developed and tested with Java 11, Maven 3.6, Postgres 13 and Postgis 3.
+Baremaps is developed and tested with Java 17, Maven 3.6, Postgres 13 and Postgis 3.
 
 The repository contains several sets of directories with code:
 The source code of Baremaps is organized in modules:
@@ -49,10 +49,16 @@ The source code of Baremaps is organized in modules:
 - `baremaps-benchmarks` contains JMH benchmarks.
 - `baremaps-cli` contains the command line interface of baremaps.
 - `baremaps-collection` contains fast on-heap, off-heap, and on-disk collections inspired by planetiler.
-- `baremaps-workflow` contains the pipeline to import osm data in postgis and produce vector tiles.
+- `baremaps-database` contains the database schema for openstreetmap.
+- `baremaps-geocoder` contains utilities to create a spatial index with lucene.
 - `baremaps-http` contains the parent sever module with the main dependencies.
-- `baremaps-osm` contains parsers for various osm formats (xml, pbf) and a cache and a database abstraction to import these data.
+- `baremaps-iploc` contains utilities to create an ip to location database.
+- `baremaps-osm` contains parsers for various openstreetmap formats (osm.xml, osc.xml, pbf).
+- `baremaps-postgres` contains utilities to manage a postgresql database.
+- `baremaps-storage` contains parsers for various data formats (shapefile, geopackage, etc.).
+- `baremaps-stream` contains utilities to process large unbounded streams in parallel.
 - `baremaps-testing` contains common utilities (data, etc.) used for testing in different module.
+- `baremaps-workflow` contains the pipeline to import osm data in postgis and produce vector tiles.
 
 The naming convention used for the modules is 'baremaps-{component}'.
 Here, component corresponds to the api and the main implementation of a component.
@@ -61,7 +67,7 @@ If the component has multiple implementation or requires some specific dependenc
 Knowing that, you should be able to checkout and build Baremaps from source, and start hacking:
 
 ```bash
-git clone --recurse-submodules git@github.com:baremaps/baremaps.git
+git clone git@github.com:baremaps/baremaps.git
 cd baremaps/
 mvn install
 ``` 
@@ -75,13 +81,13 @@ mvn test
 Given a local and properly configured install of Postgres, the following command can be used to run the integration tests.
 
 ```bash
-mvn verify -P integration
+mvn install -P integration
 ```
 
 ## Providing Patches
 
-You have fixed an annoying bug or have added a new feature? Let's
-get it into the project! 
+You have fixed an annoying bug or have added a new feature? 
+Let's get it into the project! 
 To do so, follow guidelines described in the [GitHub Flow](https://guides.github.com/introduction/flow/),
 a branch-based workflow that supports teams and projects.
 
