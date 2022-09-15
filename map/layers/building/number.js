@@ -1,0 +1,30 @@
+export default {
+    id: 'building_number',
+    type: 'symbol',
+    source: 'baremaps',
+    'source-layer': 'building',
+    layout: {
+        'text-allow-overlap': false,
+        'text-anchor': 'center',
+        'text-field': '{addr:housenumber}',
+        'text-font': ['Noto Sans Regular'],
+        'text-offset': [0, 0],
+        'text-size': [
+            'interpolate',
+            ['exponential', 1],
+            ['zoom'],
+            15,
+            0,
+            16,
+            11,
+            20,
+            11,
+        ],
+        visibility: 'visible',
+    },
+    paint: {
+        'text-color': 'rgb(96,96,96)',
+        'text-halo-color': 'rgba(255,255,255,0.8)',
+        'text-halo-width': 1.2,
+    },
+}

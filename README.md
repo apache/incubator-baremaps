@@ -6,8 +6,6 @@
 ![example workflow](https://github.com/baremaps/baremaps/actions/workflows/release.yml/badge.svg)
 ![example workflow](https://github.com/baremaps/baremaps/actions/workflows/analyze.yml/badge.svg)
 
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/baremaps/baremaps.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/baremaps/baremaps/alerts/)
-[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/baremaps/baremaps.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/baremaps/baremaps/context:java)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=baremaps_baremaps&metric=alert_status)](https://sonarcloud.io/dashboard?id=baremaps_baremaps)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=baremaps_baremaps&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=baremaps_baremaps)
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=baremaps_baremaps&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=baremaps_baremaps)
