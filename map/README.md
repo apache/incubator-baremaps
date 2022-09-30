@@ -2,7 +2,7 @@
 
 🚧 🚧 Work in progress 🚧 🚧
 
-OpenStreetMap Vecto is a general-purpose configuration for [Baremaps](https://github.com/baremaps/baremaps).
+This directory contains the configuration files for a general-purpose map.
 It is used to generate vector tiles and to produce a Mapbox style inspired by [OpenStreetMap Carto](https://github.com/gravitystorm/openstreetmap-carto).
 
 ## Requirements
@@ -12,20 +12,13 @@ It is used to generate vector tiles and to produce a Mapbox style inspired by [O
 * [Java](https://adoptium.net/) 17+
 * [Baremaps](https://www.baremaps.com/) 0.7+
 
-The database should be accessible with the following jdbc settings:
+A PostgreSQL database with the PostGIS extension should be accessible with the following jdbc settings:
 
 ```
 jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps
 ```
 
 ## Getting started
-
-In order to experiment with OpenStreetMap Vecto, you first need to clone the current repository
- 
-```
-git clone git@github.com:baremaps/openstreetmap-vecto.git
-cd openstreetmap-vecto/
-```
 
 Assuming that the necessary requirements have been installed, the database can be populated with the following command.
 
@@ -44,8 +37,8 @@ baremaps map dev --log-level DEBUG \
 
 ## Editing the tileset
 
-The configuration format used in the `tileset.json` file extends the [TileJSON specification](https://github.com/mapbox/tilejson-spec/tree/master/2.2.0).
-Simply put, it adds in the ability to describe the `vector_tiles` and their content with SQL queries that follow the Postgis dialect.
+The configuration format used in the `tileset.js` file extends the [TileJSON specification](https://github.com/mapbox/tilejson-spec/tree/master/2.2.0).
+Simply put, it adds in the ability to describe the `vector_tiles` and their content with SQL queries that follow the PostGIS dialect.
 
 ```
 {
@@ -70,7 +63,7 @@ Simply put, it adds in the ability to describe the `vector_tiles` and their cont
 
 ## Editing the style
 
-The configuration format used in the `style.json` follows the [Mapbox style specification](https://github.com/mapbox/mapbox-gl-js).
+The configuration format used in the `style.js` file follows the [Mapbox style specification](https://github.com/mapbox/mapbox-gl-js).
 Baremaps integrates [Maputnik](https://maputnik.github.io/) and most of the modifications will take place in the browser.
 
 ## Tools
@@ -79,4 +72,4 @@ Baremaps integrates [Maputnik](https://maputnik.github.io/) and most of the modi
 
 ## Contributing
 
-As a lot remains to be done, contributions and feedbacks are welcome.
+As a lot of work remains to be done, contributions and feedbacks are welcome.
