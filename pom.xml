@@ -83,7 +83,7 @@
     <version.lib.geopackage>6.5.0</version.lib.geopackage>
     <version.lib.guava>31.1-jre</version.lib.guava>
     <version.lib.hikari>5.0.1</version.lib.hikari>
-    <version.lib.jersey>2.35</version.lib.jersey>
+    <version.lib.jersey>3.0.8</version.lib.jersey>
     <version.lib.jmh>1.35</version.lib.jmh>
     <version.lib.jts>1.19.0</version.lib.jts>
     <version.lib.log4j>2.19.0</version.lib.log4j>
