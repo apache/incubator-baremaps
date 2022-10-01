@@ -9,20 +9,14 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>baremaps-iploc</artifactId>
-  <properties>
-    <version.lib.sqlite>3.34.0</version.lib.sqlite>
-    <version.hikarycp>5.0.0</version.hikarycp>
-  </properties>
   <dependencies>
     <dependency>
       <artifactId>sqlite-jdbc</artifactId>
       <groupId>org.xerial</groupId>
-      <version>${version.lib.sqlite}</version>
     </dependency>
     <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
-      <version>${version.hikarycp}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

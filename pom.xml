@@ -75,15 +75,20 @@
     <maven.compiler.target>17</maven.compiler.target>
 
     <!-- libraries -->
+    <version.lib.annotation-api>1.3.2</version.lib.annotation-api>
     <version.lib.awssdk>2.17.284</version.lib.awssdk>
     <version.lib.caffeine>3.1.1</version.lib.caffeine>
     <version.lib.commons-compress>1.21</version.lib.commons-compress>
     <version.lib.fastutil>8.5.9</version.lib.fastutil>
     <version.lib.geopackage>6.5.0</version.lib.geopackage>
     <version.lib.guava>31.1-jre</version.lib.guava>
-    <version.lib.jersey>2.34</version.lib.jersey>
+    <version.lib.hikari>5.0.1</version.lib.hikari>
+    <version.lib.jersey>2.35</version.lib.jersey>
+    <version.lib.jmh>1.35</version.lib.jmh>
     <version.lib.jts>1.19.0</version.lib.jts>
     <version.lib.log4j>2.19.0</version.lib.log4j>
+    <version.lucene>8.10.1</version.lucene>
+    <version.lucene-spatial>8.4.1</version.lucene-spatial>
     <version.lib.picocli>4.6.3</version.lib.picocli>
     <version.lib.postgresql>42.5.0</version.lib.postgresql>
     <version.lib.proj4j>1.1.5</version.lib.proj4j>
@@ -101,28 +106,39 @@
     <version.lib.jaxb-runtime>2.3.5</version.lib.jaxb-runtime>
     <version.lib.activation>1.2.2</version.lib.activation>
     <version.lib.servlet>3.1.0</version.lib.servlet>
-    <version.lib.graalvm>22.0.0.2</version.lib.graalvm>
+    <version.lib.graalvm>22.2.0</version.lib.graalvm>
     <version.lib.ipresource>1.49</version.lib.ipresource>
     <version.lib.geoapi>4.0-M19</version.lib.geoapi>
-    <version.lib.sis>2.0-M0116</version.lib.sis>
+    <version.lib.sis>2.0-M0117</version.lib.sis>
 
     <!-- testing -->
     <version.lib.junit>5.7.1</version.lib.junit>
     <version.lib.junit-vintage>5.7.2</version.lib.junit-vintage>
-    <version.lib.testcontainers>1.16.0</version.lib.testcontainers>
+    <version.lib.testcontainers>1.17.3</version.lib.testcontainers>
 
     <!-- plugins -->
-    <version.plugin.compiler>3.8.1</version.plugin.compiler>
-    <version.plugin.jacoco>0.8.7</version.plugin.jacoco>
-    <version.plugin.surefire>2.22.2</version.plugin.surefire>
-    <version.plugin.surefire.provider.junit>1.3.2</version.plugin.surefire.provider.junit>
+    <version.plugin.jacoco-maven-plugin>0.8.8</version.plugin.jacoco-maven-plugin>
+    <version.plugin.jib-maven-plugin>3.0.0</version.plugin.jib-maven-plugin>
+    <version.plugin.maven-compiler-plugin>3.10.1</version.plugin.maven-compiler-plugin>
+    <version.plugin.maven-exec-plugin>3.0.0</version.plugin.maven-exec-plugin>
+    <version.plugin.maven-gpg-plugin>1.6</version.plugin.maven-gpg-plugin>
+    <version.plugin.maven-jar-plugin>3.3.0</version.plugin.maven-jar-plugin>
+    <version.plugin.maven-javadoc-plugin>3.2.0</version.plugin.maven-javadoc-plugin>
+    <version.plugin.maven-jxr-plugin>3.1.1</version.plugin.maven-jxr-plugin>
+    <version.plugin.maven-scm-plugin>1.11.2</version.plugin.maven-scm-plugin>
+    <version.plugin.maven-source-plugin>3.2.1</version.plugin.maven-source-plugin>
+    <version.plugin.nexus-staging-maven-plugin>1.6.8</version.plugin.nexus-staging-maven-plugin>
+    <version.plugin.maven-surefire-plugin>2.22.2</version.plugin.maven-surefire-plugin>
+    <version.plugin.maven-surefire-plugin.provider.junit>1.3.2</version.plugin.maven-surefire-plugin.provider.junit>
+    <version.plugin.openapi-generator-maven-plugin>5.1.0</version.plugin.openapi-generator-maven-plugin>
 
     <!-- sonar -->
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.organization>baremaps</sonar.organization>
     <sonar.projectKey>baremaps_baremaps</sonar.projectKey>
     <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
-    <version.lib.hikari>5.0.0</version.lib.hikari>
+    <version.plugin.protobuf-maven-plugin>0.6.1</version.plugin.protobuf-maven-plugin>
+    <version.plugin.os-maven-plugin>1.7.0</version.plugin.os-maven-plugin>
   </properties>
 
   <modules>
@@ -149,7 +165,7 @@
           <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
             <groupId>org.apache.maven.plugins</groupId>
-            <version>${version.plugin.surefire}</version>
+            <version>${version.plugin.maven-surefire-plugin}</version>
             <configuration>
               <excludes>none</excludes>
               <excludedGroups>none</excludedGroups>
@@ -170,14 +186,14 @@
               <dependency>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-plugin</artifactId>
-                <version>1.11.2</version>
+                <version>${version.plugin.maven-scm-plugin}</version>
               </dependency>
             </dependencies>
           </plugin>
           <plugin>
             <groupId>org.sonatype.plugins</groupId>
             <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>1.6.8</version>
+            <version>${version.plugin.nexus-staging-maven-plugin}</version>
             <extensions>true</extensions>
             <configuration>
               <serverId>maven</serverId>
@@ -188,7 +204,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <version>3.2.1</version>
+            <version>${version.plugin.maven-source-plugin}</version>
             <executions>
               <execution>
                 <id>attach-sources</id>
@@ -201,7 +217,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
+            <version>${version.plugin.maven-gpg-plugin}</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
@@ -222,7 +238,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.2.0</version>
+            <version>${version.plugin.maven-javadoc-plugin}</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -246,7 +262,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>${version.plugin.maven-exec-plugin}</version>
         <inherited>false</inherited> <!-- only execute these in the parent -->
         <executions>
           <execution>
@@ -270,7 +286,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>${version.plugin.maven-jar-plugin}</version>
         <executions>
           <execution>
             <goals>
@@ -282,7 +298,7 @@
       <plugin>
         <artifactId>jacoco-maven-plugin</artifactId>
         <groupId>org.jacoco</groupId>
-        <version>${version.plugin.jacoco}</version>
+        <version>${version.plugin.jacoco-maven-plugin}</version>
         <executions>
           <execution>
             <goals>
@@ -301,7 +317,7 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <groupId>org.apache.maven.plugins</groupId>
-        <version>${version.plugin.surefire}</version>
+        <version>${version.plugin.maven-surefire-plugin}</version>
         <configuration>
           <excludes>**/*IntegrationTest.java</excludes>
           <excludedGroups>integration</excludedGroups>
@@ -310,7 +326,7 @@
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
         <groupId>org.apache.maven.plugins</groupId>
-        <version>${version.plugin.surefire}</version>
+        <version>${version.plugin.maven-surefire-plugin}</version>
       </plugin>
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
@@ -347,12 +363,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>${version.plugin.surefire}</version>
+        <version>${version.plugin.maven-surefire-plugin}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>${version.plugin.maven-jxr-plugin}</version>
       </plugin>
     </plugins>
   </reporting>

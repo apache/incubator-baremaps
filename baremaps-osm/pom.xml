@@ -48,14 +48,14 @@
       <extension>
         <groupId>kr.motd.maven</groupId>
         <artifactId>os-maven-plugin</artifactId>
-        <version>1.7.0</version>
+        <version>${version.plugin.os-maven-plugin}</version>
       </extension>
     </extensions>
     <plugins>
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
-        <version>0.6.1</version>
+        <version>${version.plugin.protobuf-maven-plugin}</version>
         <extensions>true</extensions>
         <executions>
           <execution>

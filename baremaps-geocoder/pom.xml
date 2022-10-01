@@ -7,13 +7,9 @@
     <groupId>com.baremaps</groupId>
     <version>0.6.6-SNAPSHOT</version>
   </parent>
+
   <artifactId>baremaps-geocoder</artifactId>
   <modelVersion>4.0.0</modelVersion>
-
-  <properties>
-    <version.lucene>8.10.1</version.lucene>
-    <version.lucene-spatial>8.4.1</version.lucene-spatial>
-  </properties>
 
   <dependencies>
     <dependency>
