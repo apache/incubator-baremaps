@@ -113,7 +113,7 @@
 
     <!-- testing -->
     <version.lib.junit>5.7.1</version.lib.junit>
-    <version.lib.junit-vintage>5.7.2</version.lib.junit-vintage>
+    <version.lib.junit-vintage>5.9.1</version.lib.junit-vintage>
     <version.lib.testcontainers>1.17.3</version.lib.testcontainers>
 
     <!-- plugins -->
