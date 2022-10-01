@@ -101,7 +101,7 @@
     <version.lib.jaxb-runtime>2.3.5</version.lib.jaxb-runtime>
     <version.lib.activation>1.2.2</version.lib.activation>
     <version.lib.servlet>3.1.0</version.lib.servlet>
-    <version.lib.graalvm>22.0.0.2</version.lib.graalvm>
+    <version.lib.graalvm>22.2.0</version.lib.graalvm>
     <version.lib.ipresource>1.49</version.lib.ipresource>
     <version.lib.geoapi>4.0-M19</version.lib.geoapi>
     <version.lib.sis>2.0-M0116</version.lib.sis>
