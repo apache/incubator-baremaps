@@ -125,7 +125,7 @@
     <version.plugin.maven-jar-plugin>3.3.0</version.plugin.maven-jar-plugin>
     <version.plugin.maven-javadoc-plugin>3.2.0</version.plugin.maven-javadoc-plugin>
     <version.plugin.maven-jxr-plugin>3.1.1</version.plugin.maven-jxr-plugin>
-    <version.plugin.maven-scm-plugin>1.11.2</version.plugin.maven-scm-plugin>
+    <version.plugin.maven-scm-plugin>1.13.0</version.plugin.maven-scm-plugin>
     <version.plugin.maven-source-plugin>3.2.1</version.plugin.maven-source-plugin>
     <version.plugin.nexus-staging-maven-plugin>1.6.8</version.plugin.nexus-staging-maven-plugin>
     <version.plugin.maven-surefire-plugin>2.22.2</version.plugin.maven-surefire-plugin>
