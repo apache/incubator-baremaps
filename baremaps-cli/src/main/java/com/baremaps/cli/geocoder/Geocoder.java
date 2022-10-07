@@ -17,7 +17,7 @@ import picocli.CommandLine.Command;
 
 @Command(
   name = "geocoder",
-  description = "Geocoder commands.",
+  description = "Geocoder commands (experimental).",
   subcommands = {Index.class, Search.class},
   sortOptions = false)
 public class Geocoder implements Runnable {
