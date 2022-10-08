@@ -9,7 +9,7 @@
   <parent>
     <artifactId>baremaps</artifactId>
     <groupId>com.baremaps</groupId>
-    <version>0.7.0</version>
+    <version>0.7.1-SNAPSHOT</version>
   </parent>
 
   <properties>
