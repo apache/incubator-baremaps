@@ -23,7 +23,7 @@ jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps
 Assuming that the necessary requirements have been installed, the database can be populated with the following command.
 
 ```
-baremaps workflow execute --file workflow.json
+baremaps workflow execute --file workflow.js
 ```
 
 The development server can be started with the following command.
@@ -31,8 +31,8 @@ The development server can be started with the following command.
 ```
 baremaps map dev --log-level DEBUG \
   --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
-  --tileset 'tileset.json' \
-  --style 'style.json'
+  --tileset 'tileset.js' \
+  --style 'style.js'
 ```
 
 ## Editing the tileset

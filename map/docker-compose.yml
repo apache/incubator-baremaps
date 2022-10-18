@@ -1,0 +1,52 @@
+# This docker-compose file is not intended for production use.
+# Its purpose is to provide a quick and easy way to get started with
+# the application. We recommend instead to use the zip distribution.
+
+version: "3.9"
+services:
+  postgis:
+    container_name: postgis
+    image: "postgis/postgis:14-3.1-alpine"
+    ports:
+      - "127.0.0.1:3901:3901"
+    environment:
+      - POSTGRES_DB=baremaps
+      - POSTGRES_PASSWORD=baremaps
+      - POSTGRES_USER=baremaps
+  workflow:
+    container_name: workflow
+    image: "baremaps/baremaps:latest"
+    volumes:
+      - "./:/map" # Mount the map directory
+      - "./docker.js:/map/config.js" # Override the default javascript configuration
+    command:
+      - "workflow"
+      - "execute"
+      - "--file"
+      - "/map/workflow.js"
+    links:
+      - "postgis"
+    depends_on:
+      - "postgis"
+  server:
+    container_name: server
+    image: "baremaps/baremaps:latest"
+    volumes:
+      - "./:/map"
+    ports:
+      - "9000:9000"
+    command:
+      - "map"
+      - "dev"
+      - "--database"
+      - "jdbc:postgresql://postgis:5432/baremaps?user=baremaps&password=baremaps"
+      - "--tileset"
+      - "/map/tileset.js"
+      - "--style"
+      - "/map/style.js"
+    links:
+      - "postgis"
+    depends_on:
+      - "postgis"
+      - "data"
+

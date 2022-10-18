@@ -63,10 +63,10 @@
         <version>${version.plugin.jib-maven-plugin}</version>
         <configuration>
           <from>
-            <image>adoptopenjdk/openjdk11:alpine</image>
+            <image>eclipse-temurin:17-jre-alpine</image>
           </from>
           <to>
-            <image>registry.hub.docker.com/baremaps/baremaps</image>
+            <image>baremaps/baremaps</image>
             <tags>v${project.version}</tags>
           </to>
         </configuration>
