@@ -49,8 +49,8 @@ class WayRepositoryTest extends DatabaseContainerTest {
   void insertAll() throws RepositoryException {
     List<Way> ways = Arrays.asList(Constants.WAY_1, Constants.WAY_2, Constants.WAY_3);
     wayRepository.put(ways);
-    assertIterableEquals(
-      ways, wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+    assertIterableEquals(ways,
+        wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
@@ -67,9 +67,8 @@ class WayRepositoryTest extends DatabaseContainerTest {
     List<Way> ways = Arrays.asList(Constants.WAY_1, Constants.WAY_2, Constants.WAY_3);
     wayRepository.put(ways);
     wayRepository.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
-    assertIterableEquals(
-      Arrays.asList(null, null, null),
-      wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+    assertIterableEquals(Arrays.asList(null, null, null),
+        wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 
   @Test
@@ -77,7 +76,7 @@ class WayRepositoryTest extends DatabaseContainerTest {
   void copy() throws RepositoryException {
     List<Way> ways = Arrays.asList(Constants.WAY_1, Constants.WAY_2, Constants.WAY_3);
     wayRepository.copy(ways);
-    assertIterableEquals(
-      ways, wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+    assertIterableEquals(ways,
+        wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
   }
 }

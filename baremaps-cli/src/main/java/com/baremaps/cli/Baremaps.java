@@ -12,6 +12,8 @@
 
 package com.baremaps.cli;
 
+
+
 import com.baremaps.cli.Baremaps.VersionProvider;
 import com.baremaps.cli.database.Database;
 import com.baremaps.cli.geocoder.Geocoder;
@@ -34,19 +36,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.IVersionProvider;
 import picocli.CommandLine.Option;
 
-@Command(
-  name = "baremaps",
-  description = "A toolkit for producing vector tiles.",
-  versionProvider = VersionProvider.class,
-  subcommands = {
-    Workflow.class,
-    Database.class,
-    Map.class,
-    Geocoder.class,
-    IpLoc.class,
-    OgcApi.class,
-  },
-  sortOptions = false)
+@Command(name = "baremaps", description = "A toolkit for producing vector tiles.",
+    versionProvider = VersionProvider.class, subcommands = {Workflow.class, Database.class,
+        Map.class, Geocoder.class, IpLoc.class, OgcApi.class,},
+    sortOptions = false)
 public class Baremaps implements Callable<Integer> {
 
   static {
@@ -56,10 +49,7 @@ public class Baremaps implements Callable<Integer> {
     SLF4JBridgeHandler.install();
   }
 
-  @Option(
-    names = {"-V", "--version"},
-    versionHelp = true,
-    description = "Print version info.")
+  @Option(names = {"-V", "--version"}, versionHelp = true, description = "Print version info.")
   boolean version;
 
   @Override
@@ -88,9 +78,7 @@ public class Baremaps implements Callable<Integer> {
     }
 
     // Execute the command
-    CommandLine cmd =
-      new CommandLine(new Baremaps())
-        .setUsageHelpLongOptionsMaxWidth(30)
+    CommandLine cmd = new CommandLine(new Baremaps()).setUsageHelpLongOptionsMaxWidth(30)
         .addMixin("options", new Options());
     cmd.execute(args);
   }
@@ -100,14 +88,13 @@ public class Baremaps implements Callable<Integer> {
     public String[] getVersion() throws Exception {
       URL url = getClass().getResource("/version.txt");
       if (url == null) {
-        return new String[]{"No version.txt file found in the classpath."};
+        return new String[] {"No version.txt file found in the classpath."};
       }
       try (InputStream inputStream = url.openStream()) {
         Properties properties = new Properties();
         properties.load(inputStream);
-        return new String[]{
-          properties.getProperty("application") + " v" + properties.getProperty("version"),
-        };
+        return new String[] {
+            properties.getProperty("application") + " v" + properties.getProperty("version"),};
       }
     }
   }

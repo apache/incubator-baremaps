@@ -12,6 +12,8 @@
 
 package com.baremaps.database.tile;
 
+
+
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
@@ -38,31 +40,25 @@ public class TileCache implements TileStore {
    */
   public TileCache(TileStore tileStore, CaffeineSpec spec) {
     this.tileStore = tileStore;
-    this.cache =
-      Caffeine.from(spec)
-        .weigher(
-          new Weigher<Tile, ByteBuffer>() {
-            @Override
-            public @NonNegative int weigh(Tile tile, ByteBuffer blob) {
-              return 28 + blob.capacity();
-            }
-          })
-        .build();
+    this.cache = Caffeine.from(spec).weigher(new Weigher<Tile, ByteBuffer>() {
+      @Override
+      public @NonNegative int weigh(Tile tile, ByteBuffer blob) {
+        return 28 + blob.capacity();
+      }
+    }).build();
   }
 
   /** {@inheritDoc} */
   @Override
   public ByteBuffer read(Tile tile) throws TileStoreException {
-    return cache.get(
-      tile,
-      t -> {
-        try {
-          return tileStore.read(t).duplicate();
-        } catch (TileStoreException e) {
-          logger.error("Unable to read the tile.", e);
-          return null;
-        }
-      });
+    return cache.get(tile, t -> {
+      try {
+        return tileStore.read(t).duplicate();
+      } catch (TileStoreException e) {
+        logger.error("Unable to read the tile.", e);
+        return null;
+      }
+    });
   }
 
   /** {@inheritDoc} */

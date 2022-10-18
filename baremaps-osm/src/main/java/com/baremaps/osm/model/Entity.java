@@ -12,11 +12,14 @@
 
 package com.baremaps.osm.model;
 
+
+
 import com.baremaps.osm.function.EntityConsumer;
 import com.baremaps.osm.function.EntityFunction;
 
 /**
- * Represents an entity in an OpenStreetMap dataset. Entities are a basis to model all the objects in OpenStreetMap.
+ * Represents an entity in an OpenStreetMap dataset. Entities are a basis to model all the objects
+ * in OpenStreetMap.
  */
 public interface Entity {
 

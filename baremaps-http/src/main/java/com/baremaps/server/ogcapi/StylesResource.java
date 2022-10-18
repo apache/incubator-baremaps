@@ -12,6 +12,8 @@
 
 package com.baremaps.server.ogcapi;
 
+
+
 import com.baremaps.api.StylesApi;
 import com.baremaps.model.Link;
 import com.baremaps.model.MbStyle;
@@ -34,7 +36,7 @@ import org.jdbi.v3.json.Json;
 public class StylesResource implements StylesApi {
 
   private static final QualifiedType<MbStyle> MBSTYLE =
-    QualifiedType.of(MbStyle.class).with(Json.class);
+      QualifiedType.of(MbStyle.class).with(Json.class);
 
   private final Jdbi jdbi;
 
@@ -49,12 +51,9 @@ public class StylesResource implements StylesApi {
   @Override
   public Response addStyle(MbStyle mbStyle) {
     UUID styleId = UUID.randomUUID(); // TODO: Read from body
-    jdbi.useHandle(
-      handle -> handle
+    jdbi.useHandle(handle -> handle
         .createUpdate("insert into styles (id, style) values (:id, CAST(:json AS jsonb))")
-        .bindByType("json", mbStyle, MBSTYLE)
-        .bind("id", styleId)
-        .execute());
+        .bindByType("json", mbStyle, MBSTYLE).bind("id", styleId).execute());
     return Response.created(URI.create("styles/" + styleId)).build();
   }
 
@@ -68,21 +67,16 @@ public class StylesResource implements StylesApi {
   @Override
   public Response getStyle(UUID styleId) {
     MbStyle style =
-      jdbi.withHandle(
-        handle -> handle
-          .createQuery("select style from styles where id = :id")
-          .bind("id", styleId)
-          .mapTo(MBSTYLE)
-          .one());
+        jdbi.withHandle(handle -> handle.createQuery("select style from styles where id = :id")
+            .bind("id", styleId).mapTo(MBSTYLE).one());
 
     return Response.ok(style).build();
   }
 
   @Override
   public Response getStyleSet() {
-    List<UUID> ids =
-      jdbi.withHandle(
-        handle -> handle.createQuery("select id from styles").mapTo(UUID.class).list());
+    List<UUID> ids = jdbi
+        .withHandle(handle -> handle.createQuery("select id from styles").mapTo(UUID.class).list());
 
     StyleSet styleSet = new StyleSet();
     List<StyleSetEntry> entries = new ArrayList<>();
@@ -108,12 +102,8 @@ public class StylesResource implements StylesApi {
 
   @Override
   public Response updateStyle(UUID styleId, MbStyle mbStyle) {
-    jdbi.useHandle(
-      handle -> handle
-        .createUpdate("update styles set style = :json where id = :id")
-        .bindByType("json", mbStyle, MBSTYLE)
-        .bind("id", styleId)
-        .execute());
+    jdbi.useHandle(handle -> handle.createUpdate("update styles set style = :json where id = :id")
+        .bindByType("json", mbStyle, MBSTYLE).bind("id", styleId).execute());
 
     return Response.noContent().build();
   }

@@ -12,6 +12,8 @@
 
 package com.baremaps.postgres;
 
+
+
 import com.baremaps.postgres.handlers.BooleanValueHandler;
 import com.baremaps.postgres.handlers.ByteArrayValueHandler;
 import com.baremaps.postgres.handlers.ByteValueHandler;
@@ -66,8 +68,9 @@ public class CopyWriter implements AutoCloseable {
    * Creates a new writer with the specified {@code PGCopyOutputStream}.
    *
    * <p>
-   * This code has been adapted from <a href="https://github.com/PgBulkInsert/PgBulkInsert">PgBulkInsert</a> licensed
-   * under the MIT license.
+   * This code has been adapted from
+   * <a href="https://github.com/PgBulkInsert/PgBulkInsert">PgBulkInsert</a> licensed under the MIT
+   * license.
    *
    * <p>
    * Copyright (c) The PgBulkInsert Team.

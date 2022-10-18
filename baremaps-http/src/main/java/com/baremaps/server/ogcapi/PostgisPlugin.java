@@ -12,6 +12,8 @@
 
 package com.baremaps.server.ogcapi;
 
+
+
 import com.baremaps.osm.geometry.GeometryUtils;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -68,7 +70,8 @@ public class PostgisPlugin extends JdbiPlugin.Singleton {
 
     @Override
     public Argument build(T value, ConfigRegistry config) {
-      return (position, statement, ctx) -> statement.setBytes(position, GeometryUtils.serialize(value));
+      return (position, statement, ctx) -> statement.setBytes(position,
+          GeometryUtils.serialize(value));
     }
   }
 
@@ -85,46 +88,64 @@ public class PostgisPlugin extends JdbiPlugin.Singleton {
       byte[] data = new byte[len / 2];
       for (int i = 0; i < len; i += 2) {
         data[i / 2] =
-          (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
+            (byte) ((Character.digit(s.charAt(i), 16) << 4) + Character.digit(s.charAt(i + 1), 16));
       }
       return data;
     }
   }
 
-  static final class GeometryArgumentFactory extends BaseArgumentFactory<Geometry> {}
+  static final class GeometryArgumentFactory extends BaseArgumentFactory<Geometry> {
+  }
 
   static final class GeometryCollectionArgumentFactory
-    extends BaseArgumentFactory<GeometryCollection> {}
+      extends BaseArgumentFactory<GeometryCollection> {
+  }
 
-  static final class GeometryCollectionColumnMapper extends BaseColumnMapper<GeometryCollection> {}
+  static final class GeometryCollectionColumnMapper extends BaseColumnMapper<GeometryCollection> {
+  }
 
-  static final class GeometryColumnMapper extends BaseColumnMapper<Geometry> {}
+  static final class GeometryColumnMapper extends BaseColumnMapper<Geometry> {
+  }
 
-  static final class LinearRingArgumentFactory extends BaseArgumentFactory<LinearRing> {}
+  static final class LinearRingArgumentFactory extends BaseArgumentFactory<LinearRing> {
+  }
 
-  static final class LinearRingColumnMapper extends BaseColumnMapper<LinearRing> {}
+  static final class LinearRingColumnMapper extends BaseColumnMapper<LinearRing> {
+  }
 
-  static final class LineStringArgumentFactory extends BaseArgumentFactory<LineString> {}
+  static final class LineStringArgumentFactory extends BaseArgumentFactory<LineString> {
+  }
 
-  static final class LineStringColumnMapper extends BaseColumnMapper<LineString> {}
+  static final class LineStringColumnMapper extends BaseColumnMapper<LineString> {
+  }
 
-  static final class MultiLineStringArgumentFactory extends BaseArgumentFactory<MultiLineString> {}
+  static final class MultiLineStringArgumentFactory extends BaseArgumentFactory<MultiLineString> {
+  }
 
-  static final class MultiLineStringColumnMapper extends BaseColumnMapper<MultiLineString> {}
+  static final class MultiLineStringColumnMapper extends BaseColumnMapper<MultiLineString> {
+  }
 
-  static final class MultiPointArgumentFactory extends BaseArgumentFactory<MultiPoint> {}
+  static final class MultiPointArgumentFactory extends BaseArgumentFactory<MultiPoint> {
+  }
 
-  static final class MultiPointColumnMapper extends BaseColumnMapper<MultiPoint> {}
+  static final class MultiPointColumnMapper extends BaseColumnMapper<MultiPoint> {
+  }
 
-  static final class MultiPolygonArgumentFactory extends BaseArgumentFactory<MultiPolygon> {}
+  static final class MultiPolygonArgumentFactory extends BaseArgumentFactory<MultiPolygon> {
+  }
 
-  static final class MultiPolygonColumnMapper extends BaseColumnMapper<MultiPolygon> {}
+  static final class MultiPolygonColumnMapper extends BaseColumnMapper<MultiPolygon> {
+  }
 
-  static final class PointArgumentFactory extends BaseArgumentFactory<Point> {}
+  static final class PointArgumentFactory extends BaseArgumentFactory<Point> {
+  }
 
-  static final class PointColumnMapper extends BaseColumnMapper<Point> {}
+  static final class PointColumnMapper extends BaseColumnMapper<Point> {
+  }
 
-  static final class PolygonArgumentFactory extends BaseArgumentFactory<Polygon> {}
+  static final class PolygonArgumentFactory extends BaseArgumentFactory<Polygon> {
+  }
 
-  static final class PolygonColumnMapper extends BaseColumnMapper<Polygon> {}
+  static final class PolygonColumnMapper extends BaseColumnMapper<Polygon> {
+  }
 }

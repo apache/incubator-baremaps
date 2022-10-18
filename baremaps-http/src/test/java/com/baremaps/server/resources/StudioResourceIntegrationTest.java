@@ -51,20 +51,16 @@ public class StudioResourceIntegrationTest extends JerseyTest {
     // Initialize the database
     jdbi = Jdbi.create(connection).installPlugin(new Jackson2Plugin());
     jdbi.useHandle(handle -> handle.execute("create schema studio"));
-    jdbi.useHandle(
-      handle -> handle.execute(
-        "create table studio.entities (id uuid primary key, entity jsonb, kind text)"));
+    jdbi.useHandle(handle -> handle
+        .execute("create table studio.entities (id uuid primary key, entity jsonb, kind text)"));
 
     // Configure the service
-    return new ResourceConfig()
-      .register(StudioResource.class)
-      .register(
-        new AbstractBinder() {
-          @Override
-          protected void configure() {
-            bind(jdbi).to(Jdbi.class);
-          }
-        });
+    return new ResourceConfig().register(StudioResource.class).register(new AbstractBinder() {
+      @Override
+      protected void configure() {
+        bind(jdbi).to(Jdbi.class);
+      }
+    });
   }
 
   @Test
@@ -76,10 +72,7 @@ public class StudioResourceIntegrationTest extends JerseyTest {
     // Create a new map with the service
     ObjectMapper mapper = new ObjectMapper();
     ObjectNode entity = mapper.createObjectNode().put("title", "My Map").put("views", 3);
-    Response response =
-      target()
-        .path("studio/maps")
-        .request(MediaType.APPLICATION_JSON)
+    Response response = target().path("studio/maps").request(MediaType.APPLICATION_JSON)
         .post(Entity.entity(entity, MediaType.valueOf("application/json")));
     assertEquals(201, response.getStatus());
 

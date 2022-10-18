@@ -50,19 +50,14 @@ public class ImportResourceIntegrationTest extends JerseyTest {
     DataSource dataSource = PostgresUtils.dataSource("jdbc:tc:postgis:13-3.1:///baremaps");
 
     // Initialize the database
-    jdbi =
-      Jdbi.create(dataSource)
-        .installPlugin(new Jackson2Plugin())
+    jdbi = Jdbi.create(dataSource).installPlugin(new Jackson2Plugin())
         .installPlugin(new PostgisPlugin());
-    jdbi.useHandle(
-      handle -> handle.execute(
-        "create extension if not exists hstore;" + "create table collections (id uuid primary key, collection jsonb)"));
+    jdbi.useHandle(handle -> handle.execute("create extension if not exists hstore;"
+        + "create table collections (id uuid primary key, collection jsonb)"));
 
     // Configure the service
-    return new ResourceConfig()
-      .registerClasses(MultiPartFeature.class, ImportResource.class)
-      .register(
-        new AbstractBinder() {
+    return new ResourceConfig().registerClasses(MultiPartFeature.class, ImportResource.class)
+        .register(new AbstractBinder() {
           @Override
           protected void configure() {
             bind(jdbi).to(Jdbi.class);
@@ -82,14 +77,10 @@ public class ImportResourceIntegrationTest extends JerseyTest {
     URL url = Resources.getResource(FILE);
     File data = new File(url.getFile());
     FileDataBodyPart fileDataBodyPart =
-      new FileDataBodyPart("file", data, MediaType.APPLICATION_JSON_TYPE);
+        new FileDataBodyPart("file", data, MediaType.APPLICATION_JSON_TYPE);
     MultiPart entity = new FormDataMultiPart().bodyPart(fileDataBodyPart);
-    Response response =
-      target()
-        .path("studio/import")
-        .request()
-        .header(
-          "Content-Disposition", "form-data; name=\"file\"; fileName=\"features.geojson\"")
+    Response response = target().path("studio/import").request()
+        .header("Content-Disposition", "form-data; name=\"file\"; fileName=\"features.geojson\"")
         .post(Entity.entity(entity, MediaType.MULTIPART_FORM_DATA_TYPE));
     assertEquals(201, response.getStatus());
   }

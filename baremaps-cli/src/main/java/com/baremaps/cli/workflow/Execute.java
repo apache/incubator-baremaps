@@ -33,11 +33,8 @@ public class Execute implements Callable<Integer> {
   @Mixin
   private Options options;
 
-  @Option(
-    names = {"--file"},
-    paramLabel = "FILE",
-    description = "The workflow file.",
-    required = true)
+  @Option(names = {"--file"}, paramLabel = "FILE", description = "The workflow file.",
+      required = true)
   private Path file;
 
   @Override
@@ -45,7 +42,8 @@ public class Execute implements Callable<Integer> {
     logger.info("Executing the workflow {}", file);
     var mapper = defaultObjectMapper();
     var configReader = new ConfigReader();
-    var workflow = mapper.readValue(configReader.read(file.toAbsolutePath()), com.baremaps.workflow.Workflow.class);
+    var workflow = mapper.readValue(configReader.read(file.toAbsolutePath()),
+        com.baremaps.workflow.Workflow.class);
     try (var executor = new WorkflowExecutor(workflow)) {
       executor.execute().get();
     }

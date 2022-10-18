@@ -12,6 +12,8 @@
 
 package com.baremaps.collection.type;
 
+
+
 import java.nio.ByteBuffer;
 
 /** A {@link DataType} for reading and writing shorts in {@link ByteBuffer}s. */

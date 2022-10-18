@@ -38,8 +38,8 @@ class TileIterator implements Iterator<Tile> {
    * Constructs a {@code TileGeometryIterator}.
    *
    * @param envelope the envelope
-   * @param minZoom  the min zoom
-   * @param maxZoom  the max zoom
+   * @param minZoom the min zoom
+   * @param maxZoom the max zoom
    */
   public TileIterator(Envelope envelope, int minZoom, int maxZoom) {
     this.envelope = envelope;

@@ -47,7 +47,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 /**
- * An object for traversing an OpenStreetMap XML file describing entities (osm.xml) and creating a stream.
+ * An object for traversing an OpenStreetMap XML file describing entities (osm.xml) and creating a
+ * stream.
  */
 public class XmlEntitySpliterator implements Spliterator<Entity> {
 
@@ -67,9 +68,9 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
   private static final String ATTRIBUTE_NAME_TIMESTAMP = "timestamp";
   private static final String ATTRIBUTE_NAME_OSMOSIS_REPLICATION_URL = "osmosis_replication_url";
   private static final String ATTRIBUTE_NAME_OSMOSIS_REPLICATION_TIMESTAMP =
-    "osmosis_replication_timestamp";
+      "osmosis_replication_timestamp";
   private static final String ATTRIBUTE_NAME_OSMOSIS_REPLICATION_SEQUENCE_NUMBER =
-    "osmosis_replication_sequence_number";
+      "osmosis_replication_sequence_number";
   private static final String ATTRIBUTE_NAME_USER_ID = "uid";
   private static final String ATTRIBUTE_NAME_CHANGESET_ID = "changeset";
   private static final String ATTRIBUTE_NAME_LATITUDE = "lat";
@@ -84,7 +85,7 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
   private static final String ATTRIBUTE_NAME_MINLON = "minlon";
   private static final String ATTRIBUTE_NAME_MINLAT = "minlat";
   public static final DateTimeFormatter format =
-    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+      DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
   private final XMLStreamReader reader;
 
@@ -153,17 +154,18 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
     String source = reader.getAttributeValue(null, ATTRIBUTE_NAME_SOURCE);
     String replicationUrl = reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_URL);
     String replicationSequenceNumberValue =
-      reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_SEQUENCE_NUMBER);
+        reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_SEQUENCE_NUMBER);
     Long replicationSequenceNumber =
-      replicationSequenceNumberValue != null ? Long.parseLong(replicationSequenceNumberValue) : null;
+        replicationSequenceNumberValue != null ? Long.parseLong(replicationSequenceNumberValue)
+            : null;
     String timestampValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_TIMESTAMP);
     LocalDateTime timestamp =
-      timestampValue != null ? LocalDateTime.parse(timestampValue, format) : null;
+        timestampValue != null ? LocalDateTime.parse(timestampValue, format) : null;
     String osmosisReplicationTimestampValue =
-      reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_TIMESTAMP);
-    timestamp =
-      osmosisReplicationTimestampValue != null ? LocalDateTime.parse(osmosisReplicationTimestampValue, format) :
-        timestamp;
+        reader.getAttributeValue(null, ATTRIBUTE_NAME_OSMOSIS_REPLICATION_TIMESTAMP);
+    timestamp = osmosisReplicationTimestampValue != null
+        ? LocalDateTime.parse(osmosisReplicationTimestampValue, format)
+        : timestamp;
     return new Header(replicationSequenceNumber, timestamp, replicationUrl, source, generator);
   }
 
@@ -257,9 +259,8 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
 
   private void readRelationMember(List<Member> members) throws XMLStreamException {
     long id = Long.parseLong(reader.getAttributeValue(null, ATTRIBUTE_NAME_REF));
-    MemberType type =
-      Member.MemberType.valueOf(
-        reader.getAttributeValue(null, ATTRIBUTE_NAME_TYPE).toUpperCase());
+    MemberType type = Member.MemberType
+        .valueOf(reader.getAttributeValue(null, ATTRIBUTE_NAME_TYPE).toUpperCase());
     String role = reader.getAttributeValue(null, ATTRIBUTE_NAME_ROLE);
     members.add(new Member(id, type, role));
     reader.nextTag();
@@ -271,7 +272,7 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
     int version = versionValue != null ? Ints.tryParse(versionValue) : 0;
     String timestampValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_TIMESTAMP);
     LocalDateTime timestamp =
-      timestampValue != null ? LocalDateTime.parse(timestampValue, format) : null;
+        timestampValue != null ? LocalDateTime.parse(timestampValue, format) : null;
     String changesetValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_CHANGESET_ID);
     long changeset = changesetValue != null ? Longs.tryParse(changesetValue) : -1;
     String uidValue = reader.getAttributeValue(null, ATTRIBUTE_NAME_USER_ID);

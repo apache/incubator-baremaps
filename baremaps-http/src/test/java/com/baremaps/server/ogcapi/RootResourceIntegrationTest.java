@@ -12,6 +12,8 @@
 
 package com.baremaps.server.ogcapi;
 
+
+
 import com.baremaps.model.LandingPage;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;

@@ -56,17 +56,11 @@ public class OgcApi implements Callable<Integer> {
   @Mixin
   private Options options;
 
-  @Option(
-    names = {"--database"},
-    paramLabel = "DATABASE",
-    description = "The JDBC url of the Postgres database.",
-    required = true)
+  @Option(names = {"--database"}, paramLabel = "DATABASE",
+      description = "The JDBC url of the Postgres database.", required = true)
   private String database;
 
-  @Option(
-    names = {"--port"},
-    paramLabel = "PORT",
-    description = "The port of the server.")
+  @Option(names = {"--port"}, paramLabel = "PORT", description = "The port of the server.")
   private int port = 9000;
 
   @Override
@@ -77,41 +71,29 @@ public class OgcApi implements Callable<Integer> {
 
     // Configure jdbi and set the ObjectMapper
     DataSource datasource = PostgresUtils.dataSource(this.database);
-    Jdbi jdbi =
-      Jdbi.create(datasource)
-        .installPlugin(new PostgresPlugin())
+    Jdbi jdbi = Jdbi.create(datasource).installPlugin(new PostgresPlugin())
         .installPlugin(new Jackson2Plugin())
         .configure(Jackson2Config.class, config -> config.setMapper(mapper));
 
     // Initialize the application
-    ResourceConfig application =
-      new ResourceConfig()
-        .registerClasses(
-          SwaggerResource.class,
-          RootResource.class,
-          CorsFilter.class,
-          ConformanceResource.class,
-          CollectionsResource.class,
-          StylesResource.class,
-          TilesetsResource.class,
-          StudioResource.class,
-          ImportResource.class,
-          MultiPartFeature.class)
-        .register(new ApiResource("studio-openapi.yaml"))
-        .register(contextResolverFor(mapper))
-        .register(
-          new AbstractBinder() {
-            @Override
-            protected void configure() {
-              bind(datasource).to(DataSource.class);
-              bind(jdbi).to(Jdbi.class);
-            }
-          });
+    ResourceConfig application = new ResourceConfig()
+        .registerClasses(SwaggerResource.class, RootResource.class, CorsFilter.class,
+            ConformanceResource.class, CollectionsResource.class, StylesResource.class,
+            TilesetsResource.class, StudioResource.class, ImportResource.class,
+            MultiPartFeature.class)
+        .register(new ApiResource("studio-openapi.yaml")).register(contextResolverFor(mapper))
+        .register(new AbstractBinder() {
+          @Override
+          protected void configure() {
+            bind(datasource).to(DataSource.class);
+            bind(jdbi).to(Jdbi.class);
+          }
+        });
 
     BlockingStreamingHttpService httpService =
-      new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
+        new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
     ServerContext serverContext =
-      HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
+        HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
     logger.info("Listening on {}", serverContext.listenAddress());
 

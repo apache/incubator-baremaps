@@ -12,6 +12,8 @@
 
 package com.baremaps.stream;
 
+
+
 import java.util.Spliterator;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -19,12 +21,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 /**
- * A spliterator that buffers the completion of a spliterator of future elements and returns them according to a user
- * defined order.
+ * A spliterator that buffers the completion of a spliterator of future elements and returns them
+ * according to a user defined order.
  *
  * <p>
- * This code has been adapted from {@link <a href="https://github.com/palantir/streams/">streams</a>} licensed under the
- * Apache License 2.0.
+ * This code has been adapted from
+ * {@link <a href="https://github.com/palantir/streams/">streams</a>} licensed under the Apache
+ * License 2.0.
  *
  * <p>
  * Copyright 2017 Palantir Technologies, Inc. All rights reserved.
@@ -46,14 +49,12 @@ class BufferedSpliterator<T> implements Spliterator<CompletableFuture<T>> {
   /**
    * Constructs a {@code BufferedSpliterator} from a spliterator of futures elements.
    *
-   * @param spliterator     the spliterator to buffer
-   * @param bufferSize      the buffer size
+   * @param spliterator the spliterator to buffer
+   * @param bufferSize the buffer size
    * @param completionOrder the completion order
    */
-  public BufferedSpliterator(
-    Spliterator<CompletableFuture<T>> spliterator,
-    int bufferSize,
-    CompletionOrder completionOrder) {
+  public BufferedSpliterator(Spliterator<CompletableFuture<T>> spliterator, int bufferSize,
+      CompletionOrder completionOrder) {
     this.spliterator = spliterator;
     this.bufferSize = bufferSize;
     this.buffer = new ArrayBlockingQueue<>(bufferSize);
@@ -101,8 +102,8 @@ class BufferedSpliterator<T> implements Spliterator<CompletableFuture<T>> {
   }
 
   private void fillBuffer() {
-    while (pending < bufferSize && spliterator.tryAdvance(
-      future -> completionOrder.registerCompletion(future, buffer::add))) {
+    while (pending < bufferSize && spliterator
+        .tryAdvance(future -> completionOrder.registerCompletion(future, buffer::add))) {
       pending++;
     }
   }
@@ -110,8 +111,8 @@ class BufferedSpliterator<T> implements Spliterator<CompletableFuture<T>> {
   /** Represents the completion order applied to a {@code BufferedSpliterator}. */
   public interface CompletionOrder {
 
-    <T> void registerCompletion(
-      CompletableFuture<T> future, Consumer<CompletableFuture<T>> resultConsumer);
+    <T> void registerCompletion(CompletableFuture<T> future,
+        Consumer<CompletableFuture<T>> resultConsumer);
   }
 
   /** An order that registers completions when futures are completed. */
@@ -119,8 +120,8 @@ class BufferedSpliterator<T> implements Spliterator<CompletableFuture<T>> {
     INSTANCE;
 
     @Override
-    public <T> void registerCompletion(
-      CompletableFuture<T> future, Consumer<CompletableFuture<T>> resultConsumer) {
+    public <T> void registerCompletion(CompletableFuture<T> future,
+        Consumer<CompletableFuture<T>> resultConsumer) {
       future.thenAccept(result -> resultConsumer.accept(future));
     }
   }
@@ -130,8 +131,8 @@ class BufferedSpliterator<T> implements Spliterator<CompletableFuture<T>> {
     INSTANCE;
 
     @Override
-    public <T> void registerCompletion(
-      CompletableFuture<T> future, Consumer<CompletableFuture<T>> resultConsumer) {
+    public <T> void registerCompletion(CompletableFuture<T> future,
+        Consumer<CompletableFuture<T>> resultConsumer) {
       resultConsumer.accept(future);
     }
   }

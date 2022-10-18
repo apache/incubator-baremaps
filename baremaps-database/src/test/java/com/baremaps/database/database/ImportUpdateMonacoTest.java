@@ -48,33 +48,20 @@ class ImportUpdateMonacoTest extends DatabaseContainerTest {
     PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
 
     LongDataMap<Coordinate> coordinates =
-      new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
+        new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
     LongDataMap<List<Long>> references =
-      new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
+        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
-    new ImportService(
-      TestFiles.resolve("monaco/monaco-210801.osm.pbf"),
-      coordinates,
-      references,
-      headerRepository,
-      nodeRepository,
-      wayRepository,
-      relationRepository,
-      3857)
-        .call();
+    new ImportService(TestFiles.resolve("monaco/monaco-210801.osm.pbf"), coordinates, references,
+        headerRepository, nodeRepository, wayRepository, relationRepository, 3857).call();
 
     assertEquals(3047l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     // Fix the replicationUrl so that we can update the database with local files
     headerRepository.delete(3047l);
-    headerRepository.put(
-      new Header(
-        3047l,
-        LocalDateTime.of(2021, 8, 01, 20, 21, 41, 0),
-        "file:///" + TestFiles.resolve("monaco"),
-        "",
-        ""));
+    headerRepository.put(new Header(3047l, LocalDateTime.of(2021, 8, 01, 20, 21, 41, 0),
+        "file:///" + TestFiles.resolve("monaco"), "", ""));
 
     coordinates = new PostgresCoordinateMap(dataSource());
     references = new PostgresReferenceMap(dataSource());
@@ -82,27 +69,12 @@ class ImportUpdateMonacoTest extends DatabaseContainerTest {
     // Generate the diff and update the database
     long replicationSequenceNumber = headerRepository.selectLatest().getReplicationSequenceNumber();
     while (replicationSequenceNumber < 3075) {
-      new DiffService(
-        coordinates,
-        references,
-        headerRepository,
-        nodeRepository,
-        wayRepository,
-        relationRepository,
-        3857,
-        14)
-          .call();
-      new UpdateService(
-        coordinates,
-        references,
-        headerRepository,
-        nodeRepository,
-        wayRepository,
-        relationRepository,
-        3857)
-          .call();
+      new DiffService(coordinates, references, headerRepository, nodeRepository, wayRepository,
+          relationRepository, 3857, 14).call();
+      new UpdateService(coordinates, references, headerRepository, nodeRepository, wayRepository,
+          relationRepository, 3857).call();
       long nextReplicationSequenceNumber =
-        headerRepository.selectLatest().getReplicationSequenceNumber();
+          headerRepository.selectLatest().getReplicationSequenceNumber();
       assertEquals(replicationSequenceNumber + 1, nextReplicationSequenceNumber);
       replicationSequenceNumber = nextReplicationSequenceNumber;
     }

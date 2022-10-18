@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.model;
 
+
+
 import com.baremaps.osm.function.ChangeConsumer;
 import com.baremaps.osm.function.ChangeFunction;
 import java.util.List;
@@ -21,9 +23,7 @@ import java.util.StringJoiner;
 public final class Change {
 
   public enum ChangeType {
-    DELETE,
-    CREATE,
-    MODIFY
+    DELETE, CREATE, MODIFY
   }
 
   private final ChangeType type;
@@ -33,7 +33,7 @@ public final class Change {
   /**
    * Constructs an OpenStreetMap change.
    *
-   * @param type     the type of the change
+   * @param type the type of the change
    * @param entities the entities affected by the change
    */
   public Change(ChangeType type, List<Entity> entities) {
@@ -72,9 +72,7 @@ public final class Change {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return new StringJoiner(", ", Change.class.getSimpleName() + "[", "]")
-      .add("type=" + type)
-      .add("elements=" + entities)
-      .toString();
+    return new StringJoiner(", ", Change.class.getSimpleName() + "[", "]").add("type=" + type)
+        .add("elements=" + entities).toString();
   }
 }

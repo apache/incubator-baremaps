@@ -12,6 +12,8 @@
 
 package com.baremaps.stream;
 
+
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Spliterator;
@@ -19,8 +21,8 @@ import java.util.Spliterators;
 import java.util.function.Consumer;
 
 /**
- * A {@code BatchedSpliterator} wraps another spliterator and partition its elements according to a given batch size
- * when trySplit is invoked.
+ * A {@code BatchedSpliterator} wraps another spliterator and partition its elements according to a
+ * given batch size when trySplit is invoked.
  *
  * @param <T>
  */
@@ -30,10 +32,11 @@ class BatchedSpliterator<T> implements Spliterator<T> {
   private final int batchSize;
 
   /**
-   * Creates a spliterator that partitions the underlying spliterator according to a given batch size.
+   * Creates a spliterator that partitions the underlying spliterator according to a given batch
+   * size.
    *
    * @param spliterator the underlying spliterator.
-   * @param batchSize   the batch size.
+   * @param batchSize the batch size.
    */
   public BatchedSpliterator(Spliterator<T> spliterator, int batchSize) {
     this.spliterator = spliterator;

@@ -18,39 +18,40 @@ import com.baremaps.iploc.data.Ipv4Range;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test the IP Range class which can generate 32 bits byte arrays representing IPv4 addresses from a string
+ * Test the IP Range class which can generate 32 bits byte arrays representing IPv4 addresses from a
+ * string
  */
 class Ipv4RangeTest {
 
   @Test
   void testRange() {
     Ipv4Range ipv4Range = new Ipv4Range("0.0.0.0 - 0.0.0.255");
-    assertArrayEquals(ipv4Range.getStart(), new byte[]{0x0, 0x0, 0x0, 0x0});
-    assertArrayEquals(ipv4Range.getEnd(), new byte[]{0x0, 0x0, 0x0, (byte) 0xFF});
+    assertArrayEquals(ipv4Range.getStart(), new byte[] {0x0, 0x0, 0x0, 0x0});
+    assertArrayEquals(ipv4Range.getEnd(), new byte[] {0x0, 0x0, 0x0, (byte) 0xFF});
   }
 
   @Test
   void testRangeWithMask() {
     Ipv4Range ipv4Range = new Ipv4Range("0.0.0.0/24");
-    assertArrayEquals(ipv4Range.getStart(), new byte[]{0x0, 0x0, 0x0, 0x0});
-    assertArrayEquals(ipv4Range.getEnd(), new byte[]{0x0, 0x0, 0x0, (byte) 0xFF});
+    assertArrayEquals(ipv4Range.getStart(), new byte[] {0x0, 0x0, 0x0, 0x0});
+    assertArrayEquals(ipv4Range.getEnd(), new byte[] {0x0, 0x0, 0x0, (byte) 0xFF});
   }
 
   @Test
   void testRangeMaxValue() {
     Ipv4Range ipv4Range = new Ipv4Range("255.255.255.0 - 255.255.255.255");
-    assertArrayEquals(
-      ipv4Range.getStart(), new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x0});
-    assertArrayEquals(
-      ipv4Range.getEnd(), new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF});
+    assertArrayEquals(ipv4Range.getStart(),
+        new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x0});
+    assertArrayEquals(ipv4Range.getEnd(),
+        new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF});
   }
 
   @Test
   void testRangeWithMaxMask() {
     Ipv4Range ipv4Range = new Ipv4Range("255.255.255.0/24");
-    assertArrayEquals(
-      ipv4Range.getStart(), new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x0});
-    assertArrayEquals(
-      ipv4Range.getEnd(), new byte[]{(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF});
+    assertArrayEquals(ipv4Range.getStart(),
+        new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x0});
+    assertArrayEquals(ipv4Range.getEnd(),
+        new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF});
   }
 }

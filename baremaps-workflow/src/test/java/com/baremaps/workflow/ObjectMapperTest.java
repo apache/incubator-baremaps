@@ -29,23 +29,15 @@ public class ObjectMapperTest {
 
     // serialize the workflow
     var workflow1 =
-      new Workflow(
-        List.of(
-          new Step(
-            "download",
-            List.of(),
-            List.of(
-              new DownloadUrl(
-                "https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
-                "liechtenstein-latest.osm.pbf"))),
-          new Step(
-            "import",
-            List.of("download"),
-            List.of(
-              new ImportOpenStreetMap(
-                "liechtenstein-latest.osm.pbf",
-                "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-                3857)))));
+        new Workflow(List.of(
+            new Step("download", List.of(),
+                List.of(new DownloadUrl(
+                    "https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
+                    "liechtenstein-latest.osm.pbf"))),
+            new Step("import", List.of("download"),
+                List.of(new ImportOpenStreetMap("liechtenstein-latest.osm.pbf",
+                    "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+                    3857)))));
     var json = mapper.writeValueAsString(workflow1);
     System.out.println(json);
     assertTrue(json.contains(DownloadUrl.class.getSimpleName()));

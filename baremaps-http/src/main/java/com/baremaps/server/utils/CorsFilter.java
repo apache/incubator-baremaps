@@ -12,6 +12,8 @@
 
 package com.baremaps.server.utils;
 
+
+
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.ContainerResponseContext;
@@ -42,20 +44,18 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
   }
 
   @Override
-  public void filter(
-    ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
+  public void filter(ContainerRequestContext requestContext,
+      ContainerResponseContext responseContext) {
     String origin = requestContext.getHeaderString(ORIGIN);
-    if (origin == null || requestContext.getMethod().equalsIgnoreCase("OPTIONS") ||
-      requestContext.getProperty("cors.failure") != null) {
+    if (origin == null || requestContext.getMethod().equalsIgnoreCase("OPTIONS")
+        || requestContext.getProperty("cors.failure") != null) {
       return;
     }
     responseContext.getHeaders().putSingle(ACCESS_CONTROL_ALLOW_ORIGIN, origin);
-    responseContext
-      .getHeaders()
-      .putSingle(ACCESS_CONTROL_ALLOW_METHODS, "GET, POST, PUT, DELETE, OPTIONS, HEAD");
-    responseContext
-      .getHeaders()
-      .putSingle(ACCESS_CONTROL_ALLOW_HEADERS, "origin, content-type, accept, authorization");
+    responseContext.getHeaders().putSingle(ACCESS_CONTROL_ALLOW_METHODS,
+        "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+    responseContext.getHeaders().putSingle(ACCESS_CONTROL_ALLOW_HEADERS,
+        "origin, content-type, accept, authorization");
     responseContext.getHeaders().putSingle(ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
     responseContext.getHeaders().putSingle(ACCESS_CONTROL_EXPOSE_HEADERS, "Location");
     responseContext.getHeaders().putSingle(VARY, ORIGIN);

@@ -12,6 +12,8 @@
 
 package com.baremaps.workflow.tasks;
 
+
+
 import com.baremaps.collection.utils.FileUtils;
 import com.baremaps.testing.PostgresContainerTest;
 import com.baremaps.testing.TestFiles;
@@ -29,9 +31,8 @@ class ImportShapefileTest extends PostgresContainerTest {
     var directory = Files.createTempDirectory("tmp_");
     var unzip = new UnzipFile(zip.toString(), directory.toString());
     unzip.run();
-    var task =
-      new ImportShapefile(
-        directory.resolve("gis_osm_buildings_a_free_1.shp").toString(), jdbcUrl(), 4326, 3857);
+    var task = new ImportShapefile(directory.resolve("gis_osm_buildings_a_free_1.shp").toString(),
+        jdbcUrl(), 4326, 3857);
     task.run();
     FileUtils.deleteRecursively(directory);
   }

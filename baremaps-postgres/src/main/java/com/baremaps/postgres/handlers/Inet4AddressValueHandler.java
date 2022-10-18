@@ -12,6 +12,8 @@
 
 package com.baremaps.postgres.handlers;
 
+
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -24,7 +26,7 @@ public class Inet4AddressValueHandler extends BaseValueHandler<Inet4Address> {
 
   @Override
   protected void internalHandle(DataOutputStream buffer, final Inet4Address value)
-    throws IOException {
+      throws IOException {
     buffer.writeInt(8);
 
     buffer.writeByte(IPv4);

@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.progress;
 
+
+
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +30,7 @@ public class InputStreamProgress extends FilterInputStream {
    * Constructs a {@code InputStreamProgress} with the provided parameters.
    *
    * @param inputStream the input stream
-   * @param listener    the progress listener
+   * @param listener the progress listener
    */
   public InputStreamProgress(InputStream inputStream, Consumer<Long> listener) {
     super(inputStream);

@@ -42,17 +42,11 @@ class ExternalMergeSortTest {
 
   @BeforeEach
   void before() {
-    input =
-      new IndexedDataList<>(
-        new LongList(new OnHeapMemory()),
+    input = new IndexedDataList<>(new LongList(new OnHeapMemory()),
         new DataStore<>(new StringDataType(), new OnHeapMemory()));
-    output =
-      new IndexedDataList<>(
-        new LongList(new OnHeapMemory()),
+    output = new IndexedDataList<>(new LongList(new OnHeapMemory()),
         new DataStore<>(new StringDataType(), new OnHeapMemory()));
-    supplier =
-      () -> new IndexedDataList<>(
-        new LongList(new OnHeapMemory()),
+    supplier = () -> new IndexedDataList<>(new LongList(new OnHeapMemory()),
         new DataStore<>(new StringDataType(), new OnHeapMemory()));
     for (var string : strings) {
       input.add(string);
@@ -103,8 +97,8 @@ class ExternalMergeSortTest {
     for (int i = 0; i < 1_000_000; i++) {
       input.add(randomString(random));
     }
-    ExternalMergeSort.sort(
-      input, output, Comparator.naturalOrder(), supplier, 100_000, false, true);
+    ExternalMergeSort.sort(input, output, Comparator.naturalOrder(), supplier, 100_000, false,
+        true);
     for (int i = 1; i < 1_000_000; i++) {
       assertTrue(output.get(i - 1).compareTo(output.get(i)) <= 0);
     }

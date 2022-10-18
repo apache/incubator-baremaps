@@ -12,6 +12,8 @@
 
 package com.baremaps.stream;
 
+
+
 import java.util.function.Consumer;
 
 /**

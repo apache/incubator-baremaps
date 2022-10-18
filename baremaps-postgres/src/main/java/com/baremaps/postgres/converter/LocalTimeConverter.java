@@ -12,6 +12,8 @@
 
 package com.baremaps.postgres.converter;
 
+
+
 import java.time.LocalTime;
 
 public class LocalTimeConverter implements ValueConverter<LocalTime, Long> {

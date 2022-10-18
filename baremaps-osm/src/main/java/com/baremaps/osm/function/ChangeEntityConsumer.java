@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.function;
 
+
+
 import com.baremaps.osm.model.Change;
 import com.baremaps.osm.model.Entity;
 import java.util.function.Consumer;

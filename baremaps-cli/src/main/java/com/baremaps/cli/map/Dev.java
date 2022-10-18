@@ -41,43 +41,25 @@ public class Dev implements Callable<Integer> {
   @Mixin
   private Options options;
 
-  @Option(
-    names = {"--database"},
-    paramLabel = "DATABASE",
-    description = "The JDBC url of Postgres.",
-    required = true)
+  @Option(names = {"--database"}, paramLabel = "DATABASE",
+      description = "The JDBC url of Postgres.", required = true)
   private String database;
 
-  @Option(
-    names = {"--cache"},
-    paramLabel = "CACHE",
-    description = "The caffeine cache directive.")
+  @Option(names = {"--cache"}, paramLabel = "CACHE", description = "The caffeine cache directive.")
   private String cache = "";
 
-  @Option(
-    names = {"--tileset"},
-    paramLabel = "TILESET",
-    description = "The tileset file.",
-    required = true)
+  @Option(names = {"--tileset"}, paramLabel = "TILESET", description = "The tileset file.",
+      required = true)
   private Path tileset;
 
-  @Option(
-    names = {"--style"},
-    paramLabel = "STYLE",
-    description = "The style file.",
-    required = true)
+  @Option(names = {"--style"}, paramLabel = "STYLE", description = "The style file.",
+      required = true)
   private Path style;
 
-  @Option(
-    names = {"--host"},
-    paramLabel = "HOST",
-    description = "The host of the server.")
+  @Option(names = {"--host"}, paramLabel = "HOST", description = "The host of the server.")
   private String host = "localhost";
 
-  @Option(
-    names = {"--port"},
-    paramLabel = "PORT",
-    description = "The port of the server.")
+  @Option(names = {"--port"}, paramLabel = "PORT", description = "The port of the server.")
   private int port = 9000;
 
   @Override
@@ -88,22 +70,17 @@ public class Dev implements Callable<Integer> {
       var objectMapper = defaultObjectMapper();
 
       // Configure the application
-      var application =
-        new ResourceConfig()
-          .register(CorsFilter.class)
-          .register(DevResources.class)
-          .register(contextResolverFor(objectMapper))
-          .register(
-            new AbstractBinder() {
-              @Override
-              protected void configure() {
-                bind("viewer").to(String.class).named("assets");
-                bind(tileset.toAbsolutePath()).to(Path.class).named("tileset");
-                bind(style.toAbsolutePath()).to(Path.class).named("style");
-                bind(dataSource).to(DataSource.class);
-                bind(objectMapper).to(ObjectMapper.class);
-              }
-            });
+      var application = new ResourceConfig().register(CorsFilter.class).register(DevResources.class)
+          .register(contextResolverFor(objectMapper)).register(new AbstractBinder() {
+            @Override
+            protected void configure() {
+              bind("viewer").to(String.class).named("assets");
+              bind(tileset.toAbsolutePath()).to(Path.class).named("tileset");
+              bind(style.toAbsolutePath()).to(Path.class).named("style");
+              bind(dataSource).to(DataSource.class);
+              bind(objectMapper).to(ObjectMapper.class);
+            }
+          });
 
       var httpService = new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
       var serverContext = HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);

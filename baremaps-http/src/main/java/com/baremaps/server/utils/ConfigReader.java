@@ -12,6 +12,8 @@
 
 package com.baremaps.server.utils;
 
+
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
@@ -29,34 +31,22 @@ public class ConfigReader {
 
   public String read(Path path) throws IOException {
     var extension = com.google.common.io.Files.getFileExtension(path.toString());
-    var config =
-      switch (extension) {
+    var config = switch (extension) {
       case "js" -> eval(path);
       default -> Files.readString(path);
-      };
+    };
     return config;
   }
 
   private String eval(Path path) throws IOException {
-    try (
-      var context =
-        Context.newBuilder("js")
-          .option("js.esm-eval-returns-exports", "true")
-          .option("js.scripting", "true")
-          .allowExperimentalOptions(true)
-          .allowIO(true)
-          .build()
-    ) {
-      var script =
-        String.format("""
+    try (var context = Context.newBuilder("js").option("js.esm-eval-returns-exports", "true")
+        .option("js.scripting", "true").allowExperimentalOptions(true).allowIO(true).build()) {
+      var script = String.format("""
           import config from '%s';
           export default JSON.stringify(config);
-          """,
-          path.toAbsolutePath());
-      var source =
-        Source.newBuilder("js", new StringReader(script), "script.js")
-          .mimeType("application/javascript+module")
-          .build();
+          """, path.toAbsolutePath());
+      var source = Source.newBuilder("js", new StringReader(script), "script.js")
+          .mimeType("application/javascript+module").build();
       var value = context.eval(source);
       return value.getMember("default").toString();
     } catch (Exception e) {

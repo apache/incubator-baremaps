@@ -12,6 +12,8 @@
 
 package com.baremaps.server.ogcapi;
 
+
+
 import com.google.common.io.Resources;
 import io.swagger.util.Json;
 import io.swagger.util.Yaml;
@@ -67,17 +69,11 @@ public class ApiResource {
 
   private OpenAPI parseOpenapi(UriInfo uriInfo) throws IOException {
     try (InputStream inputStream = Resources.getResource(openapiPath).openStream()) {
-      var openAPI =
-        new OpenAPIV3Parser()
+      var openAPI = new OpenAPIV3Parser()
           .readContents(new String(inputStream.readAllBytes(), StandardCharsets.UTF_8))
           .getOpenAPI();
-      openAPI.setServers(
-        List.of(
-          new Server()
-            .url(
-              String.format(
-                "%s:%s",
-                uriInfo.getBaseUri().getHost(), uriInfo.getBaseUri().getPort()))));
+      openAPI.setServers(List.of(new Server().url(
+          String.format("%s:%s", uriInfo.getBaseUri().getHost(), uriInfo.getBaseUri().getPort()))));
       return openAPI;
     }
   }

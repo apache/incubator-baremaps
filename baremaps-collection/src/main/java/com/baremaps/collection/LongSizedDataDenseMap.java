@@ -12,6 +12,8 @@
 
 package com.baremaps.collection;
 
+
+
 import com.baremaps.collection.memory.Memory;
 import com.baremaps.collection.type.SizedDataType;
 import java.nio.ByteBuffer;
@@ -41,7 +43,7 @@ public class LongSizedDataDenseMap<T> implements LongDataMap<T> {
    * Constructs a map.
    *
    * @param dataType the data type
-   * @param memory   the memory
+   * @param memory the memory
    */
   public LongSizedDataDenseMap(SizedDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {

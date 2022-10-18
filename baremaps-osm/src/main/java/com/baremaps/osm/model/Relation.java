@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.model;
 
+
+
 import com.baremaps.osm.function.EntityConsumer;
 import com.baremaps.osm.function.EntityFunction;
 import java.util.List;
@@ -28,9 +30,9 @@ public final class Relation extends Element {
   /**
    * Constructs an OpenStreetMap {@code Relation} with the specified parameters.
    *
-   * @param id      the id
-   * @param info    the information
-   * @param tags    the tags
+   * @param id the id
+   * @param info the information
+   * @param tags the tags
    * @param members the members
    */
   public Relation(long id, Info info, Map<String, String> tags, List<Member> members) {
@@ -41,14 +43,14 @@ public final class Relation extends Element {
   /**
    * Constructs an OpenStreetMap {@code Relation} with the specified parameters.
    *
-   * @param id       the id
-   * @param info     the information
-   * @param tags     the tags
-   * @param members  the members
+   * @param id the id
+   * @param info the information
+   * @param tags the tags
+   * @param members the members
    * @param geometry the geometry
    */
-  public Relation(
-    long id, Info info, Map<String, String> tags, List<Member> members, Geometry geometry) {
+  public Relation(long id, Info info, Map<String, String> tags, List<Member> members,
+      Geometry geometry) {
     super(id, info, tags, geometry);
     this.members = members;
   }
@@ -100,8 +102,6 @@ public final class Relation extends Element {
   @Override
   public String toString() {
     return new StringJoiner(", ", Relation.class.getSimpleName() + "[", "]")
-      .add("members=" + members)
-      .add("id=" + id)
-      .toString();
+        .add("members=" + members).add("id=" + id).toString();
   }
 }

@@ -77,12 +77,8 @@ public class DevResources {
   public static final String TILE_TYPE = "application/vnd.mapbox-vector-tile";
 
   @Inject
-  public DevResources(
-    @Named("tileset") Path tileset,
-    @Named("style") Path style,
-    DataSource dataSource,
-    ObjectMapper objectMapper,
-    Sse sse) {
+  public DevResources(@Named("tileset") Path tileset, @Named("style") Path style,
+      DataSource dataSource, ObjectMapper objectMapper, Sse sse) {
     this.tileset = tileset.toAbsolutePath();
     this.style = style.toAbsolutePath();
     this.dataSource = dataSource;
@@ -145,11 +141,8 @@ public class DevResources {
       Tile tile = new Tile(x, y, z);
       ByteBuffer blob = tileStore.read(tile);
       if (blob != null) {
-        return Response.status(200)
-          .header(CONTENT_TYPE, TILE_TYPE)
-          .header(CONTENT_ENCODING, TILE_ENCODING)
-          .entity(blob.array())
-          .build();
+        return Response.status(200).header(CONTENT_TYPE, TILE_TYPE)
+            .header(CONTENT_ENCODING, TILE_ENCODING).entity(blob.array()).build();
       } else {
         return Response.status(204).build();
       }

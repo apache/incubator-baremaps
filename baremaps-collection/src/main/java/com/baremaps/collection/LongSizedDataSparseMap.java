@@ -12,6 +12,8 @@
 
 package com.baremaps.collection;
 
+
+
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import java.util.List;
@@ -80,9 +82,8 @@ public class LongSizedDataSparseMap<T> implements LongDataMap<T> {
     }
 
     long lo = offsets.get(chunk);
-    long hi =
-      Math.min(
-        values.size(), chunk >= offsets.size() - 1 ? values.size() : offsets.get(chunk + 1)) - 1;
+    long hi = Math.min(values.size(),
+        chunk >= offsets.size() - 1 ? values.size() : offsets.get(chunk + 1)) - 1;
     int startPad = offsetStartPad.getByte(chunk) & 255;
 
     long index = lo + offset - startPad;

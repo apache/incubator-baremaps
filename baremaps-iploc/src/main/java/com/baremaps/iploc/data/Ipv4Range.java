@@ -12,6 +12,8 @@
 
 package com.baremaps.iploc.data;
 
+
+
 import com.google.common.primitives.Bytes;
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -19,8 +21,8 @@ import net.ripe.ipresource.IpResourceRange;
 import net.ripe.ipresource.Ipv4Address;
 
 /**
- * Represents an IP range from a start IP to an end IP stored into longs because Java and Sqlite do not have unsigned 32
- * bits integers
+ * Represents an IP range from a start IP to an end IP stored into longs because Java and Sqlite do
+ * not have unsigned 32 bits integers
  */
 public class Ipv4Range {
   private final byte[] start;
@@ -49,10 +51,11 @@ public class Ipv4Range {
   }
 
   /**
-   * Force an IP on 4 bytes. Because the RIPE uses BigInteger as a means to store IPs and BigIntegers toByteArray()
-   * method returns byte arrays of variable size, we need to force it onto 4 bytes. It might be less than 4 bytes when
-   * the first part of the address if 0.x.x.x. It might be more than 4 bytes when the first bit in the address is 1
-   * because BigInteger will prepend a zero byte to prevent negative value in the two's-complement binary representation
+   * Force an IP on 4 bytes. Because the RIPE uses BigInteger as a means to store IPs and
+   * BigIntegers toByteArray() method returns byte arrays of variable size, we need to force it onto
+   * 4 bytes. It might be less than 4 bytes when the first part of the address if 0.x.x.x. It might
+   * be more than 4 bytes when the first bit in the address is 1 because BigInteger will prepend a
+   * zero byte to prevent negative value in the two's-complement binary representation
    *
    * @param bytes
    * @return
@@ -67,14 +70,14 @@ public class Ipv4Range {
   }
 
   /**
-   * Format an IP from a byte array into a string We need to prepend a byte of value 0 to the byte array so that the MSB
-   * is 0 in the two's-complement binary representation
+   * Format an IP from a byte array into a string We need to prepend a byte of value 0 to the byte
+   * array so that the MSB is 0 in the two's-complement binary representation
    *
    * @param ip the IP in a byte array
    * @return teh formatted IP
    */
   public static String format(byte[] ip) {
-    byte[] zero = new byte[]{0};
+    byte[] zero = new byte[] {0};
     return new Ipv4Address(new BigInteger(Bytes.concat(zero, ip)).longValue()).toString();
   }
 

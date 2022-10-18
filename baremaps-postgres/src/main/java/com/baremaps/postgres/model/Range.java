@@ -12,6 +12,8 @@
 
 package com.baremaps.postgres.model;
 
+
+
 import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -30,26 +32,15 @@ public class Range<T> {
     this(lowerBound, true, false, upperBound, true, false);
   }
 
-  public Range(
-    @Nullable T lowerBound,
-    boolean lowerBoundIsInclusive,
-    @Nullable T upperBound,
-    boolean upperBoundIsInclusive) {
+  public Range(@Nullable T lowerBound, boolean lowerBoundIsInclusive, @Nullable T upperBound,
+      boolean upperBoundIsInclusive) {
     this(lowerBound, lowerBoundIsInclusive, false, upperBound, upperBoundIsInclusive, false);
   }
 
-  public Range(
-    @Nullable T lowerBound,
-    boolean lowerBoundIsInclusive,
-    boolean lowerBoundInfinite,
-    @Nullable T upperBound,
-    boolean upperBoundIsInclusive,
-    boolean upperBoundInfinite) {
-    this(
-      lowerBound,
-      upperBound,
-      evaluateBoundaryFlags(
-        lowerBoundIsInclusive, upperBoundIsInclusive, lowerBoundInfinite, upperBoundInfinite));
+  public Range(@Nullable T lowerBound, boolean lowerBoundIsInclusive, boolean lowerBoundInfinite,
+      @Nullable T upperBound, boolean upperBoundIsInclusive, boolean upperBoundInfinite) {
+    this(lowerBound, upperBound, evaluateBoundaryFlags(lowerBoundIsInclusive, upperBoundIsInclusive,
+        lowerBoundInfinite, upperBoundInfinite));
   }
 
   private Range(@Nullable T lowerBound, @Nullable T upperBound, int flags) {
@@ -76,14 +67,14 @@ public class Range<T> {
   private boolean isEmptyRange(@Nullable T lowerBound, @Nullable T upperBound, int flags) {
     // ---------------------------------------------------------------------------------
     // We only want to check for those conditions that are unambiguously erroneous:
-    //   1. The bounds must not be default values (including null).
-    //   2. The bounds must be definite (non-infinite).
-    //   3. The bounds must be inclusive.
-    //   4. The bounds must be considered equal.
+    // 1. The bounds must not be default values (including null).
+    // 2. The bounds must be definite (non-infinite).
+    // 3. The bounds must be inclusive.
+    // 4. The bounds must be considered equal.
     //
     // See:
-    //  - https://github.com/npgsql/npgsql/pull/1939
-    //  - https://github.com/npgsql/npgsql/issues/1943
+    // - https://github.com/npgsql/npgsql/pull/1939
+    // - https://github.com/npgsql/npgsql/issues/1943
     // ---------------------------------------------------------------------------------
 
     if ((flags & RangeFlags.Empty) == RangeFlags.Empty)
@@ -98,11 +89,8 @@ public class Range<T> {
     return Objects.equals(lowerBound, upperBound);
   }
 
-  private static int evaluateBoundaryFlags(
-    boolean lowerBoundIsInclusive,
-    boolean upperBoundIsInclusive,
-    boolean lowerBoundInfinite,
-    boolean upperBoundInfinite) {
+  private static int evaluateBoundaryFlags(boolean lowerBoundIsInclusive,
+      boolean upperBoundIsInclusive, boolean lowerBoundInfinite, boolean upperBoundInfinite) {
 
     int result = RangeFlags.None;
 

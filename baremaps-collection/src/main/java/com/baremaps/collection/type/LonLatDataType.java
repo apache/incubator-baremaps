@@ -12,12 +12,14 @@
 
 package com.baremaps.collection.type;
 
+
+
 import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- * A {@link DataType} for reading and writing longitude/latitude coordinates in {@link ByteBuffer}s. An integer is used
- * to compress the coordinates to the detriment of precision (centimeters).
+ * A {@link DataType} for reading and writing longitude/latitude coordinates in {@link ByteBuffer}s.
+ * An integer is used to compress the coordinates to the detriment of precision (centimeters).
  */
 public class LonLatDataType implements SizedDataType<Coordinate> {
 

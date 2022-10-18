@@ -40,7 +40,7 @@ public class RepositoryException extends Exception {
    * Constructs a {@code RepositoryException} with the specified detail message and cause.
    *
    * @param message the message
-   * @param cause   the cause
+   * @param cause the cause
    */
   public RepositoryException(String message, Throwable cause) {
     super(message, cause);

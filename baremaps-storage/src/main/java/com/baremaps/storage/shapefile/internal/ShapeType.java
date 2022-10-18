@@ -12,6 +12,8 @@
 
 package com.baremaps.storage.shapefile.internal;
 
+
+
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,26 +22,17 @@ import java.util.Map;
  * Provides a ShapefileType Enumeration
  *
  * <p>
- * <div class="warning">This is an experimental class, not yet target for any Apache SIS release at this time.</div>
+ * <div class="warning">This is an experimental class, not yet target for any Apache SIS release at
+ * this time.</div>
  *
  * @author Travis L. Pinney
- * @see <a href="http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf">ESRI Shapefile Specification</a>
+ * @see <a href="http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf">ESRI Shapefile
+ *      Specification</a>
  */
 public enum ShapeType {
-  NullShape(0),
-  Point(1),
-  PolyLine(3),
-  Polygon(5),
-  MultiPoint(8),
-  PointZ(11),
-  PolyLineZ(13),
-  PolygonZ(15),
-  MultiPointZ(18),
-  PointM(21),
-  PolyLineM(23),
-  PolygonM(25),
-  MultiPointM(28),
-  MultiPatch(31);
+  NullShape(0), Point(1), PolyLine(3), Polygon(5), MultiPoint(8), PointZ(11), PolyLineZ(
+      13), PolygonZ(15), MultiPointZ(
+          18), PointM(21), PolyLineM(23), PolygonM(25), MultiPointM(28), MultiPatch(31);
 
   // used for initializing the enumeration
   private int value;

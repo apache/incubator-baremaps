@@ -12,14 +12,13 @@
 
 package com.baremaps.cli.geocoder;
 
+
+
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(
-  name = "geocoder",
-  description = "Geocoder commands (experimental).",
-  subcommands = {Index.class, Search.class},
-  sortOptions = false)
+@Command(name = "geocoder", description = "Geocoder commands (experimental).",
+    subcommands = {Index.class, Search.class}, sortOptions = false)
 public class Geocoder implements Runnable {
 
   @Override

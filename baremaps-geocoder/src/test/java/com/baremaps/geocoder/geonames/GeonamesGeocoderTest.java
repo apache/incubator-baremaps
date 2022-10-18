@@ -44,7 +44,7 @@ class GeonamesGeocoderTest {
 
   @Test
   public void buildAndSearchWithTheRightCountryCode()
-    throws IOException, URISyntaxException, ParseException {
+      throws IOException, URISyntaxException, ParseException {
     var path = Files.createTempDirectory(Paths.get("."), "geocoder_");
     var data = TestFiles.resolve("geonames/LI.txt");
     var geocoder = new GeonamesGeocoder(path, data);
@@ -59,7 +59,7 @@ class GeonamesGeocoderTest {
 
   @Test
   public void buildAndSearchWithTheWrongCountryCode()
-    throws IOException, URISyntaxException, ParseException {
+      throws IOException, URISyntaxException, ParseException {
     var path = Files.createTempDirectory(Paths.get("."), "geocoder_");
     var data = TestFiles.resolve("geonames/LI.txt");
     var geocoder = new GeonamesGeocoder(path, data);

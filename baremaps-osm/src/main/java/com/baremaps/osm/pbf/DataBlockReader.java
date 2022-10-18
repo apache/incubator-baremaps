@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.pbf;
 
+
+
 import com.baremaps.osm.binary.Osmformat;
 import com.baremaps.osm.binary.Osmformat.DenseNodes;
 import com.baremaps.osm.binary.Osmformat.PrimitiveGroup;
@@ -250,8 +252,8 @@ class DataBlockReader {
   }
 
   private LocalDateTime getTimestamp(long timestamp) {
-    return LocalDateTime.ofInstant(
-      Instant.ofEpochMilli(dateGranularity * timestamp), TimeZone.getDefault().toZoneId());
+    return LocalDateTime.ofInstant(Instant.ofEpochMilli(dateGranularity * timestamp),
+        TimeZone.getDefault().toZoneId());
   }
 
   private Map<String, String> getTags(List<Integer> keys, List<Integer> vals) {

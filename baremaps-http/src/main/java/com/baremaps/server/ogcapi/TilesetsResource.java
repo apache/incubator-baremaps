@@ -42,14 +42,14 @@ public class TilesetsResource implements TilesetsApi {
   private static final Logger logger = LoggerFactory.getLogger(TilesetsResource.class);
 
   private static final QualifiedType<TileJSON> TILESET =
-    QualifiedType.of(TileJSON.class).with(Json.class);
+      QualifiedType.of(TileJSON.class).with(Json.class);
 
   private final DataSource dataSource;
 
   private final Jdbi jdbi;
 
   private final LoadingCache<UUID, TileStore> tileStores =
-    Caffeine.newBuilder().build(this::loadTileStore);
+      Caffeine.newBuilder().build(this::loadTileStore);
 
   @Inject
   public TilesetsResource(DataSource dataSource, Jdbi jdbi) {
@@ -59,22 +59,11 @@ public class TilesetsResource implements TilesetsApi {
 
   private TileStore loadTileStore(UUID tilesetId) {
     TileJSON tileset =
-      jdbi.withHandle(
-        handle -> handle
-          .createQuery("select tileset from tilesets where id = :id")
-          .bind("id", tilesetId)
-          .mapTo(TILESET)
-          .one());
-    List<PostgresQuery> queries =
-      tileset.getVectorLayers().stream()
-        .flatMap(
-          layer -> layer.getQueries().stream()
-            .map(
-              query -> new PostgresQuery(
-                layer.getId(),
-                query.getMinzoom(),
-                query.getMaxzoom(),
-                query.getSql())))
+        jdbi.withHandle(handle -> handle.createQuery("select tileset from tilesets where id = :id")
+            .bind("id", tilesetId).mapTo(TILESET).one());
+    List<PostgresQuery> queries = tileset.getVectorLayers().stream()
+        .flatMap(layer -> layer.getQueries().stream().map(query -> new PostgresQuery(layer.getId(),
+            query.getMinzoom(), query.getMaxzoom(), query.getSql())))
         .toList();
     return new PostgresTileStore(dataSource, queries);
   }
@@ -88,13 +77,9 @@ public class TilesetsResource implements TilesetsApi {
       tilesetId = UUID.randomUUID();
     }
     UUID finalTilesetId = tilesetId;
-    jdbi.useHandle(
-      handle -> handle
-        .createUpdate(
-          "insert into tilesets (id, tileset) values (:id, CAST(:json AS JSONB))")
-        .bindByType("json", tileSet, TILESET)
-        .bind("id", finalTilesetId)
-        .execute());
+    jdbi.useHandle(handle -> handle
+        .createUpdate("insert into tilesets (id, tileset) values (:id, CAST(:json AS JSONB))")
+        .bindByType("json", tileSet, TILESET).bind("id", finalTilesetId).execute());
     return Response.created(URI.create("tilesets/" + tilesetId)).build();
   }
 
@@ -108,19 +93,14 @@ public class TilesetsResource implements TilesetsApi {
   @Override
   public Response getTileset(UUID tilesetId) {
     TileJSON tileset =
-      jdbi.withHandle(
-        handle -> handle
-          .createQuery("select tileset from tilesets where id = :id")
-          .bind("id", tilesetId)
-          .mapTo(TILESET)
-          .one());
+        jdbi.withHandle(handle -> handle.createQuery("select tileset from tilesets where id = :id")
+            .bind("id", tilesetId).mapTo(TILESET).one());
     return Response.ok(tileset).build();
   }
 
   @Override
   public Response getTilesets() {
-    List<UUID> ids =
-      jdbi.withHandle(
+    List<UUID> ids = jdbi.withHandle(
         handle -> handle.createQuery("select id from tilesets").mapTo(UUID.class).list());
     return Response.ok(ids).build();
   }
@@ -128,22 +108,15 @@ public class TilesetsResource implements TilesetsApi {
   @Override
   public Response updateTileset(UUID tilesetId, TileJSON tileSet) {
     tileStores.invalidate(tilesetId);
-    jdbi.useHandle(
-      handle -> handle
+    jdbi.useHandle(handle -> handle
         .createUpdate("update tilesets set tileset = cast(:json as jsonb) where id = :id")
-        .bindByType("json", tileSet, TILESET)
-        .bind("id", tilesetId)
-        .execute());
+        .bindByType("json", tileSet, TILESET).bind("id", tilesetId).execute());
     return Response.noContent().build();
   }
 
   @Override
-  public Response getTile(
-    UUID tilesetId,
-    String tileMatrixSetId,
-    Integer tileMatrix,
-    Integer tileRow,
-    Integer tileCol) {
+  public Response getTile(UUID tilesetId, String tileMatrixSetId, Integer tileMatrix,
+      Integer tileRow, Integer tileCol) {
     Tile tile = new Tile(tileCol, tileRow, tileMatrix);
     TileStore tileStore = tileStores.get(tilesetId);
     try {

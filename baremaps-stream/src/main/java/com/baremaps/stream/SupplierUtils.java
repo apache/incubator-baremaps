@@ -12,6 +12,8 @@
 
 package com.baremaps.stream;
 
+
+
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -24,7 +26,7 @@ public class SupplierUtils {
    * Returns a supplier that memoizes the result returned by another supplier.
    *
    * @param supplier the original supplier
-   * @param <T>      the type of element returned by the supplier
+   * @param <T> the type of element returned by the supplier
    * @return the memoized supplier
    */
   public static <T> Supplier<T> memoize(Supplier<T> supplier) {
@@ -33,11 +35,12 @@ public class SupplierUtils {
   }
 
   /**
-   * Returns a supplier that memoizes the result returned by another supplier for a user defined time to live.
+   * Returns a supplier that memoizes the result returned by another supplier for a user defined
+   * time to live.
    *
-   * @param supplier         the original supplier
+   * @param supplier the original supplier
    * @param timeToLiveMillis the time to live in milliseconds
-   * @param <T>              the type of element returned by the supplier
+   * @param <T> the type of element returned by the supplier
    * @return the memoized supplier
    */
   public static <T> Supplier<T> memoize(Supplier<T> supplier, int timeToLiveMillis) {
@@ -62,8 +65,8 @@ public class SupplierUtils {
    *
    * @param supplier the original supplier
    * @param function the function to apply
-   * @param <T>      the type of elements returned by the original supplier
-   * @param <R>      the type of elements returned by the function
+   * @param <T> the type of elements returned by the original supplier
+   * @param <R> the type of elements returned by the function
    * @return the resulting supplier
    */
   public static <T, R> Supplier<R> convert(Supplier<T> supplier, Function<T, R> function) {

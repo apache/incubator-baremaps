@@ -12,6 +12,8 @@
 
 package com.baremaps.postgres.handlers;
 
+
+
 import com.baremaps.postgres.util.BigDecimalUtils;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -21,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The Algorithm for turning a BigDecimal into a Postgres Numeric is heavily inspired by the Intermine Implementation:
+ * The Algorithm for turning a BigDecimal into a Postgres Numeric is heavily inspired by the
+ * Intermine Implementation:
  *
  * <p>
  * https://github.com/intermine/intermine/blob/master/intermine/objectstore/main/src/org/intermine/sql/writebatch/BatchWriterPostgresCopyImpl.java
@@ -79,9 +82,9 @@ public class BigDecimalValueHandler<T extends Number> extends BaseValueHandler<T
     // Scale the first value:
     if (scaleRemainder != 0) {
       final BigInteger[] result =
-        unscaledValue.divideAndRemainder(BigInteger.TEN.pow(scaleRemainder));
+          unscaledValue.divideAndRemainder(BigInteger.TEN.pow(scaleRemainder));
       final int digit =
-        result[1].intValue() * (int) Math.pow(10, (double) DECIMAL_DIGITS - scaleRemainder);
+          result[1].intValue() * (int) Math.pow(10, (double) DECIMAL_DIGITS - scaleRemainder);
       digits.add(digit);
       unscaledValue = result[0];
     }

@@ -12,6 +12,8 @@
 
 package com.baremaps.storage.shapefile.internal;
 
+
+
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 
@@ -25,7 +27,8 @@ public class ShapefileDescriptor {
   private int fileCode; // big
 
   /** File length. */
-  private int fileLength; // big // The value for file length is the total length of the file in 16-bit
+  private int fileLength; // big // The value for file length is the total length of the file in
+                          // 16-bit
   // words
 
   /** File version. */

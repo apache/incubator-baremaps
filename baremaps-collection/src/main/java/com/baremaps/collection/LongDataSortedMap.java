@@ -12,12 +12,15 @@
 
 package com.baremaps.collection;
 
+
+
 import com.baremaps.collection.memory.OffHeapMemory;
 import com.baremaps.collection.type.LongDataType;
 import com.baremaps.collection.type.PairDataType.Pair;
 
 /**
- * A map of data backed by a {@link AlignedDataList} for storing keys and a {@link DataStore} for storing values.
+ * A map of data backed by a {@link AlignedDataList} for storing keys and a {@link DataStore} for
+ * storing values.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
@@ -61,7 +64,8 @@ public class LongDataSortedMap<T> implements LongDataMap<T> {
     }
     long lo = offsets.get(chunk);
     long hi =
-      Math.min(keys.size(), chunk >= offsets.size() - 1 ? keys.size() : offsets.get(chunk + 1)) - 1;
+        Math.min(keys.size(), chunk >= offsets.size() - 1 ? keys.size() : offsets.get(chunk + 1))
+            - 1;
     while (lo <= hi) {
       long index = (lo + hi) >>> 1;
       Pair<Long, Long> pair = keys.get(index);

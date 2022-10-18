@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.model;
 
+
+
 import com.baremaps.osm.function.BlockConsumer;
 import com.baremaps.osm.function.BlockFunction;
 import java.util.List;
@@ -27,18 +29,14 @@ public class DataBlock extends Block {
   /**
    * Constructs an OpenStreetMap {@code DataBlock} with the specified parameters.
    *
-   * @param blob       the blob
+   * @param blob the blob
    * @param denseNodes the dense nodes
-   * @param nodes      the nodes
-   * @param ways       the ways
-   * @param relations  the relations
+   * @param nodes the nodes
+   * @param ways the ways
+   * @param relations the relations
    */
-  public DataBlock(
-    Blob blob,
-    List<Node> denseNodes,
-    List<Node> nodes,
-    List<Way> ways,
-    List<Relation> relations) {
+  public DataBlock(Blob blob, List<Node> denseNodes, List<Node> nodes, List<Way> ways,
+      List<Relation> relations) {
     super(blob);
     this.denseNodes = denseNodes;
     this.nodes = nodes;

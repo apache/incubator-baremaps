@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.model;
 
+
+
 import com.baremaps.osm.binary.Fileformat;
 import com.baremaps.osm.binary.Fileformat.BlobHeader;
 import com.google.protobuf.ByteString;
@@ -30,9 +32,9 @@ public class Blob {
   /**
    * Constructs a OpenStreetMap {@code Blob}.
    *
-   * @param header  the header
+   * @param header the header
    * @param rawData the raw data
-   * @param size    the size
+   * @param size the size
    */
   public Blob(BlobHeader header, byte[] rawData, int size) {
     this.header = header;
@@ -84,9 +86,7 @@ public class Blob {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return new StringJoiner(", ", Blob.class.getSimpleName() + "[", "]")
-      .add("header=" + header)
-      .add("size=" + size)
-      .toString();
+    return new StringJoiner(", ", Blob.class.getSimpleName() + "[", "]").add("header=" + header)
+        .add("size=" + size).toString();
   }
 }

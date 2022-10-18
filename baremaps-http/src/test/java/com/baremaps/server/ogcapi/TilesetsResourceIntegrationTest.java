@@ -45,13 +45,11 @@ public class TilesetsResourceIntegrationTest extends JerseyTest {
     DataSource dataSource = PostgresUtils.dataSource("jdbc:tc:postgresql:13:///test");
     jdbi = Jdbi.create(dataSource).installPlugin(new Jackson2Plugin());
     jdbi.useHandle(
-      handle -> handle.execute("create table tilesets (id uuid primary key, tileset jsonb)"));
+        handle -> handle.execute("create table tilesets (id uuid primary key, tileset jsonb)"));
 
     // Configure the service
-    return new ResourceConfig()
-      .registerClasses(JacksonFeature.class, TilesetsResource.class)
-      .register(
-        new AbstractBinder() {
+    return new ResourceConfig().registerClasses(JacksonFeature.class, TilesetsResource.class)
+        .register(new AbstractBinder() {
           @Override
           protected void configure() {
             bind(dataSource).to(DataSource.class);

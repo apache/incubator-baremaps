@@ -12,20 +12,16 @@
 
 package com.baremaps.cli;
 
+
+
 import picocli.CommandLine.Option;
 
 public class Options {
 
   public enum LogLevel {
-    DEBUG,
-    INFO,
-    TRACE,
-    ERROR
+    DEBUG, INFO, TRACE, ERROR
   }
 
-  @Option(
-    names = {"--log-level"},
-    paramLabel = "LOG_LEVEL",
-    description = {"The log level."})
+  @Option(names = {"--log-level"}, paramLabel = "LOG_LEVEL", description = {"The log level."})
   public LogLevel logLevel = LogLevel.INFO;
 }

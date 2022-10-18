@@ -71,9 +71,9 @@ public class GeometryUtils {
   public static CoordinateTransform coordinateTransform(Integer sourceSRID, Integer targetSRID) {
     CRSFactory crsFactory = new CRSFactory();
     CoordinateReferenceSystem sourceCRS =
-      crsFactory.createFromName(String.format("EPSG:%d", sourceSRID));
+        crsFactory.createFromName(String.format("EPSG:%d", sourceSRID));
     CoordinateReferenceSystem targetCRS =
-      crsFactory.createFromName(String.format("EPSG:%d", targetSRID));
+        crsFactory.createFromName(String.format("EPSG:%d", targetSRID));
     CoordinateTransformFactory coordinateTransformFactory = new CoordinateTransformFactory();
     return coordinateTransformFactory.createTransform(sourceCRS, targetCRS);
   }
@@ -81,7 +81,7 @@ public class GeometryUtils {
   /**
    * Creates a projection transformer with the provided SRIDs.
    *
-   * @param inputSRID  the input SRID
+   * @param inputSRID the input SRID
    * @param outputSRID the output SRID
    * @return the projection transformer
    */

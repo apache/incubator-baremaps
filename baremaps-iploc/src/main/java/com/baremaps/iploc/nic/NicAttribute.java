@@ -21,7 +21,7 @@ public class NicAttribute {
   /**
    * Constructs a NIC attribute.
    *
-   * @param name  an attribute name
+   * @param name an attribute name
    * @param value an attribute value
    */
   public NicAttribute(String name, String value) {

@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.model;
 
+
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -30,10 +32,10 @@ public class Info {
   /**
    * Constructs an OpenStreetMap {@code Info} with the specified metadata.
    *
-   * @param version   the version
+   * @param version the version
    * @param timestamp the timestamp
    * @param changeset the changeset
-   * @param uid       the user id
+   * @param uid the user id
    */
   public Info(int version, LocalDateTime timestamp, long changeset, int uid) {
     this.version = version;
@@ -88,8 +90,8 @@ public class Info {
       return false;
     }
     Info info = (Info) o;
-    return version == info.version && changeset == info.changeset && uid == info.uid &&
-      Objects.equals(timestamp, info.timestamp);
+    return version == info.version && changeset == info.changeset && uid == info.uid
+        && Objects.equals(timestamp, info.timestamp);
   }
 
   /** {@inheritDoc} */
@@ -101,11 +103,7 @@ public class Info {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return new StringJoiner(", ", Info.class.getSimpleName() + "[", "]")
-      .add("version=" + version)
-      .add("timestamp=" + timestamp)
-      .add("changeset=" + changeset)
-      .add("uid=" + uid)
-      .toString();
+    return new StringJoiner(", ", Info.class.getSimpleName() + "[", "]").add("version=" + version)
+        .add("timestamp=" + timestamp).add("changeset=" + changeset).add("uid=" + uid).toString();
   }
 }

@@ -71,10 +71,8 @@ public class NicObject {
    * @return the attribute value
    */
   public Optional<String> first(String name) {
-    return attributes.stream()
-      .filter(attr -> attr.name().equals(name))
-      .map(NicAttribute::value)
-      .findFirst();
+    return attributes.stream().filter(attr -> attr.name().equals(name)).map(NicAttribute::value)
+        .findFirst();
   }
 
   /**
@@ -84,10 +82,8 @@ public class NicObject {
    * @return the attribute values
    */
   public List<String> all(String name) {
-    return attributes.stream()
-      .filter(attr -> attr.name().equals(name))
-      .map(NicAttribute::value)
-      .toList();
+    return attributes.stream().filter(attr -> attr.name().equals(name)).map(NicAttribute::value)
+        .toList();
   }
 
   /**
@@ -98,9 +94,8 @@ public class NicObject {
   public Map<String, String> toMap() {
     Map<String, String> map = new HashMap<>();
     for (NicAttribute attr : attributes()) {
-      map.put(
-        attr.name(),
-        (map.containsKey(attr.name()) ? map.get(attr.name()) + ", " : "") + attr.value());
+      map.put(attr.name(),
+          (map.containsKey(attr.name()) ? map.get(attr.name()) + ", " : "") + attr.value());
     }
     return map;
   }

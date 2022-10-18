@@ -12,6 +12,8 @@
 
 package com.baremaps.storage.shapefile.internal;
 
+
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
@@ -36,7 +38,8 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
   /** Reserved (dBASE IV) Filled with 00h. */
   protected byte[] reservedFiller1 = new byte[2];
   /**
-   * Reserved : Incomplete transaction (dBASE IV). 00h : Transaction ended (or rolled back). 01h : Transaction started.
+   * Reserved : Incomplete transaction (dBASE IV). 00h : Transaction ended (or rolled back). 01h :
+   * Transaction started.
    */
   protected byte reservedIncompleteTransaction;
   /** Reserved : Encryption flag (dBASE IV). 00h : Not encrypted. 01h : Data encrypted. */
@@ -70,7 +73,7 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
   /**
    * Construct a mapped byte reader on a file.
    *
-   * @param dbase3File      File.
+   * @param dbase3File File.
    * @param connectionInfos Connection properties, maybe null.
    * @throws DbaseException if the database seems to be invalid.
    */
@@ -117,8 +120,7 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
       String value = new String(data, 0, length);
 
       // TODO: move somewhere else
-      Object object =
-        switch (fd.getType()) {
+      Object object = switch (fd.getType()) {
         case Character -> value;
         case Number -> getNumber(fd, value);
         case Currency -> Double.parseDouble(value.trim());
@@ -134,7 +136,7 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
         case Variant -> value;
         case TimeStamp -> value;
         case DateTime -> value;
-        };
+      };
 
       feature.setPropertyValue(fd.getName(), object);
     }
@@ -181,8 +183,8 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
    */
   public int getRowNum() {
     int position = getByteBuffer().position();
-    int recordNumber =
-      (position - Short.toUnsignedInt(this.firstRecordPosition)) / Short.toUnsignedInt(this.recordLength);
+    int recordNumber = (position - Short.toUnsignedInt(this.firstRecordPosition))
+        / Short.toUnsignedInt(this.recordLength);
     return recordNumber;
   }
 
@@ -344,8 +346,8 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
    *
    * @param codePageBinaryValue page code binary value.
    * @return Charset.
-   * @throws UnsupportedCharsetException if the code page as no representation in recents Charset (legacy DOS or
-   *                                     macintosh charsets).
+   * @throws UnsupportedCharsetException if the code page as no representation in recents Charset
+   *         (legacy DOS or macintosh charsets).
    */
   protected Charset toCharset(byte codePageBinaryValue) throws UnsupportedCharsetException {
     // Attempt to find a known conversion.
@@ -374,60 +376,60 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
   private String toCodePage(byte pageCodeBinaryValue) {
     // From http://trac.osgeo.org/gdal/ticket/2864
     HashMap<Integer, String> knownConversions = new HashMap<>();
-    knownConversions.put(0x01, "cp437"); //  U.S. MS–DOS
+    knownConversions.put(0x01, "cp437"); // U.S. MS–DOS
     knownConversions.put(0x02, "cp850"); // International MS–DOS
     knownConversions.put(0x03, "cp1252"); // Windows ANSI
-    knownConversions.put(0x08, "cp865"); //  Danish OEM
-    knownConversions.put(0x09, "cp437"); //  Dutch OEM
-    knownConversions.put(0x0a, "cp850"); //  Dutch OEM*
-    knownConversions.put(0x0b, "cp437"); //  Finnish OEM
-    knownConversions.put(0x0d, "cp437"); //  French OEM
-    knownConversions.put(0x0e, "cp850"); //  French OEM*
-    knownConversions.put(0x0f, "cp437"); //  German OEM
-    knownConversions.put(0x10, "cp850"); //  German OEM*
-    knownConversions.put(0x11, "cp437"); //  Italian OEM
-    knownConversions.put(0x12, "cp850"); //  Italian OEM*
-    knownConversions.put(0x13, "cp932"); //  Japanese Shift-JIS
-    knownConversions.put(0x14, "cp850"); //  Spanish OEM*
-    knownConversions.put(0x15, "cp437"); //  Swedish OEM
-    knownConversions.put(0x16, "cp850"); //  Swedish OEM*
-    knownConversions.put(0x17, "cp865"); //  Norwegian OEM
-    knownConversions.put(0x18, "cp437"); //  Spanish OEM
-    knownConversions.put(0x19, "cp437"); //  English OEM (Britain)
-    knownConversions.put(0x1a, "cp850"); //  English OEM (Britain)*
-    knownConversions.put(0x1b, "cp437"); //  English OEM (U.S.)
-    knownConversions.put(0x1c, "cp863"); //  French OEM (Canada)
-    knownConversions.put(0x1d, "cp850"); //  French OEM*
-    knownConversions.put(0x1f, "cp852"); //  Czech OEM
-    knownConversions.put(0x22, "cp852"); //  Hungarian OEM
-    knownConversions.put(0x23, "cp852"); //  Polish OEM
-    knownConversions.put(0x24, "cp860"); //  Portuguese OEM
-    knownConversions.put(0x25, "cp850"); //  Portuguese OEM*
-    knownConversions.put(0x26, "cp866"); //  Russian OEM
-    knownConversions.put(0x37, "cp850"); //  English OEM (U.S.)*
-    knownConversions.put(0x40, "cp852"); //  Romanian OEM
-    knownConversions.put(0x4d, "cp936"); //  Chinese GBK (PRC)
-    knownConversions.put(0x4e, "cp949"); //  Korean (ANSI/OEM)
-    knownConversions.put(0x4f, "cp950"); //  Chinese Big5 (Taiwan)
-    knownConversions.put(0x50, "cp874"); //  Thai (ANSI/OEM)
+    knownConversions.put(0x08, "cp865"); // Danish OEM
+    knownConversions.put(0x09, "cp437"); // Dutch OEM
+    knownConversions.put(0x0a, "cp850"); // Dutch OEM*
+    knownConversions.put(0x0b, "cp437"); // Finnish OEM
+    knownConversions.put(0x0d, "cp437"); // French OEM
+    knownConversions.put(0x0e, "cp850"); // French OEM*
+    knownConversions.put(0x0f, "cp437"); // German OEM
+    knownConversions.put(0x10, "cp850"); // German OEM*
+    knownConversions.put(0x11, "cp437"); // Italian OEM
+    knownConversions.put(0x12, "cp850"); // Italian OEM*
+    knownConversions.put(0x13, "cp932"); // Japanese Shift-JIS
+    knownConversions.put(0x14, "cp850"); // Spanish OEM*
+    knownConversions.put(0x15, "cp437"); // Swedish OEM
+    knownConversions.put(0x16, "cp850"); // Swedish OEM*
+    knownConversions.put(0x17, "cp865"); // Norwegian OEM
+    knownConversions.put(0x18, "cp437"); // Spanish OEM
+    knownConversions.put(0x19, "cp437"); // English OEM (Britain)
+    knownConversions.put(0x1a, "cp850"); // English OEM (Britain)*
+    knownConversions.put(0x1b, "cp437"); // English OEM (U.S.)
+    knownConversions.put(0x1c, "cp863"); // French OEM (Canada)
+    knownConversions.put(0x1d, "cp850"); // French OEM*
+    knownConversions.put(0x1f, "cp852"); // Czech OEM
+    knownConversions.put(0x22, "cp852"); // Hungarian OEM
+    knownConversions.put(0x23, "cp852"); // Polish OEM
+    knownConversions.put(0x24, "cp860"); // Portuguese OEM
+    knownConversions.put(0x25, "cp850"); // Portuguese OEM*
+    knownConversions.put(0x26, "cp866"); // Russian OEM
+    knownConversions.put(0x37, "cp850"); // English OEM (U.S.)*
+    knownConversions.put(0x40, "cp852"); // Romanian OEM
+    knownConversions.put(0x4d, "cp936"); // Chinese GBK (PRC)
+    knownConversions.put(0x4e, "cp949"); // Korean (ANSI/OEM)
+    knownConversions.put(0x4f, "cp950"); // Chinese Big5 (Taiwan)
+    knownConversions.put(0x50, "cp874"); // Thai (ANSI/OEM)
     knownConversions.put(0x57, "cp1252"); // ANSI
     knownConversions.put(0x58, "cp1252"); // Western European ANSI
     knownConversions.put(0x59, "cp1252"); // Spanish ANSI
-    knownConversions.put(0x64, "cp852"); //  Eastern European MS–DOS
-    knownConversions.put(0x65, "cp866"); //  Russian MS–DOS
-    knownConversions.put(0x66, "cp865"); //  Nordic MS–DOS
-    knownConversions.put(0x67, "cp861"); //  Icelandic MS–DOS
-    knownConversions.put(0x6a, "cp737"); //  Greek MS–DOS (437G)
-    knownConversions.put(0x6b, "cp857"); //  Turkish MS–DOS
-    knownConversions.put(0x6c, "cp863"); //  French–Canadian MS–DOS
-    knownConversions.put(0x78, "cp950"); //  Taiwan Big 5
-    knownConversions.put(0x79, "cp949"); //  Hangul (Wansung)
-    knownConversions.put(0x7a, "cp936"); //  PRC GBK
-    knownConversions.put(0x7b, "cp932"); //  Japanese Shift-JIS
-    knownConversions.put(0x7c, "cp874"); //  Thai Windows/MS–DOS
-    knownConversions.put(0x86, "cp737"); //  Greek OEM
-    knownConversions.put(0x87, "cp852"); //  Slovenian OEM
-    knownConversions.put(0x88, "cp857"); //  Turkish OEM
+    knownConversions.put(0x64, "cp852"); // Eastern European MS–DOS
+    knownConversions.put(0x65, "cp866"); // Russian MS–DOS
+    knownConversions.put(0x66, "cp865"); // Nordic MS–DOS
+    knownConversions.put(0x67, "cp861"); // Icelandic MS–DOS
+    knownConversions.put(0x6a, "cp737"); // Greek MS–DOS (437G)
+    knownConversions.put(0x6b, "cp857"); // Turkish MS–DOS
+    knownConversions.put(0x6c, "cp863"); // French–Canadian MS–DOS
+    knownConversions.put(0x78, "cp950"); // Taiwan Big 5
+    knownConversions.put(0x79, "cp949"); // Hangul (Wansung)
+    knownConversions.put(0x7a, "cp936"); // PRC GBK
+    knownConversions.put(0x7b, "cp932"); // Japanese Shift-JIS
+    knownConversions.put(0x7c, "cp874"); // Thai Windows/MS–DOS
+    knownConversions.put(0x86, "cp737"); // Greek OEM
+    knownConversions.put(0x87, "cp852"); // Slovenian OEM
+    knownConversions.put(0x88, "cp857"); // Turkish OEM
     knownConversions.put(0xc8, "cp1250"); // Eastern European Windows
     knownConversions.put(0xc9, "cp1251"); // Russian Windows
     knownConversions.put(0xca, "cp1254"); // Turkish Windows
@@ -456,8 +458,7 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
     Objects.requireNonNull(yymmdd, "the yymmdd bytes cannot be null");
 
     if (yymmdd.length != 3) {
-      throw new IllegalArgumentException(
-        MessageFormat.format(
+      throw new IllegalArgumentException(MessageFormat.format(
           "Database:toDate() works only on a 3 bytes YY MM DD date. this array has {0} length",
           yymmdd.length));
     }

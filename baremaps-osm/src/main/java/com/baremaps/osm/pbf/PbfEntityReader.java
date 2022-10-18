@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.pbf;
 
+
+
 import com.baremaps.osm.OsmReader;
 import com.baremaps.osm.function.BlockEntityConsumer;
 import com.baremaps.osm.model.Entity;
@@ -40,16 +42,14 @@ public class PbfEntityReader implements OsmReader<Entity> {
    * @return a stream of blocks
    */
   public Stream<Entity> stream(InputStream inputStream) {
-    return reader.stream(inputStream)
-      .flatMap(
-        block -> {
-          try {
-            Stream.Builder<Entity> entities = Stream.builder();
-            block.visit(new BlockEntityConsumer(entities::add));
-            return entities.build();
-          } catch (Exception e) {
-            throw new StreamException(e);
-          }
-        });
+    return reader.stream(inputStream).flatMap(block -> {
+      try {
+        Stream.Builder<Entity> entities = Stream.builder();
+        block.visit(new BlockEntityConsumer(entities::add));
+        return entities.build();
+      } catch (Exception e) {
+        throw new StreamException(e);
+      }
+    });
   }
 }

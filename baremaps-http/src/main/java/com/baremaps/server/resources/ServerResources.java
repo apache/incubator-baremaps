@@ -52,11 +52,8 @@ public class ServerResources {
   public static final String TILE_TYPE = "application/vnd.mapbox-vector-tile";
 
   @Inject
-  public ServerResources(
-    @Named("tileset") Path tileset,
-    @Named("style") Path style,
-    TileStore tileStore,
-    ObjectMapper objectMapper) throws IOException {
+  public ServerResources(@Named("tileset") Path tileset, @Named("style") Path style,
+      TileStore tileStore, ObjectMapper objectMapper) throws IOException {
     this.tileStore = tileStore;
     var configReader = new ConfigReader();
     this.style = objectMapper.readValue(configReader.read(style), MbStyle.class);
@@ -90,11 +87,8 @@ public class ServerResources {
       ByteBuffer blob = tileStore.read(tile);
       if (blob != null) {
         return Response.status(200) // lgtm [java/xss]
-          .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-          .header(CONTENT_TYPE, TILE_TYPE)
-          .header(CONTENT_ENCODING, TILE_ENCODING)
-          .entity(blob.array())
-          .build();
+            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(CONTENT_TYPE, TILE_TYPE)
+            .header(CONTENT_ENCODING, TILE_ENCODING).entity(blob.array()).build();
       } else {
         return Response.status(204).build();
       }

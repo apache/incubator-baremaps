@@ -12,6 +12,8 @@
 
 package com.baremaps.collection;
 
+
+
 import com.baremaps.collection.memory.Memory;
 import com.baremaps.collection.type.DataType;
 import java.io.Closeable;
@@ -21,8 +23,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * A data store backed by a {@link DataType} and a {@link Memory}. Data is appended to the store and can be accessed by
- * its position in the {@link Memory}.
+ * A data store backed by a {@link DataType} and a {@link Memory}. Data is appended to the store and
+ * can be accessed by its position in the {@link Memory}.
  */
 public class DataStore<T> implements Closeable, Cleanable {
 
@@ -38,7 +40,7 @@ public class DataStore<T> implements Closeable, Cleanable {
    * Constructs a data store.
    *
    * @param dataType the data type
-   * @param memory   the memory
+   * @param memory the memory
    */
   public DataStore(DataType<T> dataType, Memory memory) {
     this.dataType = dataType;

@@ -52,25 +52,16 @@ class ImportUpdateDataTest extends DatabaseContainerTest {
     PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
 
     LongDataMap<Coordinate> coordinates =
-      new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
+        new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
     LongDataMap<List<Long>> references =
-      new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
+        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
-    new ImportService(
-      SIMPLE_DATA_OSM_PBF,
-      coordinates,
-      references,
-      headerRepository,
-      nodeRepository,
-      wayRepository,
-      relationRepository,
-      3857)
-        .call();
+    new ImportService(SIMPLE_DATA_OSM_PBF, coordinates, references, headerRepository,
+        nodeRepository, wayRepository, relationRepository, 3857).call();
 
-    headerRepository.put(
-      new Header(
-        0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0), "file:///" + SIMPLE_DATA_DIR, "", ""));
+    headerRepository.put(new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0),
+        "file:///" + SIMPLE_DATA_DIR, "", ""));
 
     // Check node importation
     assertNull(nodeRepository.get(0l));
@@ -99,15 +90,9 @@ class ImportUpdateDataTest extends DatabaseContainerTest {
     assertNotNull(way);
 
     // Update the database
-    new UpdateService(
-      new PostgresCoordinateMap(dataSource()),
-      new PostgresReferenceMap(dataSource()),
-      headerRepository,
-      nodeRepository,
-      wayRepository,
-      relationRepository,
-      3857)
-        .call();
+    new UpdateService(new PostgresCoordinateMap(dataSource()),
+        new PostgresReferenceMap(dataSource()), headerRepository, nodeRepository, wayRepository,
+        relationRepository, 3857).call();
 
     // Check deletions
     assertNull(nodeRepository.get(0l));

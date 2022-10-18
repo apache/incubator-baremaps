@@ -12,13 +12,16 @@
 
 package com.baremaps.osm.model;
 
+
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * Represents an element in an OpenStreetMap dataset. Elements are a basis to model the physical world.
+ * Represents an element in an OpenStreetMap dataset. Elements are a basis to model the physical
+ * world.
  */
 public abstract class Element implements Entity {
 
@@ -37,9 +40,9 @@ public abstract class Element implements Entity {
   /**
    * Constructs an OpenStreetMap {@code Element} with the specified parameters.
    *
-   * @param id       the id
-   * @param info     the {@code Info}
-   * @param tags     the tags
+   * @param id the id
+   * @param info the {@code Info}
+   * @param tags the tags
    * @param geometry the geometry
    */
   protected Element(long id, Info info, Map<String, String> tags, Geometry geometry) {
@@ -104,8 +107,8 @@ public abstract class Element implements Entity {
       return false;
     }
     Element element = (Element) o;
-    return id == element.id && Objects.equals(info, element.info) && Objects.equals(tags, element.tags) &&
-      Objects.equals(geometry, element.geometry);
+    return id == element.id && Objects.equals(info, element.info)
+        && Objects.equals(tags, element.tags) && Objects.equals(geometry, element.geometry);
   }
 
   /** {@inheritDoc} */
@@ -117,11 +120,7 @@ public abstract class Element implements Entity {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return new StringJoiner(", ", Element.class.getSimpleName() + "[", "]")
-      .add("id=" + id)
-      .add("info=" + info)
-      .add("tags=" + tags)
-      .add("geometry=" + geometry)
-      .toString();
+    return new StringJoiner(", ", Element.class.getSimpleName() + "[", "]").add("id=" + id)
+        .add("info=" + info).add("tags=" + tags).add("geometry=" + geometry).toString();
   }
 }

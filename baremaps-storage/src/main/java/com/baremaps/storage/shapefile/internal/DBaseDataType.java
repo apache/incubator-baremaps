@@ -16,7 +16,8 @@ package com.baremaps.storage.shapefile.internal;
  * Provides a simple DataType class.
  *
  * @author Travis L. Pinney
- * @see <a href="http://www.clicketyclick.dk/databases/xbase/format/data_types.html">Xbase Data Types</a>
+ * @see <a href="http://www.clicketyclick.dk/databases/xbase/format/data_types.html">Xbase Data
+ *      Types</a>
  */
 public enum DBaseDataType {
   /** Character (less than 254 characters). */
@@ -37,7 +38,7 @@ public enum DBaseDataType {
   /** Floating point (20 digits). */
   FloatingPoint('F'),
 
-  // CharacterNameVariable("?"),  //1-254 Characters
+  // CharacterNameVariable("?"), //1-254 Characters
 
   /** Picture (memo). */
   Picture('P'),
@@ -46,7 +47,8 @@ public enum DBaseDataType {
   Currency('Y'),
 
   /**
-   * Date time (32 bit little-endian Julian date, 32 byte little endian milliseconds since midnight).
+   * Date time (32 bit little-endian Julian date, 32 byte little endian milliseconds since
+   * midnight).
    */
   DateTime('T'),
 

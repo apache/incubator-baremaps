@@ -25,7 +25,7 @@ class ProjectionTransformerTest {
   @Test
   public void testPoint() {
     var inputGeom =
-      new GeometryFactory(new PrecisionModel(), 4326).createPoint(new Coordinate(1, 1));
+        new GeometryFactory(new PrecisionModel(), 4326).createPoint(new Coordinate(1, 1));
     var outputGeom = (Point) new ProjectionTransformer(4326, 3857).transform(inputGeom);
     assertEquals(3857, outputGeom.getSRID());
     assertEquals(111319.49079327357, outputGeom.getX());

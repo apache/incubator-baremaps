@@ -52,36 +52,30 @@ public class CollectionsResourceIntegrationTest extends JerseyTest {
 
     // Initialize the database
     jdbi = Jdbi.create(connection).installPlugin(new Jackson2Plugin());
-    jdbi.useHandle(
-      handle -> handle.execute("create table collections (id uuid primary key, collection jsonb)"));
+    jdbi.useHandle(handle -> handle
+        .execute("create table collections (id uuid primary key, collection jsonb)"));
 
     // Configure the service
-    return new ResourceConfig()
-      .register(CollectionsResource.class)
-      .register(
-        new AbstractBinder() {
-          @Override
-          protected void configure() {
-            bind(jdbi).to(Jdbi.class);
-          }
-        });
+    return new ResourceConfig().register(CollectionsResource.class).register(new AbstractBinder() {
+      @Override
+      protected void configure() {
+        bind(jdbi).to(Jdbi.class);
+      }
+    });
   }
 
   @Test
   public void test() {
     // Create a new collection
     Collection collection =
-      new Collection().title("test").links(List.of(new Link().href("/link").rel("self")));
+        new Collection().title("test").links(List.of(new Link().href("/link").rel("self")));
 
     // List the collections
     Collections collections = target().path("/collections").request().get(Collections.class);
     Assert.assertEquals(0, collections.getCollections().size());
 
     // Insert the collection
-    Response response =
-      target()
-        .path("/collections")
-        .request(MediaType.APPLICATION_JSON)
+    Response response = target().path("/collections").request(MediaType.APPLICATION_JSON)
         .post(Entity.entity(collection, MediaType.valueOf("application/json")));
     assertEquals(201, response.getStatus());
 
@@ -96,10 +90,7 @@ public class CollectionsResourceIntegrationTest extends JerseyTest {
 
     // Update the collection
     collection.setTitle("test_update");
-    response =
-      target()
-        .path("/collections/" + id)
-        .request()
+    response = target().path("/collections/" + id).request()
         .put(Entity.entity(collection, MediaType.valueOf("application/json")));
     assertEquals(204, response.getStatus());
 

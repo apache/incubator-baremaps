@@ -12,6 +12,8 @@
 
 package com.baremaps.stream;
 
+
+
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -30,7 +32,7 @@ public class PartitionedSpliterator<T> implements Spliterator<Stream<T>> {
   /**
    * Constructs a {@code PartitionedSpliterator} from another spliterator
    *
-   * @param spliterator   the spliterator to partition
+   * @param spliterator the spliterator to partition
    * @param partitionSize the partition size
    */
   public PartitionedSpliterator(Spliterator<T> spliterator, int partitionSize) {

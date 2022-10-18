@@ -12,6 +12,8 @@
 
 package com.baremaps.collection;
 
+
+
 import com.baremaps.collection.memory.OffHeapMemory;
 import com.baremaps.collection.type.LongDataType;
 
@@ -34,7 +36,7 @@ public class LongSizedDataSortedMap<T> implements LongDataMap<T> {
   /**
    * Constructs a map.
    *
-   * @param keys   the list of keys
+   * @param keys the list of keys
    * @param values the list of values
    */
   public LongSizedDataSortedMap(AlignedDataList<Long> keys, AlignedDataList<T> values) {
@@ -67,7 +69,8 @@ public class LongSizedDataSortedMap<T> implements LongDataMap<T> {
     }
     long lo = offsets.get(chunk);
     long hi =
-      Math.min(keys.size(), chunk >= offsets.size() - 1 ? keys.size() : offsets.get(chunk + 1)) - 1;
+        Math.min(keys.size(), chunk >= offsets.size() - 1 ? keys.size() : offsets.get(chunk + 1))
+            - 1;
     while (lo <= hi) {
       long index = (lo + hi) >>> 1;
       long value = keys.get(index);

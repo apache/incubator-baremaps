@@ -12,6 +12,8 @@
 
 package com.baremaps.iploc.database;
 
+
+
 import com.baremaps.iploc.data.InetnumLocation;
 import java.util.List;
 

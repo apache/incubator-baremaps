@@ -45,7 +45,7 @@ class TileTest {
     int minZoom = 12;
     int maxZoom = 14;
     Envelope envelope = new Envelope(minLon, maxLon, minLat, maxLat);
-    assertEquals(
-      Tile.count(envelope, minZoom, maxZoom), Tile.list(envelope, minZoom, maxZoom).size());
+    assertEquals(Tile.count(envelope, minZoom, maxZoom),
+        Tile.list(envelope, minZoom, maxZoom).size());
   }
 }

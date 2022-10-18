@@ -12,6 +12,8 @@
 
 package com.baremaps.workflow;
 
+
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
@@ -20,4 +22,5 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @JsonSerialize
 @JsonTypeInfo(use = Id.CLASS, property = "type")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public interface Task extends Runnable {}
+public interface Task extends Runnable {
+}

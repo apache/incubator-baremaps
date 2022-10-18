@@ -39,27 +39,26 @@ class GeocoderTest {
   @Test
   public void buildAndSearch() throws IOException, ParseException {
     Path path = Files.createTempDirectory(Paths.get("."), "geocoder_");
-    Geocoder geocoder =
-      new Geocoder(path) {
-        @Override
-        protected Analyzer analyzer() {
-          return new StandardAnalyzer();
-        }
+    Geocoder geocoder = new Geocoder(path) {
+      @Override
+      protected Analyzer analyzer() {
+        return new StandardAnalyzer();
+      }
 
-        @Override
-        protected Stream<Document> documents() {
-          Document d1 = new Document();
-          d1.add(new Field("value", v1, TextField.TYPE_STORED));
-          Document d2 = new Document();
-          d2.add(new Field("value", v2, TextField.TYPE_STORED));
-          return Stream.of(d1, d2);
-        }
+      @Override
+      protected Stream<Document> documents() {
+        Document d1 = new Document();
+        d1.add(new Field("value", v1, TextField.TYPE_STORED));
+        Document d2 = new Document();
+        d2.add(new Field("value", v2, TextField.TYPE_STORED));
+        return Stream.of(d1, d2);
+      }
 
-        @Override
-        protected Query query(Analyzer analyzer, Request request) throws ParseException {
-          return new QueryParser("value", analyzer).parse(request.query());
-        }
-      };
+      @Override
+      protected Query query(Analyzer analyzer, Request request) throws ParseException {
+        return new QueryParser("value", analyzer).parse(request.query());
+      }
+    };
     geocoder.build();
 
     Response r3 = geocoder.search(new Request("simple", 10));

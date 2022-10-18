@@ -12,6 +12,8 @@
 
 package com.baremaps.storage.shapefile.internal;
 
+
+
 import java.io.IOException;
 
 /**
@@ -34,7 +36,7 @@ public class ShapefileException extends IOException {
    * Construct an exception.
    *
    * @param message Message of the exception.
-   * @param cause   Root cause of the exception.
+   * @param cause Root cause of the exception.
    */
   public ShapefileException(String message, Throwable cause) {
     super(message, cause);

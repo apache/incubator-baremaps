@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.model;
 
+
+
 import com.baremaps.osm.function.EntityConsumer;
 import com.baremaps.osm.function.EntityFunction;
 import java.util.Map;
@@ -29,11 +31,11 @@ public final class Node extends Element {
   /**
    * Constructs an OpenStreetMap {@code Node} with the specified parameters.
    *
-   * @param id   the id
+   * @param id the id
    * @param info the information
    * @param tags the tags
-   * @param lon  the longitude
-   * @param lat  the latitude
+   * @param lon the longitude
+   * @param lat the latitude
    */
   public Node(long id, Info info, Map<String, String> tags, double lon, double lat) {
     super(id, info, tags);
@@ -44,15 +46,15 @@ public final class Node extends Element {
   /**
    * Constructs an OpenStreetMap {@code Node} with the specified parameters.
    *
-   * @param id       the id
-   * @param info     the information
-   * @param tags     the tags
-   * @param lon      the longitude
-   * @param lat      the latitude
+   * @param id the id
+   * @param info the information
+   * @param tags the tags
+   * @param lon the longitude
+   * @param lat the latitude
    * @param geometry the geometry
    */
-  public Node(
-    long id, Info info, Map<String, String> tags, double lon, double lat, Geometry geometry) {
+  public Node(long id, Info info, Map<String, String> tags, double lon, double lat,
+      Geometry geometry) {
     super(id, info, tags, geometry);
     this.lon = lon;
     this.lat = lat;
@@ -113,10 +115,7 @@ public final class Node extends Element {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return new StringJoiner(", ", Node.class.getSimpleName() + "[", "]")
-      .add("lon=" + lon)
-      .add("lat=" + lat)
-      .add("id=" + id)
-      .toString();
+    return new StringJoiner(", ", Node.class.getSimpleName() + "[", "]").add("lon=" + lon)
+        .add("lat=" + lat).add("id=" + id).toString();
   }
 }

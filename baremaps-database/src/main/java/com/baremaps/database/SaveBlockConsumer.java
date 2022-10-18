@@ -12,6 +12,8 @@
 
 package com.baremaps.database;
 
+
+
 import com.baremaps.database.repository.Repository;
 import com.baremaps.osm.function.BlockConsumerAdapter;
 import com.baremaps.osm.model.DataBlock;
@@ -32,16 +34,14 @@ public class SaveBlockConsumer implements BlockConsumerAdapter {
   /**
    * Constructs a {@code SaveBlockConsumer}.
    *
-   * @param headerRepository   the header table
-   * @param nodeRepository     the node table
-   * @param wayRepository      the way table
+   * @param headerRepository the header table
+   * @param nodeRepository the node table
+   * @param wayRepository the way table
    * @param relationRepository the relation table
    */
-  public SaveBlockConsumer(
-    Repository<Long, Header> headerRepository,
-    Repository<Long, Node> nodeRepository,
-    Repository<Long, Way> wayRepository,
-    Repository<Long, Relation> relationRepository) {
+  public SaveBlockConsumer(Repository<Long, Header> headerRepository,
+      Repository<Long, Node> nodeRepository, Repository<Long, Way> wayRepository,
+      Repository<Long, Relation> relationRepository) {
     this.headerRepository = headerRepository;
     this.nodeRepository = nodeRepository;
     this.wayRepository = wayRepository;

@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.function;
 
+
+
 import com.baremaps.osm.geometry.ProjectionTransformer;
 import com.baremaps.osm.model.Element;
 import com.baremaps.osm.model.Node;
@@ -27,7 +29,7 @@ public class ReprojectEntityConsumer implements EntityConsumerAdapter {
   /**
    * Creates a consumer that reproject geometries with the provided SRIDs.
    *
-   * @param inputSRID  the input SRID
+   * @param inputSRID the input SRID
    * @param outputSRID the output SRID
    */
   public ReprojectEntityConsumer(int inputSRID, int outputSRID) {

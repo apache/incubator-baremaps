@@ -12,6 +12,8 @@
 
 package com.baremaps.storage.shapefile.internal;
 
+
+
 import java.io.*;
 import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
@@ -62,14 +64,14 @@ public class ShapefileByteReader extends CommonByteReader {
   /**
    * Construct a shapefile byte reader.
    *
-   * @param shapefile      Shapefile.
-   * @param dbaseFile      underlying database file name.
+   * @param shapefile Shapefile.
+   * @param dbaseFile underlying database file name.
    * @param shapefileIndex Shapefile index, if any. Null else.
-   * @throws DbaseException     if the database file format is invalid.
+   * @throws DbaseException if the database file format is invalid.
    * @throws ShapefileException if the shapefile has not been found.
    */
   public ShapefileByteReader(File shapefile, File dbaseFile, File shapefileIndex)
-    throws IOException {
+      throws IOException {
     super(shapefile);
     this.shapeFileIndex = shapefileIndex;
 
@@ -129,8 +131,7 @@ public class ShapefileByteReader extends CommonByteReader {
       properties.put(DefaultAttributeType.NAME_KEY, fieldDescriptor.getName());
 
       // TODO: move somewhere else
-      Class type =
-        switch (fieldDescriptor.getType()) {
+      Class type = switch (fieldDescriptor.getType()) {
         case Character -> String.class;
         case Number -> fieldDescriptor.getDecimalCount() == 0 ? Long.class : Double.class;
         case Currency -> Double.class;
@@ -148,7 +149,7 @@ public class ShapefileByteReader extends CommonByteReader {
         case Variant -> String.class;
         case TimeStamp -> String.class;
         case DateTime -> String.class;
-        };
+      };
 
       attributes[i] = new DefaultAttributeType<>(properties, type, 1, 1, null);
     }
@@ -170,17 +171,16 @@ public class ShapefileByteReader extends CommonByteReader {
   /**
    * Load shapefile indexes.
    *
-   * @return true if shapefile indexes has been read, false if none where available or a problem occured.
+   * @return true if shapefile indexes has been read, false if none where available or a problem
+   *         occured.
    */
   private boolean loadShapefileIndexes() {
     if (this.shapeFileIndex == null) {
       return false;
     }
 
-    try (
-      FileInputStream fis = new FileInputStream(this.shapeFileIndex);
-      FileChannel fc = fis.getChannel()
-    ) {
+    try (FileInputStream fis = new FileInputStream(this.shapeFileIndex);
+        FileChannel fc = fis.getChannel()) {
       try {
         int fsize = (int) fc.size();
         MappedByteBuffer indexesByteBuffer = fc.map(FileChannel.MapMode.READ_ONLY, 0, fsize);
@@ -192,9 +192,8 @@ public class ShapefileByteReader extends CommonByteReader {
         indexesByteBuffer.order(ByteOrder.BIG_ENDIAN);
 
         while (indexesByteBuffer.hasRemaining()) {
-          this.indexes.add(
-            indexesByteBuffer
-              .getInt()); // Data offset : the position of the record in the main shapefile,
+          this.indexes.add(indexesByteBuffer.getInt()); // Data offset : the position of the record
+                                                        // in the main shapefile,
           // expressed in words (16 bits).
           this.recordsLengths.add(indexesByteBuffer.getInt()); // Length of this shapefile record.
         }
@@ -280,7 +279,7 @@ public class ShapefileByteReader extends CommonByteReader {
 
     if (type == null) {
       throw new ShapefileException(
-        "The shapefile feature type doesn''t match to any known feature type.");
+          "The shapefile feature type doesn''t match to any known feature type.");
     }
 
     switch (type) {
@@ -337,19 +336,20 @@ public class ShapefileByteReader extends CommonByteReader {
   /**
    * Read a polygon that has multiple parts.
    *
-   * @param numParts  Number of parts of this polygon.
+   * @param numParts Number of parts of this polygon.
    * @param numPoints Total number of points of this polygon, all parts considered.
    * @return a multiple part polygon.
    */
   private Geometry readMultiplePolygon(int numParts, int numPoints) {
     /**
-     * From ESRI Specification : Parts : 0 5 (meaning : 0 designs the first v1, 5 designs the first v5 on the points
-     * list below). Points : v1 v2 v3 v4 v1 v5 v8 v7 v6 v5
+     * From ESRI Specification : Parts : 0 5 (meaning : 0 designs the first v1, 5 designs the first
+     * v5 on the points list below). Points : v1 v2 v3 v4 v1 v5 v8 v7 v6 v5
      *
      * <p>
-     * POSITION FIELD VALUE TYPE NUMBER ORDER Byte 0 Shape Type 5 Integer 1 Little Byte 4 Box Box Double 4 Little Byte
-     * 36 NumParts NumParts Integer 1 Little Byte 40 NumPoints NumPoints Integer 1 Little Byte 44 Parts Parts Integer
-     * NumParts Little Byte X Points Points Point NumPoints Little
+     * POSITION FIELD VALUE TYPE NUMBER ORDER Byte 0 Shape Type 5 Integer 1 Little Byte 4 Box Box
+     * Double 4 Little Byte 36 NumParts NumParts Integer 1 Little Byte 40 NumPoints NumPoints
+     * Integer 1 Little Byte 44 Parts Parts Integer NumParts Little Byte X Points Points Point
+     * NumPoints Little
      */
 
     // Read all the parts indexes (starting at byte 44).
@@ -383,8 +383,10 @@ public class ShapefileByteReader extends CommonByteReader {
     }
 
     // Compute the difference between shells and holes
-    var shellsMultiPolygon = geometryFactory.createMultiPolygon(shells.toArray(size -> new Polygon[size]));
-    var holesMultiPolygon = geometryFactory.createMultiPolygon(holes.toArray(size -> new Polygon[size]));
+    var shellsMultiPolygon =
+        geometryFactory.createMultiPolygon(shells.toArray(size -> new Polygon[size]));
+    var holesMultiPolygon =
+        geometryFactory.createMultiPolygon(holes.toArray(size -> new Polygon[size]));
     return shellsMultiPolygon.difference(holesMultiPolygon);
   }
 
@@ -425,7 +427,7 @@ public class ShapefileByteReader extends CommonByteReader {
       }
     }
 
-    feature.setPropertyValue(
-      GEOMETRY_NAME, geometryFactory.createLineString(coordinates.toCoordinateArray()));
+    feature.setPropertyValue(GEOMETRY_NAME,
+        geometryFactory.createLineString(coordinates.toCoordinateArray()));
   }
 }

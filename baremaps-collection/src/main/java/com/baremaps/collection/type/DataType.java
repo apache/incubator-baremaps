@@ -12,11 +12,13 @@
 
 package com.baremaps.collection.type;
 
+
+
 import java.nio.ByteBuffer;
 
 /**
- * A data type for reading and writing values in {@link ByteBuffer}s. Read and write operations must use absolute
- * positions within the {@link ByteBuffer}.
+ * A data type for reading and writing values in {@link ByteBuffer}s. Read and write operations must
+ * use absolute positions within the {@link ByteBuffer}.
  *
  * @param <T>
  */
@@ -33,16 +35,16 @@ public interface DataType<T> {
   /**
    * Write a value.
    *
-   * @param buffer   the source buffer
+   * @param buffer the source buffer
    * @param position the absolute position of the value within the buffer
-   * @param value    the value
+   * @param value the value
    */
   void write(ByteBuffer buffer, int position, T value);
 
   /**
    * Read a value.
    *
-   * @param buffer   the source buffer
+   * @param buffer the source buffer
    * @param position the absolute position of the value within the buffer
    * @return the object
    */

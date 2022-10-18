@@ -12,6 +12,8 @@
 
 package com.baremaps.postgres;
 
+
+
 import com.google.common.io.Resources;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -27,16 +29,15 @@ public final class PostgresUtils {
 
   private PostgresUtils() {}
 
-  public static HikariDataSource dataSource(
-    String host, Integer port, String database, String username, String password) {
-    return dataSource(
-      String.format(
-        "jdbc:postgresql://%s:%s/%s?&user=%s&password=%s",
-        host, port, database, username, password));
+  public static HikariDataSource dataSource(String host, Integer port, String database,
+      String username, String password) {
+    return dataSource(String.format("jdbc:postgresql://%s:%s/%s?&user=%s&password=%s", host, port,
+        database, username, password));
   }
 
   /**
-   * Creates a data source from a JDBC url with a pool size corresponding to the number of available processors.
+   * Creates a data source from a JDBC url with a pool size corresponding to the number of available
+   * processors.
    *
    * @param url the JDBC url
    * @return the data source
@@ -48,7 +49,7 @@ public final class PostgresUtils {
   /**
    * Creates a data source from a JDBC url with a pool size defined by the user.
    *
-   * @param url      the JDBC url
+   * @param url the JDBC url
    * @param poolSize the pool size
    * @return the data source
    */
@@ -66,12 +67,12 @@ public final class PostgresUtils {
    * Executes the queries contained in a resource file.
    *
    * @param connection the JDBC connection
-   * @param resource   the path of the resource file
+   * @param resource the path of the resource file
    * @throws IOException
    * @throws SQLException
    */
   public static void executeResource(Connection connection, String resource)
-    throws IOException, SQLException {
+      throws IOException, SQLException {
     URL resourceURL = Resources.getResource(resource);
     String queries = Resources.toString(resourceURL, StandardCharsets.UTF_8);
     try (Statement statement = connection.createStatement()) {

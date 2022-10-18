@@ -12,6 +12,8 @@
 
 package com.baremaps.cli.geocoder;
 
+
+
 import com.baremaps.cli.Options;
 import com.baremaps.geocoder.Geocoder;
 import com.baremaps.geocoder.geonames.GeonamesGeocoder;
@@ -31,17 +33,12 @@ public class Index implements Callable<Integer> {
   @Mixin
   private Options options;
 
-  @Option(
-    names = {"--index"},
-    paramLabel = "INDEX",
-    description = "The path to the lucene index.",
-    defaultValue = "geocoder_index")
+  @Option(names = {"--index"}, paramLabel = "INDEX", description = "The path to the lucene index.",
+      defaultValue = "geocoder_index")
   private Path index;
 
-  @Option(
-    names = {"--geonames"},
-    paramLabel = "GEONAMES",
-    description = "The path of the geonames file.")
+  @Option(names = {"--geonames"}, paramLabel = "GEONAMES",
+      description = "The path of the geonames file.")
   private Path geonames;
 
   @Override

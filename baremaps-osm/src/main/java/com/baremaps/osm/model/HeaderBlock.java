@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.model;
 
+
+
 import com.baremaps.osm.function.BlockConsumer;
 import com.baremaps.osm.function.BlockFunction;
 
@@ -25,9 +27,9 @@ public class HeaderBlock extends Block {
   /**
    * Constructs an OpenStreetMap {@code HeaderBlock} with the specified parameters.
    *
-   * @param blob   the blob
+   * @param blob the blob
    * @param header the header
-   * @param bound  the bound
+   * @param bound the bound
    */
   public HeaderBlock(Blob blob, Header header, Bound bound) {
     super(blob);

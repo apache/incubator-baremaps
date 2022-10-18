@@ -12,6 +12,8 @@
 
 package com.baremaps.server.resources;
 
+
+
 import java.io.InputStream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -38,77 +40,36 @@ public class ImportResource {
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Path("studio/import")
-  public Response uploadData(
-    @FormDataParam("file") InputStream fileInputStream,
-    @FormDataParam("file") FormDataContentDisposition fileMetaData) {
+  public Response uploadData(@FormDataParam("file") InputStream fileInputStream,
+      @FormDataParam("file") FormDataContentDisposition fileMetaData) {
     /*
-    TODO: replace GeoTools with Apache SIS
-    // Read FeatureCollection
-    FeatureJSON fjson = new FeatureJSON();
-    var fc = fjson.readFeatureCollection(fileInputStream);
-    
-    // Setup Collection
-    String fileName = fileMetaData.getFileName();
-    Collection collection =
-        new Collection()
-            .id(UUID.randomUUID())
-            .title(fileName.substring(0, fileName.lastIndexOf(".") - 1))
-            .extent(
-                new Extent()
-                    .spatial(
-                        new ExtentSpatial()
-                            .bbox(
-                                List.of(
-                                    List.of(
-                                        fc.getBounds().getMinX(),
-                                        fc.getBounds().getMinY(),
-                                        fc.getBounds().getMaxX(),
-                                        fc.getBounds().getMaxY())))))
-            .count(fc.size())
-            .created(new Date())
-            .geometryType(
-                fc.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName());
-    
-    // Load data
-    jdbi.useTransaction(
-        handle -> {
-          // Create collection
-          handle
-              .createUpdate(
-                  "insert into collections (id, collection) values (:id, CAST(:collection AS jsonb))")
-              .bind("id", collection.getId())
-              .bindByType("collection", collection, COLLECTION)
-              .execute();
-          // Create table
-          handle.execute(
-              String.format(
-                  "create table \"%s\" (id serial, tags hstore, geom geometry)",
-                  collection.getId()));
-          // Insert features
-          var features = fc.features();
-          while (features.hasNext()) {
-            SimpleFeature feature = (SimpleFeature) features.next();
-            HashMap<String, String> properties = new HashMap<>();
-            feature.getProperties().stream()
-                .filter(property -> !property.getName().getLocalPart().equals("geometry"))
-                .forEach(
-                    property ->
-                        properties.put(
-                            property.getName().getLocalPart(), property.getValue().toString()));
-            Object geom = feature.getDefaultGeometryProperty().getValue();
-            handle
-                .createUpdate(
-                    String.format(
-                        "insert into \"%s\" (tags, geom) values (:tags, ST_Transform(ST_SetSRID(CAST(:geom as geometry), 4326), 3857))",
-                        collection.getId()))
-                .bind("tags", properties)
-                .bind("geom", geom.toString())
-                .execute();
-          }
-        });
-    
-    return Response.created(URI.create("collections/" + collection.getId())).build();
-    */
+     * TODO: replace GeoTools with Apache SIS // Read FeatureCollection FeatureJSON fjson = new
+     * FeatureJSON(); var fc = fjson.readFeatureCollection(fileInputStream);
+     * 
+     * // Setup Collection String fileName = fileMetaData.getFileName(); Collection collection = new
+     * Collection() .id(UUID.randomUUID()) .title(fileName.substring(0, fileName.lastIndexOf(".") -
+     * 1)) .extent( new Extent() .spatial( new ExtentSpatial() .bbox( List.of( List.of(
+     * fc.getBounds().getMinX(), fc.getBounds().getMinY(), fc.getBounds().getMaxX(),
+     * fc.getBounds().getMaxY()))))) .count(fc.size()) .created(new Date()) .geometryType(
+     * fc.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName());
+     * 
+     * // Load data jdbi.useTransaction( handle -> { // Create collection handle .createUpdate(
+     * "insert into collections (id, collection) values (:id, CAST(:collection AS jsonb))")
+     * .bind("id", collection.getId()) .bindByType("collection", collection, COLLECTION) .execute();
+     * // Create table handle.execute( String.format(
+     * "create table \"%s\" (id serial, tags hstore, geom geometry)", collection.getId())); //
+     * Insert features var features = fc.features(); while (features.hasNext()) { SimpleFeature
+     * feature = (SimpleFeature) features.next(); HashMap<String, String> properties = new
+     * HashMap<>(); feature.getProperties().stream() .filter(property ->
+     * !property.getName().getLocalPart().equals("geometry")) .forEach( property -> properties.put(
+     * property.getName().getLocalPart(), property.getValue().toString())); Object geom =
+     * feature.getDefaultGeometryProperty().getValue(); handle .createUpdate( String.format(
+     * "insert into \"%s\" (tags, geom) values (:tags, ST_Transform(ST_SetSRID(CAST(:geom as geometry), 4326), 3857))"
+     * , collection.getId())) .bind("tags", properties) .bind("geom", geom.toString()) .execute(); }
+     * });
+     * 
+     * return Response.created(URI.create("collections/" + collection.getId())).build();
+     */
     return Response.ok().build();
   }
 }

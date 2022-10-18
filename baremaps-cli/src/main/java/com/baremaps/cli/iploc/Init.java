@@ -12,6 +12,8 @@
 
 package com.baremaps.cli.iploc;
 
+
+
 import com.baremaps.geocoder.Geocoder;
 import com.baremaps.geocoder.geonames.GeonamesGeocoder;
 import com.baremaps.iploc.IpLoc;
@@ -39,24 +41,16 @@ public class Init implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Init.class);
 
-  @Option(
-    names = {"--index"},
-    paramLabel = "INDEX",
-    description = "The path to the lucene index.",
-    defaultValue = "geocoder_index")
+  @Option(names = {"--index"}, paramLabel = "INDEX", description = "The path to the lucene index.",
+      defaultValue = "geocoder_index")
   private Path index;
 
-  @Option(
-    names = {"--geonames"},
-    paramLabel = "GEONAMES",
-    description = "The path of the geonames file.")
+  @Option(names = {"--geonames"}, paramLabel = "GEONAMES",
+      description = "The path of the geonames file.")
   private Path geonames;
 
-  @Option(
-    names = {"--database"},
-    paramLabel = "DATABASE",
-    description = "The path of the output SQLite database.",
-    defaultValue = "iploc.db")
+  @Option(names = {"--database"}, paramLabel = "DATABASE",
+      description = "The path of the output SQLite database.", defaultValue = "iploc.db")
   private Path database;
 
   @Override
@@ -74,25 +68,21 @@ public class Init implements Callable<Integer> {
       Stream<Path> nicPaths = new NicFetcher().fetch();
 
       logger.info("Generating NIC objects stream");
-      Stream<NicObject> fetchNicObjectStream =
-        nicPaths.flatMap(
-          nicPath -> {
+      Stream<NicObject> fetchNicObjectStream = nicPaths.flatMap(nicPath -> {
+        try {
+          InputStream inputStream =
+              new GZIPInputStream(new BufferedInputStream(Files.newInputStream(nicPath)));
+          return NicParser.parse(inputStream).onClose(() -> {
             try {
-              InputStream inputStream =
-                new GZIPInputStream(new BufferedInputStream(Files.newInputStream(nicPath)));
-              return NicParser.parse(inputStream)
-                .onClose(
-                  () -> {
-                    try {
-                      inputStream.close();
-                    } catch (IOException e) {
-                      throw new UncheckedIOException(e);
-                    }
-                  });
+              inputStream.close();
             } catch (IOException e) {
               throw new UncheckedIOException(e);
             }
           });
+        } catch (IOException e) {
+          throw new UncheckedIOException(e);
+        }
+      });
 
       logger.info("Creating the Iploc database");
       String jdbcUrl = String.format("JDBC:sqlite:%s", database.toString());
@@ -107,17 +97,14 @@ public class Init implements Callable<Integer> {
       ipLoc.insertNicObjects(fetchNicObjectStream);
       IpLocStats ipLocStats = ipLoc.getIplocStats();
 
-      logger.info(
-        String.format(
-          "IpLoc stats\n" + "-----------\n" + "inetnumInsertedByAddress : %s\n" + "inetnumInsertedByDescr : %s\n" +
-            "inetnumInsertedByCountry : %s\n" + "inetnumInsertedByCountryCode : %s\n" +
-            "inetnumInsertedByGeoloc : %s\n" + "inetnumNotInserted : %s\n",
-          ipLocStats.getInsertedByAddressCount(),
-          ipLocStats.getInsertedByDescrCount(),
-          ipLocStats.getInsertedByCountryCount(),
-          ipLocStats.getInsertedByCountryCodeCount(),
-          ipLocStats.getInsertedByGeolocCount(),
-          ipLocStats.getNotInsertedCount()));
+      logger.info(String.format(
+          "IpLoc stats\n" + "-----------\n" + "inetnumInsertedByAddress : %s\n"
+              + "inetnumInsertedByDescr : %s\n" + "inetnumInsertedByCountry : %s\n"
+              + "inetnumInsertedByCountryCode : %s\n" + "inetnumInsertedByGeoloc : %s\n"
+              + "inetnumNotInserted : %s\n",
+          ipLocStats.getInsertedByAddressCount(), ipLocStats.getInsertedByDescrCount(),
+          ipLocStats.getInsertedByCountryCount(), ipLocStats.getInsertedByCountryCodeCount(),
+          ipLocStats.getInsertedByGeolocCount(), ipLocStats.getNotInsertedCount()));
 
       logger.info("IpLoc database created successfully");
     }

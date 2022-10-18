@@ -12,6 +12,8 @@
 
 package com.baremaps.server.ogcapi;
 
+
+
 import com.baremaps.api.CollectionsApi;
 import com.baremaps.model.Collection;
 import com.baremaps.model.Collections;
@@ -35,7 +37,7 @@ public class CollectionsResource implements CollectionsApi {
   UriInfo uriInfo;
 
   private static final QualifiedType<Collection> COLLECTION =
-    QualifiedType.of(Collection.class).with(Json.class);
+      QualifiedType.of(Collection.class).with(Json.class);
 
   private final Jdbi jdbi;
 
@@ -47,51 +49,36 @@ public class CollectionsResource implements CollectionsApi {
   @Override
   public Response addCollection(Collection collection) {
     collection.setId(UUID.randomUUID());
-    jdbi.useHandle(
-      handle -> handle
+    jdbi.useHandle(handle -> handle
         .createUpdate("insert into collections (id, collection) values (:id, :collection)")
-        .bind("id", collection.getId())
-        .bindByType("collection", collection, COLLECTION)
-        .execute());
+        .bind("id", collection.getId()).bindByType("collection", collection, COLLECTION).execute());
     return Response.created(URI.create("collections/" + collection.getId())).build();
   }
 
   @Override
   public Response deleteCollection(UUID collectionId) {
-    jdbi.useHandle(
-      handle -> handle.execute(
-        String.format(
-          "drop table if exists \"%s\"; delete from collections where id = (?)",
-          collectionId),
+    jdbi.useHandle(handle -> handle.execute(
+        String.format("drop table if exists \"%s\"; delete from collections where id = (?)",
+            collectionId),
         collectionId));
     return Response.noContent().build();
   }
 
   @Override
   public Response getCollection(UUID collectionId) {
-    Collection collection =
-      jdbi.withHandle(
-        handle -> handle
-          .createQuery("select collection from collections where id = :id")
-          .bind("id", collectionId)
-          .mapTo(COLLECTION)
-          .one());
+    Collection collection = jdbi.withHandle(
+        handle -> handle.createQuery("select collection from collections where id = :id")
+            .bind("id", collectionId).mapTo(COLLECTION).one());
     collection.getLinks().add(new Link().href(uriInfo.getRequestUri().toString()).rel("self"));
     return Response.ok(collection).build();
   }
 
   @Override
   public Response getCollections() {
-    List<Collection> collectionList =
-      jdbi.withHandle(
-        handle -> handle.createQuery("select collection from collections").mapTo(COLLECTION).list());
-    collectionList.forEach(
-      collection -> collection
-        .getLinks()
-        .add(
-          new Link()
-            .href(uriInfo.getRequestUri().toString() + "/" + collection.getId())
-            .rel("self")));
+    List<Collection> collectionList = jdbi.withHandle(handle -> handle
+        .createQuery("select collection from collections").mapTo(COLLECTION).list());
+    collectionList.forEach(collection -> collection.getLinks().add(new Link()
+        .href(uriInfo.getRequestUri().toString() + "/" + collection.getId()).rel("self")));
     Collections collections = new Collections().collections(collectionList);
     collections.getLinks().add(new Link().href(uriInfo.getRequestUri().toString()).rel("self"));
     return Response.ok(collections).build();
@@ -99,12 +86,9 @@ public class CollectionsResource implements CollectionsApi {
 
   @Override
   public Response updateCollection(UUID collectionId, Collection collection) {
-    jdbi.useHandle(
-      handle -> handle
+    jdbi.useHandle(handle -> handle
         .createUpdate("update collections set collection = :collection where id = :id")
-        .bind("id", collectionId)
-        .bindByType("collection", collection, COLLECTION)
-        .execute());
+        .bind("id", collectionId).bindByType("collection", collection, COLLECTION).execute());
     return Response.noContent().build();
   }
 }

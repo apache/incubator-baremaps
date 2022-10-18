@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.model;
 
+
+
 import com.baremaps.osm.function.EntityConsumer;
 import com.baremaps.osm.function.EntityFunction;
 import java.time.LocalDateTime;
@@ -31,17 +33,13 @@ public class Header implements Entity {
    * Constructs an OpenStreetMap {@code Header} based on the specified parameters.
    *
    * @param replicationSequenceNumber the replication sequence number
-   * @param replicationTimestamp      the replication timestamp
-   * @param replicationUrl            the replication url
-   * @param source                    the source
-   * @param writingProgram            the writing program
+   * @param replicationTimestamp the replication timestamp
+   * @param replicationUrl the replication url
+   * @param source the source
+   * @param writingProgram the writing program
    */
-  public Header(
-    Long replicationSequenceNumber,
-    LocalDateTime replicationTimestamp,
-    String replicationUrl,
-    String source,
-    String writingProgram) {
+  public Header(Long replicationSequenceNumber, LocalDateTime replicationTimestamp,
+      String replicationUrl, String source, String writingProgram) {
     this.replicationTimestamp = replicationTimestamp;
     this.replicationSequenceNumber = replicationSequenceNumber;
     this.replicationUrl = replicationUrl;
@@ -113,28 +111,27 @@ public class Header implements Entity {
       return false;
     }
     Header header = (Header) o;
-    return Objects.equals(replicationTimestamp, header.replicationTimestamp) &&
-      Objects.equals(replicationSequenceNumber, header.replicationSequenceNumber) &&
-      Objects.equals(replicationUrl, header.replicationUrl) && Objects.equals(source, header.source) &&
-      Objects.equals(writingProgram, header.writingProgram);
+    return Objects.equals(replicationTimestamp, header.replicationTimestamp)
+        && Objects.equals(replicationSequenceNumber, header.replicationSequenceNumber)
+        && Objects.equals(replicationUrl, header.replicationUrl)
+        && Objects.equals(source, header.source)
+        && Objects.equals(writingProgram, header.writingProgram);
   }
 
   /** {@inheritDoc} */
   @Override
   public int hashCode() {
-    return Objects.hash(
-      replicationTimestamp, replicationSequenceNumber, replicationUrl, source, writingProgram);
+    return Objects.hash(replicationTimestamp, replicationSequenceNumber, replicationUrl, source,
+        writingProgram);
   }
 
   /** {@inheritDoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Header.class.getSimpleName() + "[", "]")
-      .add("replicationTimestamp=" + replicationTimestamp)
-      .add("replicationSequenceNumber=" + replicationSequenceNumber)
-      .add("replicationUrl='" + replicationUrl + "'")
-      .add("source='" + source + "'")
-      .add("writingProgram='" + writingProgram + "'")
-      .toString();
+        .add("replicationTimestamp=" + replicationTimestamp)
+        .add("replicationSequenceNumber=" + replicationSequenceNumber)
+        .add("replicationUrl='" + replicationUrl + "'").add("source='" + source + "'")
+        .add("writingProgram='" + writingProgram + "'").toString();
   }
 }

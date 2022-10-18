@@ -12,6 +12,8 @@
 
 package com.baremaps.postgres.util;
 
+
+
 import java.sql.Connection;
 import java.util.Optional;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -54,11 +56,11 @@ public final class PostgreSqlUtils {
   }
 
   @SuppressWarnings("NullAway")
-  public static String getFullyQualifiedTableName(
-    @Nullable String schemaName, String tableName, boolean usePostgresQuoting) {
+  public static String getFullyQualifiedTableName(@Nullable String schemaName, String tableName,
+      boolean usePostgresQuoting) {
     if (usePostgresQuoting) {
-      return StringUtils.isNullOrWhiteSpace(schemaName) ? quoteIdentifier(tableName) :
-        String.format("%s.%s", quoteIdentifier(schemaName), quoteIdentifier(tableName));
+      return StringUtils.isNullOrWhiteSpace(schemaName) ? quoteIdentifier(tableName)
+          : String.format("%s.%s", quoteIdentifier(schemaName), quoteIdentifier(tableName));
     }
 
     if (StringUtils.isNullOrWhiteSpace(schemaName)) {

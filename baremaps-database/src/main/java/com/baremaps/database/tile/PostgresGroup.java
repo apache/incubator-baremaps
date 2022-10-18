@@ -12,6 +12,8 @@
 
 package com.baremaps.database.tile;
 
+
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,8 +23,8 @@ import net.sf.jsqlparser.statement.select.Join;
 import net.sf.jsqlparser.statement.select.SelectItem;
 
 /**
- * Models the groups identified in the input queries of a {@code PostgresTileStore}. These groups are used to form
- * common table expressions (CTE).
+ * Models the groups identified in the input queries of a {@code PostgresTileStore}. These groups
+ * are used to form common table expressions (CTE).
  */
 class PostgresGroup {
 
@@ -31,12 +33,12 @@ class PostgresGroup {
   private final List<Join> joins;
 
   /**
-   * Constructs a {@code PostgresGroup} with objects extracted from an AST obtained by parsing a SQL query with
-   * JSQLParser.
+   * Constructs a {@code PostgresGroup} with objects extracted from an AST obtained by parsing a SQL
+   * query with JSQLParser.
    *
    * @param selectItems the selected columns.
-   * @param fromItem    the from clause
-   * @param joins       the join clauses
+   * @param fromItem the from clause
+   * @param joins the join clauses
    */
   public PostgresGroup(List<SelectItem> selectItems, FromItem fromItem, List<Join> joins) {
     this.selectItems = selectItems;
@@ -97,11 +99,8 @@ class PostgresGroup {
   public int hashCode() {
     String selectItemsString = selectItems.toString();
     String fromItemString = fromItem.toString();
-    String joinsString =
-      Optional.ofNullable(joins).stream()
-        .flatMap(List::stream)
-        .map(Join::toString)
-        .collect(Collectors.joining());
+    String joinsString = Optional.ofNullable(joins).stream().flatMap(List::stream)
+        .map(Join::toString).collect(Collectors.joining());
     return Objects.hash(selectItemsString, fromItemString, joinsString);
   }
 }

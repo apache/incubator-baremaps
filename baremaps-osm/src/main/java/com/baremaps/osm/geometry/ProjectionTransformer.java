@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.geometry;
 
+
+
 import java.util.stream.Stream;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
@@ -60,27 +62,19 @@ public class ProjectionTransformer extends GeometryTransformer {
 
     var targetCRS = new CRSFactory().createFromName(String.format("EPSG:%s", targetSrid));
     var lonlatTranform = GeometryUtils.coordinateTransform(4326, sourceSrid);
-    min =
-      lonlatTranform.transform(
-        new ProjCoordinate(
-          Math.toDegrees(targetCRS.getProjection().getMinLongitude()),
-          Math.toDegrees(targetCRS.getProjection().getMinLatitude())),
-        new ProjCoordinate());
-    max =
-      lonlatTranform.transform(
-        new ProjCoordinate(
-          Math.toDegrees(targetCRS.getProjection().getMaxLongitude()),
-          Math.toDegrees(targetCRS.getProjection().getMaxLatitude())),
-        new ProjCoordinate());
+    min = lonlatTranform
+        .transform(new ProjCoordinate(Math.toDegrees(targetCRS.getProjection().getMinLongitude()),
+            Math.toDegrees(targetCRS.getProjection().getMinLatitude())), new ProjCoordinate());
+    max = lonlatTranform
+        .transform(new ProjCoordinate(Math.toDegrees(targetCRS.getProjection().getMaxLongitude()),
+            Math.toDegrees(targetCRS.getProjection().getMaxLatitude())), new ProjCoordinate());
   }
 
   @Override
-  protected CoordinateSequence transformCoordinates(
-    CoordinateSequence coordinateSequence, Geometry parent) {
-    Coordinate[] coordinateArray =
-      Stream.of(coordinateSequence.toCoordinateArray())
-        .map(this::transformCoordinate)
-        .toArray(Coordinate[]::new);
+  protected CoordinateSequence transformCoordinates(CoordinateSequence coordinateSequence,
+      Geometry parent) {
+    Coordinate[] coordinateArray = Stream.of(coordinateSequence.toCoordinateArray())
+        .map(this::transformCoordinate).toArray(Coordinate[]::new);
     return new CoordinateArraySequence(coordinateArray);
   }
 
@@ -109,7 +103,7 @@ public class ProjectionTransformer extends GeometryTransformer {
     try {
       var geometry = super.transformMultiPoint(geom, parent);
       if (geometry instanceof Point point) {
-        geometry = factory.createMultiPoint(new Point[]{point});
+        geometry = factory.createMultiPoint(new Point[] {point});
       }
       return withTargetSRID(geometry);
     } catch (Exception e) {
@@ -142,7 +136,7 @@ public class ProjectionTransformer extends GeometryTransformer {
     try {
       var geometry = super.transformMultiLineString(geom, parent);
       if (geometry instanceof LineString lineString) {
-        geometry = factory.createMultiLineString(new LineString[]{lineString});
+        geometry = factory.createMultiLineString(new LineString[] {lineString});
       }
       return withTargetSRID(geometry);
     } catch (Exception e) {
@@ -165,7 +159,7 @@ public class ProjectionTransformer extends GeometryTransformer {
     try {
       var geometry = super.transformMultiPolygon(geom, parent);
       if (geometry instanceof Polygon polygon) {
-        geometry = factory.createMultiPolygon(new Polygon[]{polygon});
+        geometry = factory.createMultiPolygon(new Polygon[] {polygon});
       }
       return withTargetSRID(geometry);
     } catch (Exception e) {

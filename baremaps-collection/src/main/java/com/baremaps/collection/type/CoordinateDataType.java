@@ -12,6 +12,8 @@
 
 package com.baremaps.collection.type;
 
+
+
 import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
 

@@ -12,6 +12,8 @@
 
 package com.baremaps.postgres.handlers;
 
+
+
 import com.baremaps.postgres.util.StringUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -22,7 +24,7 @@ public class HstoreValueHandler extends BaseValueHandler<Map<String, String>> {
 
   @Override
   protected void internalHandle(DataOutputStream buffer, final Map<String, String> value)
-    throws IOException {
+      throws IOException {
 
     // Write into a Temporary ByteArrayOutputStream:
     ByteArrayOutputStream byteArrayOutput = new ByteArrayOutputStream();

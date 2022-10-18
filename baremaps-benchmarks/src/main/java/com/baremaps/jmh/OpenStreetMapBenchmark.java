@@ -12,6 +12,8 @@
 
 package com.baremaps.jmh;
 
+
+
 import com.baremaps.osm.function.EntityConsumerAdapter;
 import com.baremaps.osm.model.Node;
 import com.baremaps.osm.model.Relation;
@@ -70,10 +72,8 @@ public class OpenStreetMapBenchmark {
     AtomicLong relations = new AtomicLong(0);
 
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      new PbfEntityReader(new PbfBlockReader())
-        .stream(inputStream)
-        .forEach(
-          new EntityConsumerAdapter() {
+      new PbfEntityReader(new PbfBlockReader()).stream(inputStream)
+          .forEach(new EntityConsumerAdapter() {
             @Override
             public void match(Node node) {
               nodes.incrementAndGet();
@@ -94,7 +94,7 @@ public class OpenStreetMapBenchmark {
 
   public static void main(String[] args) throws RunnerException {
     Options opt =
-      new OptionsBuilder().include(OpenStreetMapBenchmark.class.getSimpleName()).forks(1).build();
+        new OptionsBuilder().include(OpenStreetMapBenchmark.class.getSimpleName()).forks(1).build();
     new Runner(opt).run();
   }
 }

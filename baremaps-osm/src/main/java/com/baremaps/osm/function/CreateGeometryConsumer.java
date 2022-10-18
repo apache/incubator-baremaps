@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.function;
 
+
+
 import com.baremaps.collection.LongDataMap;
 import com.baremaps.osm.model.Member;
 import com.baremaps.osm.model.Member.MemberType;
@@ -55,10 +57,10 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
    * Constructs a consumer that uses the provided caches to create and set geometries.
    *
    * @param coordinates the coordinate cache
-   * @param references  the reference cache
+   * @param references the reference cache
    */
-  public CreateGeometryConsumer(
-    LongDataMap<Coordinate> coordinates, LongDataMap<List<Long>> references) {
+  public CreateGeometryConsumer(LongDataMap<Coordinate> coordinates,
+      LongDataMap<List<Long>> references) {
     this.geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
     this.coordinates = coordinates;
     this.references = references;
@@ -123,7 +125,7 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
         relation.setGeometry(polygon);
       } else if (polygons.size() > 1) {
         MultiPolygon multiPolygon =
-          geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[0]));
+            geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[0]));
         relation.setGeometry(multiPolygon);
       }
     } catch (Exception e) {
@@ -131,8 +133,8 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
     }
   }
 
-  private List<Polygon> mergeOuterAndInnerPolygons(
-    Set<Polygon> outerPolygons, Set<Polygon> innerPolygons) {
+  private List<Polygon> mergeOuterAndInnerPolygons(Set<Polygon> outerPolygons,
+      Set<Polygon> innerPolygons) {
     List<Polygon> polygons = new ArrayList<>();
     for (Polygon outerPolygon : outerPolygons) {
       LinearRing shell = outerPolygon.getExteriorRing();
@@ -177,11 +179,8 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
   private Set<Polygon> createPolygons(Relation relation, String role) {
     Set<Polygon> polygons = new HashSet<>();
     LineMerger lineMerger = new LineMerger();
-    relation.getMembers().stream()
-      .filter(m -> MemberType.WAY.equals(m.getType()))
-      .filter(m -> role.equals(m.getRole()))
-      .forEach(
-        member -> {
+    relation.getMembers().stream().filter(m -> MemberType.WAY.equals(m.getType()))
+        .filter(m -> role.equals(m.getRole())).forEach(member -> {
           LineString line = createLine(member);
           if (line.isClosed()) {
             Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
@@ -190,15 +189,13 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
             lineMerger.add(line);
           }
         });
-    lineMerger.getMergedLineStrings().stream()
-      .forEach(
-        geometry -> {
-          LineString line = (LineString) geometry;
-          if (line.isClosed()) {
-            Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
-            polygons.add(polygon);
-          }
-        });
+    lineMerger.getMergedLineStrings().stream().forEach(geometry -> {
+      LineString line = (LineString) geometry;
+      if (line.isClosed()) {
+        Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
+        polygons.add(polygon);
+      }
+    });
     return polygons;
   }
 

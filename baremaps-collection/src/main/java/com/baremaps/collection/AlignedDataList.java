@@ -12,6 +12,8 @@
 
 package com.baremaps.collection;
 
+
+
 import com.baremaps.collection.memory.Memory;
 import com.baremaps.collection.type.SizedDataType;
 import java.io.IOException;
@@ -47,7 +49,7 @@ public class AlignedDataList<T> implements DataList<T> {
    * Constructs a list.
    *
    * @param dataType the data type
-   * @param memory   the memory
+   * @param memory the memory
    */
   public AlignedDataList(SizedDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {

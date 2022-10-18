@@ -12,6 +12,8 @@
 
 package com.baremaps.storage;
 
+
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -29,24 +31,13 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 public enum DataType {
-  STRING(String.class),
-  SHORT(Short.class),
-  INTEGER(Integer.class),
-  LONG(Long.class),
-  FLOAT(Float.class),
-  DOUBLE(Double.class),
-  GEOMETRY(Geometry.class),
-  POINT(Point.class),
-  MULTIPOINT(MultiPoint.class),
-  LINESTRING(LineString.class),
-  MULTILINESTRING(MultiLineString.class),
-  POLYGON(Polygon.class),
-  MULTIPOLYGON(MultiPolygon.class),
-  LINEARRING(LinearRing.class),
-  GEOMETRYCOLLECTION(GeometryCollection.class),
-  LOCALDATE(LocalDate.class),
-  LOCALTIME(LocalTime.class),
-  LOCALDATETIME(LocalDateTime.class);
+  STRING(String.class), SHORT(Short.class), INTEGER(Integer.class), LONG(Long.class), FLOAT(
+      Float.class), DOUBLE(Double.class), GEOMETRY(Geometry.class), POINT(Point.class), MULTIPOINT(
+          MultiPoint.class), LINESTRING(LineString.class), MULTILINESTRING(
+              MultiLineString.class), POLYGON(Polygon.class), MULTIPOLYGON(
+                  MultiPolygon.class), LINEARRING(LinearRing.class), GEOMETRYCOLLECTION(
+                      GeometryCollection.class), LOCALDATE(LocalDate.class), LOCALTIME(
+                          LocalTime.class), LOCALDATETIME(LocalDateTime.class);
 
   Class type;
 
@@ -54,8 +45,7 @@ public enum DataType {
     this.type = type;
   }
 
-  private static Map<Class, DataType> lookup =
-    Arrays.stream(DataType.values())
+  private static Map<Class, DataType> lookup = Arrays.stream(DataType.values())
       .collect(Collectors.toMap(dataType -> dataType.type, dataType -> dataType));
 
   public static boolean exists(Class type) {

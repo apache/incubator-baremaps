@@ -12,6 +12,8 @@
 
 package com.baremaps.iploc.nic;
 
+
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -30,8 +32,7 @@ public class NicFetcher {
   private static final Logger logger = LoggerFactory.getLogger(NicFetcher.class);
 
   /** A list of default urls. */
-  public static final List<String> NIC_URLS =
-    List.of(
+  public static final List<String> NIC_URLS = List.of(
       "https://ftp.afrinic.net/pub/dbase/afrinic.db.gz",
       "https://ftp.apnic.net/apnic/whois/apnic.db.as-block.gz",
       "https://ftp.apnic.net/apnic/whois/apnic.db.as-set.gz",
@@ -51,8 +52,7 @@ public class NicFetcher {
       "https://ftp.apnic.net/apnic/whois/apnic.db.route.gz",
       "https://ftp.apnic.net/apnic/whois/apnic.db.route6.gz",
       "https://ftp.apnic.net/apnic/whois/apnic.db.rtr-set.gz",
-      "https://ftp.arin.net/pub/rr/arin.db.gz",
-      "https://ftp.arin.net/pub/rr/arin-nonauth.db.gz",
+      "https://ftp.arin.net/pub/rr/arin.db.gz", "https://ftp.arin.net/pub/rr/arin-nonauth.db.gz",
       "https://ftp.lacnic.net/lacnic/dbase/lacnic.db.gz",
       "https://ftp.ripe.net/ripe/dbase/ripe.db.gz");
 

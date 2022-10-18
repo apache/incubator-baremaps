@@ -12,6 +12,8 @@
 
 package com.baremaps.iploc.database;
 
+
+
 import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URL;
@@ -28,11 +30,11 @@ public final class SqliteUtils {
    * Executes the queries contained in a resource file.
    *
    * @param databaseUrl the JDBC url
-   * @param resource    the path of the resource file
+   * @param resource the path of the resource file
    * @throws SQLException
    */
   public static void executeResource(String databaseUrl, String resource)
-    throws IOException, SQLException {
+      throws IOException, SQLException {
     try (Connection connection = DriverManager.getConnection(databaseUrl)) {
       URL resourceURL = Resources.getResource(resource);
       String queries = Resources.toString(resourceURL, StandardCharsets.UTF_8);

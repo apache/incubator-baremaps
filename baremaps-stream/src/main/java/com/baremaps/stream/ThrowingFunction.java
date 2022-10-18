@@ -37,16 +37,16 @@ public interface ThrowingFunction<T, R, E extends Exception> {
   R apply(T t) throws E;
 
   /**
-   * Converts a {@code ThrowingFunction} into a {@code Function} that returns {@code Optional} elements which are empty
-   * in case of {@code Exception}.
+   * Converts a {@code ThrowingFunction} into a {@code Function} that returns {@code Optional}
+   * elements which are empty in case of {@code Exception}.
    *
    * @param throwingFunction the throwing function
-   * @param <T>              the type of the input to the function
-   * @param <R>              the type of the result of the function
+   * @param <T> the type of the input to the function
+   * @param <R> the type of the result of the function
    * @return the resulting function
    */
   static <T, R> Function<T, Optional<R>> optional(
-    final ThrowingFunction<? super T, ? extends R, ?> throwingFunction) {
+      final ThrowingFunction<? super T, ? extends R, ?> throwingFunction) {
     requireNonNull(throwingFunction);
     return t -> {
       try {
@@ -58,16 +58,16 @@ public interface ThrowingFunction<T, R, E extends Exception> {
   }
 
   /**
-   * Converts a {@code ThrowingFunction} into a {@code Function} that returns elements or throws unchecked exceptions in
-   * case of {@code Exception}.
+   * Converts a {@code ThrowingFunction} into a {@code Function} that returns elements or throws
+   * unchecked exceptions in case of {@code Exception}.
    *
    * @param throwingFunction the throwing function
-   * @param <T>              the type of the input to the function
-   * @param <R>              the type of the result of the function
+   * @param <T> the type of the input to the function
+   * @param <R> the type of the result of the function
    * @return the resulting function
    */
   static <T, R> Function<T, R> unchecked(
-    final ThrowingFunction<? super T, ? extends R, ?> throwingFunction) {
+      final ThrowingFunction<? super T, ? extends R, ?> throwingFunction) {
     requireNonNull(throwingFunction);
     return t -> {
       try {

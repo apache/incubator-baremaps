@@ -12,6 +12,8 @@
 
 package com.baremaps.workflow;
 
+
+
 import com.google.common.graph.Graph;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.Graphs;
@@ -62,10 +64,7 @@ public class WorkflowExecutor implements AutoCloseable {
   }
 
   public CompletableFuture<Void> execute() {
-    var endSteps =
-      graph.nodes().stream()
-        .filter(this::isEndStep)
-        .map(this::getStep)
+    var endSteps = graph.nodes().stream().filter(this::isEndStep).map(this::getStep)
         .toArray(CompletableFuture[]::new);
     return CompletableFuture.allOf(endSteps);
   }
@@ -89,8 +88,8 @@ public class WorkflowExecutor implements AutoCloseable {
     } else if (predecessors.size() == 1) {
       return getStep(predecessors.get(0));
     } else {
-      return CompletableFuture.allOf(
-        predecessors.stream().map(this::getStep).toArray(CompletableFuture[]::new));
+      return CompletableFuture
+          .allOf(predecessors.stream().map(this::getStep).toArray(CompletableFuture[]::new));
     }
   }
 

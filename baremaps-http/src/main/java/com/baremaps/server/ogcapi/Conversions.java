@@ -12,6 +12,8 @@
 
 package com.baremaps.server.ogcapi;
 
+
+
 import com.baremaps.database.tile.PostgresQuery;
 import com.baremaps.model.TileJSON;
 import java.util.List;
@@ -22,14 +24,8 @@ public class Conversions {
 
   public static List<PostgresQuery> asPostgresQuery(TileJSON tileJSON) {
     return tileJSON.getVectorLayers().stream()
-      .flatMap(
-        layer -> layer.getQueries().stream()
-          .map(
-            query -> new PostgresQuery(
-              layer.getId(),
-              query.getMinzoom(),
-              query.getMaxzoom(),
-              query.getSql())))
-      .toList();
+        .flatMap(layer -> layer.getQueries().stream().map(query -> new PostgresQuery(layer.getId(),
+            query.getMinzoom(), query.getMaxzoom(), query.getSql())))
+        .toList();
   }
 }

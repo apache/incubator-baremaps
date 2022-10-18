@@ -12,6 +12,8 @@
 
 package com.baremaps.osm.model;
 
+
+
 import java.time.LocalDateTime;
 
 /** Represents the state of an OpenStreetMap dataset, enabling its replication. */
@@ -25,7 +27,7 @@ public class State {
    * Constructs an OpenStreetMap {@code State} with the specified parameters.
    *
    * @param sequenceNumber the sequence number
-   * @param timestamp      the timestamp
+   * @param timestamp the timestamp
    */
   public State(long sequenceNumber, LocalDateTime timestamp) {
     this.sequenceNumber = sequenceNumber;

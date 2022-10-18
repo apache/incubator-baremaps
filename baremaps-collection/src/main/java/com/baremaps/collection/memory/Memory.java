@@ -12,6 +12,8 @@
 
 package com.baremaps.collection.memory;
 
+
+
 import com.baremaps.collection.Cleanable;
 import java.io.Closeable;
 import java.nio.ByteBuffer;
@@ -99,7 +101,7 @@ public abstract class Memory<T extends ByteBuffer> implements Closeable, Cleanab
    * Allocates a segment for a given index and size.
    *
    * @param index the index of the segment
-   * @param size  the size of the segment
+   * @param size the size of the segment
    * @return the segment
    */
   protected abstract T allocate(int index, int size);

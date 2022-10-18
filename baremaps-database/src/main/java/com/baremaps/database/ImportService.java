@@ -48,15 +48,10 @@ public class ImportService implements Callable<Void> {
   private final Repository<Long, Relation> relationRepository;
   private final int databaseSrid;
 
-  public ImportService(
-    Path path,
-    LongDataMap<Coordinate> coordinates,
-    LongDataMap<List<Long>> references,
-    HeaderRepository headerRepository,
-    Repository<Long, Node> nodeRepository,
-    Repository<Long, Way> wayRepository,
-    Repository<Long, Relation> relationRepository,
-    Integer databaseSrid) {
+  public ImportService(Path path, LongDataMap<Coordinate> coordinates,
+      LongDataMap<List<Long>> references, HeaderRepository headerRepository,
+      Repository<Long, Node> nodeRepository, Repository<Long, Way> wayRepository,
+      Repository<Long, Relation> relationRepository, Integer databaseSrid) {
     this.path = path;
     this.coordinates = coordinates;
     this.references = references;
@@ -73,10 +68,10 @@ public class ImportService implements Callable<Void> {
     Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
     Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, databaseSrid);
     Consumer<Block> prepareGeometries =
-      new BlockEntityConsumer(createGeometry.andThen(reprojectGeometry));
+        new BlockEntityConsumer(createGeometry.andThen(reprojectGeometry));
     Function<Block, Block> prepareBlock = consumeThenReturn(cacheBlock.andThen(prepareGeometries));
     Consumer<Block> saveBlock =
-      new SaveBlockConsumer(headerRepository, nodeRepository, wayRepository, relationRepository);
+        new SaveBlockConsumer(headerRepository, nodeRepository, wayRepository, relationRepository);
     try (InputStream inputStream = Files.newInputStream(path)) {
       batch(new PbfBlockReader().stream(inputStream).map(prepareBlock)).forEach(saveBlock);
     }

@@ -12,6 +12,8 @@
 
 package com.baremaps.server.utils;
 
+
+
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -20,11 +22,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class DefaultObjectMapper {
 
   public static ObjectMapper defaultObjectMapper() {
-    return new ObjectMapper()
-      .configure(Feature.IGNORE_UNKNOWN, true)
-      .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-      .configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true)
-      .setSerializationInclusion(Include.NON_NULL)
-      .setSerializationInclusion(Include.NON_EMPTY);
+    return new ObjectMapper().configure(Feature.IGNORE_UNKNOWN, true)
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true)
+        .setSerializationInclusion(Include.NON_NULL).setSerializationInclusion(Include.NON_EMPTY);
   }
 }
