@@ -345,7 +345,7 @@
             <eclipse>
               <version>4.21.0</version>
               <!--suppress UnresolvedMavenProperty -->
-              <file>${maven.multiModuleProjectDirectory}/eclipse-format.xml</file>
+              <file>${maven.multiModuleProjectDirectory}/codestyle.xml</file>
             </eclipse>
             <licenseHeader>
               <file>${maven.multiModuleProjectDirectory}/LICENSE.header</file>
