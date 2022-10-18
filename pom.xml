@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <groupId>com.baremaps</groupId>
+  <groupId>org.apache.baremaps</groupId>
   <artifactId>baremaps</artifactId>
   <name>baremaps</name>
   <description>Baremaps</description>
@@ -384,68 +384,68 @@
       <!-- Internal dependencies -->
       <dependency>
         <artifactId>baremaps-benchmarks</artifactId>
-        <groupId>com.baremaps</groupId>
+        <groupId>org.apache.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <artifactId>baremaps-cli</artifactId>
-        <groupId>com.baremaps</groupId>
+        <groupId>org.apache.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <artifactId>baremaps-collection</artifactId>
-        <groupId>com.baremaps</groupId>
+        <groupId>org.apache.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <artifactId>baremaps-geocoder</artifactId>
-        <groupId>com.baremaps</groupId>
+        <groupId>org.apache.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <artifactId>baremaps-http</artifactId>
-        <groupId>com.baremaps</groupId>
+        <groupId>org.apache.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <artifactId>baremaps-iploc</artifactId>
-        <groupId>com.baremaps</groupId>
+        <groupId>org.apache.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <artifactId>baremaps-database</artifactId>
-        <groupId>com.baremaps</groupId>
+        <groupId>org.apache.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <artifactId>baremaps-osm</artifactId>
-        <groupId>com.baremaps</groupId>
+        <groupId>org.apache.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <artifactId>baremaps-postgres</artifactId>
-        <groupId>com.baremaps</groupId>
+        <groupId>org.apache.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <artifactId>baremaps-storage</artifactId>
-        <groupId>com.baremaps</groupId>
+        <groupId>org.apache.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <artifactId>baremaps-stream</artifactId>
-        <groupId>com.baremaps</groupId>
+        <groupId>org.apache.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <artifactId>baremaps-testing</artifactId>
-        <groupId>com.baremaps</groupId>
+        <groupId>org.apache.baremaps</groupId>
         <scope>test</scope>
         <version>${project.parent.version}</version>
       </dependency>
       <dependency>
         <artifactId>baremaps-workflow</artifactId>
-        <groupId>com.baremaps</groupId>
+        <groupId>org.apache.baremaps</groupId>
         <version>${project.parent.version}</version>
       </dependency>
 

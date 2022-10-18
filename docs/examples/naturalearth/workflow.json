@@ -5,24 +5,24 @@
       "needs": [],
       "tasks": [
         {
-          "type": "com.baremaps.workflow.tasks.DownloadUrl",
+          "type": "org.apache.baremaps.workflow.tasks.DownloadUrl",
           "url": "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
           "path": "natural_earth_vector.gpkg.zip"
         },
         {
-          "type": "com.baremaps.workflow.tasks.UnzipFile",
+          "type": "org.apache.baremaps.workflow.tasks.UnzipFile",
           "file": "natural_earth_vector.gpkg.zip",
           "directory": "natural_earth_vector"
         },
         {
-          "type": "com.baremaps.workflow.tasks.ImportGeoPackage",
+          "type": "org.apache.baremaps.workflow.tasks.ImportGeoPackage",
           "file": "natural_earth_vector/packages/natural_earth_vector.gpkg",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
           "sourceSRID": 4326,
           "targetSRID": 3857
         },
         {
-          "type": "com.baremaps.workflow.tasks.ExecuteSql",
+          "type": "org.apache.baremaps.workflow.tasks.ExecuteSql",
           "file": "indexes.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps"
         }
