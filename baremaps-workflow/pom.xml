@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>baremaps</artifactId>
-    <groupId>com.baremaps</groupId>
+    <groupId>org.apache.baremaps</groupId>
     <version>0.7.1-SNAPSHOT</version>
   </parent>
 
@@ -11,11 +11,11 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.baremaps</groupId>
+      <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-collection</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.baremaps</groupId>
+      <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-database</artifactId>
     </dependency>
     <dependency>
@@ -35,11 +35,11 @@
       <groupId>org.postgresql</groupId>
     </dependency>
     <dependency>
-      <groupId>com.baremaps</groupId>
+      <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-osm</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.baremaps</groupId>
+      <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-storage</artifactId>
     </dependency>
     <dependency>
@@ -79,7 +79,7 @@
       <groupId>com.github.ben-manes.caffeine</groupId>
     </dependency>
     <dependency>
-      <groupId>com.baremaps</groupId>
+      <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-testing</artifactId>
       <scope>test</scope>
     </dependency>
@@ -88,7 +88,7 @@
       <artifactId>jul-to-slf4j</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.baremaps</groupId>
+      <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-http</artifactId>
     </dependency>
   </dependencies>

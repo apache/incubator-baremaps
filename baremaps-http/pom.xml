@@ -3,7 +3,7 @@
 
   <parent>
     <artifactId>baremaps</artifactId>
-    <groupId>com.baremaps</groupId>
+    <groupId>org.apache.baremaps</groupId>
     <version>0.7.1-SNAPSHOT</version>
   </parent>
 
@@ -50,9 +50,9 @@
               <inputSpec>${project.basedir}/src/main/resources/ogcapi-openapi.yaml</inputSpec>
               <generatorName>jaxrs-spec</generatorName>
               <configOptions>
-                <apiPackage>com.baremaps.api</apiPackage>
+                <apiPackage>org.apache.baremaps.api</apiPackage>
                 <interfaceOnly>true</interfaceOnly>
-                <modelPackage>com.baremaps.model</modelPackage>
+                <modelPackage>org.apache.baremaps.model</modelPackage>
                 <returnResponse>true</returnResponse>
                 <sortModelPropertiesByRequiredFlag>false</sortModelPropertiesByRequiredFlag>
                 <sortParamsByRequiredFlag>false</sortParamsByRequiredFlag>
@@ -153,12 +153,12 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.baremaps</groupId>
+      <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-testing</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.baremaps</groupId>
+      <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-database</artifactId>
     </dependency>
   </dependencies>

@@ -7,13 +7,13 @@
 
   <parent>
     <artifactId>baremaps</artifactId>
-    <groupId>com.baremaps</groupId>
+    <groupId>org.apache.baremaps</groupId>
     <version>0.7.1-SNAPSHOT</version>
   </parent>
 
   <dependencies>
     <dependency>
-      <groupId>com.baremaps</groupId>
+      <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-collection</artifactId>
     </dependency>
     <dependency>
@@ -29,11 +29,11 @@
       <artifactId>sis-storage</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.baremaps</groupId>
+      <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-stream</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.baremaps</groupId>
+      <groupId>org.apache.baremaps</groupId>
       <artifactId>baremaps-testing</artifactId>
       <scope>test</scope>
     </dependency>

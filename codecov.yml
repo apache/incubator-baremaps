@@ -1,4 +1,0 @@
-ignore:
-  - "baremaps-osm/src/main/java/com/baremaps/osm/domain"
-  - "baremaps-osm/target"
-  - "baremaps-export/target"

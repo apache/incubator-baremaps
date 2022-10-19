@@ -3,7 +3,7 @@
 
   <parent>
     <artifactId>baremaps</artifactId>
-    <groupId>com.baremaps</groupId>
+    <groupId>org.apache.baremaps</groupId>
     <version>0.7.1-SNAPSHOT</version>
   </parent>
 
