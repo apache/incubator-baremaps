@@ -10,10 +10,11 @@
  * the License.
  */
 
-package org.apache.baremaps.postgres;
+package org.apache.baremaps.postgres.copy;
 
 
 
+import de.bytefish.pgbulkinsert.pgsql.handlers.*;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -25,24 +26,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import org.apache.baremaps.postgres.handlers.BooleanValueHandler;
-import org.apache.baremaps.postgres.handlers.ByteArrayValueHandler;
-import org.apache.baremaps.postgres.handlers.ByteValueHandler;
-import org.apache.baremaps.postgres.handlers.CollectionValueHandler;
-import org.apache.baremaps.postgres.handlers.DoubleValueHandler;
-import org.apache.baremaps.postgres.handlers.FloatValueHandler;
-import org.apache.baremaps.postgres.handlers.HstoreValueHandler;
-import org.apache.baremaps.postgres.handlers.Inet4AddressValueHandler;
-import org.apache.baremaps.postgres.handlers.Inet6AddressValueHandler;
-import org.apache.baremaps.postgres.handlers.IntegerValueHandler;
-import org.apache.baremaps.postgres.handlers.JsonbValueHandler;
-import org.apache.baremaps.postgres.handlers.LocalDateTimeValueHandler;
-import org.apache.baremaps.postgres.handlers.LocalDateValueHandler;
-import org.apache.baremaps.postgres.handlers.LongValueHandler;
-import org.apache.baremaps.postgres.handlers.PostgisGeometryValueHandler;
-import org.apache.baremaps.postgres.handlers.ShortValueHandler;
-import org.apache.baremaps.postgres.handlers.StringValueHandler;
-import org.apache.baremaps.postgres.handlers.ValueHandler;
 import org.locationtech.jts.geom.Geometry;
 import org.postgresql.copy.PGCopyOutputStream;
 import org.postgresql.core.Oid;
@@ -109,7 +92,7 @@ public class CopyWriter implements AutoCloseable {
    *
    * @throws IOException
    */
-  public <T> void write(ValueHandler<T> handler, T value) throws IOException {
+  public <T> void write(BaseValueHandler<T> handler, T value) throws IOException {
     handler.handle(data, value);
   }
 

@@ -10,10 +10,11 @@
  * the License.
  */
 
-package org.apache.baremaps.postgres.handlers;
+package org.apache.baremaps.postgres.copy;
 
 import static org.locationtech.jts.io.WKBConstants.wkbNDR;
 
+import de.bytefish.pgbulkinsert.pgsql.handlers.BaseValueHandler;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import org.locationtech.jts.geom.Geometry;
@@ -27,5 +28,10 @@ public class PostgisGeometryValueHandler extends BaseValueHandler<Geometry> {
     byte[] wkb = writer.write(value);
     buffer.writeInt(wkb.length);
     buffer.write(wkb, 0, wkb.length);
+  }
+
+  @Override
+  public int getLength(Geometry geometry) {
+    throw new UnsupportedOperationException();
   }
 }

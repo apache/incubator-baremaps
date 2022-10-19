@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.apache.baremaps.osm.model.Header;
-import org.apache.baremaps.postgres.CopyWriter;
+import org.apache.baremaps.postgres.copy.CopyWriter;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 

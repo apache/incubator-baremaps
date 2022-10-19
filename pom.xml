@@ -145,6 +145,7 @@
     <sonar.organization>baremaps</sonar.organization>
     <sonar.projectKey>baremaps_baremaps</sonar.projectKey>
     <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
+    <version.lib.pgbulkinsert>8.1.0</version.lib.pgbulkinsert>
   </properties>
 
   <modules>
@@ -777,6 +778,11 @@
         <artifactId>junit-vintage-engine</artifactId>
         <scope>test</scope>
         <version>${version.lib.junit-vintage}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.bytefish</groupId>
+        <artifactId>pgbulkinsert</artifactId>
+        <version>${version.lib.pgbulkinsert}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
