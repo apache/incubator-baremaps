@@ -14,6 +14,7 @@ package org.apache.baremaps.storage.postgres;
 
 
 
+import de.bytefish.pgbulkinsert.pgsql.handlers.*;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,18 +26,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import org.apache.baremaps.postgres.CopyWriter;
-import org.apache.baremaps.postgres.handlers.DoubleValueHandler;
-import org.apache.baremaps.postgres.handlers.FloatValueHandler;
-import org.apache.baremaps.postgres.handlers.IntegerValueHandler;
-import org.apache.baremaps.postgres.handlers.LocalDateTimeValueHandler;
-import org.apache.baremaps.postgres.handlers.LocalDateValueHandler;
-import org.apache.baremaps.postgres.handlers.LocalTimeValueHandler;
-import org.apache.baremaps.postgres.handlers.LongValueHandler;
-import org.apache.baremaps.postgres.handlers.PostgisGeometryValueHandler;
-import org.apache.baremaps.postgres.handlers.ShortValueHandler;
-import org.apache.baremaps.postgres.handlers.StringValueHandler;
-import org.apache.baremaps.postgres.handlers.ValueHandler;
+import org.apache.baremaps.postgres.copy.CopyWriter;
+import org.apache.baremaps.postgres.copy.PostgisGeometryValueHandler;
 import org.apache.sis.feature.builder.FeatureTypeBuilder;
 import org.apache.sis.storage.DataStoreException;
 import org.apache.sis.storage.FeatureSet;
@@ -87,7 +78,7 @@ public class PostgresDatabase implements WritableAggregate, AutoCloseable {
     typeToName.put(LocalDateTime.class, "timestamp");
   }
 
-  private static Map<Class, ValueHandler> typeToHandler = new HashMap<>();
+  private static Map<Class, BaseValueHandler> typeToHandler = new HashMap<>();
 
   static {
     typeToHandler.put(String.class, new StringValueHandler());

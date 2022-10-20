@@ -31,7 +31,7 @@ import javax.sql.DataSource;
 import org.apache.baremaps.osm.geometry.GeometryUtils;
 import org.apache.baremaps.osm.model.Info;
 import org.apache.baremaps.osm.model.Way;
-import org.apache.baremaps.postgres.CopyWriter;
+import org.apache.baremaps.postgres.copy.CopyWriter;
 import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
