@@ -1,14 +1,19 @@
 /** Copyright (c) 2010 Scott A. Crosby. <scott@sacrosby.com>
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 */
 
 syntax = "proto2";
@@ -19,27 +24,37 @@ package OSMPBF;
 
 //protoc --java_out=../.. fileformat.proto
 
+
 //
 //  STORAGE LAYER: Storing primitives.
 //
 
 message Blob {
-  optional bytes raw = 1; // No compression
   optional int32 raw_size = 2; // When compressed, the uncompressed size
 
-  // Possible compressed versions of the data.
-  optional bytes zlib_data = 3;
+  oneof data {
+    bytes raw = 1; // No compression
 
-  // PROPOSED feature for LZMA compressed data. SUPPORT IS NOT REQUIRED.
-  optional bytes lzma_data = 4;
+    // Possible compressed versions of the data.
+    bytes zlib_data = 3;
 
-  // Formerly used for bzip2 compressed data. Depreciated in 2010.
-  optional bytes OBSOLETE_bzip2_data = 5 [deprecated = true]; // Don't reuse this tag number.
+    // For LZMA compressed data (optional)
+    bytes lzma_data = 4;
+
+    // Formerly used for bzip2 compressed data. Deprecated in 2010.
+    bytes OBSOLETE_bzip2_data = 5 [deprecated=true]; // Don't reuse this tag number.
+
+    // For LZ4 compressed data (optional)
+    bytes lz4_data = 6;
+
+    // For ZSTD compressed data (optional)
+    bytes zstd_data = 7;
+  }
 }
 
 /* A file contains an sequence of fileblock headers, each prefixed by
 their length in network byte order, followed by a data block
-containing the actual data. types staring with a "_" are reserved.
+containing the actual data. Types starting with a "_" are reserved.
 */
 
 message BlobHeader {
