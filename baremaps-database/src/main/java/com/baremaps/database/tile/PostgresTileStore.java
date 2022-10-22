@@ -93,7 +93,7 @@ public class PostgresTileStore implements TileStore {
     ) {
 
       String sql = withQuery(tile);
-      logger.debug("Executing query: {}", sql);
+      logger.warn("Executing query: {}", sql);
 
       int length = 0;
       try (

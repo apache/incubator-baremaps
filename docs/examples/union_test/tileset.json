@@ -1,0 +1,36 @@
+{
+  "tilejson": "2.2.0",
+  "center": [
+    9.5554,
+    47.166,
+    14.0
+  ],
+  "bounds": [
+    7.471078,
+    45.04774,
+    11.636217,
+    49.27128
+  ],
+  "minzoom": 8.0,
+  "maxzoom": 14.0,
+  "tiles": [
+    "http://localhost:9000/tiles/{z}/{x}/{y}.mvt"
+  ],
+  "vector_layers": [
+    {
+      "id": "landuse",
+      "queries": [
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_landuse_ways"
+        },
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_landuse_relations"
+        }
+      ]
+    }
+  ]
+}
