@@ -23,12 +23,12 @@
         {
           "minzoom": 8,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_landuse_ways"
+          "sql": "SELECT id, tags, geom FROM osm_landuse_ways_simplified"
         },
         {
           "minzoom": 8,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom FROM osm_landuse_relations"
+          "sql": "SELECT id, tags, geom FROM osm_landuse_relations_simplified"
         }
       ]
     }
