@@ -1,0 +1,115 @@
+{
+  "version": 8,
+  "sources": {
+    "baremaps": {
+      "type": "vector",
+      "url": "http://localhost:9000/tiles.json"
+    }
+  },
+  "layers": [
+    {
+      "id": "landuse_forest",
+      "type": "fill",
+      "source": "baremaps",
+      "source-layer": "landuse_forest",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(0, 255, 0, 1)"
+      }
+    },
+    {
+      "id": "landuse_meadow",
+      "type": "fill",
+      "source": "baremaps",
+      "source-layer": "landuse_meadow",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(0, 128, 0, 1)"
+      }
+    },
+    {
+      "id": "landuse_farmland",
+      "type": "fill",
+      "source": "baremaps",
+      "source-layer": "landuse_farmland",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(255, 255, 0, 1)"
+      }
+    },
+    {
+      "id": "landuse_residential",
+      "type": "fill",
+      "source": "baremaps",
+      "source-layer": "landuse_residential",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(64,224,208, 1)"
+      }
+    },
+    {
+      "id": "landuse_railway",
+      "type": "fill",
+      "source": "baremaps",
+      "source-layer": "landuse_railway",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(128,128,128, 1)"
+      }
+    },
+    {
+      "id": "landuse_industrial",
+      "type": "fill",
+      "source": "baremaps",
+      "source-layer": "landuse_industrial",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(255,165,0, 1)"
+      }
+    },
+    {
+      "id": "landuse_vineyard",
+      "type": "fill",
+      "source": "baremaps",
+      "source-layer": "landuse_vineyard",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(75,0,130, 1)"
+      }
+    },
+    {
+      "id": "landuse_commercial",
+      "type": "fill",
+      "source": "baremaps",
+      "source-layer": "landuse_commercial",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "fill-color": "rgba(0,0,255, 1)"
+      }
+    }
+  ],
+  "center": [
+    9.5554,
+    47.166
+  ],
+  "metadata": {
+    "maputnik:renderer": "mbgljs"
+  },
+  "zoom": 14
+}
