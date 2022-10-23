@@ -1,0 +1,141 @@
+{
+  "tilejson": "2.2.0",
+  "center": [
+    9.5554,
+    47.166,
+    14.0
+  ],
+  "bounds": [
+    6.471078,
+    44.04774,
+    12.636217,
+    50.27128
+  ],
+  "minzoom": 8.0,
+  "maxzoom": 14.0,
+  "tiles": [
+    "http://localhost:9000/tiles/{z}/{x}/{y}.mvt"
+  ],
+  "vector_layers": [
+    {
+      "id": "landuse_forest",
+      "queries": [
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'landuse' AND tags ->> 'landuse' = 'forest'"
+        },
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse' AND tags ->> 'type' = 'multipolygon' AND tags ->> 'landuse' = 'forest'"
+        }
+      ]
+    },
+    {
+      "id": "landuse_meadow",
+      "queries": [
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'landuse' AND tags ->> 'landuse' = 'meadow'"
+        },
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse' AND tags ->> 'type' = 'multipolygon' AND tags ->> 'landuse' = 'meadow'"
+        }
+      ]
+    },
+    {
+      "id": "landuse_farmland",
+      "queries": [
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'landuse' AND tags ->> 'landuse' = 'farmland'"
+        },
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse' AND tags ->> 'type' = 'multipolygon' AND tags ->> 'landuse' = 'farmland'"
+        }
+      ]
+    },
+    {
+      "id": "landuse_residential",
+      "queries": [
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'landuse' AND tags ->> 'landuse' = 'residential'"
+        },
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse' AND tags ->> 'type' = 'multipolygon' AND tags ->> 'landuse' = 'residential'"
+        }
+      ]
+    },
+    {
+      "id": "landuse_railway",
+      "queries": [
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'landuse' AND tags ->> 'landuse' = 'railway'"
+        },
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse' AND tags ->> 'type' = 'multipolygon' AND tags ->> 'landuse' = 'railway'"
+        }
+      ]
+    },
+    {
+      "id": "landuse_industrial",
+      "queries": [
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'landuse' AND tags ->> 'landuse' = 'industrial'"
+        },
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse' AND tags ->> 'type' = 'multipolygon' AND tags ->> 'landuse' = 'industrial'"
+        }
+      ]
+    },
+    {
+      "id": "landuse_vineyard",
+      "queries": [
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'landuse' AND tags ->> 'landuse' = 'vineyard'"
+        },
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse' AND tags ->> 'type' = 'multipolygon' AND tags ->> 'landuse' = 'vineyard'"
+        }
+      ]
+    },
+    {
+      "id": "landuse_commercial",
+      "queries": [
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'landuse' AND tags ->> 'landuse' = 'commercial'"
+        },
+        {
+          "minzoom": 8,
+          "maxzoom": 20,
+          "sql": "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse' AND tags ->> 'type' = 'multipolygon' AND tags ->> 'landuse' = 'commercial'"
+        }
+      ]
+    }
+  ]
+}
