@@ -11,8 +11,8 @@
     12.636217,
     50.27128
   ],
-  "minzoom": 8.0,
-  "maxzoom": 14.0,
+  "minzoom": 5.0,
+  "maxzoom": 15.0,
   "tiles": [
     "http://localhost:9000/tiles/{z}/{x}/{y}.mvt"
   ],
@@ -21,9 +21,15 @@
       "id": "landuse_forest",
       "queries": [
         {
-          "minzoom": 8,
-          "maxzoom": 20,
-          "sql": "SELECT id, tags, geom from osm_landuse_relations_tags_4 WHERE tags ->> 'landuse' = 'forest'"
+          "minzoom": 5,
+          "maxzoom": 15,
+          "sql": "SELECT id, tags, st_simplifypreservetopology(geom, 250) as geom from osm_landuse_relations_tags_4",
+          "original_sql": "SELECT id, tags, geom as geom from osm_relations WHERE tags ? 'landuse' AND tags ->> 'type' = 'multipolygon'",
+          "union_no_simplify": "SELECT id, tags, geom as geom from osm_landuse_relations_tags_4",
+          "union_simplify_20": "SELECT id, tags, st_simplifypreservetopology(geom, 20) as geom from osm_landuse_relations_tags_4",
+          "union_simplify_80": "SELECT id, tags, st_simplifypreservetopology(geom, 80) as geom from osm_landuse_relations_tags_4",
+          "union_simplify_200": "SELECT id, tags, st_simplifypreservetopology(geom, 200) as geom from osm_landuse_relations_tags_4",
+          "union_simplify_1000": "SELECT id, tags, st_simplifypreservetopology(geom, 1000) as geom from osm_landuse_relations_tags_4"
         }
       ]
     }
