@@ -23,7 +23,7 @@
         {
           "minzoom": 8,
           "maxzoom": 20,
-          "sql": "SELECT id, tags, geom from osm_landuse_relations_tags_3 WHERE tags ->> 'landuse' = 'forest'"
+          "sql": "SELECT id, tags, geom from osm_landuse_relations_tags_4 WHERE tags ->> 'landuse' = 'forest'"
         }
       ]
     }
