@@ -23,7 +23,7 @@
         {
           "minzoom": 5,
           "maxzoom": 15,
-          "sql": "SELECT id, tags, st_simplifypreservetopology(geom, 250) as geom from osm_landuse_relations_tags_4",
+          "sql": "SELECT id, tags, st_simplifypreservetopology(geom, 250) as geom from osm_landuse_relations_tags_simplified",
           "original_sql": "SELECT id, tags, geom as geom from osm_relations WHERE tags ? 'landuse' AND tags ->> 'type' = 'multipolygon'",
           "union_no_simplify": "SELECT id, tags, geom as geom from osm_landuse_relations_tags_4",
           "union_simplify_20": "SELECT id, tags, st_simplifypreservetopology(geom, 20) as geom from osm_landuse_relations_tags_4",

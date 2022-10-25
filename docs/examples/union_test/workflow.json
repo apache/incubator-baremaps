@@ -6,11 +6,6 @@
       "tasks": [
         {
           "type": "com.baremaps.workflow.tasks.DownloadUrl",
-          "url": "https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
-          "path": "liechtenstein-latest.osm.pbf"
-        },
-        {
-          "type": "com.baremaps.workflow.tasks.DownloadUrl",
           "url": "https://download.geofabrik.de/europe/switzerland-latest.osm.pbf",
           "path": "switzerland-latest.osm.pbf"
         }
@@ -22,12 +17,6 @@
         "download"
       ],
       "tasks": [
-        {
-          "type": "com.baremaps.workflow.tasks.ImportOpenStreetMap",
-          "file": "liechtenstein-latest.osm.pbf",
-          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "databaseSrid": 3857
-        },
         {
           "type": "com.baremaps.workflow.tasks.ImportOpenStreetMap",
           "file": "switzerland-latest.osm.pbf",
@@ -45,19 +34,6 @@
         {
           "type": "com.baremaps.workflow.tasks.ExecuteSql",
           "file": "indexes.sql",
-          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps"
-        }
-      ]
-    },
-    {
-      "id": "view",
-      "needs": [
-        "index"
-      ],
-      "tasks": [
-        {
-          "type": "com.baremaps.workflow.tasks.ExecuteSql",
-          "file": "view.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps"
         }
       ]

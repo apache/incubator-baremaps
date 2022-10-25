@@ -40,8 +40,8 @@ CREATE MATERIALIZED VIEW osm_landuse_ways_tags_2 AS SELECT (ST_Dump(geom)).path[
 --Select tags, ST_MakeValid(geom) FROM test_polygons_1 WHERE ST_GeometryType(geom) = 'ST_Polygon')
 --Select ROW_NUMBER() OVER (ORDER BY (ST_DUMP(ST_union(geom))).geom) as id,  (array_agg(tags))[1] as tags, (ST_DUMP(ST_union(geom))).geom as geom from ( Select tags, ST_BuildArea((ST_DumpRings(geom)).geom) as geom from test_polygons_2) as data GROUP BY tags
 
-DROP Materialized View IF EXISTS osm_landuse_relations_tags_4;
-CREATE MATERIALIZED VIEW osm_landuse_relations_tags_4 AS
+DROP Materialized View IF EXISTS osm_landuse_relations_tags_simplified;
+CREATE MATERIALIZED VIEW osm_landuse_relations_tags_simplified AS
 With test_polygons_1 as (
 Select tags, (ST_DUMP(geom)).geom as geom FROM osm_landuse_relations_tags WHERE ST_GeometryType(geom) = 'ST_MultiPolygon'
 Union ALL
