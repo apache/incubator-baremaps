@@ -1,7 +1,11 @@
 <html>
 <head>
   <script src='https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.js'></script>
+  <script src='/maplibre-gl-inspect.js'></script>
+  <script src='/maplibre-gl-tile-boundaries.js'></script>
   <link href='https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.css' rel='stylesheet' />
+  <link href='/maplibre-gl-inspect.css' rel='stylesheet' />
+  <link href='/maplibre-gl-tile-boundaries.css' rel='stylesheet' />
   <style>
 
     body {
@@ -26,7 +30,22 @@
     style: '/style.json',
     hash: true
   });
+
   map.addControl(new maplibregl.NavigationControl());
+
+  map.addControl(new MaplibreInspect({
+    showMapPopup: true,
+    showMapPopupOnHover: false,
+    showInspectMapPopupOnHover: false,
+    popup: new maplibregl.Popup({
+      closeButton: true,
+      closeOnClick: true
+    })
+  }));
+
+  map.addControl(new MaplibreTileBoundaries({
+    showBoundaries: false
+  }));
 
   // Listen to map changes
   const connection = new EventSource('/changes')
