@@ -14,11 +14,11 @@ package org.apache.baremaps.workflow.tasks;
 
 
 
-import java.io.IOException;
 import java.nio.file.Files;
 import org.apache.baremaps.collection.utils.FileUtils;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
+import org.apache.baremaps.workflow.WorkflowContext;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -26,14 +26,14 @@ class ImportShapefileTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
-  void run() throws IOException {
+  void execute() throws Exception {
     var zip = TestFiles.resolve("monaco-shapefile.zip");
     var directory = Files.createTempDirectory("tmp_");
     var unzip = new UnzipFile(zip.toString(), directory.toString());
-    unzip.run();
+    unzip.execute(new WorkflowContext());
     var task = new ImportShapefile(directory.resolve("gis_osm_buildings_a_free_1.shp").toString(),
         jdbcUrl(), 4326, 3857);
-    task.run();
+    task.execute(new WorkflowContext());
     FileUtils.deleteRecursively(directory);
   }
 }

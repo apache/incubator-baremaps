@@ -16,6 +16,7 @@ package org.apache.baremaps.workflow.tasks;
 
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
+import org.apache.baremaps.workflow.WorkflowContext;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -23,8 +24,8 @@ class ExecuteSqlFileTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
-  void run() {
+  void execute() throws Exception {
     var task = new ExecuteSql(jdbcUrl(), TestFiles.resolve("queries.sql").toString(), false);
-    task.run();
+    task.execute(new WorkflowContext());
   }
 }

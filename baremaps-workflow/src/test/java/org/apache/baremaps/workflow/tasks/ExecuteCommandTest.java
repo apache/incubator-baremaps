@@ -14,9 +14,9 @@ package org.apache.baremaps.workflow.tasks;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import org.apache.baremaps.workflow.WorkflowContext;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -24,9 +24,9 @@ class ExecuteCommandTest {
 
   @Test
   @Disabled
-  void run() throws IOException {
+  void execute() throws Exception {
     var path = Paths.get("test.txt").toAbsolutePath();
-    new ExecuteCommand(String.format("echo test > %s", path)).run();
+    new ExecuteCommand(String.format("echo test > %s", path)).execute(new WorkflowContext());
     assertTrue(Files.exists(path));
     assertTrue(Files.readString(path).contains("test"));
     Files.deleteIfExists(path);

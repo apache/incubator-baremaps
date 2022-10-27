@@ -19,8 +19,19 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+/**
+ * A task is a unit of work in a workflow.
+ */
 @JsonSerialize
 @JsonTypeInfo(use = Id.CLASS, property = "type")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public interface Task extends Runnable {
+public interface Task {
+
+  /**
+   * Executes the task.
+   *
+   * @throws Exception if an error occurs during the execution of the task
+   */
+  void execute(WorkflowContext context) throws Exception;
+
 }

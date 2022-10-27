@@ -13,6 +13,7 @@
 package org.apache.baremaps.workflow.tasks;
 
 import org.apache.baremaps.workflow.Task;
+import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -26,16 +27,13 @@ public record DownloadUrl(String url, String path) implements Task {
   private static final Logger logger = LoggerFactory.getLogger(DownloadUrl.class);
 
   @Override
-  public void run() {
+  public void execute(WorkflowContext context) throws Exception {
     logger.info("Downloading {} to {}", url, path);
     try (var inputStream = new URL(url).openStream()) {
       var downloadFile = Paths.get(path).toAbsolutePath();
       Files.createDirectories(downloadFile.getParent());
       Files.copy(inputStream, downloadFile, StandardCopyOption.REPLACE_EXISTING);
       logger.info("Finished downloading {} to {}", url, path);
-    } catch (Exception e) {
-      logger.error("Failed downloading {} to {}", url, path);
-      throw new WorkflowException(e);
     }
   }
 }

@@ -14,4 +14,9 @@ package org.apache.baremaps.workflow;
 
 import java.util.List;
 
+/**
+ * A workflow is a graph of steps that can be executed in parallel.
+ *
+ * @param steps
+ */
 public record Workflow(List<Step> steps) {}

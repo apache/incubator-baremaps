@@ -15,8 +15,8 @@ package org.apache.baremaps.workflow.tasks;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
+import org.apache.baremaps.workflow.WorkflowContext;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -24,12 +24,12 @@ class DownloadUrlTest {
 
   @Test
   @Tag("integration")
-  void run() throws IOException {
+  void execute() throws Exception {
     var file = File.createTempFile("test", ".tmp");
     file.deleteOnExit();
     var task = new DownloadUrl("https://raw.githubusercontent.com/baremaps/baremaps/main/README.md",
         file.getAbsolutePath());
-    task.run();
+    task.execute(new WorkflowContext());
     assertTrue(Files.readString(file.toPath()).contains("Baremaps"));
   }
 }
