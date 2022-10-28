@@ -12,7 +12,6 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;

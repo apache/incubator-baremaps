@@ -12,10 +12,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import org.apache.baremaps.collection.AlignedDataList;
-import org.apache.baremaps.collection.LongDataSortedMap;
-import org.apache.baremaps.collection.LongSizedDataDenseMap;
-import org.apache.baremaps.collection.DataStore;
+import org.apache.baremaps.collection.*;
 import org.apache.baremaps.collection.memory.OnDiskDirectoryMemory;
 import org.apache.baremaps.collection.type.LonLatDataType;
 import org.apache.baremaps.collection.type.LongDataType;
@@ -32,6 +29,7 @@ import org.apache.baremaps.workflow.WorkflowException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,14 +61,29 @@ public record ImportOpenStreetMap(String file, String database, Integer database
     relationRepository.create();
 
     var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
-    var coordinatesDir = Files.createDirectories(cacheDir.resolve("coordinates"));
+
+    LongDataMap<Coordinate> coordinates;
+    if (Files.size(path) > 1 << 30) {
+      var coordinatesDir = Files.createDirectories(cacheDir.resolve("coordinates"));
+      coordinates = new LongSizedDataDenseMap<>(
+        new LonLatDataType(),
+        new OnDiskDirectoryMemory(coordinatesDir));
+    } else {
+      var coordinatesKeysDir = Files.createDirectories(cacheDir.resolve("coordinates_keys"));
+      var coordinatesValsDir = Files.createDirectories(cacheDir.resolve("coordinates_vals"));
+      coordinates =
+        new LongDataSortedMap<>(
+          new AlignedDataList<>(
+            new PairDataType<>(new LongDataType(), new LongDataType()),
+            new OnDiskDirectoryMemory(coordinatesKeysDir)
+          ),
+          new DataStore<>(
+            new LonLatDataType(),
+            new OnDiskDirectoryMemory(coordinatesValsDir)));
+    }
+
     var referencesKeysDir = Files.createDirectories(cacheDir.resolve("references_keys"));
     var referencesValuesDir = Files.createDirectories(cacheDir.resolve("references_vals"));
-
-    var coordinates =
-      new LongSizedDataDenseMap<>(
-        new LonLatDataType(), new OnDiskDirectoryMemory(coordinatesDir));
-
     var references =
       new LongDataSortedMap<>(
         new AlignedDataList<>(
@@ -78,8 +91,8 @@ public record ImportOpenStreetMap(String file, String database, Integer database
           new OnDiskDirectoryMemory(referencesKeysDir)
         ),
         new DataStore<>(
-          new LongListDataType(), new OnDiskDirectoryMemory(referencesValuesDir))
-      );
+          new LongListDataType(),
+          new OnDiskDirectoryMemory(referencesValuesDir)));
 
     new ImportService(
       path,
@@ -90,8 +103,7 @@ public record ImportOpenStreetMap(String file, String database, Integer database
       wayRepository,
       relationRepository,
       databaseSrid
-    )
-      .call();
+    ).call();
 
     FileUtils.deleteRecursively(cacheDir);
 
