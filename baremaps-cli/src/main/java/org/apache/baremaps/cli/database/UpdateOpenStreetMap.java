@@ -16,6 +16,7 @@ package org.apache.baremaps.cli.database;
 
 import java.util.concurrent.Callable;
 import org.apache.baremaps.cli.Options;
+import org.apache.baremaps.workflow.WorkflowContext;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
@@ -36,7 +37,8 @@ public class UpdateOpenStreetMap implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    new org.apache.baremaps.workflow.tasks.UpdateOpenStreetMap(database, srid).run();
+    new org.apache.baremaps.workflow.tasks.UpdateOpenStreetMap(database, srid)
+        .execute(new WorkflowContext());
     return 0;
   }
 }

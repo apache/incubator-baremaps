@@ -13,6 +13,7 @@
 package org.apache.baremaps.workflow.tasks;
 
 import org.apache.baremaps.workflow.Task;
+import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
 import java.io.BufferedInputStream;
 import java.nio.file.Files;
@@ -28,7 +29,7 @@ public record UnzipFile(String file, String directory) implements Task {
   private static final Logger logger = LoggerFactory.getLogger(UnzipFile.class);
 
   @Override
-  public void run() {
+  public void execute(WorkflowContext context) throws Exception {
     logger.info("Unzipping {} to {}", file, directory);
     var filePath = Paths.get(file);
     var directoryPath = Paths.get(directory);

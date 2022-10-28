@@ -13,6 +13,7 @@
 package org.apache.baremaps.workflow.tasks;
 
 import org.apache.baremaps.workflow.Task;
+import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,7 @@ public record LogMessage(String message) implements Task {
   private static final Logger logger = LoggerFactory.getLogger(LogMessage.class);
 
   @Override
-  public void run() {
+  public void execute(WorkflowContext context) throws Exception {
     logger.info(message);
   }
 }

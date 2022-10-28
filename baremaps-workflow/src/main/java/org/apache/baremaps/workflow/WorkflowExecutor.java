@@ -25,10 +25,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-/** A class for building and executing pipelines. */
+/**
+ * A workflow executor executes a workflow in parallel.
+ */
 public class WorkflowExecutor implements AutoCloseable {
 
   private final ExecutorService executorService;
+
+  private final WorkflowContext context;
 
   private final Map<String, Step> steps;
 
@@ -36,12 +40,24 @@ public class WorkflowExecutor implements AutoCloseable {
 
   private final Graph<String> graph;
 
+  /**
+   * Constructs a workflow executor.
+   *
+   * @param workflow the workflow to execute
+   */
   public WorkflowExecutor(Workflow workflow) {
     this(workflow, Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
   }
 
+  /**
+   * Constructs a workflow executor.
+   *
+   * @param workflow the workflow to execute
+   * @param executorService the executor service used to execute the tasks
+   */
   public WorkflowExecutor(Workflow workflow, ExecutorService executorService) {
     this.executorService = executorService;
+    this.context = new WorkflowContext();
     this.steps = workflow.steps().stream().collect(Collectors.toMap(s -> s.id(), s -> s));
     this.futures = new ConcurrentHashMap<>();
 
@@ -63,6 +79,9 @@ public class WorkflowExecutor implements AutoCloseable {
     }
   }
 
+  /**
+   * Executes the workflow.
+   */
   public CompletableFuture<Void> execute() {
     var endSteps = graph.nodes().stream().filter(this::isEndStep).map(this::getStep)
         .toArray(CompletableFuture[]::new);
@@ -76,7 +95,13 @@ public class WorkflowExecutor implements AutoCloseable {
   private CompletableFuture<Void> initStep(String step) {
     var future = previousSteps(step);
     for (Task task : steps.get(step).tasks()) {
-      future = future.thenRunAsync(task, executorService);
+      future = future.thenRunAsync(() -> {
+        try {
+          task.execute(context);
+        } catch (Exception e) {
+          throw new WorkflowException(e);
+        }
+      }, executorService);
     }
     return future;
   }

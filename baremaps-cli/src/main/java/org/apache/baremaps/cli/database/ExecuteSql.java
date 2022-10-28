@@ -17,6 +17,7 @@ package org.apache.baremaps.cli.database;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.apache.baremaps.cli.Options;
+import org.apache.baremaps.workflow.WorkflowContext;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
@@ -42,7 +43,7 @@ public class ExecuteSql implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     new org.apache.baremaps.workflow.tasks.ExecuteSql(database, file.toAbsolutePath().toString(),
-        parallel).run();
+        parallel).execute(new WorkflowContext());
     return 0;
   }
 }

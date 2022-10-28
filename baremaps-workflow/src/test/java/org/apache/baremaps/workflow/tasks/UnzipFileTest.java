@@ -14,10 +14,10 @@ package org.apache.baremaps.workflow.tasks;
 
 
 
-import java.io.IOException;
 import java.nio.file.Files;
 import org.apache.baremaps.collection.utils.FileUtils;
 import org.apache.baremaps.testing.TestFiles;
+import org.apache.baremaps.workflow.WorkflowContext;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -25,11 +25,11 @@ class UnzipFileTest {
 
   @Test
   @Tag("integration")
-  void run() throws IOException {
+  void execute() throws Exception {
     var zip = TestFiles.resolve("monaco-shapefile.zip");
     var directory = Files.createTempDirectory("tmp_");
     var task = new UnzipFile(zip.toString(), directory.toString());
-    task.run();
+    task.execute(new WorkflowContext());
     FileUtils.deleteRecursively(directory);
   }
 }

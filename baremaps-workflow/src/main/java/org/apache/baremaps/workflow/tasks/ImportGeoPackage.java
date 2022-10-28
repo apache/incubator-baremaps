@@ -17,6 +17,7 @@ import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.storage.geopackage.GeoPackageDatabase;
 import org.apache.baremaps.storage.postgres.PostgresDatabase;
 import org.apache.baremaps.workflow.Task;
+import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
 import java.nio.file.Paths;
 import org.apache.sis.storage.FeatureSet;
@@ -29,14 +30,12 @@ public record ImportGeoPackage(String file, String database, Integer sourceSRID,
   private static final Logger logger = LoggerFactory.getLogger(ImportGeoPackage.class);
 
   @Override
-  public void run() {
+  public void execute(WorkflowContext context) throws Exception {
     logger.info("Importing {} into {}", file, database);
     var path = Paths.get(file).toAbsolutePath();
-    try (
-      var geoPackageStore = new GeoPackageDatabase(path);
-      var dataSource = PostgresUtils.dataSource(database);
-      var postgresDatabase = new PostgresDatabase(dataSource)
-    ) {
+    try (var geoPackageStore = new GeoPackageDatabase(path)) {
+      var dataSource = context.getDataSource(database);
+      var postgresDatabase = new PostgresDatabase(dataSource);
       for (var resource : geoPackageStore.components()) {
         if (resource instanceof FeatureSet featureSet) {
           postgresDatabase.add(new FeatureProjectionTransform(

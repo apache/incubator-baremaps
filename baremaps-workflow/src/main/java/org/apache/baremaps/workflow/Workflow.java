@@ -14,4 +14,11 @@ package org.apache.baremaps.workflow;
 
 import java.util.List;
 
+/**
+ * A workflow is a graph of steps that can be executed in parallel.
+ * Steps are nodes of a directed acyclic graph (DAG) and each step may depend on other steps through the needs attribute.
+ * The directed acyclic graph is built, validated and executed by the {@link WorkflowExecutor}.
+ *
+ * @param steps the steps of the workflow
+ */
 public record Workflow(List<Step> steps) {}

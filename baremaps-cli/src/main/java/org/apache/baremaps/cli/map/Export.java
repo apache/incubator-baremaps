@@ -18,6 +18,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.apache.baremaps.cli.Options;
+import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.tasks.ExportVectorTiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,8 @@ public class Export implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     new ExportVectorTiles(database, tileset.toAbsolutePath().toString(),
-        repository.toAbsolutePath().toString(), batchArraySize, batchArrayIndex, mbtiles).run();
+        repository.toAbsolutePath().toString(), batchArraySize, batchArrayIndex, mbtiles)
+            .execute(new WorkflowContext());
     return 0;
   }
 }

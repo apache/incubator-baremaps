@@ -14,4 +14,12 @@ package org.apache.baremaps.workflow;
 
 import java.util.List;
 
+/**
+ * A step is a group of tasks executed sequentially in a workflow.
+ * A step may depend on other steps through the needs attribute.
+ *
+ * @param id the identifier of the step
+ * @param needs the identifiers of the steps that must be executed before this step
+ * @param tasks the tasks of the step
+ */
 public record Step(String id, List<String> needs, List<Task> tasks) {}

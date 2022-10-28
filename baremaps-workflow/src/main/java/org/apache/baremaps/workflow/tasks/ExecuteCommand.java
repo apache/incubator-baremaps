@@ -14,6 +14,8 @@ package org.apache.baremaps.workflow.tasks;
 
 import org.apache.baremaps.workflow.Task;
 import java.io.IOException;
+
+import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,14 +24,7 @@ public record ExecuteCommand(String command) implements Task {
   private static final Logger logger = LoggerFactory.getLogger(ExecuteCommand.class);
 
   @Override
-  public void run() {
-    try {
-      new ProcessBuilder().command("/bin/sh", "-c", command).start().waitFor();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    } catch (InterruptedException e) {
-      logger.error("Failed to execute process", e);
-      Thread.currentThread().interrupt();
-    }
+  public void execute(WorkflowContext context) throws Exception {
+    new ProcessBuilder().command("/bin/sh", "-c", command).start().waitFor();
   }
 }

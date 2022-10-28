@@ -14,11 +14,14 @@ package org.apache.baremaps.workflow.tasks;
 
 import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.workflow.Task;
+import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,25 +30,21 @@ public record ExecuteSql(String database, String file, boolean parallel) impleme
   private static final Logger logger = LoggerFactory.getLogger(ExecuteSql.class);
 
   @Override
-  public void run() {
+  public void execute(WorkflowContext context) throws Exception {
     logger.info("Executing {} into {}", file, database);
-    try (var dataSource = PostgresUtils.dataSource(database)) {
-      var queries = Arrays.stream(Files.readString(Paths.get(file)).split(";"));
-      if (parallel) {
-        queries = queries.parallel();
-      }
-      queries.forEach(
-        query -> {
-          try (var connection = dataSource.getConnection()) {
-            connection.createStatement().execute(query);
-          } catch (SQLException e) {
-            throw new WorkflowException(e);
-          }
-        });
-      logger.info("Finished executing {} into {}", file, database);
-    } catch (Exception e) {
-      logger.error("Failed executing {} into {}", file, database);
-      throw new WorkflowException(e);
+    var dataSource = context.getDataSource(database);
+    var queries = Arrays.stream(Files.readString(Paths.get(file)).split(";"));
+    if (parallel) {
+      queries = queries.parallel();
     }
+    queries.forEach(
+      query -> {
+        try (var connection = dataSource.getConnection()) {
+          connection.createStatement().execute(query);
+        } catch (SQLException e) {
+          throw new WorkflowException(e);
+        }
+      });
+    logger.info("Finished executing {} into {}", file, database);
   }
 }
