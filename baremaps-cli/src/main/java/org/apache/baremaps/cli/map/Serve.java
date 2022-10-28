@@ -13,8 +13,7 @@
 package org.apache.baremaps.cli.map;
 
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
-import static org.apache.baremaps.http.ogcapi.Conversions.asPostgresQuery;
-import static org.apache.baremaps.http.utils.DefaultObjectMapper.defaultObjectMapper;
+import static org.apache.baremaps.server.DefaultObjectMapper.defaultObjectMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
@@ -23,14 +22,14 @@ import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.apache.baremaps.cli.Options;
+import org.apache.baremaps.database.PostgresUtils;
 import org.apache.baremaps.database.tile.PostgresTileStore;
 import org.apache.baremaps.database.tile.TileCache;
 import org.apache.baremaps.database.tile.TileStore;
-import org.apache.baremaps.http.resources.ServerResources;
-import org.apache.baremaps.http.utils.ConfigReader;
-import org.apache.baremaps.http.utils.CorsFilter;
-import org.apache.baremaps.model.TileJSON;
-import org.apache.baremaps.postgres.PostgresUtils;
+import org.apache.baremaps.server.ConfigReader;
+import org.apache.baremaps.server.CorsFilter;
+import org.apache.baremaps.server.ServerResources;
+import org.apache.baremaps.tileset.Tileset;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -72,12 +71,11 @@ public class Serve implements Callable<Integer> {
   public Integer call() throws Exception {
     var objectMapper = defaultObjectMapper();
     var configReader = new ConfigReader();
-    var tileJSON = objectMapper.readValue(configReader.read(tileset), TileJSON.class);
+    var tileset = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
     var caffeineSpec = CaffeineSpec.parse(cache);
     var datasource = PostgresUtils.dataSource(database);
 
-    var queries = asPostgresQuery(tileJSON);
-    var tileStore = new PostgresTileStore(datasource, queries);
+    var tileStore = new PostgresTileStore(datasource, tileset);
     var tileCache = new TileCache(tileStore, caffeineSpec);
 
     // Configure the application
@@ -86,7 +84,7 @@ public class Serve implements Callable<Integer> {
             .register(contextResolverFor(objectMapper)).register(new AbstractBinder() {
               @Override
               protected void configure() {
-                bind(tileset).to(Path.class).named("tileset");
+                bind(Serve.this.tileset).to(Path.class).named("tileset");
                 bind(style).to(Path.class).named("style");
                 bind(tileCache).to(TileStore.class);
                 bind(objectMapper).to(ObjectMapper.class);

@@ -13,7 +13,7 @@
 package org.apache.baremaps.cli.map;
 
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
-import static org.apache.baremaps.http.utils.DefaultObjectMapper.defaultObjectMapper;
+import static org.apache.baremaps.server.DefaultObjectMapper.defaultObjectMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.netty.HttpServers;
@@ -22,9 +22,9 @@ import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
-import org.apache.baremaps.http.resources.DevResources;
-import org.apache.baremaps.http.utils.CorsFilter;
-import org.apache.baremaps.postgres.PostgresUtils;
+import org.apache.baremaps.database.PostgresUtils;
+import org.apache.baremaps.server.CorsFilter;
+import org.apache.baremaps.server.DevResources;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
