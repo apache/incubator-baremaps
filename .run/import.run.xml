@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="workflow-execute" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.Baremaps" />
-    <module name="baremaps-benchmarks" />
+    <module name="baremaps-benchmark" />
     <option name="PROGRAM_PARAMETERS" value="workflow execute --file workflow.json" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/docs/examples/openstreetmap" />
     <extension name="coverage">

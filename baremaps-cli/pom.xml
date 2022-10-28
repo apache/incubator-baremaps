@@ -1,95 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-  <artifactId>baremaps-cli</artifactId>
-  <name>baremaps-cli</name>
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>baremaps</artifactId>
     <groupId>org.apache.baremaps</groupId>
+    <artifactId>baremaps</artifactId>
     <version>0.7.1-SNAPSHOT</version>
   </parent>
 
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <groupId>org.apache.maven.plugins</groupId>
-        <version>${version.plugin.maven-compiler-plugin}</version>
-        <configuration>
-          <annotationProcessorPaths>
-            <path>
-              <groupId>info.picocli</groupId>
-              <artifactId>picocli-codegen</artifactId>
-              <version>${version.lib.picocli}</version>
-            </path>
-          </annotationProcessorPaths>
-          <compilerArgs>
-            <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
-          </compilerArgs>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.3.0</version>
-        <executions>
-          <execution>
-            <id>make-zip</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <finalName>baremaps</finalName>
-              <appendAssemblyId>false</appendAssemblyId>
-              <descriptors>
-                <descriptor>src/assembly/assembly.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>com.google.cloud.tools</groupId>
-        <artifactId>jib-maven-plugin</artifactId>
-        <version>${version.plugin.jib-maven-plugin}</version>
-        <configuration>
-          <from>
-            <image>adoptopenjdk/openjdk11:alpine</image>
-          </from>
-          <to>
-            <image>registry.hub.docker.com/baremaps/baremaps</image>
-            <tags>v${project.version}</tags>
-          </to>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+  <artifactId>baremaps-cli</artifactId>
+  <name>baremaps-cli</name>
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.baremaps</groupId>
-      <artifactId>baremaps-workflow</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.baremaps</groupId>
-      <artifactId>baremaps-osm</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.baremaps</groupId>
-      <artifactId>baremaps-testing</artifactId>
-    </dependency>
-    <dependency>
-      <artifactId>picocli</artifactId>
       <groupId>info.picocli</groupId>
+      <artifactId>picocli</artifactId>
     </dependency>
     <dependency>
       <groupId>io.servicetalk</groupId>
@@ -105,25 +30,90 @@
     </dependency>
     <dependency>
       <groupId>io.servicetalk</groupId>
-      <artifactId>servicetalk-transport-netty</artifactId>
+      <artifactId>servicetalk-http-router-jersey</artifactId>
     </dependency>
     <dependency>
       <groupId>io.servicetalk</groupId>
-      <artifactId>servicetalk-http-router-jersey</artifactId>
+      <artifactId>servicetalk-transport-netty</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-ogcapi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.baremaps</groupId>
+      <artifactId>baremaps-server</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j2-impl</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.baremaps</groupId>
-      <artifactId>baremaps-geocoder</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.baremaps</groupId>
-      <artifactId>baremaps-iploc</artifactId>
-      <version>0.7.1-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
   </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>${version.plugin.jib-maven-plugin}</version>
+        <configuration>
+          <from>
+            <image>adoptopenjdk/openjdk11:alpine</image>
+          </from>
+          <to>
+            <image>registry.hub.docker.com/baremaps/baremaps</image>
+            <tags>v${project.version}</tags>
+          </to>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <id>make-zip</id>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <finalName>baremaps</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/assembly/assembly.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${version.plugin.maven-compiler-plugin}</version>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>info.picocli</groupId>
+              <artifactId>picocli-codegen</artifactId>
+              <version>${version.lib.picocli}</version>
+            </path>
+          </annotationProcessorPaths>
+          <compilerArgs>
+            <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
