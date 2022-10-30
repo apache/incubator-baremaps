@@ -39,7 +39,7 @@ public record DownloadUrl(String url, String path, boolean replaceExisting) impl
     var targetUrl = new URL(url);
     var targetPath = Paths.get(path);
 
-    if (!replaceExisting) {
+    if (!replaceExisting && targetPath.toFile().exists()) {
       var head = (HttpURLConnection) targetUrl.openConnection();
       head.setFollowRedirects(true);
       head.setRequestMethod("HEAD");
