@@ -16,9 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.apache.baremaps.collection.utils.FileUtils;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.junit.jupiter.api.Tag;
@@ -43,7 +40,7 @@ class DownloadUrlTest {
     var directory = Files.createTempDirectory("tmp_");
     var file = directory.resolve("README.md");
     var task = new DownloadUrl("https://raw.githubusercontent.com/baremaps/baremaps/main/README.md",
-            file.toAbsolutePath().toString());
+        file.toAbsolutePath().toString());
     task.execute(new WorkflowContext());
     assertTrue(Files.readString(file).contains("Baremaps"));
     FileUtils.deleteRecursively(directory);
