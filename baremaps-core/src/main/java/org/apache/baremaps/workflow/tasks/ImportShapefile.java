@@ -13,6 +13,7 @@
 package org.apache.baremaps.workflow.tasks;
 
 import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
+import org.apache.baremaps.storage.FeatureProjectionTransform;
 import org.apache.baremaps.storage.postgres.PostgresDatabase;
 import org.apache.baremaps.storage.shapefile.ShapefileFeatureSet;
 import org.apache.baremaps.workflow.Task;

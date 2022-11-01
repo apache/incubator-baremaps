@@ -15,16 +15,30 @@ package org.apache.baremaps.workflow;
 
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.apache.baremaps.workflow.tasks.*;
 
 /**
  * A task is a unit of work executed in a step of a workflow.
  */
 @JsonSerialize
-@JsonTypeInfo(use = Id.CLASS, property = "type")
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+@JsonTypeInfo(use = Id.NAME, property = "type")
+@JsonSubTypes({
+  @JsonSubTypes.Type(value = DownloadUrl.class, name = "DownloadUrl"),
+  @JsonSubTypes.Type(value = ExecuteCommand.class, name = "ExecuteCommand"),
+  @JsonSubTypes.Type(value = ExecuteSql.class, name = "ExecuteSql"),
+  @JsonSubTypes.Type(value = ExportVectorTiles.class, name = "ExportVectorTiles"),
+  @JsonSubTypes.Type(value = ImportGeoPackage.class, name = "ImportGeoPackage"),
+  @JsonSubTypes.Type(value = ImportOpenStreetMap.class, name = "ImportOpenStreetMap"),
+  @JsonSubTypes.Type(value = ImportShapefile.class, name = "ImportShapefile"),
+  @JsonSubTypes.Type(value = LogMessage.class, name = "LogMessage"),
+  @JsonSubTypes.Type(value = UnzipFile.class, name = "UnzipFile"),
+  @JsonSubTypes.Type(value = UpdateOpenStreetMap.class, name = "UpdateOpenStreetMap"),
+})
 public interface Task {
 
   /**

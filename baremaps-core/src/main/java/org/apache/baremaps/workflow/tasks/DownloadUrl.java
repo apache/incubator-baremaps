@@ -14,7 +14,6 @@ package org.apache.baremaps.workflow.tasks;
 
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
-import org.apache.baremaps.workflow.WorkflowException;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -38,7 +37,7 @@ public record DownloadUrl(String url, String path, boolean replaceExisting) impl
 
     var targetUrl = new URL(url);
     var targetPath = Paths.get(path);
-    
+
     if (Files.exists(targetPath) && !replaceExisting) {
       var head = (HttpURLConnection) targetUrl.openConnection();
       head.setFollowRedirects(true);

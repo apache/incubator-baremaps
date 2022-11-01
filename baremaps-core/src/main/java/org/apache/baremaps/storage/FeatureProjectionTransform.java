@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.workflow.tasks;
+package org.apache.baremaps.storage;
 
 
 
