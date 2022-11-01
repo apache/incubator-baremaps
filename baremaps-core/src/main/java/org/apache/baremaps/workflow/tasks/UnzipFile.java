@@ -53,7 +53,7 @@ public record UnzipFile(String file, String directory) implements Task {
         var ze = entries.nextElement();
         var file = directoryPath.resolve(ze.getName());
 
-        if (!file.toFile().getCanonicalPath().startsWith(directory)) {
+        if (!file.toFile().getCanonicalPath().startsWith(directoryPath.toFile().getCanonicalPath())) {
           throw new IOException("Entry is outside of the target directory");
         }
 

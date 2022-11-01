@@ -19,7 +19,9 @@ import org.apache.baremaps.storage.shapefile.ShapefileFeatureSet;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
+
 import java.nio.file.Paths;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +36,10 @@ public record ImportShapefile(String file, String database, Integer sourceSRID, 
     var path = Paths.get(file);
     try (var featureSet = new ShapefileFeatureSet(path)) {
       var dataSource = context.getDataSource(database);
-      try(var postgresDatabase = new PostgresDatabase(dataSource)) {
-        postgresDatabase.add(new FeatureProjectionTransform(
-          featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
-        logger.info("Finished importing {} into {}", file, database);
-      }
+      var postgresDatabase = new PostgresDatabase(dataSource);
+      postgresDatabase.add(new FeatureProjectionTransform(
+        featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
+      logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {
       logger.error("Failed importing {} into {}", file, database);
       throw new WorkflowException(e);

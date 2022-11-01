@@ -52,7 +52,7 @@ import org.opengis.util.GenericName;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class PostgresDatabase implements WritableAggregate, AutoCloseable {
+public class PostgresDatabase implements WritableAggregate {
 
   private static Map<Class, String> typeToName = new HashMap<>();
 
@@ -258,10 +258,4 @@ public class PostgresDatabase implements WritableAggregate, AutoCloseable {
     return String.format("DROP TABLE IF EXISTS %s", type.getName());
   }
 
-  @Override
-  public void close() throws Exception {
-    if (dataSource instanceof AutoCloseable closeable) {
-      closeable.close();
-    }
-  }
 }

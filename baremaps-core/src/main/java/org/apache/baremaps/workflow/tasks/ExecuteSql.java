@@ -31,13 +31,13 @@ public record ExecuteSql(String database, String file, boolean parallel) impleme
   @Override
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Executing {} into {}", file, database);
-    var dataSource = context.getDataSource(database);
     var queries = Arrays.stream(Files.readString(Paths.get(file)).split(";"));
     if (parallel) {
       queries = queries.parallel();
     }
     queries.forEach(
       query -> {
+        var dataSource = context.getDataSource(database);
         try (var connection = dataSource.getConnection()) {
           connection.createStatement().execute(query);
         } catch (SQLException e) {
@@ -46,4 +46,5 @@ public record ExecuteSql(String database, String file, boolean parallel) impleme
       });
     logger.info("Finished executing {} into {}", file, database);
   }
+  
 }

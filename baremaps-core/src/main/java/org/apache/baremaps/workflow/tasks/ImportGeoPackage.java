@@ -37,15 +37,14 @@ public record ImportGeoPackage(String file, String database, Integer sourceSRID,
     var path = Paths.get(file).toAbsolutePath();
     try (var geoPackageStore = new GeoPackageDatabase(path)) {
       var dataSource = context.getDataSource(database);
-      try (var postgresDatabase = new PostgresDatabase(dataSource)) {
-        for (var resource : geoPackageStore.components()) {
-          if (resource instanceof FeatureSet featureSet) {
-            postgresDatabase.add(new FeatureProjectionTransform(
-              featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
-          }
+      var postgresDatabase = new PostgresDatabase(dataSource);
+      for (var resource : geoPackageStore.components()) {
+        if (resource instanceof FeatureSet featureSet) {
+          postgresDatabase.add(new FeatureProjectionTransform(
+            featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
         }
-        logger.info("Finished importing {} into {}", file, database);
       }
+      logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {
       logger.error("Failed importing {} into {}", file, database);
       throw new WorkflowException(e);
