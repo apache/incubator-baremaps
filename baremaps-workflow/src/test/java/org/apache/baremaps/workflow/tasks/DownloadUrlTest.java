@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.nio.file.Files;
+import org.apache.baremaps.collection.utils.FileUtils;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -31,5 +32,17 @@ class DownloadUrlTest {
         file.getAbsolutePath());
     task.execute(new WorkflowContext());
     assertTrue(Files.readString(file.toPath()).contains("Baremaps"));
+  }
+
+  @Test
+  @Tag("integration")
+  void executeFileThatDoesntExist() throws Exception {
+    var directory = Files.createTempDirectory("tmp_");
+    var file = directory.resolve("README.md");
+    var task = new DownloadUrl("https://raw.githubusercontent.com/baremaps/baremaps/main/README.md",
+        file.toAbsolutePath().toString());
+    task.execute(new WorkflowContext());
+    assertTrue(Files.readString(file).contains("Baremaps"));
+    FileUtils.deleteRecursively(directory);
   }
 }
