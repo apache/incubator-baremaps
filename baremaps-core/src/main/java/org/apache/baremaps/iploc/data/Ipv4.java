@@ -45,8 +45,6 @@ public class Ipv4 {
     this.ip = forceIpOn4Bytes(uniqueIpResource.getValue().toByteArray());
   }
 
-
-
   /**
    * Constructs an Ipv4 range from an ip
    *
