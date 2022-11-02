@@ -26,13 +26,13 @@ class Ipv4Test {
   @Test
   void testRange() {
     Ipv4 ipv4Range = new Ipv4("0.0.0.0");
-    assertArrayEquals(ipv4Range.getIp(), new byte[] {0x0, 0x0, 0x0, 0x0});
+    assertArrayEquals(new byte[] {0x0, 0x0, 0x0, 0x0}, ipv4Range.getIp());
   }
 
   @Test
   void testRangeMaxValue() {
     Ipv4 ipv4Range = new Ipv4("255.255.255.255");
-    assertArrayEquals(ipv4Range.getIp(),
-        new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF});
+    assertArrayEquals(new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF},
+        ipv4Range.getIp());
   }
 }

@@ -26,32 +26,32 @@ class Ipv4RangeTest {
   @Test
   void testRange() {
     Ipv4Range ipv4Range = new Ipv4Range("0.0.0.0 - 0.0.0.255");
-    assertArrayEquals(ipv4Range.getStart(), new byte[] {0x0, 0x0, 0x0, 0x0});
-    assertArrayEquals(ipv4Range.getEnd(), new byte[] {0x0, 0x0, 0x0, (byte) 0xFF});
+    assertArrayEquals(new byte[] {0x0, 0x0, 0x0, 0x0}, ipv4Range.getStart());
+    assertArrayEquals(new byte[] {0x0, 0x0, 0x0, (byte) 0xFF}, ipv4Range.getEnd());
   }
 
   @Test
   void testRangeWithMask() {
     Ipv4Range ipv4Range = new Ipv4Range("0.0.0.0/24");
-    assertArrayEquals(ipv4Range.getStart(), new byte[] {0x0, 0x0, 0x0, 0x0});
-    assertArrayEquals(ipv4Range.getEnd(), new byte[] {0x0, 0x0, 0x0, (byte) 0xFF});
+    assertArrayEquals(new byte[] {0x0, 0x0, 0x0, 0x0}, ipv4Range.getStart());
+    assertArrayEquals(new byte[] {0x0, 0x0, 0x0, (byte) 0xFF}, ipv4Range.getEnd());
   }
 
   @Test
   void testRangeMaxValue() {
     Ipv4Range ipv4Range = new Ipv4Range("255.255.255.0 - 255.255.255.255");
-    assertArrayEquals(ipv4Range.getStart(),
-        new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x0});
-    assertArrayEquals(ipv4Range.getEnd(),
-        new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF});
+    assertArrayEquals(new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x0},
+        ipv4Range.getStart());
+    assertArrayEquals(new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF},
+        ipv4Range.getEnd());
   }
 
   @Test
   void testRangeWithMaxMask() {
     Ipv4Range ipv4Range = new Ipv4Range("255.255.255.0/24");
-    assertArrayEquals(ipv4Range.getStart(),
-        new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x0});
-    assertArrayEquals(ipv4Range.getEnd(),
-        new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF});
+    assertArrayEquals(new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, 0x0},
+        ipv4Range.getStart());
+    assertArrayEquals(new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF},
+        ipv4Range.getEnd());
   }
 }
