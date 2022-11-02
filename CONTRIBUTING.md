@@ -46,19 +46,11 @@ Baremaps is developed and tested with Java 17, Maven 3.6, Postgres 13 and Postgi
 The repository contains several sets of directories with code:
 The source code of Baremaps is organized in modules:
 
-- `baremaps-benchmarks` contains JMH benchmarks.
-- `baremaps-cli` contains the command line interface of baremaps.
-- `baremaps-collection` contains fast on-heap, off-heap, and on-disk collections inspired by planetiler.
-- `baremaps-database` contains the database schema for openstreetmap.
-- `baremaps-geocoder` contains utilities to create a spatial index with lucene.
-- `baremaps-http` contains the parent sever module with the main dependencies.
-- `baremaps-iploc` contains utilities to create an ip to location database.
-- `baremaps-osm` contains parsers for various openstreetmap formats (osm.xml, osc.xml, pbf).
-- `baremaps-postgres` contains utilities to manage a postgresql database.
-- `baremaps-storage` contains parsers for various data formats (shapefile, geopackage, etc.).
-- `baremaps-stream` contains utilities to process large unbounded streams in parallel.
-- `baremaps-testing` contains common utilities (data, etc.) used for testing in different module.
-- `baremaps-workflow` contains the pipeline to import osm data in postgis and produce vector tiles.
+- `baremaps-benchmark` contains JMH benchmarks.
+- `baremaps-cli` contains the command line interface.
+- `baremaps-core` contains the core features.
+- `baremaps-server` contains web resources.
+- `baremaps-ogcapi` contains ogcapi resources (experimental).
 
 The naming convention used for the modules is 'baremaps-{component}'.
 Here, component corresponds to the api and the main implementation of a component.

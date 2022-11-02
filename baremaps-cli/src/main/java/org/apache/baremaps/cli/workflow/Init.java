@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.cli.workflow;
 
-import static org.apache.baremaps.http.utils.DefaultObjectMapper.defaultObjectMapper;
+import static org.apache.baremaps.server.DefaultObjectMapper.defaultObjectMapper;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

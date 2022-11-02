@@ -13,7 +13,7 @@
 package org.apache.baremaps.cli.ogcapi;
 
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
-import static org.apache.baremaps.http.utils.DefaultObjectMapper.defaultObjectMapper;
+import static org.apache.baremaps.server.DefaultObjectMapper.defaultObjectMapper;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,17 +24,17 @@ import io.servicetalk.transport.api.ServerContext;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
-import org.apache.baremaps.http.ogcapi.ApiResource;
-import org.apache.baremaps.http.ogcapi.CollectionsResource;
-import org.apache.baremaps.http.ogcapi.ConformanceResource;
-import org.apache.baremaps.http.ogcapi.RootResource;
-import org.apache.baremaps.http.ogcapi.StylesResource;
-import org.apache.baremaps.http.ogcapi.SwaggerResource;
-import org.apache.baremaps.http.ogcapi.TilesetsResource;
-import org.apache.baremaps.http.resources.ImportResource;
-import org.apache.baremaps.http.resources.StudioResource;
-import org.apache.baremaps.http.utils.CorsFilter;
-import org.apache.baremaps.postgres.PostgresUtils;
+import org.apache.baremaps.database.PostgresUtils;
+import org.apache.baremaps.ogcapi.ApiResource;
+import org.apache.baremaps.ogcapi.CollectionsResource;
+import org.apache.baremaps.ogcapi.ConformanceResource;
+import org.apache.baremaps.ogcapi.ImportResource;
+import org.apache.baremaps.ogcapi.RootResource;
+import org.apache.baremaps.ogcapi.StudioResource;
+import org.apache.baremaps.ogcapi.StylesResource;
+import org.apache.baremaps.ogcapi.SwaggerResource;
+import org.apache.baremaps.ogcapi.TilesetsResource;
+import org.apache.baremaps.server.CorsFilter;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;

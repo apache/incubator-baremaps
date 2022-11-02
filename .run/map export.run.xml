@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="map-export" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.Baremaps" />
-    <module name="baremaps-benchmarks" />
+    <module name="baremaps-benchmark" />
     <option name="PROGRAM_PARAMETERS" value="map export --database jdbc:postgresql://localhost:5432/baremaps?user=baremaps&amp;password=baremaps --tileset tileset.json --repository tiles/" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/docs/examples/openstreetmap" />
     <extension name="coverage">

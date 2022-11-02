@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.cli.map;
 
-import static org.apache.baremaps.http.utils.DefaultObjectMapper.defaultObjectMapper;
+import static org.apache.baremaps.server.DefaultObjectMapper.defaultObjectMapper;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,9 +20,9 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import org.apache.baremaps.cli.Options;
-import org.apache.baremaps.model.MbStyle;
-import org.apache.baremaps.model.MbStyleSources;
-import org.apache.baremaps.model.TileJSON;
+import org.apache.baremaps.style.Style;
+import org.apache.baremaps.style.StyleSource;
+import org.apache.baremaps.tileset.Tileset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -46,9 +46,9 @@ public class Init implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     if (style != null) {
-      MbStyle styleObject = new MbStyle();
+      Style styleObject = new Style();
       styleObject.setName("Baremaps");
-      MbStyleSources sources = new MbStyleSources();
+      StyleSource sources = new StyleSource();
       sources.setType("vector");
       sources.setUrl("http://localhost:9000/tiles.json");
       styleObject.setSources(Map.of("baremaps", sources));
@@ -57,7 +57,7 @@ public class Init implements Callable<Integer> {
       logger.info("Style initialized: {}", style);
     }
     if (tileset != null) {
-      TileJSON tilesetObject = new TileJSON();
+      Tileset tilesetObject = new Tileset();
       tilesetObject.setTilejson("2.2.0");
       tilesetObject.setName("Baremaps");
       tilesetObject.setTiles(Arrays.asList("http://localhost:9000/tiles.json"));
