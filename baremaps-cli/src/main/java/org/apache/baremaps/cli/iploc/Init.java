@@ -12,6 +12,8 @@
 
 package org.apache.baremaps.cli.iploc;
 
+
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -93,13 +95,14 @@ public class Init implements Callable<Integer> {
                     new UngzipFile(String.format("downloads/%s",
                         nicUrl.substring(nicUrl.lastIndexOf("/") + 1)), "archives"))));
 
-    var workflow = new Workflow(Stream.concat(Stream.of(downloadGeonamesStep), downloadNicSteps).toList());
+    var workflow =
+        new Workflow(Stream.concat(Stream.of(downloadGeonamesStep), downloadNicSteps).toList());
 
-    try(var workflowExecutor = new WorkflowExecutor(workflow)) {
+    try (var workflowExecutor = new WorkflowExecutor(workflow)) {
       workflowExecutor.execute().join();
-    } catch(Exception e){
+    } catch (Exception e) {
       logger.error("Workflow execution fail");
-      throw(e);
+      throw (e);
     }
 
     try (GeonamesGeocoder geocoder =
