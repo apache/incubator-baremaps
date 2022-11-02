@@ -26,6 +26,7 @@ import org.apache.baremaps.collection.utils.FileUtils;
 import org.apache.baremaps.geocoder.Geocoder;
 import org.apache.baremaps.geocoder.geonames.GeonamesGeocoder;
 import org.apache.baremaps.iploc.data.InetnumLocation;
+import org.apache.baremaps.iploc.data.Ipv4;
 import org.apache.baremaps.iploc.data.Ipv4Range;
 import org.apache.baremaps.iploc.data.Location;
 import org.apache.baremaps.iploc.database.InetnumLocationDao;
@@ -92,7 +93,7 @@ class IpLocTest {
   void findByIpWithZeroes() {
     ipLoc.insertNicObjects(nicObjects.stream());
     List<InetnumLocation> inetnumLocations =
-        inetnumLocationDao.findByIp(new Ipv4Range("0.0.0.5/32").getStart());
+        inetnumLocationDao.findByIp(new Ipv4("0.0.0.5").getIp());
     assertEquals(4, inetnumLocations.size());
   }
 
@@ -100,7 +101,7 @@ class IpLocTest {
   void findByIp() {
     ipLoc.insertNicObjects(nicObjects.stream());
     List<InetnumLocation> inetnumLocations =
-        inetnumLocationDao.findByIp(new Ipv4Range("255.22.22.2/32").getStart());
+        inetnumLocationDao.findByIp(new Ipv4("255.22.22.2").getIp());
     assertEquals(1, inetnumLocations.size());
   }
 
