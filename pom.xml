@@ -8,11 +8,11 @@
   <packaging>pom</packaging>
   <name>baremaps</name>
   <description>Baremaps</description>
-  <url>https://github.com/baremaps/baremaps</url>
+  <url>https://github.com/apache/baremaps</url>
 
   <organization>
     <name>baremaps</name>
-    <url>https://www.baremaps.com/</url>
+    <url>https://baremaps.apache.org/</url>
   </organization>
 
   <licenses>
@@ -39,10 +39,10 @@
   </modules>
 
   <scm>
-    <connection>scm:git:git@github.com:baremaps/baremaps.git</connection>
-    <developerConnection>scm:git:git@github.com:baremaps/baremaps.git</developerConnection>
+    <connection>scm:git:git@github.com:apache/baremaps.git</connection>
+    <developerConnection>scm:git:git@github.com:apache/baremaps.git</developerConnection>
     <tag>v0.2.3</tag>
-    <url>scm:git:git@github.com:baremaps/baremaps.git</url>
+    <url>scm:git:git@github.com:apache/baremaps.git</url>
   </scm>
 
   <distributionManagement>
@@ -106,6 +106,7 @@
     <version.lucene-spatial>8.4.1</version.lucene-spatial>
     <version.plugin.jacoco-maven-plugin>0.8.8</version.plugin.jacoco-maven-plugin>
     <version.plugin.jib-maven-plugin>3.0.0</version.plugin.jib-maven-plugin>
+    <version.plugin.maven-assembly-plugin>3.3.0</version.plugin.maven-assembly-plugin>
     <version.plugin.maven-compiler-plugin>3.10.1</version.plugin.maven-compiler-plugin>
     <version.plugin.maven-exec-plugin>3.0.0</version.plugin.maven-exec-plugin>
     <version.plugin.maven-gpg-plugin>1.6</version.plugin.maven-gpg-plugin>
@@ -633,6 +634,11 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>${version.plugin.maven-assembly-plugin}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>${version.plugin.maven-surefire-plugin}</version>
       </plugin>
@@ -640,13 +646,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>${version.plugin.maven-jar-plugin}</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test-jar</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -656,6 +655,11 @@
           <excludes>**/*IntegrationTest.java</excludes>
           <excludedGroups>integration</excludedGroups>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>${version.plugin.maven-exec-plugin}</version>
       </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
@@ -676,7 +680,28 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.jreleaser</groupId>
+        <artifactId>jreleaser-maven-plugin</artifactId>
+        <version>1.3.0</version>
+        <configuration>
+          <jreleaser>
+            <project>
+              <copyright>Baremaps</copyright>
+            </project>
+          </jreleaser>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
     </plugins>
+
     <sourceDirectory>src/main/java</sourceDirectory>
   </build>
 

@@ -11,6 +11,10 @@
   <artifactId>baremaps-cli</artifactId>
   <name>baremaps-cli</name>
 
+  <properties>
+    <mainClass>org.apache.baremaps.cli.Baremaps</mainClass>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>info.picocli</groupId>
@@ -79,7 +83,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.3.0</version>
         <executions>
           <execution>
             <id>make-zip</id>
@@ -88,7 +91,9 @@
             </goals>
             <phase>package</phase>
             <configuration>
-              <finalName>baremaps</finalName>
+              <finalName>${project.parent.artifactId}-${project.version}-incubating</finalName>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <attach>false</attach>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
                 <descriptor>src/assembly/assembly.xml</descriptor>
@@ -112,6 +117,63 @@
           <compilerArgs>
             <arg>-Aproject=${project.groupId}/${project.artifactId}</arg>
           </compilerArgs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>${mainClass}</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>${mainClass}</mainClass>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.jreleaser</groupId>
+        <artifactId>jreleaser-maven-plugin</artifactId>
+        <configuration>
+          <jreleaser>
+            <project>
+              <copyright>Baremaps</copyright>
+              <java>
+                <mainClass>${mainClass}</mainClass>
+              </java>
+            </project>
+            <release>
+              <github>
+                <owner>apache</owner>
+                <overwrite>true</overwrite>
+              </github>
+            </release>
+            <distributions>
+              <app>
+                <artifacts>
+                  <artifact>
+                    <path>${project.build.directory}/${project.parent.artifactId}-${project.parent.version}-incubating.zip</path>
+                  </artifact>
+                </artifacts>
+              </app>
+            </distributions>
+            <checksum>
+              <algorithms>
+                <algorithm>SHA_256</algorithm>
+                <algorithm>SHA_512</algorithm>
+              </algorithms>
+            </checksum>
+            <signing>
+              <active>ALWAYS</active>
+              <mode>COMMAND</mode>
+            </signing>
+          </jreleaser>
         </configuration>
       </plugin>
     </plugins>
