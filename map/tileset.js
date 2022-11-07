@@ -46,7 +46,6 @@ export default {
     power,
     railway,
     route,
-    //tourism,
     waterway,
   ]
 }
