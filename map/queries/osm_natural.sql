@@ -5,16 +5,6 @@ SELECT id, tags, geom
 FROM osm_polygon
 WHERE geom IS NOT NULL AND tags ?| ARRAY ['natural'];
 
-CREATE VIEW osm_natural_z20 AS SELECT id, tags, geom FROM osm_natural;
-CREATE VIEW osm_natural_z19 AS SELECT id, tags, geom FROM osm_natural;
-CREATE VIEW osm_natural_z18 AS SELECT id, tags, geom FROM osm_natural;
-CREATE VIEW osm_natural_z17 AS SELECT id, tags, geom FROM osm_natural;
-CREATE VIEW osm_natural_z16 AS SELECT id, tags, geom FROM osm_natural;
-CREATE VIEW osm_natural_z15 AS SELECT id, tags, geom FROM osm_natural;
-CREATE VIEW osm_natural_z14 AS SELECT id, tags, geom FROM osm_natural;
-CREATE VIEW osm_natural_z13 AS SELECT id, tags, geom FROM osm_natural;
-
-
 CREATE MATERIALIZED VIEW osm_natural_grouped AS
 SELECT
     min(id) as id,
@@ -23,6 +13,15 @@ SELECT
 FROM osm_natural
 GROUP BY tags -> 'natural';
 CREATE INDEX osm_natural_grouped_geom_idx ON osm_natural_grouped USING GIST (geom);
+
+CREATE VIEW osm_natural_z20 AS SELECT id, tags, geom FROM osm_natural;
+CREATE VIEW osm_natural_z19 AS SELECT id, tags, geom FROM osm_natural;
+CREATE VIEW osm_natural_z18 AS SELECT id, tags, geom FROM osm_natural;
+CREATE VIEW osm_natural_z17 AS SELECT id, tags, geom FROM osm_natural;
+CREATE VIEW osm_natural_z16 AS SELECT id, tags, geom FROM osm_natural;
+CREATE VIEW osm_natural_z15 AS SELECT id, tags, geom FROM osm_natural;
+CREATE VIEW osm_natural_z14 AS SELECT id, tags, geom FROM osm_natural;
+CREATE VIEW osm_natural_z13 AS SELECT id, tags, geom FROM osm_natural;
 
 DROP MATERIALIZED VIEW IF EXISTS osm_natural_z12 CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_z12 AS
