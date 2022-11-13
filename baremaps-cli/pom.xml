@@ -82,16 +82,30 @@
         <version>3.3.0</version>
         <executions>
           <execution>
-            <id>make-zip</id>
+            <id>src</id>
             <goals>
               <goal>single</goal>
             </goals>
             <phase>package</phase>
             <configuration>
-              <finalName>${project.parent.artifactId}-${project.parent.version}-incubating</finalName>
+              <finalName>${project.parent.artifactId}-${project.parent.version}-incubating-src</finalName>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
-                <descriptor>src/assembly/assembly.xml</descriptor>
+                <descriptor>src/assembly/src.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+          <execution>
+            <id>bin</id>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <finalName>${project.parent.artifactId}-${project.parent.version}-incubating-bin</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/assembly/bin.xml</descriptor>
               </descriptors>
             </configuration>
           </execution>
