@@ -7,8 +7,8 @@
   <version>0.7.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>baremaps</name>
-  <description>Baremaps</description>
-  <url>https://github.com/baremaps/baremaps</url>
+  <description>Apache Baremaps (incubating) is a toolkit and a set of infrastructure components for creating, publishing, and operating online maps.</description>
+  <url>https://github.com/apache/baremaps</url>
 
   <organization>
     <name>baremaps</name>
