@@ -88,7 +88,7 @@
             </goals>
             <phase>package</phase>
             <configuration>
-              <finalName>baremaps</finalName>
+              <finalName>${project.parent.artifactId}-${project.parent.version}-incubating</finalName>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
                 <descriptor>src/assembly/assembly.xml</descriptor>
