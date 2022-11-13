@@ -1,0 +1,24 @@
+Apache Baremaps (incubating)
+Copyright 2022 and onwards The Apache Software Foundation.
+
+Baremaps development team
+Copyright 2020-2022.
+
+This product includes protocol buffers definitions copied from OSMPBF.
+Copyright (c) 2010 Scott A. Crosby. <scott@sacrosby.com>
+MIT License.
+Please visit the following URLs for the licensing information:
+https://github.com/openstreetmap/OSM-binary/issues/18
+https://github.com/openstreetmap/OSM-binary/pull/35
+
+This product includes software derived from Palantir Streams.
+Copyright 2015 Palantir Technologies, Inc.
+Apache License, Version 2.0
+Please visit the following URL for the full text of the Palantir license:
+https://github.com/palantir/streams/blob/develop/LICENSE
+
+This product includes software derived from Planetiler.
+Copyright 2021 Michael Barry and Planetiler Contributors.
+Apache License, Version 2.0
+Please visit the following URL for the full text of the Planetiler license:
+https://github.com/onthegomap/planetiler/blob/main/LICENSE
