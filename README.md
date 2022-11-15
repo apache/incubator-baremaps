@@ -23,7 +23,7 @@
 
 [Baremaps](https://www.baremaps.com/) is a toolkit for creating custom vector tiles from [OpenStreetMap](https://www.openstreetmap.org) and other data sources with Postgis and Java. The project is licensed under [Apache License 2.0](LICENSE).
 
-[![State of the map](/docs/assets/screenshot.jpg)](https://www.baremaps.com/assets/demo.html)
+[![State of the map](/site/assets/screenshot.jpg)](https://www.baremaps.com/assets/demo.html)
 
 Baremaps is inspired by [Osmosis](https://github.com/openstreetmap/osmosis), but it comes with additional features, such as the ability to:
 -   Process data in parallel with the [Stream API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html) introduced in Java 8
