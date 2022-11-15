@@ -1,5 +1,6 @@
 ---
-layout: default title: Extrusion Example
+layout: default 
+title: Extrusion Example
 ---
 
 # Extrusion Example
