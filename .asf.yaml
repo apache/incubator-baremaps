@@ -16,7 +16,7 @@
 
 github:
   description: Create custom vector tiles from OpenStreetMap and other data sources with Postgis and Java.
-  homepage: www.baremaps.com
+  homepage: baremaps.apache.org
   ghp_branch: main
   ghp_path: /docs
   labels:
