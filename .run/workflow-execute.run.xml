@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="workflow-execute" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.cli.Baremaps" />
-    <module name="baremaps-benchmark" />
-    <option name="PROGRAM_PARAMETERS" value="workflow execute --file workflow.json" />
+    <module name="baremaps-cli" />
+    <option name="PROGRAM_PARAMETERS" value="workflow execute --file workflow.js" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/map" />
     <extension name="coverage">
       <pattern>
