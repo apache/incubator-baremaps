@@ -80,10 +80,8 @@ public class WorkflowExecutor implements AutoCloseable {
    * Executes the workflow.
    */
   public CompletableFuture<Void> execute() {
-    var endSteps = graph.nodes().stream()
-      .filter(this::isEndStep)
-      .map(this::getStep)
-      .toArray(CompletableFuture[]::new);
+    var endSteps = graph.nodes().stream().filter(this::isEndStep).map(this::getStep)
+        .toArray(CompletableFuture[]::new);
     return CompletableFuture.allOf(endSteps);
   }
 
