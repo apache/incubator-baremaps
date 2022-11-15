@@ -16,7 +16,3 @@ SELECT id, tags, (st_dump(geom)).geom as geom
 FROM osm_relations
 WHERE ST_GeometryType(osm_relations.geom) = 'ST_MultiPolygon'
   AND tags != '{}';
-
-CREATE INDEX osm_polygon_geom_idx ON osm_polygon USING GIST (geom);
-CREATE INDEX osm_polygon_tags_idx ON osm_polygon USING GIN (tags);
-

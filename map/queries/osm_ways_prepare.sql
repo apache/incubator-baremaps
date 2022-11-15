@@ -1,4 +1,5 @@
-DROP MATERIALIZED VIEW IF EXISTS osm_ways_member CASCADE;
+CREATE INDEX osm_ways_geom_index ON osm_ways USING spgist (geom);
+CREATE INDEX osm_ways_tags_index ON osm_ways USING gin (tags);
 
 CREATE MATERIALIZED VIEW osm_ways_member AS
 SELECT DISTINCT member_ref as way_id
@@ -7,5 +8,3 @@ WHERE geom IS NOT NULL
   AND member_type = 1
   AND tags ->> 'type' = 'multipolygon'
   AND NOT tags ->> 'natural' = 'coastline';
-
-CREATE INDEX osm_ways_member_index ON osm_ways_member(way_id);
