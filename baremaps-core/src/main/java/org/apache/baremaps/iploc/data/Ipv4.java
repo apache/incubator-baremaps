@@ -41,7 +41,7 @@ public class Ipv4 {
    *
    * @param uniqueIpResource
    */
-  public Ipv4(UniqueIpResource uniqueIpResource) {
+  protected Ipv4(UniqueIpResource uniqueIpResource) {
     this.ip = forceIpOn4Bytes(uniqueIpResource.getValue().toByteArray());
   }
 
