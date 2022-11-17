@@ -1,6 +1,0 @@
-source "https://rubygems.org"
-gem "jekyll", "~> 3.9.2"
-gem "github-pages", "~> 227"
-gem "jekyll-sitemap", "~> 1.4.0"
-gem "jekyll-gist", "~> 1.5.0"
-gem "jekyll-github-metadata", "~> 2.13.0"
