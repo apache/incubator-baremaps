@@ -605,6 +605,8 @@
             </includes>
             <sortPom>
               <encoding>UTF-8</encoding>
+              <expandEmptyElements>false</expandEmptyElements>
+              <spaceBeforeCloseEmptyElement>true</spaceBeforeCloseEmptyElement>
               <nrOfIndentSpace>2</nrOfIndentSpace>
               <sortDependencies>groupId,artifactId</sortDependencies>
               <sortPlugins>groupId,artifactId</sortPlugins>
@@ -613,8 +615,8 @@
             </sortPom>
           </pom>
           <java>
-            <importOrder></importOrder>
-            <removeUnusedImports></removeUnusedImports>
+            <importOrder/>
+            <removeUnusedImports/>
             <eclipse>
               <version>4.21.0</version>
               <file>${maven.multiModuleProjectDirectory}/codestyle.xml</file>
