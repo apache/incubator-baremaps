@@ -89,17 +89,17 @@ export default {
       "id": "openstreetmap-data",
       "needs": [],
       "tasks": [
-        // {
-        //   "type": "DownloadUrl",
-        //   "url": "https://download.geofabrik.de/europe/switzerland-latest.osm.pbf",
-        //   "path": "data/data.osm.pbf"
-        // },
-        // {
-        //   "type": "ImportOpenStreetMap",
-        //   "file": "data/data.osm.pbf",
-        //   "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-        //   "databaseSrid": 3857
-        // },
+        {
+          "type": "DownloadUrl",
+          "url": "https://download.geofabrik.de/europe/switzerland-latest.osm.pbf",
+          "path": "data/data.osm.pbf"
+        },
+        {
+          "type": "ImportOpenStreetMap",
+          "file": "data/data.osm.pbf",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+          "databaseSrid": 3857
+        },
       ]
     },
     {
@@ -110,25 +110,21 @@ export default {
           "type": "ExecuteSql",
           "file": "queries/osm_nodes_clean.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "queries/osm_nodes_prepare.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "queries/osm_nodes_simplify.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "queries/osm_nodes_index.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
       ]
     },
@@ -140,25 +136,21 @@ export default {
           "type": "ExecuteSql",
           "file": "queries/osm_ways_clean.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "queries/osm_ways_prepare.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "queries/osm_ways_simplify.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "queries/osm_ways_index.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
       ]
     },
@@ -170,25 +162,21 @@ export default {
           "type": "ExecuteSql",
           "file": "queries/osm_relations_clean.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "queries/osm_relations_prepare.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "queries/osm_relations_simplify.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "queries/osm_relations_index.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
       ]
     },
@@ -216,7 +204,6 @@ export default {
           "type": "ExecuteSql",
           "file": "queries/osm_polygon_index.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
       ]
     },
@@ -233,13 +220,11 @@ export default {
           "type": "ExecuteSql",
           "file": "queries/osm_boundary_simplify.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "queries/osm_boundary_index.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
       ]
     },
@@ -256,13 +241,11 @@ export default {
           "type": "ExecuteSql",
           "file": "queries/osm_highway_simplify.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "queries/osm_highway_index.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
       ]
     },
@@ -279,13 +262,11 @@ export default {
           "type": "ExecuteSql",
           "file": "queries/osm_railway_simplify.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "queries/osm_railway_index.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
       ]
     },
@@ -302,7 +283,6 @@ export default {
           "type": "ExecuteSql",
           "file": "queries/osm_natural_simplify.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
       ]
     },
@@ -319,7 +299,6 @@ export default {
           "type": "ExecuteSql",
           "file": "queries/osm_landuse_simplify.sql",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-          "parallel": true,
         },
       ]
     }
