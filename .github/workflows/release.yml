@@ -18,36 +18,28 @@ jobs:
         with:
           java-version: 17
           distribution: temurin
-      - name: Build with maven
-        run: ./mvnw install -B
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Baremaps ${{ github.ref }}
-          draft: true
-          prerelease: false
-      - name: Get version
-        id: project
+      - name: Create release
         run: |
           set -x
-          version=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
-          cd baremaps-cli/target/
+          echo "$GPG_PRIVATE_KEY" | gpg --import --no-tty --batch --yes
+          version=$(./mvnw -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+          ./mvnw install -B
+          cd ./baremaps-cli/target/
           assets=()
-          for asset in "./baremaps-$version-incubating-*"; do
-            shasum -a 512 shasum -a 512 "$asset" > "$asset.sha512"
-            gpg --batch --yes --detach-sign --armor "$asset"
+          for asset in ./baremaps-$version-incubating-*; do
+            shasum -a 512 "$asset" > "$asset.sha512"
+            gpg --no-tty --pinentry-mode loopback --batch --yes --passphrase "$GPG_PASSPHRASE" --output "$asset.asc" --detach-sign --armor "$asset"
             assets+=("-a" "$asset")
             assets+=("-a" "$asset.sha512")
             assets+=("-a" "$asset.asc")
           done
           tag_name="${GITHUB_REF##*/}"
-          hub release create "${assets[@]}" -m "$tag_name" "$tag_name"
+          hub release create "${assets[@]}" -d -m "Baremaps $tag_name" "$tag_name"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
+
 
 #  maven-central:
 #    name: Release on Maven Central
