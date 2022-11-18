@@ -18,9 +18,6 @@ jobs:
         with:
           java-version: 17
           distribution: temurin
-      - name: Get version
-        id: project
-        run: echo ::set-output name=version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
       - name: Build with maven
         run: ./mvnw install -B
       - name: Create Release
@@ -31,28 +28,26 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Baremaps ${{ github.ref }}
-          draft: false
+          draft: true
           prerelease: false
-      - name: Upload binary release
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
+      - name: Get version
+        id: project
+        run: |
+          set -x
+          version=$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+          cd baremaps-cli/target/
+          assets=()
+          for asset in "./baremaps-$version-incubating-*"; do
+            shasum -a 512 shasum -a 512 "$asset" > "$asset.sha512"
+            gpg --batch --yes --detach-sign --armor "$asset"
+            assets+=("-a" "$asset")
+            assets+=("-a" "$asset.sha512")
+            assets+=("-a" "$asset.asc")
+          done
+          tag_name="${GITHUB_REF##*/}"
+          hub release create "${assets[@]}" -m "$tag_name" "$tag_name"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./baremaps-cli/target/baremaps-${{ steps.project.outputs.version }}-incubating-bin.zip
-          asset_name: baremaps-${{ steps.project.outputs.version }}-incubating-bin.zip
-          asset_content_type: application/zip
-      - name: Upload source release
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./baremaps-cli/target/baremaps-${{ steps.project.outputs.version }}-incubating-src.zip
-          asset_name: baremaps-${{ steps.project.outputs.version }}-incubating-src.zip
-          asset_content_type: application/zip
 
 #  maven-central:
 #    name: Release on Maven Central
