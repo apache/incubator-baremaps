@@ -615,8 +615,8 @@
             </sortPom>
           </pom>
           <java>
-            <importOrder/>
-            <removeUnusedImports/>
+            <importOrder />
+            <removeUnusedImports />
             <eclipse>
               <version>4.21.0</version>
               <file>${maven.multiModuleProjectDirectory}/codestyle.xml</file>
