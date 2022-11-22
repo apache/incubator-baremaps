@@ -32,7 +32,6 @@ import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.apache.baremaps.openstreetmap.model.Bound;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Header;
@@ -74,10 +73,8 @@ class OpenStreetMapTest {
   @Test
   void dataOsmXmlRelations() throws IOException {
     try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
-      assertEquals(
-        1,
-        new XmlEntityReader().stream(input).filter(e -> e instanceof Relation).count()
-      );
+      assertEquals(1,
+          new XmlEntityReader().stream(input).filter(e -> e instanceof Relation).count());
     }
   }
 
@@ -99,7 +96,7 @@ class OpenStreetMapTest {
   void denseNodesOsmPbf() throws IOException {
     try (InputStream input = Files.newInputStream(DENSE_NODES_OSM_PBF)) {
       assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).stream(input)
-        .filter(e -> e instanceof Node).count());
+          .filter(e -> e instanceof Node).count());
     }
   }
 
@@ -107,7 +104,7 @@ class OpenStreetMapTest {
   void waysOsmPbf() throws IOException {
     try (InputStream input = Files.newInputStream(WAYS_OSM_PBF)) {
       assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).stream(input)
-        .filter(e -> e instanceof Way).count());
+          .filter(e -> e instanceof Way).count());
     }
   }
 
@@ -115,7 +112,7 @@ class OpenStreetMapTest {
   void relationsOsmPbf() throws IOException {
     try (InputStream input = Files.newInputStream(RELATIONS_OSM_PBF)) {
       assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).stream(input)
-        .filter(e -> e instanceof Relation).count());
+          .filter(e -> e instanceof Relation).count());
     }
   }
 
@@ -138,19 +135,15 @@ class OpenStreetMapTest {
 
   @Test
   void monacoOsmBz2() throws IOException, URISyntaxException {
-    try (
-      InputStream inputStream =
-        new BZip2CompressorInputStream(Files.newInputStream(MONACO_OSM_BZ2))
-    ) {
+    try (InputStream inputStream =
+        new BZip2CompressorInputStream(Files.newInputStream(MONACO_OSM_BZ2))) {
       Stream<Entity> stream = new XmlEntityReader().stream(inputStream);
       process(stream, 1, 1, 24951, 4015, 243);
     }
   }
 
-  void process(
-    Stream<Entity> stream, long headerCount, long boundCount, long nodeCount,
-    long wayCount, long relationCount
-  ) {
+  void process(Stream<Entity> stream, long headerCount, long boundCount, long nodeCount,
+      long wayCount, long relationCount) {
     AtomicLong headers = new AtomicLong(0);
     AtomicLong bounds = new AtomicLong(0);
     AtomicLong nodes = new AtomicLong(0);

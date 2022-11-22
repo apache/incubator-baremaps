@@ -14,17 +14,13 @@ package org.apache.baremaps.database;
 
 
 
+import java.util.function.Consumer;
 import org.apache.baremaps.database.repository.Repository;
-import org.apache.baremaps.openstreetmap.function.BlockConsumerAdapter;
-import org.apache.baremaps.openstreetmap.model.DataBlock;
-import org.apache.baremaps.openstreetmap.model.Header;
-import org.apache.baremaps.openstreetmap.model.HeaderBlock;
-import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.openstreetmap.model.*;
+import org.apache.baremaps.stream.StreamException;
 
 /** A consumer for saving OpenStreetMap blocks in a database. */
-public class SaveBlockConsumer implements BlockConsumerAdapter {
+public class SaveBlockConsumer implements Consumer<Block> {
 
   private final Repository<Long, Header> headerRepository;
   private final Repository<Long, Node> nodeRepository;
@@ -48,18 +44,19 @@ public class SaveBlockConsumer implements BlockConsumerAdapter {
     this.relationRepository = relationRepository;
   }
 
-  /** {@inheritDoc} */
   @Override
-  public void match(HeaderBlock headerBlock) throws Exception {
-    headerRepository.put(headerBlock.getHeader());
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void match(DataBlock dataBlock) throws Exception {
-    nodeRepository.copy(dataBlock.getDenseNodes());
-    nodeRepository.copy(dataBlock.getNodes());
-    wayRepository.copy(dataBlock.getWays());
-    relationRepository.copy(dataBlock.getRelations());
+  public void accept(Block block) {
+    try {
+      if (block instanceof HeaderBlock headerBlock) {
+        headerRepository.put(headerBlock.getHeader());
+      } else if (block instanceof DataBlock dataBlock) {
+        nodeRepository.copy(dataBlock.getDenseNodes());
+        nodeRepository.copy(dataBlock.getNodes());
+        wayRepository.copy(dataBlock.getWays());
+        relationRepository.copy(dataBlock.getRelations());
+      }
+    } catch (Exception e) {
+      throw new StreamException(e);
+    }
   }
 }

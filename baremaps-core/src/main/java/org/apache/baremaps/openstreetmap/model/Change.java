@@ -16,8 +16,6 @@ package org.apache.baremaps.openstreetmap.model;
 
 import java.util.List;
 import java.util.StringJoiner;
-import org.apache.baremaps.openstreetmap.function.ChangeConsumer;
-import org.apache.baremaps.openstreetmap.function.ChangeFunction;
 
 /** Represents a change in an OpenStreetMap dataset. */
 public final class Change {
@@ -57,16 +55,6 @@ public final class Change {
    */
   public List<Entity> getEntities() {
     return entities;
-  }
-
-  /** Visits the entity with the provided entity consumer. */
-  public void visit(ChangeConsumer consumer) throws Exception {
-    consumer.match(this);
-  }
-
-  /** Visits the entity with the provided entity function. */
-  public <T> T visit(ChangeFunction<T> function) throws Exception {
-    return function.match(this);
   }
 
   /** {@inheritDoc} */

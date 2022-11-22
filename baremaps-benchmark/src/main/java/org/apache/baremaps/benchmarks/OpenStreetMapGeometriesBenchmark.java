@@ -13,6 +13,7 @@
 package org.apache.baremaps.benchmarks;
 
 
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +25,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.baremaps.collection.DataStore;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.collection.LongDataOpenHashMap;
@@ -78,31 +78,31 @@ public class OpenStreetMapGeometriesBenchmark {
   public void store() throws IOException {
     Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
     LongDataMap<Coordinate> coordinates = new LongDataOpenHashMap<>(
-      new DataStore<>(new CoordinateDataType(), new OnDiskDirectoryMemory(directory)));
+        new DataStore<>(new CoordinateDataType(), new OnDiskDirectoryMemory(directory)));
     LongDataMap<List<Long>> references =
-      new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
+        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
       new PbfEntityReader(
-        new PbfBlockReader().coordinates(coordinates).references(references).projection(4326))
-        .stream(inputStream).forEach(entity -> {
-          if (entity instanceof Node node) {
-            nodes.incrementAndGet();
-          } else if (entity instanceof Way way) {
-            ways.incrementAndGet();
-          } else if (entity instanceof Relation) {
-            relations.incrementAndGet();
-          }
-        });
+          new PbfBlockReader().coordinates(coordinates).references(references).projection(4326))
+              .stream(inputStream).forEach(entity -> {
+                if (entity instanceof Node node) {
+                  nodes.incrementAndGet();
+                } else if (entity instanceof Way way) {
+                  ways.incrementAndGet();
+                } else if (entity instanceof Relation) {
+                  relations.incrementAndGet();
+                }
+              });
     }
     FileUtils.deleteRecursively(directory);
   }
 
   public static void main(String[] args) throws RunnerException {
     Options opt = new OptionsBuilder()
-      .include(OpenStreetMapGeometriesBenchmark.class.getSimpleName()).forks(1).build();
+        .include(OpenStreetMapGeometriesBenchmark.class.getSimpleName()).forks(1).build();
     new Runner(opt).run();
   }
 }

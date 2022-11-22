@@ -19,7 +19,7 @@ import org.apache.baremaps.openstreetmap.model.Change;
 import org.apache.baremaps.openstreetmap.model.Entity;
 
 /** Represents an operation on the entities of changes of different types. */
-public class ChangeEntityConsumer implements ChangeConsumer {
+public class ChangeEntitiesConsumer implements Consumer<Change> {
 
   private final Consumer<Entity> consumer;
 
@@ -29,13 +29,13 @@ public class ChangeEntityConsumer implements ChangeConsumer {
    *
    * @param consumer
    */
-  public ChangeEntityConsumer(Consumer<Entity> consumer) {
+  public ChangeEntitiesConsumer(Consumer<Entity> consumer) {
     this.consumer = consumer;
   }
 
   /** {@inheritDoc} */
   @Override
-  public void match(Change change) throws Exception {
+  public void accept(Change change) {
     change.getEntities().forEach(consumer);
   }
 }

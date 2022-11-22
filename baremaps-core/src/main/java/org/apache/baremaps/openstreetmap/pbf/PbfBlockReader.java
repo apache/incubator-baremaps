@@ -21,7 +21,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.openstreetmap.OsmReader;
-import org.apache.baremaps.openstreetmap.function.BlockEntityConsumer;
+import org.apache.baremaps.openstreetmap.function.BlockEntitiesConsumer;
 import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
 import org.apache.baremaps.openstreetmap.function.ReprojectEntityConsumer;
 import org.apache.baremaps.openstreetmap.model.Blob;
@@ -161,7 +161,7 @@ public class PbfBlockReader implements OsmReader<Block> {
         Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, srid);
         createGeometry = createGeometry.andThen(reprojectGeometry);
       }
-      Consumer<Block> prepareGeometries = new BlockEntityConsumer(createGeometry);
+      Consumer<Block> prepareGeometries = new BlockEntitiesConsumer(createGeometry);
       Function<Block, Block> prepareBlock =
           consumeThenReturn(cacheBlock.andThen(prepareGeometries));
       blocks = blocks.map(prepareBlock);

@@ -14,11 +14,10 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 
+import java.util.function.Consumer;
 import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
 import org.apache.baremaps.openstreetmap.model.*;
 import org.locationtech.jts.geom.Geometry;
-
-import java.util.function.Consumer;
 
 /** Changes the projection of the geometry of an entity via side-effects. */
 public class ReprojectEntityConsumer implements Consumer<Entity> {

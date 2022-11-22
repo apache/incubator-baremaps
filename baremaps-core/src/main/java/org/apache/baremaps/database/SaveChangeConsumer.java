@@ -14,16 +14,18 @@ package org.apache.baremaps.database;
 
 
 
+import java.util.function.Consumer;
 import org.apache.baremaps.database.repository.Repository;
-import org.apache.baremaps.openstreetmap.function.ChangeConsumer;
+import org.apache.baremaps.database.repository.RepositoryException;
 import org.apache.baremaps.openstreetmap.model.Change;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.stream.StreamException;
 
 /** A consumer for saving OpenStreetMap changes in a database. */
-public class SaveChangeConsumer implements ChangeConsumer {
+public class SaveChangeConsumer implements Consumer<Change> {
 
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
@@ -45,29 +47,35 @@ public class SaveChangeConsumer implements ChangeConsumer {
 
   /** {@inheritDoc} */
   @Override
-  public void match(Change change) throws Exception {
-    for (Entity entity : change.getEntities()) {
-      switch (change.getType()) {
-        case CREATE:
-        case MODIFY:
-          if (entity instanceof Node node) {
-            nodeRepository.put(node);
-          } else if (entity instanceof Way way) {
-            wayRepository.put(way);
-          } else if (entity instanceof Relation relation) {
-            relationRepository.put(relation);
-          }
-          break;
-        case DELETE:
-          if (entity instanceof Node node) {
-            nodeRepository.delete(node.getId());
-          } else if (entity instanceof Way way) {
-            wayRepository.delete(way.getId());
-          } else if (entity instanceof Relation relation) {
-            relationRepository.delete(relation.getId());
-          }
-          break;
+  public void accept(Change change) {
+    try {
+      for (Entity entity : change.getEntities()) {
+        switch (change.getType()) {
+          case CREATE:
+          case MODIFY:
+            if (entity instanceof Node node) {
+              nodeRepository.put(node);
+            } else if (entity instanceof Way way) {
+              wayRepository.put(way);
+            } else if (entity instanceof Relation relation) {
+              relationRepository.put(relation);
+            }
+            break;
+          case DELETE:
+            if (entity instanceof Node node) {
+              nodeRepository.delete(node.getId());
+            } else if (entity instanceof Way way) {
+              wayRepository.delete(way.getId());
+            } else if (entity instanceof Relation relation) {
+              relationRepository.delete(relation.getId());
+            }
+            break;
+        }
       }
+    } catch (RepositoryException e) {
+      throw new StreamException(e);
     }
   }
+
+
 }
