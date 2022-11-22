@@ -20,11 +20,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
+
 import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.openstreetmap.model.Member;
-import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.stream.StreamException;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -43,8 +42,8 @@ import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** A consumer that creates and sets the geometry of OpenStreetMap entities via side-effects. */
-public class CreateGeometryConsumer implements EntityConsumerAdapter {
+/** A consumer that creates and sets the geometry of OpenStreetMap entities via side effects. */
+public class CreateGeometryConsumer implements Consumer<Entity> {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateGeometryConsumer.class);
 
@@ -65,15 +64,26 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
     this.references = references;
   }
 
-  /** {@inheritDoc} */
   @Override
+  public void accept(Entity entity) {
+    if (entity instanceof Node node) {
+      match(node);
+    } else if (entity instanceof Way way) {
+      match(way);
+    } else if (entity instanceof Relation relation) {
+      match(relation);
+    } else {
+      // do nothing
+    }
+  }
+
+  /** {@inheritDoc} */
   public void match(Node node) {
     Point point = geometryFactory.createPoint(new Coordinate(node.getLon(), node.getLat()));
     node.setGeometry(point);
   }
 
   /** {@inheritDoc} */
-  @Override
   public void match(Way way) {
     try {
       List<Coordinate> list = way.getNodes().stream().map(coordinates::get).toList();
@@ -93,7 +103,6 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
   }
 
   /** {@inheritDoc} */
-  @Override
   public void match(Relation relation) {
     try {
       Map<String, String> tags = relation.getTags();
@@ -208,4 +217,6 @@ public class CreateGeometryConsumer implements EntityConsumerAdapter {
       throw new StreamException(e);
     }
   }
+
+
 }
