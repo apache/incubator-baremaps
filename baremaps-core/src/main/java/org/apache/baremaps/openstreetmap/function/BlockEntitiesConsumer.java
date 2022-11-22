@@ -38,13 +38,13 @@ public class BlockEntitiesConsumer implements Consumer<Block> {
   @Override
   public void accept(Block block) {
     if (block instanceof HeaderBlock headerBlock) {
-      consumer.accept(headerBlock.getHeader());
-      consumer.accept(headerBlock.getBound());
+      consumer.accept(headerBlock.header());
+      consumer.accept(headerBlock.bound());
     } else if (block instanceof DataBlock dataBlock) {
-      dataBlock.getDenseNodes().forEach(consumer);
-      dataBlock.getNodes().forEach(consumer);
-      dataBlock.getWays().forEach(consumer);
-      dataBlock.getRelations().forEach(consumer);
+      dataBlock.denseNodes().forEach(consumer);
+      dataBlock.nodes().forEach(consumer);
+      dataBlock.ways().forEach(consumer);
+      dataBlock.relations().forEach(consumer);
     } else {
       throw new StreamException("Unknown block type.");
     }

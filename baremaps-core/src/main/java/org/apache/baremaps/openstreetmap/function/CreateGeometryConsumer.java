@@ -78,33 +78,33 @@ public class CreateGeometryConsumer implements Consumer<Entity> {
 
   /** {@inheritDoc} */
   public void match(Node node) {
-    Point point = geometryFactory.createPoint(new Coordinate(node.getLon(), node.getLat()));
-    node.setGeometry(point);
+    Point point = geometryFactory.createPoint(new Coordinate(node.lon(), node.lat()));
+    node.withGeometry(point);
   }
 
   /** {@inheritDoc} */
   public void match(Way way) {
     try {
-      List<Coordinate> list = way.getNodes().stream().map(coordinates::get).toList();
+      List<Coordinate> list = way.nodes().stream().map(coordinates::get).toList();
       Coordinate[] array = list.toArray(new Coordinate[list.size()]);
       LineString line = geometryFactory.createLineString(array);
       if (!line.isEmpty()) {
         if (!line.isClosed()) {
-          way.setGeometry(line);
+          way.withGeometry(line);
         } else {
           Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
-          way.setGeometry(polygon);
+          way.withGeometry(polygon);
         }
       }
     } catch (Exception e) {
-      logger.warn("Unable to build the geometry for way #" + way.getId(), e);
+      logger.warn("Unable to build the geometry for way #" + way.id(), e);
     }
   }
 
   /** {@inheritDoc} */
   public void match(Relation relation) {
     try {
-      Map<String, String> tags = relation.getTags();
+      Map<String, String> tags = relation.tags();
 
       // Filter multipolygon geometries
       if (!"multipolygon".equals(tags.get("type"))) {
@@ -129,14 +129,14 @@ public class CreateGeometryConsumer implements Consumer<Entity> {
       // Set the geometry of the relation
       if (polygons.size() == 1) {
         Polygon polygon = polygons.get(0);
-        relation.setGeometry(polygon);
+        relation.withGeometry(polygon);
       } else if (polygons.size() > 1) {
         MultiPolygon multiPolygon =
             geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[0]));
-        relation.setGeometry(multiPolygon);
+        relation.withGeometry(multiPolygon);
       }
     } catch (Exception e) {
-      logger.warn("Unable to build the geometry for relation #" + relation.getId(), e);
+      logger.warn("Unable to build the geometry for relation #" + relation.id(), e);
     }
   }
 
@@ -186,7 +186,7 @@ public class CreateGeometryConsumer implements Consumer<Entity> {
   private Set<Polygon> createPolygons(Relation relation, String role) {
     Set<Polygon> polygons = new HashSet<>();
     LineMerger lineMerger = new LineMerger();
-    relation.getMembers().stream().filter(m -> MemberType.WAY.equals(m.type()))
+    relation.members().stream().filter(m -> MemberType.WAY.equals(m.type()))
         .filter(m -> role.equals(m.role())).forEach(member -> {
           LineString line = createLine(member);
           if (line.isClosed()) {

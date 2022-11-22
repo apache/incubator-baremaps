@@ -19,40 +19,4 @@ import java.util.List;
 /** Represents a data block in an OpenStreetMap dataset. */
 public record DataBlock(List<Node> denseNodes, List<Node> nodes, List<Way> ways, List<Relation> relations) implements Block {
 
-  /**
-   * Returns the dense nodes.
-   *
-   * @return the dense nodes
-   */
-  public List<Node> getDenseNodes() {
-    return denseNodes;
-  }
-
-  /**
-   * Returns the nodes.
-   *
-   * @return the nodes
-   */
-  public List<Node> getNodes() {
-    return nodes;
-  }
-
-  /**
-   * Returns the ways.
-   *
-   * @return the ways
-   */
-  public List<Way> getWays() {
-    return ways;
-  }
-
-  /**
-   * Returns the relations.
-   *
-   * @return the relations
-   */
-  public List<Relation> getRelations() {
-    return relations;
-  }
-
 }

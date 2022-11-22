@@ -47,13 +47,13 @@ public class PbfEntityReader implements OsmReader<Entity> {
       try {
         Stream.Builder<Entity> entities = Stream.builder();
         if (block instanceof HeaderBlock headerBlock) {
-          entities.add(headerBlock.getHeader());
-          entities.add(headerBlock.getBound());
+          entities.add(headerBlock.header());
+          entities.add(headerBlock.bound());
         } else if (block instanceof DataBlock dataBlock) {
-          dataBlock.getDenseNodes().forEach(entities::add);
-          dataBlock.getNodes().forEach(entities::add);
-          dataBlock.getWays().forEach(entities::add);
-          dataBlock.getRelations().forEach(entities::add);
+          dataBlock.denseNodes().forEach(entities::add);
+          dataBlock.nodes().forEach(entities::add);
+          dataBlock.ways().forEach(entities::add);
+          dataBlock.relations().forEach(entities::add);
         } else {
           throw new StreamException("Unknown block type.");
         }

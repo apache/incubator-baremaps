@@ -37,16 +37,16 @@ class RelationGeometryTest {
   Geometry handleRelation(String file) throws IOException {
     InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
     List<Entity> entities = new XmlEntityReader().stream(input).toList();
-    LongDataMap<Coordinate> coordinates = new MockLongDataMap<>(
-        entities.stream().filter(e -> e instanceof Node).map(e -> (Node) e).collect(
-            Collectors.toMap(n -> n.getId(), n -> new Coordinate(n.getLon(), n.getLat()))));
+    LongDataMap<Coordinate> coordinates =
+        new MockLongDataMap<>(entities.stream().filter(e -> e instanceof Node).map(e -> (Node) e)
+            .collect(Collectors.toMap(n -> n.id(), n -> new Coordinate(n.lon(), n.lat()))));
     LongDataMap<List<Long>> references =
         new MockLongDataMap<>(entities.stream().filter(e -> e instanceof Way).map(e -> (Way) e)
-            .collect(Collectors.toMap(w -> w.getId(), w -> w.getNodes())));
+            .collect(Collectors.toMap(w -> w.id(), w -> w.nodes())));
     Relation relation = entities.stream().filter(e -> e instanceof Relation).map(e -> (Relation) e)
         .findFirst().get();
     new CreateGeometryConsumer(coordinates, references).match(relation);
-    return relation.getGeometry();
+    return relation.geometry();
   }
 
   @Test

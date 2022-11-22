@@ -199,7 +199,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
         Map<Long, Relation> values = new HashMap<>();
         while (result.next()) {
           Relation value = getValue(result);
-          values.put(value.getId(), value);
+          values.put(value.id(), value);
         }
         return keys.stream().map(values::get).toList();
       }
@@ -282,18 +282,18 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
         writer.writeHeader();
         for (Relation value : values) {
           writer.startRow(10);
-          writer.writeLong(value.getId());
-          writer.writeInteger(value.getInfo().version());
-          writer.writeInteger(value.getInfo().uid());
-          writer.writeLocalDateTime(value.getInfo().timestamp());
-          writer.writeLong(value.getInfo().changeset());
-          writer.writeJsonb(toJson(value.getTags()));
+          writer.writeLong(value.id());
+          writer.writeInteger(value.info().version());
+          writer.writeInteger(value.info().uid());
+          writer.writeLocalDateTime(value.info().timestamp());
+          writer.writeLong(value.info().changeset());
+          writer.writeJsonb(toJson(value.tags()));
           writer.writeLongList(
-              value.getMembers().stream().map(Member::ref).collect(Collectors.toList()));
-          writer.writeIntegerList(value.getMembers().stream().map(Member::type)
+              value.members().stream().map(Member::ref).collect(Collectors.toList()));
+          writer.writeIntegerList(value.members().stream().map(Member::type)
               .map(MemberType::ordinal).collect(Collectors.toList()));
-          writer.write(value.getMembers().stream().map(Member::role).collect(Collectors.toList()));
-          writer.writePostgisGeometry(value.getGeometry());
+          writer.write(value.members().stream().map(Member::role).collect(Collectors.toList()));
+          writer.writePostgisGeometry(value.geometry());
         }
       }
     } catch (IOException | SQLException ex) {
@@ -322,19 +322,18 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
 
   private void setValue(PreparedStatement statement, Relation value)
       throws SQLException, JsonProcessingException {
-    statement.setObject(1, value.getId());
-    statement.setObject(2, value.getInfo().version());
-    statement.setObject(3, value.getInfo().uid());
-    statement.setObject(4, value.getInfo().timestamp());
-    statement.setObject(5, value.getInfo().changeset());
-    statement.setObject(6, toJson(value.getTags()));
-    Object[] refs = value.getMembers().stream().map(Member::ref).toArray();
+    statement.setObject(1, value.id());
+    statement.setObject(2, value.info().version());
+    statement.setObject(3, value.info().uid());
+    statement.setObject(4, value.info().timestamp());
+    statement.setObject(5, value.info().changeset());
+    statement.setObject(6, toJson(value.tags()));
+    Object[] refs = value.members().stream().map(Member::ref).toArray();
     statement.setObject(7, statement.getConnection().createArrayOf("bigint", refs));
-    Object[] types =
-        value.getMembers().stream().map(Member::type).map(MemberType::ordinal).toArray();
+    Object[] types = value.members().stream().map(Member::type).map(MemberType::ordinal).toArray();
     statement.setObject(8, statement.getConnection().createArrayOf("int", types));
-    Object[] roles = value.getMembers().stream().map(Member::role).toArray();
+    Object[] roles = value.members().stream().map(Member::role).toArray();
     statement.setObject(9, statement.getConnection().createArrayOf("varchar", roles));
-    statement.setBytes(10, GeometryUtils.serialize(value.getGeometry()));
+    statement.setBytes(10, GeometryUtils.serialize(value.geometry()));
   }
 }

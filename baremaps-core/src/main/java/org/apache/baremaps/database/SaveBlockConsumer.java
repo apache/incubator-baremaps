@@ -48,12 +48,12 @@ public class SaveBlockConsumer implements Consumer<Block> {
   public void accept(Block block) {
     try {
       if (block instanceof HeaderBlock headerBlock) {
-        headerRepository.put(headerBlock.getHeader());
+        headerRepository.put(headerBlock.header());
       } else if (block instanceof DataBlock dataBlock) {
-        nodeRepository.copy(dataBlock.getDenseNodes());
-        nodeRepository.copy(dataBlock.getNodes());
-        wayRepository.copy(dataBlock.getWays());
-        relationRepository.copy(dataBlock.getRelations());
+        nodeRepository.copy(dataBlock.denseNodes());
+        nodeRepository.copy(dataBlock.nodes());
+        wayRepository.copy(dataBlock.ways());
+        relationRepository.copy(dataBlock.relations());
       }
     } catch (Exception e) {
       throw new StreamException(e);

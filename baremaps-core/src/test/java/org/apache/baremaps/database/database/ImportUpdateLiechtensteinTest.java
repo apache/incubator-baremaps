@@ -56,7 +56,7 @@ class ImportUpdateLiechtensteinTest extends DatabaseContainerTest {
     // Import data
     new ImportService(LIECHTENSTEIN_OSM_PBF, coordinates, references, headerRepository,
         nodeRepository, wayRepository, relationRepository, 3857).call();
-    assertEquals(2434l, headerRepository.selectLatest().getReplicationSequenceNumber());
+    assertEquals(2434l, headerRepository.selectLatest().replicationSequenceNumber());
 
     // Fix the replicationUrl so that we can update the database with local files
     headerRepository.put(new Header(2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0),
@@ -71,20 +71,20 @@ class ImportUpdateLiechtensteinTest extends DatabaseContainerTest {
     // Update the database
     new UpdateService(coordinates, references, headerRepository, nodeRepository, wayRepository,
         relationRepository, 3857).call();
-    assertEquals(2435l, headerRepository.selectLatest().getReplicationSequenceNumber());
+    assertEquals(2435l, headerRepository.selectLatest().replicationSequenceNumber());
 
     assertEquals(2, new DiffService(coordinates, references, headerRepository, nodeRepository,
         wayRepository, relationRepository, 3857, 14).call().size());
 
     new UpdateService(coordinates, references, headerRepository, nodeRepository, wayRepository,
         relationRepository, 3857).call();
-    assertEquals(2436l, headerRepository.selectLatest().getReplicationSequenceNumber());
+    assertEquals(2436l, headerRepository.selectLatest().replicationSequenceNumber());
 
     assertEquals(0, new DiffService(coordinates, references, headerRepository, nodeRepository,
         wayRepository, relationRepository, 3857, 14).call().size());
 
     new UpdateService(coordinates, references, headerRepository, nodeRepository, wayRepository,
         relationRepository, 3857).call();
-    assertEquals(2437l, headerRepository.selectLatest().getReplicationSequenceNumber());
+    assertEquals(2437l, headerRepository.selectLatest().replicationSequenceNumber());
   }
 }

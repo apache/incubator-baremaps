@@ -16,8 +16,6 @@ package org.apache.baremaps.openstreetmap.model;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 /** Represents a relation element in an OpenStreetMap dataset. */
@@ -58,36 +56,7 @@ public final class Relation extends Element {
    *
    * @return the members
    */
-  public List<Member> getMembers() {
+  public List<Member> members() {
     return members;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof Relation)) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    Relation relation = (Relation) o;
-    return Objects.equals(members, relation.members);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public int hashCode() {
-    return Objects.hash(super.hashCode(), members);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Relation.class.getSimpleName() + "[", "]")
-        .add("members=" + members).add("id=" + id).toString();
   }
 }

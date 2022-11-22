@@ -110,8 +110,7 @@ class GeometryHandlerTest {
   static final LongDataMap<Coordinate> COORDINATE_CACHE = new MockLongDataMap(Arrays
       .asList(NODE_0, NODE_1, NODE_2, NODE_3, NODE_4, NODE_5, NODE_6, NODE_7, NODE_8, NODE_9,
           NODE_10, NODE_11, NODE_12, NODE_13, NODE_14, NODE_15)
-      .stream()
-      .collect(Collectors.toMap(n -> n.getId(), n -> new Coordinate(n.getLon(), n.getLat()))));
+      .stream().collect(Collectors.toMap(n -> n.id(), n -> new Coordinate(n.lon(), n.lat()))));
 
   static final Way WAY_0 = new Way(0, INFO, ImmutableMap.of(), ImmutableList.of());
 
@@ -131,7 +130,7 @@ class GeometryHandlerTest {
 
   static final LongDataMap<List<Long>> REFERENCE_CACHE =
       new MockLongDataMap(Arrays.asList(WAY_0, WAY_1, WAY_2, WAY_3, WAY_4, WAY_5).stream()
-          .collect(Collectors.toMap(w -> w.getId(), w -> w.getNodes())));
+          .collect(Collectors.toMap(w -> w.id(), w -> w.nodes())));
 
   static final Relation RELATION_0 = new Relation(0, INFO, ImmutableMap.of(), Arrays.asList());
 
@@ -159,11 +158,11 @@ class GeometryHandlerTest {
   @Test
   void handleNode() {
     GEOMETRY_BUILDER.match(NODE_0);
-    Point p0 = (Point) NODE_0.getGeometry();
+    Point p0 = (Point) NODE_0.geometry();
     assertEquals(0, p0.getX());
     assertEquals(0, p0.getY());
     GEOMETRY_BUILDER.match(NODE_2);
-    Point p1 = (Point) NODE_2.getGeometry();
+    Point p1 = (Point) NODE_2.geometry();
     assertEquals(4, p1.getX());
     assertEquals(4, p1.getY());
   }
@@ -171,32 +170,32 @@ class GeometryHandlerTest {
   @Test
   void handleWay() {
     GEOMETRY_BUILDER.match(WAY_0);
-    assertNull(WAY_0.getGeometry());
+    assertNull(WAY_0.geometry());
     GEOMETRY_BUILDER.match(WAY_1);
-    assertTrue(WAY_1.getGeometry() instanceof LineString);
+    assertTrue(WAY_1.geometry() instanceof LineString);
     GEOMETRY_BUILDER.match(WAY_2);
-    assertTrue(WAY_2.getGeometry() instanceof Polygon);
+    assertTrue(WAY_2.geometry() instanceof Polygon);
   }
 
   @Test
   void handleRelation() {
     GEOMETRY_BUILDER.match(RELATION_0);
-    assertNull(RELATION_0.getGeometry());
+    assertNull(RELATION_0.geometry());
     GEOMETRY_BUILDER.match(RELATION_1);
-    assertNull(RELATION_1.getGeometry());
+    assertNull(RELATION_1.geometry());
     GEOMETRY_BUILDER.match(RELATION_2);
-    assertTrue(RELATION_2.getGeometry() instanceof Polygon);
+    assertTrue(RELATION_2.geometry() instanceof Polygon);
     GEOMETRY_BUILDER.match(RELATION_3);
-    assertTrue(RELATION_3.getGeometry() instanceof Polygon);
+    assertTrue(RELATION_3.geometry() instanceof Polygon);
     GEOMETRY_BUILDER.match(RELATION_4);
-    assertTrue(RELATION_4.getGeometry() instanceof MultiPolygon);
+    assertTrue(RELATION_4.geometry() instanceof MultiPolygon);
   }
 
   @Test
   void handleRelationWithHole() {
     GEOMETRY_BUILDER.match(RELATION_5);
-    assertTrue(RELATION_5.getGeometry() instanceof Polygon);
-    assertNotNull(((Polygon) RELATION_5.getGeometry()).getExteriorRing());
-    assertEquals(1, ((Polygon) RELATION_5.getGeometry()).getNumInteriorRing());
+    assertTrue(RELATION_5.geometry() instanceof Polygon);
+    assertNotNull(((Polygon) RELATION_5.geometry()).getExteriorRing());
+    assertEquals(1, ((Polygon) RELATION_5.geometry()).getNumInteriorRing());
   }
 }

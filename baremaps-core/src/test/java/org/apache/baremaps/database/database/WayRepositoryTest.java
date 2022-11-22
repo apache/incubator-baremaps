@@ -41,7 +41,7 @@ class WayRepositoryTest extends DatabaseContainerTest {
   @Tag("integration")
   void insert() throws RepositoryException {
     wayRepository.put(Constants.WAY_1);
-    assertEquals(Constants.WAY_1, wayRepository.get(Constants.WAY_1.getId()));
+    assertEquals(Constants.WAY_1, wayRepository.get(Constants.WAY_1.id()));
   }
 
   @Test
@@ -50,15 +50,15 @@ class WayRepositoryTest extends DatabaseContainerTest {
     List<Way> ways = Arrays.asList(Constants.WAY_1, Constants.WAY_2, Constants.WAY_3);
     wayRepository.put(ways);
     assertIterableEquals(ways,
-        wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        wayRepository.get(ways.stream().map(e -> e.id()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   void delete() throws RepositoryException {
     wayRepository.put(Constants.WAY_1);
-    wayRepository.delete(Constants.WAY_1.getId());
-    assertNull(wayRepository.get(Constants.WAY_1.getId()));
+    wayRepository.delete(Constants.WAY_1.id());
+    assertNull(wayRepository.get(Constants.WAY_1.id()));
   }
 
   @Test
@@ -66,9 +66,9 @@ class WayRepositoryTest extends DatabaseContainerTest {
   void deleteAll() throws RepositoryException {
     List<Way> ways = Arrays.asList(Constants.WAY_1, Constants.WAY_2, Constants.WAY_3);
     wayRepository.put(ways);
-    wayRepository.delete(ways.stream().map(e -> e.getId()).collect(Collectors.toList()));
+    wayRepository.delete(ways.stream().map(e -> e.id()).collect(Collectors.toList()));
     assertIterableEquals(Arrays.asList(null, null, null),
-        wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        wayRepository.get(ways.stream().map(e -> e.id()).collect(Collectors.toList())));
   }
 
   @Test
@@ -77,6 +77,6 @@ class WayRepositoryTest extends DatabaseContainerTest {
     List<Way> ways = Arrays.asList(Constants.WAY_1, Constants.WAY_2, Constants.WAY_3);
     wayRepository.copy(ways);
     assertIterableEquals(ways,
-        wayRepository.get(ways.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        wayRepository.get(ways.stream().map(e -> e.id()).collect(Collectors.toList())));
   }
 }

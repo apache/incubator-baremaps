@@ -15,8 +15,6 @@ package org.apache.baremaps.openstreetmap.model;
 
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 /** Represents a node element in an OpenStreetMap dataset. */
@@ -63,7 +61,7 @@ public final class Node extends Element {
    *
    * @return the longitude
    */
-  public double getLon() {
+  public double lon() {
     return lon;
   }
 
@@ -72,36 +70,7 @@ public final class Node extends Element {
    *
    * @return the latitude
    */
-  public double getLat() {
+  public double lat() {
     return lat;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof Node)) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    Node node = (Node) o;
-    return Double.compare(node.lon, lon) == 0 && Double.compare(node.lat, lat) == 0;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public int hashCode() {
-    return Objects.hash(super.hashCode(), lon, lat);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Node.class.getSimpleName() + "[", "]").add("lon=" + lon)
-        .add("lat=" + lat).add("id=" + id).toString();
   }
 }

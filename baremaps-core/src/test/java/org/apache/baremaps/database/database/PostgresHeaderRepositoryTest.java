@@ -60,7 +60,7 @@ class PostgresHeaderRepositoryTest extends DatabaseContainerTest {
   @Tag("integration")
   void insert() throws RepositoryException {
     headerRepository.put(HEADER_0);
-    assertEquals(HEADER_0, headerRepository.get(HEADER_0.getReplicationSequenceNumber()));
+    assertEquals(HEADER_0, headerRepository.get(HEADER_0.replicationSequenceNumber()));
   }
 
   @Test
@@ -69,15 +69,15 @@ class PostgresHeaderRepositoryTest extends DatabaseContainerTest {
     List<Header> headers = Arrays.asList(HEADER_0, HEADER_1, HEADER_2);
     headerRepository.put(headers);
     assertIterableEquals(headers, headerRepository.get(
-        headers.stream().map(e -> e.getReplicationSequenceNumber()).collect(Collectors.toList())));
+        headers.stream().map(e -> e.replicationSequenceNumber()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   void delete() throws RepositoryException {
     headerRepository.put(HEADER_0);
-    headerRepository.delete(HEADER_0.getReplicationSequenceNumber());
-    assertNull(headerRepository.get(HEADER_0.getReplicationSequenceNumber()));
+    headerRepository.delete(HEADER_0.replicationSequenceNumber());
+    assertNull(headerRepository.get(HEADER_0.replicationSequenceNumber()));
   }
 
   @Test
@@ -86,9 +86,9 @@ class PostgresHeaderRepositoryTest extends DatabaseContainerTest {
     List<Header> headers = Arrays.asList(HEADER_0, HEADER_1, HEADER_2);
     headerRepository.put(headers);
     headerRepository.delete(
-        headers.stream().map(e -> e.getReplicationSequenceNumber()).collect(Collectors.toList()));
+        headers.stream().map(e -> e.replicationSequenceNumber()).collect(Collectors.toList()));
     assertIterableEquals(Arrays.asList(null, null, null), headerRepository.get(
-        headers.stream().map(e -> e.getReplicationSequenceNumber()).collect(Collectors.toList())));
+        headers.stream().map(e -> e.replicationSequenceNumber()).collect(Collectors.toList())));
   }
 
   @Test
@@ -97,6 +97,6 @@ class PostgresHeaderRepositoryTest extends DatabaseContainerTest {
     List<Header> headers = Arrays.asList(HEADER_0, HEADER_1, HEADER_2);
     headerRepository.copy(headers);
     assertIterableEquals(headers, headerRepository.get(
-        headers.stream().map(e -> e.getReplicationSequenceNumber()).collect(Collectors.toList())));
+        headers.stream().map(e -> e.replicationSequenceNumber()).collect(Collectors.toList())));
   }
 }

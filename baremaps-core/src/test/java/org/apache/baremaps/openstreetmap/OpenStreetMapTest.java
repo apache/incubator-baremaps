@@ -120,8 +120,8 @@ class OpenStreetMapTest {
   void monacoStateTxt() throws URISyntaxException, IOException {
     try (InputStream inputStream = Files.newInputStream(MONACO_STATE_TXT)) {
       State state = new StateReader().state(inputStream);
-      assertEquals(2788, state.getSequenceNumber());
-      assertEquals(LocalDateTime.parse("2020-11-10T21:42:03"), state.getTimestamp());
+      assertEquals(2788, state.sequenceNumber());
+      assertEquals(LocalDateTime.parse("2020-11-10T21:42:03"), state.timestamp());
     }
   }
 
@@ -152,7 +152,7 @@ class OpenStreetMapTest {
     stream.forEach(entity -> {
       if (entity instanceof Header header) {
         assertNotNull(header);
-        assertEquals("osmium/1.8.0", header.getWritingProgram());
+        assertEquals("osmium/1.8.0", header.writingProgram());
         headers.incrementAndGet();
       } else if (entity instanceof Bound bound) {
         assertNotNull(bound);

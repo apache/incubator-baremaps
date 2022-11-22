@@ -187,7 +187,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
         Map<Long, Node> values = new HashMap<>();
         while (result.next()) {
           Node value = getValue(result);
-          values.put(value.getId(), value);
+          values.put(value.id(), value);
         }
         return keys.stream().map(values::get).toList();
       }
@@ -270,15 +270,15 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
         writer.writeHeader();
         for (Node value : values) {
           writer.startRow(9);
-          writer.writeLong(value.getId());
-          writer.writeInteger(value.getInfo().version());
-          writer.writeInteger(value.getInfo().uid());
-          writer.writeLocalDateTime(value.getInfo().timestamp());
-          writer.writeLong(value.getInfo().changeset());
-          writer.writeJsonb(PostgresJsonbMapper.toJson(value.getTags()));
-          writer.writeDouble(value.getLon());
-          writer.writeDouble(value.getLat());
-          writer.writePostgisGeometry(value.getGeometry());
+          writer.writeLong(value.id());
+          writer.writeInteger(value.info().version());
+          writer.writeInteger(value.info().uid());
+          writer.writeLocalDateTime(value.info().timestamp());
+          writer.writeLong(value.info().changeset());
+          writer.writeJsonb(PostgresJsonbMapper.toJson(value.tags()));
+          writer.writeDouble(value.lon());
+          writer.writeDouble(value.lat());
+          writer.writePostgisGeometry(value.geometry());
         }
       }
     } catch (IOException | SQLException e) {
@@ -302,14 +302,14 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
 
   private void setValue(PreparedStatement statement, Node value)
       throws SQLException, JsonProcessingException {
-    statement.setObject(1, value.getId());
-    statement.setObject(2, value.getInfo().version());
-    statement.setObject(3, value.getInfo().uid());
-    statement.setObject(4, value.getInfo().timestamp());
-    statement.setObject(5, value.getInfo().changeset());
-    statement.setObject(6, PostgresJsonbMapper.toJson(value.getTags()));
-    statement.setObject(7, value.getLon());
-    statement.setObject(8, value.getLat());
-    statement.setBytes(9, GeometryUtils.serialize(value.getGeometry()));
+    statement.setObject(1, value.id());
+    statement.setObject(2, value.info().version());
+    statement.setObject(3, value.info().uid());
+    statement.setObject(4, value.info().timestamp());
+    statement.setObject(5, value.info().changeset());
+    statement.setObject(6, PostgresJsonbMapper.toJson(value.tags()));
+    statement.setObject(7, value.lon());
+    statement.setObject(8, value.lat());
+    statement.setBytes(9, GeometryUtils.serialize(value.geometry()));
   }
 }

@@ -13,37 +13,7 @@
 package org.apache.baremaps.openstreetmap.model;
 
 
-
-import com.google.common.base.Objects;
-import java.util.StringJoiner;
-
 /** Represents a member of a relation in an OpenStreetMap dataset. */
-public record Member(long ref,MemberType type,String role){
+public record Member(long ref, MemberType type, String role) {
 
-  /** {@inheritDoc} */
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Member member = (Member) o;
-    return ref == member.ref && Objects.equal(type, member.type)
-        && Objects.equal(role, member.role);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(ref, type, role);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Member.class.getSimpleName() + "[", "]").add("ref=" + ref)
-        .add("type='" + type.name() + "'").add("role='" + role + "'").toString();
-  }
 }

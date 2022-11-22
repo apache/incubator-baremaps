@@ -37,9 +37,9 @@ public class ReprojectEntityConsumer implements Consumer<Entity> {
   /** {@inheritDoc} */
   @Override
   public void accept(Entity entity) {
-    if (entity instanceof Element element && element.getGeometry() != null) {
-      Geometry geometry = projectionTransformer.transform(element.getGeometry());
-      element.setGeometry(geometry);
+    if (entity instanceof Element element && element.geometry() != null) {
+      Geometry geometry = projectionTransformer.transform(element.geometry());
+      element.withGeometry(geometry);
     }
   }
 }

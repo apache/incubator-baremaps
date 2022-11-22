@@ -82,8 +82,8 @@ class ImportUpdateDataTest extends DatabaseContainerTest {
 
     // Check node properties
     Node node = nodeRepository.get(1l);
-    Assertions.assertEquals(1, node.getLon());
-    Assertions.assertEquals(1, node.getLat());
+    Assertions.assertEquals(1, node.lon());
+    Assertions.assertEquals(1, node.lat());
 
     // Check way properties
     Way way = wayRepository.get(1l);

@@ -21,30 +21,4 @@ import java.util.StringJoiner;
 /** Represents all the metadata associated to an element in an OpenStreetMap dataset. */
 public record Info(int version, LocalDateTime timestamp, long changeset, int uid) {
 
-  /** {@inheritDoc} */
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof Info)) {
-      return false;
-    }
-    Info info = (Info) o;
-    return version == info.version && changeset == info.changeset && uid == info.uid
-        && Objects.equals(timestamp, info.timestamp);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public int hashCode() {
-    return Objects.hash(version, timestamp, changeset, uid);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Info.class.getSimpleName() + "[", "]").add("version=" + version)
-        .add("timestamp=" + timestamp).add("changeset=" + changeset).add("uid=" + uid).toString();
-  }
 }

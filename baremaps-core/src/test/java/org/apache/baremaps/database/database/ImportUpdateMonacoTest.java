@@ -56,7 +56,7 @@ class ImportUpdateMonacoTest extends DatabaseContainerTest {
     new ImportService(TestFiles.resolve("monaco/monaco-210801.osm.pbf"), coordinates, references,
         headerRepository, nodeRepository, wayRepository, relationRepository, 3857).call();
 
-    assertEquals(3047l, headerRepository.selectLatest().getReplicationSequenceNumber());
+    assertEquals(3047l, headerRepository.selectLatest().replicationSequenceNumber());
 
     // Fix the replicationUrl so that we can update the database with local files
     headerRepository.delete(3047l);
@@ -67,14 +67,14 @@ class ImportUpdateMonacoTest extends DatabaseContainerTest {
     references = new PostgresReferenceMap(dataSource());
 
     // Generate the diff and update the database
-    long replicationSequenceNumber = headerRepository.selectLatest().getReplicationSequenceNumber();
+    long replicationSequenceNumber = headerRepository.selectLatest().replicationSequenceNumber();
     while (replicationSequenceNumber < 3075) {
       new DiffService(coordinates, references, headerRepository, nodeRepository, wayRepository,
           relationRepository, 3857, 14).call();
       new UpdateService(coordinates, references, headerRepository, nodeRepository, wayRepository,
           relationRepository, 3857).call();
       long nextReplicationSequenceNumber =
-          headerRepository.selectLatest().getReplicationSequenceNumber();
+          headerRepository.selectLatest().replicationSequenceNumber();
       assertEquals(replicationSequenceNumber + 1, nextReplicationSequenceNumber);
       replicationSequenceNumber = nextReplicationSequenceNumber;
     }

@@ -67,8 +67,8 @@ public class UpdateService implements Callable<Void> {
   @Override
   public Void call() throws Exception {
     Header header = headerRepository.selectLatest();
-    String replicationUrl = header.getReplicationUrl();
-    Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
+    String replicationUrl = header.replicationUrl();
+    Long sequenceNumber = header.replicationSequenceNumber() + 1;
 
     Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
     Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, srid);
@@ -87,8 +87,8 @@ public class UpdateService implements Callable<Void> {
     URL stateUrl = resolve(replicationUrl, sequenceNumber, "state.txt");
     try (InputStream stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
       State state = new StateReader().state(stateInputStream);
-      headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),
-          header.getReplicationUrl(), header.getSource(), header.getWritingProgram()));
+      headerRepository.put(new Header(state.sequenceNumber(), state.timestamp(),
+          header.replicationUrl(), header.source(), header.writingProgram()));
     }
 
     return null;

@@ -61,7 +61,7 @@ permits Node, Way, Relation
    *
    * @return the id
    */
-  public long getId() {
+  public long id() {
     return id;
   }
 
@@ -70,7 +70,7 @@ permits Node, Way, Relation
    *
    * @return the info
    */
-  public Info getInfo() {
+  public Info info() {
     return info;
   }
 
@@ -79,7 +79,7 @@ permits Node, Way, Relation
    *
    * @return the tags
    */
-  public Map<String, String> getTags() {
+  public Map<String, String> tags() {
     return tags;
   }
 
@@ -88,7 +88,7 @@ permits Node, Way, Relation
    *
    * @return the geometry
    */
-  public Geometry getGeometry() {
+  public Geometry geometry() {
     return this.geometry;
   }
 
@@ -97,7 +97,7 @@ permits Node, Way, Relation
    *
    * @param geometry the geometry
    */
-  public void setGeometry(Geometry geometry) {
+  public void withGeometry(Geometry geometry) {
     this.geometry = geometry;
   }
 

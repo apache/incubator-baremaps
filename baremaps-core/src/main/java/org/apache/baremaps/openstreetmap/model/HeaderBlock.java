@@ -17,22 +17,4 @@ package org.apache.baremaps.openstreetmap.model;
 /** Represents a header block in an OpenStreetMap dataset. */
 public record HeaderBlock(Header header, Bound bound) implements Block {
 
-  /**
-   * Returns the header.
-   *
-   * @return the header
-   */
-  public Header getHeader() {
-    return header;
-  }
-
-  /**
-   * Returns the bounds.
-   *
-   * @return the bounds
-   */
-  public Bound getBound() {
-    return bound;
-  }
-
 }

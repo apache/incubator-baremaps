@@ -16,8 +16,6 @@ package org.apache.baremaps.openstreetmap.model;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 /** Represents a way element in an OpenStreetMap dataset. */
@@ -57,36 +55,7 @@ public final class Way extends Element {
    *
    * @return the nodes
    */
-  public List<Long> getNodes() {
+  public List<Long> nodes() {
     return nodes;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof Way)) {
-      return false;
-    }
-    if (!super.equals(o)) {
-      return false;
-    }
-    Way way = (Way) o;
-    return Objects.equals(nodes, way.nodes);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public int hashCode() {
-    return Objects.hash(super.hashCode(), nodes);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Way.class.getSimpleName() + "[", "]").add("nodes=" + nodes)
-        .add("id=" + id).toString();
   }
 }

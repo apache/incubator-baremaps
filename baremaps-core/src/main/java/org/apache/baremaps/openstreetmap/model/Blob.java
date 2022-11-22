@@ -12,8 +12,6 @@
 
 package org.apache.baremaps.openstreetmap.model;
 
-
-
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import java.util.StringJoiner;
@@ -23,7 +21,7 @@ import org.apache.baremaps.osm.binary.Fileformat;
 import org.apache.baremaps.osm.binary.Fileformat.BlobHeader;
 
 /** Represents a raw blob of data in an OpenStreetMap dataset. */
-public record Blob (BlobHeader header, byte[] rawData, int size) {
+public record Blob(BlobHeader header, byte[] rawData, int size) {
 
   /**
    * Returns the data.
@@ -46,12 +44,5 @@ public record Blob (BlobHeader header, byte[] rawData, int size) {
     } else {
       throw new DataFormatException("Unsupported toPrimitiveBlock format");
     }
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Blob.class.getSimpleName() + "[", "]").add("header=" + header)
-        .add("size=" + size).toString();
   }
 }

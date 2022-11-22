@@ -74,8 +74,8 @@ public class DiffService implements Callable<List<Tile>> {
     logger.info("Importing changes");
 
     Header header = headerRepository.selectLatest();
-    String replicationUrl = header.getReplicationUrl();
-    Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
+    String replicationUrl = header.replicationUrl();
+    Long sequenceNumber = header.replicationSequenceNumber() + 1;
     URL changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
 
     ProjectionTransformer projectionTransformer = new ProjectionTransformer(srid, 4326);
@@ -116,14 +116,14 @@ public class DiffService implements Callable<List<Tile>> {
   private Optional<Geometry> geometriesForPreviousVersion(Entity entity) {
     try {
       if (entity instanceof Node node) {
-        Node previousNode = nodeRepository.get(node.getId());
-        return Optional.ofNullable(previousNode).map(Node::getGeometry);
+        Node previousNode = nodeRepository.get(node.id());
+        return Optional.ofNullable(previousNode).map(Node::geometry);
       } else if (entity instanceof Way way) {
-        Way previousWay = wayRepository.get(way.getId());
-        return Optional.ofNullable(previousWay).map(Way::getGeometry);
+        Way previousWay = wayRepository.get(way.id());
+        return Optional.ofNullable(previousWay).map(Way::geometry);
       } else if (entity instanceof Relation relation) {
-        Relation previousRelation = relationRepository.get(relation.getId());
-        return Optional.ofNullable(previousRelation).map(Relation::getGeometry);
+        Relation previousRelation = relationRepository.get(relation.id());
+        return Optional.ofNullable(previousRelation).map(Relation::geometry);
       } else {
         return Optional.empty();
       }

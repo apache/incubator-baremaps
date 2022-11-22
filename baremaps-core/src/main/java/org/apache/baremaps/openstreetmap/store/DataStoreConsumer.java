@@ -45,11 +45,11 @@ public class DataStoreConsumer implements Consumer<Block> {
   public void accept(Block block) {
     try {
       if (block instanceof DataBlock dataBlock) {
-        dataBlock.getDenseNodes().stream().forEach(
-            node -> coordinates.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
-        dataBlock.getNodes().stream().forEach(
-            node -> coordinates.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
-        dataBlock.getWays().stream().forEach(way -> references.put(way.getId(), way.getNodes()));
+        dataBlock.denseNodes().stream()
+            .forEach(node -> coordinates.put(node.id(), new Coordinate(node.lon(), node.lat())));
+        dataBlock.nodes().stream()
+            .forEach(node -> coordinates.put(node.id(), new Coordinate(node.lon(), node.lat())));
+        dataBlock.ways().stream().forEach(way -> references.put(way.id(), way.nodes()));
       }
     } catch (Exception e) {
       throw new StreamException(e);

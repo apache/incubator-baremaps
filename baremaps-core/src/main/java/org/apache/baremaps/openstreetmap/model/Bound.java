@@ -12,38 +12,7 @@
 
 package org.apache.baremaps.openstreetmap.model;
 
-
-
-import java.util.Objects;
-import java.util.StringJoiner;
-
 /** Represents the bounds of an OpenStreetMap dataset. */
 public record Bound(double maxLat, double maxLon, double minLat, double minLon) implements Entity {
 
-  /** {@inheritDoc} */
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof Bound)) {
-      return false;
-    }
-    Bound bound = (Bound) o;
-    return Double.compare(bound.maxLat, maxLat) == 0 && Double.compare(bound.maxLon, maxLon) == 0
-        && Double.compare(bound.minLat, minLat) == 0 && Double.compare(bound.minLon, minLon) == 0;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public int hashCode() {
-    return Objects.hash(maxLat, maxLon, minLat, minLon);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Bound.class.getSimpleName() + "[", "]").add("maxLat=" + maxLat)
-        .add("maxLon=" + maxLon).add("minLat=" + minLat).add("minLon=" + minLon).toString();
-  }
 }

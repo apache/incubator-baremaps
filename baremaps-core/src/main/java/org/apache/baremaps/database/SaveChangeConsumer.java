@@ -63,11 +63,11 @@ public class SaveChangeConsumer implements Consumer<Change> {
             break;
           case DELETE:
             if (entity instanceof Node node) {
-              nodeRepository.delete(node.getId());
+              nodeRepository.delete(node.id());
             } else if (entity instanceof Way way) {
-              wayRepository.delete(way.getId());
+              wayRepository.delete(way.id());
             } else if (entity instanceof Relation relation) {
-              relationRepository.delete(relation.getId());
+              relationRepository.delete(relation.id());
             }
             break;
         }

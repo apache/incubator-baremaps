@@ -12,7 +12,6 @@
 
 package org.apache.baremaps.openstreetmap.model;
 
-
 /** Represents a block of data in an OpenStreetMap dataset. */
 public sealed
 interface Block

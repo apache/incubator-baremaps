@@ -27,11 +27,11 @@ public class ExtractGeometryFunction implements Function<Entity, Optional<Geomet
   public Optional<Geometry> apply(Entity entity) {
     try {
       if (entity instanceof Node node) {
-        return Optional.ofNullable(node.getGeometry());
+        return Optional.ofNullable(node.geometry());
       } else if (entity instanceof Way way) {
-        return Optional.ofNullable(way.getGeometry());
+        return Optional.ofNullable(way.geometry());
       } else if (entity instanceof Relation relation) {
-        return Optional.ofNullable(relation.getGeometry());
+        return Optional.ofNullable(relation.geometry());
       } else if (entity instanceof Header header) {
         return Optional.empty();
       } else if (entity instanceof Bound bound) {
