@@ -12,18 +12,19 @@
 
 package org.apache.baremaps.openstreetmap.model;
 
+public enum MemberType {
+  NODE, WAY, RELATION;
 
-
-import java.util.List;
-import java.util.StringJoiner;
-
-/** Represents a change in an OpenStreetMap dataset. */
-public record Change(ChangeType type,List<Entity>entities){
-
-  /** {@inheritDoc} */
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Change.class.getSimpleName() + "[", "]").add("type=" + type)
-        .add("elements=" + entities).toString();
+  public static MemberType forNumber(int value) {
+    switch (value) {
+      case 0:
+        return NODE;
+      case 1:
+        return WAY;
+      case 2:
+        return RELATION;
+      default:
+        throw new IllegalArgumentException();
+    }
   }
 }

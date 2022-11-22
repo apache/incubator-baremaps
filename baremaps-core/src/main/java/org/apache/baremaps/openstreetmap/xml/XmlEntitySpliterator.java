@@ -35,14 +35,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import org.apache.baremaps.openstreetmap.model.Bound;
-import org.apache.baremaps.openstreetmap.model.Entity;
-import org.apache.baremaps.openstreetmap.model.Header;
-import org.apache.baremaps.openstreetmap.model.Info;
-import org.apache.baremaps.openstreetmap.model.Member;
-import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.stream.StreamException;
 
 /**
@@ -258,8 +251,8 @@ public class XmlEntitySpliterator implements Spliterator<Entity> {
 
   private void readRelationMember(List<Member> members) throws XMLStreamException {
     long id = Long.parseLong(reader.getAttributeValue(null, ATTRIBUTE_NAME_REF));
-    Member.MemberType type = Member.MemberType
-        .valueOf(reader.getAttributeValue(null, ATTRIBUTE_NAME_TYPE).toUpperCase());
+    MemberType type =
+        MemberType.valueOf(reader.getAttributeValue(null, ATTRIBUTE_NAME_TYPE).toUpperCase());
     String role = reader.getAttributeValue(null, ATTRIBUTE_NAME_ROLE);
     members.add(new Member(id, type, role));
     reader.nextTag();

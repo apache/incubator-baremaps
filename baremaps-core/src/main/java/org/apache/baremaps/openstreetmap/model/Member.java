@@ -20,24 +20,6 @@ import java.util.StringJoiner;
 /** Represents a member of a relation in an OpenStreetMap dataset. */
 public record Member(long ref,MemberType type,String role){
 
-public enum MemberType {
-  NODE, WAY, RELATION;
-
-  public static MemberType forNumber(int value) {
-    switch (value) {
-      case 0:
-        return NODE;
-      case 1:
-        return WAY;
-      case 2:
-        return RELATION;
-      default:
-        throw new IllegalArgumentException();
-    }
-  }
-
-  }
-
   /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {

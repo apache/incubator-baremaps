@@ -186,7 +186,7 @@ public class CreateGeometryConsumer implements Consumer<Entity> {
   private Set<Polygon> createPolygons(Relation relation, String role) {
     Set<Polygon> polygons = new HashSet<>();
     LineMerger lineMerger = new LineMerger();
-    relation.getMembers().stream().filter(m -> Member.MemberType.WAY.equals(m.type()))
+    relation.getMembers().stream().filter(m -> MemberType.WAY.equals(m.type()))
         .filter(m -> role.equals(m.role())).forEach(member -> {
           LineString line = createLine(member);
           if (line.isClosed()) {

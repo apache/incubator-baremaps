@@ -27,7 +27,7 @@ import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
 import org.apache.baremaps.openstreetmap.model.Info;
 import org.apache.baremaps.openstreetmap.model.Member;
-import org.apache.baremaps.openstreetmap.model.Member.MemberType;
+import org.apache.baremaps.openstreetmap.model.MemberType;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;

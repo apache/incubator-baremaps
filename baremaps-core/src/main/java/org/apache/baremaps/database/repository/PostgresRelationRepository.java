@@ -32,7 +32,7 @@ import org.apache.baremaps.database.copy.CopyWriter;
 import org.apache.baremaps.openstreetmap.geometry.GeometryUtils;
 import org.apache.baremaps.openstreetmap.model.Info;
 import org.apache.baremaps.openstreetmap.model.Member;
-import org.apache.baremaps.openstreetmap.model.Member.MemberType;
+import org.apache.baremaps.openstreetmap.model.MemberType;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.locationtech.jts.geom.Geometry;
 import org.postgresql.PGConnection;

@@ -33,14 +33,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import org.apache.baremaps.openstreetmap.model.Change;
-import org.apache.baremaps.openstreetmap.model.Element;
-import org.apache.baremaps.openstreetmap.model.Entity;
-import org.apache.baremaps.openstreetmap.model.Info;
-import org.apache.baremaps.openstreetmap.model.Member;
-import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.stream.StreamException;
 
 /**
@@ -121,7 +114,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
       case ELEMENT_NAME_CREATE:
       case ELEMENT_NAME_DELETE:
       case ELEMENT_NAME_MODIFY:
-        Change.ChangeType type = Change.ChangeType.valueOf(reader.getLocalName().toUpperCase());
+        ChangeType type = ChangeType.valueOf(reader.getLocalName().toUpperCase());
         List<Entity> elements = new ArrayList<>();
         reader.nextTag();
         while (reader.getEventType() == XMLStreamConstants.START_ELEMENT) {
@@ -229,8 +222,8 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
 
   private void readRelationMember(List<Member> members) throws XMLStreamException {
     long id = Long.parseLong(reader.getAttributeValue(null, ATTRIBUTE_NAME_REF));
-    Member.MemberType type = Member.MemberType
-        .valueOf(reader.getAttributeValue(null, ATTRIBUTE_NAME_TYPE).toUpperCase());
+    MemberType type =
+        MemberType.valueOf(reader.getAttributeValue(null, ATTRIBUTE_NAME_TYPE).toUpperCase());
     String role = reader.getAttributeValue(null, ATTRIBUTE_NAME_ROLE);
     members.add(new Member(id, type, role));
     reader.nextTag();

@@ -24,14 +24,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 import java.util.zip.DataFormatException;
-import org.apache.baremaps.openstreetmap.model.Blob;
-import org.apache.baremaps.openstreetmap.model.DataBlock;
-import org.apache.baremaps.openstreetmap.model.Entity;
-import org.apache.baremaps.openstreetmap.model.Info;
-import org.apache.baremaps.openstreetmap.model.Member;
-import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.osm.binary.Osmformat;
 import org.apache.baremaps.osm.binary.Osmformat.DenseNodes;
 import org.apache.baremaps.osm.binary.Osmformat.PrimitiveGroup;
@@ -219,7 +212,7 @@ class DataBlockReader {
         for (int j = 0; j < relation.getMemidsCount(); j++) {
           mid = mid + relation.getMemids(j);
           String role = getString(relation.getRolesSid(j));
-          Member.MemberType type = type(relation.getTypes(j));
+          MemberType type = type(relation.getTypes(j));
           members.add(new Member(mid, type, role));
         }
 
@@ -229,14 +222,14 @@ class DataBlockReader {
     }
   }
 
-  private Member.MemberType type(Osmformat.Relation.MemberType type) {
+  private MemberType type(Osmformat.Relation.MemberType type) {
     switch (type) {
       case NODE:
-        return Member.MemberType.NODE;
+        return MemberType.NODE;
       case WAY:
-        return Member.MemberType.WAY;
+        return MemberType.WAY;
       case RELATION:
-        return Member.MemberType.RELATION;
+        return MemberType.RELATION;
       default:
         throw new UnsupportedOperationException();
     }
