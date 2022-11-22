@@ -15,14 +15,13 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
-import org.apache.baremaps.openstreetmap.model.Element;
-import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.openstreetmap.model.*;
 import org.locationtech.jts.geom.Geometry;
 
+import java.util.function.Consumer;
+
 /** Changes the projection of the geometry of an entity via side-effects. */
-public class ReprojectEntityConsumer implements EntityConsumerAdapter {
+public class ReprojectEntityConsumer implements Consumer<Entity> {
 
   private final ProjectionTransformer projectionTransformer;
 
@@ -38,25 +37,8 @@ public class ReprojectEntityConsumer implements EntityConsumerAdapter {
 
   /** {@inheritDoc} */
   @Override
-  public void match(Node node) {
-    handleElement(node);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void match(Way way) {
-    handleElement(way);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void match(Relation relation) {
-    handleElement(relation);
-  }
-
-  /** {@inheritDoc} */
-  private void handleElement(Element element) {
-    if (element.getGeometry() != null) {
+  public void accept(Entity entity) {
+    if (entity instanceof Element element && element.getGeometry() != null) {
       Geometry geometry = projectionTransformer.transform(element.getGeometry());
       element.setGeometry(geometry);
     }

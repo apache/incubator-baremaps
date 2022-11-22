@@ -32,7 +32,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.baremaps.openstreetmap.function.EntityConsumer;
+
 import org.apache.baremaps.openstreetmap.model.Bound;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Header;
@@ -74,8 +74,10 @@ class OpenStreetMapTest {
   @Test
   void dataOsmXmlRelations() throws IOException {
     try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
-      assertEquals(1,
-          new XmlEntityReader().stream(input).filter(e -> e instanceof Relation).count());
+      assertEquals(
+        1,
+        new XmlEntityReader().stream(input).filter(e -> e instanceof Relation).count()
+      );
     }
   }
 
@@ -97,7 +99,7 @@ class OpenStreetMapTest {
   void denseNodesOsmPbf() throws IOException {
     try (InputStream input = Files.newInputStream(DENSE_NODES_OSM_PBF)) {
       assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).stream(input)
-          .filter(e -> e instanceof Node).count());
+        .filter(e -> e instanceof Node).count());
     }
   }
 
@@ -105,7 +107,7 @@ class OpenStreetMapTest {
   void waysOsmPbf() throws IOException {
     try (InputStream input = Files.newInputStream(WAYS_OSM_PBF)) {
       assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).stream(input)
-          .filter(e -> e instanceof Way).count());
+        .filter(e -> e instanceof Way).count());
     }
   }
 
@@ -113,7 +115,7 @@ class OpenStreetMapTest {
   void relationsOsmPbf() throws IOException {
     try (InputStream input = Files.newInputStream(RELATIONS_OSM_PBF)) {
       assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).stream(input)
-          .filter(e -> e instanceof Relation).count());
+        .filter(e -> e instanceof Relation).count());
     }
   }
 
@@ -136,52 +138,43 @@ class OpenStreetMapTest {
 
   @Test
   void monacoOsmBz2() throws IOException, URISyntaxException {
-    try (InputStream inputStream =
-        new BZip2CompressorInputStream(Files.newInputStream(MONACO_OSM_BZ2))) {
+    try (
+      InputStream inputStream =
+        new BZip2CompressorInputStream(Files.newInputStream(MONACO_OSM_BZ2))
+    ) {
       Stream<Entity> stream = new XmlEntityReader().stream(inputStream);
       process(stream, 1, 1, 24951, 4015, 243);
     }
   }
 
-  void process(Stream<Entity> stream, long headerCount, long boundCount, long nodeCount,
-      long wayCount, long relationCount) {
+  void process(
+    Stream<Entity> stream, long headerCount, long boundCount, long nodeCount,
+    long wayCount, long relationCount
+  ) {
     AtomicLong headers = new AtomicLong(0);
     AtomicLong bounds = new AtomicLong(0);
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
-    stream.forEach(new EntityConsumer() {
-      @Override
-      public void match(Header header) {
+    stream.forEach(entity -> {
+      if (entity instanceof Header header) {
         assertNotNull(header);
         assertEquals("osmium/1.8.0", header.getWritingProgram());
         headers.incrementAndGet();
-      }
-
-      @Override
-      public void match(Bound bound) {
+      } else if (entity instanceof Bound bound) {
         assertNotNull(bound);
         assertEquals(43.75169, bound.getMaxLat(), 0.000001);
         assertEquals(7.448637, bound.getMaxLon(), 0.000001);
         assertEquals(43.72335, bound.getMinLat(), 0.000001);
         assertEquals(7.409205, bound.getMinLon(), 0.000001);
         bounds.incrementAndGet();
-      }
-
-      @Override
-      public void match(Node node) {
+      } else if (entity instanceof Node node) {
         assertNotNull(node);
         nodes.incrementAndGet();
-      }
-
-      @Override
-      public void match(Way way) {
+      } else if (entity instanceof Way way) {
         assertNotNull(way);
         ways.incrementAndGet();
-      }
-
-      @Override
-      public void match(Relation relation) {
+      } else if (entity instanceof Relation relation) {
         assertNotNull(relation);
         relations.incrementAndGet();
       }
