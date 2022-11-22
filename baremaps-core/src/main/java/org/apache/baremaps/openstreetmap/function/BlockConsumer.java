@@ -27,9 +27,13 @@ public interface BlockConsumer extends Consumer<Block> {
   @Override
   default void accept(Block block) {
     try {
-      block.visit(this);
-    } catch (StreamException e) {
-      throw e;
+      if (block instanceof HeaderBlock headerBlock) {
+        match(headerBlock);
+      } else if (block instanceof DataBlock dataBlock) {
+        match(dataBlock);
+      } else {
+        throw new StreamException("Unknown block type.");
+      }
     } catch (Exception e) {
       throw new StreamException(e);
     }

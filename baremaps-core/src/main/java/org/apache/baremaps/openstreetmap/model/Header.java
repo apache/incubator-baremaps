@@ -17,11 +17,9 @@ package org.apache.baremaps.openstreetmap.model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
-import org.apache.baremaps.openstreetmap.function.EntityConsumer;
-import org.apache.baremaps.openstreetmap.function.EntityFunction;
 
 /** Represents a header entity in an OpenStreetMap dataset. */
-public class Header implements Entity {
+public final class Header implements Entity {
 
   private final Long replicationSequenceNumber;
   private final LocalDateTime replicationTimestamp;
@@ -90,16 +88,6 @@ public class Header implements Entity {
    */
   public String getWritingProgram() {
     return writingProgram;
-  }
-
-  @Override
-  public void visit(EntityConsumer consumer) throws Exception {
-    consumer.match(this);
-  }
-
-  @Override
-  public <T> T visit(EntityFunction<T> function) throws Exception {
-    return function.match(this);
   }
 
   @Override

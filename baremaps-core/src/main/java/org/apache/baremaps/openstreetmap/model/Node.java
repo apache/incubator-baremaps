@@ -17,8 +17,6 @@ package org.apache.baremaps.openstreetmap.model;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
-import org.apache.baremaps.openstreetmap.function.EntityConsumer;
-import org.apache.baremaps.openstreetmap.function.EntityFunction;
 import org.locationtech.jts.geom.Geometry;
 
 /** Represents a node element in an OpenStreetMap dataset. */
@@ -76,18 +74,6 @@ public final class Node extends Element {
    */
   public double getLat() {
     return lat;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void visit(EntityConsumer consumer) throws Exception {
-    consumer.match(this);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public <T> T visit(EntityFunction<T> function) throws Exception {
-    return function.match(this);
   }
 
   /** {@inheritDoc} */

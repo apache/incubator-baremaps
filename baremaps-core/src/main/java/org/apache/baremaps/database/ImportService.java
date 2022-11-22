@@ -27,6 +27,7 @@ import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
 import org.apache.baremaps.openstreetmap.function.BlockEntityConsumer;
 import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
+import org.apache.baremaps.openstreetmap.function.EntityConsumer;
 import org.apache.baremaps.openstreetmap.function.ReprojectEntityConsumer;
 import org.apache.baremaps.openstreetmap.model.Block;
 import org.apache.baremaps.openstreetmap.model.Entity;
@@ -77,4 +78,5 @@ public class ImportService implements Callable<Void> {
     }
     return null;
   }
+
 }

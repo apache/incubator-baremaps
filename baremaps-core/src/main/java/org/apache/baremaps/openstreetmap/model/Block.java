@@ -13,12 +13,11 @@
 package org.apache.baremaps.openstreetmap.model;
 
 
-
-import org.apache.baremaps.openstreetmap.function.BlockConsumer;
-import org.apache.baremaps.openstreetmap.function.BlockFunction;
-
 /** Represents a block of data in an OpenStreetMap dataset. */
-public abstract class Block {
+public abstract sealed
+class Block
+permits HeaderBlock, DataBlock
+{
 
   private final Blob blob;
 
@@ -40,21 +39,4 @@ public abstract class Block {
     return blob;
   }
 
-  /**
-   * Accepts the specified block consumer.
-   *
-   * @param consumer the consumer
-   * @throws Exception
-   */
-  public abstract void visit(BlockConsumer consumer) throws Exception;
-
-  /**
-   * Applies the specified block function.
-   *
-   * @param function the function
-   * @param <T> the return type of the function
-   * @return the function result
-   * @throws Exception
-   */
-  public abstract <T> T visit(BlockFunction<T> function) throws Exception;
 }

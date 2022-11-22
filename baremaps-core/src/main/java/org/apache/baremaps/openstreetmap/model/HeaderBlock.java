@@ -14,11 +14,8 @@ package org.apache.baremaps.openstreetmap.model;
 
 
 
-import org.apache.baremaps.openstreetmap.function.BlockConsumer;
-import org.apache.baremaps.openstreetmap.function.BlockFunction;
-
 /** Represents a header block in an OpenStreetMap dataset. */
-public class HeaderBlock extends Block {
+public final class HeaderBlock extends Block {
 
   private final Header header;
 
@@ -55,15 +52,4 @@ public class HeaderBlock extends Block {
     return bound;
   }
 
-  /** {@inheritDoc} */
-  @Override
-  public void visit(BlockConsumer consumer) throws Exception {
-    consumer.match(this);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public <T> T visit(BlockFunction<T> function) throws Exception {
-    return function.match(this);
-  }
 }

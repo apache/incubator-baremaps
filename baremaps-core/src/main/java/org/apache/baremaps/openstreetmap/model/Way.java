@@ -18,8 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
-import org.apache.baremaps.openstreetmap.function.EntityConsumer;
-import org.apache.baremaps.openstreetmap.function.EntityFunction;
 import org.locationtech.jts.geom.Geometry;
 
 /** Represents a way element in an OpenStreetMap dataset. */
@@ -61,18 +59,6 @@ public final class Way extends Element {
    */
   public List<Long> getNodes() {
     return nodes;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void visit(EntityConsumer consumer) throws Exception {
-    consumer.match(this);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public <T> T visit(EntityFunction<T> function) throws Exception {
-    return function.match(this);
   }
 
   /** {@inheritDoc} */

@@ -15,11 +15,9 @@ package org.apache.baremaps.openstreetmap.model;
 
 
 import java.util.List;
-import org.apache.baremaps.openstreetmap.function.BlockConsumer;
-import org.apache.baremaps.openstreetmap.function.BlockFunction;
 
 /** Represents a data block in an OpenStreetMap dataset. */
-public class DataBlock extends Block {
+public final class DataBlock extends Block {
 
   private final List<Node> denseNodes;
   private final List<Node> nodes;
@@ -80,15 +78,4 @@ public class DataBlock extends Block {
     return relations;
   }
 
-  /** {@inheritDoc} */
-  @Override
-  public void visit(BlockConsumer consumer) throws Exception {
-    consumer.match(this);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public <T> T visit(BlockFunction<T> function) throws Exception {
-    return function.match(this);
-  }
 }
