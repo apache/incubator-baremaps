@@ -30,9 +30,19 @@ public interface EntityConsumer extends Consumer<Entity> {
   @Override
   default void accept(Entity entity) {
     try {
-      entity.visit(this);
-    } catch (StreamException e) {
-      throw e;
+      if (entity instanceof Node node) {
+        match(node);
+      } else if (entity instanceof Way way) {
+        match(way);
+      } else if (entity instanceof Relation relation) {
+        match(relation);
+      } else if (entity instanceof Header header) {
+        match(header);
+      } else if (entity instanceof Bound bound) {
+        match(bound);
+      } else {
+        throw new StreamException("Unknown entity type.");
+      }
     } catch (Exception e) {
       throw new StreamException(e);
     }

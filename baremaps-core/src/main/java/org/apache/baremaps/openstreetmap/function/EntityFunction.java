@@ -34,9 +34,19 @@ public interface EntityFunction<T> extends Function<Entity, T> {
   @Override
   default T apply(Entity entity) {
     try {
-      return entity.visit(this);
-    } catch (StreamException e) {
-      throw e;
+      if (entity instanceof Node node) {
+        return match(node);
+      } else if (entity instanceof Way way) {
+        return match(way);
+      } else if (entity instanceof Relation relation) {
+        return match(relation);
+      } else if (entity instanceof Header header) {
+        return match(header);
+      } else if (entity instanceof Bound bound) {
+        return match(bound);
+      } else {
+        throw new StreamException("Unknown entity type.");
+      }
     } catch (Exception e) {
       throw new StreamException(e);
     }

@@ -31,9 +31,13 @@ public interface BlockFunction<T> extends Function<Block, T> {
   @Override
   default T apply(Block block) {
     try {
-      return block.visit(this);
-    } catch (StreamException e) {
-      throw e;
+      if (block instanceof HeaderBlock headerBlock) {
+        return match(headerBlock);
+      } else if (block instanceof DataBlock dataBlock) {
+        return match(dataBlock);
+      } else {
+        throw new StreamException("Unknown block type.");
+      }
     } catch (Exception e) {
       throw new StreamException(e);
     }

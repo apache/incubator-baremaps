@@ -16,7 +16,6 @@ package org.apache.baremaps.database;
 
 import org.apache.baremaps.database.repository.Repository;
 import org.apache.baremaps.openstreetmap.function.ChangeConsumer;
-import org.apache.baremaps.openstreetmap.function.EntityConsumerAdapter;
 import org.apache.baremaps.openstreetmap.model.Change;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Node;
@@ -48,46 +47,27 @@ public class SaveChangeConsumer implements ChangeConsumer {
   @Override
   public void match(Change change) throws Exception {
     for (Entity entity : change.getEntities()) {
-      entity.visit(new EntityConsumerAdapter() {
-        @Override
-        public void match(Node node) throws Exception {
-          switch (change.getType()) {
-            case CREATE:
-            case MODIFY:
-              nodeRepository.put(node);
-              break;
-            case DELETE:
-              nodeRepository.delete(node.getId());
-              break;
+      switch (change.getType()) {
+        case CREATE:
+        case MODIFY:
+          if (entity instanceof Node node) {
+            nodeRepository.put(node);
+          } else if (entity instanceof Way way) {
+            wayRepository.put(way);
+          } else if (entity instanceof Relation relation) {
+            relationRepository.put(relation);
           }
-        }
-
-        @Override
-        public void match(Way way) throws Exception {
-          switch (change.getType()) {
-            case CREATE:
-            case MODIFY:
-              wayRepository.put(way);
-              break;
-            case DELETE:
-              wayRepository.delete(way.getId());
-              break;
+          break;
+        case DELETE:
+          if (entity instanceof Node node) {
+            nodeRepository.delete(node.getId());
+          } else if (entity instanceof Way way) {
+            wayRepository.delete(way.getId());
+          } else if (entity instanceof Relation relation) {
+            relationRepository.delete(relation.getId());
           }
-        }
-
-        @Override
-        public void match(Relation relation) throws Exception {
-          switch (change.getType()) {
-            case CREATE:
-            case MODIFY:
-              relationRepository.put(relation);
-              break;
-            case DELETE:
-              relationRepository.delete(relation.getId());
-              break;
-          }
-        }
-      });
+          break;
+      }
     }
   }
 }
