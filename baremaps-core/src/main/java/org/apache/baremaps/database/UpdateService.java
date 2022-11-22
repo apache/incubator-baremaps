@@ -27,7 +27,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
-import org.apache.baremaps.openstreetmap.function.ChangeEntityConsumer;
+import org.apache.baremaps.openstreetmap.function.ChangeEntitiesConsumer;
 import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
 import org.apache.baremaps.openstreetmap.function.ReprojectEntityConsumer;
 import org.apache.baremaps.openstreetmap.model.Change;
@@ -73,7 +73,7 @@ public class UpdateService implements Callable<Void> {
     Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
     Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, srid);
     Consumer<Change> prepareGeometries =
-        new ChangeEntityConsumer(createGeometry.andThen(reprojectGeometry));
+        new ChangeEntitiesConsumer(createGeometry.andThen(reprojectGeometry));
     Function<Change, Change> prepareChange = consumeThenReturn(prepareGeometries);
     Consumer<Change> saveChange =
         new SaveChangeConsumer(nodeRepository, wayRepository, relationRepository);

@@ -15,13 +15,15 @@ package org.apache.baremaps.openstreetmap.store;
 
 
 import java.util.List;
+import java.util.function.Consumer;
 import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.openstreetmap.function.BlockConsumerAdapter;
+import org.apache.baremaps.openstreetmap.model.Block;
 import org.apache.baremaps.openstreetmap.model.DataBlock;
+import org.apache.baremaps.stream.StreamException;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A consumer that stores osm nodes and ways in the provided caches. */
-public class DataStoreConsumer implements BlockConsumerAdapter {
+public class DataStoreConsumer implements Consumer<Block> {
 
   private final LongDataMap<Coordinate> coordinates;
   private final LongDataMap<List<Long>> references;
@@ -40,11 +42,17 @@ public class DataStoreConsumer implements BlockConsumerAdapter {
 
   /** {@inheritDoc} */
   @Override
-  public void match(DataBlock dataBlock) throws Exception {
-    dataBlock.getDenseNodes().stream().forEach(
-        node -> coordinates.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
-    dataBlock.getNodes().stream().forEach(
-        node -> coordinates.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
-    dataBlock.getWays().stream().forEach(way -> references.put(way.getId(), way.getNodes()));
+  public void accept(Block block) {
+    try {
+      if (block instanceof DataBlock dataBlock) {
+        dataBlock.getDenseNodes().stream().forEach(
+            node -> coordinates.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
+        dataBlock.getNodes().stream().forEach(
+            node -> coordinates.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
+        dataBlock.getWays().stream().forEach(way -> references.put(way.getId(), way.getNodes()));
+      }
+    } catch (Exception e) {
+      throw new StreamException(e);
+    }
   }
 }

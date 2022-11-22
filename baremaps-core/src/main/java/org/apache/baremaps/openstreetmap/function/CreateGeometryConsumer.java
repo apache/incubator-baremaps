@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.stream.StreamException;

@@ -32,16 +32,11 @@ import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
 import org.apache.baremaps.database.tile.Tile;
 import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
-import org.apache.baremaps.openstreetmap.function.EntityFunction;
 import org.apache.baremaps.openstreetmap.function.ExtractGeometryFunction;
 import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
-import org.apache.baremaps.openstreetmap.model.Bound;
-import org.apache.baremaps.openstreetmap.model.Change;
-import org.apache.baremaps.openstreetmap.model.Header;
-import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
+import org.apache.baremaps.stream.StreamException;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
@@ -114,35 +109,27 @@ public class DiffService implements Callable<List<Tile>> {
   }
 
   private Stream<Geometry> geometriesForPreviousVersion(Change change) {
-    return change.getEntities().stream().map(new EntityFunction<Optional<Geometry>>() {
-      @Override
-      public Optional<Geometry> match(Header header) {
-        return Optional.empty();
-      }
+    return change.getEntities().stream().map(this::geometriesForPreviousVersion)
+        .flatMap(Optional::stream);
+  }
 
-      @Override
-      public Optional<Geometry> match(Bound bound) {
-        return Optional.empty();
-      }
-
-      @Override
-      public Optional<Geometry> match(Node node) throws Exception {
+  private Optional<Geometry> geometriesForPreviousVersion(Entity entity) {
+    try {
+      if (entity instanceof Node node) {
         Node previousNode = nodeRepository.get(node.getId());
         return Optional.ofNullable(previousNode).map(Node::getGeometry);
-      }
-
-      @Override
-      public Optional<Geometry> match(Way way) throws Exception {
+      } else if (entity instanceof Way way) {
         Way previousWay = wayRepository.get(way.getId());
         return Optional.ofNullable(previousWay).map(Way::getGeometry);
-      }
-
-      @Override
-      public Optional<Geometry> match(Relation relation) throws Exception {
+      } else if (entity instanceof Relation relation) {
         Relation previousRelation = relationRepository.get(relation.getId());
         return Optional.ofNullable(previousRelation).map(Relation::getGeometry);
+      } else {
+        return Optional.empty();
       }
-    }).flatMap(Optional::stream);
+    } catch (Exception e) {
+      throw new StreamException(e);
+    }
   }
 
   private Stream<Geometry> geometriesForNextVersion(Change change) {

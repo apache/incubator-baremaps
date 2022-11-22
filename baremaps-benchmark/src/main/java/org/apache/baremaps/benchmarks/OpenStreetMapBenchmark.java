@@ -13,6 +13,7 @@
 package org.apache.baremaps.benchmarks;
 
 
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +24,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
@@ -71,22 +71,21 @@ public class OpenStreetMapBenchmark {
     AtomicLong relations = new AtomicLong(0);
 
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      new PbfEntityReader(new PbfBlockReader()).stream(inputStream)
-        .forEach(entity -> {
-          if (entity instanceof Node node) {
-            nodes.incrementAndGet();
-          } else if (entity instanceof Way way) {
-            ways.incrementAndGet();
-          } else if (entity instanceof Relation) {
-            relations.incrementAndGet();
-          }
-        });
+      new PbfEntityReader(new PbfBlockReader()).stream(inputStream).forEach(entity -> {
+        if (entity instanceof Node node) {
+          nodes.incrementAndGet();
+        } else if (entity instanceof Way way) {
+          ways.incrementAndGet();
+        } else if (entity instanceof Relation) {
+          relations.incrementAndGet();
+        }
+      });
     }
   }
 
   public static void main(String[] args) throws RunnerException {
     Options opt =
-      new OptionsBuilder().include(OpenStreetMapBenchmark.class.getSimpleName()).forks(1).build();
+        new OptionsBuilder().include(OpenStreetMapBenchmark.class.getSimpleName()).forks(1).build();
     new Runner(opt).run();
   }
 }

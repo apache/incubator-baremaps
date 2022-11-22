@@ -25,7 +25,7 @@ import java.util.function.Function;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
-import org.apache.baremaps.openstreetmap.function.BlockEntityConsumer;
+import org.apache.baremaps.openstreetmap.function.BlockEntitiesConsumer;
 import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
 import org.apache.baremaps.openstreetmap.function.ReprojectEntityConsumer;
 import org.apache.baremaps.openstreetmap.model.Block;
@@ -68,7 +68,7 @@ public class ImportService implements Callable<Void> {
     Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
     Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, databaseSrid);
     Consumer<Block> prepareGeometries =
-        new BlockEntityConsumer(createGeometry.andThen(reprojectGeometry));
+        new BlockEntitiesConsumer(createGeometry.andThen(reprojectGeometry));
     Function<Block, Block> prepareBlock = consumeThenReturn(cacheBlock.andThen(prepareGeometries));
     Consumer<Block> saveBlock =
         new SaveBlockConsumer(headerRepository, nodeRepository, wayRepository, relationRepository);
