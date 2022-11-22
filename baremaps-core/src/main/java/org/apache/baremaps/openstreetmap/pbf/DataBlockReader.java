@@ -33,8 +33,6 @@ import org.apache.baremaps.stream.StreamException;
 /** A reader that extracts data blocks and entities from OpenStreetMap data blobs. */
 class DataBlockReader {
 
-  private final Blob blob;
-
   private final Osmformat.PrimitiveBlock primitiveBlock;
   private final int granularity;
   private final int dateGranularity;
@@ -50,7 +48,6 @@ class DataBlockReader {
    * @throws InvalidProtocolBufferException
    */
   public DataBlockReader(Blob blob) throws DataFormatException, InvalidProtocolBufferException {
-    this.blob = blob;
     this.primitiveBlock = Osmformat.PrimitiveBlock.parseFrom(blob.data());
     this.granularity = primitiveBlock.getGranularity();
     this.latOffset = primitiveBlock.getLatOffset();
@@ -260,17 +257,4 @@ class DataBlockReader {
     return stringTable[id];
   }
 
-  /**
-   * Reads the provided data {@code Blob} and returns the corresponding {@code DataBlock}.
-   *
-   * @param blob the data blob
-   * @return the data block
-   */
-  public static DataBlock read(Blob blob) {
-    try {
-      return new DataBlockReader(blob).read();
-    } catch (DataFormatException | InvalidProtocolBufferException e) {
-      throw new StreamException(e);
-    }
-  }
 }

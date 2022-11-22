@@ -153,7 +153,7 @@ public class PbfBlockReader implements OsmReader<Block> {
   public Stream<Block> stream(InputStream inputStream) {
     Stream<Block> blocks =
         StreamUtils.bufferInSourceOrder(StreamUtils.stream(new BlobIterator(inputStream)),
-            this::read, Runtime.getRuntime().availableProcessors());
+            new BlobToBlockFunction(), Runtime.getRuntime().availableProcessors());
     if (geometry) {
       Consumer<Block> cacheBlock = new DataStoreConsumer(coordinates, references);
       Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
@@ -169,14 +169,4 @@ public class PbfBlockReader implements OsmReader<Block> {
     return blocks;
   }
 
-  public Block read(Blob blob) {
-    switch (blob.header().getType()) {
-      case "OSMHeader":
-        return HeaderBlockReader.read(blob);
-      case "OSMData":
-        return DataBlockReader.read(blob);
-      default:
-        throw new RuntimeException("Unknown blob type");
-    }
-  }
 }

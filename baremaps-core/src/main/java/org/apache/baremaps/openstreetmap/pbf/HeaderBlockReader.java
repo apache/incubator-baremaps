@@ -33,8 +33,6 @@ class HeaderBlockReader {
   public static final DateTimeFormatter format =
       DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
-  private final Blob blob;
-
   private final Osmformat.HeaderBlock headerBlock;
 
   /**
@@ -45,7 +43,6 @@ class HeaderBlockReader {
    * @throws InvalidProtocolBufferException
    */
   public HeaderBlockReader(Blob blob) throws DataFormatException, InvalidProtocolBufferException {
-    this.blob = blob;
     this.headerBlock = Osmformat.HeaderBlock.parseFrom(blob.data());
   }
 
@@ -72,19 +69,5 @@ class HeaderBlockReader {
     Bound bound = new Bound(maxLat, maxLon, minLat, minLon);
 
     return new HeaderBlock(header, bound);
-  }
-
-  /**
-   * Reads the provided header {@code Blob} and returns the corresponding {@code HeaderBlock}.
-   *
-   * @param blob the header blob
-   * @return the header block
-   */
-  public static HeaderBlock read(Blob blob) {
-    try {
-      return new HeaderBlockReader(blob).read();
-    } catch (DataFormatException | InvalidProtocolBufferException e) {
-      throw new StreamException(e);
-    }
   }
 }
