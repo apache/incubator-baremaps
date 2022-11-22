@@ -28,7 +28,6 @@ import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.osm.binary.Osmformat;
 import org.apache.baremaps.osm.binary.Osmformat.DenseNodes;
 import org.apache.baremaps.osm.binary.Osmformat.PrimitiveGroup;
-import org.apache.baremaps.stream.StreamException;
 
 /** A reader that extracts data blocks and entities from OpenStreetMap data blobs. */
 class DataBlockReader {

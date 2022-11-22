@@ -25,7 +25,6 @@ import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.openstreetmap.model.HeaderBlock;
 import org.apache.baremaps.osm.binary.Osmformat;
 import org.apache.baremaps.osm.binary.Osmformat.HeaderBBox;
-import org.apache.baremaps.stream.StreamException;
 
 /** A reader that extracts header blocks and entities from OpenStreetMap header blobs. */
 class HeaderBlockReader {

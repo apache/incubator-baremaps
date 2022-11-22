@@ -24,7 +24,6 @@ import org.apache.baremaps.openstreetmap.OsmReader;
 import org.apache.baremaps.openstreetmap.function.BlockEntitiesConsumer;
 import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
 import org.apache.baremaps.openstreetmap.function.ReprojectEntityConsumer;
-import org.apache.baremaps.openstreetmap.model.Blob;
 import org.apache.baremaps.openstreetmap.model.Block;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.store.DataStoreConsumer;
