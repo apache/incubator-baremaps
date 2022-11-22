@@ -283,17 +283,16 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
         for (Relation value : values) {
           writer.startRow(10);
           writer.writeLong(value.getId());
-          writer.writeInteger(value.getInfo().getVersion());
-          writer.writeInteger(value.getInfo().getUid());
-          writer.writeLocalDateTime(value.getInfo().getTimestamp());
-          writer.writeLong(value.getInfo().getChangeset());
+          writer.writeInteger(value.getInfo().version());
+          writer.writeInteger(value.getInfo().uid());
+          writer.writeLocalDateTime(value.getInfo().timestamp());
+          writer.writeLong(value.getInfo().changeset());
           writer.writeJsonb(toJson(value.getTags()));
           writer.writeLongList(
-              value.getMembers().stream().map(Member::getRef).collect(Collectors.toList()));
-          writer.writeIntegerList(value.getMembers().stream().map(Member::getType)
+              value.getMembers().stream().map(Member::ref).collect(Collectors.toList()));
+          writer.writeIntegerList(value.getMembers().stream().map(Member::type)
               .map(MemberType::ordinal).collect(Collectors.toList()));
-          writer
-              .write(value.getMembers().stream().map(Member::getRole).collect(Collectors.toList()));
+          writer.write(value.getMembers().stream().map(Member::role).collect(Collectors.toList()));
           writer.writePostgisGeometry(value.getGeometry());
         }
       }
@@ -324,17 +323,17 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
   private void setValue(PreparedStatement statement, Relation value)
       throws SQLException, JsonProcessingException {
     statement.setObject(1, value.getId());
-    statement.setObject(2, value.getInfo().getVersion());
-    statement.setObject(3, value.getInfo().getUid());
-    statement.setObject(4, value.getInfo().getTimestamp());
-    statement.setObject(5, value.getInfo().getChangeset());
+    statement.setObject(2, value.getInfo().version());
+    statement.setObject(3, value.getInfo().uid());
+    statement.setObject(4, value.getInfo().timestamp());
+    statement.setObject(5, value.getInfo().changeset());
     statement.setObject(6, toJson(value.getTags()));
-    Object[] refs = value.getMembers().stream().map(Member::getRef).toArray();
+    Object[] refs = value.getMembers().stream().map(Member::ref).toArray();
     statement.setObject(7, statement.getConnection().createArrayOf("bigint", refs));
     Object[] types =
-        value.getMembers().stream().map(Member::getType).map(MemberType::ordinal).toArray();
+        value.getMembers().stream().map(Member::type).map(MemberType::ordinal).toArray();
     statement.setObject(8, statement.getConnection().createArrayOf("int", types));
-    Object[] roles = value.getMembers().stream().map(Member::getRole).toArray();
+    Object[] roles = value.getMembers().stream().map(Member::role).toArray();
     statement.setObject(9, statement.getConnection().createArrayOf("varchar", roles));
     statement.setBytes(10, GeometryUtils.serialize(value.getGeometry()));
   }

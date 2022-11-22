@@ -156,10 +156,10 @@ class OpenStreetMapTest {
         headers.incrementAndGet();
       } else if (entity instanceof Bound bound) {
         assertNotNull(bound);
-        assertEquals(43.75169, bound.getMaxLat(), 0.000001);
-        assertEquals(7.448637, bound.getMaxLon(), 0.000001);
-        assertEquals(43.72335, bound.getMinLat(), 0.000001);
-        assertEquals(7.409205, bound.getMinLon(), 0.000001);
+        assertEquals(43.75169, bound.maxLat(), 0.000001);
+        assertEquals(7.448637, bound.maxLon(), 0.000001);
+        assertEquals(43.72335, bound.minLat(), 0.000001);
+        assertEquals(7.409205, bound.minLon(), 0.000001);
         bounds.incrementAndGet();
       } else if (entity instanceof Node node) {
         assertNotNull(node);

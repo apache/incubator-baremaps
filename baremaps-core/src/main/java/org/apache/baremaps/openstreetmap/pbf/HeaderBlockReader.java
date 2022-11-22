@@ -71,7 +71,7 @@ class HeaderBlockReader {
     double maxLat = headerBBox.getTop() * .000000001;
     Bound bound = new Bound(maxLat, maxLon, minLat, minLon);
 
-    return new HeaderBlock(blob, header, bound);
+    return new HeaderBlock(header, bound);
   }
 
   /**

@@ -83,7 +83,7 @@ class DataBlockReader {
     readWays(ways::add);
     List<Relation> relations = new ArrayList<>();
     readRelations(relations::add);
-    return new DataBlock(blob, denseNodes, nodes, ways, relations);
+    return new DataBlock(denseNodes, nodes, ways, relations);
   }
 
   /**

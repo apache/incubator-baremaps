@@ -23,33 +23,7 @@ import org.apache.baremaps.osm.binary.Fileformat;
 import org.apache.baremaps.osm.binary.Fileformat.BlobHeader;
 
 /** Represents a raw blob of data in an OpenStreetMap dataset. */
-public class Blob {
-
-  private final BlobHeader header;
-  private final byte[] rawData;
-  private final int size;
-
-  /**
-   * Constructs a OpenStreetMap {@code Blob}.
-   *
-   * @param header the header
-   * @param rawData the raw data
-   * @param size the size
-   */
-  public Blob(BlobHeader header, byte[] rawData, int size) {
-    this.header = header;
-    this.rawData = rawData;
-    this.size = size;
-  }
-
-  /**
-   * Returns the header.
-   *
-   * @return the header
-   */
-  public BlobHeader header() {
-    return header;
-  }
+public record Blob (BlobHeader header, byte[] rawData, int size) {
 
   /**
    * Returns the data.
@@ -72,15 +46,6 @@ public class Blob {
     } else {
       throw new DataFormatException("Unsupported toPrimitiveBlock format");
     }
-  }
-
-  /**
-   * Returns the size.
-   *
-   * @return the size
-   */
-  public long size() {
-    return size;
   }
 
   /** {@inheritDoc} */

@@ -19,66 +19,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /** Represents all the metadata associated to an element in an OpenStreetMap dataset. */
-public class Info {
-
-  protected final int version;
-
-  protected final LocalDateTime timestamp;
-
-  protected final long changeset;
-
-  protected final int uid;
-
-  /**
-   * Constructs an OpenStreetMap {@code Info} with the specified metadata.
-   *
-   * @param version the version
-   * @param timestamp the timestamp
-   * @param changeset the changeset
-   * @param uid the user id
-   */
-  public Info(int version, LocalDateTime timestamp, long changeset, int uid) {
-    this.version = version;
-    this.timestamp = timestamp;
-    this.changeset = changeset;
-    this.uid = uid;
-  }
-
-  /**
-   * Returns the version.
-   *
-   * @return the version
-   */
-  public int getVersion() {
-    return version;
-  }
-
-  /**
-   * Returns the timestamp.
-   *
-   * @return the timestamp
-   */
-  public LocalDateTime getTimestamp() {
-    return timestamp;
-  }
-
-  /**
-   * Returns the changeset.
-   *
-   * @return the changeset
-   */
-  public long getChangeset() {
-    return changeset;
-  }
-
-  /**
-   * Returns the user id.
-   *
-   * @return the user id
-   */
-  public int getUid() {
-    return uid;
-  }
+public record Info(int version, LocalDateTime timestamp, long changeset, int uid) {
 
   /** {@inheritDoc} */
   @Override

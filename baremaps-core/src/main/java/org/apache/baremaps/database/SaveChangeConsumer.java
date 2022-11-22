@@ -49,8 +49,8 @@ public class SaveChangeConsumer implements Consumer<Change> {
   @Override
   public void accept(Change change) {
     try {
-      for (Entity entity : change.getEntities()) {
-        switch (change.getType()) {
+      for (Entity entity : change.entities()) {
+        switch (change.type()) {
           case CREATE:
           case MODIFY:
             if (entity instanceof Node node) {

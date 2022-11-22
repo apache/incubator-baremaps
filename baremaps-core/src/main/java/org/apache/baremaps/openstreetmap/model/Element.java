@@ -24,7 +24,6 @@ import org.locationtech.jts.geom.Geometry;
  * world.
  */
 public sealed
-
 abstract class Element implements Entity
 permits Node, Way, Relation
 {

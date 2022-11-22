@@ -19,31 +19,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /** Represents a header entity in an OpenStreetMap dataset. */
-public final class Header implements Entity {
-
-  private final Long replicationSequenceNumber;
-  private final LocalDateTime replicationTimestamp;
-  private final String replicationUrl;
-  private final String source;
-  private final String writingProgram;
-
-  /**
-   * Constructs an OpenStreetMap {@code Header} based on the specified parameters.
-   *
-   * @param replicationSequenceNumber the replication sequence number
-   * @param replicationTimestamp the replication timestamp
-   * @param replicationUrl the replication url
-   * @param source the source
-   * @param writingProgram the writing program
-   */
-  public Header(Long replicationSequenceNumber, LocalDateTime replicationTimestamp,
-      String replicationUrl, String source, String writingProgram) {
-    this.replicationTimestamp = replicationTimestamp;
-    this.replicationSequenceNumber = replicationSequenceNumber;
-    this.replicationUrl = replicationUrl;
-    this.source = source;
-    this.writingProgram = writingProgram;
-  }
+public record Header(Long replicationSequenceNumber, LocalDateTime replicationTimestamp,String replicationUrl,String source,String writingProgram) implements Entity {
 
   /**
    * Returns the replication timestamp.

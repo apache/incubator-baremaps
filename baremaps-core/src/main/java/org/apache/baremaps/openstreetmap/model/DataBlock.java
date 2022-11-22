@@ -17,30 +17,7 @@ package org.apache.baremaps.openstreetmap.model;
 import java.util.List;
 
 /** Represents a data block in an OpenStreetMap dataset. */
-public final class DataBlock extends Block {
-
-  private final List<Node> denseNodes;
-  private final List<Node> nodes;
-  private final List<Way> ways;
-  private final List<Relation> relations;
-
-  /**
-   * Constructs an OpenStreetMap {@code DataBlock} with the specified parameters.
-   *
-   * @param blob the blob
-   * @param denseNodes the dense nodes
-   * @param nodes the nodes
-   * @param ways the ways
-   * @param relations the relations
-   */
-  public DataBlock(Blob blob, List<Node> denseNodes, List<Node> nodes, List<Way> ways,
-      List<Relation> relations) {
-    super(blob);
-    this.denseNodes = denseNodes;
-    this.nodes = nodes;
-    this.ways = ways;
-    this.relations = relations;
-  }
+public record DataBlock(List<Node> denseNodes, List<Node> nodes, List<Way> ways, List<Relation> relations) implements Block {
 
   /**
    * Returns the dense nodes.

@@ -18,66 +18,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /** Represents the bounds of an OpenStreetMap dataset. */
-public final class Bound implements Entity {
-
-  private final double maxLat;
-
-  private final double maxLon;
-
-  private final double minLat;
-
-  private final double minLon;
-
-  /**
-   * Consturcts a {@code Bound} with the specified limits.
-   *
-   * @param maxLat the max latitude
-   * @param maxLon the max longitude
-   * @param minLat the min latitude
-   * @param minLon the max longitude
-   */
-  public Bound(double maxLat, double maxLon, double minLat, double minLon) {
-    this.maxLat = maxLat;
-    this.maxLon = maxLon;
-    this.minLat = minLat;
-    this.minLon = minLon;
-  }
-
-  /**
-   * Returns the max latitude.
-   *
-   * @return the max latitude
-   */
-  public double getMaxLat() {
-    return maxLat;
-  }
-
-  /**
-   * Returns the max longitude.
-   *
-   * @return the max longitude
-   */
-  public double getMaxLon() {
-    return maxLon;
-  }
-
-  /**
-   * Returns the min latitude.
-   *
-   * @return the min latitude
-   */
-  public double getMinLat() {
-    return minLat;
-  }
-
-  /**
-   * Returns the min longitude.
-   *
-   * @return the min longitude
-   */
-  public double getMinLon() {
-    return minLon;
-  }
+public record Bound(double maxLat, double maxLon, double minLat, double minLon) implements Entity {
 
   /** {@inheritDoc} */
   @Override

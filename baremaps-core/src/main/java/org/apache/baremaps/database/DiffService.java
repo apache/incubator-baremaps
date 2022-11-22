@@ -95,7 +95,7 @@ public class DiffService implements Callable<List<Tile>> {
   }
 
   private Stream<Geometry> geometriesForChange(Change change) {
-    switch (change.getType()) {
+    switch (change.type()) {
       case CREATE:
         return geometriesForNextVersion(change);
       case DELETE:
@@ -109,7 +109,7 @@ public class DiffService implements Callable<List<Tile>> {
   }
 
   private Stream<Geometry> geometriesForPreviousVersion(Change change) {
-    return change.getEntities().stream().map(this::geometriesForPreviousVersion)
+    return change.entities().stream().map(this::geometriesForPreviousVersion)
         .flatMap(Optional::stream);
   }
 
@@ -133,7 +133,7 @@ public class DiffService implements Callable<List<Tile>> {
   }
 
   private Stream<Geometry> geometriesForNextVersion(Change change) {
-    return change.getEntities().stream()
+    return change.entities().stream()
         .map(consumeThenReturn(new CreateGeometryConsumer(coordinates, references)))
         .flatMap(new ExtractGeometryFunction().andThen(Optional::stream));
   }

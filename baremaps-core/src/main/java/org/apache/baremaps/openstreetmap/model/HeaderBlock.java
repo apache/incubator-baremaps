@@ -15,24 +15,7 @@ package org.apache.baremaps.openstreetmap.model;
 
 
 /** Represents a header block in an OpenStreetMap dataset. */
-public final class HeaderBlock extends Block {
-
-  private final Header header;
-
-  private final Bound bound;
-
-  /**
-   * Constructs an OpenStreetMap {@code HeaderBlock} with the specified parameters.
-   *
-   * @param blob the blob
-   * @param header the header
-   * @param bound the bound
-   */
-  public HeaderBlock(Blob blob, Header header, Bound bound) {
-    super(blob);
-    this.header = header;
-    this.bound = bound;
-  }
+public record HeaderBlock(Header header, Bound bound) implements Block {
 
   /**
    * Returns the header.

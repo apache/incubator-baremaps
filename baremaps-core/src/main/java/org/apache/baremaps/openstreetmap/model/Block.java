@@ -14,29 +14,9 @@ package org.apache.baremaps.openstreetmap.model;
 
 
 /** Represents a block of data in an OpenStreetMap dataset. */
-public abstract sealed
-class Block
+public sealed
+interface Block
 permits HeaderBlock, DataBlock
 {
-
-  private final Blob blob;
-
-  /**
-   * Constructs an OpenStreetMap {@code Block} with the specified {@code Blob}.
-   *
-   * @param blob the blob
-   */
-  protected Block(Blob blob) {
-    this.blob = blob;
-  }
-
-  /**
-   * Returns the blob.
-   *
-   * @return the blob
-   */
-  public Blob getBlob() {
-    return blob;
-  }
 
 }

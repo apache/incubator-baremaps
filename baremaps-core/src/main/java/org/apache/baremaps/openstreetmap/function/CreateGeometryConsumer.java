@@ -186,8 +186,8 @@ public class CreateGeometryConsumer implements Consumer<Entity> {
   private Set<Polygon> createPolygons(Relation relation, String role) {
     Set<Polygon> polygons = new HashSet<>();
     LineMerger lineMerger = new LineMerger();
-    relation.getMembers().stream().filter(m -> Member.MemberType.WAY.equals(m.getType()))
-        .filter(m -> role.equals(m.getRole())).forEach(member -> {
+    relation.getMembers().stream().filter(m -> Member.MemberType.WAY.equals(m.type()))
+        .filter(m -> role.equals(m.role())).forEach(member -> {
           LineString line = createLine(member);
           if (line.isClosed()) {
             Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
@@ -208,7 +208,7 @@ public class CreateGeometryConsumer implements Consumer<Entity> {
 
   private LineString createLine(Member member) {
     try {
-      List<Long> refs = this.references.get(member.getRef());
+      List<Long> refs = this.references.get(member.ref());
       List<Coordinate> coords = refs.stream().map(coordinates::get).toList();
       Coordinate[] array = coords.toArray(new Coordinate[coords.size()]);
       return geometryFactory.createLineString(array);

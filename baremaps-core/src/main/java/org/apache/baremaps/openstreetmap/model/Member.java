@@ -12,77 +12,30 @@
 
 package org.apache.baremaps.openstreetmap.model;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+
 
 import com.google.common.base.Objects;
 import java.util.StringJoiner;
 
 /** Represents a member of a relation in an OpenStreetMap dataset. */
-public final class Member {
+public record Member(long ref,MemberType type,String role){
 
-  public enum MemberType {
-    NODE, WAY, RELATION;
+public enum MemberType {
+  NODE, WAY, RELATION;
 
-    public static MemberType forNumber(int value) {
-      switch (value) {
-        case 0:
-          return NODE;
-        case 1:
-          return WAY;
-        case 2:
-          return RELATION;
-        default:
-          throw new IllegalArgumentException();
-      }
+  public static MemberType forNumber(int value) {
+    switch (value) {
+      case 0:
+        return NODE;
+      case 1:
+        return WAY;
+      case 2:
+        return RELATION;
+      default:
+        throw new IllegalArgumentException();
     }
   }
 
-  private final long ref;
-
-  private final MemberType type;
-
-  private final String role;
-
-  /**
-   * Constructs a {@code Member} of an OpenStreetMap relation.
-   *
-   * @param ref the relation id
-   * @param type the member type
-   * @param role the member role
-   */
-  public Member(long ref, MemberType type, String role) {
-    checkNotNull(type);
-    checkNotNull(role);
-    this.ref = ref;
-    this.type = type;
-    this.role = role;
-  }
-
-  /**
-   * Returns the relation id.
-   *
-   * @return the relation id
-   */
-  public long getRef() {
-    return ref;
-  }
-
-  /**
-   * Returns the member type.
-   *
-   * @return the member type
-   */
-  public MemberType getType() {
-    return type;
-  }
-
-  /**
-   * Returns the member role.
-   *
-   * @return the member role
-   */
-  public String getRole() {
-    return role;
   }
 
   /** {@inheritDoc} */
