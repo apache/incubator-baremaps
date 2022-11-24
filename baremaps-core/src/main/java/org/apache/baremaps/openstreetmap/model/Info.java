@@ -19,6 +19,4 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 /** Represents all the metadata associated to an element in an OpenStreetMap dataset. */
-public record Info(int version, LocalDateTime timestamp, long changeset, int uid) {
-
-}
+public record Info(int version, LocalDateTime timestamp, long changeset, int uid) {}

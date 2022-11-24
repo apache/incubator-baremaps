@@ -17,6 +17,4 @@ package org.apache.baremaps.openstreetmap.model;
 import java.util.List;
 
 /** Represents a data block in an OpenStreetMap dataset. */
-public record DataBlock(List<Node> denseNodes, List<Node> nodes, List<Way> ways, List<Relation> relations) implements Block {
-
-}
+public record DataBlock(List<Node> denseNodes, List<Node> nodes, List<Way> ways, List<Relation> relations) implements Block {}

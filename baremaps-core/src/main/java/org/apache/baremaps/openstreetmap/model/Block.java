@@ -17,5 +17,4 @@ public sealed
 interface Block
 permits HeaderBlock, DataBlock
 {
-
 }

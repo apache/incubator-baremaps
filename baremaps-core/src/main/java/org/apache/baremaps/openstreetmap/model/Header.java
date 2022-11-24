@@ -17,6 +17,4 @@ package org.apache.baremaps.openstreetmap.model;
 import java.time.LocalDateTime;
 
 /** Represents a header entity in an OpenStreetMap dataset. */
-public record Header(Long replicationSequenceNumber, LocalDateTime replicationTimestamp,String replicationUrl,String source,String writingProgram) implements Entity {
-
-}
+public record Header(Long replicationSequenceNumber, LocalDateTime replicationTimestamp,String replicationUrl,String source,String writingProgram) implements Entity {}

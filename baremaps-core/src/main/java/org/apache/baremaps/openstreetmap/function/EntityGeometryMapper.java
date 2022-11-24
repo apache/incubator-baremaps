@@ -15,13 +15,14 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 import java.util.function.Function;
+import org.apache.baremaps.openstreetmap.OsmReaderContext;
 import org.apache.baremaps.openstreetmap.model.*;
 
 public class EntityGeometryMapper<T extends Entity> implements Function<T, T> {
 
-  private final Context context;
+  private final OsmReaderContext context;
 
-  public EntityGeometryMapper(Context context) {
+  public EntityGeometryMapper(OsmReaderContext context) {
     this.context = context;
   }
 

@@ -22,5 +22,4 @@ public sealed
 interface Entity
 permits Header, Bound, Element
 {
-
 }

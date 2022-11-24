@@ -20,6 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.openstreetmap.OsmReader;
+import org.apache.baremaps.openstreetmap.OsmReaderContext;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
 import org.apache.baremaps.openstreetmap.model.*;
@@ -154,7 +155,7 @@ public class PbfBlockReader implements OsmReader<Block> {
             Runtime.getRuntime().availableProcessors());
 
     if (geometry) {
-      var context = new Context(new GeometryFactory(), coordinates, references);
+      var context = new OsmReaderContext(new GeometryFactory(), coordinates, references);
 
       Function<Node, Node> nodeMapper = new NodeGeometryMapper(context);
       Function<Way, Way> wayMapper = new WayGeometryMapper(context);

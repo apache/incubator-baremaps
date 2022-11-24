@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.baremaps.collection.LongDataMap;
+import org.apache.baremaps.openstreetmap.OsmReaderContext;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Info;
 import org.apache.baremaps.openstreetmap.model.Member;
@@ -152,7 +153,8 @@ class GeometryHandlerTest {
       Arrays.asList(new Member(2l, MemberType.WAY, "outer"),
           new Member(4l, MemberType.WAY, "inner"), new Member(5l, MemberType.WAY, "inner")));
 
-  static final Context CONTEXT = new Context(GEOMETRY_FACTORY, COORDINATE_CACHE, REFERENCE_CACHE);
+  static final OsmReaderContext CONTEXT =
+      new OsmReaderContext(GEOMETRY_FACTORY, COORDINATE_CACHE, REFERENCE_CACHE);
 
   static final NodeGeometryMapper NODE_MAPPER = new NodeGeometryMapper(CONTEXT);
 

@@ -13,6 +13,4 @@
 package org.apache.baremaps.openstreetmap.model;
 
 /** Represents the bounds of an OpenStreetMap dataset. */
-public record Bound(double maxLat, double maxLon, double minLat, double minLon) implements Entity {
-
-}
+public record Bound(double maxLat, double maxLon, double minLat, double minLon) implements Entity {}

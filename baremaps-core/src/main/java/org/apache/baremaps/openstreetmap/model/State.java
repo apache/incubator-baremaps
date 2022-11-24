@@ -17,6 +17,4 @@ package org.apache.baremaps.openstreetmap.model;
 import java.time.LocalDateTime;
 
 /** Represents the state of an OpenStreetMap dataset, enabling its replication. */
-public record State(long sequenceNumber, LocalDateTime timestamp) {
-
-}
+public record State(long sequenceNumber, LocalDateTime timestamp) {}

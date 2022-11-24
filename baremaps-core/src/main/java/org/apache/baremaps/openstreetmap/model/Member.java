@@ -14,6 +14,4 @@ package org.apache.baremaps.openstreetmap.model;
 
 
 /** Represents a member of a relation in an OpenStreetMap dataset. */
-public record Member(long ref, MemberType type, String role) {
-
-}
+public record Member(long ref, MemberType type, String role) {}

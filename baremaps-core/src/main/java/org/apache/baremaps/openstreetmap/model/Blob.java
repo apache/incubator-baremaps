@@ -14,6 +14,8 @@ package org.apache.baremaps.openstreetmap.model;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+
+import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
@@ -44,5 +46,40 @@ public record Blob(BlobHeader header, byte[] rawData, int size) {
     } else {
       throw new DataFormatException("Unsupported toPrimitiveBlock format");
     }
+  }
+
+/**
+ * {@inheritdoc}
+ */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (!(o instanceof Blob blob))
+      return false;
+    if (size != blob.size)
+      return false;
+    if (!header.equals(blob.header))
+      return false;
+    return Arrays.equals(rawData, blob.rawData);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  @Override
+  public int hashCode() {
+    int result = header.hashCode();
+    result = 31 * result + Arrays.hashCode(rawData);
+    result = 31 * result + size;
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Blob.class.getSimpleName() + "[", "]")
+      .add("header=" + header)
+      .add("size=" + size)
+      .toString();
   }
 }

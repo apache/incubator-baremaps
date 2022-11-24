@@ -15,6 +15,4 @@ package org.apache.baremaps.openstreetmap.model;
 
 
 /** Represents a header block in an OpenStreetMap dataset. */
-public record HeaderBlock(Header header, Bound bound) implements Block {
-
-}
+public record HeaderBlock(Header header, Bound bound) implements Block {}

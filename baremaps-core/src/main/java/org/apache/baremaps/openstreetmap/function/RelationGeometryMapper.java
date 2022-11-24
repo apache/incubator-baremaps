@@ -1,5 +1,6 @@
 package org.apache.baremaps.openstreetmap.function;
 
+import org.apache.baremaps.openstreetmap.OsmReaderContext;
 import org.apache.baremaps.openstreetmap.model.Member;
 import org.apache.baremaps.openstreetmap.model.MemberType;
 import org.apache.baremaps.openstreetmap.model.Relation;
@@ -19,7 +20,7 @@ import java.util.function.Function;
 /**
  * A function that adds a geometry to a relation.
  */
-public record RelationGeometryMapper(Context context) implements Function<Relation, Relation> {
+public record RelationGeometryMapper(OsmReaderContext context) implements Function<Relation, Relation> {
 
   private static final Logger logger = LoggerFactory.getLogger(RelationGeometryMapper.class);
 

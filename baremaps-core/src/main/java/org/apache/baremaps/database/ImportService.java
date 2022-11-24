@@ -23,6 +23,7 @@ import java.util.function.Function;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
+import org.apache.baremaps.openstreetmap.OsmReaderContext;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
 import org.apache.baremaps.openstreetmap.model.Node;
@@ -61,7 +62,7 @@ public class ImportService implements Callable<Void> {
 
   @Override
   public Void call() throws Exception {
-    var context = new Context(new GeometryFactory(), coordinates, references);
+    var context = new OsmReaderContext(new GeometryFactory(), coordinates, references);
 
     Function<Node, Node> nodeMapper = new NodeGeometryMapper(context);
     Function<Way, Way> wayMapper = new WayGeometryMapper(context);

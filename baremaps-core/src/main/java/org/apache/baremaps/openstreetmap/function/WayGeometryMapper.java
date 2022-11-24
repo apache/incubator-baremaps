@@ -1,5 +1,6 @@
 package org.apache.baremaps.openstreetmap.function;
 
+import org.apache.baremaps.openstreetmap.OsmReaderContext;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
@@ -13,7 +14,7 @@ import java.util.function.Function;
 /**
  * A function that adds a geometry to a way.
  */
-public record WayGeometryMapper(Context context) implements Function<Way, Way> {
+public record WayGeometryMapper(OsmReaderContext context) implements Function<Way, Way> {
 
   private static final Logger logger = LoggerFactory.getLogger(WayGeometryMapper.class);
 

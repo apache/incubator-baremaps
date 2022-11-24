@@ -25,6 +25,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
+import org.apache.baremaps.openstreetmap.OsmReaderContext;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
 import org.apache.baremaps.openstreetmap.model.Header;
@@ -67,7 +68,8 @@ public class UpdateService implements Callable<Void> {
     var sequenceNumber = header.replicationSequenceNumber() + 1;
 
     var elementMapper =
-        new EntityGeometryMapper(new Context(new GeometryFactory(), coordinates, references));
+        new EntityGeometryMapper(
+            new OsmReaderContext(new GeometryFactory(), coordinates, references));
     var projectionMapper = new ProjectionMapper<>(new ProjectionTransformer(4326, srid));
     var prepareGeometries = new ChangeEntitiesMapper(elementMapper.andThen(projectionMapper));
     var saveChange = new SaveChangeConsumer(nodeRepository, wayRepository, relationRepository);

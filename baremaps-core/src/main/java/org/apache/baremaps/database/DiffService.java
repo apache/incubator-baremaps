@@ -31,7 +31,7 @@ import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
 import org.apache.baremaps.database.tile.Tile;
-import org.apache.baremaps.openstreetmap.function.Context;
+import org.apache.baremaps.openstreetmap.OsmReaderContext;
 import org.apache.baremaps.openstreetmap.function.EntityGeometryMapper;
 import org.apache.baremaps.openstreetmap.function.GeometryExtractor;
 import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
@@ -136,7 +136,8 @@ public class DiffService implements Callable<List<Tile>> {
 
   private Stream<Geometry> geometriesForNextVersion(Change change) {
     return change.entities().stream()
-        .map(new EntityGeometryMapper(new Context(new GeometryFactory(), coordinates, references)))
+        .map(new EntityGeometryMapper(
+            new OsmReaderContext(new GeometryFactory(), coordinates, references)))
         .flatMap(new GeometryExtractor().andThen(Optional::stream));
   }
 

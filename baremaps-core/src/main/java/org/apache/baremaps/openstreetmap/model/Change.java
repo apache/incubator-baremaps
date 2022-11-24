@@ -15,6 +15,4 @@ package org.apache.baremaps.openstreetmap.model;
 import java.util.List;
 
 /** Represents a change in an OpenStreetMap dataset. */
-public record Change(ChangeType type, List<Entity>entities) {
-
-}
+public record Change(ChangeType type, List<Entity>entities) {}

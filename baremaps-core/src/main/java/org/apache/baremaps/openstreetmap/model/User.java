@@ -13,8 +13,4 @@
 package org.apache.baremaps.openstreetmap.model;
 
 /** Represents the author of an objet in an OpenStreetMap dataset. */
-public record User(int id, String name) {
-
-  public static final User NO_USER = new User(-1, "");
-
-}
+public record User(int id, String name) {}

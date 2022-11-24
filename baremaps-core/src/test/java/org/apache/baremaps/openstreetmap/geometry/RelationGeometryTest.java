@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.IOException;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.openstreetmap.function.Context;
+import org.apache.baremaps.openstreetmap.OsmReaderContext;
 import org.apache.baremaps.openstreetmap.function.EntityGeometryMapper;
 import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.openstreetmap.store.MockLongDataMap;
@@ -42,7 +42,7 @@ class RelationGeometryTest {
     var relation = entities.stream().filter(e -> e instanceof Relation).map(e -> (Relation) e)
         .findFirst().get();
     var mapper = new EntityGeometryMapper<Element>(
-        new Context(new GeometryFactory(), coordinates, references));
+        new OsmReaderContext(new GeometryFactory(), coordinates, references));
     return mapper.apply(relation).geometry();
   }
 
