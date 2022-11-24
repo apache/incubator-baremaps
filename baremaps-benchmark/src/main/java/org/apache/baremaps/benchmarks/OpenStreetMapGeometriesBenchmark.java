@@ -73,8 +73,8 @@ public class OpenStreetMapGeometriesBenchmark {
 
   @Benchmark
   @BenchmarkMode(Mode.SingleShotTime)
-  @Warmup(iterations = 0)
-  @Measurement(iterations = 1)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
   public void store() throws IOException {
     Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
     LongDataMap<Coordinate> coordinates = new LongDataOpenHashMap<>(
@@ -86,16 +86,17 @@ public class OpenStreetMapGeometriesBenchmark {
     AtomicLong relations = new AtomicLong(0);
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
       new PbfEntityReader(
-          new PbfBlockReader().coordinates(coordinates).references(references).projection(4326))
-              .stream(inputStream).forEach(entity -> {
-                if (entity instanceof Node node) {
-                  nodes.incrementAndGet();
-                } else if (entity instanceof Way way) {
-                  ways.incrementAndGet();
-                } else if (entity instanceof Relation) {
-                  relations.incrementAndGet();
-                }
-              });
+          new PbfBlockReader().geometries(true).coordinates(coordinates).references(references)
+              .projection(4326))
+                  .stream(inputStream).forEach(entity -> {
+                    if (entity instanceof Node) {
+                      nodes.incrementAndGet();
+                    } else if (entity instanceof Way) {
+                      ways.incrementAndGet();
+                    } else if (entity instanceof Relation) {
+                      relations.incrementAndGet();
+                    }
+                  });
     }
     FileUtils.deleteRecursively(directory);
   }

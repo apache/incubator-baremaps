@@ -14,28 +14,27 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 
-import java.util.function.Consumer;
+import java.util.function.Function;
 import org.apache.baremaps.openstreetmap.model.Change;
 import org.apache.baremaps.openstreetmap.model.Entity;
 
 /** Represents an operation on the entities of changes of different types. */
-public class ChangeEntitiesConsumer implements Consumer<Change> {
+public class ChangeEntitiesMapper implements Function<Change, Change> {
 
-  private final Consumer<Entity> consumer;
+  private final Function<Entity, Entity> mapper;
 
   /**
    * Constructs a consumer that applies the specified consumer to all the entities of a {@code
    * Change}.
    *
-   * @param consumer
+   * @param mapper
    */
-  public ChangeEntitiesConsumer(Consumer<Entity> consumer) {
-    this.consumer = consumer;
+  public ChangeEntitiesMapper(Function<Entity, Entity> mapper) {
+    this.mapper = mapper;
   }
 
-  /** {@inheritDoc} */
   @Override
-  public void accept(Change change) {
-    change.entities().forEach(consumer);
+  public Change apply(Change change) {
+    return new Change(change.type(), change.entities().stream().map(mapper).toList());
   }
 }

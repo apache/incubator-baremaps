@@ -15,8 +15,6 @@ package org.apache.baremaps.openstreetmap.model;
 
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.StringJoiner;
 import org.locationtech.jts.geom.Geometry;
 
 /**
@@ -25,106 +23,43 @@ import org.locationtech.jts.geom.Geometry;
  */
 public sealed
 
-abstract class Element implements Entity
+interface Element<T> extends Entity
 permits Node, Way, Relation
 {
-
-  protected final long id;
-
-  protected final Info info;
-
-  protected final Map<String, String> tags;
-
-  protected Geometry geometry;
-
-  protected Element(long id, Info info, Map<String, String> tags) {
-    this(id, info, tags, null);
-  }
-
-  /**
-   * Constructs an OpenStreetMap {@code Element} with the specified parameters.
-   *
-   * @param id the id
-   * @param info the {@code Info}
-   * @param tags the tags
-   * @param geometry the geometry
-   */
-  protected Element(long id, Info info, Map<String, String> tags, Geometry geometry) {
-    this.id = id;
-    this.info = info;
-    this.tags = tags;
-    this.geometry = geometry;
-  }
 
   /**
    * Returns the id.
    *
    * @return the id
    */
-  public long id() {
-    return id;
-  }
+  long id();
 
   /**
    * Returns the info.
    *
    * @return the info
    */
-  public Info info() {
-    return info;
-  }
+  Info info();
 
   /**
    * Returns the tags.
    *
    * @return the tags
    */
-  public Map<String, String> tags() {
-    return tags;
-  }
+  Map<String, String> tags();
 
   /**
    * Returns the geometry.
    *
    * @return the geometry
    */
-  public Geometry geometry() {
-    return this.geometry;
-  }
+  Geometry geometry();
 
   /**
    * Sets the geometry.
    *
    * @param geometry the geometry
    */
-  public void withGeometry(Geometry geometry) {
-    this.geometry = geometry;
-  }
+  T withGeometry(Geometry geometry);
 
-  /** {@inheritDoc} */
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof Element)) {
-      return false;
-    }
-    Element element = (Element) o;
-    return id == element.id && Objects.equals(info, element.info)
-        && Objects.equals(tags, element.tags) && Objects.equals(geometry, element.geometry);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, info, tags, geometry);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Element.class.getSimpleName() + "[", "]").add("id=" + id)
-        .add("info=" + info).add("tags=" + tags).add("geometry=" + geometry).toString();
-  }
 }

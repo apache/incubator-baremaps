@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.database;
 
-import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
+
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -21,17 +21,12 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
-import org.apache.baremaps.openstreetmap.function.ChangeEntitiesConsumer;
-import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
-import org.apache.baremaps.openstreetmap.function.ReprojectEntityConsumer;
-import org.apache.baremaps.openstreetmap.model.Change;
-import org.apache.baremaps.openstreetmap.model.Entity;
+import org.apache.baremaps.openstreetmap.function.*;
+import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
 import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
@@ -40,6 +35,7 @@ import org.apache.baremaps.openstreetmap.model.Way;
 import org.apache.baremaps.openstreetmap.state.StateReader;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 
 public class UpdateService implements Callable<Void> {
 
@@ -66,22 +62,20 @@ public class UpdateService implements Callable<Void> {
 
   @Override
   public Void call() throws Exception {
-    Header header = headerRepository.selectLatest();
-    String replicationUrl = header.replicationUrl();
-    Long sequenceNumber = header.replicationSequenceNumber() + 1;
+    var header = headerRepository.selectLatest();
+    var replicationUrl = header.replicationUrl();
+    var sequenceNumber = header.replicationSequenceNumber() + 1;
 
-    Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
-    Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, srid);
-    Consumer<Change> prepareGeometries =
-        new ChangeEntitiesConsumer(createGeometry.andThen(reprojectGeometry));
-    Function<Change, Change> prepareChange = consumeThenReturn(prepareGeometries);
-    Consumer<Change> saveChange =
-        new SaveChangeConsumer(nodeRepository, wayRepository, relationRepository);
+    var elementMapper =
+        new EntityGeometryMapper(new Context(new GeometryFactory(), coordinates, references));
+    var projectionMapper = new ProjectionMapper<>(new ProjectionTransformer(4326, srid));
+    var prepareGeometries = new ChangeEntitiesMapper(elementMapper.andThen(projectionMapper));
+    var saveChange = new SaveChangeConsumer(nodeRepository, wayRepository, relationRepository);
 
     URL changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
     try (InputStream changeInputStream =
         new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
-      new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(saveChange);
+      new XmlChangeReader().stream(changeInputStream).map(prepareGeometries).forEach(saveChange);
     }
 
     URL stateUrl = resolve(replicationUrl, sequenceNumber, "state.txt");

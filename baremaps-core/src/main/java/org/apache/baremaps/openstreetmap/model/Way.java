@@ -19,9 +19,7 @@ import java.util.Map;
 import org.locationtech.jts.geom.Geometry;
 
 /** Represents a way element in an OpenStreetMap dataset. */
-public final class Way extends Element {
-
-  private final List<Long> nodes;
+public record Way(long id, Info info, Map<String, String> tags, List<Long> nodes, Geometry geometry) implements Element<Way> {
 
   /**
    * Constructs an OpenStreetMap {@code Node} with the specified parameters.
@@ -32,30 +30,11 @@ public final class Way extends Element {
    * @param nodes the nodes
    */
   public Way(long id, Info info, Map<String, String> tags, List<Long> nodes) {
-    super(id, info, tags);
-    this.nodes = nodes;
+    this(id, info, tags, nodes, null);
   }
 
-  /**
-   * Constructs an OpenStreetMap {@code Node} with the specified parameters.
-   *
-   * @param id the id
-   * @param info the information
-   * @param tags the tags
-   * @param nodes the nodes
-   * @param geometry the geometry
-   */
-  public Way(long id, Info info, Map<String, String> tags, List<Long> nodes, Geometry geometry) {
-    super(id, info, tags, geometry);
-    this.nodes = nodes;
-  }
-
-  /**
-   * Returns the nodes.
-   *
-   * @return the nodes
-   */
-  public List<Long> nodes() {
-    return nodes;
+  @Override
+  public Way withGeometry(Geometry geometry) {
+    return new Way(id, info, tags, nodes, geometry);
   }
 }

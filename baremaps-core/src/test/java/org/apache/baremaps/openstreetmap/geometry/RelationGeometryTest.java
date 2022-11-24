@@ -15,38 +15,35 @@ package org.apache.baremaps.openstreetmap.geometry;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
-import org.apache.baremaps.openstreetmap.model.Entity;
-import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.openstreetmap.function.Context;
+import org.apache.baremaps.openstreetmap.function.EntityGeometryMapper;
+import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.openstreetmap.store.MockLongDataMap;
 import org.apache.baremaps.openstreetmap.xml.XmlEntityReader;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 
 class RelationGeometryTest {
 
   Geometry handleRelation(String file) throws IOException {
-    InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
-    List<Entity> entities = new XmlEntityReader().stream(input).toList();
-    LongDataMap<Coordinate> coordinates =
+    var input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
+    var entities = new XmlEntityReader().stream(input).toList();
+    var coordinates =
         new MockLongDataMap<>(entities.stream().filter(e -> e instanceof Node).map(e -> (Node) e)
             .collect(Collectors.toMap(n -> n.id(), n -> new Coordinate(n.lon(), n.lat()))));
-    LongDataMap<List<Long>> references =
+    var references =
         new MockLongDataMap<>(entities.stream().filter(e -> e instanceof Way).map(e -> (Way) e)
             .collect(Collectors.toMap(w -> w.id(), w -> w.nodes())));
-    Relation relation = entities.stream().filter(e -> e instanceof Relation).map(e -> (Relation) e)
+    var relation = entities.stream().filter(e -> e instanceof Relation).map(e -> (Relation) e)
         .findFirst().get();
-    new CreateGeometryConsumer(coordinates, references).match(relation);
-    return relation.geometry();
+    var mapper = new EntityGeometryMapper<Element>(
+        new Context(new GeometryFactory(), coordinates, references));
+    return mapper.apply(relation).geometry();
   }
 
   @Test

@@ -12,23 +12,20 @@
 
 package org.apache.baremaps.openstreetmap.pbf;
 
-import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
+
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.openstreetmap.OsmReader;
-import org.apache.baremaps.openstreetmap.function.BlockEntitiesConsumer;
-import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
-import org.apache.baremaps.openstreetmap.function.ReprojectEntityConsumer;
-import org.apache.baremaps.openstreetmap.model.Block;
-import org.apache.baremaps.openstreetmap.model.Entity;
-import org.apache.baremaps.openstreetmap.store.DataStoreConsumer;
+import org.apache.baremaps.openstreetmap.function.*;
+import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
+import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.stream.StreamUtils;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 
 /** A utility class for reading an OpenStreetMap pbf file. */
 public class PbfBlockReader implements OsmReader<Block> {
@@ -151,20 +148,31 @@ public class PbfBlockReader implements OsmReader<Block> {
    */
   public Stream<Block> stream(InputStream inputStream) {
     Stream<Block> blocks =
-        StreamUtils.bufferInSourceOrder(StreamUtils.stream(new BlobIterator(inputStream)),
-            new BlobToBlockFunction(), Runtime.getRuntime().availableProcessors());
+        StreamUtils.bufferInSourceOrder(
+            StreamUtils.stream(new BlobIterator(inputStream)),
+            new BlobToBlockMapper(),
+            Runtime.getRuntime().availableProcessors());
+
     if (geometry) {
-      Consumer<Block> cacheBlock = new DataStoreConsumer(coordinates, references);
-      Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
+      var context = new Context(new GeometryFactory(), coordinates, references);
+
+      Function<Node, Node> nodeMapper = new NodeGeometryMapper(context);
+      Function<Way, Way> wayMapper = new WayGeometryMapper(context);
+      Function<Relation, Relation> relationMapper = new RelationGeometryMapper(context);
+
       if (srid != 4326) {
-        Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, srid);
-        createGeometry = createGeometry.andThen(reprojectGeometry);
+        var projectionTransformer = new ProjectionTransformer(4326, srid);
+        nodeMapper = nodeMapper.andThen(new ProjectionMapper<>(projectionTransformer));
+        wayMapper = wayMapper.andThen(new ProjectionMapper<>(projectionTransformer));
+        relationMapper = relationMapper.andThen(new ProjectionMapper<>(projectionTransformer));
       }
-      Consumer<Block> prepareGeometries = new BlockEntitiesConsumer(createGeometry);
-      Function<Block, Block> prepareBlock =
-          consumeThenReturn(cacheBlock.andThen(prepareGeometries));
+
+      var prepareBlock = new BlockMapper(Function.identity(),
+          new DataBlockMapper(nodeMapper, wayMapper, relationMapper));
+
       blocks = blocks.map(prepareBlock);
     }
+
     return blocks;
   }
 

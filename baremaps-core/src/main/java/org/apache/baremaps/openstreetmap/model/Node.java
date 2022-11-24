@@ -18,11 +18,7 @@ import java.util.Map;
 import org.locationtech.jts.geom.Geometry;
 
 /** Represents a node element in an OpenStreetMap dataset. */
-public final class Node extends Element {
-
-  private final double lon;
-
-  private final double lat;
+public record Node(long id, Info info, Map<String, String> tags, double lon, double lat, Geometry geometry) implements Element<Node> {
 
   /**
    * Constructs an OpenStreetMap {@code Node} with the specified parameters.
@@ -34,43 +30,11 @@ public final class Node extends Element {
    * @param lat the latitude
    */
   public Node(long id, Info info, Map<String, String> tags, double lon, double lat) {
-    super(id, info, tags);
-    this.lon = lon;
-    this.lat = lat;
+    this(id, info, tags, lon, lat, null);
   }
 
-  /**
-   * Constructs an OpenStreetMap {@code Node} with the specified parameters.
-   *
-   * @param id the id
-   * @param info the information
-   * @param tags the tags
-   * @param lon the longitude
-   * @param lat the latitude
-   * @param geometry the geometry
-   */
-  public Node(long id, Info info, Map<String, String> tags, double lon, double lat,
-      Geometry geometry) {
-    super(id, info, tags, geometry);
-    this.lon = lon;
-    this.lat = lat;
-  }
-
-  /**
-   * Returns the longitude.
-   *
-   * @return the longitude
-   */
-  public double lon() {
-    return lon;
-  }
-
-  /**
-   * Returns the latitude.
-   *
-   * @return the latitude
-   */
-  public double lat() {
-    return lat;
+  @Override
+  public Node withGeometry(Geometry geometry) {
+    return new Node(id, info, tags, lon, lat, geometry);
   }
 }

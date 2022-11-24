@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
+import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Info;
 import org.apache.baremaps.openstreetmap.model.Member;
 import org.apache.baremaps.openstreetmap.model.MemberType;
@@ -152,50 +152,45 @@ class GeometryHandlerTest {
       Arrays.asList(new Member(2l, MemberType.WAY, "outer"),
           new Member(4l, MemberType.WAY, "inner"), new Member(5l, MemberType.WAY, "inner")));
 
-  static final CreateGeometryConsumer GEOMETRY_BUILDER =
-      new CreateGeometryConsumer(COORDINATE_CACHE, REFERENCE_CACHE);
+  static final Context CONTEXT = new Context(GEOMETRY_FACTORY, COORDINATE_CACHE, REFERENCE_CACHE);
+
+  static final NodeGeometryMapper NODE_MAPPER = new NodeGeometryMapper(CONTEXT);
+
+  static final WayGeometryMapper WAY_MAPPER = new WayGeometryMapper(CONTEXT);
+
+  static final RelationGeometryMapper RELATION_MAPPER = new RelationGeometryMapper(CONTEXT);
 
   @Test
   void handleNode() {
-    GEOMETRY_BUILDER.match(NODE_0);
-    Point p0 = (Point) NODE_0.geometry();
+    var p0 = (Point) NODE_MAPPER.apply(NODE_0).geometry();
     assertEquals(0, p0.getX());
     assertEquals(0, p0.getY());
-    GEOMETRY_BUILDER.match(NODE_2);
-    Point p1 = (Point) NODE_2.geometry();
+    Point p1 = (Point) NODE_MAPPER.apply(NODE_2).geometry();
     assertEquals(4, p1.getX());
     assertEquals(4, p1.getY());
   }
 
   @Test
   void handleWay() {
-    GEOMETRY_BUILDER.match(WAY_0);
-    assertNull(WAY_0.geometry());
-    GEOMETRY_BUILDER.match(WAY_1);
-    assertTrue(WAY_1.geometry() instanceof LineString);
-    GEOMETRY_BUILDER.match(WAY_2);
-    assertTrue(WAY_2.geometry() instanceof Polygon);
+    assertNull(WAY_MAPPER.apply(WAY_0).geometry());
+    assertTrue(WAY_MAPPER.apply(WAY_1).geometry() instanceof LineString);
+    assertTrue(WAY_MAPPER.apply(WAY_2).geometry() instanceof Polygon);
   }
 
   @Test
   void handleRelation() {
-    GEOMETRY_BUILDER.match(RELATION_0);
-    assertNull(RELATION_0.geometry());
-    GEOMETRY_BUILDER.match(RELATION_1);
-    assertNull(RELATION_1.geometry());
-    GEOMETRY_BUILDER.match(RELATION_2);
-    assertTrue(RELATION_2.geometry() instanceof Polygon);
-    GEOMETRY_BUILDER.match(RELATION_3);
-    assertTrue(RELATION_3.geometry() instanceof Polygon);
-    GEOMETRY_BUILDER.match(RELATION_4);
-    assertTrue(RELATION_4.geometry() instanceof MultiPolygon);
+    assertNull(RELATION_MAPPER.apply(RELATION_0).geometry());
+    assertNull(RELATION_MAPPER.apply(RELATION_1).geometry());
+    assertTrue(RELATION_MAPPER.apply(RELATION_2).geometry() instanceof Polygon);
+    assertTrue(RELATION_MAPPER.apply(RELATION_3).geometry() instanceof Polygon);
+    assertTrue(RELATION_MAPPER.apply(RELATION_4).geometry() instanceof MultiPolygon);
   }
 
   @Test
   void handleRelationWithHole() {
-    GEOMETRY_BUILDER.match(RELATION_5);
-    assertTrue(RELATION_5.geometry() instanceof Polygon);
-    assertNotNull(((Polygon) RELATION_5.geometry()).getExteriorRing());
-    assertEquals(1, ((Polygon) RELATION_5.geometry()).getNumInteriorRing());
+    var relation = RELATION_MAPPER.apply(RELATION_5);
+    assertTrue(relation.geometry() instanceof Polygon);
+    assertNotNull(((Polygon) relation.geometry()).getExteriorRing());
+    assertEquals(1, ((Polygon) relation.geometry()).getNumInteriorRing());
   }
 }

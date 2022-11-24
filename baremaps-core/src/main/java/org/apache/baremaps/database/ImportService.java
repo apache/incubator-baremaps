@@ -12,7 +12,6 @@
 
 package org.apache.baremaps.database;
 
-import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 import static org.apache.baremaps.stream.StreamUtils.batch;
 
 import java.io.InputStream;
@@ -20,22 +19,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
-import org.apache.baremaps.openstreetmap.function.BlockEntitiesConsumer;
-import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
-import org.apache.baremaps.openstreetmap.function.ReprojectEntityConsumer;
-import org.apache.baremaps.openstreetmap.model.Block;
-import org.apache.baremaps.openstreetmap.model.Entity;
+import org.apache.baremaps.openstreetmap.function.*;
+import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
-import org.apache.baremaps.openstreetmap.store.DataStoreConsumer;
+import org.apache.baremaps.openstreetmap.store.CacheMapper;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 
 public class ImportService implements Callable<Void> {
 
@@ -48,7 +44,8 @@ public class ImportService implements Callable<Void> {
   private final Repository<Long, Relation> relationRepository;
   private final int databaseSrid;
 
-  public ImportService(Path path, LongDataMap<Coordinate> coordinates,
+  public ImportService(
+      Path path, LongDataMap<Coordinate> coordinates,
       LongDataMap<List<Long>> references, HeaderRepository headerRepository,
       Repository<Long, Node> nodeRepository, Repository<Long, Way> wayRepository,
       Repository<Long, Relation> relationRepository, Integer databaseSrid) {
@@ -64,18 +61,34 @@ public class ImportService implements Callable<Void> {
 
   @Override
   public Void call() throws Exception {
-    Consumer<Block> cacheBlock = new DataStoreConsumer(coordinates, references);
-    Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
-    Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, databaseSrid);
-    Consumer<Block> prepareGeometries =
-        new BlockEntitiesConsumer(createGeometry.andThen(reprojectGeometry));
-    Function<Block, Block> prepareBlock = consumeThenReturn(cacheBlock.andThen(prepareGeometries));
-    Consumer<Block> saveBlock =
+    var context = new Context(new GeometryFactory(), coordinates, references);
+
+    Function<Node, Node> nodeMapper = new NodeGeometryMapper(context);
+    Function<Way, Way> wayMapper = new WayGeometryMapper(context);
+    Function<Relation, Relation> relationMapper = new RelationGeometryMapper(context);
+
+    if (databaseSrid != 4326) {
+      var projectionTransformer = new ProjectionTransformer(4326, databaseSrid);
+      nodeMapper = nodeMapper.andThen(new ProjectionMapper<>(projectionTransformer));
+      wayMapper = wayMapper.andThen(new ProjectionMapper<>(projectionTransformer));
+      relationMapper = relationMapper.andThen(new ProjectionMapper<>(projectionTransformer));
+    }
+
+    var cacheBlock = new CacheMapper(coordinates, references);
+
+    var prepareBlock = new BlockMapper(
+        Function.identity(),
+        new DataBlockMapper(nodeMapper, wayMapper, relationMapper));
+
+    var saveBlock =
         new SaveBlockConsumer(headerRepository, nodeRepository, wayRepository, relationRepository);
+
     try (InputStream inputStream = Files.newInputStream(path)) {
-      batch(new PbfBlockReader().stream(inputStream).map(prepareBlock)).forEach(saveBlock);
+      batch(new PbfBlockReader().stream(inputStream)
+          .map(cacheBlock)
+          .map(prepareBlock))
+              .forEach(saveBlock);
     }
     return null;
   }
-
 }

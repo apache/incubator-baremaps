@@ -21,26 +21,22 @@ import org.apache.baremaps.stream.StreamException;
 import org.locationtech.jts.geom.Geometry;
 
 /** A function that maps an {@code Entity} to its {@code Geometry}. */
-public class ExtractGeometryFunction implements Function<Entity, Optional<Geometry>> {
+public class GeometryExtractor implements Function<Entity, Optional<Geometry>> {
 
   @Override
   public Optional<Geometry> apply(Entity entity) {
-    try {
-      if (entity instanceof Node node) {
-        return Optional.ofNullable(node.geometry());
-      } else if (entity instanceof Way way) {
-        return Optional.ofNullable(way.geometry());
-      } else if (entity instanceof Relation relation) {
-        return Optional.ofNullable(relation.geometry());
-      } else if (entity instanceof Header header) {
-        return Optional.empty();
-      } else if (entity instanceof Bound bound) {
-        return Optional.empty();
-      } else {
-        throw new StreamException("Unknown entity type.");
-      }
-    } catch (Exception e) {
-      throw new StreamException(e);
+    if (entity instanceof Node node) {
+      return Optional.ofNullable(node.geometry());
+    } else if (entity instanceof Way way) {
+      return Optional.ofNullable(way.geometry());
+    } else if (entity instanceof Relation relation) {
+      return Optional.ofNullable(relation.geometry());
+    } else if (entity instanceof Header) {
+      return Optional.empty();
+    } else if (entity instanceof Bound) {
+      return Optional.empty();
+    } else {
+      throw new StreamException("Unknown entity type.");
     }
   }
 }

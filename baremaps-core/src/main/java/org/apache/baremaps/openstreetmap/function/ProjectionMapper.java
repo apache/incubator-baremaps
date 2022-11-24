@@ -14,32 +14,27 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 
-import java.util.function.Consumer;
+import java.util.function.Function;
 import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
-import org.apache.baremaps.openstreetmap.model.*;
-import org.locationtech.jts.geom.Geometry;
+import org.apache.baremaps.openstreetmap.model.Element;
+import org.apache.baremaps.openstreetmap.model.Entity;
 
-/** Changes the projection of the geometry of an entity via side-effects. */
-public class ReprojectEntityConsumer implements Consumer<Entity> {
+public class ProjectionMapper<T extends Entity> implements Function<T, T> {
 
   private final ProjectionTransformer projectionTransformer;
 
-  /**
-   * Creates a consumer that reproject geometries with the provided SRIDs.
-   *
-   * @param inputSRID the input SRID
-   * @param outputSRID the output SRID
-   */
-  public ReprojectEntityConsumer(int inputSRID, int outputSRID) {
-    this.projectionTransformer = new ProjectionTransformer(inputSRID, outputSRID);
+  public ProjectionMapper(ProjectionTransformer projectionTransformer) {
+    this.projectionTransformer = projectionTransformer;
   }
 
-  /** {@inheritDoc} */
   @Override
-  public void accept(Entity entity) {
+  public T apply(T entity) {
     if (entity instanceof Element element && element.geometry() != null) {
-      Geometry geometry = projectionTransformer.transform(element.geometry());
-      element.withGeometry(geometry);
+      var geometry = projectionTransformer.transform(element.geometry());
+      return (T) element.withGeometry(geometry);
+    } else {
+      return entity;
     }
   }
+
 }

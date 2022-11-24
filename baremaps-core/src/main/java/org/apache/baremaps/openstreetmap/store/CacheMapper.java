@@ -15,7 +15,7 @@ package org.apache.baremaps.openstreetmap.store;
 
 
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.Function;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.openstreetmap.model.Block;
 import org.apache.baremaps.openstreetmap.model.DataBlock;
@@ -23,7 +23,7 @@ import org.apache.baremaps.stream.StreamException;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A consumer that stores osm nodes and ways in the provided caches. */
-public class DataStoreConsumer implements Consumer<Block> {
+public class CacheMapper implements Function<Block, Block> {
 
   private final LongDataMap<Coordinate> coordinates;
   private final LongDataMap<List<Long>> references;
@@ -34,7 +34,7 @@ public class DataStoreConsumer implements Consumer<Block> {
    * @param coordinates the map of coordinates
    * @param references the map of references
    */
-  public DataStoreConsumer(LongDataMap<Coordinate> coordinates,
+  public CacheMapper(LongDataMap<Coordinate> coordinates,
       LongDataMap<List<Long>> references) {
     this.coordinates = coordinates;
     this.references = references;
@@ -42,7 +42,7 @@ public class DataStoreConsumer implements Consumer<Block> {
 
   /** {@inheritDoc} */
   @Override
-  public void accept(Block block) {
+  public Block apply(Block block) {
     try {
       if (block instanceof DataBlock dataBlock) {
         dataBlock.denseNodes().stream()
@@ -54,5 +54,6 @@ public class DataStoreConsumer implements Consumer<Block> {
     } catch (Exception e) {
       throw new StreamException(e);
     }
+    return block;
   }
 }

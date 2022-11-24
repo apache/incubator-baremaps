@@ -19,7 +19,7 @@ import org.apache.baremaps.openstreetmap.model.Blob;
 import org.apache.baremaps.openstreetmap.model.Block;
 import org.apache.baremaps.stream.StreamException;
 
-public class BlobToBlockFunction implements Function<Blob, Block> {
+class BlobToBlockMapper implements Function<Blob, Block> {
 
   @Override
   public Block apply(Blob blob) {
