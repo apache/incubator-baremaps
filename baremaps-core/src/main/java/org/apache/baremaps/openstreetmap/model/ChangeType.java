@@ -12,6 +12,9 @@
 
 package org.apache.baremaps.openstreetmap.model;
 
+/**
+ * Reprensets the type of a change.
+ */
 public enum ChangeType {
   DELETE, CREATE, MODIFY;
 }

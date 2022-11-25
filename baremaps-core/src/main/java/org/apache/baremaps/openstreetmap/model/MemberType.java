@@ -12,6 +12,9 @@
 
 package org.apache.baremaps.openstreetmap.model;
 
+/**
+ * Represents the type of a member.
+ */
 public enum MemberType {
   NODE, WAY, RELATION;
 
