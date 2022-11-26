@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.openstreetmap.geometry;
+package org.apache.baremaps.utils;
 
 import static org.locationtech.jts.io.WKBConstants.wkbNDR;
 
@@ -26,6 +26,8 @@ import org.locationtech.proj4j.CoordinateTransformFactory;
 
 /** Utility methods for serializing and deserializing geometries. */
 public class GeometryUtils {
+
+  public static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
   private GeometryUtils() {}
 
@@ -54,7 +56,7 @@ public class GeometryUtils {
       return null;
     }
     try {
-      WKBReader reader = new WKBReader(new GeometryFactory());
+      WKBReader reader = new WKBReader(GEOMETRY_FACTORY);
       return reader.read(wkb);
     } catch (ParseException e) {
       throw new IllegalArgumentException(e);

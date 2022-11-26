@@ -16,7 +16,7 @@ package org.apache.baremaps.storage;
 
 import java.util.Optional;
 import java.util.stream.Stream;
-import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
+import org.apache.baremaps.utils.ProjectionTransformer;
 import org.apache.sis.storage.DataStoreException;
 import org.apache.sis.storage.FeatureSet;
 import org.apache.sis.storage.event.StoreEvent;

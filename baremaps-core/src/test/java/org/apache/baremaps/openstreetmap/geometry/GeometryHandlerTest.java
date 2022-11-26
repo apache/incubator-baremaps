@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.openstreetmap.OsmReaderContext;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Info;
 import org.apache.baremaps.openstreetmap.model.Member;
@@ -35,42 +34,12 @@ import org.apache.baremaps.openstreetmap.model.Way;
 import org.apache.baremaps.openstreetmap.store.MockLongDataMap;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.proj4j.CRSFactory;
-import org.locationtech.proj4j.CoordinateReferenceSystem;
-import org.locationtech.proj4j.CoordinateTransform;
-import org.locationtech.proj4j.Proj4jException;
-import org.locationtech.proj4j.ProjCoordinate;
 
 class GeometryHandlerTest {
-
-  static final CRSFactory CRS_FACTORY = new CRSFactory();
-
-  static final CoordinateReferenceSystem EPSG_4326 = CRS_FACTORY.createFromName("EPSG:4326");
-
-  static final CoordinateTransform COORDINATE_TRANSFORM = new CoordinateTransform() {
-    @Override
-    public CoordinateReferenceSystem getSourceCRS() {
-      return EPSG_4326;
-    }
-
-    @Override
-    public CoordinateReferenceSystem getTargetCRS() {
-      return EPSG_4326;
-    }
-
-    @Override
-    public ProjCoordinate transform(ProjCoordinate src, ProjCoordinate tgt) throws Proj4jException {
-      return src;
-    }
-  };
-
-  static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
 
   static final LocalDateTime TIMESTAMP = LocalDateTime.of(2020, 1, 1, 0, 0);
 
@@ -153,14 +122,14 @@ class GeometryHandlerTest {
       Arrays.asList(new Member(2l, MemberType.WAY, "outer"),
           new Member(4l, MemberType.WAY, "inner"), new Member(5l, MemberType.WAY, "inner")));
 
-  static final OsmReaderContext CONTEXT =
-      new OsmReaderContext(GEOMETRY_FACTORY, COORDINATE_CACHE, REFERENCE_CACHE);
+  static final NodeGeometryMapper NODE_MAPPER =
+      new NodeGeometryMapper(COORDINATE_CACHE, REFERENCE_CACHE);
 
-  static final NodeGeometryMapper NODE_MAPPER = new NodeGeometryMapper(CONTEXT);
+  static final WayGeometryMapper WAY_MAPPER =
+      new WayGeometryMapper(COORDINATE_CACHE, REFERENCE_CACHE);
 
-  static final WayGeometryMapper WAY_MAPPER = new WayGeometryMapper(CONTEXT);
-
-  static final RelationGeometryMapper RELATION_MAPPER = new RelationGeometryMapper(CONTEXT);
+  static final RelationGeometryMapper RELATION_MAPPER =
+      new RelationGeometryMapper(COORDINATE_CACHE, REFERENCE_CACHE);
 
   @Test
   void handleNode() {

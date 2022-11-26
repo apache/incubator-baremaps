@@ -33,9 +33,7 @@ public record Node(long id, Info info, Map<String, String> tags, double lon, dou
     this(id, info, tags, lon, lat, null);
   }
 
-  /**
-   * {@inheritdoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Node withGeometry(Geometry geometry) {
     return new Node(id, info, tags, lon, lat, geometry);

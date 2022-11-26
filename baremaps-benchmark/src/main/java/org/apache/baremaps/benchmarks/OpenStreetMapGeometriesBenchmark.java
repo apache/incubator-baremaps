@@ -86,7 +86,7 @@ public class OpenStreetMapGeometriesBenchmark {
     AtomicLong relations = new AtomicLong(0);
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
       new PbfEntityReader(
-          new PbfBlockReader().geometries(true).coordinates(coordinates).references(references)
+          new PbfBlockReader().geometries(true).coordinateMap(coordinates).referenceMap(references)
               .projection(4326))
                   .stream(inputStream).forEach(entity -> {
                     if (entity instanceof Node) {

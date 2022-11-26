@@ -20,13 +20,11 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.openstreetmap.OsmReader;
-import org.apache.baremaps.openstreetmap.OsmReaderContext;
 import org.apache.baremaps.openstreetmap.function.*;
-import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
 import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.stream.StreamUtils;
+import org.apache.baremaps.utils.ProjectionTransformer;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 
 /** A utility class for reading an OpenStreetMap pbf file. */
 public class PbfBlockReader implements OsmReader<Block> {
@@ -37,9 +35,9 @@ public class PbfBlockReader implements OsmReader<Block> {
 
   private int srid = 4326;
 
-  private LongDataMap<Coordinate> coordinates;
+  private LongDataMap<Coordinate> coordinateMap;
 
-  private LongDataMap<List<Long>> references;
+  private LongDataMap<List<Long>> referenceMap;
 
   /**
    * Gets the number of blobs buffered by the parser to parallelize deserialization.
@@ -106,18 +104,18 @@ public class PbfBlockReader implements OsmReader<Block> {
    *
    * @return the map of coordinates
    */
-  public LongDataMap<Coordinate> coordinates() {
-    return coordinates;
+  public LongDataMap<Coordinate> coordinateMap() {
+    return coordinateMap;
   }
 
   /**
    * Sets the map used to store coordinates for generating geometries.
    *
-   * @param coordinates the map of coordinates
+   * @param coordinateMap the map of coordinates
    * @return the parser
    */
-  public PbfBlockReader coordinates(LongDataMap<Coordinate> coordinates) {
-    this.coordinates = coordinates;
+  public PbfBlockReader coordinateMap(LongDataMap<Coordinate> coordinateMap) {
+    this.coordinateMap = coordinateMap;
     return this;
   }
 
@@ -126,18 +124,18 @@ public class PbfBlockReader implements OsmReader<Block> {
    *
    * @return the map of references
    */
-  public LongDataMap<List<Long>> references() {
-    return references;
+  public LongDataMap<List<Long>> referenceMap() {
+    return referenceMap;
   }
 
   /**
    * Sets the map used to store references for generating geometries.
    *
-   * @param references the map of references
+   * @param referenceMap the map of references
    * @return the parser
    */
-  public PbfBlockReader references(LongDataMap<List<Long>> references) {
-    this.references = references;
+  public PbfBlockReader referenceMap(LongDataMap<List<Long>> referenceMap) {
+    this.referenceMap = referenceMap;
     return this;
   }
 
@@ -155,11 +153,10 @@ public class PbfBlockReader implements OsmReader<Block> {
             Runtime.getRuntime().availableProcessors());
 
     if (geometry) {
-      var context = new OsmReaderContext(new GeometryFactory(), coordinates, references);
-
-      Function<Node, Node> nodeMapper = new NodeGeometryMapper(context);
-      Function<Way, Way> wayMapper = new WayGeometryMapper(context);
-      Function<Relation, Relation> relationMapper = new RelationGeometryMapper(context);
+      Function<Node, Node> nodeMapper = new NodeGeometryMapper(coordinateMap, referenceMap);
+      Function<Way, Way> wayMapper = new WayGeometryMapper(coordinateMap, referenceMap);
+      Function<Relation, Relation> relationMapper =
+          new RelationGeometryMapper(coordinateMap, referenceMap);
 
       if (srid != 4326) {
         var projectionTransformer = new ProjectionTransformer(4326, srid);

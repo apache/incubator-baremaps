@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.openstreetmap.store;
+package org.apache.baremaps.openstreetmap.function;
 
 
 
@@ -22,7 +22,7 @@ import org.apache.baremaps.openstreetmap.model.DataBlock;
 import org.apache.baremaps.stream.StreamException;
 import org.locationtech.jts.geom.Coordinate;
 
-/** A consumer that stores osm nodes and ways in the provided caches. */
+/** A function that stores osm nodes and ways in the provided caches. */
 public class CacheMapper implements Function<Block, Block> {
 
   private final LongDataMap<Coordinate> coordinates;

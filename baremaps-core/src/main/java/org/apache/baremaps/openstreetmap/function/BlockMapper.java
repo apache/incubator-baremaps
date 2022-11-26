@@ -6,11 +6,13 @@ import org.apache.baremaps.openstreetmap.model.HeaderBlock;
 
 import java.util.function.Function;
 
+/** A function that transforms a block. */
 public record BlockMapper(
   Function<HeaderBlock, HeaderBlock> headerBlockMapper,
   Function<DataBlock, DataBlock> dataBlockMapper
 ) implements Function<Block, Block> {
 
+  /** {@inheritDoc} */
   @Override
   public Block apply(Block block) {
     if (block instanceof HeaderBlock headerBlock) {

@@ -33,9 +33,7 @@ public record Way(long id, Info info, Map<String, String> tags, List<Long> nodes
     this(id, info, tags, nodes, null);
   }
 
-  /**
-   * {@inheritdoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Way withGeometry(Geometry geometry) {
     return new Way(id, info, tags, nodes, geometry);

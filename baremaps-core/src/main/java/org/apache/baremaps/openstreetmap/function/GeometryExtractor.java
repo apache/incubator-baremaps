@@ -23,6 +23,7 @@ import org.locationtech.jts.geom.Geometry;
 /** A function that maps an {@code Entity} to its {@code Geometry}. */
 public class GeometryExtractor implements Function<Entity, Optional<Geometry>> {
 
+  /** {@inheritDoc} */
   @Override
   public Optional<Geometry> apply(Entity entity) {
     if (entity instanceof Node node) {

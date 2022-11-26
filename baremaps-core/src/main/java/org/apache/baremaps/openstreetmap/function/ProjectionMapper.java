@@ -15,18 +15,25 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 import java.util.function.Function;
-import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
 import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.openstreetmap.model.Entity;
+import org.apache.baremaps.utils.ProjectionTransformer;
 
+/** A function that changes the projection of the geometry of an entity. */
 public class ProjectionMapper<T extends Entity> implements Function<T, T> {
 
   private final ProjectionTransformer projectionTransformer;
 
+  /**
+   * Constructs a function that changes the projection of the geometry of an entity.
+   *
+   * @param projectionTransformer The projection transformer.
+   */
   public ProjectionMapper(ProjectionTransformer projectionTransformer) {
     this.projectionTransformer = projectionTransformer;
   }
 
+  /** {@inheritDoc} */
   @Override
   public T apply(T entity) {
     if (entity instanceof Element element && element.geometry() != null) {

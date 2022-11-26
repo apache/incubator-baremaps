@@ -18,7 +18,7 @@ import java.util.function.Function;
 import org.apache.baremaps.openstreetmap.model.Change;
 import org.apache.baremaps.openstreetmap.model.Entity;
 
-/** Represents an operation on the entities of changes of different types. */
+/** A function that transforms all the entities of a change. */
 public class ChangeEntitiesMapper implements Function<Change, Change> {
 
   private final Function<Entity, Entity> mapper;
@@ -33,6 +33,7 @@ public class ChangeEntitiesMapper implements Function<Change, Change> {
     this.mapper = mapper;
   }
 
+  /** {@inheritDoc} */
   @Override
   public Change apply(Change change) {
     return new Change(change.type(), change.entities().stream().map(mapper).toList());

@@ -25,9 +25,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
-import org.apache.baremaps.openstreetmap.OsmReaderContext;
 import org.apache.baremaps.openstreetmap.function.*;
-import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
 import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
@@ -35,25 +33,25 @@ import org.apache.baremaps.openstreetmap.model.State;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.apache.baremaps.openstreetmap.state.StateReader;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
+import org.apache.baremaps.utils.ProjectionTransformer;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 
 public class UpdateService implements Callable<Void> {
 
-  private final LongDataMap<Coordinate> coordinates;
-  private final LongDataMap<List<Long>> references;
+  private final LongDataMap<Coordinate> coordinateMap;
+  private final LongDataMap<List<Long>> referenceMap;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
   private final Repository<Long, Relation> relationRepository;
   private final int srid;
 
-  public UpdateService(LongDataMap<Coordinate> coordinates, LongDataMap<List<Long>> references,
+  public UpdateService(LongDataMap<Coordinate> coordinateMap, LongDataMap<List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository,
       int srid) {
-    this.coordinates = coordinates;
-    this.references = references;
+    this.coordinateMap = coordinateMap;
+    this.referenceMap = referenceMap;
     this.headerRepository = headerRepository;
     this.nodeRepository = nodeRepository;
     this.wayRepository = wayRepository;
@@ -68,8 +66,7 @@ public class UpdateService implements Callable<Void> {
     var sequenceNumber = header.replicationSequenceNumber() + 1;
 
     var elementMapper =
-        new EntityGeometryMapper(
-            new OsmReaderContext(new GeometryFactory(), coordinates, references));
+        new EntityGeometryMapper(coordinateMap, referenceMap);
     var projectionMapper = new ProjectionMapper<>(new ProjectionTransformer(4326, srid));
     var prepareGeometries = new ChangeEntitiesMapper(elementMapper.andThen(projectionMapper));
     var saveChange = new SaveChangeConsumer(nodeRepository, wayRepository, relationRepository);

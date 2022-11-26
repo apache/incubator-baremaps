@@ -7,12 +7,14 @@ import org.apache.baremaps.openstreetmap.model.Way;
 
 import java.util.function.Function;
 
+/** A function that transforms a data block. */
 public record DataBlockMapper(
   Function<Node, Node> nodeMapper,
   Function<Way, Way> wayMapper,
   Function<Relation, Relation> relationMapper
 ) implements Function<DataBlock, DataBlock> {
 
+  /** {@inheritDoc} */
   @Override
   public DataBlock apply(DataBlock dataBlock) {
     var denseNodes = dataBlock.denseNodes().stream().map(nodeMapper).toList();

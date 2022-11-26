@@ -56,7 +56,7 @@ permits Node, Way, Relation
   Geometry geometry();
 
   /**
-   * Sets the geometry.
+   * Returns a new element with the provided the geometry.
    *
    * @param geometry the geometry
    */

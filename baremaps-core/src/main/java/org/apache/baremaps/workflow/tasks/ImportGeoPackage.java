@@ -12,10 +12,10 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
 import org.apache.baremaps.storage.FeatureProjectionTransform;
 import org.apache.baremaps.storage.geopackage.GeoPackageDatabase;
 import org.apache.baremaps.storage.postgres.PostgresDatabase;
+import org.apache.baremaps.utils.ProjectionTransformer;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;

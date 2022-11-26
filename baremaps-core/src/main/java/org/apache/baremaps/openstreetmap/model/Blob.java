@@ -48,9 +48,7 @@ public record Blob(BlobHeader header, byte[] rawData, int size) {
     }
   }
 
-/**
- * {@inheritdoc}
- */
+  /** {@inheritDoc} */
   @Override
   public boolean equals(Object o) {
     if (this == o)
@@ -64,9 +62,7 @@ public record Blob(BlobHeader header, byte[] rawData, int size) {
     return Arrays.equals(rawData, blob.rawData);
   }
 
-  /**
-   * {@inheritdoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public int hashCode() {
     int result = header.hashCode();
@@ -75,6 +71,7 @@ public record Blob(BlobHeader header, byte[] rawData, int size) {
     return result;
   }
 
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return new StringJoiner(", ", Blob.class.getSimpleName() + "[", "]")

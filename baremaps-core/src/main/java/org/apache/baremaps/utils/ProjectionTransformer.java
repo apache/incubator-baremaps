@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.openstreetmap.geometry;
+package org.apache.baremaps.utils;
 
 
 

@@ -14,26 +14,41 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 
+import java.util.List;
 import java.util.function.Function;
-import org.apache.baremaps.openstreetmap.OsmReaderContext;
+import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.openstreetmap.model.*;
+import org.locationtech.jts.geom.Coordinate;
 
+/** A function that adds geometry to an entity. */
 public class EntityGeometryMapper<T extends Entity> implements Function<T, T> {
 
-  private final OsmReaderContext context;
+  private final NodeGeometryMapper nodeGeometryMapper;
+  private final WayGeometryMapper wayGeometryMapper;
+  private final RelationGeometryMapper relationGeometryMapper;
 
-  public EntityGeometryMapper(OsmReaderContext context) {
-    this.context = context;
+  /**
+   * Constructs a function that adds geometry to an entity.
+   *
+   * @param coordinateMap The map of coordinates
+   * @param referenceMap The map of references
+   */
+  public EntityGeometryMapper(LongDataMap<Coordinate> coordinateMap,
+      LongDataMap<List<Long>> referenceMap) {
+    this.nodeGeometryMapper = new NodeGeometryMapper(coordinateMap, referenceMap);
+    this.wayGeometryMapper = new WayGeometryMapper(coordinateMap, referenceMap);
+    this.relationGeometryMapper = new RelationGeometryMapper(coordinateMap, referenceMap);
   }
 
+  /** {@inheritDoc} */
   @Override
   public T apply(T entity) {
     if (entity instanceof Node node) {
-      return (T) new NodeGeometryMapper(context).apply(node);
+      return (T) nodeGeometryMapper.apply(node);
     } else if (entity instanceof Way way) {
-      return (T) new WayGeometryMapper(context).apply(way);
+      return (T) wayGeometryMapper.apply(way);
     } else if (entity instanceof Relation) {
-      return (T) new RelationGeometryMapper(context).apply((Relation) entity);
+      return (T) relationGeometryMapper.apply((Relation) entity);
     } else {
       return entity;
     }

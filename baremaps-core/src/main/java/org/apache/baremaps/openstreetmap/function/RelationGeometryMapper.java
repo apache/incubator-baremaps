@@ -1,6 +1,22 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package org.apache.baremaps.openstreetmap.function;
 
-import org.apache.baremaps.openstreetmap.OsmReaderContext;
+import static org.apache.baremaps.utils.GeometryUtils.GEOMETRY_FACTORY;
+
+import java.util.*;
+import java.util.function.Function;
+import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.openstreetmap.model.Member;
 import org.apache.baremaps.openstreetmap.model.MemberType;
 import org.apache.baremaps.openstreetmap.model.Relation;
@@ -14,13 +30,10 @@ import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.function.Function;
-
 /**
  * A function that adds a geometry to a relation.
  */
-public record RelationGeometryMapper(OsmReaderContext context) implements Function<Relation, Relation> {
+public record RelationGeometryMapper(LongDataMap<Coordinate> coordinateMap, LongDataMap<List<Long>> referenceMap) implements Function<Relation, Relation> {
 
   private static final Logger logger = LoggerFactory.getLogger(RelationGeometryMapper.class);
 
@@ -55,7 +68,7 @@ public record RelationGeometryMapper(OsmReaderContext context) implements Functi
         return relation.withGeometry(polygon);
       } else if (polygons.size() > 1) {
         MultiPolygon multiPolygon =
-          context.geometryFactory().createMultiPolygon(polygons.toArray(new Polygon[0]));
+          GEOMETRY_FACTORY.createMultiPolygon(polygons.toArray(new Polygon[0]));
         return relation.withGeometry(multiPolygon);
       }
     } catch (Exception e) {
@@ -80,7 +93,7 @@ public record RelationGeometryMapper(OsmReaderContext context) implements Functi
           it.remove();
         }
       }
-      Polygon polygon = context.geometryFactory().createPolygon(shell, holes.toArray(new LinearRing[0]));
+      Polygon polygon = GEOMETRY_FACTORY.createPolygon(shell, holes.toArray(new LinearRing[0]));
       polygons.add(polygon);
     }
     return polygons;
@@ -115,7 +128,7 @@ public record RelationGeometryMapper(OsmReaderContext context) implements Functi
       .filter(m -> role.equals(m.role())).forEach(member -> {
         LineString line = createLine(member);
         if (line.isClosed()) {
-          Polygon polygon = context.geometryFactory().createPolygon(line.getCoordinates());
+          Polygon polygon = GEOMETRY_FACTORY.createPolygon(line.getCoordinates());
           polygons.add(polygon);
         } else {
           lineMerger.add(line);
@@ -124,7 +137,7 @@ public record RelationGeometryMapper(OsmReaderContext context) implements Functi
     lineMerger.getMergedLineStrings().stream().forEach(geometry -> {
       LineString line = (LineString) geometry;
       if (line.isClosed()) {
-        Polygon polygon = context.geometryFactory().createPolygon(line.getCoordinates());
+        Polygon polygon = GEOMETRY_FACTORY.createPolygon(line.getCoordinates());
         polygons.add(polygon);
       }
     });
@@ -133,10 +146,10 @@ public record RelationGeometryMapper(OsmReaderContext context) implements Functi
 
   private LineString createLine(Member member) {
     try {
-      List<Long> refs = context.referenceMap().get(member.ref());
-      List<Coordinate> coords = refs.stream().map(context.coordinateMap()::get).toList();
+      List<Long> refs = referenceMap.get(member.ref());
+      List<Coordinate> coords = refs.stream().map(coordinateMap::get).toList();
       Coordinate[] array = coords.toArray(new Coordinate[coords.size()]);
-      return context.geometryFactory().createLineString(array);
+      return GEOMETRY_FACTORY.createLineString(array);
     } catch (Exception e) {
       throw new StreamException(e);
     }

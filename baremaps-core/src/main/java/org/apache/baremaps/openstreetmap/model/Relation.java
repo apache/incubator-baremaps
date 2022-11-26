@@ -34,9 +34,7 @@ public record Relation(long id, Info info, Map<String, String> tags, List<Member
     this(id, info, tags, members, null);
   }
 
-  /**
-   * {@inheritdoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public Relation withGeometry(Geometry geometry) {
     return new Relation(id, info, tags, members, geometry);
