@@ -18,7 +18,7 @@ import org.apache.baremaps.collection.type.LonLatDataType;
 import org.apache.baremaps.collection.type.LongDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
 import org.apache.baremaps.collection.type.PairDataType;
-import org.apache.baremaps.collection.utils.FileUtils;
+import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.database.ImportService;
 import org.apache.baremaps.database.repository.*;
 import org.apache.baremaps.workflow.Task;

@@ -24,7 +24,7 @@ import org.apache.baremaps.collection.memory.OffHeapMemory;
 import org.apache.baremaps.collection.memory.OnDiskDirectoryMemory;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
 import org.apache.baremaps.collection.type.LongDataType;
-import org.apache.baremaps.collection.utils.FileUtils;
+import org.apache.baremaps.utils.FileUtils;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;

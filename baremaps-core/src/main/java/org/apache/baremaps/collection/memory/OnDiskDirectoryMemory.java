@@ -21,8 +21,8 @@ import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import org.apache.baremaps.collection.StoreException;
-import org.apache.baremaps.collection.utils.FileUtils;
-import org.apache.baremaps.collection.utils.MappedByteBufferUtils;
+import org.apache.baremaps.utils.FileUtils;
+import org.apache.baremaps.utils.MappedByteBufferUtils;
 
 /** A memory that stores segments on-disk using mapped byte buffers. */
 public class OnDiskDirectoryMemory extends Memory<MappedByteBuffer> {
