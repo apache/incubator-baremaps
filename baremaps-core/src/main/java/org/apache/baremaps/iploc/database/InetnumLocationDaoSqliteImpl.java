@@ -43,7 +43,7 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
 
   private static final String SELECT_ALL_BY_IP_SQL = "SELECT id, address, "
       + "ip_start, ip_end, latitude, longitude, network, "
-      + "country FROM inetnum_locations WHERE ip_start <= ? AND ip_end >= ? ORDER BY ip_start DESC;";
+      + "country FROM inetnum_locations WHERE ip_start <= ? AND ip_end >= ? ORDER BY ip_start DESC, ip_end ASC;";
 
   private static final Logger logger = LoggerFactory.getLogger(InetnumLocationDaoSqliteImpl.class);
 
