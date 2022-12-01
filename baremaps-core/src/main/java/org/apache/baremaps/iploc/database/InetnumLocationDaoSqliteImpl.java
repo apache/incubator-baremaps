@@ -36,15 +36,19 @@ import org.sqlite.SQLiteDataSource;
 public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
 
   private static final String INSERT_SQL =
-      "INSERT INTO inetnum_locations(address, ip_start, ip_end, latitude, longitude, network, country) VALUES(?,?,?,?,?,?,?)";
+      """
+          INSERT INTO inetnum_locations(address, ip_start, ip_end, latitude, longitude, network, country)
+          VALUES(?,?,?,?,?,?,?)""";
 
-  private static final String SELECT_ALL_SQL =
-      "SELECT " + "id, \n" + "address, \n" + "ip_start, \n" + "ip_end, \n" + "latitude, \n"
-          + "longitude, \n" + "network, \n" + "country \n" + " FROM inetnum_locations;";
+  private static final String SELECT_ALL_SQL = """
+      SELECT id, address, ip_start, ip_end, latitude, longitude, network, country
+      FROM inetnum_locations;""";
 
-  private static final String SELECT_ALL_BY_IP_SQL = "SELECT " + "id, \n" + "address, \n"
-      + "ip_start, \n" + "ip_end, \n" + "latitude, \n" + "longitude, \n" + "network, \n"
-      + "country FROM inetnum_locations WHERE ip_start <= ? AND ip_end >= ?;";
+  private static final String SELECT_ALL_BY_IP_SQL = """
+      SELECT id, address, ip_start, ip_end, latitude, longitude, network, country
+      FROM inetnum_locations
+      WHERE ip_start <= ? AND ip_end >= ?
+      ORDER BY ip_start DESC, ip_end ASC;""";
 
   private static final Logger logger = LoggerFactory.getLogger(InetnumLocationDaoSqliteImpl.class);
 
