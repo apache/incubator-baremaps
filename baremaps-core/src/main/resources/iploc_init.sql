@@ -9,5 +9,4 @@ CREATE TABLE IF NOT EXISTS inetnum_locations (
     network text,
     country text
 );
-CREATE INDEX ip_start_index ON inetnum_locations (ip_start);
-CREATE INDEX ip_end_index ON inetnum_locations (ip_end);
+CREATE INDEX inetnum_locations_ips ON inetnum_locations (ip_start,ip_end);
