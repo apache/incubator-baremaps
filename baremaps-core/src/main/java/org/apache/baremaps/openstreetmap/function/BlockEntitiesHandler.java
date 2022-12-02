@@ -22,7 +22,7 @@ import org.apache.baremaps.openstreetmap.model.HeaderBlock;
 import org.apache.baremaps.stream.StreamException;
 
 /** Represents an operation on the entities of blocks of different types. */
-public class BlockEntitiesConsumer implements Consumer<Block> {
+public class BlockEntitiesHandler implements Consumer<Block> {
 
   private final Consumer<Entity> consumer;
 
@@ -31,7 +31,7 @@ public class BlockEntitiesConsumer implements Consumer<Block> {
    *
    * @param consumer the entity consumer
    */
-  public BlockEntitiesConsumer(Consumer<Entity> consumer) {
+  public BlockEntitiesHandler(Consumer<Entity> consumer) {
     this.consumer = consumer;
   }
 

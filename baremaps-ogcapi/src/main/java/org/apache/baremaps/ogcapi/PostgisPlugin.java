@@ -17,7 +17,7 @@ package org.apache.baremaps.ogcapi;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import org.apache.baremaps.openstreetmap.geometry.GeometryUtils;
+import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.argument.AbstractArgumentFactory;
 import org.jdbi.v3.core.argument.Argument;

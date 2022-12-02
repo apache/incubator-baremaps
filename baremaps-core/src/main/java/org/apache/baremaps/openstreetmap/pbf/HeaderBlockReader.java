@@ -28,7 +28,7 @@ import org.apache.baremaps.osm.binary.Osmformat.HeaderBBox;
 import org.apache.baremaps.stream.StreamException;
 
 /** A reader that extracts header blocks and entities from OpenStreetMap header blobs. */
-class HeaderBlockReader {
+public class HeaderBlockReader {
 
   public static final DateTimeFormatter format =
       DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");

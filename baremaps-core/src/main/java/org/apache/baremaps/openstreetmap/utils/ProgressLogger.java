@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.openstreetmap.progress;
+package org.apache.baremaps.openstreetmap.utils;
 
 
 

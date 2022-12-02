@@ -31,10 +31,10 @@ import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
 import org.apache.baremaps.database.tile.Tile;
-import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
-import org.apache.baremaps.openstreetmap.function.ExtractGeometryFunction;
-import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
+import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
+import org.apache.baremaps.openstreetmap.function.EntityToGeometryMapper;
 import org.apache.baremaps.openstreetmap.model.*;
+import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.stream.StreamException;
 import org.locationtech.jts.geom.Coordinate;
@@ -46,8 +46,8 @@ public class DiffService implements Callable<List<Tile>> {
 
   private static final Logger logger = LoggerFactory.getLogger(DiffService.class);
 
-  private final LongDataMap<Coordinate> coordinates;
-  private final LongDataMap<List<Long>> references;
+  private final LongDataMap<Coordinate> coordinateMap;
+  private final LongDataMap<List<Long>> referenceMap;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
@@ -55,12 +55,12 @@ public class DiffService implements Callable<List<Tile>> {
   private final int srid;
   private final int zoom;
 
-  public DiffService(LongDataMap<Coordinate> coordinates, LongDataMap<List<Long>> references,
+  public DiffService(LongDataMap<Coordinate> coordinateMap, LongDataMap<List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository, int srid,
       int zoom) {
-    this.coordinates = coordinates;
-    this.references = references;
+    this.coordinateMap = coordinateMap;
+    this.referenceMap = referenceMap;
     this.headerRepository = headerRepository;
     this.nodeRepository = nodeRepository;
     this.wayRepository = wayRepository;
@@ -134,8 +134,8 @@ public class DiffService implements Callable<List<Tile>> {
 
   private Stream<Geometry> geometriesForNextVersion(Change change) {
     return change.getEntities().stream()
-        .map(consumeThenReturn(new CreateGeometryConsumer(coordinates, references)))
-        .flatMap(new ExtractGeometryFunction().andThen(Optional::stream));
+        .map(consumeThenReturn(new EntityGeometryBuilder(coordinateMap, referenceMap)))
+        .flatMap(new EntityToGeometryMapper().andThen(Optional::stream));
   }
 
   public URL resolve(String replicationUrl, Long sequenceNumber, String extension)

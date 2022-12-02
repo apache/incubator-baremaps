@@ -12,27 +12,15 @@
 
 package org.apache.baremaps.openstreetmap.function;
 
+import static org.apache.baremaps.openstreetmap.utils.GeometryUtils.GEOMETRY_FACTORY_WGS84;
 
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.openstreetmap.model.*;
+import org.apache.baremaps.openstreetmap.model.Member;
+import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.stream.StreamException;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.geom.util.PolygonExtracter;
@@ -41,68 +29,31 @@ import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** A consumer that creates and sets the geometry of OpenStreetMap entities via side effects. */
-public class CreateGeometryConsumer implements Consumer<Entity> {
+/**
+ * A consumer that builds and sets a relation geometry via side effects.
+ */
+public class RelationGeometryBuilder implements Consumer<Relation> {
 
-  private static final Logger logger = LoggerFactory.getLogger(CreateGeometryConsumer.class);
+  private static final Logger logger = LoggerFactory.getLogger(RelationGeometryBuilder.class);
 
-  protected final GeometryFactory geometryFactory;
-  private final LongDataMap<Coordinate> coordinates;
-  private final LongDataMap<List<Long>> references;
+  private final LongDataMap<Coordinate> coordinateMap;
+  private final LongDataMap<List<Long>> referenceMap;
 
   /**
-   * Constructs a consumer that uses the provided caches to create and set geometries.
+   * Constructs a relation geometry builder.
    *
-   * @param coordinates the coordinate cache
-   * @param references the reference cache
+   * @param coordinateMap the coordinates map
+   * @param referenceMap the references map
    */
-  public CreateGeometryConsumer(LongDataMap<Coordinate> coordinates,
-      LongDataMap<List<Long>> references) {
-    this.geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-    this.coordinates = coordinates;
-    this.references = references;
+  public RelationGeometryBuilder(LongDataMap<Coordinate> coordinateMap,
+      LongDataMap<List<Long>> referenceMap) {
+    this.coordinateMap = coordinateMap;
+    this.referenceMap = referenceMap;
   }
 
+  /** {@inheritDoc} */
   @Override
-  public void accept(Entity entity) {
-    if (entity instanceof Node node) {
-      match(node);
-    } else if (entity instanceof Way way) {
-      match(way);
-    } else if (entity instanceof Relation relation) {
-      match(relation);
-    } else {
-      // do nothing
-    }
-  }
-
-  /** {@inheritDoc} */
-  public void match(Node node) {
-    Point point = geometryFactory.createPoint(new Coordinate(node.getLon(), node.getLat()));
-    node.setGeometry(point);
-  }
-
-  /** {@inheritDoc} */
-  public void match(Way way) {
-    try {
-      List<Coordinate> list = way.getNodes().stream().map(coordinates::get).toList();
-      Coordinate[] array = list.toArray(new Coordinate[list.size()]);
-      LineString line = geometryFactory.createLineString(array);
-      if (!line.isEmpty()) {
-        if (!line.isClosed()) {
-          way.setGeometry(line);
-        } else {
-          Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
-          way.setGeometry(polygon);
-        }
-      }
-    } catch (Exception e) {
-      logger.warn("Unable to build the geometry for way #" + way.getId(), e);
-    }
-  }
-
-  /** {@inheritDoc} */
-  public void match(Relation relation) {
+  public void accept(Relation relation) {
     try {
       Map<String, String> tags = relation.getTags();
 
@@ -132,7 +83,7 @@ public class CreateGeometryConsumer implements Consumer<Entity> {
         relation.setGeometry(polygon);
       } else if (polygons.size() > 1) {
         MultiPolygon multiPolygon =
-            geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[0]));
+            GEOMETRY_FACTORY_WGS84.createMultiPolygon(polygons.toArray(new Polygon[0]));
         relation.setGeometry(multiPolygon);
       }
     } catch (Exception e) {
@@ -155,7 +106,8 @@ public class CreateGeometryConsumer implements Consumer<Entity> {
           it.remove();
         }
       }
-      Polygon polygon = geometryFactory.createPolygon(shell, holes.toArray(new LinearRing[0]));
+      Polygon polygon =
+          GEOMETRY_FACTORY_WGS84.createPolygon(shell, holes.toArray(new LinearRing[0]));
       polygons.add(polygon);
     }
     return polygons;
@@ -190,7 +142,7 @@ public class CreateGeometryConsumer implements Consumer<Entity> {
         .filter(m -> role.equals(m.getRole())).forEach(member -> {
           LineString line = createLine(member);
           if (line.isClosed()) {
-            Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
+            Polygon polygon = GEOMETRY_FACTORY_WGS84.createPolygon(line.getCoordinates());
             polygons.add(polygon);
           } else {
             lineMerger.add(line);
@@ -199,7 +151,7 @@ public class CreateGeometryConsumer implements Consumer<Entity> {
     lineMerger.getMergedLineStrings().stream().forEach(geometry -> {
       LineString line = (LineString) geometry;
       if (line.isClosed()) {
-        Polygon polygon = geometryFactory.createPolygon(line.getCoordinates());
+        Polygon polygon = GEOMETRY_FACTORY_WGS84.createPolygon(line.getCoordinates());
         polygons.add(polygon);
       }
     });
@@ -208,14 +160,12 @@ public class CreateGeometryConsumer implements Consumer<Entity> {
 
   private LineString createLine(Member member) {
     try {
-      List<Long> refs = this.references.get(member.getRef());
-      List<Coordinate> coords = refs.stream().map(coordinates::get).toList();
+      List<Long> refs = referenceMap.get(member.getRef());
+      List<Coordinate> coords = refs.stream().map(coordinateMap::get).toList();
       Coordinate[] array = coords.toArray(new Coordinate[coords.size()]);
-      return geometryFactory.createLineString(array);
+      return GEOMETRY_FACTORY_WGS84.createLineString(array);
     } catch (Exception e) {
       throw new StreamException(e);
     }
   }
-
-
 }

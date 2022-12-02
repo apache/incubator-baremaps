@@ -12,8 +12,8 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
-import org.apache.baremaps.storage.FeatureProjectionTransform;
+import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
+import org.apache.baremaps.storage.FeatureSetProjectionTransform;
 import org.apache.baremaps.storage.geopackage.GeoPackageDatabase;
 import org.apache.baremaps.storage.postgres.PostgresDatabase;
 import org.apache.baremaps.workflow.Task;
@@ -40,7 +40,7 @@ public record ImportGeoPackage(String file, String database, Integer sourceSRID,
       var postgresDatabase = new PostgresDatabase(dataSource);
       for (var resource : geoPackageStore.components()) {
         if (resource instanceof FeatureSet featureSet) {
-          postgresDatabase.add(new FeatureProjectionTransform(
+          postgresDatabase.add(new FeatureSetProjectionTransform(
             featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
         }
       }

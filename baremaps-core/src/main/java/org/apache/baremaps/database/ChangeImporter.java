@@ -24,8 +24,8 @@ import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.apache.baremaps.stream.StreamException;
 
-/** A consumer for saving OpenStreetMap changes in a database. */
-public class SaveChangeConsumer implements Consumer<Change> {
+/** A consumer for importing OpenStreetMap changes in a database. */
+public class ChangeImporter implements Consumer<Change> {
 
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
@@ -38,8 +38,8 @@ public class SaveChangeConsumer implements Consumer<Change> {
    * @param wayRepository the way table
    * @param relationRepository the relation table
    */
-  public SaveChangeConsumer(Repository<Long, Node> nodeRepository,
-      Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository) {
+  public ChangeImporter(Repository<Long, Node> nodeRepository, Repository<Long, Way> wayRepository,
+      Repository<Long, Relation> relationRepository) {
     this.nodeRepository = nodeRepository;
     this.wayRepository = wayRepository;
     this.relationRepository = relationRepository;

@@ -15,12 +15,12 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 import java.util.function.Consumer;
-import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
 import org.apache.baremaps.openstreetmap.model.*;
+import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
 import org.locationtech.jts.geom.Geometry;
 
 /** Changes the projection of the geometry of an entity via side-effects. */
-public class ReprojectEntityConsumer implements Consumer<Entity> {
+public class EntityProjectionTransformer implements Consumer<Entity> {
 
   private final ProjectionTransformer projectionTransformer;
 
@@ -30,7 +30,7 @@ public class ReprojectEntityConsumer implements Consumer<Entity> {
    * @param inputSRID the input SRID
    * @param outputSRID the output SRID
    */
-  public ReprojectEntityConsumer(int inputSRID, int outputSRID) {
+  public EntityProjectionTransformer(int inputSRID, int outputSRID) {
     this.projectionTransformer = new ProjectionTransformer(inputSRID, outputSRID);
   }
 

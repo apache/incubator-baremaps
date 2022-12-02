@@ -19,8 +19,8 @@ import org.apache.baremaps.database.repository.Repository;
 import org.apache.baremaps.openstreetmap.model.*;
 import org.apache.baremaps.stream.StreamException;
 
-/** A consumer for saving OpenStreetMap blocks in a database. */
-public class SaveBlockConsumer implements Consumer<Block> {
+/** A consumer for importing OpenStreetMap blocks in a database. */
+public class BlockImporter implements Consumer<Block> {
 
   private final Repository<Long, Header> headerRepository;
   private final Repository<Long, Node> nodeRepository;
@@ -35,7 +35,7 @@ public class SaveBlockConsumer implements Consumer<Block> {
    * @param wayRepository the way table
    * @param relationRepository the relation table
    */
-  public SaveBlockConsumer(Repository<Long, Header> headerRepository,
+  public BlockImporter(Repository<Long, Header> headerRepository,
       Repository<Long, Node> nodeRepository, Repository<Long, Way> wayRepository,
       Repository<Long, Relation> relationRepository) {
     this.headerRepository = headerRepository;

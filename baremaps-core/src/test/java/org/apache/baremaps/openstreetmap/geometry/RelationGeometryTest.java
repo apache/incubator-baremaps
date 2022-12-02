@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
+import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
@@ -37,15 +37,15 @@ class RelationGeometryTest {
   Geometry handleRelation(String file) throws IOException {
     InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
     List<Entity> entities = new XmlEntityReader().stream(input).toList();
-    LongDataMap<Coordinate> coordinates = new MockLongDataMap<>(
+    LongDataMap<Coordinate> coordinateMap = new MockLongDataMap<>(
         entities.stream().filter(e -> e instanceof Node).map(e -> (Node) e).collect(
             Collectors.toMap(n -> n.getId(), n -> new Coordinate(n.getLon(), n.getLat()))));
-    LongDataMap<List<Long>> references =
+    LongDataMap<List<Long>> referenceMap =
         new MockLongDataMap<>(entities.stream().filter(e -> e instanceof Way).map(e -> (Way) e)
             .collect(Collectors.toMap(w -> w.getId(), w -> w.getNodes())));
     Relation relation = entities.stream().filter(e -> e instanceof Relation).map(e -> (Relation) e)
         .findFirst().get();
-    new CreateGeometryConsumer(coordinates, references).match(relation);
+    new EntityGeometryBuilder(coordinateMap, referenceMap).match(relation);
     return relation.getGeometry();
   }
 

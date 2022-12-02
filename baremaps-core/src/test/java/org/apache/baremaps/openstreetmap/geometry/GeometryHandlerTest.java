@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
+import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
 import org.apache.baremaps.openstreetmap.model.Info;
 import org.apache.baremaps.openstreetmap.model.Member;
 import org.apache.baremaps.openstreetmap.model.Member.MemberType;
@@ -153,8 +153,8 @@ class GeometryHandlerTest {
       Arrays.asList(new Member(2l, MemberType.WAY, "outer"),
           new Member(4l, MemberType.WAY, "inner"), new Member(5l, MemberType.WAY, "inner")));
 
-  static final CreateGeometryConsumer GEOMETRY_BUILDER =
-      new CreateGeometryConsumer(COORDINATE_CACHE, REFERENCE_CACHE);
+  static final EntityGeometryBuilder GEOMETRY_BUILDER =
+      new EntityGeometryBuilder(COORDINATE_CACHE, REFERENCE_CACHE);
 
   @Test
   void handleNode() {

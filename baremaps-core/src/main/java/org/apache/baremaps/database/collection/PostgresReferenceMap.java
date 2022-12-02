@@ -75,7 +75,7 @@ public class PostgresReferenceMap implements LongDataMap<List<Long>> {
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
       try (ResultSet result = statement.executeQuery()) {
-        Map<Long, List<Long>> references = new HashMap<>();
+        Map<Long, List<Long>> referenceMap = new HashMap<>();
         while (result.next()) {
           List<Long> nodes = new ArrayList<>();
           long key = result.getLong(1);
@@ -83,9 +83,9 @@ public class PostgresReferenceMap implements LongDataMap<List<Long>> {
           if (array != null) {
             nodes = Arrays.asList((Long[]) array.getArray());
           }
-          references.put(key, nodes);
+          referenceMap.put(key, nodes);
         }
-        return keys.stream().map(references::get).toList();
+        return keys.stream().map(referenceMap::get).toList();
       }
     } catch (SQLException e) {
       throw new StoreException(e);

@@ -22,8 +22,8 @@ import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
+import org.apache.baremaps.database.BlockImporter;
 import org.apache.baremaps.database.PostgresUtils;
-import org.apache.baremaps.database.SaveBlockConsumer;
 import org.apache.baremaps.database.repository.PostgresHeaderRepository;
 import org.apache.baremaps.database.repository.PostgresNodeRepository;
 import org.apache.baremaps.database.repository.PostgresRelationRepository;
@@ -36,7 +36,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class SaveBlockConsumerTest extends PostgresContainerTest {
+class BlockImporterTest extends PostgresContainerTest {
 
   public DataSource dataSource;
   public PostgresHeaderRepository headerRepository;
@@ -62,12 +62,12 @@ class SaveBlockConsumerTest extends PostgresContainerTest {
   @Tag("integration")
   void test() throws RepositoryException, URISyntaxException, IOException {
     // Import data
-    SaveBlockConsumer dataImporter = new SaveBlockConsumer(headerRepository, nodeRepository,
-        tableRepository, relationRepository);
+    BlockImporter blockImporter =
+        new BlockImporter(headerRepository, nodeRepository, tableRepository, relationRepository);
 
     try (InputStream inputStream = Files.newInputStream(TestFiles.resolve("simple/data.osm.pbf"))) {
 
-      new PbfBlockReader().stream(inputStream).forEach(dataImporter);
+      new PbfBlockReader().stream(inputStream).forEach(blockImporter);
 
       // Check node importation
       assertNull(nodeRepository.get(0l));

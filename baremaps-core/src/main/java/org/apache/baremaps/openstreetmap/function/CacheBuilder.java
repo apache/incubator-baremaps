@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.openstreetmap.store;
+package org.apache.baremaps.openstreetmap.function;
 
 
 
@@ -22,22 +22,21 @@ import org.apache.baremaps.openstreetmap.model.DataBlock;
 import org.apache.baremaps.stream.StreamException;
 import org.locationtech.jts.geom.Coordinate;
 
-/** A consumer that stores osm nodes and ways in the provided caches. */
-public class DataStoreConsumer implements Consumer<Block> {
+/** A consumer that caches openstreetmap coordinates and references. */
+public class CacheBuilder implements Consumer<Block> {
 
-  private final LongDataMap<Coordinate> coordinates;
-  private final LongDataMap<List<Long>> references;
+  private final LongDataMap<Coordinate> coordinateMap;
+  private final LongDataMap<List<Long>> referenceMap;
 
   /**
    * Constructs a {@code CacheBlockConsumer} with the provided caches.
    *
-   * @param coordinates the map of coordinates
-   * @param references the map of references
+   * @param coordinateMap the map of coordinates
+   * @param referenceMap the map of references
    */
-  public DataStoreConsumer(LongDataMap<Coordinate> coordinates,
-      LongDataMap<List<Long>> references) {
-    this.coordinates = coordinates;
-    this.references = references;
+  public CacheBuilder(LongDataMap<Coordinate> coordinateMap, LongDataMap<List<Long>> referenceMap) {
+    this.coordinateMap = coordinateMap;
+    this.referenceMap = referenceMap;
   }
 
   /** {@inheritDoc} */
@@ -46,10 +45,10 @@ public class DataStoreConsumer implements Consumer<Block> {
     try {
       if (block instanceof DataBlock dataBlock) {
         dataBlock.getDenseNodes().stream().forEach(
-            node -> coordinates.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
+            node -> coordinateMap.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
         dataBlock.getNodes().stream().forEach(
-            node -> coordinates.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
-        dataBlock.getWays().stream().forEach(way -> references.put(way.getId(), way.getNodes()));
+            node -> coordinateMap.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
+        dataBlock.getWays().stream().forEach(way -> referenceMap.put(way.getId(), way.getNodes()));
       }
     } catch (Exception e) {
       throw new StreamException(e);

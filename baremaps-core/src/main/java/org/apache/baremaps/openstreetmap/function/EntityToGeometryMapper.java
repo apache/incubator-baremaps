@@ -21,7 +21,7 @@ import org.apache.baremaps.stream.StreamException;
 import org.locationtech.jts.geom.Geometry;
 
 /** A function that maps an {@code Entity} to its {@code Geometry}. */
-public class ExtractGeometryFunction implements Function<Entity, Optional<Geometry>> {
+public class EntityToGeometryMapper implements Function<Entity, Optional<Geometry>> {
 
   @Override
   public Optional<Geometry> apply(Entity entity) {

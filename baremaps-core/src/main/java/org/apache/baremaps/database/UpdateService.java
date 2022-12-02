@@ -27,9 +27,9 @@ import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
-import org.apache.baremaps.openstreetmap.function.ChangeEntitiesConsumer;
-import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
-import org.apache.baremaps.openstreetmap.function.ReprojectEntityConsumer;
+import org.apache.baremaps.openstreetmap.function.ChangeEntitiesHandler;
+import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
+import org.apache.baremaps.openstreetmap.function.EntityProjectionTransformer;
 import org.apache.baremaps.openstreetmap.model.Change;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Header;
@@ -43,20 +43,20 @@ import org.locationtech.jts.geom.Coordinate;
 
 public class UpdateService implements Callable<Void> {
 
-  private final LongDataMap<Coordinate> coordinates;
-  private final LongDataMap<List<Long>> references;
+  private final LongDataMap<Coordinate> coordinateMap;
+  private final LongDataMap<List<Long>> referenceMap;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
   private final Repository<Long, Relation> relationRepository;
   private final int srid;
 
-  public UpdateService(LongDataMap<Coordinate> coordinates, LongDataMap<List<Long>> references,
+  public UpdateService(LongDataMap<Coordinate> coordinateMap, LongDataMap<List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository,
       int srid) {
-    this.coordinates = coordinates;
-    this.references = references;
+    this.coordinateMap = coordinateMap;
+    this.referenceMap = referenceMap;
     this.headerRepository = headerRepository;
     this.nodeRepository = nodeRepository;
     this.wayRepository = wayRepository;
@@ -70,13 +70,13 @@ public class UpdateService implements Callable<Void> {
     String replicationUrl = header.getReplicationUrl();
     Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
 
-    Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
-    Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, srid);
+    Consumer<Entity> createGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
+    Consumer<Entity> reprojectGeometry = new EntityProjectionTransformer(4326, srid);
     Consumer<Change> prepareGeometries =
-        new ChangeEntitiesConsumer(createGeometry.andThen(reprojectGeometry));
+        new ChangeEntitiesHandler(createGeometry.andThen(reprojectGeometry));
     Function<Change, Change> prepareChange = consumeThenReturn(prepareGeometries);
     Consumer<Change> saveChange =
-        new SaveChangeConsumer(nodeRepository, wayRepository, relationRepository);
+        new ChangeImporter(nodeRepository, wayRepository, relationRepository);
 
     URL changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
     try (InputStream changeInputStream =

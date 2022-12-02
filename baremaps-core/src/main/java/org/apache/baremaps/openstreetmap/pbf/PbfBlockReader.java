@@ -16,18 +16,11 @@ import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.openstreetmap.OsmReader;
-import org.apache.baremaps.openstreetmap.function.BlockEntitiesConsumer;
-import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
-import org.apache.baremaps.openstreetmap.function.ReprojectEntityConsumer;
-import org.apache.baremaps.openstreetmap.model.Blob;
+import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Block;
-import org.apache.baremaps.openstreetmap.model.Entity;
-import org.apache.baremaps.openstreetmap.store.DataStoreConsumer;
 import org.apache.baremaps.stream.StreamUtils;
 import org.locationtech.jts.geom.Coordinate;
 
@@ -40,9 +33,9 @@ public class PbfBlockReader implements OsmReader<Block> {
 
   private int srid = 4326;
 
-  private LongDataMap<Coordinate> coordinates;
+  private LongDataMap<Coordinate> coordinateMap;
 
-  private LongDataMap<List<Long>> references;
+  private LongDataMap<List<Long>> referenceMap;
 
   /**
    * Gets the number of blobs buffered by the parser to parallelize deserialization.
@@ -109,18 +102,18 @@ public class PbfBlockReader implements OsmReader<Block> {
    *
    * @return the map of coordinates
    */
-  public LongDataMap<Coordinate> coordinates() {
-    return coordinates;
+  public LongDataMap<Coordinate> coordinateMap() {
+    return coordinateMap;
   }
 
   /**
    * Sets the map used to store coordinates for generating geometries.
    *
-   * @param coordinates the map of coordinates
+   * @param coordinateMap the map of coordinates
    * @return the parser
    */
-  public PbfBlockReader coordinates(LongDataMap<Coordinate> coordinates) {
-    this.coordinates = coordinates;
+  public PbfBlockReader coordinateMap(LongDataMap<Coordinate> coordinateMap) {
+    this.coordinateMap = coordinateMap;
     return this;
   }
 
@@ -129,18 +122,18 @@ public class PbfBlockReader implements OsmReader<Block> {
    *
    * @return the map of references
    */
-  public LongDataMap<List<Long>> references() {
-    return references;
+  public LongDataMap<List<Long>> referenceMap() {
+    return referenceMap;
   }
 
   /**
    * Sets the map used to store references for generating geometries.
    *
-   * @param references the map of references
+   * @param referenceMap the map of references
    * @return the parser
    */
-  public PbfBlockReader references(LongDataMap<List<Long>> references) {
-    this.references = references;
+  public PbfBlockReader referenceMap(LongDataMap<List<Long>> referenceMap) {
+    this.referenceMap = referenceMap;
     return this;
   }
 
@@ -151,32 +144,18 @@ public class PbfBlockReader implements OsmReader<Block> {
    * @return a stream of blocks
    */
   public Stream<Block> stream(InputStream inputStream) {
-    Stream<Block> blocks =
-        StreamUtils.bufferInSourceOrder(StreamUtils.stream(new BlobIterator(inputStream)),
-            this::read, Runtime.getRuntime().availableProcessors());
+    var blocks = StreamUtils.bufferInSourceOrder(StreamUtils.stream(new BlobIterator(inputStream)),
+        new BlobToBlockMapper(), Runtime.getRuntime().availableProcessors());
     if (geometry) {
-      Consumer<Block> cacheBlock = new DataStoreConsumer(coordinates, references);
-      Consumer<Entity> createGeometry = new CreateGeometryConsumer(coordinates, references);
-      if (srid != 4326) {
-        Consumer<Entity> reprojectGeometry = new ReprojectEntityConsumer(4326, srid);
-        createGeometry = createGeometry.andThen(reprojectGeometry);
-      }
-      Consumer<Block> prepareGeometries = new BlockEntitiesConsumer(createGeometry);
-      Function<Block, Block> prepareBlock =
-          consumeThenReturn(cacheBlock.andThen(prepareGeometries));
-      blocks = blocks.map(prepareBlock);
+      var cacheBuilder = new CacheBuilder(coordinateMap, referenceMap);
+      var entityGeometryBuilder = new EntityGeometryBuilder(coordinateMap, referenceMap);
+      var entityProjectionTransformer = new EntityProjectionTransformer(4326, srid);
+      var entityHandler = srid == 4326 ? entityGeometryBuilder
+          : entityGeometryBuilder.andThen(entityProjectionTransformer);
+      var blockEntitiesHandler = new BlockEntitiesHandler(entityHandler);
+      var blockMapper = consumeThenReturn(cacheBuilder.andThen(blockEntitiesHandler));
+      blocks = blocks.map(blockMapper);
     }
     return blocks;
-  }
-
-  public Block read(Blob blob) {
-    switch (blob.header().getType()) {
-      case "OSMHeader":
-        return HeaderBlockReader.read(blob);
-      case "OSMData":
-        return DataBlockReader.read(blob);
-      default:
-        throw new RuntimeException("Unknown blob type");
-    }
   }
 }
