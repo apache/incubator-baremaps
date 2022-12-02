@@ -46,7 +46,7 @@ import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.Proj4jException;
 import org.locationtech.proj4j.ProjCoordinate;
 
-class GeometryHandlerTest {
+class EntityGeometryBuilderTest {
 
   static final CRSFactory CRS_FACTORY = new CRSFactory();
 
@@ -158,11 +158,11 @@ class GeometryHandlerTest {
 
   @Test
   void handleNode() {
-    GEOMETRY_BUILDER.match(NODE_0);
+    GEOMETRY_BUILDER.accept(NODE_0);
     Point p0 = (Point) NODE_0.getGeometry();
     assertEquals(0, p0.getX());
     assertEquals(0, p0.getY());
-    GEOMETRY_BUILDER.match(NODE_2);
+    GEOMETRY_BUILDER.accept(NODE_2);
     Point p1 = (Point) NODE_2.getGeometry();
     assertEquals(4, p1.getX());
     assertEquals(4, p1.getY());
@@ -170,31 +170,31 @@ class GeometryHandlerTest {
 
   @Test
   void handleWay() {
-    GEOMETRY_BUILDER.match(WAY_0);
+    GEOMETRY_BUILDER.accept(WAY_0);
     assertNull(WAY_0.getGeometry());
-    GEOMETRY_BUILDER.match(WAY_1);
+    GEOMETRY_BUILDER.accept(WAY_1);
     assertTrue(WAY_1.getGeometry() instanceof LineString);
-    GEOMETRY_BUILDER.match(WAY_2);
+    GEOMETRY_BUILDER.accept(WAY_2);
     assertTrue(WAY_2.getGeometry() instanceof Polygon);
   }
 
   @Test
   void handleRelation() {
-    GEOMETRY_BUILDER.match(RELATION_0);
+    GEOMETRY_BUILDER.accept(RELATION_0);
     assertNull(RELATION_0.getGeometry());
-    GEOMETRY_BUILDER.match(RELATION_1);
+    GEOMETRY_BUILDER.accept(RELATION_1);
     assertNull(RELATION_1.getGeometry());
-    GEOMETRY_BUILDER.match(RELATION_2);
+    GEOMETRY_BUILDER.accept(RELATION_2);
     assertTrue(RELATION_2.getGeometry() instanceof Polygon);
-    GEOMETRY_BUILDER.match(RELATION_3);
+    GEOMETRY_BUILDER.accept(RELATION_3);
     assertTrue(RELATION_3.getGeometry() instanceof Polygon);
-    GEOMETRY_BUILDER.match(RELATION_4);
+    GEOMETRY_BUILDER.accept(RELATION_4);
     assertTrue(RELATION_4.getGeometry() instanceof MultiPolygon);
   }
 
   @Test
   void handleRelationWithHole() {
-    GEOMETRY_BUILDER.match(RELATION_5);
+    GEOMETRY_BUILDER.accept(RELATION_5);
     assertTrue(RELATION_5.getGeometry() instanceof Polygon);
     assertNotNull(((Polygon) RELATION_5.getGeometry()).getExteriorRing());
     assertEquals(1, ((Polygon) RELATION_5.getGeometry()).getNumInteriorRing());
