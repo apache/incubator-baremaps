@@ -23,7 +23,7 @@ import org.apache.baremaps.osm.binary.Fileformat;
 import org.apache.baremaps.osm.binary.Fileformat.BlobHeader;
 
 /** Represents a raw blob of data in an OpenStreetMap dataset. */
-public class Blob {
+public final class Blob {
 
   private final BlobHeader header;
   private final byte[] rawData;
