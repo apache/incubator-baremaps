@@ -18,7 +18,6 @@ import java.util.function.Consumer;
 import org.apache.baremaps.database.repository.Repository;
 import org.apache.baremaps.database.repository.RepositoryException;
 import org.apache.baremaps.openstreetmap.model.Change;
-import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
@@ -49,7 +48,7 @@ public class ChangeImporter implements Consumer<Change> {
   @Override
   public void accept(Change change) {
     try {
-      for (Entity entity : change.getEntities()) {
+      for (var entity : change.getEntities()) {
         switch (change.getType()) {
           case CREATE:
           case MODIFY:

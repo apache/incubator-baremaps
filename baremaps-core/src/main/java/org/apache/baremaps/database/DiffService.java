@@ -15,7 +15,6 @@ package org.apache.baremaps.database;
 import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -73,13 +72,13 @@ public class DiffService implements Callable<List<Tile>> {
   public List<Tile> call() throws Exception {
     logger.info("Importing changes");
 
-    Header header = headerRepository.selectLatest();
-    String replicationUrl = header.getReplicationUrl();
-    Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
-    URL changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
+    var header = headerRepository.selectLatest();
+    var replicationUrl = header.getReplicationUrl();
+    var sequenceNumber = header.getReplicationSequenceNumber() + 1;
+    var changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
 
-    ProjectionTransformer projectionTransformer = new ProjectionTransformer(srid, 4326);
-    try (InputStream changeInputStream =
+    var projectionTransformer = new ProjectionTransformer(srid, 4326);
+    try (var changeInputStream =
         new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
       return new XmlChangeReader().stream(changeInputStream).flatMap(this::geometriesForChange)
           .map(projectionTransformer::transform).flatMap(this::tilesForGeometry).distinct()
@@ -116,13 +115,13 @@ public class DiffService implements Callable<List<Tile>> {
   private Optional<Geometry> geometriesForPreviousVersion(Entity entity) {
     try {
       if (entity instanceof Node node) {
-        Node previousNode = nodeRepository.get(node.getId());
+        var previousNode = nodeRepository.get(node.getId());
         return Optional.ofNullable(previousNode).map(Node::getGeometry);
       } else if (entity instanceof Way way) {
-        Way previousWay = wayRepository.get(way.getId());
+        var previousWay = wayRepository.get(way.getId());
         return Optional.ofNullable(previousWay).map(Way::getGeometry);
       } else if (entity instanceof Relation relation) {
-        Relation previousRelation = relationRepository.get(relation.getId());
+        var previousRelation = relationRepository.get(relation.getId());
         return Optional.ofNullable(previousRelation).map(Relation::getGeometry);
       } else {
         return Optional.empty();
@@ -140,9 +139,9 @@ public class DiffService implements Callable<List<Tile>> {
 
   public URL resolve(String replicationUrl, Long sequenceNumber, String extension)
       throws MalformedURLException {
-    String s = String.format("%09d", sequenceNumber);
-    String uri = String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3),
-        s.substring(3, 6), s.substring(6, 9), extension);
+    var s = String.format("%09d", sequenceNumber);
+    var uri = String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
+        s.substring(6, 9), extension);
     return URI.create(uri).toURL();
   }
 }
