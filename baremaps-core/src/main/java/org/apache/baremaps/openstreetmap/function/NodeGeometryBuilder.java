@@ -12,30 +12,22 @@
 
 package org.apache.baremaps.openstreetmap.function;
 
-
+import static org.apache.baremaps.openstreetmap.utils.GeometryUtils.GEOMETRY_FACTORY_WGS84;
 
 import java.util.function.Consumer;
-import org.apache.baremaps.openstreetmap.model.Change;
-import org.apache.baremaps.openstreetmap.model.Entity;
+import org.apache.baremaps.openstreetmap.model.Node;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Point;
 
-/** Represents an operation on the entities of changes of different types. */
-public class ChangeEntityConsumer implements ChangeConsumer {
-
-  private final Consumer<Entity> consumer;
-
-  /**
-   * Constructs a consumer that applies the specified consumer to all the entities of a {@code
-   * Change}.
-   *
-   * @param consumer
-   */
-  public ChangeEntityConsumer(Consumer<Entity> consumer) {
-    this.consumer = consumer;
-  }
+/**
+ * A consumer that builds and sets a node geometry via side effects.
+ */
+public class NodeGeometryBuilder implements Consumer<Node> {
 
   /** {@inheritDoc} */
   @Override
-  public void match(Change change) throws Exception {
-    change.getEntities().forEach(consumer);
+  public void accept(Node node) {
+    Point point = GEOMETRY_FACTORY_WGS84.createPoint(new Coordinate(node.getLon(), node.getLat()));
+    node.setGeometry(point);
   }
 }

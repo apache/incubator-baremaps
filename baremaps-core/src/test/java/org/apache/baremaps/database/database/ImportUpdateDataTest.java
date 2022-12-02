@@ -51,13 +51,13 @@ class ImportUpdateDataTest extends DatabaseContainerTest {
     PostgresWayRepository wayRepository = new PostgresWayRepository(dataSource());
     PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
 
-    LongDataMap<Coordinate> coordinates =
+    LongDataMap<Coordinate> coordinateMap =
         new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
-    LongDataMap<List<Long>> references =
+    LongDataMap<List<Long>> referenceMap =
         new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
-    new ImportService(SIMPLE_DATA_OSM_PBF, coordinates, references, headerRepository,
+    new ImportService(SIMPLE_DATA_OSM_PBF, coordinateMap, referenceMap, headerRepository,
         nodeRepository, wayRepository, relationRepository, 3857).call();
 
     headerRepository.put(new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0),

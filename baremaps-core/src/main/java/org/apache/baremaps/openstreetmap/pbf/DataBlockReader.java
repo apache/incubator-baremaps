@@ -38,7 +38,7 @@ import org.apache.baremaps.osm.binary.Osmformat.PrimitiveGroup;
 import org.apache.baremaps.stream.StreamException;
 
 /** A reader that extracts data blocks and entities from OpenStreetMap data blobs. */
-class DataBlockReader {
+public class DataBlockReader {
 
   private final Blob blob;
 

@@ -60,16 +60,16 @@ public record ImportOpenStreetMap(String file, String database, Integer database
 
     var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
 
-    LongDataMap<Coordinate> coordinates;
+    LongDataMap<Coordinate> coordinateMap;
     if (Files.size(path) > 1 << 30) {
       var coordinatesDir = Files.createDirectories(cacheDir.resolve("coordinates"));
-      coordinates = new LongSizedDataDenseMap<>(
+      coordinateMap = new LongSizedDataDenseMap<>(
         new LonLatDataType(),
         new OnDiskDirectoryMemory(coordinatesDir));
     } else {
       var coordinatesKeysDir = Files.createDirectories(cacheDir.resolve("coordinates_keys"));
       var coordinatesValsDir = Files.createDirectories(cacheDir.resolve("coordinates_vals"));
-      coordinates =
+      coordinateMap =
         new LongDataSortedMap<>(
           new AlignedDataList<>(
             new PairDataType<>(new LongDataType(), new LongDataType()),
@@ -82,7 +82,7 @@ public record ImportOpenStreetMap(String file, String database, Integer database
 
     var referencesKeysDir = Files.createDirectories(cacheDir.resolve("references_keys"));
     var referencesValuesDir = Files.createDirectories(cacheDir.resolve("references_vals"));
-    var references =
+    var referenceMap =
       new LongDataSortedMap<>(
         new AlignedDataList<>(
           new PairDataType<>(new LongDataType(), new LongDataType()),
@@ -94,8 +94,8 @@ public record ImportOpenStreetMap(String file, String database, Integer database
 
     new ImportService(
       path,
-      coordinates,
-      references,
+      coordinateMap,
+      referenceMap,
       headerRepository,
       nodeRepository,
       wayRepository,

@@ -39,16 +39,16 @@ public record UpdateOpenStreetMap(String database, Integer databaseSrid) impleme
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Updating {}", database);
     var datasource = context.getDataSource(database);
-    LongDataMap<Coordinate> coordinates = new PostgresCoordinateMap(datasource);
-    LongDataMap<List<Long>> references = new PostgresReferenceMap(datasource);
+    LongDataMap<Coordinate> coordinateMap = new PostgresCoordinateMap(datasource);
+    LongDataMap<List<Long>> referenceMap = new PostgresReferenceMap(datasource);
     HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
     Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
     Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
     var action =
       new UpdateService(
-        coordinates,
-        references,
+        coordinateMap,
+        referenceMap,
         headerRepository,
         nodeRepository,
         wayRepository,

@@ -16,7 +16,7 @@ package org.apache.baremaps.storage;
 
 import java.util.Optional;
 import java.util.stream.Stream;
-import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
+import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
 import org.apache.sis.storage.DataStoreException;
 import org.apache.sis.storage.FeatureSet;
 import org.apache.sis.storage.event.StoreEvent;
@@ -28,13 +28,13 @@ import org.opengis.geometry.Envelope;
 import org.opengis.metadata.Metadata;
 import org.opengis.util.GenericName;
 
-public class FeatureProjectionTransform implements FeatureSet {
+public class FeatureSetProjectionTransform implements FeatureSet {
 
   private final FeatureSet featureSet;
 
   private final ProjectionTransformer projectionTransformer;
 
-  public FeatureProjectionTransform(FeatureSet featureSet,
+  public FeatureSetProjectionTransform(FeatureSet featureSet,
       ProjectionTransformer projectionTransformer) {
     this.featureSet = featureSet;
     this.projectionTransformer = projectionTransformer;

@@ -15,12 +15,14 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 import java.util.function.Consumer;
+import org.apache.baremaps.openstreetmap.model.Block;
 import org.apache.baremaps.openstreetmap.model.DataBlock;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.HeaderBlock;
+import org.apache.baremaps.stream.StreamException;
 
 /** Represents an operation on the entities of blocks of different types. */
-public class BlockEntityConsumer implements BlockConsumer {
+public class BlockEntitiesHandler implements Consumer<Block> {
 
   private final Consumer<Entity> consumer;
 
@@ -29,23 +31,23 @@ public class BlockEntityConsumer implements BlockConsumer {
    *
    * @param consumer the entity consumer
    */
-  public BlockEntityConsumer(Consumer<Entity> consumer) {
+  public BlockEntitiesHandler(Consumer<Entity> consumer) {
     this.consumer = consumer;
   }
 
-  /** {@inheritDoc} */
   @Override
-  public void match(HeaderBlock headerBlock) throws Exception {
-    consumer.accept(headerBlock.getHeader());
-    consumer.accept(headerBlock.getBound());
+  public void accept(Block block) {
+    if (block instanceof HeaderBlock headerBlock) {
+      consumer.accept(headerBlock.getHeader());
+      consumer.accept(headerBlock.getBound());
+    } else if (block instanceof DataBlock dataBlock) {
+      dataBlock.getDenseNodes().forEach(consumer);
+      dataBlock.getNodes().forEach(consumer);
+      dataBlock.getWays().forEach(consumer);
+      dataBlock.getRelations().forEach(consumer);
+    } else {
+      throw new StreamException("Unknown block type.");
+    }
   }
 
-  /** {@inheritDoc} */
-  @Override
-  public void match(DataBlock dataBlock) throws Exception {
-    dataBlock.getDenseNodes().forEach(consumer);
-    dataBlock.getNodes().forEach(consumer);
-    dataBlock.getWays().forEach(consumer);
-    dataBlock.getRelations().forEach(consumer);
-  }
 }

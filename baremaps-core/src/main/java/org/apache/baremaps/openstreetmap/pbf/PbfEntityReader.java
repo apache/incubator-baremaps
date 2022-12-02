@@ -17,8 +17,9 @@ package org.apache.baremaps.openstreetmap.pbf;
 import java.io.InputStream;
 import java.util.stream.Stream;
 import org.apache.baremaps.openstreetmap.OsmReader;
-import org.apache.baremaps.openstreetmap.function.BlockEntityConsumer;
+import org.apache.baremaps.openstreetmap.model.DataBlock;
 import org.apache.baremaps.openstreetmap.model.Entity;
+import org.apache.baremaps.openstreetmap.model.HeaderBlock;
 import org.apache.baremaps.stream.StreamException;
 
 /** A utility class for flattening the blocks streamed by a {@link PbfBlockReader}. */
@@ -45,7 +46,17 @@ public class PbfEntityReader implements OsmReader<Entity> {
     return reader.stream(inputStream).flatMap(block -> {
       try {
         Stream.Builder<Entity> entities = Stream.builder();
-        block.visit(new BlockEntityConsumer(entities::add));
+        if (block instanceof HeaderBlock headerBlock) {
+          entities.add(headerBlock.getHeader());
+          entities.add(headerBlock.getBound());
+        } else if (block instanceof DataBlock dataBlock) {
+          dataBlock.getDenseNodes().forEach(entities::add);
+          dataBlock.getNodes().forEach(entities::add);
+          dataBlock.getWays().forEach(entities::add);
+          dataBlock.getRelations().forEach(entities::add);
+        } else {
+          throw new StreamException("Unknown block type.");
+        }
         return entities.build();
       } catch (Exception e) {
         throw new StreamException(e);

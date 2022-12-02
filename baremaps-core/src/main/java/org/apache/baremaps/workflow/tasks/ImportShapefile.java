@@ -12,8 +12,8 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
-import org.apache.baremaps.storage.FeatureProjectionTransform;
+import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
+import org.apache.baremaps.storage.FeatureSetProjectionTransform;
 import org.apache.baremaps.storage.postgres.PostgresDatabase;
 import org.apache.baremaps.storage.shapefile.ShapefileFeatureSet;
 import org.apache.baremaps.workflow.Task;
@@ -37,7 +37,7 @@ public record ImportShapefile(String file, String database, Integer sourceSRID, 
     try (var featureSet = new ShapefileFeatureSet(path)) {
       var dataSource = context.getDataSource(database);
       var postgresDatabase = new PostgresDatabase(dataSource);
-      postgresDatabase.add(new FeatureProjectionTransform(
+      postgresDatabase.add(new FeatureSetProjectionTransform(
         featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
       logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {

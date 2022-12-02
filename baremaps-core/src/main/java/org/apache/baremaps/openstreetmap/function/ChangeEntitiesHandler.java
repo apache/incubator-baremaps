@@ -14,35 +14,28 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 import org.apache.baremaps.openstreetmap.model.Change;
-import org.apache.baremaps.stream.StreamException;
+import org.apache.baremaps.openstreetmap.model.Entity;
 
-/**
- * Represents a function that transforms entities of different types.
- *
- * @param <T>
- */
-public interface ChangeFunction<T> extends Function<Change, T> {
+/** Represents an operation on the entities of changes of different types. */
+public class ChangeEntitiesHandler implements Consumer<Change> {
+
+  private final Consumer<Entity> consumer;
+
+  /**
+   * Constructs a consumer that applies the specified consumer to all the entities of a {@code
+   * Change}.
+   *
+   * @param consumer
+   */
+  public ChangeEntitiesHandler(Consumer<Entity> consumer) {
+    this.consumer = consumer;
+  }
 
   /** {@inheritDoc} */
   @Override
-  default T apply(Change change) {
-    try {
-      return change.visit(this);
-    } catch (StreamException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new StreamException(e);
-    }
+  public void accept(Change change) {
+    change.getEntities().forEach(consumer);
   }
-
-  /**
-   * Applies a function on a {@code Change}.
-   *
-   * @param change the change
-   * @return the function result
-   * @throws Exception
-   */
-  T match(Change change) throws Exception;
 }

@@ -33,7 +33,6 @@ import org.apache.baremaps.collection.memory.OnHeapMemory;
 import org.apache.baremaps.collection.type.CoordinateDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
 import org.apache.baremaps.collection.utils.FileUtils;
-import org.apache.baremaps.openstreetmap.function.EntityConsumerAdapter;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
@@ -74,36 +73,28 @@ public class OpenStreetMapGeometriesBenchmark {
 
   @Benchmark
   @BenchmarkMode(Mode.SingleShotTime)
-  @Warmup(iterations = 0)
-  @Measurement(iterations = 1)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 3)
   public void store() throws IOException {
     Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
-    LongDataMap<Coordinate> coordinates = new LongDataOpenHashMap<>(
+    LongDataMap<Coordinate> coordinateMap = new LongDataOpenHashMap<>(
         new DataStore<>(new CoordinateDataType(), new OnDiskDirectoryMemory(directory)));
-    LongDataMap<List<Long>> references =
+    LongDataMap<List<Long>> referenceMap =
         new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      new PbfEntityReader(
-          new PbfBlockReader().coordinates(coordinates).references(references).projection(4326))
-              .stream(inputStream).forEach(new EntityConsumerAdapter() {
-                @Override
-                public void match(Node node) {
-                  nodes.incrementAndGet();
-                }
-
-                @Override
-                public void match(Way way) {
-                  ways.incrementAndGet();
-                }
-
-                @Override
-                public void match(Relation relation) {
-                  relations.incrementAndGet();
-                }
-              });
+      new PbfEntityReader(new PbfBlockReader().coordinateMap(coordinateMap)
+          .referenceMap(referenceMap).projection(4326)).stream(inputStream).forEach(entity -> {
+            if (entity instanceof Node node) {
+              nodes.incrementAndGet();
+            } else if (entity instanceof Way way) {
+              ways.incrementAndGet();
+            } else if (entity instanceof Relation) {
+              relations.incrementAndGet();
+            }
+          });
     }
     FileUtils.deleteRecursively(directory);
   }

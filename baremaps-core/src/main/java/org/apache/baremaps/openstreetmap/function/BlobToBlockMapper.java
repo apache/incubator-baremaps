@@ -15,44 +15,33 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 import java.util.function.Function;
+import org.apache.baremaps.openstreetmap.model.Blob;
 import org.apache.baremaps.openstreetmap.model.Block;
-import org.apache.baremaps.openstreetmap.model.DataBlock;
-import org.apache.baremaps.openstreetmap.model.HeaderBlock;
+import org.apache.baremaps.openstreetmap.pbf.DataBlockReader;
+import org.apache.baremaps.openstreetmap.pbf.HeaderBlockReader;
 import org.apache.baremaps.stream.StreamException;
 
 /**
- * Represents an function on blocks of different types.
- *
- * @param <T>
+ * Maps a blob to a block.
  */
-public interface BlockFunction<T> extends Function<Block, T> {
+public class BlobToBlockMapper implements Function<Blob, Block> {
 
   /** {@inheritDoc} */
   @Override
-  default T apply(Block block) {
+  public Block apply(Blob blob) {
     try {
-      return block.visit(this);
-    } catch (StreamException e) {
-      throw e;
-    } catch (Exception e) {
-      throw new StreamException(e);
+      switch (blob.header().getType()) {
+        case "OSMHeader":
+          return new HeaderBlockReader(blob).read();
+        case "OSMData":
+          return new DataBlockReader(blob).read();
+        default:
+          throw new StreamException("Unknown blob type");
+      }
+    } catch (StreamException exception) {
+      throw exception;
+    } catch (Exception exception) {
+      throw new StreamException(exception);
     }
   }
-
-  /**
-   * Applies a function on a {@code HeaderBlock}.
-   *
-   * @param headerBlock the header block
-   * @throws Exception
-   */
-  T match(HeaderBlock headerBlock) throws Exception;
-
-  /**
-   * Applies a function on a {@code DataBlock}.
-   *
-   * @param dataBlock
-   * @return the function result
-   * @throws Exception
-   */
-  T match(DataBlock dataBlock) throws Exception;
 }

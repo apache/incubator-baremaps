@@ -47,14 +47,15 @@ class ImportUpdateMonacoTest extends DatabaseContainerTest {
     PostgresWayRepository wayRepository = new PostgresWayRepository(dataSource());
     PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
 
-    LongDataMap<Coordinate> coordinates =
+    LongDataMap<Coordinate> coordinateMap =
         new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
-    LongDataMap<List<Long>> references =
+    LongDataMap<List<Long>> referenceMap =
         new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
-    new ImportService(TestFiles.resolve("monaco/monaco-210801.osm.pbf"), coordinates, references,
-        headerRepository, nodeRepository, wayRepository, relationRepository, 3857).call();
+    new ImportService(TestFiles.resolve("monaco/monaco-210801.osm.pbf"), coordinateMap,
+        referenceMap, headerRepository, nodeRepository, wayRepository, relationRepository, 3857)
+            .call();
 
     assertEquals(3047l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
@@ -63,16 +64,16 @@ class ImportUpdateMonacoTest extends DatabaseContainerTest {
     headerRepository.put(new Header(3047l, LocalDateTime.of(2021, 8, 01, 20, 21, 41, 0),
         "file:///" + TestFiles.resolve("monaco"), "", ""));
 
-    coordinates = new PostgresCoordinateMap(dataSource());
-    references = new PostgresReferenceMap(dataSource());
+    coordinateMap = new PostgresCoordinateMap(dataSource());
+    referenceMap = new PostgresReferenceMap(dataSource());
 
     // Generate the diff and update the database
     long replicationSequenceNumber = headerRepository.selectLatest().getReplicationSequenceNumber();
     while (replicationSequenceNumber < 3075) {
-      new DiffService(coordinates, references, headerRepository, nodeRepository, wayRepository,
+      new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository, wayRepository,
           relationRepository, 3857, 14).call();
-      new UpdateService(coordinates, references, headerRepository, nodeRepository, wayRepository,
-          relationRepository, 3857).call();
+      new UpdateService(coordinateMap, referenceMap, headerRepository, nodeRepository,
+          wayRepository, relationRepository, 3857).call();
       long nextReplicationSequenceNumber =
           headerRepository.selectLatest().getReplicationSequenceNumber();
       assertEquals(replicationSequenceNumber + 1, nextReplicationSequenceNumber);

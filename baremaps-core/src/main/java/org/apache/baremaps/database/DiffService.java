@@ -15,7 +15,6 @@ package org.apache.baremaps.database;
 import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 
 import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -31,17 +30,12 @@ import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
 import org.apache.baremaps.database.tile.Tile;
-import org.apache.baremaps.openstreetmap.function.CreateGeometryConsumer;
-import org.apache.baremaps.openstreetmap.function.EntityFunction;
-import org.apache.baremaps.openstreetmap.function.ExtractGeometryFunction;
-import org.apache.baremaps.openstreetmap.geometry.ProjectionTransformer;
-import org.apache.baremaps.openstreetmap.model.Bound;
-import org.apache.baremaps.openstreetmap.model.Change;
-import org.apache.baremaps.openstreetmap.model.Header;
-import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
+import org.apache.baremaps.openstreetmap.function.EntityToGeometryMapper;
+import org.apache.baremaps.openstreetmap.model.*;
+import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
+import org.apache.baremaps.stream.StreamException;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
@@ -51,8 +45,8 @@ public class DiffService implements Callable<List<Tile>> {
 
   private static final Logger logger = LoggerFactory.getLogger(DiffService.class);
 
-  private final LongDataMap<Coordinate> coordinates;
-  private final LongDataMap<List<Long>> references;
+  private final LongDataMap<Coordinate> coordinateMap;
+  private final LongDataMap<List<Long>> referenceMap;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
@@ -60,12 +54,12 @@ public class DiffService implements Callable<List<Tile>> {
   private final int srid;
   private final int zoom;
 
-  public DiffService(LongDataMap<Coordinate> coordinates, LongDataMap<List<Long>> references,
+  public DiffService(LongDataMap<Coordinate> coordinateMap, LongDataMap<List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository, int srid,
       int zoom) {
-    this.coordinates = coordinates;
-    this.references = references;
+    this.coordinateMap = coordinateMap;
+    this.referenceMap = referenceMap;
     this.headerRepository = headerRepository;
     this.nodeRepository = nodeRepository;
     this.wayRepository = wayRepository;
@@ -78,13 +72,13 @@ public class DiffService implements Callable<List<Tile>> {
   public List<Tile> call() throws Exception {
     logger.info("Importing changes");
 
-    Header header = headerRepository.selectLatest();
-    String replicationUrl = header.getReplicationUrl();
-    Long sequenceNumber = header.getReplicationSequenceNumber() + 1;
-    URL changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
+    var header = headerRepository.selectLatest();
+    var replicationUrl = header.getReplicationUrl();
+    var sequenceNumber = header.getReplicationSequenceNumber() + 1;
+    var changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
 
-    ProjectionTransformer projectionTransformer = new ProjectionTransformer(srid, 4326);
-    try (InputStream changeInputStream =
+    var projectionTransformer = new ProjectionTransformer(srid, 4326);
+    try (var changeInputStream =
         new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
       return new XmlChangeReader().stream(changeInputStream).flatMap(this::geometriesForChange)
           .map(projectionTransformer::transform).flatMap(this::tilesForGeometry).distinct()
@@ -114,48 +108,40 @@ public class DiffService implements Callable<List<Tile>> {
   }
 
   private Stream<Geometry> geometriesForPreviousVersion(Change change) {
-    return change.getEntities().stream().map(new EntityFunction<Optional<Geometry>>() {
-      @Override
-      public Optional<Geometry> match(Header header) {
-        return Optional.empty();
-      }
+    return change.getEntities().stream().map(this::geometriesForPreviousVersion)
+        .flatMap(Optional::stream);
+  }
 
-      @Override
-      public Optional<Geometry> match(Bound bound) {
-        return Optional.empty();
-      }
-
-      @Override
-      public Optional<Geometry> match(Node node) throws Exception {
-        Node previousNode = nodeRepository.get(node.getId());
+  private Optional<Geometry> geometriesForPreviousVersion(Entity entity) {
+    try {
+      if (entity instanceof Node node) {
+        var previousNode = nodeRepository.get(node.getId());
         return Optional.ofNullable(previousNode).map(Node::getGeometry);
-      }
-
-      @Override
-      public Optional<Geometry> match(Way way) throws Exception {
-        Way previousWay = wayRepository.get(way.getId());
+      } else if (entity instanceof Way way) {
+        var previousWay = wayRepository.get(way.getId());
         return Optional.ofNullable(previousWay).map(Way::getGeometry);
-      }
-
-      @Override
-      public Optional<Geometry> match(Relation relation) throws Exception {
-        Relation previousRelation = relationRepository.get(relation.getId());
+      } else if (entity instanceof Relation relation) {
+        var previousRelation = relationRepository.get(relation.getId());
         return Optional.ofNullable(previousRelation).map(Relation::getGeometry);
+      } else {
+        return Optional.empty();
       }
-    }).flatMap(Optional::stream);
+    } catch (Exception e) {
+      throw new StreamException(e);
+    }
   }
 
   private Stream<Geometry> geometriesForNextVersion(Change change) {
     return change.getEntities().stream()
-        .map(consumeThenReturn(new CreateGeometryConsumer(coordinates, references)))
-        .flatMap(new ExtractGeometryFunction().andThen(Optional::stream));
+        .map(consumeThenReturn(new EntityGeometryBuilder(coordinateMap, referenceMap)))
+        .flatMap(new EntityToGeometryMapper().andThen(Optional::stream));
   }
 
   public URL resolve(String replicationUrl, Long sequenceNumber, String extension)
       throws MalformedURLException {
-    String s = String.format("%09d", sequenceNumber);
-    String uri = String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3),
-        s.substring(3, 6), s.substring(6, 9), extension);
+    var s = String.format("%09d", sequenceNumber);
+    var uri = String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
+        s.substring(6, 9), extension);
     return URI.create(uri).toURL();
   }
 }

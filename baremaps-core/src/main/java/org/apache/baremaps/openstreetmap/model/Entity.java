@@ -14,18 +14,13 @@ package org.apache.baremaps.openstreetmap.model;
 
 
 
-import org.apache.baremaps.openstreetmap.function.EntityConsumer;
-import org.apache.baremaps.openstreetmap.function.EntityFunction;
-
 /**
  * Represents an entity in an OpenStreetMap dataset. Entities are a basis to model all the objects
  * in OpenStreetMap.
  */
-public interface Entity {
+public sealed
+interface Entity
+permits Header, Bound, Element
+{
 
-  /** Visits the entity with the provided entity consumer. */
-  void visit(EntityConsumer consumer) throws Exception;
-
-  /** Visits the entity with the provided entity function. */
-  <T> T visit(EntityFunction<T> function) throws Exception;
 }
