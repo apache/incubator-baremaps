@@ -19,10 +19,7 @@ import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.Graphs;
 import com.google.common.graph.ImmutableGraph;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 /**
@@ -59,7 +56,7 @@ public class WorkflowExecutor implements AutoCloseable {
     this.executorService = executorService;
     this.context = new WorkflowContext();
     this.steps = workflow.getSteps().stream().collect(Collectors.toMap(s -> s.getId(), s -> s));
-    this.futures = new ConcurrentHashMap<>();
+    this.futures = new ConcurrentSkipListMap<>();
 
     // Build the execution graph
     ImmutableGraph.Builder<String> graphBuilder = GraphBuilder.directed().immutable();
@@ -74,7 +71,7 @@ public class WorkflowExecutor implements AutoCloseable {
       }
     }
     this.graph = graphBuilder.build();
-    if (Graphs.hasCycle(graph)) {
+    if (Graphs.hasCycle(this.graph)) {
       throw new WorkflowException("The workflow must be a directed acyclic graph");
     }
   }
@@ -92,9 +89,9 @@ public class WorkflowExecutor implements AutoCloseable {
     return futures.computeIfAbsent(step, this::initStep);
   }
 
-  private CompletableFuture<Void> initStep(String step) {
-    var future = previousSteps(step);
-    for (Task task : steps.get(step).getTasks()) {
+  private CompletableFuture<Void> initStep(String stepId) {
+    var future = previousSteps(stepId);
+    for (Task task : steps.get(stepId).getTasks()) {
       future = future.thenRunAsync(() -> {
         try {
           task.execute(context);
@@ -106,8 +103,8 @@ public class WorkflowExecutor implements AutoCloseable {
     return future;
   }
 
-  private CompletableFuture<Void> previousSteps(String step) {
-    var predecessors = graph.predecessors(step).stream().toList();
+  private CompletableFuture<Void> previousSteps(String stepId) {
+    var predecessors = graph.predecessors(stepId).stream().toList();
     if (predecessors.isEmpty()) {
       return CompletableFuture.completedFuture(null);
     } else if (predecessors.size() == 1) {
@@ -118,8 +115,8 @@ public class WorkflowExecutor implements AutoCloseable {
     }
   }
 
-  private boolean isEndStep(String step) {
-    return graph.successors(step).isEmpty();
+  private boolean isEndStep(String stepId) {
+    return graph.successors(stepId).isEmpty();
   }
 
   @Override

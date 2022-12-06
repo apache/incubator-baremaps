@@ -1,3 +1,5 @@
+import config from "./config.js";
+
 import layer from './utils/layer.js';
 
 import background from "./layers/background/style.js";
@@ -42,15 +44,15 @@ import label from './layers/point/label.js';
 export default {
     "version": 8,
     "name": "OpenStreetMapVecto",
-    "center": [6.6323, 46.5197],
-    "zoom": 14,
+    "center": config.center,
+    "zoom": config.zoom,
     "sources": {
         "baremaps": {
             "type": "vector",
-            "url": "http://localhost:9000/tiles.json"
+            "url": `${config.host}/tiles.json`
         }
     },
-    "sprite": "https://tiles.baremaps.com/sprites/osm/sprite",
+    "sprite": `${config.host}/sprites/osm/sprite`,
     "glyphs": "https://tiles.baremaps.com/fonts/{fontstack}/{range}.pbf",
     "layers": [
         background,

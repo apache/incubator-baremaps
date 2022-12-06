@@ -4,7 +4,7 @@ export default {
         {
             "minzoom": 12,
             "maxzoom": 20,
-            "sql": "SELECT id, tags, geom FROM osm_way_z$zoom WHERE tags ->> 'power' IN ('cable', 'line', 'minor_line', 'plant', 'substation')"
+            "sql": "SELECT id, tags, geom FROM osm_ways_z$zoom WHERE tags ->> 'power' IN ('cable', 'line', 'minor_line', 'plant', 'substation')"
         }
     ]
 }

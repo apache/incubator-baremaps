@@ -4,7 +4,7 @@ export default {
         {
             "minzoom": 1,
             "maxzoom": 20,
-            "sql": "SELECT id, tags, geom FROM osm_node_z$zoom WHERE tags != '{}'"
+            "sql": "SELECT id, tags, geom FROM osm_nodes_z$zoom WHERE tags != '{}'"
         }
     ]
 }
