@@ -1,3 +1,5 @@
+import config from "./config.js";
+
 import aerialway from "./layers/aerialway/tileset.js";
 import amenity from "./layers/amenity/tileset.js";
 import attraction from "./layers/attraction/tileset.js";
@@ -18,15 +20,11 @@ import waterway from "./layers/waterway/tileset.js";
 
 export default {
   "tilejson": "2.2.0",
-  "center": [
-    6.5743,
-    46.5189,
-    14.0
-  ],
+  "center": [...config.center, config.zoom],
   "minzoom": 1.0,
   "maxzoom": 14.0,
   "tiles": [
-    "http://localhost:9000/tiles/{z}/{x}/{y}.mvt"
+    `${config.host}/tiles/{z}/{x}/{y}.mvt`
   ],
   attribution: '© <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
   "vector_layers": [
