@@ -21,13 +21,11 @@
 
 You can find the official documentation at [https://baremaps.apache.org/](https://baremaps.apache.org/). The following pages showcase the main uses of Apache Baremaps.
 
-- [Install the Baremaps CLI](https://baremaps.apache.org/examples/openstreetmap/)
-- [Import OSM data from GeoFabrik into PostGIS](https://baremaps.apache.org/examples/openstreetmap/)
-- [Import Natural Earth data into PostGIS](https://baremaps.apache.org/examples/openstreetmap/)
-- [Import Contour lines from the ASTER dataset into PostGIS](https://baremaps.apache.org/examples/openstreetmap/)
-- [Serve Mapbox Vector Tiles from PostGIS](https://baremaps.apache.org/examples/openstreetmap/)
-- [Generate and serve a geocoding index](https://baremaps.apache.org/examples/openstreetmap/)
-- [Generate and serve an IP to location index](https://baremaps.apache.org/examples/openstreetmap/)
+- The [OpenStreetMap](/examples/import-osm-into-postgis/) example is a good introduction to Baremaps, it shows how to produce high resolution vector tiles.
+- The [NaturalEarth](/examples/import-naturalearth-into-postgis/) example shows how to produce low resolution vector tiles.
+- The [Contour](/examples/import-contour-into-postgis/) example shows how to produce contour lines from a digital elevation model.
+- The [IP to location](/examples/ip-to-location/) example shows how to create and serve an IP to location service in a simple web application.
+- The [Geocoding](/examples/geocoding/) example shows how to create and serve a geocoding service in a simple web application.
 
 ## 👩‍💻 How do I contribute?
 
@@ -37,9 +35,12 @@ The official documentation is located in a separate repository available here [h
 
 If you want to contribute to the code you can refer to the following developer guides available in the documentation.
 
-- [How to build with Maven](https://baremaps.apache.org/development/build/)
-- [How to run in IntelliJ](https://baremaps.apache.org/development/run/)
-- [Structure and modules](https://baremaps.apache.org/development/run/)
+- [Project structure](/developer-manual/project-structure/)
+- [How to build with Maven](/developer-manual/how-to-build-with-maven/)
+- [Set up in IntelliJ IDEA](/developer-manual/setup-with-intellij/)
+- [Geocoder](/developer-manual/geocoder/)
+- [IP to location](/developer-manual/ip-to-location/)
+- [Stylesheet](/developer-manual/stylesheet/)
 
 You can also contribute in the following ways.
 
