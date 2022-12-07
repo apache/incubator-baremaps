@@ -1,0 +1,31 @@
+{
+  "version" : 8,
+  "sources" : {
+    "baremaps" : {
+      "type" : "vector",
+      "url" : "http://localhost:9000/tiles.json"
+    }
+  },
+  "layers" : [ {
+    "id" : "background",
+    "type" : "background",
+    "maxzoom" : 24,
+    "paint" : {
+      "background-color" : "rgba(255, 255, 255, 1)"
+    }
+  }, {
+    "id" : "geoadmin_traffic_noise_day",
+    "type" : "line",
+    "source" : "baremaps",
+    "source-layer" : "geoadmin_traffic_noise_day",
+    "layout" : {
+      "line-cap" : "round",
+      "line-join" : "round"
+    },
+    "paint" : {
+      "line-color" : "rgba(181, 169, 152, 1)"
+    }
+  } ],
+  "center" : [ 9.5554, 47.166 ],
+  "zoom" : 14
+}

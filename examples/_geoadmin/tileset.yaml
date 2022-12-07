@@ -1,0 +1,19 @@
+id: 'contour'
+center:
+  lon: 6.5743
+  lat: 46.5189
+  zoom: 14
+bounds:
+  minLon: 5.8358
+  minLat: 45.6591
+  maxLon: 10.9794
+  maxLat: 47.8700
+  minZoom: 10
+  maxZoom: 20
+layers:
+  - id: 'geoadmin_traffic_noise_day'
+    type: 'geometry'
+    queries:
+      - minZoom: 12
+        maxZoom: 20
+        sql: SELECT ogc_fid, ('{level:' || dn::text || '}') as tags, wkb_geometry as geom FROM geoadmin_traffic_noise_day

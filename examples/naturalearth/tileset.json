@@ -1,0 +1,1360 @@
+{
+  "tilejson": "2.2.0",
+  "minzoom": 0,
+  "maxzoom": 12,
+  "tiles": [
+    "http://localhost:9000/tiles/{z}/{x}/{y}.mvt"
+  ],
+  "vector_layers": [
+    {
+      "id": "ne_110m_admin_0_boundary_lines_land",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_boundary_lines_land AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_0_countries",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_countries AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_0_countries_lakes",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_countries_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_0_map_units",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_map_units AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_0_pacific_groupings",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_pacific_groupings AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_0_scale_rank",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_0_sovereignty",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_sovereignty AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_0_tiny_countries",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_0_tiny_countries AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_1_states_provinces",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_1_states_provinces AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_1_states_provinces_lakes",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_1_states_provinces_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_1_states_provinces_lines",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_1_states_provinces_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_admin_1_states_provinces_scale_rank",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_admin_1_states_provinces_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_coastline",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_coastline AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_geographic_lines",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_geographic_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_geography_marine_polys",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_geography_marine_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_geography_regions_elevation_points",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_geography_regions_elevation_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_geography_regions_points",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_geography_regions_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_geography_regions_polys",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_geography_regions_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_glaciated_areas",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_glaciated_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_lakes",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_land",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_land AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_ocean",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_ocean AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_populated_places",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_populated_places AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_populated_places_simple",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_populated_places_simple AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_110m_rivers_lake_centerlines",
+      "queries": [
+        {
+          "minzoom": 0,
+          "maxzoom": 2,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_110m_rivers_lake_centerlines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_boundary_lines_disputed_areas",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_boundary_lines_disputed_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_boundary_lines_land",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_boundary_lines_land AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_boundary_lines_maritime_indicator",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_boundary_lines_maritime_indicator AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_boundary_map_units",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_boundary_map_units AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_breakaway_disputed_areas",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_breakaway_disputed_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_breakaway_disputed_areas_scale_rank",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_breakaway_disputed_areas_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_countries",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_countries AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_countries_lakes",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_countries_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_map_subunits",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_map_subunits AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_map_units",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_map_units AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_pacific_groupings",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_pacific_groupings AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_scale_rank",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_sovereignty",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_sovereignty AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_tiny_countries",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_tiny_countries AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_0_tiny_countries_scale_rank",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_0_tiny_countries_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_1_states_provinces",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_1_states_provinces AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_1_states_provinces_lakes",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_1_states_provinces_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_1_states_provinces_lines",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_1_states_provinces_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_admin_1_states_provinces_scale_rank",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_admin_1_states_provinces_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_airports",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_airports AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_antarctic_ice_shelves_lines",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_antarctic_ice_shelves_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_antarctic_ice_shelves_polys",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_antarctic_ice_shelves_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_coastline",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_coastline AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_geographic_lines",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_geographic_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_geography_marine_polys",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_geography_marine_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_geography_regions_elevation_points",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_geography_regions_elevation_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_geography_regions_points",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_geography_regions_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_geography_regions_polys",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_geography_regions_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_glaciated_areas",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_glaciated_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_lakes",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_lakes_historic",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_lakes_historic AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_land",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_land AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_ocean",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_ocean AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_playas",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_playas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_populated_places",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_populated_places AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_populated_places_simple",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_populated_places_simple AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_ports",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_ports AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_rivers_lake_centerlines",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_rivers_lake_centerlines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_rivers_lake_centerlines_scale_rank",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_rivers_lake_centerlines_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_50m_urban_areas",
+      "queries": [
+        {
+          "minzoom": 2,
+          "maxzoom": 5,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_50m_urban_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_antarctic_claim_limit_lines",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_antarctic_claim_limit_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_antarctic_claims",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_antarctic_claims AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_boundary_lines_disputed_areas",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_boundary_lines_disputed_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_boundary_lines_land",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_boundary_lines_land AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_boundary_lines_map_units",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_boundary_lines_map_units AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_boundary_lines_maritime_indicator",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_boundary_lines_maritime_indicator AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_countries",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_countries AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_countries_lakes",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_countries_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_disputed_areas",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_disputed_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_disputed_areas_scale_rank_minor_islands",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_disputed_areas_scale_rank_minor_islands AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_label_points",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_label_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_map_subunits",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_map_subunits AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_map_units",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_map_units AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_pacific_groupings",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_pacific_groupings AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_scale_rank",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_scale_rank_minor_islands",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_scale_rank_minor_islands AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_seams",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_seams AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_0_sovereignty",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_0_sovereignty AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_label_points",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_label_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_label_points_details",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_label_points_details AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_seams",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_seams AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_states_provinces",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_states_provinces AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_states_provinces_lakes",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_states_provinces_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_states_provinces_lines",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_states_provinces_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_states_provinces_scale_rank",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_states_provinces_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_admin_1_states_provinces_scale_rank_minor_islands",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_admin_1_states_provinces_scale_rank_minor_islands AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_airports",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_airports AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_antarctic_ice_shelves_lines",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_antarctic_ice_shelves_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_antarctic_ice_shelves_polys",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_antarctic_ice_shelves_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_coastline",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_coastline AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_geographic_lines",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_geographic_lines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_geography_marine_polys",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_geography_marine_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_geography_regions_elevation_points",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_geography_regions_elevation_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_geography_regions_points",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_geography_regions_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_geography_regions_polys",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_geography_regions_polys AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_glaciated_areas",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_glaciated_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_lakes",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_lakes AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_lakes_europe",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_lakes_europe AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_lakes_historic",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_lakes_historic AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_lakes_north_america",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_lakes_north_america AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_lakes_pluvial",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_lakes_pluvial AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_land",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_land AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_land_ocean_label_points",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_land_ocean_label_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_land_ocean_seams",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_land_ocean_seams AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_land_scale_rank",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_land_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_minor_islands",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_minor_islands AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_minor_islands_coastline",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_minor_islands_coastline AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_minor_islands_label_points",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_minor_islands_label_points AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_ocean",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_ocean AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_ocean_scale_rank",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_ocean_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_parks_and_protected_lands_area",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_parks_and_protected_lands_area AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_parks_and_protected_lands_line",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_parks_and_protected_lands_line AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_parks_and_protected_lands_point",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_parks_and_protected_lands_point AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_parks_and_protected_lands_scale_rank",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_parks_and_protected_lands_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_playas",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_playas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_populated_places",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_populated_places AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_populated_places_simple",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_populated_places_simple AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_ports",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_ports AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_railroads",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_railroads AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_railroads_north_america",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_railroads_north_america AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_reefs",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_reefs AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_rivers_europe",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_rivers_europe AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_rivers_lake_centerlines",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_rivers_lake_centerlines AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_rivers_lake_centerlines_scale_rank",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_rivers_lake_centerlines_scale_rank AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_rivers_north_america",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_rivers_north_america AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_roads",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_roads AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_roads_north_america",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_roads_north_america AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_time_zones",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_time_zones AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_urban_areas",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_urban_areas AS t"
+        }
+      ]
+    },
+    {
+      "id": "ne_10m_urban_areas_landscan",
+      "queries": [
+        {
+          "minzoom": 5,
+          "maxzoom": 12,
+          "sql": "SELECT fid as id, '{}'::jsonb as tags, geom FROM ne_10m_urban_areas_landscan AS t"
+        }
+      ]
+    }
+  ]
+}
