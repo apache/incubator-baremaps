@@ -33,6 +33,8 @@ You can find the official documentation at [https://baremaps.apache.org/](https:
 
 There are many places where you can contribute to Apache Baremaps such as the code, the documentation, the website or the examples.
 
+The official documentation is located in a separate repository available here [https://github.com/apache/incubator-baremaps-site](https://github.com/apache/incubator-baremaps-site).
+
 If you want to contribute to the code you can refer to the following developer guides available in the documentation.
 
 - [How to build with Maven](https://baremaps.apache.org/development/build/)
