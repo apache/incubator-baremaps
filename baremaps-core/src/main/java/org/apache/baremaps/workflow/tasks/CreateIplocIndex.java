@@ -59,7 +59,13 @@ public record CreateIplocIndex(String geonamesIndexPath, String[] iplocNicPath, 
     Stream<NicObject> fetchNicObjectStream = Arrays.stream(iplocNicPath).flatMap(iplocNicPath -> {
       try {
         InputStream inputStream = new BufferedInputStream(Files.newInputStream(Path.of(iplocNicPath)));
-        return NicParser.parse(inputStream).onClose(closeInputStream(inputStream));
+        return NicParser.parse(inputStream).onClose(() -> {
+          try {
+            inputStream.close();
+          } catch (IOException e) {
+            throw new UncheckedIOException(e);
+          }
+        });
       } catch (IOException e) {
         throw new UncheckedIOException(e);
       }
@@ -75,29 +81,23 @@ public record CreateIplocIndex(String geonamesIndexPath, String[] iplocNicPath, 
       ipLoc.insertNicObjects(fetchNicObjectStream);
       IpLocStats ipLocStats = ipLoc.getIplocStats();
 
-      logger.info(String.format(
+      logger.info(
               """
-                      IpLoc stats\n-----------\ninetnumInsertedByAddress : %s\n
-                      inetnumInsertedByDescr : %s\ninetnumInsertedByCountry : %s\n
-                      inetnumInsertedByCountryCode : %s\ninetnumInsertedByGeoloc : %s\n
-                      inetnumNotInserted : %s\n,""",
+                      IpLoc stats
+                      -----------
+                      inetnumInsertedByAddress : {}
+                      inetnumInsertedByDescr : {}
+                      inetnumInsertedByCountry : {}
+                      inetnumInsertedByCountryCode : {}
+                      inetnumInsertedByGeoloc : {}
+                      inetnumNotInserted : {}""",
               ipLocStats.getInsertedByAddressCount(), ipLocStats.getInsertedByDescrCount(),
               ipLocStats.getInsertedByCountryCount(), ipLocStats.getInsertedByCountryCodeCount(),
-              ipLocStats.getInsertedByGeolocCount(), ipLocStats.getNotInsertedCount()));
+              ipLocStats.getInsertedByGeolocCount(), ipLocStats.getNotInsertedCount());
 
       logger.info("IpLoc database created successfully");
 
     logger.info("Finished creating the Geocoder index {}", targetIplocIndexPath);
-  }
-
-  private static Runnable closeInputStream(InputStream inputStream) {
-    return () -> {
-      try {
-        inputStream.close();
-      } catch (IOException e) {
-        throw new UncheckedIOException(e);
-      }
-    };
   }
 
   @Override
