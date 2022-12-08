@@ -1,0 +1,33 @@
+{
+  "version" : 8,
+  "sources" : {
+    "baremaps" : {
+      "type" : "vector",
+      "url" : "http://localhost:9000/tiles.json"
+    }
+  },
+  "layers" : [ {
+    "id" : "ne_50m_admin_0_countries",
+    "type" : "fill",
+    "source" : "baremaps",
+    "source-layer" : "ne_50m_admin_0_countries",
+    "layout" : {
+      "visibility" : "visible"
+    },
+    "paint" : {
+      "fill-color" : "rgba(125, 105, 105, 1)",
+      "fill-outline-color" : "rgba(0, 0, 0, 1)"
+    }
+  }, {
+    "id" : "ne_10m_admin_0_countries",
+    "type" : "fill",
+    "source" : "baremaps",
+    "source-layer" : "ne_10m_admin_0_countries",
+    "paint" : {
+      "fill-color" : "rgba(125, 105, 105, 1)",
+      "fill-outline-color" : "rgba(0, 0, 0, 1)"
+    }
+  } ],
+  "center" : [ 0, 0 ],
+  "zoom" : 4
+}
