@@ -1,38 +1,55 @@
-# Baremaps
+<div align="center">
+<br/>
+<img src="logo.svg" width="100px">
 
-![Java CI](https://github.com/baremaps/baremaps/workflows/Java%20CI/badge.svg)
+# Apache Baremaps (Incubating)
 
-![example workflow](https://github.com/baremaps/baremaps/actions/workflows/build.yml/badge.svg)
-![example workflow](https://github.com/baremaps/baremaps/actions/workflows/release.yml/badge.svg)
-![example workflow](https://github.com/baremaps/baremaps/actions/workflows/analyze.yml/badge.svg)
-
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=baremaps_baremaps&metric=alert_status)](https://sonarcloud.io/dashboard?id=baremaps_baremaps)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=baremaps_baremaps&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=baremaps_baremaps)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=baremaps_baremaps&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=baremaps_baremaps)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=baremaps_baremaps&metric=security_rating)](https://sonarcloud.io/dashboard?id=baremaps_baremaps)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=baremaps_baremaps&metric=coverage)](https://sonarcloud.io/dashboard?id=baremaps_baremaps)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=baremaps_baremaps&metric=ncloc)](https://sonarcloud.io/dashboard?id=baremaps_baremaps)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat&logo=github&color=2370ff&labelColor=454545)](http://makeapullrequest.com)
+![Build passing](https://github.com/baremaps/baremaps/actions/workflows/build.yml/badge.svg)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=baremaps_baremaps&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=baremaps_baremaps)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=baremaps_baremaps&metric=bugs)](https://sonarcloud.io/dashboard?id=baremaps_baremaps)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=baremaps_baremaps&metric=code_smells)](https://sonarcloud.io/dashboard?id=baremaps_baremaps)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=baremaps_baremaps&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=baremaps_baremaps)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=baremaps_baremaps&metric=sqale_index)](https://sonarcloud.io/dashboard?id=baremaps_baremaps)
+[![Slack](https://img.shields.io/badge/Apache-dev_mailing_list-success.svg?logo=apache)](https://lists.apache.org/list.html?dev@baremaps.apache.org)
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbaremaps%2Fbaremaps.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbaremaps%2Fbaremaps?ref=badge_shield)
+</div>
 
-[Baremaps](https://www.baremaps.com/) is a toolkit for creating custom vector tiles from [OpenStreetMap](https://www.openstreetmap.org) and other data sources with Postgis and Java. The project is licensed under [Apache License 2.0](LICENSE).
+**Apache Baremaps** is a toolkit and a set of infrastructure components for creating, publishing, and operating online maps. It provides a data pipeline enabling developers to build maps with different data sources with live reload capabilities. It provides other services commonly used in online maps, such as location search and IP to location.
 
-[![State of the map](https://baremaps.apache.org/assets/screenshot.jpg)](https://www.baremaps.com/assets/demo.html)
+## 🔥 Live Demo
 
-Baremaps is inspired by [Osmosis](https://github.com/openstreetmap/osmosis), but it comes with additional features, such as the ability to:
--   Process data in parallel with the [Stream API](https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html) introduced in Java 8
--   Import data faster with the [COPY API](https://www.postgresql.org/docs/11/sql-copy.html) of Postgresql
--   Create postgis geometries on the fly with [JTS](https://github.com/locationtech/jts)
--   Create and serve customized [Mapbox Vector Tiles](https://docs.mapbox.com/vector-tiles/specification/)
+[https://demo.baremaps.com/](https://demo.baremaps.com/)
 
-On the longer run, the aim of the project is to work with a variety of data sources in order to create highly specialized and customized maps.
+## 📖 How do I use Apache Baremaps?
 
-## Start Hacking
+You can find the official documentation at [https://baremaps.apache.org/](https://baremaps.apache.org/). The following pages showcase the main uses of Apache Baremaps.
 
-To contribute to this repo see [CONTRIBUTING](CONTRIBUTING.md) and [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md).
+- The [OpenStreetMap](/examples/import-osm-into-postgis/) example is a good introduction to Baremaps, it shows how to produce high resolution vector tiles.
+- The [NaturalEarth](/examples/import-naturalearth-into-postgis/) example shows how to produce low resolution vector tiles.
+- The [Contour](/examples/import-contour-into-postgis/) example shows how to produce contour lines from a digital elevation model.
+- The [IP to location](/examples/ip-to-location/) example shows how to create and serve an IP to location service in a simple web application.
+- The [Geocoding](/examples/geocoding/) example shows how to create and serve a geocoding service in a simple web application.
+
+## 👩‍💻 How do I contribute?
+
+There are many places where you can contribute to Apache Baremaps such as the code, the documentation, the website or the examples.
+
+The official documentation is located in a separate repository available here [https://github.com/apache/incubator-baremaps-site](https://github.com/apache/incubator-baremaps-site).
+
+If you want to contribute to the code you can refer to the following developer guides available in the documentation.
+
+- [Project structure](/developer-manual/project-structure/)
+- [How to build with Maven](/developer-manual/how-to-build-with-maven/)
+- [Set up in IntelliJ IDEA](/developer-manual/setup-with-intellij/)
+- [Geocoder](/developer-manual/geocoder/)
+- [IP to location](/developer-manual/ip-to-location/)
+- [Stylesheet](/developer-manual/stylesheet/)
+
+You can also contribute in the following ways.
+
+- [Create an issue](https://github.com/apache/incubator-baremaps/issues): Report a bug or feature request
+- [Join the mailing list](https://lists.apache.org/list.html?dev@baremaps.apache.org): Initiate or participate in project discussions on the mailing list
+- [Write a post](https://medium.com/): Write a post to share your use cases and experiences with Apache Baremaps
+
+Finally, check out [CONTRIBUTING](CONTRIBUTING.md) and [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md).
+
+## 📄 License
+
+This project is licensed under Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
