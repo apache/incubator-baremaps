@@ -30,6 +30,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public record CreateIplocIndex(String geonamesIndexPath, String[] iplocNicPath, String targetIplocIndexPath) implements Task {
@@ -93,5 +94,29 @@ public record CreateIplocIndex(String geonamesIndexPath, String[] iplocNicPath, 
       throw(e);
     }
     logger.info("Finished creating the Geocoder index {}", targetIplocIndexPath);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    CreateIplocIndex that = (CreateIplocIndex) o;
+    return Objects.equals(geonamesIndexPath, that.geonamesIndexPath) && Arrays.equals(iplocNicPath, that.iplocNicPath) && Objects.equals(targetIplocIndexPath, that.targetIplocIndexPath);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = Objects.hash(geonamesIndexPath, targetIplocIndexPath);
+    result = 31 * result + Arrays.hashCode(iplocNicPath);
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "CreateIplocIndex{" +
+            "geonamesIndexPath='" + geonamesIndexPath + '\'' +
+            ", iplocNicPath=" + Arrays.toString(iplocNicPath) +
+            ", targetIplocIndexPath='" + targetIplocIndexPath + '\'' +
+            '}';
   }
 }
