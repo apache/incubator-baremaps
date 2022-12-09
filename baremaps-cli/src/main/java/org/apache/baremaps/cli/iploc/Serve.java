@@ -29,13 +29,13 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "serve", description = "Start a tile server with caching capabilities.")
+@Command(name = "serve", description = "Start an IP to location web service.")
 public class Serve implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Serve.class);
 
   @Option(names = {"--database"}, paramLabel = "DATABASE",
-      description = "The path of the SQLite database.", defaultValue = "iploc.db")
+          description = "The path of the SQLite database.", defaultValue = "iploc.db")
   private Path database;
 
   @Option(names = {"--host"}, paramLabel = "HOST", description = "The host of the server.")
@@ -52,12 +52,12 @@ public class Serve implements Callable<Integer> {
 
     // Configure the application
     var application = new ResourceConfig().register(CorsFilter.class).register(IplocResources.class)
-        .register(new AbstractBinder() {
-          @Override
-          protected void configure() {
-            bind(inetnumLocationDao).to(InetnumLocationDao.class).named("inetnumLocationDao");
-          }
-        });
+            .register(new AbstractBinder() {
+              @Override
+              protected void configure() {
+                bind(inetnumLocationDao).to(InetnumLocationDao.class).named("inetnumLocationDao");
+              }
+            });
 
     var httpService = new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
     var serverContext = HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
