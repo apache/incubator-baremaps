@@ -34,21 +34,13 @@ public class InetnumLocationDto {
   private final String country;
 
   public InetnumLocationDto(InetnumLocation inetnumLocation) {
-
     this.address = inetnumLocation.getAddress();
-
     this.ipv4Start = Ipv4.format(inetnumLocation.getIpv4Range().getStart());
-
     this.ipv4End = Ipv4.format(inetnumLocation.getIpv4Range().getEnd());
-
     this.latitude = inetnumLocation.getLocation().getLatitude();
-
     this.longitude = inetnumLocation.getLocation().getLongitude();
-
     this.network = inetnumLocation.getNetwork();
-
     this.country = inetnumLocation.getCountry();
-
   }
 
   public String getAddress() {

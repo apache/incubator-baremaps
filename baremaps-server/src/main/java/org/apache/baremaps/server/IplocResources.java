@@ -13,6 +13,7 @@
 package org.apache.baremaps.server;
 
 import static com.google.common.net.HttpHeaders.*;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,8 +34,6 @@ public class IplocResources {
 
   private final InetnumLocationDao inetnumLocationDao;
 
-  public static final String TILE_TYPE = "application/json";
-
   @Inject
   public IplocResources(InetnumLocationDao inetnumLocationDao) {
     this.inetnumLocationDao = inetnumLocationDao;
@@ -51,7 +50,7 @@ public class IplocResources {
       List<InetnumLocationDto> inetnumLocationDtos =
           inetnumLocations.stream().map(InetnumLocationDto::new).toList();
       return Response.status(200) // lgtm [java/xss]
-          .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(CONTENT_TYPE, TILE_TYPE)
+          .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(CONTENT_TYPE, APPLICATION_JSON)
           .entity(inetnumLocationDtos).build();
     } catch (IllegalArgumentException e) {
       return Response.status(400).entity(e.getMessage()).build();
