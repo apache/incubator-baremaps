@@ -5,84 +5,86 @@
     <title>Baremaps Iploc example</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no"/>
     <style>
-        #ip-form{
+        #ip-form {
             margin-bottom: 1rem;
         }
-        td, th{
+
+        td, th {
             padding: 1rem;
             border: 1px solid black;
         }
+
         table {
             border-collapse: collapse;
         }
     </style>
 </head>
 <body>
-<!-- Show my IP address-->
-<p>Your IP address is <span id="my-ip"></span></p>
+    <!-- Show my IP address-->
+    <p>Your IP address is <span id="my-ip"></span></p>
     <!-- A form to submit the IP address -->
     <form id="ip-form" onsubmit="searchByIp(event)">
         <label for="ip">IP address:</label>
         <input type="text" id="ip" name="ip" value=""/>
         <input type="submit" value="Submit"/>
     </form>
-<!-- The table of retrieved locations -->
-<table id="geo-locations"></table>
-<script>
-    function getIP(json) {
-        // Write my IP address to the my-ip span
-        document.getElementById('my-ip').textContent = json.ip;
-    }
+    <!-- The table of retrieved locations -->
+    <table id="geo-locations"></table>
+    <script>
+        function getIP(json) {
+            // Write my IP address to the my-ip span
+            document.getElementById('my-ip').textContent = json.ip;
+        }
 
-    function searchByIp(event) {
-        event.preventDefault();
+        function searchByIp(event) {
+            event.preventDefault();
 
-        // Get the IP address from the form
-        var ip = document.getElementById('ip').value;
+            // Get the IP address from the form
+            var ip = document.getElementById('ip').value;
 
-        // Make a http request on localhost:9100/api/ip/:ip to retrieve the IP address
-        const request = new XMLHttpRequest();
-        request.open('GET', `http://localhost:9100/api/ip/${ip}`, true);
+            // Make a http request on localhost:9100/api/ip/:ip to retrieve the IP address
+            const request = new XMLHttpRequest();
+            request.open('GET', `http://localhost:9100/api/ip/${ip}`, true);
 
-        // Display the request result in the map
-        request.onload = function () {
-            if (request.status >= 200 && request.status < 400) {
-                // Success!
-                const geoLocations = JSON.parse(request.responseText);
+            // Display the request result in the map
+            request.onload = function () {
+                if (request.status >= 200 && request.status < 400) {
+                    // Success!
+                    const geoLocations = JSON.parse(request.responseText);
 
-                // Fill the table of geo locations from the resulting geoLocations
-                // Geo locations contain an address, an ipv4Range, a location, a network and a country
-                const table = document.getElementById('geo-locations');
-                table.innerHTML = '';
-                // Insert header row
-                table.insertRow().innerHTML = '<th>#</th><th>Address</th><th>IP Range</th><th>Latitude</th><th>Longitude</th><th>Network</th><th>Country</th>';
-                for (let i = 0; i < geoLocations.length; i++) {
-                    const row = table.insertRow(i+1);
-                    let pos = 0;
-                    let cell = row.insertCell(pos++);
-                    cell.innerHTML = i+1;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = geoLocations[i].address;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = `${geoLocations[i].ipv4Start} - ${geoLocations[i].ipv4End}`;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = geoLocations[i].latitude;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = geoLocations[i].longitude;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = geoLocations[i].network;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = geoLocations[i].country;
+                    // Fill the table of geo locations from the resulting geoLocations
+                    // Geo locations contain an address, an ipv4Range, a location, a network and a country
+                    const table = document.getElementById('geo-locations');
+                    table.innerHTML = '';
+                    // Insert header row
+                    table.insertRow().innerHTML = '<th>#</th><th>Address</th><th>IP Range</th><th>Latitude</th><th>Longitude</th><th>Network</th><th>Country</th>';
+                    for (let i = 0; i < geoLocations.length; i++) {
+                        const row = table.insertRow(i + 1);
+                        let pos = 0;
+                        let cell = row.insertCell(pos++);
+                        cell.innerHTML = i + 1;
+                        cell = row.insertCell(pos++);
+                        cell.innerHTML = geoLocations[i].address;
+                        cell = row.insertCell(pos++);
+                        cell.innerHTML = `${geoLocations[i].ipv4Start} - ${geoLocations[i].ipv4End}`;
+                        cell = row.insertCell(pos++);
+                        cell.innerHTML = geoLocations[i].latitude;
+                        cell = row.insertCell(pos++);
+                        cell.innerHTML = geoLocations[i].longitude;
+                        cell = row.insertCell(pos++);
+                        cell.innerHTML = geoLocations[i].network;
+                        cell = row.insertCell(pos++);
+                        cell.innerHTML = geoLocations[i].country;
+                    }
+                } else {
+                    // We reached our target server, but it returned an error
+                    console.log('Error');
                 }
-            } else {
-                // We reached our target server, but it returned an error
-                console.log('Error');
-            }
-        };
+            };
 
-        request.send();
-    }
-</script>
-<script src="https://api.ipify.org?format=jsonp&callback=getIP"></script>
+            request.send();
+        }
+    </script>
+    <script src="https://api.ipify.org?format=jsonp&callback=getIP"></script>
 </body>
 </html>
