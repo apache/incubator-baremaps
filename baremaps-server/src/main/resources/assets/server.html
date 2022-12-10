@@ -24,15 +24,17 @@
 <div id="map"></div>
 <script>
 
-  // Initialize the map
+  // Initialize the map.
   let map = new maplibregl.Map({
     container: 'map',
     style: '/style.json',
     hash: true
   });
 
+  // Add the navigation control to the map.
   map.addControl(new maplibregl.NavigationControl());
 
+  // Add the inspect control to the map.
   map.addControl(new MaplibreInspect({
     showMapPopup: true,
     showMapPopupOnHover: false,
@@ -43,11 +45,12 @@
     })
   }));
 
+  // Add the tile boundaries control to the map.
   map.addControl(new MaplibreTileBoundaries({
     showBoundaries: false
   }));
 
-  // Listen to map changes
+  // Listen to configuration changes and update the map.
   const connection = new EventSource('/changes')
   connection.onmessage = e => {
     let style = JSON.parse(e.data);
