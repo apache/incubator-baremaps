@@ -100,9 +100,9 @@ public class ServerResources {
   @javax.ws.rs.Path("{path:.*}")
   public Response get(@PathParam("path") String path) throws IOException {
     if (path.equals("") || path.endsWith("/")) {
-      path += "index.html";
+      path += "server.html";
     }
-    path = String.format("server/%s", path);
+    path = String.format("assets/%s", path);
     try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
       var bytes = inputStream.readAllBytes();
       return Response.ok().entity(bytes).build();

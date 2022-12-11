@@ -52,7 +52,7 @@ export default {
             "url": `${config.host}/tiles.json`
         }
     },
-    "sprite": `${config.host}/sprites/osm/sprite`,
+    "sprite": `https://tiles.baremaps.com/sprites/osm/sprite`,
     "glyphs": "https://tiles.baremaps.com/fonts/{fontstack}/{range}.pbf",
     "layers": [
         background,
