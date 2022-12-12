@@ -10,19 +10,26 @@
  * the License.
  */
 
-package org.apache.baremaps.iploc.nic;
+package org.apache.baremaps.workflow.tasks;
 
 
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
+import java.nio.file.Files;
+import org.apache.baremaps.collection.utils.FileUtils;
+import org.apache.baremaps.testing.TestFiles;
+import org.apache.baremaps.workflow.WorkflowContext;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class NicFetcherTest {
+class UngzipFileTest {
 
   @Test
-  @Disabled
-  void fetch() {
-    Assertions.assertEquals(NicFetcher.NIC_URLS.size(), new NicFetcher().fetch().count());
+  @Tag("integration")
+  void run() throws Exception {
+    var gzip = TestFiles.resolve("ripe/sample.txt.gz");
+    var directory = Files.createTempDirectory("tmp_");
+    var task = new UngzipFile(gzip.toString(), directory.toString());
+    task.execute(new WorkflowContext());
+    FileUtils.deleteRecursively(directory);
   }
 }

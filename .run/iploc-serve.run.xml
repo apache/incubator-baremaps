@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="iploc-serve" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.cli.Baremaps" />
+    <module name="baremaps-cli" />
+    <option name="PROGRAM_PARAMETERS" value="iploc serve --database iploc.db --port 9000" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

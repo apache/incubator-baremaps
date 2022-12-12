@@ -17,7 +17,7 @@ package org.apache.baremaps.cli.iploc;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-@Command(name = "iploc", subcommands = {Init.class},
+@Command(name = "iploc", subcommands = {Serve.class},
     description = "IP to location commands (experimental).")
 public class IpLoc implements Runnable {
 
