@@ -4,7 +4,7 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.cli.Baremaps" />
     <module name="baremaps-cli" />
-    <option name="PROGRAM_PARAMETERS" value="geocoder serve --index geocoder-index --port 3000" />
+    <option name="PROGRAM_PARAMETERS" value="geocoder serve --index geocoder-index --port 9000" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
