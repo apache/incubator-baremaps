@@ -28,9 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public record CreateIplocIndex(String geonamesIndexPath, List<String> nicPaths,
                                String targetIplocIndexPath) implements Task {
