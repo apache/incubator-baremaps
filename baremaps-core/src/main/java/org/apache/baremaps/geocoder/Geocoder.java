@@ -83,17 +83,24 @@ public abstract class Geocoder implements AutoCloseable {
         Document document = searcher.doc(scoreDoc.doc);
         Record record = new Record(document.get("name"), document.get("asciiname"),
             document.get("alternatenames"),
-            document.getField("latitude").numericValue().doubleValue(),
-            document.getField("longitude").numericValue().doubleValue(),
+            document.getField("latitude") != null
+                ? document.getField("latitude").numericValue().doubleValue()
+                : null,
+            document.getField("longitude") != null
+                ? document.getField("longitude").numericValue().doubleValue()
+                : null,
             document.get("featureClass"), document.get("featureCode"), document.get("countryCode"),
             document.get("cc2"), document.get("admin1Code"), document.get("admin2Code"),
             document.get("admin3Code"), document.get("admin4Code"),
-            document.getField("population").numericValue().longValue(),
+            document.getField("population") != null
+                ? document.getField("population").numericValue().longValue()
+                : null,
             document.getField("elevation") != null
                 ? document.getField("elevation").numericValue().intValue()
                 : null,
-            document.getField("dem").numericValue().intValue(), document.get("timezone"),
-            document.get("modificationDate"));
+            document.getField("dem") != null ? document.getField("dem").numericValue().intValue()
+                : null,
+            document.get("timezone"), document.get("modificationDate"));
         results.add(new Result(scoreDoc.score, record));
       }
       return new Response(results);

@@ -37,7 +37,7 @@ class GeonamesGeocoderTest {
 
     var response = geocoder.search(new Request("Bim Alta Schloss", 1));
     assertEquals(1, response.results().size());
-    assertEquals("Bim Alta Schloss", response.results().get(0).document().get("name"));
+    assertEquals("Bim Alta Schloss", response.results().get(0).record().name());
 
     Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
   }
@@ -52,7 +52,7 @@ class GeonamesGeocoderTest {
 
     var response = geocoder.search(new Request("Bim Alta Schloss", 10, "LI"));
     assertEquals(10, response.results().size());
-    assertEquals("Bim Alta Schloss", response.results().get(0).document().get("name"));
+    assertEquals("Bim Alta Schloss", response.results().get(0).record().name());
 
     Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
   }
