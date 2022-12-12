@@ -37,12 +37,12 @@ public class Serve implements Callable<Integer> {
   @Option(names = {"--index"}, paramLabel = "INDEX", description = "The path to the lucene index.",
       required = true)
   private Path indexPath;
-
+ 
   @Option(names = {"--host"}, paramLabel = "HOST", description = "The host of the server.")
   private String host = "localhost";
 
   @Option(names = {"--port"}, paramLabel = "PORT", description = "The port of the server.")
-  private int port = 3000;
+  private int port = 9000;
 
   @Override
   public Integer call() throws Exception {
