@@ -10,7 +10,11 @@
  * the License.
  */
 
-package org.apache.baremaps.geocoder;
+package org.apache.baremaps.geocoder.request;
+
+
+
+import org.apache.baremaps.geocoder.utils.IsoCountriesUtils;
 
 public class Request {
 

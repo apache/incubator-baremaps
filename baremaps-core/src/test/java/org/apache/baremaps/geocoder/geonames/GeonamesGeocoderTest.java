@@ -21,7 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
-import org.apache.baremaps.geocoder.Request;
+import org.apache.baremaps.geocoder.request.Request;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.jupiter.api.Test;

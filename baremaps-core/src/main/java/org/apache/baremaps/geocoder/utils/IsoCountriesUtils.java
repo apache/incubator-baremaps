@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.geocoder;
+package org.apache.baremaps.geocoder.utils;
 
 
 

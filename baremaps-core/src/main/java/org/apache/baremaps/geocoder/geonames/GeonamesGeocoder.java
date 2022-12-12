@@ -23,8 +23,8 @@ import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.apache.baremaps.geocoder.Geocoder;
-import org.apache.baremaps.geocoder.IsoCountriesUtils;
-import org.apache.baremaps.geocoder.Request;
+import org.apache.baremaps.geocoder.request.Request;
+import org.apache.baremaps.geocoder.utils.IsoCountriesUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -76,21 +76,22 @@ public class GeonamesGeocoder extends Geocoder {
       document.add(new StringField("countryCode", record.getCountryCode(), Store.YES));
       document.add(new StoredField("longitude", record.getLongitude()));
       document.add(new StoredField("latitude", record.getLatitude()));
-      document.add(new StoredField("asciiname", record.getLatitude()));
-      document.add(new StoredField("alternatenames", record.getLatitude()));
-      document.add(new StoredField("featureClass", record.getLatitude()));
-      document.add(new StoredField("featureCode", record.getLatitude()));
-      document.add(new StoredField("cc2", record.getLatitude()));
-      document.add(new StoredField("cc2", record.getLatitude()));
-      document.add(new StoredField("admin1Code", record.getLatitude()));
-      document.add(new StoredField("admin2Code", record.getLatitude()));
-      document.add(new StoredField("admin3Code", record.getLatitude()));
-      document.add(new StoredField("admin4Code", record.getLatitude()));
-      document.add(new StoredField("population", record.getLatitude()));
-      document.add(new StoredField("elevation", record.getLatitude()));
-      document.add(new StoredField("dem", record.getLatitude()));
-      document.add(new StoredField("timezone", record.getLatitude()));
-      document.add(new StoredField("modificationDate", record.getLatitude()));
+      document.add(new StoredField("asciiname", record.getAsciiname()));
+      document.add(new StoredField("alternatenames", record.getAlternatenames()));
+      document.add(new StoredField("featureClass", record.getFeatureClass()));
+      document.add(new StoredField("featureCode", record.getFeatureCode()));
+      document.add(new StoredField("cc2", record.getCc2()));
+      document.add(new StoredField("admin1Code", record.getAdmin1Code()));
+      document.add(new StoredField("admin2Code", record.getAdmin2Code()));
+      document.add(new StoredField("admin3Code", record.getAdmin3Code()));
+      document.add(new StoredField("admin4Code", record.getAdmin4Code()));
+      document.add(new StoredField("population", record.getPopulation()));
+      if (record.getElevation() != null) {
+        document.add(new StoredField("elevation", record.getElevation()));
+      }
+      document.add(new StoredField("dem", record.getDem()));
+      document.add(new StoredField("timezone", record.getTimezone()));
+      document.add(new StoredField("modificationDate", record.getModificationDate()));
       return document;
     });
   }

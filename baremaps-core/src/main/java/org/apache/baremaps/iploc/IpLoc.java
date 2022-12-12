@@ -23,9 +23,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.baremaps.geocoder.Geocoder;
-import org.apache.baremaps.geocoder.IsoCountriesUtils;
-import org.apache.baremaps.geocoder.Request;
-import org.apache.baremaps.geocoder.Response;
+import org.apache.baremaps.geocoder.request.Request;
+import org.apache.baremaps.geocoder.response.Response;
+import org.apache.baremaps.geocoder.utils.IsoCountriesUtils;
 import org.apache.baremaps.iploc.data.InetnumLocation;
 import org.apache.baremaps.iploc.data.IpLocStats;
 import org.apache.baremaps.iploc.data.Ipv4Range;
@@ -186,10 +186,10 @@ public class IpLoc {
   private Optional<Location> findLocation(Request request) throws IOException, ParseException {
     Response response = geocoder.search(request);
     if (response.results().size() > 0) {
-      if (response.topDocs().scoreDocs[0].score > SCORE_THRESHOLD) {
-        double latitude = Double.parseDouble(response.results().get(0).document().get("latitude"));
-        double longitude =
-            Double.parseDouble(response.results().get(0).document().get("longitude"));
+      var bestResult = response.results().get(0);
+      if (bestResult.score() > SCORE_THRESHOLD) {
+        double latitude = bestResult.record().latitude();
+        double longitude = bestResult.record().longitude();
         return Optional.of(new Location(latitude, longitude));
       }
     }

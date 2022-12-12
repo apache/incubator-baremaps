@@ -16,8 +16,8 @@ package org.apache.baremaps.cli.geocoder;
 
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import org.apache.baremaps.geocoder.Request;
 import org.apache.baremaps.geocoder.geonames.GeonamesGeocoder;
+import org.apache.baremaps.geocoder.request.Request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
