@@ -16,8 +16,8 @@ import org.apache.baremaps.geocoder.geonames.GeonamesGeocoder;
 import org.apache.baremaps.iploc.IpLoc;
 import org.apache.baremaps.iploc.data.IpLocStats;
 import org.apache.baremaps.iploc.database.SqliteUtils;
-import org.apache.baremaps.iploc.nic.NicObject;
 import org.apache.baremaps.iploc.nic.NicParser;
+import org.apache.baremaps.stream.StreamException;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
@@ -26,101 +26,93 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Stream;
 
-public record CreateIplocIndex(String geonamesIndexPath, String[] iplocNicPath, String targetIplocIndexPath) implements Task {
+public record CreateIplocIndex(String geonamesIndexPath, String[] nicPaths,
+                               String targetIplocIndexPath) implements Task {
 
-  private static final Logger logger = LoggerFactory.getLogger(CreateIplocIndex.class);
+    private static final Logger logger = LoggerFactory.getLogger(CreateIplocIndex.class);
 
-  @Override
-  public void execute(WorkflowContext context) throws Exception {
-    logger.info("Generating Iploc from {} {}", geonamesIndexPath, iplocNicPath);
+    @Override
+    public void execute(WorkflowContext context) throws Exception {
+        logger.info("Generating Iploc from {} {}", geonamesIndexPath, nicPaths);
 
-    logger.info("Creating the Geocoder");
-    GeonamesGeocoder geocoder;
-    try {
-      geocoder = new GeonamesGeocoder(Path.of(geonamesIndexPath), null);
-      if (!geocoder.indexExists()) {
-        logger.error("Geocoder index doesn't exist");
-        return;
-      }
-      geocoder.open();
-    } catch(Exception e) {
-      logger.error("Error while creating the geocoder index", e);
-      return;
-    }
+        logger.info("Creating the Geocoder");
+        GeonamesGeocoder geocoder;
+        try {
+            geocoder = new GeonamesGeocoder(Path.of(geonamesIndexPath), null);
+            if (!geocoder.indexExists()) {
+                logger.error("Geocoder index doesn't exist");
+                return;
+            }
+            geocoder.open();
+        } catch (Exception e) {
+            logger.error("Error while creating the geocoder index", e);
+            return;
+        }
 
-    logger.info("Generating NIC objects stream");
-    Stream<NicObject> fetchNicObjectStream = Arrays.stream(iplocNicPath).flatMap(iplocNicPath -> {
-      try {
-        InputStream inputStream = new BufferedInputStream(Files.newInputStream(Path.of(iplocNicPath)));
-        return NicParser.parse(inputStream).onClose(() -> {
-          try {
-            inputStream.close();
+        logger.info("Creating the Iploc database");
+        String jdbcUrl = String.format("JDBC:sqlite:%s", targetIplocIndexPath);
+
+        SqliteUtils.executeResource(jdbcUrl, "iploc_init.sql");
+        org.apache.baremaps.iploc.IpLoc ipLoc = new IpLoc(jdbcUrl, geocoder);
+
+        logger.info("Generating NIC objects stream");
+        Arrays.stream(nicPaths).parallel().forEach(path -> {
+          try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(Path.of(path)));) {
+            var nicObjects = NicParser.parse(inputStream);
+            logger.info("Inserting the nic objects into the Iploc database");
+            ipLoc.insertNicObjects(nicObjects);
           } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            throw new StreamException(e);
           }
         });
-      } catch (IOException e) {
-        throw new UncheckedIOException(e);
-      }
-    });
 
-      logger.info("Creating the Iploc database");
-      String jdbcUrl = String.format("JDBC:sqlite:%s", targetIplocIndexPath);
+        IpLocStats ipLocStats = ipLoc.getIplocStats();
 
-      SqliteUtils.executeResource(jdbcUrl, "iploc_init.sql");
+        logger.info(
+                """
+                        IpLoc stats
+                        -----------
+                        inetnumInsertedByAddress : {}
+                        inetnumInsertedByDescr : {}
+                        inetnumInsertedByCountry : {}
+                        inetnumInsertedByCountryCode : {}
+                        inetnumInsertedByGeoloc : {}
+                        inetnumNotInserted : {}""",
+                ipLocStats.getInsertedByAddressCount(), ipLocStats.getInsertedByDescrCount(),
+                ipLocStats.getInsertedByCountryCount(), ipLocStats.getInsertedByCountryCodeCount(),
+                ipLocStats.getInsertedByGeolocCount(), ipLocStats.getNotInsertedCount());
 
-      logger.info("Inserting the nic objects into the Iploc database");
-      org.apache.baremaps.iploc.IpLoc ipLoc = new IpLoc(jdbcUrl, geocoder);
-      ipLoc.insertNicObjects(fetchNicObjectStream);
-      IpLocStats ipLocStats = ipLoc.getIplocStats();
+        logger.info("IpLoc database created successfully");
 
-      logger.info(
-              """
-                      IpLoc stats
-                      -----------
-                      inetnumInsertedByAddress : {}
-                      inetnumInsertedByDescr : {}
-                      inetnumInsertedByCountry : {}
-                      inetnumInsertedByCountryCode : {}
-                      inetnumInsertedByGeoloc : {}
-                      inetnumNotInserted : {}""",
-              ipLocStats.getInsertedByAddressCount(), ipLocStats.getInsertedByDescrCount(),
-              ipLocStats.getInsertedByCountryCount(), ipLocStats.getInsertedByCountryCodeCount(),
-              ipLocStats.getInsertedByGeolocCount(), ipLocStats.getNotInsertedCount());
+        logger.info("Finished creating the Geocoder index {}", targetIplocIndexPath);
+    }
 
-      logger.info("IpLoc database created successfully");
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CreateIplocIndex that = (CreateIplocIndex) o;
+        return Objects.equals(geonamesIndexPath, that.geonamesIndexPath) && Arrays.equals(nicPaths, that.nicPaths) && Objects.equals(targetIplocIndexPath, that.targetIplocIndexPath);
+    }
 
-    logger.info("Finished creating the Geocoder index {}", targetIplocIndexPath);
-  }
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(geonamesIndexPath, targetIplocIndexPath);
+        result = 31 * result + Arrays.hashCode(nicPaths);
+        return result;
+    }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    CreateIplocIndex that = (CreateIplocIndex) o;
-    return Objects.equals(geonamesIndexPath, that.geonamesIndexPath) && Arrays.equals(iplocNicPath, that.iplocNicPath) && Objects.equals(targetIplocIndexPath, that.targetIplocIndexPath);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = Objects.hash(geonamesIndexPath, targetIplocIndexPath);
-    result = 31 * result + Arrays.hashCode(iplocNicPath);
-    return result;
-  }
-
-  @Override
-  public String toString() {
-    return "CreateIplocIndex{" +
-            "geonamesIndexPath='" + geonamesIndexPath + '\'' +
-            ", iplocNicPath=" + Arrays.toString(iplocNicPath) +
-            ", targetIplocIndexPath='" + targetIplocIndexPath + '\'' +
-            '}';
-  }
+    @Override
+    public String toString() {
+        return "CreateIplocIndex{" +
+                "geonamesIndexPath='" + geonamesIndexPath + '\'' +
+                ", nicPaths=" + Arrays.toString(nicPaths) +
+                ", targetIplocIndexPath='" + targetIplocIndexPath + '\'' +
+                '}';
+    }
 }

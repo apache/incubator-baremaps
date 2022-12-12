@@ -5,7 +5,7 @@
     <title>Baremaps Iploc example</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no"/>
     <style>
-        #ip-form {
+        form {
             margin-bottom: 1rem;
         }
 
@@ -23,13 +23,13 @@
     <!-- Show my IP address-->
     <p>Your IP address is <span id="my-ip"></span></p>
     <!-- A form to submit the IP address -->
-    <form id="ip-form" onsubmit="searchByIp(event)">
+    <form onsubmit="searchByIp(event)">
         <label for="ip">IP address:</label>
         <input type="text" id="ip" name="ip" value=""/>
         <input type="submit" value="Submit"/>
     </form>
     <!-- The table of retrieved locations -->
-    <table id="geo-locations"></table>
+    <table id="results"></table>
     <script>
         function getIP(json) {
             // Write my IP address to the my-ip span
@@ -44,7 +44,10 @@
 
             // Make a http request on localhost:9100/api/ip/:ip to retrieve the IP address
             const request = new XMLHttpRequest();
-            request.open('GET', `http://localhost:9100/api/ip/${ip}`, true);
+            request.open('GET', `http://localhost:3000/api/ip/${ip}`, true);
+
+            // Set request Accept header to application/json
+            request.setRequestHeader('Accept', 'application/json');
 
             // Display the request result in the map
             request.onload = function () {
@@ -54,7 +57,7 @@
 
                     // Fill the table of geo locations from the resulting geoLocations
                     // Geo locations contain an address, an ipv4Range, a location, a network and a country
-                    const table = document.getElementById('geo-locations');
+                    const table = document.getElementById('results');
                     table.innerHTML = '';
                     // Insert header row
                     table.insertRow().innerHTML = '<th>#</th><th>Address</th><th>IP Range</th><th>Latitude</th><th>Longitude</th><th>Network</th><th>Country</th>';

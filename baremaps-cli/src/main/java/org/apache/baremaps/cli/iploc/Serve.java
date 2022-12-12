@@ -42,7 +42,7 @@ public class Serve implements Callable<Integer> {
   private String host = "localhost";
 
   @Option(names = {"--port"}, paramLabel = "PORT", description = "The port of the server.")
-  private int port = 9000;
+  private int port = 3000;
 
   @Override
   public Integer call() throws Exception {

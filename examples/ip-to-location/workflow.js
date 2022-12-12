@@ -46,7 +46,7 @@ const createGeonamesIndex = {id: "geocoder-index", needs: [FetchAndUnzipGeonames
 
 // Create the iploc database
 const createIplocIndex = {id: "iploc-index", needs: fetchAndUnzipNic.map(e => e.id).concat([createGeonamesIndex.id]), tasks: [
-    {type: "CreateIplocIndex", geonamesIndexPath: "geocoder-index", iplocNicPath: nics.map(nic => `archives/${nic.filename}`), targetIplocIndexPath: "iploc.db"}
+    {type: "CreateIplocIndex", geonamesIndexPath: "geocoder-index", nicPaths: nics.map(nic => `archives/${nic.filename}`), targetIplocIndexPath: "iploc.db"}
 ]};
 
 export default {"steps": fetchAndUnzipNic.concat([FetchAndUnzipGeonames, createGeonamesIndex, createIplocIndex])};
