@@ -37,7 +37,7 @@ public class Serve implements Callable<Integer> {
   @Option(names = {"--index"}, paramLabel = "INDEX", description = "The path to the lucene index.",
       required = true)
   private Path indexPath;
- 
+
   @Option(names = {"--host"}, paramLabel = "HOST", description = "The host of the server.")
   private String host = "localhost";
 
