@@ -36,7 +36,8 @@ import org.apache.baremaps.workflow.tasks.*;
     @JsonSubTypes.Type(value = ImportShapefile.class, name = "ImportShapefile"),
     @JsonSubTypes.Type(value = LogMessage.class, name = "LogMessage"),
     @JsonSubTypes.Type(value = UnzipFile.class, name = "UnzipFile"),
-    @JsonSubTypes.Type(value = UpdateOpenStreetMap.class, name = "UpdateOpenStreetMap"),})
+    @JsonSubTypes.Type(value = UpdateOpenStreetMap.class, name = "UpdateOpenStreetMap"),
+    @JsonSubTypes.Type(value = CreateGeonamesIndex.class, name = "CreateGeonamesIndex"),})
 public interface Task {
 
   /**

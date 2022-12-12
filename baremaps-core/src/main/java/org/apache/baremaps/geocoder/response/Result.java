@@ -10,29 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.geocoder;
+package org.apache.baremaps.geocoder.response;
 
 
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.search.ScoreDoc;
-
-public class Result {
-
-  private final ScoreDoc scoreDoc;
-
-  private final Document document;
-
-  public Result(ScoreDoc scoreDoc, Document document) {
-    this.scoreDoc = scoreDoc;
-    this.document = document;
-  }
-
-  public ScoreDoc scoreDoc() {
-    return scoreDoc;
-  }
-
-  public Document document() {
-    return document;
-  }
-}
+public record Result(float score, Data data) {}

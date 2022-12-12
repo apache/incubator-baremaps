@@ -10,29 +10,8 @@
  * the License.
  */
 
-package org.apache.baremaps.geocoder;
-
-
+package org.apache.baremaps.geocoder.response;
 
 import java.util.List;
-import org.apache.lucene.search.TopDocs;
 
-public class Response {
-
-  private final TopDocs topDocs;
-
-  private final List<Result> results;
-
-  public Response(TopDocs topDocs, List<Result> results) {
-    this.topDocs = topDocs;
-    this.results = results;
-  }
-
-  public TopDocs topDocs() {
-    return topDocs;
-  }
-
-  public List<Result> results() {
-    return results;
-  }
-}
+public record Response(List<Result> results) {}

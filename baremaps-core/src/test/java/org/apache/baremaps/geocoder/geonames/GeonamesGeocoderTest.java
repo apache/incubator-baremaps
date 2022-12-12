@@ -21,7 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
-import org.apache.baremaps.geocoder.Request;
+import org.apache.baremaps.geocoder.request.Request;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class GeonamesGeocoderTest {
 
     var response = geocoder.search(new Request("Bim Alta Schloss", 1));
     assertEquals(1, response.results().size());
-    assertEquals("Bim Alta Schloss", response.results().get(0).document().get("name"));
+    assertEquals("Bim Alta Schloss", response.results().get(0).data().name());
 
     Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
   }
@@ -52,7 +52,7 @@ class GeonamesGeocoderTest {
 
     var response = geocoder.search(new Request("Bim Alta Schloss", 10, "LI"));
     assertEquals(10, response.results().size());
-    assertEquals("Bim Alta Schloss", response.results().get(0).document().get("name"));
+    assertEquals("Bim Alta Schloss", response.results().get(0).data().name());
 
     Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
   }

@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.geocoder;
+package org.apache.baremaps.geocoder.utils;
 
 
 
@@ -35,7 +35,7 @@ public class IsoCountriesUtils {
     return isoCountries.getOrDefault(iso, "");
   }
 
-  public static Boolean containsCountry(String iso) {
+  public static boolean containsCountry(String iso) {
     return isoCountries.containsKey(iso);
   }
 }

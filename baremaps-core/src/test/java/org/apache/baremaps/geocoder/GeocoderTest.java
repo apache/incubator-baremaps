@@ -21,6 +21,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.stream.Stream;
+import org.apache.baremaps.geocoder.request.Request;
+import org.apache.baremaps.geocoder.response.Response;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -48,15 +50,15 @@ class GeocoderTest {
       @Override
       protected Stream<Document> documents() {
         Document d1 = new Document();
-        d1.add(new Field("value", v1, TextField.TYPE_STORED));
+        d1.add(new Field("name", v1, TextField.TYPE_STORED));
         Document d2 = new Document();
-        d2.add(new Field("value", v2, TextField.TYPE_STORED));
+        d2.add(new Field("name", v2, TextField.TYPE_STORED));
         return Stream.of(d1, d2);
       }
 
       @Override
       protected Query query(Analyzer analyzer, Request request) throws ParseException {
-        return new QueryParser("value", analyzer).parse(request.query());
+        return new QueryParser("name", analyzer).parse(request.query());
       }
     };
     geocoder.build();
@@ -66,11 +68,11 @@ class GeocoderTest {
 
     Response r1 = geocoder.search(new Request("text", 10));
     assertEquals(1, r1.results().size());
-    assertEquals(v1, r1.results().get(0).document().get("value"));
+    assertEquals(v1, r1.results().get(0).data().name());
 
     Response r2 = geocoder.search(new Request("test", 10));
     assertEquals(1, r2.results().size());
-    assertEquals(v2, r2.results().get(0).document().get("value"));
+    assertEquals(v2, r2.results().get(0).data().name());
 
     Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
   }

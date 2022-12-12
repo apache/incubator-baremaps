@@ -19,6 +19,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import org.apache.baremaps.geocoder.request.Request;
+import org.apache.baremaps.geocoder.response.Data;
+import org.apache.baremaps.geocoder.response.Response;
+import org.apache.baremaps.geocoder.response.Result;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -76,9 +80,30 @@ public abstract class Geocoder implements AutoCloseable {
     try {
       TopDocs topDocs = searcher.search(query(analyzer, request), request.limit());
       for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
-        results.add(new Result(scoreDoc, searcher.doc(scoreDoc.doc)));
+        Document document = searcher.doc(scoreDoc.doc);
+        Data data = new Data(document.get("name"), document.get("asciiname"),
+            document.get("alternatenames"),
+            document.getField("latitude") != null
+                ? document.getField("latitude").numericValue().doubleValue()
+                : null,
+            document.getField("longitude") != null
+                ? document.getField("longitude").numericValue().doubleValue()
+                : null,
+            document.get("featureClass"), document.get("featureCode"), document.get("countryCode"),
+            document.get("cc2"), document.get("admin1Code"), document.get("admin2Code"),
+            document.get("admin3Code"), document.get("admin4Code"),
+            document.getField("population") != null
+                ? document.getField("population").numericValue().longValue()
+                : null,
+            document.getField("elevation") != null
+                ? document.getField("elevation").numericValue().intValue()
+                : null,
+            document.getField("dem") != null ? document.getField("dem").numericValue().intValue()
+                : null,
+            document.get("timezone"), document.get("modificationDate"));
+        results.add(new Result(scoreDoc.score, data));
       }
-      return new Response(topDocs, results);
+      return new Response(results);
     } finally {
       searcherManager.release(searcher);
     }
@@ -88,7 +113,9 @@ public abstract class Geocoder implements AutoCloseable {
   public void close() throws IOException {
     analyzer.close();
     directory.close();
-    searcherManager.close();
+    if (searcherManager != null) {
+      searcherManager.close();
+    }
   }
 
   protected abstract Analyzer analyzer() throws IOException;
