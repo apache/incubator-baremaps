@@ -29,9 +29,10 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
-public record CreateIplocIndex(String geonamesIndexPath, String[] nicPaths,
+public record CreateIplocIndex(String geonamesIndexPath, List<String> nicPaths,
                                String targetIplocIndexPath) implements Task {
 
     private static final Logger logger = LoggerFactory.getLogger(CreateIplocIndex.class);
@@ -58,10 +59,10 @@ public record CreateIplocIndex(String geonamesIndexPath, String[] nicPaths,
         String jdbcUrl = String.format("JDBC:sqlite:%s", targetIplocIndexPath);
 
         SqliteUtils.executeResource(jdbcUrl, "iploc_init.sql");
-        org.apache.baremaps.iploc.IpLoc ipLoc = new IpLoc(jdbcUrl, geocoder);
+        IpLoc ipLoc = new IpLoc(jdbcUrl, geocoder);
 
         logger.info("Generating NIC objects stream");
-        Arrays.stream(nicPaths).parallel().forEach(path -> {
+        nicPaths.stream().parallel().forEach(path -> {
           try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(Path.of(path)));) {
             var nicObjects = NicParser.parse(inputStream);
             logger.info("Inserting the nic objects into the Iploc database");
@@ -90,29 +91,5 @@ public record CreateIplocIndex(String geonamesIndexPath, String[] nicPaths,
         logger.info("IpLoc database created successfully");
 
         logger.info("Finished creating the Geocoder index {}", targetIplocIndexPath);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CreateIplocIndex that = (CreateIplocIndex) o;
-        return Objects.equals(geonamesIndexPath, that.geonamesIndexPath) && Arrays.equals(nicPaths, that.nicPaths) && Objects.equals(targetIplocIndexPath, that.targetIplocIndexPath);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Objects.hash(geonamesIndexPath, targetIplocIndexPath);
-        result = 31 * result + Arrays.hashCode(nicPaths);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "CreateIplocIndex{" +
-                "geonamesIndexPath='" + geonamesIndexPath + '\'' +
-                ", nicPaths=" + Arrays.toString(nicPaths) +
-                ", targetIplocIndexPath='" + targetIplocIndexPath + '\'' +
-                '}';
     }
 }
