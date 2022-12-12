@@ -27,7 +27,7 @@ package org.apache.baremaps.geocoder.response;
 /**
  * Structured of a Geonames record.
  */
-public record Record(
+public record Data(
 
         // name of geographical point (utf8) varchar(200)
         String name,

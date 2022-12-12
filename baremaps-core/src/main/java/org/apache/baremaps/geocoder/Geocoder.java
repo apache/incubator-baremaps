@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.apache.baremaps.geocoder.request.Request;
-import org.apache.baremaps.geocoder.response.Record;
+import org.apache.baremaps.geocoder.response.Data;
 import org.apache.baremaps.geocoder.response.Response;
 import org.apache.baremaps.geocoder.response.Result;
 import org.apache.lucene.analysis.Analyzer;
@@ -81,7 +81,7 @@ public abstract class Geocoder implements AutoCloseable {
       TopDocs topDocs = searcher.search(query(analyzer, request), request.limit());
       for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
         Document document = searcher.doc(scoreDoc.doc);
-        Record record = new Record(document.get("name"), document.get("asciiname"),
+        Data data = new Data(document.get("name"), document.get("asciiname"),
             document.get("alternatenames"),
             document.getField("latitude") != null
                 ? document.getField("latitude").numericValue().doubleValue()
@@ -101,7 +101,7 @@ public abstract class Geocoder implements AutoCloseable {
             document.getField("dem") != null ? document.getField("dem").numericValue().intValue()
                 : null,
             document.get("timezone"), document.get("modificationDate"));
-        results.add(new Result(scoreDoc.score, record));
+        results.add(new Result(scoreDoc.score, data));
       }
       return new Response(results);
     } finally {

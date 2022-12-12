@@ -188,8 +188,8 @@ public class IpLoc {
     if (response.results().size() > 0) {
       var bestResult = response.results().get(0);
       if (bestResult.score() > SCORE_THRESHOLD) {
-        double latitude = bestResult.record().latitude();
-        double longitude = bestResult.record().longitude();
+        double latitude = bestResult.data().latitude();
+        double longitude = bestResult.data().longitude();
         return Optional.of(new Location(latitude, longitude));
       }
     }

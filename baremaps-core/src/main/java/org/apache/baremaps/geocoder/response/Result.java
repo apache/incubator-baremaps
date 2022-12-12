@@ -13,4 +13,4 @@
 package org.apache.baremaps.geocoder.response;
 
 
-public record Result(float score, Record record) {}
+public record Result(float score, Data data) {}

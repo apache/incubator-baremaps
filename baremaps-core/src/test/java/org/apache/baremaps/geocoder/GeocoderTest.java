@@ -68,11 +68,11 @@ class GeocoderTest {
 
     Response r1 = geocoder.search(new Request("text", 10));
     assertEquals(1, r1.results().size());
-    assertEquals(v1, r1.results().get(0).record().name());
+    assertEquals(v1, r1.results().get(0).data().name());
 
     Response r2 = geocoder.search(new Request("test", 10));
     assertEquals(1, r2.results().size());
-    assertEquals(v2, r2.results().get(0).record().name());
+    assertEquals(v2, r2.results().get(0).data().name());
 
     Files.walk(path).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
   }

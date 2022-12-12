@@ -12,26 +12,12 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.database.UpdateService;
-import org.apache.baremaps.database.collection.PostgresCoordinateMap;
-import org.apache.baremaps.database.collection.PostgresReferenceMap;
-import org.apache.baremaps.database.repository.*;
 import org.apache.baremaps.geocoder.geonames.GeonamesGeocoder;
-import org.apache.baremaps.openstreetmap.model.Node;
-import org.apache.baremaps.openstreetmap.model.Relation;
-import org.apache.baremaps.openstreetmap.model.Way;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
-import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
 import java.nio.file.Path;
-import java.util.List;
 
 public record CreateGeonamesIndex(String geonamesDumpPath, String targetGeonamesIndexPath) implements Task {
 
@@ -48,7 +34,7 @@ public record CreateGeonamesIndex(String geonamesDumpPath, String targetGeonames
       }
     } catch(Exception e) {
       logger.error("Error while creating the geocoder index", e);
-      throw(e);
+      return;
     }
     logger.info("Finished creating the Geocoder index {}", targetGeonamesIndexPath);
   }
