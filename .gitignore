@@ -15,7 +15,7 @@ examples/output/
 /baremaps/
 
 # Map
-/map/data/
+/basemap/data/
 
 # JMH
 jmh-result.json
