@@ -18,7 +18,8 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(name = "map", description = "Map commands.",
-    subcommands = {Init.class, Export.class, Serve.class, Dev.class}, sortOptions = false)
+    subcommands = {Init.class, Export.class, Serve.class, Dev.class, Maputnik.class},
+    sortOptions = false)
 public class Map implements Runnable {
 
   @Override

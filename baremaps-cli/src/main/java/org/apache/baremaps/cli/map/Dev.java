@@ -74,7 +74,6 @@ public class Dev implements Callable<Integer> {
           .register(contextResolverFor(objectMapper)).register(new AbstractBinder() {
             @Override
             protected void configure() {
-              bind("viewer").to(String.class).named("assets");
               bind(tileset.toAbsolutePath()).to(Path.class).named("tileset");
               bind(style.toAbsolutePath()).to(Path.class).named("style");
               bind(dataSource).to(DataSource.class);

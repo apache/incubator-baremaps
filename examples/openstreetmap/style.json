@@ -1,5 +1,10 @@
 {
   "version" : 8,
+  "metadata" : {
+    "maputnik:renderer" : "mbgljs"
+  },
+  "center" : [ 9.5554, 47.166 ],
+  "zoom" : 14,
   "sources" : {
     "baremaps" : {
       "type" : "vector",
@@ -15,12 +20,8 @@
       "visibility" : "visible"
     },
     "paint" : {
-      "fill-color" : "rgba(255, 0, 0, 1)"
+      "fill-color" : "rgba(109, 8, 8, 1)"
     }
   } ],
-  "center" : [ 9.5554, 47.166 ],
-  "metadata" : {
-    "maputnik:renderer" : "mbgljs"
-  },
-  "zoom" : 14
+  "id" : "amqplfmqy"
 }

@@ -1,0 +1,52 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Maputnik</title><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="manifest" href="manifest.json"><style>html {
+      background-color: rgb(28, 31, 36);
+    }
+
+    .loading {
+      text-align: center;
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loading__logo svg {
+      width: 200px;
+      height: 200px;
+    }
+
+    .loading__text {
+      font-family: sans-serif;
+      color: white;
+      font-size: 1.2em;
+      padding-bottom: 2em;
+    }</style></head><body><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" version="1.1"><defs><filter id="protanopia"><feColorMatrix in="SourceGraphic" type="matrix" values="0.567, 0.433, 0,     0, 0
+                  0.558, 0.442, 0,     0, 0
+                  0,     0.242, 0.758, 0, 0
+                  0,     0,     0,     1, 0"/></filter><filter id="protanomaly"><feColorMatrix in="SourceGraphic" type="matrix" values="0.817, 0.183, 0,     0, 0
+                  0.333, 0.667, 0,     0, 0
+                  0,     0.125, 0.875, 0, 0
+                  0,     0,     0,     1, 0"/></filter><filter id="deuteranopia"><feColorMatrix in="SourceGraphic" type="matrix" values="0.625, 0.375, 0,   0, 0
+                  0.7,   0.3,   0,   0, 0
+                  0,     0.3,   0.7, 0, 0
+                  0,     0,     0,   1, 0"/></filter><filter id="deuteranomaly"><feColorMatrix in="SourceGraphic" type="matrix" values="0.8,   0.2,   0,     0, 0
+                  0.258, 0.742, 0,     0, 0
+                  0,     0.142, 0.858, 0, 0
+                  0,     0,     0,     1, 0"/></filter><filter id="tritanopia"><feColorMatrix in="SourceGraphic" type="matrix" values="0.95, 0.05,  0,     0, 0
+                  0,    0.433, 0.567, 0, 0
+                  0,    0.475, 0.525, 0, 0
+                  0,    0,     0,     1, 0"/></filter><filter id="tritanomaly"><feColorMatrix in="SourceGraphic" type="matrix" values="0.967, 0.033, 0,     0, 0
+                  0,     0.733, 0.267, 0, 0
+                  0,     0.183, 0.817, 0, 0
+                  0,     0,     0,     1, 0"/></filter><filter id="achromatopsia"><feColorMatrix in="SourceGraphic" type="matrix" values="0.299, 0.587, 0.114, 0, 0
+                  0.299, 0.587, 0.114, 0, 0
+                  0.299, 0.587, 0.114, 0, 0
+                  0,     0,     0,     1, 0"/></filter><filter id="achromatomaly"><feColorMatrix in="SourceGraphic" type="matrix" values="0.618, 0.320, 0.062, 0, 0
+                  0.163, 0.775, 0.062, 0, 0
+                  0.163, 0.320, 0.516, 0, 0
+                  0,     0,     0,     1, 0"/></filter></defs></svg><div id="app"></div><div class="loading"><div class="loading__logo"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="1200" viewBox="0 0 100 100"><style>@keyframes circle-anim{0%,40%{fill-opacity:0}60%{fill-opacity:1}}</style><g class="map" stroke="#000"><use xlink:href="#ref-1--map__main" fill="#4eba6f"/><use xlink:href="#ref-1--map__line1" fill="none"/><use xlink:href="#ref-1--map__line2" fill="none"/><use xlink:href="#ref-1--map__line3" fill="none"/></g><g class="palette"><use xlink:href="#ref-1--palette__main" fill="#fff" stroke="#000"/><use xlink:href="#ref-1--palette__inner" fill="none" stroke="#000"/><use xlink:href="#ref-1--palette__circle5" fill="#f7c44c" style="animation-delay:600ms;animation-name:circle-anim;will-change:transform;animation-timing-function:east-in-out;animation-duration:800ms;animation-iteration-count:infinite;animation-direction:alternate" stroke-opacity="0"/><use xlink:href="#ref-1--palette__circle4" fill="#4eba6f" style="animation-delay:500ms;animation-name:circle-anim;will-change:transform;animation-timing-function:east-in-out;animation-duration:800ms;animation-iteration-count:infinite;animation-direction:alternate" stroke-opacity="0"/><use xlink:href="#ref-1--palette__circle3" fill="#f7c44c" style="animation-delay:400ms;animation-name:circle-anim;will-change:transform;animation-timing-function:east-in-out;animation-duration:800ms;animation-iteration-count:infinite;animation-direction:alternate" stroke-opacity="0"/><use xlink:href="#ref-1--palette__circle2" fill="#4eba6f" style="animation-delay:300ms;animation-name:circle-anim;will-change:transform;animation-timing-function:east-in-out;animation-duration:800ms;animation-iteration-count:infinite;animation-direction:alternate" stroke-opacity="0"/><use xlink:href="#ref-1--palette__circle1" fill="#f7c44c" style="animation-delay:200ms;animation-name:circle-anim;will-change:transform;animation-timing-function:east-in-out;animation-duration:800ms;animation-iteration-count:infinite;animation-direction:alternate" stroke-opacity="0"/><use xlink:href="#ref-1--palette__circle0" fill="#4eba6f" style="animation-delay:100ms;animation-name:circle-anim;will-change:transform;animation-timing-function:east-in-out;animation-duration:800ms;animation-iteration-count:infinite;animation-direction:alternate" stroke-opacity="0"/></g><g class="brush" stroke="#000"><use xlink:href="#ref-1--brush__bottom" fill="#f7c44c"/><use xlink:href="#ref-1--brush__top" fill="#fff"/></g><defs><circle id="ref-1--palette__inner" stroke-width="2.3" cx="41.873" cy="61.901" r="6.389"/><circle id="ref-1--palette__circle5" cy="44.56" cx="54.347" r="4.336"/><circle id="ref-1--palette__circle4" cx="40.443" cy="41.555" r="4.336"/><circle id="ref-1--palette__circle3" r="4.336" cy="51.102" cx="29.651"/><circle id="ref-1--palette__circle2" cx="25.293" cy="65.836" r="4.336"/><circle id="ref-1--palette__circle1" r="4.336" cy="79.326" cx="32.764"/><circle id="ref-1--palette__circle0" cx="46.669" cy="80.571" r="4.336"/><path id="ref-1--map__main" stroke-width="2.366" stroke-linejoin="round" d="M18.84 7.717l15.44 7.542 15.75-7.762 15.7 7.857L81.005 7.67 96.31 54.052 73.598 62.12 50.93 53.872l-25.1 8.066-22.668-8.066z"/><path id="ref-1--map__line1" d="M65.556 15.07l7.647 46.838" stroke-width="1.104"/><path id="ref-1--map__line2" d="M50.261 7.422l.717 46.6" stroke-width="1.104"/><path id="ref-1--map__line3" d="M34.011 15.07l-8.603 46.6" stroke-width="1.104"/><path id="ref-1--palette__main" stroke-width="2.3" d="M47.352 30.887c7.993.226 16.934 9.725 17.954 15.25 1.02 5.527-.743 11.125-4.298 13.875-3.554 2.75-8.6 2.905-8.723 8.302-.097 4.237 8.457 8.5 8.088 15.653-.406 7.857-15.508 13.15-30.943 6.102-8.556-3.906-14.249-13.653-13.385-26.238C16.833 52.334 22.32 43.658 27.382 39c5.977-5.503 11.977-8.337 19.97-8.112z"/><path id="ref-1--brush__bottom" d="M76.333 89.333c-1.645-9.794-4.375-35.26-4.32-37.887.056-2.627 2.52-4.34 5.36-4.317 2.842.022 5.098 1.87 5.314 4.27.107 1.2-1.576 28.06-2.318 37.844-.332 4.374-3.31 4.413-4.036.09z" stroke-width="2.3" stroke-linejoin="round"/><path id="ref-1--brush__top" stroke-linejoin="round" stroke-width="2.3" d="M77.184 26.428s-5.621 7.02-5.621 11.978c0 4.957 2.206 6.878 5.81 6.878 3.606 0 5.148-1.708 5.29-6.736.142-5.028-5.479-12.12-5.479-12.12z"/></defs></svg></div><div class="loading__text">Loading&hellip;</div></div><script src="app.45afceafeedad888c128.js"></script></body></html>
