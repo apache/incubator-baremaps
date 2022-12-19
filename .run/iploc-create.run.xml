@@ -3,7 +3,7 @@
     <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.cli.Baremaps" />
     <module name="baremaps-cli" />
     <option name="PROGRAM_PARAMETERS" value="workflow execute --file workflow.js" />
-    <option name="WORKING_DIRECTORY" value="examples/ip-to-location" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examples/ip-to-location" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
