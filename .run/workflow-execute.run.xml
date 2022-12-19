@@ -3,7 +3,6 @@
     <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.cli.Baremaps" />
     <module name="baremaps-cli" />
     <option name="PROGRAM_PARAMETERS" value="workflow execute --file workflow.js" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/map" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="org.apache.baremaps.server.ogcapi.*" />

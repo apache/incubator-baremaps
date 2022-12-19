@@ -2,7 +2,8 @@
   <configuration default="false" name="iploc-create" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.cli.Baremaps" />
     <module name="baremaps-cli" />
-    <option name="PROGRAM_PARAMETERS" value="workflow execute --file examples/ip-to-location/workflow.js" />
+    <option name="PROGRAM_PARAMETERS" value="workflow execute --file workflow.js" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examples/ip-to-location" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
