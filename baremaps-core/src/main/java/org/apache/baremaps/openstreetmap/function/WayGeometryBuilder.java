@@ -50,7 +50,11 @@ public class WayGeometryBuilder implements Consumer<Way> {
       Coordinate[] array = list.toArray(new Coordinate[list.size()]);
       LineString line = GEOMETRY_FACTORY_WGS84.createLineString(array);
       if (!line.isEmpty()) {
-        if (!line.isClosed()) {
+        // Ways can be open or closed depending on the geometry or the tags:
+        // https://wiki.openstreetmap.org/wiki/Way
+        if (!line.isClosed()
+          || way.getTags().containsKey("highway")
+          || way.getTags().containsKey("barrier")) {
           way.setGeometry(line);
         } else {
           Polygon polygon = GEOMETRY_FACTORY_WGS84.createPolygon(line.getCoordinates());
