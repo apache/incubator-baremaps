@@ -10,7 +10,15 @@
  * the License.
  */
 
-package org.apache.baremaps.geocoder.response;
+package org.apache.baremaps.openstreetmap;
 
 
-public record Result(float score, Data data) {}
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.stream.Stream;
+
+public interface DataReader<T> {
+
+  Stream<T> read(InputStream inputStream) throws IOException;
+}

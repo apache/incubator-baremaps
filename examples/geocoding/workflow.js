@@ -8,7 +8,7 @@ const FetchAndUnzipGeonames = {id: "fetch-geonames-allcountries", needs: [], tas
 
 // Create the Geocoder index
 const createGeonamesIndex = {id: "geocoder-index", needs: [FetchAndUnzipGeonames.id], tasks: [
-    {type: "CreateGeonamesIndex", geonamesDumpPath: "archives/allCountries.txt", targetGeonamesIndexPath: "geocoder-index"}
+    {type: "CreateGeonamesIndex", dataFile: "archives/allCountries.txt", indexDirectory: "geocoder-index"}
 ]};
 
 export default {"steps": [FetchAndUnzipGeonames, createGeonamesIndex]};

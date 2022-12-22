@@ -16,14 +16,14 @@ package org.apache.baremaps.openstreetmap.pbf;
 
 import java.io.InputStream;
 import java.util.stream.Stream;
-import org.apache.baremaps.openstreetmap.OsmReader;
+import org.apache.baremaps.openstreetmap.DataReader;
 import org.apache.baremaps.openstreetmap.model.DataBlock;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.HeaderBlock;
 import org.apache.baremaps.stream.StreamException;
 
 /** A utility class for flattening the blocks streamed by a {@link PbfBlockReader}. */
-public class PbfEntityReader implements OsmReader<Entity> {
+public class PbfEntityReader implements DataReader<Entity> {
 
   private final PbfBlockReader reader;
 
@@ -42,8 +42,8 @@ public class PbfEntityReader implements OsmReader<Entity> {
    * @param inputStream an osm pbf {@link InputStream}
    * @return a stream of blocks
    */
-  public Stream<Entity> stream(InputStream inputStream) {
-    return reader.stream(inputStream).flatMap(block -> {
+  public Stream<Entity> read(InputStream inputStream) {
+    return reader.read(inputStream).flatMap(block -> {
       try {
         Stream.Builder<Entity> entities = Stream.builder();
         if (block instanceof HeaderBlock headerBlock) {

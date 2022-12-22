@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.geocoder.utils;
+package org.apache.baremaps.geocoder;
 
 
 
@@ -18,24 +18,27 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Utility class to deal with country codes.
+ */
 public class IsoCountriesUtils {
 
-  private static Map<String, String> isoCountries = new HashMap<>();
+  private static final Map<String, String> ISO_COUNTRIES = new HashMap<>();
 
   static {
     for (String iso : Locale.getISOCountries()) {
       Locale l = new Locale("", iso);
-      isoCountries.put(iso, l.getDisplayCountry());
+      ISO_COUNTRIES.put(iso, l.getDisplayCountry());
     }
   }
 
   private IsoCountriesUtils() {}
 
   public static String getCountry(String iso) {
-    return isoCountries.getOrDefault(iso, "");
+    return ISO_COUNTRIES.getOrDefault(iso, "");
   }
 
   public static boolean containsCountry(String iso) {
-    return isoCountries.containsKey(iso);
+    return ISO_COUNTRIES.containsKey(iso);
   }
 }

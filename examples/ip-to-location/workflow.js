@@ -27,26 +27,67 @@ const geonamesUrl =
     "https://download.geonames.org/export/dump/allCountries.zip";
 
 // Iterate over nic urls to create a list of downloads and ungzip
-const fetchAndUnzipNic = nics.map((nic,index) =>
-    ({id: `fetch-nic-${index}`, needs: [], tasks: [
-        {type: "DownloadUrl", url: nic.url, path: `downloads/${nic.filename}.gz`},
-        {type: "UngzipFile", file: `downloads/${nic.filename}.gz`, directory: "archives"}
-    ]}));
+const fetchAndUnzipNic = nics.map((nic, index) => ({
+    id: `fetch-nic-${index}`,
+    needs: [],
+    tasks: [
+        {
+            type: "DownloadUrl",
+            url: nic.url,
+            path: `downloads/${nic.filename}.gz`
+        },
+        {
+            type: "UngzipFile",
+            file: `downloads/${nic.filename}.gz`,
+            directory: "archives"
+        }
+    ]
+}));
 
 // Fetch and unzip Geonames
-const FetchAndUnzipGeonames = {id: "fetch-geonames-allcountries", needs: [], tasks: [
-    {type: "DownloadUrl", url: geonamesUrl, path: "downloads/geonames-allcountries.zip", force: true},
-    {type: "UnzipFile", file: "downloads/geonames-allcountries.zip", directory: "archives"}
-]};
+const FetchAndUnzipGeonames = {
+    id: "fetch-geonames-allcountries",
+    needs: [],
+    tasks: [
+        {
+            type: "DownloadUrl",
+            url: geonamesUrl,
+            path: "downloads/geonames-allcountries.zip",
+            force: true
+        },
+        {
+            type: "UnzipFile",
+            file: "downloads/geonames-allcountries.zip",
+            directory: "archives"
+        }
+    ]
+};
 
 // Create the Geocoder index
-const createGeonamesIndex = {id: "geocoder-index", needs: [FetchAndUnzipGeonames.id], tasks: [
-    {type: "CreateGeonamesIndex", geonamesDumpPath: "archives/allCountries.txt", targetGeonamesIndexPath: "geocoder-index"}
-]};
+const createGeonamesIndex = {
+    id: "geocoder-index",
+    needs: [FetchAndUnzipGeonames.id],
+    tasks: [
+        {
+            type: "CreateGeonamesIndex",
+            dataFile: "archives/allCountries.txt",
+            indexDirectory: "geocoder-index"
+        }
+    ]
+};
 
 // Create the iploc database
-const createIplocIndex = {id: "iploc-index", needs: fetchAndUnzipNic.map(e => e.id).concat([createGeonamesIndex.id]), tasks: [
-    {type: "CreateIplocIndex", geonamesIndexPath: "geocoder-index", nicPaths: nics.map(nic => `archives/${nic.filename}`), targetIplocIndexPath: "iploc.db"}
-]};
+const createIplocIndex = {
+    id: "iploc-index",
+    needs: fetchAndUnzipNic.map(e => e.id).concat([createGeonamesIndex.id]),
+    tasks: [
+        {
+            type: "CreateIplocIndex",
+            geonamesIndexPath: "geocoder-index",
+            nicPaths: nics.map(nic => `archives/${nic.filename}`),
+            targetIplocIndexPath: "iploc.db"
+        }
+    ]
+};
 
 export default {"steps": fetchAndUnzipNic.concat([FetchAndUnzipGeonames, createGeonamesIndex, createIplocIndex])};

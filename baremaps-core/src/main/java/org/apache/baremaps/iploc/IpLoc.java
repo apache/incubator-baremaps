@@ -22,10 +22,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.baremaps.geocoder.Geocoder;
-import org.apache.baremaps.geocoder.request.Request;
-import org.apache.baremaps.geocoder.response.Response;
-import org.apache.baremaps.geocoder.utils.IsoCountriesUtils;
+import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
+import org.apache.baremaps.geocoder.IsoCountriesUtils;
 import org.apache.baremaps.iploc.data.InetnumLocation;
 import org.apache.baremaps.iploc.data.IpLocStats;
 import org.apache.baremaps.iploc.data.Ipv4Range;
@@ -36,6 +34,8 @@ import org.apache.baremaps.iploc.nic.NicAttribute;
 import org.apache.baremaps.iploc.nic.NicObject;
 import org.apache.baremaps.stream.StreamUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.search.TopDocs;
 
 /** Generating pairs of IP address ranges and their locations into an SQLite database */
 public class IpLoc {
@@ -43,19 +43,19 @@ public class IpLoc {
   private final float SCORE_THRESHOLD = 0.1f;
 
   private final InetnumLocationDao inetnumLocationDao;
-  private final Geocoder geocoder;
+  private final SearcherManager searcherManager;
   private IpLocStats iplocStats;
 
   /**
    * Create a new IpLoc object
    *
    * @param databaseUrl the jdbc url to the sqlite database
-   * @param geocoder the geocoder that will be used to find the locations of the objects
+   * @param searcherManager the geocoder that will be used to find the locations of the objects
    */
-  public IpLoc(String databaseUrl, Geocoder geocoder) {
-    inetnumLocationDao = new InetnumLocationDaoSqliteImpl(databaseUrl);
-    iplocStats = new IpLocStats();
-    this.geocoder = geocoder;
+  public IpLoc(String databaseUrl, SearcherManager searcherManager) {
+    this.inetnumLocationDao = new InetnumLocationDaoSqliteImpl(databaseUrl);
+    this.iplocStats = new IpLocStats();
+    this.searcherManager = searcherManager;
   }
 
   /**
@@ -92,7 +92,6 @@ public class IpLoc {
       }
 
       NicAttribute firstAttribute = nicObject.attributes().get(0);
-
       if (!Objects.equals(firstAttribute.name(), "inetnum")) {
         return Optional.empty();
       }
@@ -115,7 +114,7 @@ public class IpLoc {
       // If there is an address we use that address to query the geocoder
       if (attributes.containsKey("address")) {
         Optional<Location> location =
-            findLocation(new Request(attributes.get("address"), 1, attributes.get("country")));
+            findLocation(attributes.get("address"), attributes.get("country"));
         if (location.isPresent()) {
           iplocStats.incrementInsertedByAddressCount();
           return Optional.of(new InetnumLocation(attributes.get("address"), ipRange, location.get(),
@@ -125,7 +124,7 @@ public class IpLoc {
       // If there is a description we use that description to query the geocoder
       if (attributes.containsKey("descr")) {
         Optional<Location> location =
-            findLocation(new Request(attributes.get("descr"), 1, attributes.get("country")));
+            findLocation(attributes.get("descr"), attributes.get("country"));
         if (location.isPresent()) {
           iplocStats.incrementInsertedByDescrCount();
           return Optional.of(new InetnumLocation(attributes.get("descr"), ipRange, location.get(),
@@ -135,7 +134,7 @@ public class IpLoc {
       // If there is a name we use that name to query the geocoder
       if (attributes.containsKey("name")) {
         Optional<Location> location =
-            findLocation(new Request(attributes.get("name"), 1, attributes.get("country")));
+            findLocation(attributes.get("name"), attributes.get("country"));
         if (location.isPresent()) {
           iplocStats.incrementInsertedByDescrCount();
           return Optional.of(new InetnumLocation(attributes.get("name"), ipRange, location.get(),
@@ -147,8 +146,8 @@ public class IpLoc {
       if (attributes.containsKey("country")
           && IsoCountriesUtils.containsCountry(attributes.get("country").toUpperCase())) {
         String countryUppercase = attributes.get("country").toUpperCase();
-        Optional<Location> location = findLocation(
-            new Request(IsoCountriesUtils.getCountry(countryUppercase), 1, countryUppercase));
+        Optional<Location> location =
+            findLocation(IsoCountriesUtils.getCountry(countryUppercase), countryUppercase);
         if (location.isPresent()) {
           iplocStats.incrementInsertedByCountryCodeCount();
           return Optional.of(new InetnumLocation(IsoCountriesUtils.getCountry(countryUppercase),
@@ -159,7 +158,7 @@ public class IpLoc {
       // If there is a country that did not follow the ISO format we will query using the country
       // has plain text
       if (attributes.containsKey("country")) {
-        Optional<Location> location = findLocation(new Request(attributes.get("country"), 1));
+        Optional<Location> location = findLocation(attributes.get("country"), "");
         if (location.isPresent()) {
           iplocStats.incrementInsertedByCountryCount();
           return Optional.of(new InetnumLocation(attributes.get("country"), ipRange, location.get(),
@@ -178,22 +177,32 @@ public class IpLoc {
   /**
    * Use the geocoder to find a latitude/longitude with the given query.
    *
-   * @param request for the location
+   * @param searchTerms the search terms
+   * @param countryCode the country code filter
    * @return an optional of the location
    * @throws IOException
    * @throws ParseException
    */
-  private Optional<Location> findLocation(Request request) throws IOException, ParseException {
-    Response response = geocoder.search(request);
-    if (response.results().size() > 0) {
-      var bestResult = response.results().get(0);
-      if (bestResult.score() > SCORE_THRESHOLD) {
-        double latitude = bestResult.data().latitude();
-        double longitude = bestResult.data().longitude();
-        return Optional.of(new Location(latitude, longitude));
-      }
+  private Optional<Location> findLocation(String searchTerms, String countryCode)
+      throws IOException, ParseException {
+    var indexSearcher = searcherManager.acquire();
+    var geonamesQuery =
+        new GeonamesQueryBuilder().queryText(searchTerms).countryCode(countryCode).build();
+
+    TopDocs topDocs = indexSearcher.search(geonamesQuery, 1);
+    if (topDocs.scoreDocs.length == 0) {
+      return Optional.empty();
     }
-    return Optional.empty();
+
+    var scoreDoc = topDocs.scoreDocs[0];
+    if (scoreDoc.score < SCORE_THRESHOLD) {
+      return Optional.empty();
+    }
+
+    var document = indexSearcher.doc(scoreDoc.doc);
+    double latitude = document.getField("latitude").numericValue().doubleValue();
+    double longitude = document.getField("longitude").numericValue().doubleValue();
+    return Optional.of(new Location(latitude, longitude));
   }
 
   /**

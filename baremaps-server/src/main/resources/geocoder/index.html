@@ -21,115 +21,61 @@
 </head>
 <body>
 <!-- A form to submit the IP address -->
-<form onsubmit="searchByAddress(event)">
-    <label for="address">Address:</label>
-    <input type="text" id="address" name="address" value=""/>
+<form id="searchForm">
+    <input type="text" id="queryText" name="queryText" placeholder="Query text" value=""/>
+    <input type="text" id="countryCode" name="countryCode" placeholder="Country code" value=""/>
     <input type="submit" value="Submit"/>
 </form>
 <!-- The table of retrieved locations -->
 <table id="results"></table>
+
 <script>
-    function searchByAddress(event) {
+
+    // Add a listener to submit the search form
+    const searchForm = document.getElementById('searchForm');
+    searchForm.addEventListener('submit', search);
+
+    // Get the table of results
+    const table = document.getElementById('results');
+
+    function search(event) {
         event.preventDefault();
 
-        // Get the IP address from the form
-        var address = document.getElementById('address').value;
+        // Build the query string
+        const formData = new FormData(searchForm);
+        const queryString = new URLSearchParams(formData).toString()
 
-        // Make a query to retrieve the location from the address
-        const request = new XMLHttpRequest();
-        request.open('GET', `http://localhost:9000/api/geocoder?address=${address}`, true);
+        // Send the search request
+        fetch(`${window.location.origin}/api/geocoder?${queryString}`)
+            .then(response => response.json())
+            .then(response => {
+                // Extract the headers from the first row
+                const headers = response.results && response.results.length > 0
+                    ? Object.keys(response.results[0].data).sort()
+                    : [];
 
-        // Set request Accept header to application/json
-        request.setRequestHeader('Accept', 'application/json');
-
-        // Display the request result in the map
-        request.onload = function () {
-            if (request.status >= 200 && request.status < 400) {
-                // Success!
-                const response = JSON.parse(request.responseText);
-
-                // Write the result address in a href
-                // Fill the table of geo locations from the resulting geoLocations
-                // Geo locations contain an address, an ipv4Range, a location, a network and a country
-                const table = document.getElementById('results');
+                // Clear the results table
                 table.innerHTML = '';
-                // Insert header row
-                table.insertRow().innerHTML =
-                    `<th>#</th>
-                    <th>Score</th>
-                    <th>Url</th>
-                    <th>Name</th>
-                    <th>Ascii name</th>
-                    <th>Alternate names</th>
-                    <th>Latitude</th>
-                    <th>Longitude</th>
-                    <th>Feature Class</th>
-                    <th>feature Code</th>
-                    <th>Country Code</th>
-                    <th>Country Code 2</th>
-                    <th>Admin1Code</th>
-                    <th>Admin2Code</th>
-                    <th>Admin3Code</th>
-                    <th>Admin4Code</th>
-                    <th>Population</th>
-                    <th>Elevation</th>
-                    <th>Dem</th>
-                    <th>Timezone</th>
-                    <th>Modification Date</th>`;
-                for (let i = 0; i < response.results.length; i++) {
-                    const result = response.results[i];
-                    const row = table.insertRow(i + 1);
-                    let pos = 0;
-                    let cell = row.insertCell(pos++);
-                    cell.innerHTML = i + 1;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.score;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = `<a href="http://www.openstreetmap.org/?mlat=${result.data.latitude}&mlon=${result.data.longitude}&zoom=15" target="_blank">OSM</a>`;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.name;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.asciiname;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.alternatenames;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.latitude;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.longitude;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.featureClass;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.featureCode;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.countryCode;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.cc2;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.admin1Code;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.admin2Code;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.admin3Code;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.admin4Code;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.population;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.elevation;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.dem;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.timezone;
-                    cell = row.insertCell(pos++);
-                    cell.innerHTML = result.data.modificationDate;
-                }
-            } else {
-                // We reached our target server, but it returned an error
-                console.log('Error');
-            }
-        };
 
-        request.send();
+                // Insert the headers in the table
+                const headerRow = table.insertRow();
+                headerRow.innerHTML = `<th>#</th><th>score</th>${headers.map(header => `<th>${header}</th>`).join('')}`;
+
+                // Insert the results in the table
+                response.results.forEach((result, index) => {
+                    const row = table.insertRow();
+                    row.insertCell().innerText = index;
+                    row.insertCell().innerText = result.score;
+                    headers.forEach(header => {
+                        if (result.data[header] !== undefined) {
+                            row.insertCell().innerText = result.data[header];
+                        } else {
+                            row.insertCell().innerText = '';
+                        }
+                    });
+                });
+            })
+            .catch(error => console.error(error));
     }
 </script>
 </body>

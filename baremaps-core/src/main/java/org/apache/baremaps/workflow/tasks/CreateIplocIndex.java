@@ -12,7 +12,6 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import org.apache.baremaps.geocoder.geonames.GeonamesGeocoder;
 import org.apache.baremaps.iploc.IpLoc;
 import org.apache.baremaps.iploc.data.IpLocStats;
 import org.apache.baremaps.iploc.database.SqliteUtils;
@@ -20,6 +19,9 @@ import org.apache.baremaps.iploc.nic.NicParser;
 import org.apache.baremaps.stream.StreamException;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
+import org.apache.lucene.search.SearcherFactory;
+import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.store.MMapDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,10 +30,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
-public record CreateIplocIndex(String geonamesIndexPath, List<String> nicPaths,
-                               String targetIplocIndexPath) implements Task {
+public record CreateIplocIndex(
+  String geonamesIndexPath,
+  List<String> nicPaths,
+  String targetIplocIndexPath
+) implements Task {
 
     private static final Logger logger = LoggerFactory.getLogger(CreateIplocIndex.class);
 
@@ -40,24 +46,14 @@ public record CreateIplocIndex(String geonamesIndexPath, List<String> nicPaths,
         logger.info("Generating Iploc from {} {}", geonamesIndexPath, nicPaths);
 
         logger.info("Creating the Geocoder");
-        GeonamesGeocoder geocoder;
-        try {
-            geocoder = new GeonamesGeocoder(Path.of(geonamesIndexPath), null);
-            if (!geocoder.indexExists()) {
-                logger.error("Geocoder index doesn't exist");
-                return;
-            }
-            geocoder.open();
-        } catch (Exception e) {
-            logger.error("Error while creating the geocoder index", e);
-            return;
-        }
+        var directory = MMapDirectory.open(Paths.get(geonamesIndexPath));
+        var searcherManager = new SearcherManager(directory, new SearcherFactory());
 
         logger.info("Creating the Iploc database");
         String jdbcUrl = String.format("JDBC:sqlite:%s", targetIplocIndexPath);
 
         SqliteUtils.executeResource(jdbcUrl, "iploc_init.sql");
-        IpLoc ipLoc = new IpLoc(jdbcUrl, geocoder);
+        IpLoc ipLoc = new IpLoc(jdbcUrl, searcherManager);
 
         logger.info("Generating NIC objects stream");
         nicPaths.stream().parallel().forEach(path -> {

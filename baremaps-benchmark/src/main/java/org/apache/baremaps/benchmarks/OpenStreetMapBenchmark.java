@@ -71,7 +71,7 @@ public class OpenStreetMapBenchmark {
     AtomicLong relations = new AtomicLong(0);
 
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      new PbfEntityReader(new PbfBlockReader()).stream(inputStream).forEach(entity -> {
+      new PbfEntityReader(new PbfBlockReader()).read(inputStream).forEach(entity -> {
         if (entity instanceof Node node) {
           nodes.incrementAndGet();
         } else if (entity instanceof Way way) {

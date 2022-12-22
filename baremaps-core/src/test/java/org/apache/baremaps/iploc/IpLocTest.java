@@ -15,7 +15,6 @@ package org.apache.baremaps.iploc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,8 +22,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.baremaps.collection.utils.FileUtils;
-import org.apache.baremaps.geocoder.Geocoder;
-import org.apache.baremaps.geocoder.geonames.GeonamesGeocoder;
 import org.apache.baremaps.iploc.data.InetnumLocation;
 import org.apache.baremaps.iploc.data.Ipv4;
 import org.apache.baremaps.iploc.data.Ipv4Range;
@@ -35,6 +32,11 @@ import org.apache.baremaps.iploc.database.SqliteUtils;
 import org.apache.baremaps.iploc.nic.NicData;
 import org.apache.baremaps.iploc.nic.NicObject;
 import org.apache.baremaps.testing.TestFiles;
+import org.apache.baremaps.workflow.WorkflowContext;
+import org.apache.baremaps.workflow.tasks.CreateGeonamesIndex;
+import org.apache.lucene.search.SearcherFactory;
+import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.store.MMapDirectory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,20 +55,23 @@ class IpLocTest {
   private static String databaseUrl;
 
   @BeforeAll
-  public static void beforeAll() throws IOException, URISyntaxException {
+  public static void beforeAll() throws Exception {
     // Load the NIC sample objects
     nicObjects = NicData.sample("ripe/simple_nic_sample.txt");
 
     // Init the geocoderservice
     directory = Files.createTempDirectory(Paths.get("."), "geocoder_");
 
+    // Create the geonames index
     var data = TestFiles.resolve("geonames/geocoder_sample.txt");
-    Geocoder geocoder = new GeonamesGeocoder(directory, data);
-    geocoder.build();
+    var task = new CreateGeonamesIndex(data.toString(), directory.toString());
+    task.execute(new WorkflowContext());
 
     // Create the IPLoc service
     databaseUrl = String.format("JDBC:sqlite:%s", directory.resolve("test.db"));
-    ipLoc = new IpLoc(databaseUrl, geocoder);
+    var dir = MMapDirectory.open(directory);
+    var searcherManager = new SearcherManager(dir, new SearcherFactory());
+    ipLoc = new IpLoc(databaseUrl, searcherManager);
 
     // Accessor for the database
     inetnumLocationDao = new InetnumLocationDaoSqliteImpl(databaseUrl);
@@ -78,7 +83,7 @@ class IpLocTest {
   }
 
   @BeforeEach
-  public void beforeEach() throws IOException, URISyntaxException, SQLException {
+  public void beforeEach() throws IOException, SQLException {
     SqliteUtils.executeResource(databaseUrl, "iploc_init.sql");
   }
 

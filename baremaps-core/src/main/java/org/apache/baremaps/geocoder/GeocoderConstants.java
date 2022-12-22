@@ -10,8 +10,18 @@
  * the License.
  */
 
-package org.apache.baremaps.geocoder.response;
+package org.apache.baremaps.geocoder;
 
-import java.util.List;
 
-public record Response(List<Result> results) {}
+
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
+
+/**
+ * Constants used by the geocoder.
+ */
+public class GeocoderConstants {
+
+  public static final Analyzer ANALYZER = new StandardAnalyzer();
+
+}
