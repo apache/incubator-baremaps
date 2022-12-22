@@ -16,13 +16,12 @@ package org.apache.baremaps.openstreetmap.function;
 
 import java.util.function.Consumer;
 import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.openstreetmap.model.Block;
-import org.apache.baremaps.openstreetmap.model.DataBlock;
-import org.apache.baremaps.stream.StreamException;
+import org.apache.baremaps.openstreetmap.model.Entity;
+import org.apache.baremaps.openstreetmap.model.Node;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A consumer that stores openstreetmap coordinates in a map. */
-public class CoordinateMapBuilder implements Consumer<Block> {
+public class CoordinateMapBuilder implements Consumer<Entity> {
 
   private final LongDataMap<Coordinate> coordinateMap;
 
@@ -37,16 +36,9 @@ public class CoordinateMapBuilder implements Consumer<Block> {
 
   /** {@inheritDoc} */
   @Override
-  public void accept(Block block) {
-    try {
-      if (block instanceof DataBlock dataBlock) {
-        dataBlock.getDenseNodes().stream().forEach(
-            node -> coordinateMap.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
-        dataBlock.getNodes().stream().forEach(
-            node -> coordinateMap.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
-      }
-    } catch (Exception e) {
-      throw new StreamException(e);
+  public void accept(Entity entity) {
+    if (entity instanceof Node node) {
+      coordinateMap.put(node.getId(), new Coordinate(node.getLon(), node.getLat()));
     }
   }
 }

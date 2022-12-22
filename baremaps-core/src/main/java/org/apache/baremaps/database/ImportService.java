@@ -60,12 +60,12 @@ public class ImportService implements Callable<Void> {
     var coordinateMapBuilder = new CoordinateMapBuilder(coordinateMap);
     var referenceMapBuilder = new ReferenceMapBuilder(referenceMap);
     var entityGeometryBuilder = new EntityGeometryBuilder(coordinateMap, referenceMap);
+    var entityGeometryHandler =
+        coordinateMapBuilder.andThen(referenceMapBuilder).andThen(entityGeometryBuilder);
     var entityProjectionTransformer = new EntityProjectionTransformer(4326, databaseSrid);
-    var entityHandler = entityGeometryBuilder.andThen(entityProjectionTransformer);
+    var entityHandler = entityGeometryHandler.andThen(entityProjectionTransformer);
     var blockEntitiesHandler = new BlockEntitiesHandler(entityHandler);
-    var blockHandler =
-        coordinateMapBuilder.andThen(referenceMapBuilder).andThen(blockEntitiesHandler);
-    var blockMapper = consumeThenReturn(blockHandler);
+    var blockMapper = consumeThenReturn(blockEntitiesHandler);
     var blockImporter =
         new BlockImporter(headerRepository, nodeRepository, wayRepository, relationRepository);
     try (InputStream inputStream = Files.newInputStream(path)) {

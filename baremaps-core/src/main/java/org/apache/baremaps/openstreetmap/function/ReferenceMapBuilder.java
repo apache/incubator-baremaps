@@ -17,12 +17,11 @@ package org.apache.baremaps.openstreetmap.function;
 import java.util.List;
 import java.util.function.Consumer;
 import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.openstreetmap.model.Block;
-import org.apache.baremaps.openstreetmap.model.DataBlock;
-import org.apache.baremaps.stream.StreamException;
+import org.apache.baremaps.openstreetmap.model.Entity;
+import org.apache.baremaps.openstreetmap.model.Way;
 
 /** A consumer that stores openstreetmap references in a map. */
-public class ReferenceMapBuilder implements Consumer<Block> {
+public class ReferenceMapBuilder implements Consumer<Entity> {
 
   private final LongDataMap<List<Long>> referenceMap;
 
@@ -37,13 +36,9 @@ public class ReferenceMapBuilder implements Consumer<Block> {
 
   /** {@inheritDoc} */
   @Override
-  public void accept(Block block) {
-    try {
-      if (block instanceof DataBlock dataBlock) {
-        dataBlock.getWays().stream().forEach(way -> referenceMap.put(way.getId(), way.getNodes()));
-      }
-    } catch (Exception e) {
-      throw new StreamException(e);
+  public void accept(Entity entity) {
+    if (entity instanceof Way way) {
+      referenceMap.put(way.getId(), way.getNodes());
     }
   }
 }

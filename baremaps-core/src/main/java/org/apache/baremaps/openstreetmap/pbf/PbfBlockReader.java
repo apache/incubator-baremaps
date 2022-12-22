@@ -150,13 +150,13 @@ public class PbfBlockReader implements OsmReader<Block> {
       var coordinateMapBuilder = new CoordinateMapBuilder(coordinateMap);
       var referenceMapBuilder = new ReferenceMapBuilder(referenceMap);
       var entityGeometryBuilder = new EntityGeometryBuilder(coordinateMap, referenceMap);
+      var entityGeometryHandler =
+          coordinateMapBuilder.andThen(referenceMapBuilder).andThen(entityGeometryBuilder);
       var entityProjectionTransformer = new EntityProjectionTransformer(4326, srid);
-      var entityHandler = srid == 4326 ? entityGeometryBuilder
-          : entityGeometryBuilder.andThen(entityProjectionTransformer);
-      var blockEntitiesHandler = new BlockEntitiesHandler(entityHandler);
-      var blockHandler =
-          coordinateMapBuilder.andThen(referenceMapBuilder).andThen(blockEntitiesHandler);
-      var blockMapper = consumeThenReturn(blockHandler);
+      var entityProjectionHandler = srid == 4326 ? entityGeometryHandler
+          : entityGeometryHandler.andThen(entityProjectionTransformer);
+      var blockEntitiesHandler = new BlockEntitiesHandler(entityProjectionHandler);
+      var blockMapper = consumeThenReturn(blockEntitiesHandler);
       blocks = blocks.map(blockMapper);
     }
     return blocks;
