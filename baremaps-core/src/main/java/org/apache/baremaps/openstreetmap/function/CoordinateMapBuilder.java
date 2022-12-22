@@ -21,7 +21,7 @@ import org.apache.baremaps.openstreetmap.model.DataBlock;
 import org.apache.baremaps.stream.StreamException;
 import org.locationtech.jts.geom.Coordinate;
 
-/** A consumer that caches openstreetmap coordinates in a map. */
+/** A consumer that stores openstreetmap coordinates in a map. */
 public class CoordinateMapBuilder implements Consumer<Block> {
 
   private final LongDataMap<Coordinate> coordinateMap;

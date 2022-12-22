@@ -21,7 +21,7 @@ import org.apache.baremaps.openstreetmap.model.Block;
 import org.apache.baremaps.openstreetmap.model.DataBlock;
 import org.apache.baremaps.stream.StreamException;
 
-/** A consumer that caches openstreetmap references in a map. */
+/** A consumer that stores openstreetmap references in a map. */
 public class ReferenceMapBuilder implements Consumer<Block> {
 
   private final LongDataMap<List<Long>> referenceMap;

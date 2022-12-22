@@ -52,9 +52,8 @@ public class WayGeometryBuilder implements Consumer<Way> {
       if (!line.isEmpty()) {
         // Ways can be open or closed depending on the geometry or the tags:
         // https://wiki.openstreetmap.org/wiki/Way
-        if (!line.isClosed()
-          || way.getTags().containsKey("highway")
-          || way.getTags().containsKey("barrier")) {
+        if (!line.isClosed() || way.getTags().containsKey("highway")
+            || way.getTags().containsKey("barrier")) {
           way.setGeometry(line);
         } else {
           Polygon polygon = GEOMETRY_FACTORY_WGS84.createPolygon(line.getCoordinates());
