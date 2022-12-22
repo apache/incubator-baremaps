@@ -20,22 +20,18 @@ import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.openstreetmap.model.Block;
 import org.apache.baremaps.openstreetmap.model.DataBlock;
 import org.apache.baremaps.stream.StreamException;
-import org.locationtech.jts.geom.Coordinate;
 
-/** A consumer that caches openstreetmap coordinates and references. */
-public class CacheBuilder implements Consumer<Block> {
+/** A consumer that caches openstreetmap references in a map. */
+public class ReferenceMapBuilder implements Consumer<Block> {
 
-  private final LongDataMap<Coordinate> coordinateMap;
   private final LongDataMap<List<Long>> referenceMap;
 
   /**
-   * Constructs a {@code CacheBlockConsumer} with the provided caches.
+   * Constructs a {@code CacheBlockConsumer} with the provided map.
    *
-   * @param coordinateMap the map of coordinates
    * @param referenceMap the map of references
    */
-  public CacheBuilder(LongDataMap<Coordinate> coordinateMap, LongDataMap<List<Long>> referenceMap) {
-    this.coordinateMap = coordinateMap;
+  public ReferenceMapBuilder(LongDataMap<List<Long>> referenceMap) {
     this.referenceMap = referenceMap;
   }
 
@@ -44,10 +40,6 @@ public class CacheBuilder implements Consumer<Block> {
   public void accept(Block block) {
     try {
       if (block instanceof DataBlock dataBlock) {
-        dataBlock.getDenseNodes().stream().forEach(
-            node -> coordinateMap.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
-        dataBlock.getNodes().stream().forEach(
-            node -> coordinateMap.put(node.getId(), new Coordinate(node.getLon(), node.getLat())));
         dataBlock.getWays().stream().forEach(way -> referenceMap.put(way.getId(), way.getNodes()));
       }
     } catch (Exception e) {
