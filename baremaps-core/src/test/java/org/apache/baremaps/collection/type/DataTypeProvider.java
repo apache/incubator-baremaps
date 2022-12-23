@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.provider.Arguments;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 
 public class DataTypeProvider {
 
@@ -29,6 +30,11 @@ public class DataTypeProvider {
         Arguments.of(new DoubleListDataType(), List.of((double) 1, (double) 2, (double) 3)),
         Arguments.of(new FloatDataType(), (float) 1),
         Arguments.of(new FloatListDataType(), List.of((float) 1, (float) 2, (float) 3)),
+        Arguments.of(new GeometryDataType(),
+            new GeometryFactory().createPoint(new Coordinate(1, 1))),
+        Arguments.of(new GeometryDataType(),
+            new GeometryFactory()
+                .createLineString(new Coordinate[] {new Coordinate(1, 1), new Coordinate(2, 2)})),
         Arguments.of(new IntegerDataType(), 1),
         Arguments.of(new IntegerListDataType(), List.of(1, 2, 3)),
         Arguments.of(new LongDataType(), (long) 1),

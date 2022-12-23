@@ -23,10 +23,7 @@ import java.util.concurrent.Callable;
 import org.apache.baremaps.collection.LongDataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
-import org.apache.baremaps.openstreetmap.function.BlockEntitiesHandler;
-import org.apache.baremaps.openstreetmap.function.CacheBuilder;
-import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
-import org.apache.baremaps.openstreetmap.function.EntityProjectionTransformer;
+import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
@@ -60,17 +57,26 @@ public class ImportService implements Callable<Void> {
 
   @Override
   public Void call() throws Exception {
-    var cacheBuilder = new CacheBuilder(coordinateMap, referenceMap);
+    // Initialize and chain the entity handlers
+    var coordinateMapBuilder = new CoordinateMapBuilder(coordinateMap);
+    var referenceMapBuilder = new ReferenceMapBuilder(referenceMap);
     var entityGeometryBuilder = new EntityGeometryBuilder(coordinateMap, referenceMap);
     var entityProjectionTransformer = new EntityProjectionTransformer(4326, databaseSrid);
-    var blockEntitiesHandler =
-        new BlockEntitiesHandler(entityGeometryBuilder.andThen(entityProjectionTransformer));
-    var blockMapper = consumeThenReturn(cacheBuilder.andThen(blockEntitiesHandler));
+    var entityHandler = coordinateMapBuilder
+        .andThen(referenceMapBuilder)
+        .andThen(entityGeometryBuilder)
+        .andThen(entityProjectionTransformer);
+
+    // Initialize the block mapper
+    var blockMapper = consumeThenReturn(new BlockEntitiesHandler(entityHandler));
     var blockImporter =
         new BlockImporter(headerRepository, nodeRepository, wayRepository, relationRepository);
+
+    // Process the blocks
     try (InputStream inputStream = Files.newInputStream(path)) {
       batch(new PbfBlockReader().stream(inputStream).map(blockMapper)).forEach(blockImporter);
     }
+
     return null;
   }
 
