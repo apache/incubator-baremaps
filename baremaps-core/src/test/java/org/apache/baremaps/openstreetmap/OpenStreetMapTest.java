@@ -73,7 +73,8 @@ class OpenStreetMapTest {
   @Test
   void dataOsmXmlRelations() throws IOException {
     try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
-      assertEquals(1, new XmlEntityReader().stream(input).filter(e -> e instanceof Relation).count());
+      assertEquals(1,
+          new XmlEntityReader().stream(input).filter(e -> e instanceof Relation).count());
     }
   }
 
