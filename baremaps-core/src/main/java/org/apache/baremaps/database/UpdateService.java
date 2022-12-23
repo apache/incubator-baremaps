@@ -73,7 +73,7 @@ public class UpdateService implements Callable<Void> {
     var changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
     try (var changeInputStream =
         new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
-      new XmlChangeReader().read(changeInputStream).map(prepareChange).forEach(saveChange);
+      new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(saveChange);
     }
 
     var stateUrl = resolve(replicationUrl, sequenceNumber, "state.txt");

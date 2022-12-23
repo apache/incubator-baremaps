@@ -48,7 +48,7 @@ public record CreateGeonamesIndex(String dataFile, String indexDirectory) implem
       var inputStream = Files.newInputStream(dataPath)) {
       indexWriter.deleteAll();
       var documents = new GeonamesReader()
-        .read(inputStream)
+        .stream(inputStream)
         .map(new GeonamesDocumentMapper());
       indexWriter.addDocuments((Iterable<Document>) documents::iterator);
     } catch (IOException exception) {

@@ -52,49 +52,49 @@ class OpenStreetMapTest {
   @Test
   void dataOsmXml() throws IOException {
     try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
-      assertEquals(12, new XmlEntityReader().read(input).collect(Collectors.toList()).size());
+      assertEquals(12, new XmlEntityReader().stream(input).collect(Collectors.toList()).size());
     }
   }
 
   @Test
   void dataOsmXmlNodes() throws IOException {
     try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
-      assertEquals(6, new XmlEntityReader().read(input).filter(e -> e instanceof Node).count());
+      assertEquals(6, new XmlEntityReader().stream(input).filter(e -> e instanceof Node).count());
     }
   }
 
   @Test
   void dataOsmXmlWays() throws IOException {
     try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
-      assertEquals(3, new XmlEntityReader().read(input).filter(e -> e instanceof Way).count());
+      assertEquals(3, new XmlEntityReader().stream(input).filter(e -> e instanceof Way).count());
     }
   }
 
   @Test
   void dataOsmXmlRelations() throws IOException {
     try (InputStream input = Files.newInputStream(DATA_OSM_XML)) {
-      assertEquals(1, new XmlEntityReader().read(input).filter(e -> e instanceof Relation).count());
+      assertEquals(1, new XmlEntityReader().stream(input).filter(e -> e instanceof Relation).count());
     }
   }
 
   @Test
   void dataOscXml() throws IOException {
     try (InputStream input = Files.newInputStream(DATA_OSC_XML)) {
-      assertEquals(7, new XmlChangeReader().read(input).collect(Collectors.toList()).size());
+      assertEquals(7, new XmlChangeReader().stream(input).collect(Collectors.toList()).size());
     }
   }
 
   @Test
   void dataOsmPbf() throws IOException {
     try (InputStream input = Files.newInputStream(DATA_OSM_PBF)) {
-      assertEquals(72002, new PbfEntityReader(new PbfBlockReader()).read(input).count());
+      assertEquals(72002, new PbfEntityReader(new PbfBlockReader()).stream(input).count());
     }
   }
 
   @Test
   void denseNodesOsmPbf() throws IOException {
     try (InputStream input = Files.newInputStream(DENSE_NODES_OSM_PBF)) {
-      assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).read(input)
+      assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).stream(input)
           .filter(e -> e instanceof Node).count());
     }
   }
@@ -102,7 +102,7 @@ class OpenStreetMapTest {
   @Test
   void waysOsmPbf() throws IOException {
     try (InputStream input = Files.newInputStream(WAYS_OSM_PBF)) {
-      assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).read(input)
+      assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).stream(input)
           .filter(e -> e instanceof Way).count());
     }
   }
@@ -110,7 +110,7 @@ class OpenStreetMapTest {
   @Test
   void relationsOsmPbf() throws IOException {
     try (InputStream input = Files.newInputStream(RELATIONS_OSM_PBF)) {
-      assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).read(input)
+      assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).stream(input)
           .filter(e -> e instanceof Relation).count());
     }
   }
@@ -127,7 +127,7 @@ class OpenStreetMapTest {
   @Test
   void monacoOsmPbf() throws IOException, URISyntaxException {
     try (InputStream inputStream = Files.newInputStream(MONACO_OSM_PBF)) {
-      Stream<Entity> stream = new PbfEntityReader(new PbfBlockReader()).read(inputStream);
+      Stream<Entity> stream = new PbfEntityReader(new PbfBlockReader()).stream(inputStream);
       process(stream, 1, 1, 25002, 4018, 243);
     }
   }
@@ -136,7 +136,7 @@ class OpenStreetMapTest {
   void monacoOsmBz2() throws IOException, URISyntaxException {
     try (InputStream inputStream =
         new BZip2CompressorInputStream(Files.newInputStream(MONACO_OSM_BZ2))) {
-      Stream<Entity> stream = new XmlEntityReader().read(inputStream);
+      Stream<Entity> stream = new XmlEntityReader().stream(inputStream);
       process(stream, 1, 1, 24951, 4015, 243);
     }
   }

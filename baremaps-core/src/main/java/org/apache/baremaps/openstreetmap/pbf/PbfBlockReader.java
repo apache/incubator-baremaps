@@ -18,14 +18,14 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.openstreetmap.DataReader;
+import org.apache.baremaps.openstreetmap.OsmReader;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Block;
 import org.apache.baremaps.stream.StreamUtils;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A utility class for reading an OpenStreetMap pbf file. */
-public class PbfBlockReader implements DataReader<Block> {
+public class PbfBlockReader implements OsmReader<Block> {
 
   private int buffer = Runtime.getRuntime().availableProcessors();
 
@@ -143,7 +143,7 @@ public class PbfBlockReader implements DataReader<Block> {
    * @param inputStream an osm pbf {@link InputStream}
    * @return a stream of blocks
    */
-  public Stream<Block> read(InputStream inputStream) {
+  public Stream<Block> stream(InputStream inputStream) {
     var blocks = StreamUtils.bufferInSourceOrder(StreamUtils.stream(new BlobIterator(inputStream)),
         new BlobToBlockMapper(), Runtime.getRuntime().availableProcessors());
     if (geometry) {

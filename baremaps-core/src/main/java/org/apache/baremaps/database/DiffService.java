@@ -80,7 +80,7 @@ public class DiffService implements Callable<List<Tile>> {
     var projectionTransformer = new ProjectionTransformer(srid, 4326);
     try (var changeInputStream =
         new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
-      return new XmlChangeReader().read(changeInputStream).flatMap(this::geometriesForChange)
+      return new XmlChangeReader().stream(changeInputStream).flatMap(this::geometriesForChange)
           .map(projectionTransformer::transform).flatMap(this::tilesForGeometry).distinct()
           .toList();
     }

@@ -27,7 +27,7 @@ class GeonamesReaderTest {
     var data = TestFiles.resolve("geonames/geocoder_sample.txt");
     try (var inputStream = Files.newInputStream(data)) {
       var reader = new GeonamesReader();
-      var stream = reader.read(inputStream);
+      var stream = reader.stream(inputStream);
 
       var list = stream.collect(Collectors.toList());
       assertEquals(4, list.size());

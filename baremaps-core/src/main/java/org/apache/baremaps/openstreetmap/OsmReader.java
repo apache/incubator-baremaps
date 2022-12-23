@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
-public interface DataReader<T> {
+public interface OsmReader<T> {
 
-  Stream<T> read(InputStream inputStream) throws IOException;
+  Stream<T> stream(InputStream inputStream) throws IOException;
 }

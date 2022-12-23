@@ -24,15 +24,15 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.baremaps.openstreetmap.DataReader;
+import org.apache.baremaps.openstreetmap.OsmReader;
 
 /**
  * A reader for the Geonames database.
  */
-public class GeonamesReader implements DataReader<GeonamesRecord> {
+public class GeonamesReader implements OsmReader<GeonamesRecord> {
 
   @Override
-  public Stream<GeonamesRecord> read(InputStream inputStream) throws IOException {
+  public Stream<GeonamesRecord> stream(InputStream inputStream) throws IOException {
     CsvMapper mapper = new CsvMapper();
 
     CsvSchema schema = CsvSchema.builder()

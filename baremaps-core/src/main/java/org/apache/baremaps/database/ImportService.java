@@ -74,7 +74,7 @@ public class ImportService implements Callable<Void> {
 
     // Process the blocks
     try (InputStream inputStream = Files.newInputStream(path)) {
-      batch(new PbfBlockReader().read(inputStream).map(blockMapper)).forEach(blockImporter);
+      batch(new PbfBlockReader().stream(inputStream).map(blockMapper)).forEach(blockImporter);
     }
 
     return null;

@@ -17,11 +17,11 @@ package org.apache.baremaps.openstreetmap.xml;
 import java.io.InputStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import org.apache.baremaps.openstreetmap.DataReader;
+import org.apache.baremaps.openstreetmap.OsmReader;
 import org.apache.baremaps.openstreetmap.model.Entity;
 
 /** A utility class for parsing an OpenStreetMap XML file. */
-public class XmlEntityReader implements DataReader<Entity> {
+public class XmlEntityReader implements OsmReader<Entity> {
 
   /**
    * Creates an ordered stream of OSM entities from a XML file.
@@ -29,7 +29,7 @@ public class XmlEntityReader implements DataReader<Entity> {
    * @param input
    * @return
    */
-  public Stream<Entity> read(InputStream input) {
+  public Stream<Entity> stream(InputStream input) {
     return StreamSupport.stream(new XmlEntitySpliterator(input), false);
   }
 }
