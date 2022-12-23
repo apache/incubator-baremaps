@@ -57,20 +57,26 @@ public class ImportService implements Callable<Void> {
 
   @Override
   public Void call() throws Exception {
+    // Initialize and chain the entity handlers
     var coordinateMapBuilder = new CoordinateMapBuilder(coordinateMap);
     var referenceMapBuilder = new ReferenceMapBuilder(referenceMap);
     var entityGeometryBuilder = new EntityGeometryBuilder(coordinateMap, referenceMap);
-    var entityGeometryHandler =
-        coordinateMapBuilder.andThen(referenceMapBuilder).andThen(entityGeometryBuilder);
     var entityProjectionTransformer = new EntityProjectionTransformer(4326, databaseSrid);
-    var entityHandler = entityGeometryHandler.andThen(entityProjectionTransformer);
-    var blockEntitiesHandler = new BlockEntitiesHandler(entityHandler);
-    var blockMapper = consumeThenReturn(blockEntitiesHandler);
+    var entityHandler = coordinateMapBuilder
+        .andThen(referenceMapBuilder)
+        .andThen(entityGeometryBuilder)
+        .andThen(entityProjectionTransformer);
+
+    // Initialize the block mapper
+    var blockMapper = consumeThenReturn(new BlockEntitiesHandler(entityHandler));
     var blockImporter =
         new BlockImporter(headerRepository, nodeRepository, wayRepository, relationRepository);
+
+    // Process the blocks
     try (InputStream inputStream = Files.newInputStream(path)) {
       batch(new PbfBlockReader().stream(inputStream).map(blockMapper)).forEach(blockImporter);
     }
+
     return null;
   }
 

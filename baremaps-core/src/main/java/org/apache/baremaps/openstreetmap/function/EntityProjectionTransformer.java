@@ -22,22 +22,30 @@ import org.locationtech.jts.geom.Geometry;
 /** Changes the projection of the geometry of an entity via side-effects. */
 public class EntityProjectionTransformer implements Consumer<Entity> {
 
+  private final int sourceSrid;
+
+  private final int targetSrid;
+
   private final ProjectionTransformer projectionTransformer;
 
   /**
    * Creates a consumer that reproject geometries with the provided SRIDs.
    *
-   * @param inputSRID the input SRID
-   * @param outputSRID the output SRID
+   * @param sourceSrid the source SRID
+   * @param targetSrid the target SRID
    */
-  public EntityProjectionTransformer(int inputSRID, int outputSRID) {
-    this.projectionTransformer = new ProjectionTransformer(inputSRID, outputSRID);
+  public EntityProjectionTransformer(int sourceSrid, int targetSrid) {
+    this.sourceSrid = sourceSrid;
+    this.targetSrid = targetSrid;
+    this.projectionTransformer = new ProjectionTransformer(sourceSrid, targetSrid);
   }
 
   /** {@inheritDoc} */
   @Override
   public void accept(Entity entity) {
-    if (entity instanceof Element element && element.getGeometry() != null) {
+    if (sourceSrid != targetSrid
+        && entity instanceof Element element
+        && element.getGeometry() != null) {
       Geometry geometry = projectionTransformer.transform(element.getGeometry());
       element.setGeometry(geometry);
     }
