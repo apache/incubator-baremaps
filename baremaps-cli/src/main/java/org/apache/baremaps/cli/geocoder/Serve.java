@@ -35,7 +35,8 @@ public class Serve implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Serve.class);
 
-  @Option(names = {"--index"}, paramLabel = "INDEX", description = "The path to the lucene index.",
+  @Option(
+      names = {"--index"}, paramLabel = "INDEX", description = "The path to the lucene index.",
       required = true)
   private Path indexDirectory;
 
@@ -47,25 +48,25 @@ public class Serve implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
+    try (
+        var directory = MMapDirectory.open(indexDirectory);
+        var searcherManager = new SearcherManager(directory, new SearcherFactory())) {
+      // Configure the application
+      var application = new ResourceConfig().register(CorsFilter.class)
+          .register(GeocoderResources.class).register(new AbstractBinder() {
+            @Override
+            protected void configure() {
+              bind(searcherManager).to(SearcherManager.class).named("searcherManager");
+            }
+          });
 
-    var directory = MMapDirectory.open(indexDirectory);
-    var searcherManager = new SearcherManager(directory, new SearcherFactory());
+      var httpService = new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
+      var serverContext = HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
 
-    // Configure the application
-    var application = new ResourceConfig().register(CorsFilter.class)
-        .register(GeocoderResources.class).register(new AbstractBinder() {
-          @Override
-          protected void configure() {
-            bind(searcherManager).to(SearcherManager.class).named("searcherManager");
-          }
-        });
+      logger.info("Listening on {}", serverContext.listenAddress());
+      serverContext.awaitShutdown();
+    }
 
-    var httpService = new HttpJerseyRouterBuilder().buildBlockingStreaming(application);
-    var serverContext = HttpServers.forPort(port).listenBlockingStreamingAndAwait(httpService);
-
-    logger.info("Listening on {}", serverContext.listenAddress());
-
-    serverContext.awaitShutdown();
     return 0;
   }
 }

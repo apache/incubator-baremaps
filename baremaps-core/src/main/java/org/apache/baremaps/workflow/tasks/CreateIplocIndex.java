@@ -39,51 +39,50 @@ public record CreateIplocIndex(
   String targetIplocIndexPath
 ) implements Task {
 
-    private static final Logger logger = LoggerFactory.getLogger(CreateIplocIndex.class);
+  private static final Logger logger = LoggerFactory.getLogger(CreateIplocIndex.class);
 
-    @Override
-    public void execute(WorkflowContext context) throws Exception {
-        logger.info("Generating Iploc from {} {}", geonamesIndexPath, nicPaths);
+  @Override
+  public void execute(WorkflowContext context) throws Exception {
+    logger.info("Generating Iploc from {} {}", geonamesIndexPath, nicPaths);
 
-        logger.info("Creating the Geocoder");
-        var directory = MMapDirectory.open(Paths.get(geonamesIndexPath));
-        var searcherManager = new SearcherManager(directory, new SearcherFactory());
+    try (
+      var directory = MMapDirectory.open(Paths.get(geonamesIndexPath));
+      var searcherManager = new SearcherManager(directory, new SearcherFactory())
+    ) {
+      logger.info("Creating the Iploc database");
+      String jdbcUrl = String.format("JDBC:sqlite:%s", targetIplocIndexPath);
 
-        logger.info("Creating the Iploc database");
-        String jdbcUrl = String.format("JDBC:sqlite:%s", targetIplocIndexPath);
+      SqliteUtils.executeResource(jdbcUrl, "iploc_init.sql");
+      IpLoc ipLoc = new IpLoc(jdbcUrl, searcherManager);
 
-        SqliteUtils.executeResource(jdbcUrl, "iploc_init.sql");
-        IpLoc ipLoc = new IpLoc(jdbcUrl, searcherManager);
+      logger.info("Generating NIC objects stream");
+      nicPaths.stream().parallel().forEach(path -> {
+        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(Path.of(path)));) {
+          var nicObjects = NicParser.parse(inputStream);
+          logger.info("Inserting the nic objects into the Iploc database");
+          ipLoc.insertNicObjects(nicObjects);
+        } catch (IOException e) {
+          throw new StreamException(e);
+        }
+      });
 
-        logger.info("Generating NIC objects stream");
-        nicPaths.stream().parallel().forEach(path -> {
-          try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(Path.of(path)));) {
-            var nicObjects = NicParser.parse(inputStream);
-            logger.info("Inserting the nic objects into the Iploc database");
-            ipLoc.insertNicObjects(nicObjects);
-          } catch (IOException e) {
-            throw new StreamException(e);
-          }
-        });
-
-        IpLocStats ipLocStats = ipLoc.getIplocStats();
-
-        logger.info(
-                """
-                        IpLoc stats
-                        -----------
-                        inetnumInsertedByAddress : {}
-                        inetnumInsertedByDescr : {}
-                        inetnumInsertedByCountry : {}
-                        inetnumInsertedByCountryCode : {}
-                        inetnumInsertedByGeoloc : {}
-                        inetnumNotInserted : {}""",
-                ipLocStats.getInsertedByAddressCount(), ipLocStats.getInsertedByDescrCount(),
-                ipLocStats.getInsertedByCountryCount(), ipLocStats.getInsertedByCountryCodeCount(),
-                ipLocStats.getInsertedByGeolocCount(), ipLocStats.getNotInsertedCount());
-
-        logger.info("IpLoc database created successfully");
-
-        logger.info("Finished creating the Geocoder index {}", targetIplocIndexPath);
+      IpLocStats ipLocStats = ipLoc.getIplocStats();
+      logger.info(
+        """
+          IpLoc stats
+          -----------
+          inetnumInsertedByAddress : {}
+          inetnumInsertedByDescr : {}
+          inetnumInsertedByCountry : {}
+          inetnumInsertedByCountryCode : {}
+          inetnumInsertedByGeoloc : {}
+          inetnumNotInserted : {}""",
+        ipLocStats.getInsertedByAddressCount(), ipLocStats.getInsertedByDescrCount(),
+        ipLocStats.getInsertedByCountryCount(), ipLocStats.getInsertedByCountryCodeCount(),
+        ipLocStats.getInsertedByGeolocCount(), ipLocStats.getNotInsertedCount()
+      );
     }
+
+    logger.info("IpLoc database created successfully {}", targetIplocIndexPath);
+  }
 }

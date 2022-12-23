@@ -29,38 +29,42 @@ public class Search implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Search.class);
 
-  @Option(names = {"--index"}, paramLabel = "INDEX", description = "The path to the lucene index.",
+  @Option(
+      names = {"--index"}, paramLabel = "INDEX", description = "The path to the lucene index.",
       required = true)
   private Path indexDirectory;
 
-  @Option(names = {"--terms"}, paramLabel = "terms",
+  @Option(
+      names = {"--terms"}, paramLabel = "terms",
       description = "The terms to search in the index.", required = true)
   private String terms;
 
-  @Option(names = {"--country"}, paramLabel = "COUNTRY", description = "The country code filter.",
+  @Option(
+      names = {"--country"}, paramLabel = "COUNTRY", description = "The country code filter.",
       required = false)
   private String countryCode = "";
 
-  @Option(names = {"--limit"}, paramLabel = "LIMIT",
+  @Option(
+      names = {"--limit"}, paramLabel = "LIMIT",
       description = "The number of result to return.", required = false)
   private Integer limit = 10;
 
   @Override
   public Integer call() throws Exception {
-    var directory = MMapDirectory.open(indexDirectory);
-
-    var query = new GeonamesQueryBuilder().queryText(terms).countryCode(countryCode).build();
-
-    var searcherManager = new SearcherManager(directory, new SearcherFactory());
-    var searcher = searcherManager.acquire();
-    try {
-      var result = searcher.search(query, limit);
-      for (var hit : result.scoreDocs) {
-        var document = searcher.doc(hit.doc);
-        logger.info("{}", document);
+    try (
+        var directory = MMapDirectory.open(indexDirectory);
+        var searcherManager = new SearcherManager(directory, new SearcherFactory())) {
+      var query = new GeonamesQueryBuilder().queryText(terms).countryCode(countryCode).build();
+      var searcher = searcherManager.acquire();
+      try {
+        var result = searcher.search(query, limit);
+        for (var hit : result.scoreDocs) {
+          var document = searcher.doc(hit.doc);
+          logger.info("{}", document);
+        }
+      } finally {
+        searcherManager.release(searcher);
       }
-    } finally {
-      searcherManager.release(searcher);
     }
 
     return 0;
