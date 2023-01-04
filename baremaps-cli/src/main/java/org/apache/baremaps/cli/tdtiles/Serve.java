@@ -12,9 +12,12 @@
 
 package org.apache.baremaps.cli.tdtiles;
 
+
+
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.util.concurrent.Callable;
+import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.database.PostgresUtils;
 import org.apache.baremaps.server.CorsFilter;
@@ -26,8 +29,6 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
-
-import javax.sql.DataSource;
 
 @Command(name = "serve", description = "Start a 3d tile server.")
 public class Serve implements Callable<Integer> {
@@ -53,7 +54,8 @@ public class Serve implements Callable<Integer> {
 
     // Configure the application
     var application =
-        new ResourceConfig().register(CorsFilter.class).register(TdTilesResources.class).register(new AbstractBinder() {
+        new ResourceConfig().register(CorsFilter.class).register(TdTilesResources.class)
+            .register(new AbstractBinder() {
               @Override
               protected void configure() {
                 bind(datasource).to(DataSource.class);

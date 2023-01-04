@@ -13,19 +13,19 @@
 package org.apache.baremaps.tdtiles;
 
 
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.*;
+import javax.sql.DataSource;
 import org.apache.baremaps.database.tile.*;
 import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
 import org.apache.baremaps.tdtiles.building.Building;
 import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.*;
 
 /**
  * A read-only {@code TileStore} implementation that uses the PostgreSQL to generate 3d tiles.
@@ -43,11 +43,13 @@ public class TdTilesStore {
     this.datasource = datasource;
   }
 
-  public List<Building> read(float xmin, float xmax, float ymin, float ymax, int limit) throws TileStoreException {
+  public List<Building> read(float xmin, float xmax, float ymin, float ymax, int limit)
+      throws TileStoreException {
     try (Connection connection = datasource.getConnection();
         Statement statement = connection.createStatement()) {
 
-      String sql = String.format(QUERY, ymin * 180 / (float)Math.PI, xmin * 180 / (float)Math.PI, ymax * 180 / (float)Math.PI, xmax * 180 / (float)Math.PI, limit);
+      String sql = String.format(QUERY, ymin * 180 / (float) Math.PI, xmin * 180 / (float) Math.PI,
+          ymax * 180 / (float) Math.PI, xmax * 180 / (float) Math.PI, limit);
       logger.debug("Executing query: {}", sql);
 
       List<Building> buildings = new ArrayList<>();
@@ -61,11 +63,11 @@ public class TdTilesStore {
           String height = resultSet.getString(3);
           String buildingLevels = resultSet.getString(4);
           float finalHeight = 10;
-          if(buildingHeight != null) {
+          if (buildingHeight != null) {
             finalHeight = Float.parseFloat(buildingHeight.replaceAll("[^0-9]", ""));
-          } else if(height != null) {
+          } else if (height != null) {
             finalHeight = Float.parseFloat(height.replaceAll("[^0-9]", ""));
-          } else if(buildingLevels != null) {
+          } else if (buildingLevels != null) {
             finalHeight = Float.parseFloat(buildingLevels.replaceAll("[^0-9]", "")) * 3;
           }
 
