@@ -1,0 +1,31 @@
+{
+  "version": 8,
+  "center": [
+    0.1278,
+    51.5074
+  ],
+  "zoom": 14,
+  "sources": {
+    "baremaps": {
+      "type": "vector",
+      "url": "http://localhost:9000/tiles.json"
+    }
+  },
+  "layers": [
+    {
+      "id": "building",
+      "type": "fill-extrusion",
+      "source": "baremaps",
+      "source-layer": "building",
+      "paint": {
+        "fill-extrusion-color": "rgb(152, 174, 221)",
+        "fill-extrusion-height": [
+          "get",
+          "building:height"
+        ],
+        "fill-extrusion-base": 0,
+        "fill-extrusion-opacity": 0.9
+      }
+    }
+  ]
+}
