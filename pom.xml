@@ -197,6 +197,11 @@ limitations under the License.
         <version>${version.lib.pgbulkinsert}</version>
       </dependency>
       <dependency>
+        <groupId>de.javagl</groupId>
+        <artifactId>jgltf-model-builder</artifactId>
+        <version>${version.lib.jgltf}</version>
+      </dependency>
+      <dependency>
         <groupId>info.picocli</groupId>
         <artifactId>picocli</artifactId>
         <version>${version.lib.picocli}</version>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <!-- Include the CesiumJS JavaScript and CSS files -->
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.100/Build/Cesium/Cesium.js"></script>
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.100/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+</head>
+<body>
+<div id="cesiumContainer"></div>
+<script>
+    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjYTZkYThmNi1iMDIxLTRkOTAtOTI4YS01OTY4YWIzYzYzOGUiLCJpZCI6MTE4MzI0LCJpYXQiOjE2NzEwMTU5NzZ9.qjN6GQvDXYjHsgTHQ6Y8BengL4GEPGmff_WKfLzrn0o';
+
+    // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
+    const viewer = new Cesium.Viewer('cesiumContainer', {
+        //terrainProvider: Cesium.createWorldTerrain()
+    });
+
+    // Create the tileset in the viewer
+    const tileset =
+        new Cesium.Cesium3DTileset({
+            url: "http://localhost:9000/tileset.json",
+            maximumScreenSpaceError: 10,
+            //debugShowBoundingVolume: true,
+            //debugShowGeometricError: true,
+            //debugShowUrl: true,
+            //debugWireframe: true
+        });
+
+    viewer.scene.primitives.add(tileset);
+
+    const pos = Cesium.Cartesian3.fromDegrees(
+        9.5209, 47.1410, 0);
+    console.log(pos);
+
+    // Set initial position
+    viewer.camera.setView({
+        destination : Cesium.Cartesian3.fromDegrees(6.6323, 46.5197, 300)
+    });
+</script>
+</div>
+</body>
+</html>

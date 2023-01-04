@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="tdtiles-serve" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.cli.Baremaps" />
+    <module name="baremaps-cli" />
+    <option name="PROGRAM_PARAMETERS" value="tdtiles serve --database jdbc:postgresql://localhost:5432/baremaps?user=baremaps&amp;password=baremaps" />
+    <option name="WORKING_DIRECTORY" value="examples/tdtiles" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

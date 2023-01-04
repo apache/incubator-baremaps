@@ -67,6 +67,10 @@ limitations under the License.
       <artifactId>pgbulkinsert</artifactId>
     </dependency>
     <dependency>
+      <groupId>de.javagl</groupId>
+      <artifactId>jgltf-model-builder</artifactId>
+    </dependency>
+    <dependency>
       <groupId>it.unimi.dsi</groupId>
       <artifactId>fastutil</artifactId>
     </dependency>
