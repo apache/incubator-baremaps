@@ -20,11 +20,10 @@
     const tileset =
         new Cesium.Cesium3DTileset({
             url: "http://localhost:9000/tileset.json",
-            maximumScreenSpaceError: 10,
-            //debugShowBoundingVolume: true,
-            //debugShowGeometricError: true,
-            //debugShowUrl: true,
-            //debugWireframe: true
+            debugShowBoundingVolume: false,
+            debugShowGeometricError: false,
+            debugShowUrl: false,
+            debugWireframe: false
         });
 
     viewer.scene.primitives.add(tileset);
