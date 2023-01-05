@@ -43,28 +43,32 @@ public class GltfBuilder {
    * @return
    */
   public static NodeModel createNode(Building building, float tolerance) {
+
+    // Tessellate the vector data
     DelaunayTriangulationBuilder delaunayTriangulationBuilder = new DelaunayTriangulationBuilder();
     delaunayTriangulationBuilder.setSites(building.geometry());
     delaunayTriangulationBuilder.setTolerance(tolerance);
-
-    float[] translation = cartesian3Degrees((float) building.geometry().getCoordinates()[0].y,
-        (float) building.geometry().getCoordinates()[0].x, 0);
-
-    Geometry triangulation = delaunayTriangulationBuilder.getTriangles(new GeometryFactory()); // initial
-                                                                                               // triangulation
+    Geometry triangulation = delaunayTriangulationBuilder.getTriangles(new GeometryFactory());
     if (triangulation.getNumGeometries() == 0) {
       return new DefaultNodeModel();
     }
 
+    // Compute a translation for the origin of the building. If the building is too far from the
+    // origin, it will
+    // suffer from jittering. https://help.agi.com/AGIComponents/html/BlogPrecisionsPrecisions.htm
+    float[] translation = cartesian3FromDegrees((float) building.geometry().getCoordinates()[0].y,
+        (float) building.geometry().getCoordinates()[0].x, 0);
+
+    // Generate the 3d vertices, indices and normals
     List<Float> vertices = new ArrayList<>();
     List<Integer> indices = new ArrayList<>();
     List<Float> normals = new ArrayList<>();
-
     createRoof(building, translation, triangulation, vertices, indices);
     HashSet<Edge> edges = getExteriorEdges(triangulation);
     createWalls(building, translation, vertices, indices, edges);
     createNormals(vertices, normals);
 
+    // Create a mesh from the vertices, indices and normals
     MeshPrimitiveBuilder meshPrimitiveBuilder =
         MeshPrimitiveBuilder.create();
     meshPrimitiveBuilder.setIntIndicesAsShort(
@@ -73,7 +77,6 @@ public class GltfBuilder {
         FloatBuffer.wrap(ArrayUtils.toPrimitive(vertices.toArray(new Float[0]), 0.0F)));
     meshPrimitiveBuilder.addNormals3D(
         FloatBuffer.wrap(ArrayUtils.toPrimitive(normals.toArray(new Float[0]), 0.0F)));
-
     DefaultMeshPrimitiveModel meshPrimitiveModel =
         meshPrimitiveBuilder.build();
 
@@ -94,8 +97,8 @@ public class GltfBuilder {
     // Create a node with the mesh
     DefaultNodeModel nodeModel = new DefaultNodeModel();
     nodeModel.addMeshModel(meshModel);
-    // nodeModel.setScale(new float[]{5f,5f,5f});
     nodeModel.setTranslation(translation);
+
     return nodeModel;
   }
 
@@ -147,19 +150,21 @@ public class GltfBuilder {
     for (Edge edge : edges) {
       Coordinate[] v = edge.getCoordinates();
 
-      float[] pos0 = cartesian3Degrees((float) v[0].getY(), (float) v[0].getX(), 0);
+      float[] pos0 = cartesian3FromDegrees((float) v[0].getY(), (float) v[0].getX(), 0);
       pos0[0] -= translation[0];
       pos0[1] -= translation[1];
       pos0[2] -= translation[2];
-      float[] pos1 = cartesian3Degrees((float) v[1].getY(), (float) v[1].getX(), 0);
+      float[] pos1 = cartesian3FromDegrees((float) v[1].getY(), (float) v[1].getX(), 0);
       pos1[0] -= translation[0];
       pos1[1] -= translation[1];
       pos1[2] -= translation[2];
-      float[] pos2 = cartesian3Degrees((float) v[0].getY(), (float) v[0].getX(), building.height());
+      float[] pos2 =
+          cartesian3FromDegrees((float) v[0].getY(), (float) v[0].getX(), building.height());
       pos2[0] -= translation[0];
       pos2[1] -= translation[1];
       pos2[2] -= translation[2];
-      float[] pos3 = cartesian3Degrees((float) v[1].getY(), (float) v[1].getX(), building.height());
+      float[] pos3 =
+          cartesian3FromDegrees((float) v[1].getY(), (float) v[1].getX(), building.height());
       pos3[0] -= translation[0];
       pos3[1] -= translation[1];
       pos3[2] -= translation[2];
@@ -246,15 +251,15 @@ public class GltfBuilder {
       Coordinate corner2 = triangle.getCoordinates()[1];
       Coordinate corner3 = triangle.getCoordinates()[2];
 
-      float[] pos0 = cartesian3Degrees((float) corner1.y, (float) corner1.x, building.height());
+      float[] pos0 = cartesian3FromDegrees((float) corner1.y, (float) corner1.x, building.height());
       pos0[0] -= translation[0];
       pos0[1] -= translation[1];
       pos0[2] -= translation[2];
-      float[] pos1 = cartesian3Degrees((float) corner2.y, (float) corner2.x, building.height());
+      float[] pos1 = cartesian3FromDegrees((float) corner2.y, (float) corner2.x, building.height());
       pos1[0] -= translation[0];
       pos1[1] -= translation[1];
       pos1[2] -= translation[2];
-      float[] pos2 = cartesian3Degrees((float) corner3.y, (float) corner3.x, building.height());
+      float[] pos2 = cartesian3FromDegrees((float) corner3.y, (float) corner3.x, building.height());
       pos2[0] -= translation[0];
       pos2[1] -= translation[1];
       pos2[2] -= translation[2];
@@ -275,7 +280,7 @@ public class GltfBuilder {
   }
 
   /**
-   * Create a GLB from a list of nodes.
+   * Create a GLTF binary from a list of nodes.
    *
    * @param nodes
    * @return
@@ -337,7 +342,7 @@ public class GltfBuilder {
    * @param height in meters above the ellipsoid.
    * @return The position
    */
-  public static float[] cartesian3Degrees(float latitude, float longitude, float height) {
+  public static float[] cartesian3FromDegrees(float latitude, float longitude, float height) {
     return cartesian3FromRadians(latitude * (float) Math.PI / 180,
         longitude * (float) Math.PI / 180, height);
   }

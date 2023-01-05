@@ -60,18 +60,45 @@ public class TdTilesResources {
   @javax.ws.rs.Path("/content/content_{level}__{x}_{y}.glb")
   public Response getContent(@PathParam("level") int level, @PathParam("x") int x,
       @PathParam("y") int y) throws Exception {
+    if (level < 14) {
+      return Response.ok().entity(
+          GltfBuilder.createGltf(new ArrayList<>())).build();
+    }
     float[] coords = xyzToLatLonRadians(x, y, level);
-    int limit = level > 17 ? 1000 : 80;
-    List<Building> buildings = tdTilesStore.read(coords[0], coords[1], coords[2], coords[3], limit);
     List<NodeModel> nodes = new ArrayList<>();
+    int limit = level > 17 ? 1000 : level > 16 ? 200 : level > 15 ? 30 : 10;
+    List<Building> buildings = tdTilesStore.read(coords[0], coords[1], coords[2], coords[3], limit);
     for (Building building : buildings) {
-      float tolerance = level > 17 ? 0.00001f : level >= 16 ? 0.0001f : 0.0003f;
+      float tolerance = level > 17 ? 0.00001f : level > 15 ? 0.00002f : 0.00004f;
       nodes.add(GltfBuilder.createNode(building, tolerance));
     }
     return Response.ok().entity(
         GltfBuilder.createGltf(nodes)).build();
   }
 
+  @GET
+  @javax.ws.rs.Path("/{path:.*}")
+  public Response get(@PathParam("path") String path) {
+    if (path.equals("") || path.endsWith("/")) {
+      path += "index.html";
+    }
+    path = String.format("tdtiles/%s", path);
+    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
+      var bytes = inputStream.readAllBytes();
+      return Response.ok().entity(bytes).build();
+    } catch (IOException e) {
+      return Response.status(404).build();
+    }
+  }
+
+  /**
+   * Convert XYZ tile coordinates to lat/lon in radians.
+   * 
+   * @param x
+   * @param y
+   * @param z
+   * @return
+   */
   public static float[] xyzToLatLonRadians(int x, int y, int z) {
     float[] answer = new float[4];
     int subdivision = 1 << z;
@@ -88,20 +115,5 @@ public class TdTilesResources {
     answer[2] = Math.max(-(float) Math.PI, Math.min((float) Math.PI, answer[2]));
     answer[3] = Math.max(-(float) Math.PI, Math.min((float) Math.PI, answer[3]));
     return answer;
-  }
-
-  @GET
-  @javax.ws.rs.Path("/{path:.*}")
-  public Response get(@PathParam("path") String path) {
-    if (path.equals("") || path.endsWith("/")) {
-      path += "index.html";
-    }
-    path = String.format("tdtiles/%s", path);
-    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
-      var bytes = inputStream.readAllBytes();
-      return Response.ok().entity(bytes).build();
-    } catch (IOException e) {
-      return Response.status(404).build();
-    }
   }
 }
