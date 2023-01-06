@@ -12,30 +12,49 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import org.apache.baremaps.geocoder.geonames.GeonamesGeocoder;
+import org.apache.baremaps.geocoder.GeonamesDocumentMapper;
+import org.apache.baremaps.geocoder.GeonamesReader;
+import org.apache.baremaps.geocoder.GeocoderConstants;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.store.MMapDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.nio.file.Path;
 
-public record CreateGeonamesIndex(String geonamesDumpPath, String targetGeonamesIndexPath) implements Task {
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+/**
+ * A task that creates a geonames index.
+ */
+public record CreateGeonamesIndex(String dataFile, String indexDirectory) implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateGeonamesIndex.class);
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Generating geonames from {}", geonamesDumpPath);
-    try (GeonamesGeocoder geocoder =
-                 new GeonamesGeocoder(Path.of(targetGeonamesIndexPath), Path.of(geonamesDumpPath))) {
-      if (!geocoder.indexExists()) {
-        logger.info("Building the geocoder index");
-        geocoder.build();
-      }
-    } catch(Exception e) {
-      logger.error("Error while creating the geocoder index", e);
-      return;
+    logger.info("Indexing {}", dataFile);
+
+    var dataPath = Paths.get(dataFile);
+    var indexPath = Paths.get(indexDirectory);
+    var directory = MMapDirectory.open(indexPath);
+    var config = new IndexWriterConfig(GeocoderConstants.ANALYZER);
+
+    try (var indexWriter = new IndexWriter(directory, config);
+      var inputStream = Files.newInputStream(dataPath)) {
+      indexWriter.deleteAll();
+      var documents = new GeonamesReader()
+        .stream(inputStream)
+        .map(new GeonamesDocumentMapper());
+      indexWriter.addDocuments((Iterable<Document>) documents::iterator);
+    } catch (IOException exception) {
+      throw new RuntimeException();
     }
-    logger.info("Finished creating the Geocoder index {}", targetGeonamesIndexPath);
+
+    logger.info("Finished indexing {}", indexDirectory);
   }
 }

@@ -10,10 +10,12 @@
  * the License.
  */
 
-package org.apache.baremaps.geocoder.geonames;
+package org.apache.baremaps.geocoder;
 
-/** Structured of a Geonames record. */
-class GeonamesRecord {
+/**
+ * A record from the Geonames database.
+ */
+public class GeonamesRecord {
 
   // integer id of record in geonames database
   private Integer geonameid;

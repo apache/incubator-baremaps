@@ -18,45 +18,77 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import org.apache.baremaps.geocoder.Geocoder;
-import org.apache.baremaps.geocoder.request.Request;
-import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.SearcherManager;
+
 
 @Singleton
 @javax.ws.rs.Path("/")
 public class GeocoderResources {
 
-  private final Geocoder geocoder;
+  record GeocoderResponse(List<GeocoderResult> results) {}
+
+
+  record GeocoderResult(float score, Map<String, Object> data) {}
+
+
+  private final SearcherManager searcherManager;
 
   @Inject
-  public GeocoderResources(Geocoder geocoder) {
-    this.geocoder = geocoder;
+  public GeocoderResources(SearcherManager searcherManager) {
+    this.searcherManager = searcherManager;
   }
 
   @GET
   @javax.ws.rs.Path("/api/geocoder")
-  public Response getIpToLocation(@QueryParam("address") String address) {
-    if (address == null) {
+  public Response getIpToLocation(@QueryParam("queryText") String queryText,
+      @QueryParam("countryCode") @DefaultValue("") String countryCode,
+      @QueryParam("limit") @DefaultValue("10") int limit) throws IOException {
+    if (queryText == null) {
       throw new WebApplicationException(Response.status(Response.Status.BAD_REQUEST)
-          .entity("address parameter is mandatory").build());
+          .entity("The queryText parameter is mandatory").build());
     }
-
+    var query = new GeonamesQueryBuilder().queryText(queryText).countryCode(countryCode).build();
+    var searcher = searcherManager.acquire();
     try {
-      var request = new Request(address, 20);
-      var response = geocoder.search(request);
+      var result = searcher.search(query, limit);
+      var results =
+          Arrays.stream(result.scoreDocs).map(scoreDoc -> asResult(searcher, scoreDoc)).toList();
       return Response.status(200).header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
-          .header(CONTENT_TYPE, APPLICATION_JSON).entity(response).build();
+          .header(CONTENT_TYPE, APPLICATION_JSON).entity(new GeocoderResponse(results)).build();
     } catch (IllegalArgumentException e) {
       return Response.status(400).entity(e.getMessage()).build();
-    } catch (IOException | ParseException e) {
+    } catch (IOException e) {
       return Response.status(500).entity(e.getMessage()).build();
+    } finally {
+      searcherManager.release(searcher);
+    }
+  }
+
+  private GeocoderResult asResult(IndexSearcher indexSearcher, ScoreDoc scoreDoc) {
+    try {
+      var document = indexSearcher.doc(scoreDoc.doc);
+      var data = new HashMap<String, Object>();
+      for (var field : document.getFields()) {
+        if (field.numericValue() != null) {
+          data.put(field.name(), field.numericValue());
+        } else if (field.stringValue() != null) {
+          data.put(field.name(), field.stringValue());
+        }
+      }
+      return new GeocoderResult(scoreDoc.score, data);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 

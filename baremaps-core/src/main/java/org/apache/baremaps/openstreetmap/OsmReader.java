@@ -14,10 +14,11 @@ package org.apache.baremaps.openstreetmap;
 
 
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.stream.Stream;
 
 public interface OsmReader<T> {
 
-  Stream<T> stream(InputStream inputStream);
+  Stream<T> stream(InputStream inputStream) throws IOException;
 }

@@ -16,8 +16,9 @@ package org.apache.baremaps.cli.geocoder;
 
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import org.apache.baremaps.geocoder.geonames.GeonamesGeocoder;
-import org.apache.baremaps.geocoder.request.Request;
+import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
+import org.apache.lucene.search.*;
+import org.apache.lucene.store.MMapDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
@@ -28,21 +29,44 @@ public class Search implements Callable<Integer> {
 
   private static final Logger logger = LoggerFactory.getLogger(Search.class);
 
-  @Option(names = {"--index"}, paramLabel = "INDEX", description = "The path to the lucene index.",
+  @Option(
+      names = {"--index"}, paramLabel = "INDEX", description = "The path to the lucene index.",
       required = true)
-  private Path indexPath;
+  private Path indexDirectory;
 
-  @Option(names = {"--search"}, paramLabel = "SEARCH",
+  @Option(
+      names = {"--terms"}, paramLabel = "terms",
       description = "The terms to search in the index.", required = true)
-  private String search;
+  private String terms;
+
+  @Option(
+      names = {"--country"}, paramLabel = "COUNTRY", description = "The country code filter.",
+      required = false)
+  private String countryCode = "";
+
+  @Option(
+      names = {"--limit"}, paramLabel = "LIMIT",
+      description = "The number of result to return.", required = false)
+  private Integer limit = 10;
 
   @Override
   public Integer call() throws Exception {
-    var geocoder = new GeonamesGeocoder(indexPath, null);
-    geocoder.open();
-    var request = new Request(search, 20);
-    var response = geocoder.search(request);
-    logger.info("{}", response);
+    try (
+        var directory = MMapDirectory.open(indexDirectory);
+        var searcherManager = new SearcherManager(directory, new SearcherFactory())) {
+      var query = new GeonamesQueryBuilder().queryText(terms).countryCode(countryCode).build();
+      var searcher = searcherManager.acquire();
+      try {
+        var result = searcher.search(query, limit);
+        for (var hit : result.scoreDocs) {
+          var document = searcher.doc(hit.doc);
+          logger.info("{}", document);
+        }
+      } finally {
+        searcherManager.release(searcher);
+      }
+    }
+
     return 0;
   }
 }

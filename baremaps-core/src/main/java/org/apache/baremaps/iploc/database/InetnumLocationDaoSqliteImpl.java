@@ -23,7 +23,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.apache.baremaps.iploc.data.InetnumLocation;
 import org.apache.baremaps.iploc.data.Ipv4Range;
 import org.apache.baremaps.iploc.data.Location;
@@ -161,7 +160,6 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
       stmt.setString(6, inetnumLocation.getNetwork());
       stmt.setString(7, inetnumLocation.getCountry());
       stmt.executeUpdate();
-      logger.info(String.format("Data Added Successfully %s", inetnumLocation));
     } catch (SQLException e) {
       logger.error("Unable to save data", e);
     }
@@ -185,8 +183,6 @@ public final class InetnumLocationDaoSqliteImpl implements InetnumLocationDao {
       }
       stmt.executeBatch();
       connection.commit();
-      logger.info(String.format("Batch executed Successfully \n\t%s", inetnumLocations.stream()
-          .map(InetnumLocation::toString).collect(Collectors.joining("\n\t"))));
     } catch (SQLException e) {
       logger.error("Unable to save data", e);
     }
