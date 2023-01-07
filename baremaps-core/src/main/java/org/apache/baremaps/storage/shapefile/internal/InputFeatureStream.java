@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.List;
-import org.apache.sis.feature.AbstractFeature;
-import org.apache.sis.feature.DefaultFeatureType;
+import org.apache.baremaps.feature.Feature;
+import org.apache.baremaps.feature.FeatureType;
 
 /**
  * Input Stream of features.
@@ -48,7 +48,7 @@ public class InputFeatureStream extends InputStream {
   private boolean hasShapefileIndex;
 
   /** Type of the features contained in this shapefile. */
-  private DefaultFeatureType featuresType;
+  private FeatureType featuresType;
 
   /** Shapefile reader. */
   private ShapefileByteReader shapefileReader;
@@ -113,7 +113,7 @@ public class InputFeatureStream extends InputStream {
    * @throws ShapefileException if the current connection used to query the shapefile has been
    *         closed.
    */
-  public AbstractFeature readFeature() throws ShapefileException {
+  public Feature readFeature() throws ShapefileException {
     return internalReadFeature();
   }
 
@@ -122,8 +122,8 @@ public class InputFeatureStream extends InputStream {
    *
    * @return Features type.
    */
-  public DefaultFeatureType getFeaturesType() {
-    return this.featuresType;
+  public FeatureType getFeaturesType() {
+    return featuresType;
   }
 
   /**
@@ -160,11 +160,11 @@ public class InputFeatureStream extends InputStream {
    * @throws SQLFeatureNotSupportedException if a SQL ability is not currently available through
    *         this driver.
    */
-  private AbstractFeature internalReadFeature() throws ShapefileException {
+  private Feature internalReadFeature() throws ShapefileException {
     if (!this.dbaseReader.nextRowAvailable()) {
       return null;
     }
-    AbstractFeature feature = (AbstractFeature) this.featuresType.newInstance();
+    Feature feature = this.featuresType.newInstance();
     this.dbaseReader.loadRowIntoFeature(feature);
     this.shapefileReader.setRowNum(this.dbaseReader.getRowNum());
     this.shapefileReader.completeFeature(feature);

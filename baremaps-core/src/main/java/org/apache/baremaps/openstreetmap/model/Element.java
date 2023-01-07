@@ -33,11 +33,11 @@ permits Node, Way, Relation
 
   protected final Info info;
 
-  protected final Map<String, String> tags;
+  protected final Map<String, Object> tags;
 
   protected Geometry geometry;
 
-  protected Element(long id, Info info, Map<String, String> tags) {
+  protected Element(long id, Info info, Map<String, Object> tags) {
     this(id, info, tags, null);
   }
 
@@ -49,7 +49,7 @@ permits Node, Way, Relation
    * @param tags the tags
    * @param geometry the geometry
    */
-  protected Element(long id, Info info, Map<String, String> tags, Geometry geometry) {
+  protected Element(long id, Info info, Map<String, Object> tags, Geometry geometry) {
     this.id = id;
     this.info = info;
     this.tags = tags;
@@ -61,7 +61,7 @@ permits Node, Way, Relation
    *
    * @return the id
    */
-  public long getId() {
+  public long id() {
     return id;
   }
 
@@ -79,7 +79,7 @@ permits Node, Way, Relation
    *
    * @return the tags
    */
-  public Map<String, String> getTags() {
+  public Map<String, Object> getTags() {
     return tags;
   }
 
@@ -127,4 +127,5 @@ permits Node, Way, Relation
     return new StringJoiner(", ", Element.class.getSimpleName() + "[", "]").add("id=" + id)
         .add("info=" + info).add("tags=" + tags).add("geometry=" + geometry).toString();
   }
+
 }

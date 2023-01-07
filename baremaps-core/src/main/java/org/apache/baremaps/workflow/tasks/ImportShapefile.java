@@ -20,12 +20,12 @@ import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
 
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportShapefile(String file, String database, Integer sourceSRID, Integer targetSRID)
+public record ImportShapefile(Path file, String database, Integer sourceSRID, Integer targetSRID)
   implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportShapefile.class);
@@ -33,11 +33,11 @@ public record ImportShapefile(String file, String database, Integer sourceSRID, 
   @Override
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Importing {} into {}", file, database);
-    var path = Paths.get(file);
+    var path = file.toAbsolutePath();
     try (var featureSet = new ShapefileFeatureSet(path)) {
       var dataSource = context.getDataSource(database);
       var postgresDatabase = new PostgresDatabase(dataSource);
-      postgresDatabase.add(new FeatureSetProjectionTransform(
+      postgresDatabase.write(new FeatureSetProjectionTransform(
         featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
       logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {

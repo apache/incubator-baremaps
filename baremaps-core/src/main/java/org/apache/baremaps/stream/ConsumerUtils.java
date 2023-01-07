@@ -23,6 +23,18 @@ public class ConsumerUtils {
   private ConsumerUtils() {}
 
   /**
+   * Returns a consumer that applies a function to its input, and then passes the result to the
+   * 
+   * @param type the type of the input
+   * @return
+   * @param <T>
+   */
+  public static <T> Consumer<T> chain(Class<T> type) {
+    return T -> {
+    };
+  }
+
+  /**
    * Transforms a consumer into a function.
    *
    * @param consumer the consumer
@@ -35,4 +47,7 @@ public class ConsumerUtils {
       return t;
     };
   }
+
+
+
 }

@@ -17,6 +17,7 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -24,14 +25,14 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ExecuteSql(String database, String file, boolean parallel) implements Task {
+public record ExecuteSql(String database, Path file, boolean parallel) implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ExecuteSql.class);
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Executing {}", file);
-    var queries = Arrays.stream(Files.readString(Paths.get(file)).split(";"));
+    var queries = Arrays.stream(Files.readString(file).split(";"));
     if (parallel) {
       queries = queries.parallel();
     }

@@ -33,7 +33,7 @@ public final class Way extends Element {
    * @param tags the tags
    * @param nodes the nodes
    */
-  public Way(long id, Info info, Map<String, String> tags, List<Long> nodes) {
+  public Way(long id, Info info, Map<String, Object> tags, List<Long> nodes) {
     super(id, info, tags);
     this.nodes = nodes;
   }
@@ -47,7 +47,7 @@ public final class Way extends Element {
    * @param nodes the nodes
    * @param geometry the geometry
    */
-  public Way(long id, Info info, Map<String, String> tags, List<Long> nodes, Geometry geometry) {
+  public Way(long id, Info info, Map<String, Object> tags, List<Long> nodes, Geometry geometry) {
     super(id, info, tags, geometry);
     this.nodes = nodes;
   }

@@ -17,10 +17,7 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -29,7 +26,7 @@ import java.util.zip.ZipInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record UnzipFile(String file, String directory) implements Task {
+public record UnzipFile(Path file, Path directory) implements Task {
 
   private static final long THRESHOLD_ENTRIES = 10000;
   private static final long THRESHOLD_SIZE = 10l << 30;
@@ -41,8 +38,8 @@ public record UnzipFile(String file, String directory) implements Task {
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Unzipping {} to {}", file, directory);
 
-    var filePath = Paths.get(file).toAbsolutePath();
-    var directoryPath = Paths.get(directory).toAbsolutePath();
+    var filePath = file.toAbsolutePath();
+    var directoryPath = directory.toAbsolutePath();
 
     try(var zipFile = new ZipFile(filePath.toFile())) {
       var entries = zipFile.entries();

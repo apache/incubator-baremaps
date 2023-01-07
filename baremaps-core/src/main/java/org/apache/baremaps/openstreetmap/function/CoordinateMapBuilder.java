@@ -38,7 +38,7 @@ public class CoordinateMapBuilder implements Consumer<Entity> {
   @Override
   public void accept(Entity entity) {
     if (entity instanceof Node node) {
-      coordinateMap.put(node.getId(), new Coordinate(node.getLon(), node.getLat()));
+      coordinateMap.put(node.id(), new Coordinate(node.getLon(), node.getLat()));
     }
   }
 }

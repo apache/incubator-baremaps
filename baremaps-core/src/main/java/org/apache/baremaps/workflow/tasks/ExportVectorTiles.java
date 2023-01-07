@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,8 +33,8 @@ import org.apache.baremaps.database.tile.TileStore;
 import org.apache.baremaps.database.tile.TileStoreException;
 import org.apache.baremaps.openstreetmap.utils.StreamProgress;
 import org.apache.baremaps.stream.StreamUtils;
-import org.apache.baremaps.tileset.Tileset;
-import org.apache.baremaps.tileset.TilesetQuery;
+import org.apache.baremaps.mvt.tileset.Tileset;
+import org.apache.baremaps.mvt.tileset.TilesetQuery;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Envelope;
@@ -44,8 +44,8 @@ import org.sqlite.SQLiteDataSource;
 
 public record ExportVectorTiles(
   String database,
-  String tileset,
-  String repository,
+  Path tileset,
+  Path repository,
   int batchArraySize,
   int batchArrayIndex,
   boolean mbtiles
@@ -64,7 +64,7 @@ public record ExportVectorTiles(
         .setSerializationInclusion(Include.NON_NULL)
         .setSerializationInclusion(Include.NON_EMPTY);
 
-    var source = mapper.readValue(Files.readAllBytes(Paths.get(tileset)), Tileset.class);
+    var source = mapper.readValue(Files.readAllBytes(tileset), Tileset.class);
     var tileSource = sourceTileStore(source, datasource);
     var tileTarget = targetTileStore(source);
 
@@ -100,7 +100,7 @@ public record ExportVectorTiles(
 
       return tilesStore;
     } else {
-      return new FileTileStore(Paths.get(repository));
+      return new FileTileStore(repository);
     }
   }
 

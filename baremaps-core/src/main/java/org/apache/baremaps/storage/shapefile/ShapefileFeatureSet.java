@@ -14,25 +14,19 @@ package org.apache.baremaps.storage.shapefile;
 
 
 
+import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import org.apache.baremaps.feature.Feature;
+import org.apache.baremaps.feature.FeatureType;
+import org.apache.baremaps.feature.ReadableFeatureSet;
 import org.apache.baremaps.storage.shapefile.internal.InputFeatureStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
-import org.apache.sis.storage.DataStoreException;
-import org.apache.sis.storage.FeatureSet;
-import org.apache.sis.storage.event.StoreEvent;
-import org.apache.sis.storage.event.StoreListener;
-import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureType;
-import org.opengis.geometry.Envelope;
-import org.opengis.metadata.Metadata;
-import org.opengis.util.GenericName;
 
-public class ShapefileFeatureSet implements FeatureSet, AutoCloseable {
+public class ShapefileFeatureSet implements ReadableFeatureSet, AutoCloseable {
 
   private final ShapefileReader shapeFile;
 
@@ -41,54 +35,16 @@ public class ShapefileFeatureSet implements FeatureSet, AutoCloseable {
   }
 
   @Override
-  public FeatureType getType() throws DataStoreException {
+  public FeatureType getType() throws IOException {
     try (var input = shapeFile.read()) {
       return input.getFeaturesType();
-    } catch (Exception e) {
-      throw new DataStoreException(e);
     }
   }
 
   @Override
-  public Stream<Feature> features(boolean parallel) throws DataStoreException {
-    try {
-      var input = shapeFile.read();
-      return StreamSupport.stream(new FeatureSpliterator(shapeFile.read()), false)
-          .onClose(() -> input.close());
-    } catch (Exception e) {
-      throw new DataStoreException(e);
-    }
+  public Stream<Feature> read() throws IOException {
+    return StreamSupport.stream(new FeatureSpliterator(shapeFile.read()), false);
   }
-
-  @Override
-  public Optional<Envelope> getEnvelope() throws DataStoreException {
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<GenericName> getIdentifier() throws DataStoreException {
-    return Optional.empty();
-  }
-
-  @Override
-  public Metadata getMetadata() throws DataStoreException {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public <T extends StoreEvent> void addListener(Class<T> eventType,
-      StoreListener<? super T> listener) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public <T extends StoreEvent> void removeListener(Class<T> eventType,
-      StoreListener<? super T> listener) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void close() throws Exception {}
 
   static class FeatureSpliterator implements Spliterator<Feature> {
 
@@ -127,5 +83,10 @@ public class ShapefileFeatureSet implements FeatureSet, AutoCloseable {
     public int characteristics() {
       return 0;
     }
+  }
+
+  @Override
+  public void close() throws Exception {
+
   }
 }

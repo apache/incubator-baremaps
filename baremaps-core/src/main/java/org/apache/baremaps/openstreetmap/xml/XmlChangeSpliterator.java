@@ -154,7 +154,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
     double longitude = Double.parseDouble(reader.getAttributeValue(null, ATTRIBUTE_NAME_LONGITUDE));
 
     // read the content of the node
-    Map<String, String> tags = new HashMap<>();
+    Map<String, Object> tags = new HashMap<>();
     reader.nextTag();
     while (reader.getEventType() == XMLStreamConstants.START_ELEMENT) {
       switch (reader.getLocalName()) {
@@ -175,7 +175,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
     Info info = readInfo();
 
     // read the content of the node
-    Map<String, String> tags = new HashMap<>();
+    Map<String, Object> tags = new HashMap<>();
     List<Long> members = new ArrayList<>();
     reader.nextTag();
     while (reader.getEventType() == XMLStreamConstants.START_ELEMENT) {
@@ -207,7 +207,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
     Info info = readInfo();
 
     // read the content of the node
-    Map<String, String> tags = new HashMap<>();
+    Map<String, Object> tags = new HashMap<>();
     List<Member> members = new ArrayList<>();
     reader.nextTag();
     while (reader.getEventType() == XMLStreamConstants.START_ELEMENT) {
@@ -248,7 +248,7 @@ public class XmlChangeSpliterator implements Spliterator<Change> {
     return new Info(version, timestamp, changeset, uid);
   }
 
-  private void readTag(Map<String, String> tags) throws XMLStreamException {
+  private void readTag(Map<String, Object> tags) throws XMLStreamException {
     String name = reader.getAttributeValue(null, ATTRIBUTE_NAME_KEY);
     String value = reader.getAttributeValue(null, ATTRIBUTE_NAME_VALUE);
     tags.put(name, value);

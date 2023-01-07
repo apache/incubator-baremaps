@@ -32,9 +32,9 @@ import javax.ws.rs.core.Response;
 import org.apache.baremaps.database.tile.Tile;
 import org.apache.baremaps.database.tile.TileStore;
 import org.apache.baremaps.database.tile.TileStoreException;
-import org.apache.baremaps.style.Style;
-import org.apache.baremaps.tileset.Tileset;
-import org.apache.baremaps.tileset.TilesetLayer;
+import org.apache.baremaps.mvt.style.Style;
+import org.apache.baremaps.mvt.tileset.Tileset;
+import org.apache.baremaps.mvt.tileset.TilesetLayer;
 
 @Singleton
 @javax.ws.rs.Path("/")

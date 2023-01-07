@@ -26,7 +26,7 @@ class ExecuteSqlFileTest extends PostgresContainerTest {
   @Tag("integration")
   void execute() throws Exception {
     var task =
-        new ExecuteSql(jdbcUrl(), TestFiles.resolve("queries/queries.sql").toString(), false);
+        new ExecuteSql(jdbcUrl(), TestFiles.resolve("queries/queries.sql"), false);
     task.execute(new WorkflowContext());
   }
 }

@@ -19,9 +19,9 @@ import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.*;
-import org.apache.sis.feature.AbstractFeature;
-import org.apache.sis.feature.DefaultAttributeType;
-import org.apache.sis.feature.DefaultFeatureType;
+import org.apache.baremaps.feature.Feature;
+import org.apache.baremaps.feature.FeatureType;
+import org.apache.baremaps.feature.PropertyType;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
@@ -47,7 +47,7 @@ public class ShapefileByteReader extends CommonByteReader {
   private List<DBaseFieldDescriptor> databaseFieldsDescriptors;
 
   /** Type of the features contained in this shapefile. */
-  private DefaultFeatureType featuresType;
+  private FeatureType featuresType;
 
   /** Shapefile index. */
   private File shapeFileIndex;
@@ -108,7 +108,7 @@ public class ShapefileByteReader extends CommonByteReader {
    *
    * @return Features type.
    */
-  public DefaultFeatureType getFeaturesType() {
+  public FeatureType getFeaturesType() {
     return this.featuresType;
   }
 
@@ -118,20 +118,15 @@ public class ShapefileByteReader extends CommonByteReader {
    * @param name Name of the field.
    * @return The feature type.
    */
-  private DefaultFeatureType getFeatureType(final String name) {
+  private FeatureType getFeatureType(final String name) {
     Objects.requireNonNull(name, "The feature name cannot be null.");
 
-    final int n = this.databaseFieldsDescriptors.size();
-    final DefaultAttributeType<?>[] attributes = new DefaultAttributeType<?>[n + 1];
-    final Map<String, Object> properties = new HashMap<>(4);
-
-    // Load data field.
-    for (int i = 0; i < n; i++) {
+    var properties = new HashMap<String, PropertyType>();
+    for (int i = 0; i < databaseFieldsDescriptors.size(); i++) {
       var fieldDescriptor = this.databaseFieldsDescriptors.get(i);
-      properties.put(DefaultAttributeType.NAME_KEY, fieldDescriptor.getName());
 
-      // TODO: move somewhere else
-      Class type = switch (fieldDescriptor.getType()) {
+      var propertyName = fieldDescriptor.getName();
+      var propertyType = switch (fieldDescriptor.getType()) {
         case Character -> String.class;
         case Number -> fieldDescriptor.getDecimalCount() == 0 ? Long.class : Double.class;
         case Currency -> Double.class;
@@ -151,16 +146,13 @@ public class ShapefileByteReader extends CommonByteReader {
         case DateTime -> String.class;
       };
 
-      attributes[i] = new DefaultAttributeType<>(properties, type, 1, 1, null);
+      properties.put(propertyName, new PropertyType(propertyName, propertyType));
     }
 
     // Add geometry field.
-    properties.put(DefaultAttributeType.NAME_KEY, GEOMETRY_NAME);
-    attributes[n] = new DefaultAttributeType<>(properties, Geometry.class, 1, 1, null);
+    properties.put(GEOMETRY_NAME, new PropertyType(GEOMETRY_NAME, Geometry.class));
 
-    // Add name.
-    properties.put(DefaultAttributeType.NAME_KEY, name);
-    return new DefaultFeatureType(properties, false, null, attributes);
+    return new FeatureType(name, properties);
   }
 
   /** Load shapefile descriptor. */
@@ -267,7 +259,7 @@ public class ShapefileByteReader extends CommonByteReader {
    *
    * @param feature Feature to complete.
    */
-  public void completeFeature(AbstractFeature feature) throws ShapefileException {
+  public void completeFeature(Feature feature) throws ShapefileException {
     // insert points into some type of list
     int RecordNumber = getByteBuffer().getInt();
     int ContentLength = getByteBuffer().getInt();
@@ -307,11 +299,11 @@ public class ShapefileByteReader extends CommonByteReader {
    *
    * @param feature Feature to fill.
    */
-  private void loadPointFeature(AbstractFeature feature) {
+  private void loadPointFeature(Feature feature) {
     double x = getByteBuffer().getDouble();
     double y = getByteBuffer().getDouble();
     Point pnt = geometryFactory.createPoint(new Coordinate(x, y));
-    feature.setPropertyValue(GEOMETRY_NAME, pnt);
+    feature.setProperty(GEOMETRY_NAME, pnt);
   }
 
   /**
@@ -319,7 +311,7 @@ public class ShapefileByteReader extends CommonByteReader {
    *
    * @param feature Feature to fill.
    */
-  private void loadPolygonFeature(AbstractFeature feature) {
+  private void loadPolygonFeature(Feature feature) {
     double xmin = getByteBuffer().getDouble();
     double ymin = getByteBuffer().getDouble();
     double xmax = getByteBuffer().getDouble();
@@ -330,7 +322,7 @@ public class ShapefileByteReader extends CommonByteReader {
 
     Geometry multiPolygon = readMultiplePolygon(numParts, numPoints);
 
-    feature.setPropertyValue(GEOMETRY_NAME, multiPolygon);
+    feature.setProperty(GEOMETRY_NAME, multiPolygon);
   }
 
   /**
@@ -395,7 +387,7 @@ public class ShapefileByteReader extends CommonByteReader {
    *
    * @param feature Feature to fill.
    */
-  private void loadPolylineFeature(AbstractFeature feature) {
+  private void loadPolylineFeature(Feature feature) {
     /* double xmin = */ getByteBuffer().getDouble();
     /* double ymin = */ getByteBuffer().getDouble();
     /* double xmax = */ getByteBuffer().getDouble();
@@ -427,7 +419,7 @@ public class ShapefileByteReader extends CommonByteReader {
       }
     }
 
-    feature.setPropertyValue(GEOMETRY_NAME,
+    feature.setProperty(GEOMETRY_NAME,
         geometryFactory.createLineString(coordinates.toCoordinateArray()));
   }
 }

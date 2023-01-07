@@ -14,24 +14,18 @@ package org.apache.baremaps.storage.geopackage;
 
 
 
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Spliterators;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
-import org.apache.sis.feature.builder.AttributeRole;
-import org.apache.sis.feature.builder.FeatureTypeBuilder;
-import org.apache.sis.storage.DataStoreException;
-import org.apache.sis.storage.FeatureSet;
-import org.apache.sis.storage.event.StoreEvent;
-import org.apache.sis.storage.event.StoreListener;
+import org.apache.baremaps.feature.Feature;
+import org.apache.baremaps.feature.FeatureType;
+import org.apache.baremaps.feature.PropertyType;
+import org.apache.baremaps.feature.ReadableFeatureSet;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
@@ -44,13 +38,8 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureType;
-import org.opengis.geometry.Envelope;
-import org.opengis.metadata.Metadata;
-import org.opengis.util.GenericName;
 
-public class GeoPackageTable implements FeatureSet {
+public class GeoPackageTable implements ReadableFeatureSet {
 
   private final FeatureDao featureDao;
 
@@ -60,15 +49,14 @@ public class GeoPackageTable implements FeatureSet {
 
   protected GeoPackageTable(FeatureDao featureDao) {
     this.featureDao = featureDao;
-    var typeBuilder = new FeatureTypeBuilder().setName(featureDao.getTableName());
+    var name = featureDao.getTableName();
+    var properties = new HashMap<String, PropertyType>();
     for (FeatureColumn column : featureDao.getColumns()) {
-      var attributeBuilder = typeBuilder.addAttribute(classType(column)).setName(column.getName())
-          .setMinimumOccurs(column.isNotNull() ? 1 : 0);
-      if (column.isPrimaryKey()) {
-        attributeBuilder.addRole(AttributeRole.IDENTIFIER_COMPONENT);
-      }
+      var propertyName = column.getName();
+      var propertyType = classType(column);
+      properties.put(propertyName, new PropertyType(name, propertyType));
     }
-    featureType = typeBuilder.build();
+    featureType = new FeatureType(name, properties);
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
   }
 
@@ -81,40 +69,13 @@ public class GeoPackageTable implements FeatureSet {
   }
 
   @Override
-  public Optional<Envelope> getEnvelope() throws DataStoreException {
-    return Optional.empty();
-  }
-
-  @Override
-  public Optional<GenericName> getIdentifier() throws DataStoreException {
-    return Optional.empty();
-  }
-
-  @Override
-  public Metadata getMetadata() throws DataStoreException {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public <T extends StoreEvent> void addListener(Class<T> eventType,
-      StoreListener<? super T> listener) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public <T extends StoreEvent> void removeListener(Class<T> eventType,
-      StoreListener<? super T> listener) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public FeatureType getType() throws DataStoreException {
+  public FeatureType getType() throws IOException {
     return featureType;
   }
 
   @Override
-  public Stream<Feature> features(boolean parallel) throws DataStoreException {
-    Iterator<Feature> featureIterator = new FeatureIterator(featureDao.queryForAll(), featureType);
+  public Stream<Feature> read() throws IOException {
+    var featureIterator = new FeatureIterator(featureDao.queryForAll(), featureType);
     return StreamSupport.stream(Spliterators.spliteratorUnknownSize(featureIterator, 0), false);
   }
 
@@ -146,7 +107,7 @@ public class GeoPackageTable implements FeatureSet {
       for (FeatureColumn featureColumn : featureResultSet.getColumns().getColumns()) {
         var value = featureResultSet.getValue(featureColumn);
         if (value != null) {
-          feature.setPropertyValue(featureColumn.getName(), asValue(value));
+          feature.setProperty(featureColumn.getName(), asValue(value));
         }
       }
       hasNext = featureResultSet.moveToNext();

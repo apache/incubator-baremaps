@@ -55,7 +55,7 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
   @Override
   public void accept(Relation relation) {
     try {
-      Map<String, String> tags = relation.getTags();
+      Map<String, Object> tags = relation.getTags();
 
       // Filter multipolygon geometries
       if (!"multipolygon".equals(tags.get("type"))) {
@@ -87,7 +87,7 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
         relation.setGeometry(multiPolygon);
       }
     } catch (Exception e) {
-      logger.warn("Unable to build the geometry for relation #" + relation.getId(), e);
+      logger.warn("Unable to build the geometry for relation #" + relation.id(), e);
     }
   }
 

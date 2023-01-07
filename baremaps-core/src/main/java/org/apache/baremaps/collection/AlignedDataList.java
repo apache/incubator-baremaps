@@ -14,6 +14,7 @@ package org.apache.baremaps.collection;
 
 
 
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
@@ -52,6 +53,7 @@ public class AlignedDataList<T> implements DataList<T> {
    * @param memory the memory
    */
   public AlignedDataList(SizedDataType<T> dataType, Memory memory) {
+    new LongArrayList();
     if (dataType.size() > memory.segmentSize()) {
       throw new StoreException("The segment size is too small for the data type");
     }
@@ -96,6 +98,13 @@ public class AlignedDataList<T> implements DataList<T> {
     int segmentOffset = (int) (position & segmentMask);
     ByteBuffer segment = memory.segment(segmentIndex);
     return dataType.read(segment, segmentOffset);
+  }
+
+  @Override
+  public T remove(long index) {
+    T value = get(index);
+    write(index, null);
+    return value;
   }
 
   /** {@inheritDoc} */

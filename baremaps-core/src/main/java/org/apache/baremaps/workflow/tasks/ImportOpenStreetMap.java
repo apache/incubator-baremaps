@@ -25,13 +25,14 @@ import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportOpenStreetMap(String file, String database, Integer databaseSrid)
+public record ImportOpenStreetMap(Path file, String database, Integer databaseSrid)
   implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportOpenStreetMap.class);
@@ -41,7 +42,7 @@ public record ImportOpenStreetMap(String file, String database, Integer database
     logger.info("Importing {} into {}", file, database);
 
     var dataSource = context.getDataSource(database);
-    var path = Paths.get(file).toAbsolutePath();
+    var path = file.toAbsolutePath();
 
     var headerRepository = new PostgresHeaderRepository(dataSource);
     var nodeRepository = new PostgresNodeRepository(dataSource);

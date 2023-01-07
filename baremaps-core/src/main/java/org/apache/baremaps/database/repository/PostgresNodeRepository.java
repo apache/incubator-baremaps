@@ -187,7 +187,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
         Map<Long, Node> values = new HashMap<>();
         while (result.next()) {
           Node value = getValue(result);
-          values.put(value.getId(), value);
+          values.put(value.id(), value);
         }
         return keys.stream().map(values::get).toList();
       }
@@ -270,7 +270,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
         writer.writeHeader();
         for (Node value : values) {
           writer.startRow(9);
-          writer.writeLong(value.getId());
+          writer.writeLong(value.id());
           writer.writeInteger(value.getInfo().getVersion());
           writer.writeInteger(value.getInfo().getUid());
           writer.writeLocalDateTime(value.getInfo().getTimestamp());
@@ -292,7 +292,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
     int uid = resultSet.getInt(3);
     LocalDateTime timestamp = resultSet.getObject(4, LocalDateTime.class);
     long changeset = resultSet.getLong(5);
-    Map<String, String> tags = PostgresJsonbMapper.toMap(resultSet.getString(6));
+    Map<String, Object> tags = PostgresJsonbMapper.toMap(resultSet.getString(6));
     double lon = resultSet.getDouble(7);
     double lat = resultSet.getDouble(8);
     Geometry point = GeometryUtils.deserialize(resultSet.getBytes(9));
@@ -302,7 +302,7 @@ public class PostgresNodeRepository implements Repository<Long, Node> {
 
   private void setValue(PreparedStatement statement, Node value)
       throws SQLException, JsonProcessingException {
-    statement.setObject(1, value.getId());
+    statement.setObject(1, value.id());
     statement.setObject(2, value.getInfo().getVersion());
     statement.setObject(3, value.getInfo().getUid());
     statement.setObject(4, value.getInfo().getTimestamp());

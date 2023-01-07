@@ -115,13 +115,13 @@ public class DiffService implements Callable<List<Tile>> {
   private Optional<Geometry> geometriesForPreviousVersion(Entity entity) {
     try {
       if (entity instanceof Node node) {
-        var previousNode = nodeRepository.get(node.getId());
+        var previousNode = nodeRepository.get(node.id());
         return Optional.ofNullable(previousNode).map(Node::getGeometry);
       } else if (entity instanceof Way way) {
-        var previousWay = wayRepository.get(way.getId());
+        var previousWay = wayRepository.get(way.id());
         return Optional.ofNullable(previousWay).map(Way::getGeometry);
       } else if (entity instanceof Relation relation) {
-        var previousRelation = relationRepository.get(relation.getId());
+        var previousRelation = relationRepository.get(relation.id());
         return Optional.ofNullable(previousRelation).map(Relation::getGeometry);
       } else {
         return Optional.empty();

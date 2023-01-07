@@ -43,6 +43,13 @@ public class IndexedDataList<T> implements DataList<T> {
   }
 
   @Override
+  public T remove(long idx) {
+    T value = get(idx);
+    index.remove(idx);
+    return value;
+  }
+
+  @Override
   public long size() {
     return index.size();
   }

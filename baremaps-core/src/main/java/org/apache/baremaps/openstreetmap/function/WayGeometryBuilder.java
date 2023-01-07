@@ -61,7 +61,7 @@ public class WayGeometryBuilder implements Consumer<Way> {
         }
       }
     } catch (Exception e) {
-      logger.warn("Unable to build the geometry for way #" + way.getId(), e);
+      logger.warn("Unable to build the geometry for way #" + way.id(), e);
     }
   }
 }

@@ -111,7 +111,7 @@ class EntityGeometryBuilderTest {
       .asList(NODE_0, NODE_1, NODE_2, NODE_3, NODE_4, NODE_5, NODE_6, NODE_7, NODE_8, NODE_9,
           NODE_10, NODE_11, NODE_12, NODE_13, NODE_14, NODE_15)
       .stream()
-      .collect(Collectors.toMap(n -> n.getId(), n -> new Coordinate(n.getLon(), n.getLat()))));
+      .collect(Collectors.toMap(n -> n.id(), n -> new Coordinate(n.getLon(), n.getLat()))));
 
   static final Way WAY_0 = new Way(0, INFO, ImmutableMap.of(), ImmutableList.of());
 
@@ -131,7 +131,7 @@ class EntityGeometryBuilderTest {
 
   static final LongDataMap<List<Long>> REFERENCE_CACHE =
       new MockLongDataMap(Arrays.asList(WAY_0, WAY_1, WAY_2, WAY_3, WAY_4, WAY_5).stream()
-          .collect(Collectors.toMap(w -> w.getId(), w -> w.getNodes())));
+          .collect(Collectors.toMap(w -> w.id(), w -> w.getNodes())));
 
   static final Relation RELATION_0 = new Relation(0, INFO, ImmutableMap.of(), Arrays.asList());
 

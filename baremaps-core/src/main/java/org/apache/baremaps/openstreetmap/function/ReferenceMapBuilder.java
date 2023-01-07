@@ -38,7 +38,7 @@ public class ReferenceMapBuilder implements Consumer<Entity> {
   @Override
   public void accept(Entity entity) {
     if (entity instanceof Way way) {
-      referenceMap.put(way.getId(), way.getNodes());
+      referenceMap.put(way.id(), way.getNodes());
     }
   }
 }

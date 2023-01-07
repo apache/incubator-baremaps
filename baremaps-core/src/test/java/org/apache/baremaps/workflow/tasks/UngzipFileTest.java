@@ -28,7 +28,7 @@ class UngzipFileTest {
   void run() throws Exception {
     var gzip = TestFiles.resolve("ripe/sample.txt.gz");
     var directory = Files.createTempDirectory("tmp_");
-    var task = new UngzipFile(gzip.toString(), directory.toString());
+    var task = new UngzipFile(gzip, directory);
     task.execute(new WorkflowContext());
     FileUtils.deleteRecursively(directory);
   }

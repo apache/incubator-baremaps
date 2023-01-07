@@ -26,15 +26,15 @@ public interface DataList<T> extends Closeable, Cleanable {
   /**
    * Adds a value to the list and returns its index.
    *
-   * @param value the value
+   * @param value the value to be added
    * @return the index of the value
    */
   long add(T value);
 
   /**
-   * Inserts the specified element at the specified position in this list.
+   * Inserts the specified value at the specified position in this list.
    *
-   * @param index the index of the value
+   * @param index the index of the value to be added
    * @param value the value
    */
   void add(long index, T value);
@@ -42,10 +42,18 @@ public interface DataList<T> extends Closeable, Cleanable {
   /**
    * Returns a values by its index.
    *
-   * @param index the index of the value
+   * @param index the index of the value to be removed
    * @return the value
    */
   T get(long index);
+
+  /**
+   * Removes the value at the specified position in this list.
+   *
+   * @param index the index of the value to be removed
+   * @return the value that was removed from the list
+   */
+  T remove(long index);
 
   /**
    * Returns the size of the list.

@@ -33,7 +33,7 @@ public final class Relation extends Element {
    * @param tags the tags
    * @param members the members
    */
-  public Relation(long id, Info info, Map<String, String> tags, List<Member> members) {
+  public Relation(long id, Info info, Map<String, Object> tags, List<Member> members) {
     super(id, info, tags);
     this.members = members;
   }
@@ -47,7 +47,7 @@ public final class Relation extends Element {
    * @param members the members
    * @param geometry the geometry
    */
-  public Relation(long id, Info info, Map<String, String> tags, List<Member> members,
+  public Relation(long id, Info info, Map<String, Object> tags, List<Member> members,
       Geometry geometry) {
     super(id, info, tags, geometry);
     this.members = members;

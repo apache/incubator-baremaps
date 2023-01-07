@@ -26,7 +26,7 @@ class ImportGeoPackageTest extends PostgresContainerTest {
   @Tag("integration")
   void execute() throws Exception {
     var task =
-        new ImportGeoPackage(TestFiles.resolve("data.gpkg").toString(), jdbcUrl(), 4326, 3857);
+        new ImportGeoPackage(TestFiles.resolve("data.gpkg"), jdbcUrl(), 4326, 3857);
     task.execute(new WorkflowContext());
   }
 }

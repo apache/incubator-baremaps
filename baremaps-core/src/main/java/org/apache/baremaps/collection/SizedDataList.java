@@ -86,6 +86,13 @@ public class SizedDataList<T> implements DataList<T> {
     return dataType.read(segment, segmentOffset);
   }
 
+  @Override
+  public T remove(long index) {
+    T value = get(index);
+    add(index, null);
+    return value;
+  }
+
   /** {@inheritDoc} */
   public long size() {
     return size.get();

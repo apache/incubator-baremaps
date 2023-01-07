@@ -22,10 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.copy.CopyWriter;
@@ -199,7 +196,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
         Map<Long, Relation> values = new HashMap<>();
         while (result.next()) {
           Relation value = getValue(result);
-          values.put(value.getId(), value);
+          values.put(value.id(), value);
         }
         return keys.stream().map(values::get).toList();
       }
@@ -282,7 +279,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
         writer.writeHeader();
         for (Relation value : values) {
           writer.startRow(10);
-          writer.writeLong(value.getId());
+          writer.writeLong(value.id());
           writer.writeInteger(value.getInfo().getVersion());
           writer.writeInteger(value.getInfo().getUid());
           writer.writeLocalDateTime(value.getInfo().getTimestamp());
@@ -308,7 +305,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
     int uid = resultSet.getInt(3);
     LocalDateTime timestamp = resultSet.getObject(4, LocalDateTime.class);
     long changeset = resultSet.getLong(5);
-    Map<String, String> tags = toMap(resultSet.getString(6));
+    Map<String, Object> tags = toMap(resultSet.getString(6));
     Long[] refs = (Long[]) resultSet.getArray(7).getArray();
     Integer[] types = (Integer[]) resultSet.getArray(8).getArray();
     String[] roles = (String[]) resultSet.getArray(9).getArray();
@@ -323,7 +320,7 @@ public class PostgresRelationRepository implements Repository<Long, Relation> {
 
   private void setValue(PreparedStatement statement, Relation value)
       throws SQLException, JsonProcessingException {
-    statement.setObject(1, value.getId());
+    statement.setObject(1, value.id());
     statement.setObject(2, value.getInfo().getVersion());
     statement.setObject(3, value.getInfo().getUid());
     statement.setObject(4, value.getInfo().getTimestamp());

@@ -190,7 +190,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
         Map<Long, Way> values = new HashMap<>();
         while (result.next()) {
           Way value = getValue(result);
-          values.put(value.getId(), value);
+          values.put(value.id(), value);
         }
         return keys.stream().map(values::get).toList();
       }
@@ -272,7 +272,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
         writer.writeHeader();
         for (Way value : values) {
           writer.startRow(8);
-          writer.writeLong(value.getId());
+          writer.writeLong(value.id());
           writer.writeInteger(value.getInfo().getVersion());
           writer.writeInteger(value.getInfo().getUid());
           writer.writeLocalDateTime(value.getInfo().getTimestamp());
@@ -293,7 +293,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
     int uid = resultSet.getInt(3);
     LocalDateTime timestamp = resultSet.getObject(4, LocalDateTime.class);
     long changeset = resultSet.getLong(5);
-    Map<String, String> tags = PostgresJsonbMapper.toMap(resultSet.getString(6));
+    Map<String, Object> tags = PostgresJsonbMapper.toMap(resultSet.getString(6));
     List<Long> nodes = new ArrayList<>();
     Array array = resultSet.getArray(7);
     if (array != null) {
@@ -306,7 +306,7 @@ public class PostgresWayRepository implements Repository<Long, Way> {
 
   private void setValue(PreparedStatement statement, Way value)
       throws SQLException, JsonProcessingException {
-    statement.setObject(1, value.getId());
+    statement.setObject(1, value.id());
     statement.setObject(2, value.getInfo().getVersion());
     statement.setObject(3, value.getInfo().getUid());
     statement.setObject(4, value.getInfo().getTimestamp());
