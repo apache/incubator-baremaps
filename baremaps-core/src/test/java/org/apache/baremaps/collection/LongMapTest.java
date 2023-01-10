@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
-import org.apache.baremaps.collection.store.AppendOnlyStore;
+import org.apache.baremaps.collection.store.AppendOnlyCollection;
 import org.apache.baremaps.collection.store.MemoryAlignedDataStore;
 import org.apache.baremaps.collection.type.LongDataType;
 import org.apache.baremaps.collection.type.PairDataType;
@@ -40,14 +40,14 @@ class LongMapTest {
   static Stream<Arguments> mapProvider() {
     return Stream
         .of(Arguments.of(
-            new LongOpenHashMap<>(new AppendOnlyStore<>(new LongDataType(), new OffHeapMemory()))),
+            new LongOpenHashMap<>(new AppendOnlyCollection<>(new LongDataType(), new OffHeapMemory()))),
             Arguments.of(new SortedLongFixedSizeDataMap<>(
                 new MemoryAlignedDataStore<>(new LongDataType(), new OffHeapMemory()))),
             Arguments.of(new SortedLongVariableSizeDataMap<>(
                 new MemoryAlignedDataStore<>(
                     new PairDataType<>(new LongDataType(), new LongDataType()),
                     new OffHeapMemory()),
-                new AppendOnlyStore<>(new LongDataType(), new OffHeapMemory()))),
+                new AppendOnlyCollection<>(new LongDataType(), new OffHeapMemory()))),
             Arguments.of(new SparseLongFixedSizeDataMap<>(
                 new MemoryAlignedDataStore<>(new LongDataType(), new OffHeapMemory()))),
             Arguments.of(

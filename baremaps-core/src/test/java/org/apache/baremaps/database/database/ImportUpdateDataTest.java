@@ -22,7 +22,7 @@ import java.util.List;
 import org.apache.baremaps.collection.LongMap;
 import org.apache.baremaps.collection.LongOpenHashMap;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
-import org.apache.baremaps.collection.store.AppendOnlyStore;
+import org.apache.baremaps.collection.store.AppendOnlyCollection;
 import org.apache.baremaps.collection.type.CoordinateDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
 import org.apache.baremaps.database.ImportService;
@@ -52,9 +52,9 @@ class ImportUpdateDataTest extends DatabaseContainerTest {
     PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
 
     LongMap<Coordinate> coordinateMap =
-        new LongOpenHashMap<>(new AppendOnlyStore<>(new CoordinateDataType(), new OnHeapMemory()));
+        new LongOpenHashMap<>(new AppendOnlyCollection<>(new CoordinateDataType(), new OnHeapMemory()));
     LongMap<List<Long>> referenceMap =
-        new LongOpenHashMap<>(new AppendOnlyStore<>(new LongListDataType(), new OnHeapMemory()));
+        new LongOpenHashMap<>(new AppendOnlyCollection<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
     new ImportService(SIMPLE_DATA_OSM_PBF, coordinateMap, referenceMap, headerRepository,

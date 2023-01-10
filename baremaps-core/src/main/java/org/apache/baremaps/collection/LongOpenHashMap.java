@@ -19,10 +19,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.baremaps.collection.store.AppendOnlyStore;
+import org.apache.baremaps.collection.store.AppendOnlyCollection;
 
 /**
- * A map of data backed by a {@link AppendOnlyStore} and whose keys are stored in an
+ * A map of data backed by a {@link AppendOnlyCollection} and whose keys are stored in an
  * {@link Long2LongOpenHashMap}.
  *
  * <p>
@@ -34,26 +34,26 @@ import org.apache.baremaps.collection.store.AppendOnlyStore;
 public class LongOpenHashMap<T> implements LongMap<T>, Map<Long, T> {
 
   private final Map<Long, Long> index;
-  private final AppendOnlyStore<T> store;
+  private final AppendOnlyCollection<T> store;
 
-  public LongOpenHashMap(AppendOnlyStore<T> values) {
+  public LongOpenHashMap(AppendOnlyCollection<T> values) {
     this.index = new Long2LongOpenHashMap();
     this.store = values;
   }
 
-  public LongOpenHashMap(Map<Long, Long> index, AppendOnlyStore<T> store) {
+  public LongOpenHashMap(Map<Long, Long> index, AppendOnlyCollection<T> store) {
     this.index = index;
     this.store = store;
   }
 
   @Override
   public void put(long key, T value) {
-    index.put(key, store.add(value));
+    index.put(key, store.append(value));
   }
 
   @Override
   public T get(long key) {
-    return store.get(index.get(key));
+    return store.read(index.get(key));
   }
 
   @Override
@@ -79,13 +79,13 @@ public class LongOpenHashMap<T> implements LongMap<T>, Map<Long, T> {
   @Override
   public T get(Object key) {
     var position = index.get(key);
-    return store.get(position);
+    return store.read(position);
   }
 
   @Override
   public T put(Long key, T value) {
     var previous = get(key);
-    var position = store.add(value);
+    var position = store.append(value);
     index.put(key, position);
     return previous;
   }
@@ -114,14 +114,14 @@ public class LongOpenHashMap<T> implements LongMap<T>, Map<Long, T> {
 
   @Override
   public Collection<T> values() {
-    return index.values().stream().map(store::get).collect(Collectors.toList());
+    return index.values().stream().map(store::read).collect(Collectors.toList());
   }
 
   @Override
   public Set<Entry<Long, T>> entrySet() {
     return index.entrySet().stream().map(entry -> {
       var key = entry.getKey();
-      var value = store.get(entry.getValue());
+      var value = store.read(entry.getValue());
       return Map.entry(key, value);
     }).collect(Collectors.toSet());
   }

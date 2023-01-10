@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 import org.apache.baremaps.collection.*;
 import org.apache.baremaps.collection.memory.MappedMemory;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
-import org.apache.baremaps.collection.store.AppendOnlyStore;
+import org.apache.baremaps.collection.store.AppendOnlyCollection;
 import org.apache.baremaps.collection.store.MemoryAlignedDataStore;
 import org.apache.baremaps.collection.type.*;
 import org.apache.baremaps.openstreetmap.model.Element;
@@ -63,7 +63,7 @@ public record SimplifyOpenStreetMap(Path file, String database, Integer database
                                         new LongDataType(),
                                         new LongDataType()
                                 ), new MappedMemory(coordinatesKeysFile)),
-                        new AppendOnlyStore<>(
+                        new AppendOnlyCollection<>(
                                 new LonLatDataType(),
                                 new MappedMemory(coordinatesValsFile)));
 
@@ -76,13 +76,13 @@ public record SimplifyOpenStreetMap(Path file, String database, Integer database
                                         new LongDataType(),
                                         new LongDataType()
                                 ), new MappedMemory(referencesKeysFile)),
-                        new AppendOnlyStore<>(
+                        new AppendOnlyCollection<>(
                                 new LongListDataType(),
                                 new MappedMemory(referencesValuesFile)));
 
         var collection = new IndexedLongMap<>(
                 new LongLongMap(new OffHeapMemory()),
-                new AppendOnlyStore<>(new GeometryDataType(), new OffHeapMemory()));
+                new AppendOnlyCollection<>(new GeometryDataType(), new OffHeapMemory()));
 
 
 //        new PbfEntityReader(

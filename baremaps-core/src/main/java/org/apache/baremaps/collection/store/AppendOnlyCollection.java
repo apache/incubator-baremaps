@@ -17,6 +17,7 @@ package org.apache.baremaps.collection.store;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.AbstractCollection;
 import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -28,7 +29,7 @@ import org.apache.baremaps.collection.type.DataType;
  * A data log backed by a {@link DataType} and a {@link Memory}. Elements are appended to the store
  * and can be accessed by their position in the {@link Memory}.
  */
-public class AppendOnlyStore<T> implements Iterable<T>, Closeable, Cleanable {
+public class AppendOnlyCollection<T> extends AbstractCollection<T> implements Closeable, Cleanable {
 
   private final DataType<T> dataType;
   private final Memory memory;
@@ -44,7 +45,7 @@ public class AppendOnlyStore<T> implements Iterable<T>, Closeable, Cleanable {
    * @param dataType the data type
    * @param memory the memory
    */
-  public AppendOnlyStore(DataType<T> dataType, Memory memory) {
+  public AppendOnlyCollection(DataType<T> dataType, Memory memory) {
     this.dataType = dataType;
     this.memory = memory;
     this.segmentSize = memory.segmentSize();
@@ -58,7 +59,7 @@ public class AppendOnlyStore<T> implements Iterable<T>, Closeable, Cleanable {
    * @param value the value
    * @return the position of the value in the memory.
    */
-  public long add(T value) {
+  public long append(T value) {
     int valueSize = dataType.size(value);
     if (valueSize > segmentSize) {
       throw new DataStoreException("The value is too big to fit in a segment");
@@ -89,7 +90,7 @@ public class AppendOnlyStore<T> implements Iterable<T>, Closeable, Cleanable {
    * @param position the position of the value
    * @return the value
    */
-  public T get(long position) {
+  public T read(long position) {
     long segmentIndex = position / segmentSize;
     long segmentOffset = position % segmentSize;
     ByteBuffer buffer = memory.segment((int) segmentIndex);
@@ -101,7 +102,7 @@ public class AppendOnlyStore<T> implements Iterable<T>, Closeable, Cleanable {
    *
    * @return the number of values
    */
-  public long size() {
+  public long sizeAsLong() {
     return size;
   }
 
@@ -117,11 +118,45 @@ public class AppendOnlyStore<T> implements Iterable<T>, Closeable, Cleanable {
     memory.close();
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean add(T value) {
+    append(value);
+    return true;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int size() {
+    return (int) Math.min(size, Integer.MAX_VALUE);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Iterator<T> iterator() {
-    long offset = 0;
+    return new Iterator<>() {
 
+      private long position = 0;
 
-    return null;
+      @Override
+      public boolean hasNext() {
+        return position < size;
+      }
+
+      @Override
+      public T next() {
+        long segmentIndex = position / segmentSize;
+        long segmentOffset = position % segmentSize;
+        ByteBuffer buffer = memory.segment((int) segmentIndex);
+        position += dataType.size(buffer, (int) segmentOffset);
+        return dataType.read(buffer, (int) segmentOffset);
+      }
+    };
   }
 }

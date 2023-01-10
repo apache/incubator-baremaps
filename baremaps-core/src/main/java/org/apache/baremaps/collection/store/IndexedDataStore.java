@@ -20,29 +20,29 @@ public class IndexedDataStore<T> implements DataStore<T> {
 
   private final MemoryAlignedDataStore<Long> index;
 
-  private final AppendOnlyStore<T> values;
+  private final AppendOnlyCollection<T> values;
 
-  public IndexedDataStore(MemoryAlignedDataStore<Long> index, AppendOnlyStore<T> values) {
+  public IndexedDataStore(MemoryAlignedDataStore<Long> index, AppendOnlyCollection<T> values) {
     this.index = index;
     this.values = values;
   }
 
   @Override
   public long add(T value) {
-    long position = values.add(value);
+    long position = values.append(value);
     return index.add(position);
   }
 
   @Override
   public void set(long index, T value) {
-    long position = values.add(value);
+    long position = values.append(value);
     this.index.set(index, position);
   }
 
   @Override
   public T get(long index) {
     long position = this.index.get(index);
-    return values.get(position);
+    return values.read(position);
   }
 
   @Override

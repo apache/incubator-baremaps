@@ -14,28 +14,28 @@ package org.apache.baremaps.collection;
 
 
 
-import org.apache.baremaps.collection.store.AppendOnlyStore;
+import org.apache.baremaps.collection.store.AppendOnlyCollection;
 
 public class IndexedLongMap<T> implements LongMap<T> {
 
   private final LongLongMap index;
 
-  private final AppendOnlyStore<T> store;
+  private final AppendOnlyCollection<T> store;
 
-  public IndexedLongMap(LongLongMap index, AppendOnlyStore<T> store) {
+  public IndexedLongMap(LongLongMap index, AppendOnlyCollection<T> store) {
     this.index = index;
     this.store = store;
   }
 
   @Override
   public void put(long key, T value) {
-    var position = store.add(value);
+    var position = store.append(value);
     index.put(key, position);
   }
 
   @Override
   public T get(long idx) {
     var position = index.get(idx);
-    return store.get(position);
+    return store.read(position);
   }
 }

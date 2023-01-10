@@ -14,7 +14,7 @@ package org.apache.baremaps.collection;
 
 
 
-import org.apache.baremaps.collection.store.AppendOnlyStore;
+import org.apache.baremaps.collection.store.AppendOnlyCollection;
 import org.apache.baremaps.collection.store.DataStore;
 import org.apache.baremaps.collection.store.MemoryAlignedDataStore;
 import org.apache.baremaps.collection.type.LongDataType;
@@ -22,7 +22,7 @@ import org.apache.baremaps.collection.type.PairDataType;
 import org.apache.baremaps.collection.type.PairDataType.Pair;
 
 /**
- * A map of data backed by a {@link DataStore} for storing keys and a {@link AppendOnlyStore} for
+ * A map of data backed by a {@link DataStore} for storing keys and a {@link AppendOnlyCollection} for
  * storing values.
  *
  * <p>
@@ -35,11 +35,11 @@ public class SortedLongVariableSizeDataMap<T> implements LongMap<T> {
 
   private final DataStore<Long> offsets;
   private final DataStore<Pair<Long, Long>> keys;
-  private final AppendOnlyStore<T> values;
+  private final AppendOnlyCollection<T> values;
 
   private long lastChunk = -1;
 
-  public SortedLongVariableSizeDataMap(AppendOnlyStore<T> values) {
+  public SortedLongVariableSizeDataMap(AppendOnlyCollection<T> values) {
     this(
         new MemoryAlignedDataStore<>(new LongDataType()),
         new MemoryAlignedDataStore<>(new PairDataType<>(new LongDataType(), new LongDataType())),
@@ -47,7 +47,7 @@ public class SortedLongVariableSizeDataMap<T> implements LongMap<T> {
   }
 
   public SortedLongVariableSizeDataMap(DataStore<Pair<Long, Long>> keys,
-      AppendOnlyStore<T> values) {
+      AppendOnlyCollection<T> values) {
     this(
         new MemoryAlignedDataStore<>(new LongDataType()),
         keys,
@@ -56,7 +56,7 @@ public class SortedLongVariableSizeDataMap<T> implements LongMap<T> {
 
 
   public SortedLongVariableSizeDataMap(DataStore<Long> offsets, DataStore<Pair<Long, Long>> keys,
-      AppendOnlyStore<T> values) {
+      AppendOnlyCollection<T> values) {
     this.offsets = offsets;
     this.keys = keys;
     this.values = values;
@@ -72,7 +72,7 @@ public class SortedLongVariableSizeDataMap<T> implements LongMap<T> {
       }
       lastChunk = chunk;
     }
-    long position = values.add(value);
+    long position = values.append(value);
     keys.add(new Pair<>(key, position));
   }
 
@@ -96,7 +96,7 @@ public class SortedLongVariableSizeDataMap<T> implements LongMap<T> {
         hi = index - 1;
       } else {
         // found
-        return values.get(pair.right());
+        return values.read(pair.right());
       }
     }
     return null;

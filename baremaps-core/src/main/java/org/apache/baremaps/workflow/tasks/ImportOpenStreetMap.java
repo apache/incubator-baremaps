@@ -14,7 +14,7 @@ package org.apache.baremaps.workflow.tasks;
 
 import org.apache.baremaps.collection.*;
 import org.apache.baremaps.collection.memory.MappedMemory;
-import org.apache.baremaps.collection.store.AppendOnlyStore;
+import org.apache.baremaps.collection.store.AppendOnlyCollection;
 import org.apache.baremaps.collection.store.MemoryAlignedDataStore;
 import org.apache.baremaps.collection.type.LonLatDataType;
 import org.apache.baremaps.collection.type.LongDataType;
@@ -78,7 +78,7 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
             new PairDataType<>(new LongDataType(), new LongDataType()),
             new MappedMemory(coordinatesKeysFile)
           ),
-          new AppendOnlyStore<>(
+          new AppendOnlyCollection<>(
             new LonLatDataType(),
             new MappedMemory(coordinatesValsFile)));
     }
@@ -91,7 +91,7 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
           new PairDataType<>(new LongDataType(), new LongDataType()),
           new MappedMemory(referencesKeysDir)
         ),
-        new AppendOnlyStore<>(
+        new AppendOnlyCollection<>(
           new LongListDataType(),
           new MappedMemory(referencesValuesDir)));
 

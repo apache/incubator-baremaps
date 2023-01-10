@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.Random;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
-import org.apache.baremaps.collection.store.AppendOnlyStore;
+import org.apache.baremaps.collection.store.AppendOnlyCollection;
 import org.apache.baremaps.collection.type.IntegerDataType;
 import org.apache.baremaps.collection.type.IntegerListDataType;
 import org.junit.jupiter.api.Test;
@@ -26,18 +26,18 @@ class AppendStoreTest {
 
   @Test
   void addFixedSizeData() {
-    var store = new AppendOnlyStore<>(new IntegerDataType(), new OffHeapMemory(1 << 10));
+    var store = new AppendOnlyCollection<>(new IntegerDataType(), new OffHeapMemory(1 << 10));
     for (int i = 0; i < 1 << 20; i++) {
-      assertEquals(i << 2, store.add(i));
+      assertEquals(i << 2, store.append(i));
     }
     for (int i = 0; i < 1 << 20; i++) {
-      assertEquals(i, store.get(i << 2));
+      assertEquals(i, store.read(i << 2));
     }
   }
 
   @Test
   void addVariableSizeValues() {
-    var store = new AppendOnlyStore<>(new IntegerListDataType(), new OffHeapMemory(1 << 10));
+    var store = new AppendOnlyCollection<>(new IntegerListDataType(), new OffHeapMemory(1 << 10));
     var random = new Random(0);
     var positions = new ArrayList<Long>();
     var values = new ArrayList<ArrayList<Integer>>();
@@ -47,11 +47,11 @@ class AppendStoreTest {
       for (int j = 0; j < size; j++) {
         value.add(random.nextInt(1 << 20));
       }
-      positions.add(store.add(value));
+      positions.add(store.append(value));
       values.add(value);
     }
     for (int i = 0; i < positions.size(); i++) {
-      var value = store.get(positions.get(i));
+      var value = store.read(positions.get(i));
       assertEquals(values.get(i), value);
     }
   }

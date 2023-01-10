@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
-import org.apache.baremaps.collection.store.AppendOnlyStore;
+import org.apache.baremaps.collection.store.AppendOnlyCollection;
 import org.apache.baremaps.collection.store.DataStore;
 import org.apache.baremaps.collection.store.IndexedDataStore;
 import org.apache.baremaps.collection.store.MemoryAlignedDataStore;
@@ -45,7 +45,7 @@ class ExternalMergeSortTest {
   void before() {
     supplier = () -> new IndexedDataStore<>(
         new MemoryAlignedDataStore<>(new LongDataType(), new OnHeapMemory()),
-        new AppendOnlyStore<>(new StringDataType(), new OnHeapMemory()));
+        new AppendOnlyCollection<>(new StringDataType(), new OnHeapMemory()));
     input = supplier.get();
     output = supplier.get();
     for (var string : strings) {

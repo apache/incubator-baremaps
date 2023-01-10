@@ -29,7 +29,7 @@ import org.apache.baremaps.collection.LongMap;
 import org.apache.baremaps.collection.LongOpenHashMap;
 import org.apache.baremaps.collection.memory.MappedMemory;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
-import org.apache.baremaps.collection.store.AppendOnlyStore;
+import org.apache.baremaps.collection.store.AppendOnlyCollection;
 import org.apache.baremaps.collection.type.CoordinateDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
 import org.apache.baremaps.openstreetmap.model.Node;
@@ -77,9 +77,9 @@ public class OpenStreetMapGeometriesBenchmark {
   public void store() throws IOException {
     Path file = Files.createTempFile(Paths.get("."), "baremaps_", ".tmp");
     LongMap<Coordinate> coordinateMap = new LongOpenHashMap<>(
-        new AppendOnlyStore<>(new CoordinateDataType(), new MappedMemory(file)));
+        new AppendOnlyCollection<>(new CoordinateDataType(), new MappedMemory(file)));
     LongMap<List<Long>> referenceMap =
-        new LongOpenHashMap<>(new AppendOnlyStore<>(new LongListDataType(), new OnHeapMemory()));
+        new LongOpenHashMap<>(new AppendOnlyCollection<>(new LongListDataType(), new OnHeapMemory()));
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
