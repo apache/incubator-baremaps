@@ -17,13 +17,13 @@ package org.apache.baremaps.openstreetmap.store;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.baremaps.collection.LongDataMap;
+import org.apache.baremaps.collection.LongMap;
 
-public class MockLongDataMap<T> implements LongDataMap<T> {
+public class MockLongMap<T> implements LongMap<T> {
 
   private final Map<Long, T> values;
 
-  public MockLongDataMap(Map<Long, T> values) {
+  public MockLongMap(Map<Long, T> values) {
     this.values = values;
   }
 

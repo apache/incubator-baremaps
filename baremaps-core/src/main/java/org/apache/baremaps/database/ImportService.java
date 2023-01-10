@@ -20,7 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.Callable;
-import org.apache.baremaps.collection.LongDataMap;
+import org.apache.baremaps.collection.LongMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
 import org.apache.baremaps.openstreetmap.function.*;
@@ -33,16 +33,16 @@ import org.locationtech.jts.geom.Coordinate;
 public class ImportService implements Callable<Void> {
 
   private final Path path;
-  private final LongDataMap<Coordinate> coordinateMap;
-  private final LongDataMap<List<Long>> referenceMap;
+  private final LongMap<Coordinate> coordinateMap;
+  private final LongMap<List<Long>> referenceMap;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
   private final Repository<Long, Relation> relationRepository;
   private final int databaseSrid;
 
-  public ImportService(Path path, LongDataMap<Coordinate> coordinateMap,
-      LongDataMap<List<Long>> referenceMap, HeaderRepository headerRepository,
+  public ImportService(Path path, LongMap<Coordinate> coordinateMap,
+      LongMap<List<Long>> referenceMap, HeaderRepository headerRepository,
       Repository<Long, Node> nodeRepository, Repository<Long, Way> wayRepository,
       Repository<Long, Relation> relationRepository, Integer databaseSrid) {
     this.path = path;

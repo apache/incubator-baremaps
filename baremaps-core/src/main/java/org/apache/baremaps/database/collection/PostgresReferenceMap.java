@@ -25,13 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
-import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.collection.StoreException;
+import org.apache.baremaps.collection.LongMap;
+import org.apache.baremaps.collection.store.DataStoreException;
 
 /**
  * A read-only {@code LongDataMap} for references baked by OpenStreetMap ways stored in Postgres.
  */
-public class PostgresReferenceMap implements LongDataMap<List<Long>> {
+public class PostgresReferenceMap implements LongMap<List<Long>> {
 
   private static final String SELECT = "SELECT nodes FROM osm_ways WHERE id = ?";
 
@@ -64,7 +64,7 @@ public class PostgresReferenceMap implements LongDataMap<List<Long>> {
         }
       }
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DataStoreException(e);
     }
   }
 
@@ -88,7 +88,7 @@ public class PostgresReferenceMap implements LongDataMap<List<Long>> {
         return keys.stream().map(referenceMap::get).toList();
       }
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DataStoreException(e);
     }
   }
 

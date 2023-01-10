@@ -14,11 +14,16 @@ package org.apache.baremaps.collection;
 
 
 
-import org.apache.baremaps.collection.memory.OffHeapMemory;
+import org.apache.baremaps.collection.store.AppendOnlyStore;
+import org.apache.baremaps.collection.store.DataStore;
+import org.apache.baremaps.collection.store.MemoryAlignedDataStore;
 import org.apache.baremaps.collection.type.LongDataType;
+import org.apache.baremaps.collection.type.PairDataType;
+import org.apache.baremaps.collection.type.PairDataType.Pair;
 
 /**
- * A sorted map of data backed by {@link AlignedDataList}s for storing keys and values.
+ * A map of data backed by a {@link DataStore} for storing keys and a {@link AppendOnlyStore} for
+ * storing values.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
@@ -26,26 +31,37 @@ import org.apache.baremaps.collection.type.LongDataType;
  * <p>
  * Copyright (c) Planetiler.
  */
-public class LongSizedDataSortedMap<T> implements LongDataMap<T> {
+public class SortedLongVariableSizeDataMap<T> implements LongMap<T> {
 
-  private final AlignedDataList<Long> offsets;
-  private final AlignedDataList<Long> keys;
-  private final AlignedDataList<T> values;
+  private final DataStore<Long> offsets;
+  private final DataStore<Pair<Long, Long>> keys;
+  private final AppendOnlyStore<T> values;
+
   private long lastChunk = -1;
 
-  /**
-   * Constructs a map.
-   *
-   * @param keys the list of keys
-   * @param values the list of values
-   */
-  public LongSizedDataSortedMap(AlignedDataList<Long> keys, AlignedDataList<T> values) {
-    this.offsets = new AlignedDataList<>(new LongDataType(), new OffHeapMemory());
+  public SortedLongVariableSizeDataMap(AppendOnlyStore<T> values) {
+    this(
+        new MemoryAlignedDataStore<>(new LongDataType()),
+        new MemoryAlignedDataStore<>(new PairDataType<>(new LongDataType(), new LongDataType())),
+        values);
+  }
+
+  public SortedLongVariableSizeDataMap(DataStore<Pair<Long, Long>> keys,
+      AppendOnlyStore<T> values) {
+    this(
+        new MemoryAlignedDataStore<>(new LongDataType()),
+        keys,
+        values);
+  }
+
+
+  public SortedLongVariableSizeDataMap(DataStore<Long> offsets, DataStore<Pair<Long, Long>> keys,
+      AppendOnlyStore<T> values) {
+    this.offsets = offsets;
     this.keys = keys;
     this.values = values;
   }
 
-  /** {@inheritDoc} */
   @Override
   public void put(long key, T value) {
     long index = keys.size();
@@ -56,11 +72,10 @@ public class LongSizedDataSortedMap<T> implements LongDataMap<T> {
       }
       lastChunk = chunk;
     }
-    keys.add(key);
-    values.add(value);
+    long position = values.add(value);
+    keys.add(new Pair<>(key, position));
   }
 
-  /** {@inheritDoc} */
   @Override
   public T get(long key) {
     long chunk = key >>> 8;
@@ -73,14 +88,15 @@ public class LongSizedDataSortedMap<T> implements LongDataMap<T> {
             - 1;
     while (lo <= hi) {
       long index = (lo + hi) >>> 1;
-      long value = keys.get(index);
+      Pair<Long, Long> pair = keys.get(index);
+      long value = pair.left();
       if (value < key) {
         lo = index + 1;
       } else if (value > key) {
         hi = index - 1;
       } else {
         // found
-        return values.get(index);
+        return values.get(pair.right());
       }
     }
     return null;

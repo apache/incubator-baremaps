@@ -20,47 +20,45 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import org.apache.baremaps.collection.StoreException;
+import org.apache.baremaps.collection.store.DataStoreException;
 import org.apache.baremaps.collection.utils.FileUtils;
 import org.apache.baremaps.collection.utils.MappedByteBufferUtils;
 
-/** A memory that stores segments on-disk using mapped byte buffers. */
-public class OnDiskDirectoryMemory extends Memory<MappedByteBuffer> {
+/** A memory that stores segments on-disk using mapped byte buffers in a file. */
+public class MappedMemory extends Memory<MappedByteBuffer> {
 
-  private final Path directory;
+  private final Path file;
 
   /**
-   * Constructs an {@link OnDiskDirectoryMemory} with a custom directory and a default segment size
-   * of 1gb.
+   * Constructs an {@link MappedMemory} with a custom file and a default segment size of 1gb.
    *
-   * @param directory the directory that stores the data
+   * @param file the file that stores the data
    */
-  public OnDiskDirectoryMemory(Path directory) {
-    this(directory, 1 << 30);
+  public MappedMemory(Path file) {
+    this(file, 1 << 30);
   }
 
   /**
-   * Constructs an {@link OnDiskDirectoryMemory} with a custom directory and a custom segment size.
+   * Constructs an {@link MappedMemory} with a custom file and a custom segment size.
    *
-   * @param directory the directory that stores the data
+   * @param file the file that stores the data
    * @param segmentBytes the size of the segments in bytes
    */
-  public OnDiskDirectoryMemory(Path directory, int segmentBytes) {
+  public MappedMemory(Path file, int segmentBytes) {
     super(segmentBytes);
-    this.directory = directory;
+    this.file = file;
   }
 
   /** {@inheritDoc} */
   @Override
   protected MappedByteBuffer allocate(int index, int size) {
     try {
-      Path file = directory.resolve(String.format("%s.part", index));
       try (FileChannel channel = FileChannel.open(file, StandardOpenOption.CREATE,
           StandardOpenOption.READ, StandardOpenOption.WRITE)) {
-        return channel.map(MapMode.READ_WRITE, 0, size);
+        return channel.map(MapMode.READ_WRITE, (long) index * size, size);
       }
     } catch (IOException e) {
-      throw new StoreException(e);
+      throw new DataStoreException(e);
     }
   }
 
@@ -73,6 +71,6 @@ public class OnDiskDirectoryMemory extends Memory<MappedByteBuffer> {
   /** {@inheritDoc} */
   @Override
   public void clean() throws IOException {
-    FileUtils.deleteRecursively(directory);
+    FileUtils.deleteRecursively(file);
   }
 }

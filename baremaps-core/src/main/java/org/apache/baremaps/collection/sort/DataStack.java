@@ -15,22 +15,22 @@ package org.apache.baremaps.collection.sort;
 
 
 import java.io.IOException;
-import org.apache.baremaps.collection.DataList;
+import org.apache.baremaps.collection.store.DataStore;
 
 /**
- * A wrapper on top of a {@link DataList} which keeps the last data record in memory.
+ * A wrapper on top of a {@link DataStore} which keeps the last data record in memory.
  *
  * @param <T>
  */
 final class DataStack<T> implements AutoCloseable {
 
-  private DataList<T> list;
+  private DataStore<T> list;
 
   private Long index = 0l;
 
   private T cache;
 
-  public DataStack(DataList<T> list) {
+  public DataStack(DataStore<T> list) {
     this.list = list;
     reload();
   }

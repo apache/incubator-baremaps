@@ -10,19 +10,19 @@
  * the License.
  */
 
-package org.apache.baremaps.collection;
+package org.apache.baremaps.collection.store;
 
 /** Signals that an exception occurred in a store. */
-public class StoreException extends RuntimeException {
+public class DataStoreException extends RuntimeException {
   /** Constructs a {@code BlobStoreException} with {@code null} as its error detail message. */
-  public StoreException() {}
+  public DataStoreException() {}
 
   /**
    * Constructs an {@code StoreException} with the specified detail message.
    *
    * @param message the message
    */
-  public StoreException(String message) {
+  public DataStoreException(String message) {
     super(message);
   }
 
@@ -31,7 +31,7 @@ public class StoreException extends RuntimeException {
    *
    * @param cause the cause
    */
-  public StoreException(Throwable cause) {
+  public DataStoreException(Throwable cause) {
     super(cause);
   }
 
@@ -41,7 +41,7 @@ public class StoreException extends RuntimeException {
    * @param message the message
    * @param cause the cause
    */
-  public StoreException(String message, Throwable cause) {
+  public DataStoreException(String message, Throwable cause) {
     super(message, cause);
   }
 }

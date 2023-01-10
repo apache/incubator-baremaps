@@ -17,12 +17,10 @@ package org.apache.baremaps.collection.type;
 import java.nio.ByteBuffer;
 
 /** A {@link DataType} for reading and writing shorts in {@link ByteBuffer}s. */
-public class ShortDataType implements SizedDataType<Short> {
+public class ShortDataType extends FixedSizeDataType<Short> {
 
-  /** {@inheritDoc} */
-  @Override
-  public int size(Short value) {
-    return 2;
+  public ShortDataType() {
+    super(Short.BYTES);
   }
 
   /** {@inheritDoc} */

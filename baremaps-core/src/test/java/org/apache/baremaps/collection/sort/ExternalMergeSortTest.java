@@ -21,11 +21,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
-import org.apache.baremaps.collection.DataList;
-import org.apache.baremaps.collection.DataStore;
-import org.apache.baremaps.collection.IndexedDataList;
-import org.apache.baremaps.collection.LongList;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
+import org.apache.baremaps.collection.store.AppendOnlyStore;
+import org.apache.baremaps.collection.store.DataStore;
+import org.apache.baremaps.collection.store.IndexedDataStore;
+import org.apache.baremaps.collection.store.MemoryAlignedDataStore;
+import org.apache.baremaps.collection.type.LongDataType;
 import org.apache.baremaps.collection.type.StringDataType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,24 +37,23 @@ class ExternalMergeSortTest {
   List<String> stringsAsc = strings.stream().sorted(Comparator.naturalOrder()).toList();
   List<String> stringsDsc = strings.stream().sorted(Comparator.reverseOrder()).toList();;
   List<String> stringsDistinct = stringsAsc.stream().distinct().toList();
-  DataList<String> input;
-  DataList<String> output;
-  Supplier<DataList<String>> supplier;
+  Supplier<DataStore<String>> supplier;
+  DataStore<String> input;
+  DataStore<String> output;
 
   @BeforeEach
   void before() {
-    input = new IndexedDataList<>(new LongList(new OnHeapMemory()),
-        new DataStore<>(new StringDataType(), new OnHeapMemory()));
-    output = new IndexedDataList<>(new LongList(new OnHeapMemory()),
-        new DataStore<>(new StringDataType(), new OnHeapMemory()));
-    supplier = () -> new IndexedDataList<>(new LongList(new OnHeapMemory()),
-        new DataStore<>(new StringDataType(), new OnHeapMemory()));
+    supplier = () -> new IndexedDataStore<>(
+        new MemoryAlignedDataStore<>(new LongDataType(), new OnHeapMemory()),
+        new AppendOnlyStore<>(new StringDataType(), new OnHeapMemory()));
+    input = supplier.get();
+    output = supplier.get();
     for (var string : strings) {
       input.add(string);
     }
   }
 
-  public List<String> stringList(DataList<String> list) {
+  public List<String> stringList(DataStore<String> list) {
     var l = new ArrayList<String>();
     for (long i = 0; i < list.size(); i++) {
       l.add(list.get(i));

@@ -10,23 +10,25 @@
  * the License.
  */
 
-package org.apache.baremaps.collection;
+package org.apache.baremaps.collection.store;
 
 
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import org.apache.baremaps.collection.Cleanable;
 import org.apache.baremaps.collection.memory.Memory;
 import org.apache.baremaps.collection.type.DataType;
 
 /**
- * A data store backed by a {@link DataType} and a {@link Memory}. Data is appended to the store and
- * can be accessed by its position in the {@link Memory}.
+ * A data log backed by a {@link DataType} and a {@link Memory}. Elements are appended to the store
+ * and can be accessed by their position in the {@link Memory}.
  */
-public class DataStore<T> implements Closeable, Cleanable {
+public class AppendOnlyStore<T> implements Iterable<T>, Closeable, Cleanable {
 
   private final DataType<T> dataType;
   private final Memory memory;
@@ -42,7 +44,7 @@ public class DataStore<T> implements Closeable, Cleanable {
    * @param dataType the data type
    * @param memory the memory
    */
-  public DataStore(DataType<T> dataType, Memory memory) {
+  public AppendOnlyStore(DataType<T> dataType, Memory memory) {
     this.dataType = dataType;
     this.memory = memory;
     this.segmentSize = memory.segmentSize();
@@ -59,7 +61,7 @@ public class DataStore<T> implements Closeable, Cleanable {
   public long add(T value) {
     int valueSize = dataType.size(value);
     if (valueSize > segmentSize) {
-      throw new StoreException("The value is too big to fit in a segment");
+      throw new DataStoreException("The value is too big to fit in a segment");
     }
 
     lock.lock();
@@ -113,5 +115,13 @@ public class DataStore<T> implements Closeable, Cleanable {
   @Override
   public void close() throws IOException {
     memory.close();
+  }
+
+  @Override
+  public Iterator<T> iterator() {
+    long offset = 0;
+
+
+    return null;
   }
 }

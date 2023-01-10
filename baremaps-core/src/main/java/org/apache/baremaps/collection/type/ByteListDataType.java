@@ -18,35 +18,46 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A {@link DataType} for reading and writing lists of bytes in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing lists of bytes in {@link ByteBuffer}s.
+ */
 public class ByteListDataType implements DataType<List<Byte>> {
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int size(List<Byte> values) {
-    return 4 + values.size();
+    return Integer.BYTES + values.size() * Byte.BYTES;
   }
 
-  /** {@inheritDoc} */
+  @Override
+  public int size(ByteBuffer buffer, int position) {
+    return buffer.getInt(position);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void write(ByteBuffer buffer, int position, List<Byte> values) {
-    buffer.putInt(position, values.size());
-    position += 4;
+    buffer.putInt(position, size(values));
+    position += Integer.BYTES;
     for (Byte value : values) {
       buffer.put(position, value);
-      position++;
+      position += Byte.BYTES;
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public List<Byte> read(ByteBuffer buffer, int position) {
     int size = buffer.getInt(position);
-    position += 4;
-    List<Byte> list = new ArrayList<>(size);
-    for (int i = 0; i < size; i++) {
-      list.add(buffer.get(position));
-      position++;
+    var list = new ArrayList<Byte>(size);
+    for (var p = position + Integer.BYTES; p < position + size; p += Byte.BYTES) {
+      list.add(buffer.get(p));
     }
     return list;
   }

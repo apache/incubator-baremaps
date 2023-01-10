@@ -14,7 +14,6 @@ package org.apache.baremaps.workflow.tasks;
 
 
 
-import com.google.common.base.Predicates;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,14 +29,12 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.*;
+import org.apache.baremaps.collection.memory.MappedMemory;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
-import org.apache.baremaps.collection.memory.OnDiskDirectoryMemory;
+import org.apache.baremaps.collection.store.AppendOnlyStore;
+import org.apache.baremaps.collection.store.MemoryAlignedDataStore;
 import org.apache.baremaps.collection.type.*;
-import org.apache.baremaps.collection.utils.CollectionAdapter;
-import org.apache.baremaps.collection.utils.FileUtils;
 import org.apache.baremaps.openstreetmap.model.Element;
-import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
-import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Geometry;
@@ -57,59 +54,61 @@ public record SimplifyOpenStreetMap(Path file, String database, Integer database
 
         var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
 
-        var coordinatesKeysDir = Files.createDirectories(cacheDir.resolve("coordinates_keys"));
-        var coordinatesValsDir = Files.createDirectories(cacheDir.resolve("coordinates_vals"));
+        var coordinatesKeysFile = Files.createFile(cacheDir.resolve("coordinates_keys"));
+        var coordinatesValsFile = Files.createFile(cacheDir.resolve("coordinates_vals"));
         var coordinateMap =
-                new LongDataSortedMap<>(
-                        new AlignedDataList<>(
-                                new PairDataType<>(new LongDataType(), new LongDataType()),
-                                new OnDiskDirectoryMemory(coordinatesKeysDir)
-                        ),
-                        new DataStore<>(
+                new SortedLongVariableSizeDataMap<>(
+                        new MemoryAlignedDataStore<>(
+                                new PairDataType<>(
+                                        new LongDataType(),
+                                        new LongDataType()
+                                ), new MappedMemory(coordinatesKeysFile)),
+                        new AppendOnlyStore<>(
                                 new LonLatDataType(),
-                                new OnDiskDirectoryMemory(coordinatesValsDir)));
+                                new MappedMemory(coordinatesValsFile)));
 
-        var referencesKeysDir = Files.createDirectories(cacheDir.resolve("references_keys"));
-        var referencesValuesDir = Files.createDirectories(cacheDir.resolve("references_vals"));
+        var referencesKeysFile = Files.createFile(cacheDir.resolve("references_keys"));
+        var referencesValuesFile = Files.createFile(cacheDir.resolve("references_vals"));
         var referenceMap =
-                new LongDataSortedMap<>(
-                        new AlignedDataList<>(
-                                new PairDataType<>(new LongDataType(), new LongDataType()),
-                                new OnDiskDirectoryMemory(referencesKeysDir)
-                        ),
-                        new DataStore<>(
+                new SortedLongVariableSizeDataMap<>(
+                        new MemoryAlignedDataStore<>(
+                                new PairDataType<>(
+                                        new LongDataType(),
+                                        new LongDataType()
+                                ), new MappedMemory(referencesKeysFile)),
+                        new AppendOnlyStore<>(
                                 new LongListDataType(),
-                                new OnDiskDirectoryMemory(referencesValuesDir)));
+                                new MappedMemory(referencesValuesFile)));
 
-        var collection = new IndexedDataList<>(
-                new LongList(new OffHeapMemory()),
-                new DataStore<>(new GeometryDataType(), new OffHeapMemory()));
+        var collection = new IndexedLongMap<>(
+                new LongLongMap(new OffHeapMemory()),
+                new AppendOnlyStore<>(new GeometryDataType(), new OffHeapMemory()));
 
 
-        new PbfEntityReader(
-                new PbfBlockReader()
-                        .geometries(true)
-                        .coordinateMap(coordinateMap)
-                        .referenceMap(referenceMap))
-                .stream(Files.newInputStream(path))
-                .filter(Element.class::isInstance)
-                .map(Element.class::cast)
-                .filter(element -> element.getTags().containsKey("building"))
-                .map(Element::getGeometry)
-                .filter(Predicates.notNull())
-                .forEach(collection::add);
-
-        var unionedGeometry = new CascadedPolygonUnion(new CollectionAdapter(collection)).union();
-
-        var unionGeometries = IntStream.range(0, unionedGeometry.getNumGeometries())
-                .mapToObj(unionedGeometry::getGeometryN)
-                .toList();
-
-        System.out.println(unionGeometries.size());
-
-        FileUtils.deleteRecursively(cacheDir);
-
-        logger.info("Finished importing {} into {}", file, database);
+//        new PbfEntityReader(
+//                new PbfBlockReader()
+//                        .geometries(true)
+//                        .coordinateMap(coordinateMap)
+//                        .referenceMap(referenceMap))
+//                .stream(Files.newInputStream(path))
+//                .filter(Element.class::isInstance)
+//                .map(Element.class::cast)
+//                .filter(element -> element.getTags().containsKey("building"))
+//                .map(Element::getGeometry)
+//                .filter(Predicates.notNull())
+//                .forEach(collection::put);
+//
+//        var unionedGeometry = new CascadedPolygonUnion(new CollectionAdapter(collection)).union();
+//
+//        var unionGeometries = IntStream.range(0, unionedGeometry.getNumGeometries())
+//                .mapToObj(unionedGeometry::getGeometryN)
+//                .toList();
+//
+//        System.out.println(unionGeometries.size());
+//
+//        FileUtils.deleteRecursively(cacheDir);
+//
+//        logger.info("Finished importing {} into {}", file, database);
     }
 
     public static class PolygonUnionConsumer implements Consumer<Element> {

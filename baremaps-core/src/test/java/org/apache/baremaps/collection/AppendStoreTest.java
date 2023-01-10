@@ -17,15 +17,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.Random;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
+import org.apache.baremaps.collection.store.AppendOnlyStore;
 import org.apache.baremaps.collection.type.IntegerDataType;
 import org.apache.baremaps.collection.type.IntegerListDataType;
 import org.junit.jupiter.api.Test;
 
-class DataStoreTest {
+class AppendStoreTest {
 
   @Test
   void addFixedSizeData() {
-    var store = new DataStore<>(new IntegerDataType(), new OffHeapMemory(1 << 10));
+    var store = new AppendOnlyStore<>(new IntegerDataType(), new OffHeapMemory(1 << 10));
     for (int i = 0; i < 1 << 20; i++) {
       assertEquals(i << 2, store.add(i));
     }
@@ -36,7 +37,7 @@ class DataStoreTest {
 
   @Test
   void addVariableSizeValues() {
-    var store = new DataStore<>(new IntegerListDataType(), new OffHeapMemory(1 << 10));
+    var store = new AppendOnlyStore<>(new IntegerListDataType(), new OffHeapMemory(1 << 10));
     var random = new Random(0);
     var positions = new ArrayList<Long>();
     var values = new ArrayList<ArrayList<Integer>>();

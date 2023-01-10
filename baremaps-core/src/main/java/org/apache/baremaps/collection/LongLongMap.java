@@ -15,17 +15,24 @@ package org.apache.baremaps.collection;
 
 
 import org.apache.baremaps.collection.memory.Memory;
-import org.apache.baremaps.collection.type.IntegerDataType;
+import org.apache.baremaps.collection.memory.OffHeapMemory;
+import org.apache.baremaps.collection.type.LongDataType;
 
-/** A list of integers backed by a {@link Memory}. */
-public class IntegerList extends AlignedDataList<Integer> {
+/**
+ * A list of longs backed by a {@link Memory}.
+ */
+public class LongLongMap extends MemoryAlignedLongFixedSizeDataMap<Long> {
+
+  public LongLongMap() {
+    this(new OffHeapMemory());
+  }
 
   /**
    * Constructs a list.
    *
    * @param memory the memory
    */
-  public IntegerList(Memory memory) {
-    super(new IntegerDataType(), memory);
+  public LongLongMap(Memory memory) {
+    super(new LongDataType(), memory);
   }
 }

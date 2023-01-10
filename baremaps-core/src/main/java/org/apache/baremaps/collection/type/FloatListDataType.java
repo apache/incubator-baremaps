@@ -24,17 +24,22 @@ public class FloatListDataType implements DataType<List<Float>> {
   /** {@inheritDoc} */
   @Override
   public int size(List<Float> values) {
-    return 4 + values.size() * 4;
+    return Integer.BYTES + values.size() * Float.BYTES;
+  }
+
+  @Override
+  public int size(ByteBuffer buffer, int position) {
+    return buffer.getInt(position);
   }
 
   /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, List<Float> values) {
-    buffer.putInt(position, values.size());
-    position += 4;
+    buffer.putInt(position, size(values));
+    position += Integer.BYTES;
     for (Float value : values) {
       buffer.putFloat(position, value);
-      position += 4;
+      position += Float.BYTES;
     }
   }
 
@@ -42,11 +47,9 @@ public class FloatListDataType implements DataType<List<Float>> {
   @Override
   public List<Float> read(ByteBuffer buffer, int position) {
     int size = buffer.getInt(position);
-    position += 4;
     List<Float> list = new ArrayList<>(size);
-    for (int i = 0; i < size; i++) {
-      list.add(buffer.getFloat(position));
-      position += 4;
+    for (var p = position + Integer.BYTES; p < position + size; p += Float.BYTES) {
+      list.add(buffer.getFloat(p));
     }
     return list;
   }

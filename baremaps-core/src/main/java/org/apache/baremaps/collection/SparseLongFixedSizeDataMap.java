@@ -17,9 +17,11 @@ package org.apache.baremaps.collection;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import java.util.List;
+import org.apache.baremaps.collection.store.DataStore;
+import org.apache.baremaps.collection.store.FixedSizeDataStore;
 
 /**
- * A sparse map of data backed by a {@link AlignedDataList} for storing values.
+ * A sparse map of data backed by a {@link FixedSizeDataStore} for storing values.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
@@ -27,7 +29,7 @@ import java.util.List;
  * <p>
  * Copyright (c) Planetiler.
  */
-public class LongSizedDataSparseMap<T> implements LongDataMap<T> {
+public class SparseLongFixedSizeDataMap<T> implements LongMap<T> {
 
   // The key space is broken into chunks of 256 and for each chunk, store:
   // 1) the index in the outputs array for the first key in the block
@@ -35,7 +37,7 @@ public class LongSizedDataSparseMap<T> implements LongDataMap<T> {
   // 2) the number of leading 0's at the start of each block
   private final ByteArrayList offsetStartPad;
 
-  private final AlignedDataList<T> values;
+  private final DataStore<T> values;
   private int lastChunk = -1;
   private int lastOffset = 0;
 
@@ -44,7 +46,7 @@ public class LongSizedDataSparseMap<T> implements LongDataMap<T> {
    *
    * @param values the list of values
    */
-  public LongSizedDataSparseMap(AlignedDataList<T> values) {
+  public SparseLongFixedSizeDataMap(DataStore<T> values) {
     this.offsets = new LongArrayList();
     this.offsetStartPad = new ByteArrayList();
     this.values = values;
@@ -55,7 +57,6 @@ public class LongSizedDataSparseMap<T> implements LongDataMap<T> {
     long index = values.size();
     int chunk = (int) (key >>> 8);
     int offset = (int) (key & 255);
-
     if (chunk != lastChunk) {
       // new chunk, store offset and leading zeros
       lastOffset = offset;

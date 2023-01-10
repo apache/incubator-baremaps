@@ -14,27 +14,23 @@ package org.apache.baremaps.collection;
 
 
 
-import it.unimi.dsi.fastutil.longs.LongArrayList;
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.concurrent.atomic.AtomicLong;
 import org.apache.baremaps.collection.memory.Memory;
-import org.apache.baremaps.collection.type.SizedDataType;
+import org.apache.baremaps.collection.store.DataStoreException;
+import org.apache.baremaps.collection.type.FixedSizeDataType;
 
 /**
- * A list of data backed by a {@link SizedDataType} and a {@link Memory}.
+ * A dense map of data backed by a {@link FixedSizeDataType} and a {@link Memory}.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
  *
  * <p>
  * Copyright (c) Planetiler.
- *
- * @param <T>
  */
-public class AlignedDataList<T> implements DataList<T> {
+public class MemoryAlignedLongFixedSizeDataMap<T> implements LongMap<T> {
 
-  private final SizedDataType<T> dataType;
+  private final FixedSizeDataType<T> dataType;
 
   private final Memory memory;
 
@@ -44,32 +40,30 @@ public class AlignedDataList<T> implements DataList<T> {
 
   private final long segmentMask;
 
-  private AtomicLong size;
-
   /**
-   * Constructs a list.
+   * Constructs a map.
    *
    * @param dataType the data type
    * @param memory the memory
    */
-  public AlignedDataList(SizedDataType<T> dataType, Memory memory) {
-    new LongArrayList();
+  public MemoryAlignedLongFixedSizeDataMap(FixedSizeDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
-      throw new StoreException("The segment size is too small for the data type");
+      throw new DataStoreException("The values are too big");
     }
     if (memory.segmentSize() % dataType.size() != 0) {
-      throw new StoreException("The segment size and data type size must be aligned");
+      throw new DataStoreException("The segment size and data type size must be aligned");
     }
     this.dataType = dataType;
     this.memory = memory;
     this.valueShift = (int) (Math.log(dataType.size()) / Math.log(2));
     this.segmentShift = memory.segmentShift();
     this.segmentMask = memory.segmentMask();
-    this.size = new AtomicLong(0);
   }
 
-  private void write(long index, T value) {
-    long position = index << valueShift;
+  /** {@inheritDoc} */
+  @Override
+  public void put(long key, T value) {
+    long position = key << valueShift;
     int segmentIndex = (int) (position >>> segmentShift);
     int segmentOffset = (int) (position & segmentMask);
     ByteBuffer segment = memory.segment(segmentIndex);
@@ -77,50 +71,12 @@ public class AlignedDataList<T> implements DataList<T> {
   }
 
   /** {@inheritDoc} */
-  public long add(T value) {
-    long index = size.getAndIncrement();
-    write(index, value);
-    return index;
-  }
-
   @Override
-  public void add(long index, T value) {
-    if (index >= size.get()) {
-      throw new IndexOutOfBoundsException();
-    }
-    write(index, value);
-  }
-
-  /** {@inheritDoc} */
-  public T get(long index) {
-    long position = index << valueShift;
-    int segmentIndex = (int) (position >> segmentShift);
+  public T get(long key) {
+    long position = key << valueShift;
+    int segmentIndex = (int) (position >>> segmentShift);
     int segmentOffset = (int) (position & segmentMask);
     ByteBuffer segment = memory.segment(segmentIndex);
     return dataType.read(segment, segmentOffset);
-  }
-
-  @Override
-  public T remove(long index) {
-    T value = get(index);
-    write(index, null);
-    return value;
-  }
-
-  /** {@inheritDoc} */
-  public long size() {
-    return size.get();
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void close() throws IOException {
-    memory.close();
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void clean() throws IOException {
-    memory.clean();
   }
 }

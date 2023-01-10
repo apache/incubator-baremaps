@@ -16,7 +16,7 @@ import static org.apache.baremaps.openstreetmap.utils.GeometryUtils.GEOMETRY_FAC
 
 import java.util.*;
 import java.util.function.Consumer;
-import org.apache.baremaps.collection.LongDataMap;
+import org.apache.baremaps.collection.LongMap;
 import org.apache.baremaps.openstreetmap.model.Member;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.stream.StreamException;
@@ -36,8 +36,8 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
 
   private static final Logger logger = LoggerFactory.getLogger(RelationGeometryBuilder.class);
 
-  private final LongDataMap<Coordinate> coordinateMap;
-  private final LongDataMap<List<Long>> referenceMap;
+  private final LongMap<Coordinate> coordinateMap;
+  private final LongMap<List<Long>> referenceMap;
 
   /**
    * Constructs a relation geometry builder.
@@ -45,8 +45,8 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
    * @param coordinateMap the coordinates map
    * @param referenceMap the references map
    */
-  public RelationGeometryBuilder(LongDataMap<Coordinate> coordinateMap,
-      LongDataMap<List<Long>> referenceMap) {
+  public RelationGeometryBuilder(LongMap<Coordinate> coordinateMap,
+      LongMap<List<Long>> referenceMap) {
     this.coordinateMap = coordinateMap;
     this.referenceMap = referenceMap;
   }

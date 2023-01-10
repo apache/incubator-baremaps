@@ -16,13 +16,13 @@ package org.apache.baremaps.collection.utils;
 
 import java.util.Collection;
 import java.util.Iterator;
-import org.apache.baremaps.collection.DataList;
+import org.apache.baremaps.collection.store.DataStore;
 
 public class CollectionAdapter<T> implements Collection<T> {
 
-  private final DataList<T> dataList;
+  private final DataStore<T> dataList;
 
-  public CollectionAdapter(DataList<T> dataList) {
+  public CollectionAdapter(DataStore<T> dataList) {
     this.dataList = dataList;
   }
 

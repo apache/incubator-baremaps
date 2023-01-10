@@ -16,22 +16,26 @@ package org.apache.baremaps.collection.type;
 
 import java.nio.ByteBuffer;
 
-/** A {@link DataType} for reading and writing floats in {@link ByteBuffer}s. */
-public class FloatDataType implements SizedDataType<Float> {
+/**
+ * A {@link DataType} for reading and writing floats in {@link ByteBuffer}s.
+ */
+public class FloatDataType extends MemoryAlignedDataType<Float> {
 
-  /** {@inheritDoc} */
-  @Override
-  public int size(Float value) {
-    return 4;
+  public FloatDataType() {
+    super(Float.BYTES);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void write(ByteBuffer buffer, int position, Float value) {
     buffer.putFloat(position, value);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Float read(ByteBuffer buffer, int position) {
     return buffer.getFloat(position);

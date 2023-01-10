@@ -21,7 +21,7 @@ import java.util.List;
  *
  * @param <T>
  */
-public interface LongDataMap<T> {
+public interface LongMap<T> {
 
   /**
    * Associates the specified value with the specified key in this map.
@@ -51,4 +51,5 @@ public interface LongDataMap<T> {
   default List<T> get(List<Long> keys) {
     return keys.stream().map(this::get).toList();
   }
+
 }

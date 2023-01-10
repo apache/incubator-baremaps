@@ -19,12 +19,13 @@ import java.util.Objects;
 import org.apache.baremaps.collection.type.PairDataType.Pair;
 
 /** A {@link DataType} for reading and writing pairs of values in {@link ByteBuffer}s. */
-public class PairDataType<L, R> implements SizedDataType<Pair<L, R>> {
+public class PairDataType<L, R> extends FixedSizeDataType<Pair<L, R>> {
 
-  private final SizedDataType<L> left;
-  private final SizedDataType<R> right;
+  private final FixedSizeDataType<L> left;
+  private final FixedSizeDataType<R> right;
 
-  public PairDataType(SizedDataType<L> left, SizedDataType<R> right) {
+  public PairDataType(FixedSizeDataType<L> left, FixedSizeDataType<R> right) {
+    super(left.size() + right.size());
     this.left = left;
     this.right = right;
   }

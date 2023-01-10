@@ -19,13 +19,13 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.collection.LongDataMap;
+import org.apache.baremaps.collection.LongMap;
 import org.apache.baremaps.openstreetmap.function.RelationGeometryBuilder;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
-import org.apache.baremaps.openstreetmap.store.MockLongDataMap;
+import org.apache.baremaps.openstreetmap.store.MockLongMap;
 import org.apache.baremaps.openstreetmap.xml.XmlEntityReader;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -37,11 +37,11 @@ class RelationGeometryBuilderTest {
   Geometry handleRelation(String file) throws IOException {
     InputStream input = new GZIPInputStream(this.getClass().getResourceAsStream(file));
     List<Entity> entities = new XmlEntityReader().stream(input).toList();
-    LongDataMap<Coordinate> coordinateMap = new MockLongDataMap<>(
+    LongMap<Coordinate> coordinateMap = new MockLongMap<>(
         entities.stream().filter(e -> e instanceof Node).map(e -> (Node) e).collect(
             Collectors.toMap(n -> n.id(), n -> new Coordinate(n.getLon(), n.getLat()))));
-    LongDataMap<List<Long>> referenceMap =
-        new MockLongDataMap<>(entities.stream().filter(e -> e instanceof Way).map(e -> (Way) e)
+    LongMap<List<Long>> referenceMap =
+        new MockLongMap<>(entities.stream().filter(e -> e instanceof Way).map(e -> (Way) e)
             .collect(Collectors.toMap(w -> w.id(), w -> w.getNodes())));
     Relation relation = entities.stream().filter(e -> e instanceof Relation).map(e -> (Relation) e)
         .findFirst().get();

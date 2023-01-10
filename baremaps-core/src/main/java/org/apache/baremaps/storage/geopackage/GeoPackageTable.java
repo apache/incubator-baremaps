@@ -54,7 +54,7 @@ public class GeoPackageTable implements ReadableFeatureSet {
     for (FeatureColumn column : featureDao.getColumns()) {
       var propertyName = column.getName();
       var propertyType = classType(column);
-      properties.put(propertyName, new PropertyType(name, propertyType));
+      properties.put(propertyName, new PropertyType(propertyName, propertyType));
     }
     featureType = new FeatureType(name, properties);
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());

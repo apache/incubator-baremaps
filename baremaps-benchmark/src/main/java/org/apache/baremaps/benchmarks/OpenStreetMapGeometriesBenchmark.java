@@ -25,14 +25,13 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.apache.baremaps.collection.DataStore;
-import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.collection.LongDataOpenHashMap;
-import org.apache.baremaps.collection.memory.OnDiskDirectoryMemory;
+import org.apache.baremaps.collection.LongMap;
+import org.apache.baremaps.collection.LongOpenHashMap;
+import org.apache.baremaps.collection.memory.MappedMemory;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
+import org.apache.baremaps.collection.store.AppendOnlyStore;
 import org.apache.baremaps.collection.type.CoordinateDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
-import org.apache.baremaps.collection.utils.FileUtils;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
@@ -76,11 +75,11 @@ public class OpenStreetMapGeometriesBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 3)
   public void store() throws IOException {
-    Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
-    LongDataMap<Coordinate> coordinateMap = new LongDataOpenHashMap<>(
-        new DataStore<>(new CoordinateDataType(), new OnDiskDirectoryMemory(directory)));
-    LongDataMap<List<Long>> referenceMap =
-        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
+    Path file = Files.createTempFile(Paths.get("."), "baremaps_", ".tmp");
+    LongMap<Coordinate> coordinateMap = new LongOpenHashMap<>(
+        new AppendOnlyStore<>(new CoordinateDataType(), new MappedMemory(file)));
+    LongMap<List<Long>> referenceMap =
+        new LongOpenHashMap<>(new AppendOnlyStore<>(new LongListDataType(), new OnHeapMemory()));
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
@@ -96,7 +95,7 @@ public class OpenStreetMapGeometriesBenchmark {
             }
           });
     }
-    FileUtils.deleteRecursively(directory);
+    Files.delete(file);
   }
 
   public static void main(String[] args) throws RunnerException {

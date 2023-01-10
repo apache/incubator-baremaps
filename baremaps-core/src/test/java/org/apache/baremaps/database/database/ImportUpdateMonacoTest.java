@@ -16,10 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.apache.baremaps.collection.DataStore;
-import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.collection.LongDataOpenHashMap;
+import org.apache.baremaps.collection.LongMap;
+import org.apache.baremaps.collection.LongOpenHashMap;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
+import org.apache.baremaps.collection.store.AppendOnlyStore;
 import org.apache.baremaps.collection.type.CoordinateDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
 import org.apache.baremaps.database.DiffService;
@@ -47,10 +47,10 @@ class ImportUpdateMonacoTest extends DatabaseContainerTest {
     PostgresWayRepository wayRepository = new PostgresWayRepository(dataSource());
     PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
 
-    LongDataMap<Coordinate> coordinateMap =
-        new LongDataOpenHashMap<>(new DataStore<>(new CoordinateDataType(), new OnHeapMemory()));
-    LongDataMap<List<Long>> referenceMap =
-        new LongDataOpenHashMap<>(new DataStore<>(new LongListDataType(), new OnHeapMemory()));
+    LongMap<Coordinate> coordinateMap =
+        new LongOpenHashMap<>(new AppendOnlyStore<>(new CoordinateDataType(), new OnHeapMemory()));
+    LongMap<List<Long>> referenceMap =
+        new LongOpenHashMap<>(new AppendOnlyStore<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
     new ImportService(TestFiles.resolve("monaco/monaco-210801.osm.pbf"), coordinateMap,

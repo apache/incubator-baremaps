@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import org.apache.baremaps.collection.LongDataMap;
+import org.apache.baremaps.collection.LongMap;
 import org.apache.baremaps.database.UpdateService;
 import org.apache.baremaps.database.collection.PostgresCoordinateMap;
 import org.apache.baremaps.database.collection.PostgresReferenceMap;
@@ -39,8 +39,8 @@ public record UpdateOpenStreetMap(String database, Integer databaseSrid) impleme
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Updating {}", database);
     var datasource = context.getDataSource(database);
-    LongDataMap<Coordinate> coordinateMap = new PostgresCoordinateMap(datasource);
-    LongDataMap<List<Long>> referenceMap = new PostgresReferenceMap(datasource);
+    LongMap<Coordinate> coordinateMap = new PostgresCoordinateMap(datasource);
+    LongMap<List<Long>> referenceMap = new PostgresReferenceMap(datasource);
     HeaderRepository headerRepository = new PostgresHeaderRepository(datasource);
     Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);

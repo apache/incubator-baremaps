@@ -26,7 +26,12 @@ public class NullableDataType<T> implements DataType<T> {
 
   @Override
   public int size(T value) {
-    return 1 + dataType.size(value);
+    return Byte.BYTES + dataType.size(value);
+  }
+
+  @Override
+  public int size(ByteBuffer buffer, int position) {
+    return Byte.BYTES + dataType.size(buffer, position + 1);
   }
 
   @Override
@@ -35,7 +40,7 @@ public class NullableDataType<T> implements DataType<T> {
       buffer.put(position, (byte) 0);
     } else {
       buffer.put(position, (byte) 1);
-      dataType.write(buffer, position + 1, value);
+      dataType.write(buffer, position + Byte.BYTES, value);
     }
   }
 
@@ -44,7 +49,7 @@ public class NullableDataType<T> implements DataType<T> {
     if (buffer.get(position) == 0) {
       return null;
     } else {
-      return dataType.read(buffer, position + 1);
+      return dataType.read(buffer, position + Byte.BYTES);
     }
   }
 }

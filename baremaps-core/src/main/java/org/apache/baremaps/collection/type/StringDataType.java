@@ -21,24 +21,29 @@ public class StringDataType implements DataType<String> {
 
   @Override
   public int size(String value) {
-    return 8 + value.getBytes(StandardCharsets.UTF_8).length;
+    return Integer.BYTES + value.getBytes(StandardCharsets.UTF_8).length;
+  }
+
+  @Override
+  public int size(ByteBuffer buffer, int position) {
+    return buffer.getInt(position);
   }
 
   @Override
   public void write(ByteBuffer buffer, int position, String value) {
     var bytes = value.getBytes(StandardCharsets.UTF_8);
-    buffer.putInt(position, bytes.length);
+    buffer.putInt(position, size(value));
     for (int i = 0; i < bytes.length; i++) {
-      buffer.put(position + 8 + i, bytes[i]);
+      buffer.put(position + Integer.BYTES + i, bytes[i]);
     }
   }
 
   @Override
   public String read(ByteBuffer buffer, int position) {
-    var length = buffer.getInt(position);
-    var bytes = new byte[length];
+    var size = size(buffer, position);
+    var bytes = new byte[size - Integer.BYTES];
     for (int i = 0; i < bytes.length; i++) {
-      bytes[i] = buffer.get(position + 8 + i);
+      bytes[i] = buffer.get(position + Integer.BYTES + i);
     }
     return new String(bytes, StandardCharsets.UTF_8);
   }

@@ -32,7 +32,8 @@ public abstract class PostgresContainerTest {
   public void startContainer() {
     // start the container
     var postgis =
-        DockerImageName.parse("postgis/postgis:14-3.3").asCompatibleSubstituteFor("postgres");
+        DockerImageName.parse("ghcr.io/baosystems/postgis:14-3.3")
+            .asCompatibleSubstituteFor("postgres");
     container = new PostgreSQLContainer(postgis);
     container.start();
 

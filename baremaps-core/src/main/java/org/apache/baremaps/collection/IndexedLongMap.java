@@ -14,18 +14,28 @@ package org.apache.baremaps.collection;
 
 
 
-import org.apache.baremaps.collection.memory.Memory;
-import org.apache.baremaps.collection.type.LongDataType;
+import org.apache.baremaps.collection.store.AppendOnlyStore;
 
-/** A list of longs backed by a {@link Memory}. */
-public class LongList extends AlignedDataList<Long> {
+public class IndexedLongMap<T> implements LongMap<T> {
 
-  /**
-   * Constructs a list.
-   *
-   * @param memory the memory
-   */
-  public LongList(Memory memory) {
-    super(new LongDataType(), memory);
+  private final LongLongMap index;
+
+  private final AppendOnlyStore<T> store;
+
+  public IndexedLongMap(LongLongMap index, AppendOnlyStore<T> store) {
+    this.index = index;
+    this.store = store;
+  }
+
+  @Override
+  public void put(long key, T value) {
+    var position = store.add(value);
+    index.put(key, position);
+  }
+
+  @Override
+  public T get(long idx) {
+    var position = index.get(idx);
+    return store.get(position);
   }
 }

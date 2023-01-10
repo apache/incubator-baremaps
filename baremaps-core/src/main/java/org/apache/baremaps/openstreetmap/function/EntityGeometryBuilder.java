@@ -16,7 +16,7 @@ package org.apache.baremaps.openstreetmap.function;
 
 import java.util.List;
 import java.util.function.Consumer;
-import org.apache.baremaps.collection.LongDataMap;
+import org.apache.baremaps.collection.LongMap;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
@@ -36,8 +36,8 @@ public class EntityGeometryBuilder implements Consumer<Entity> {
    * @param coordinateMap the coordinate cache
    * @param referenceMap the reference cache
    */
-  public EntityGeometryBuilder(LongDataMap<Coordinate> coordinateMap,
-      LongDataMap<List<Long>> referenceMap) {
+  public EntityGeometryBuilder(LongMap<Coordinate> coordinateMap,
+      LongMap<List<Long>> referenceMap) {
     this.nodeGeometryBuilder = new NodeGeometryBuilder();
     this.wayGeometryBuilder = new WayGeometryBuilder(coordinateMap);
     this.relationGeometryBuilder = new RelationGeometryBuilder(coordinateMap, referenceMap);

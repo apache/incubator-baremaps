@@ -17,27 +17,17 @@ package org.apache.baremaps.collection.type;
 import java.nio.ByteBuffer;
 
 /**
- * A {@link DataType} for reading and writing integers in {@link ByteBuffer}s.
+ * A {@link DataType} for reading and writing values in {@link ByteBuffer}s whose size is memory
+ * aligned.
+ *
+ * @param <T>
  */
-public class IntegerDataType extends MemoryAlignedDataType<Integer> {
+public abstract class MemoryAlignedDataType<T> extends FixedSizeDataType<T> {
 
-  public IntegerDataType() {
-    super(Integer.BYTES);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void write(ByteBuffer buffer, int position, Integer value) {
-    buffer.putInt(position, value);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Integer read(ByteBuffer buffer, int position) {
-    return buffer.getInt(position);
+  public MemoryAlignedDataType(int size) {
+    super(size);
+    if ((size & -size) != size) {
+      throw new IllegalArgumentException("The size must be a power of 2");
+    }
   }
 }

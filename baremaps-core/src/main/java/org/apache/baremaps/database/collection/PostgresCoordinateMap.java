@@ -22,15 +22,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
-import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.collection.StoreException;
+import org.apache.baremaps.collection.LongMap;
+import org.apache.baremaps.collection.store.DataStoreException;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- * A read-only {@link LongDataMap} for coordinates baked by OpenStreetMap nodes stored in
- * PostgreSQL.
+ * A read-only {@link LongMap} for coordinates baked by OpenStreetMap nodes stored in PostgreSQL.
  */
-public class PostgresCoordinateMap implements LongDataMap<Coordinate> {
+public class PostgresCoordinateMap implements LongMap<Coordinate> {
 
   private static final String SELECT = "SELECT lon, lat FROM osm_nodes WHERE id = ?";
 
@@ -59,7 +58,7 @@ public class PostgresCoordinateMap implements LongDataMap<Coordinate> {
         }
       }
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DataStoreException(e);
     }
   }
 
@@ -80,7 +79,7 @@ public class PostgresCoordinateMap implements LongDataMap<Coordinate> {
         return keys.stream().map(nodes::get).toList();
       }
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DataStoreException(e);
     }
   }
 

@@ -21,14 +21,43 @@ import java.nio.ByteBuffer;
  *
  * @param <T>
  */
-public interface SizedDataType<T> extends DataType<T> {
+public abstract class FixedSizeDataType<T> implements DataType<T> {
+
+  private final int size;
+
+  public FixedSizeDataType(int size) {
+    this.size = size;
+  }
+
+  /**
+   * Returns the size of the value.
+   *
+   * @param value the value
+   * @return the size of the value
+   */
+  @Override
+  public int size(T value) {
+    return size;
+  }
+
+  /**
+   * Returns the size of the value at the given position in the buffer.
+   *
+   * @param buffer the buffer
+   * @param position the position
+   * @return the size of the value
+   */
+  @Override
+  public int size(ByteBuffer buffer, int position) {
+    return size;
+  }
 
   /**
    * Returns the size of the data type.
    *
-   * @return the size of the data type.
+   * @return the size of the data type
    */
-  default int size() {
-    return size(null);
+  public int size() {
+    return size;
   }
 }

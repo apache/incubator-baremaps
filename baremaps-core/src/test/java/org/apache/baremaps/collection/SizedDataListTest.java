@@ -18,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.IOException;
 import org.apache.baremaps.collection.memory.Memory;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
+import org.apache.baremaps.collection.store.DataStoreException;
+import org.apache.baremaps.collection.store.FixedSizeDataStore;
 import org.apache.baremaps.collection.type.LongDataType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,13 +31,13 @@ class SizedDataListTest {
   void segmentsTooSmall() {
     var dataType = new LongDataType();
     var memory = new OffHeapMemory(4);
-    assertThrows(StoreException.class, () -> new AlignedDataList<>(dataType, memory));
+    assertThrows(DataStoreException.class, () -> new FixedSizeDataStore<>(dataType, memory));
   }
 
   @ParameterizedTest
   @MethodSource("org.apache.baremaps.collection.memory.MemoryProvider#memories")
   void appendFixedSizeValues(Memory memory) throws IOException {
-    var list = new AlignedDataList<>(new LongDataType(), memory);
+    var list = new FixedSizeDataStore<>(new LongDataType(), memory);
     for (int i = 0; i < 1 << 10; i++) {
       assertEquals(i, list.add((long) i));
     }

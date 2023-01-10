@@ -16,7 +16,7 @@ import static org.apache.baremaps.openstreetmap.utils.GeometryUtils.GEOMETRY_FAC
 
 import java.util.List;
 import java.util.function.Consumer;
-import org.apache.baremaps.collection.LongDataMap;
+import org.apache.baremaps.collection.LongMap;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
@@ -31,14 +31,14 @@ public class WayGeometryBuilder implements Consumer<Way> {
 
   private static final Logger logger = LoggerFactory.getLogger(WayGeometryBuilder.class);
 
-  private final LongDataMap<Coordinate> coordinateMap;
+  private final LongMap<Coordinate> coordinateMap;
 
   /**
    * Constructs a way geometry builder.
    *
    * @param coordinateMap the coordinates map
    */
-  public WayGeometryBuilder(LongDataMap<Coordinate> coordinateMap) {
+  public WayGeometryBuilder(LongMap<Coordinate> coordinateMap) {
     this.coordinateMap = coordinateMap;
   }
 

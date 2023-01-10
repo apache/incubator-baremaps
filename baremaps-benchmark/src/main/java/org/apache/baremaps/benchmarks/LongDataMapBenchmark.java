@@ -19,12 +19,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
-import org.apache.baremaps.collection.AlignedDataList;
+import org.apache.baremaps.collection.LongMap;
+import org.apache.baremaps.collection.MemoryAlignedLongFixedSizeDataMap;
+import org.apache.baremaps.collection.memory.MappedMemory;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
-import org.apache.baremaps.collection.memory.OnDiskDirectoryMemory;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
 import org.apache.baremaps.collection.type.LongDataType;
-import org.apache.baremaps.collection.utils.FileUtils;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -45,9 +45,9 @@ public class LongDataMapBenchmark {
 
   private static final long N = 1 << 25;
 
-  private void benchmark(AlignedDataList<Long> store, long n) {
+  private void benchmark(LongMap<Long> store, long n) {
     for (long i = 0; i < n; i++) {
-      store.add(i);
+      store.put(i, i);
     }
     for (long i = 0; i < n; i++) {
       store.get(i);
@@ -59,7 +59,7 @@ public class LongDataMapBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void onHeap() {
-    benchmark(new AlignedDataList<>(new LongDataType(), new OnHeapMemory()), N);
+    benchmark(new MemoryAlignedLongFixedSizeDataMap<>(new LongDataType(), new OnHeapMemory()), N);
   }
 
   @Benchmark
@@ -67,7 +67,7 @@ public class LongDataMapBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void offHeap() {
-    benchmark(new AlignedDataList<>(new LongDataType(), new OffHeapMemory()), N);
+    benchmark(new MemoryAlignedLongFixedSizeDataMap<>(new LongDataType(), new OffHeapMemory()), N);
   }
 
   @Benchmark
@@ -75,9 +75,10 @@ public class LongDataMapBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void onDisk() throws IOException {
-    Path directory = Files.createTempDirectory(Paths.get("."), "baremaps_");
-    benchmark(new AlignedDataList<>(new LongDataType(), new OnDiskDirectoryMemory(directory)), N);
-    FileUtils.deleteRecursively(directory);
+    Path file = Files.createTempFile(Paths.get("."), "baremaps_", ".tmp");
+    benchmark(new MemoryAlignedLongFixedSizeDataMap<>(new LongDataType(), new MappedMemory(file)),
+        N);
+    Files.delete(file);
   }
 
   public static void main(String[] args) throws RunnerException {

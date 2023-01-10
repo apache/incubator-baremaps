@@ -27,5 +27,6 @@ class DataTypeTest {
     var buffer = ByteBuffer.allocate(size);
     dataType.write(buffer, 0, value);
     assertEquals(value, dataType.read(buffer, 0));
+    assertEquals(size, dataType.size(buffer, 0));
   }
 }

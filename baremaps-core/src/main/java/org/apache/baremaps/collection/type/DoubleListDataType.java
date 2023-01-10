@@ -24,29 +24,32 @@ public class DoubleListDataType implements DataType<List<Double>> {
   /** {@inheritDoc} */
   @Override
   public int size(List<Double> values) {
-    return 4 + values.size() * 8;
+    return Integer.BYTES + values.size() * Double.BYTES;
+  }
+
+  @Override
+  public int size(ByteBuffer buffer, int position) {
+    return buffer.getInt(position);
   }
 
   /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, List<Double> values) {
-    buffer.putInt(position, values.size());
-    position += 4;
+    buffer.putInt(position, size(values));
+    position += Integer.BYTES;
     for (Double value : values) {
       buffer.putDouble(position, value);
-      position += 8;
+      position += Double.BYTES;
     }
   }
 
   /** {@inheritDoc} */
   @Override
   public List<Double> read(ByteBuffer buffer, int position) {
-    int size = buffer.getInt(position);
-    position += 4;
-    List<Double> list = new ArrayList<>(size);
-    for (int i = 0; i < size; i++) {
-      list.add(buffer.getDouble(position));
-      position += 8;
+    var size = buffer.getInt(position);
+    var list = new ArrayList<Double>(size);
+    for (var p = position + Integer.BYTES; p < position + size; p += Double.BYTES) {
+      list.add(buffer.getDouble(p));
     }
     return list;
   }

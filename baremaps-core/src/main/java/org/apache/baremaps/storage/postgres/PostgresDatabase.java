@@ -23,7 +23,6 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.copy.CopyWriter;
@@ -92,8 +91,8 @@ public class PostgresDatabase implements WritableAggregate {
   private FeatureType createFeatureType(FeatureType featureType) {
     var name = featureType.getName().replaceAll("[^a-zA-Z0-9]", "_");
     var properties = featureType.getProperties().values().stream()
-        .filter(typeToName::containsKey)
-        .collect(Collectors.toMap(PropertyType::getName, Function.identity()));
+        .filter(type -> typeToName.containsKey(type.getType()))
+        .collect(Collectors.toMap(k -> k.getName(), v -> v));
     return new FeatureType(name, properties);
   }
 

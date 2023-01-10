@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import org.apache.baremaps.collection.DataList;
+import org.apache.baremaps.collection.store.DataStore;
 
 /**
  * External merge sort algorithm adapted
@@ -46,8 +46,9 @@ public class ExternalMergeSort {
    * @param parallel The flag indicating if parallelism should be used
    * @throws IOException
    */
-  public static <T> void sort(DataList<T> input, DataList<T> output, final Comparator<T> comparator,
-      Supplier<DataList<T>> tempLists, long batchSize, boolean distinct, boolean parallel)
+  public static <T> void sort(DataStore<T> input, DataStore<T> output,
+      final Comparator<T> comparator,
+      Supplier<DataStore<T>> tempLists, long batchSize, boolean distinct, boolean parallel)
       throws IOException {
     mergeSortedBatches(sortInBatch(input, comparator, tempLists, batchSize, distinct, parallel),
         output, comparator, distinct);
@@ -64,11 +65,11 @@ public class ExternalMergeSort {
    * @return the number of data sorted
    * @throws IOException
    */
-  private static <T> long mergeSortedBatches(List<DataList<T>> batches, DataList<T> output,
+  private static <T> long mergeSortedBatches(List<DataStore<T>> batches, DataStore<T> output,
       Comparator<T> comparator, boolean distinct) throws IOException {
     PriorityQueue<DataStack<T>> queue =
         new PriorityQueue<>(batches.size(), (i, j) -> comparator.compare(i.peek(), j.peek()));
-    for (DataList<T> input : batches) {
+    for (DataStore<T> input : batches) {
       if (input.size() == 0) {
         continue;
       }
@@ -121,8 +122,8 @@ public class ExternalMergeSort {
       }
     }
 
-    for (DataList<T> dataList : batches) {
-      dataList.clean();
+    for (org.apache.baremaps.collection.store.DataStore<T> DataStore : batches) {
+      DataStore.clean();
     }
 
     return counter;
@@ -141,10 +142,10 @@ public class ExternalMergeSort {
    * @return the sorted batches
    * @throws IOException
    */
-  public static <T> List<DataList<T>> sortInBatch(final DataList<T> input,
-      final Comparator<T> comparator, Supplier<DataList<T>> supplier, long batchSize,
+  public static <T> List<DataStore<T>> sortInBatch(final DataStore<T> input,
+      final Comparator<T> comparator, Supplier<DataStore<T>> supplier, long batchSize,
       final boolean distinct, final boolean parallel) throws IOException {
-    List<DataList<T>> lists = new ArrayList<>();
+    List<DataStore<T>> lists = new ArrayList<>();
     List<T> batch = new ArrayList<>();
     long inputIndex = 0;
     while (inputIndex < input.size()) {
@@ -172,9 +173,9 @@ public class ExternalMergeSort {
    * @return the sorted batch
    * @throws IOException
    */
-  public static <T> DataList<T> sortBatch(List<T> batch, Comparator<T> comparator,
-      Supplier<DataList<T>> supplier, boolean distinct, boolean parallel) throws IOException {
-    DataList<T> output = supplier.get();
+  public static <T> DataStore<T> sortBatch(List<T> batch, Comparator<T> comparator,
+      Supplier<DataStore<T>> supplier, boolean distinct, boolean parallel) throws IOException {
+    DataStore<T> output = supplier.get();
     Stream<T> tmpStream = batch.stream().sorted(comparator);
     if (parallel) {
       tmpStream = tmpStream.parallel();

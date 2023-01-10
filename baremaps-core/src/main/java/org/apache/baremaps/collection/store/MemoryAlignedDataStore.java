@@ -10,34 +10,33 @@
  * the License.
  */
 
-package org.apache.baremaps.collection;
+package org.apache.baremaps.collection.store;
 
 
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
+import org.apache.baremaps.collection.Cleanable;
 import org.apache.baremaps.collection.memory.Memory;
-import org.apache.baremaps.collection.type.SizedDataType;
+import org.apache.baremaps.collection.memory.OffHeapMemory;
+import org.apache.baremaps.collection.type.FixedSizeDataType;
 
-/**
- * A list of data backed by a {@link SizedDataType} and a {@link Memory}.
- *
- * <p>
- * This code has been adapted from Planetiler (Apache license).
- *
- * <p>
- * Copyright (c) Planetiler.
- *
- * @param <T>
- */
-public class SizedDataList<T> implements DataList<T> {
+public class MemoryAlignedDataStore<T> implements DataStore<T>, Closeable, Cleanable {
 
-  private final SizedDataType<T> dataType;
+  private final FixedSizeDataType<T> dataType;
 
   private final Memory memory;
 
+  private final int valueShift;
+
+  private final long segmentShift;
+
+  private final long segmentMask;
+
   private AtomicLong size;
+
 
   /**
    * Constructs a list.
@@ -45,19 +44,39 @@ public class SizedDataList<T> implements DataList<T> {
    * @param dataType the data type
    * @param memory the memory
    */
-  public SizedDataList(SizedDataType<T> dataType, Memory memory) {
+  public MemoryAlignedDataStore(FixedSizeDataType<T> dataType) {
+    this(dataType, new OffHeapMemory());
+  }
+
+
+  /**
+   * Constructs a list.
+   *
+   * @param dataType the data type
+   * @param memory the memory
+   */
+  public MemoryAlignedDataStore(FixedSizeDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
-      throw new StoreException("The segment size is too small for the data type");
+      throw new DataStoreException("The segment size is too small for the data type");
+    }
+    if ((dataType.size() & -dataType.size()) != dataType.size()) {
+      throw new IllegalArgumentException("The data type size must be a fixed power of 2");
+    }
+    if (memory.segmentSize() % dataType.size() != 0) {
+      throw new DataStoreException("The segment size and data type size must be aligned");
     }
     this.dataType = dataType;
     this.memory = memory;
+    this.valueShift = (int) (Math.log(dataType.size()) / Math.log(2));
+    this.segmentShift = memory.segmentShift();
+    this.segmentMask = memory.segmentMask();
     this.size = new AtomicLong(0);
   }
 
   private void write(long index, T value) {
-    long position = index * dataType.size();
-    int segmentIndex = (int) (position / dataType.size());
-    int segmentOffset = (int) (position % dataType.size());
+    long position = index << valueShift;
+    int segmentIndex = (int) (position >>> segmentShift);
+    int segmentOffset = (int) (position & segmentMask);
     ByteBuffer segment = memory.segment(segmentIndex);
     dataType.write(segment, segmentOffset, value);
   }
@@ -69,8 +88,7 @@ public class SizedDataList<T> implements DataList<T> {
     return index;
   }
 
-  @Override
-  public void add(long index, T value) {
+  public void set(long index, T value) {
     if (index >= size.get()) {
       throw new IndexOutOfBoundsException();
     }
@@ -79,18 +97,11 @@ public class SizedDataList<T> implements DataList<T> {
 
   /** {@inheritDoc} */
   public T get(long index) {
-    long position = index * dataType.size();
-    int segmentIndex = (int) (position / dataType.size());
-    int segmentOffset = (int) (position % dataType.size());
+    long position = index << valueShift;
+    int segmentIndex = (int) (position >> segmentShift);
+    int segmentOffset = (int) (position & segmentMask);
     ByteBuffer segment = memory.segment(segmentIndex);
     return dataType.read(segment, segmentOffset);
-  }
-
-  @Override
-  public T remove(long index) {
-    T value = get(index);
-    add(index, null);
-    return value;
   }
 
   /** {@inheritDoc} */

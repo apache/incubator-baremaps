@@ -14,13 +14,12 @@ package org.apache.baremaps.collection;
 
 
 
-import org.apache.baremaps.collection.memory.OffHeapMemory;
+import org.apache.baremaps.collection.store.DataStore;
+import org.apache.baremaps.collection.store.MemoryAlignedDataStore;
 import org.apache.baremaps.collection.type.LongDataType;
-import org.apache.baremaps.collection.type.PairDataType.Pair;
 
 /**
- * A map of data backed by a {@link AlignedDataList} for storing keys and a {@link DataStore} for
- * storing values.
+ * A sorted map of data backed by {@link DataStore}s for storing keys and values.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
@@ -28,20 +27,34 @@ import org.apache.baremaps.collection.type.PairDataType.Pair;
  * <p>
  * Copyright (c) Planetiler.
  */
-public class LongDataSortedMap<T> implements LongDataMap<T> {
+public class SortedLongFixedSizeDataMap<T> implements LongMap<T> {
 
-  private final AlignedDataList<Long> offsets;
-  private final AlignedDataList<Pair<Long, Long>> keys;
+  private final DataStore<Long> offsets;
+  private final DataStore<Long> keys;
   private final DataStore<T> values;
-
   private long lastChunk = -1;
 
-  public LongDataSortedMap(AlignedDataList<Pair<Long, Long>> keys, DataStore<T> values) {
-    this.offsets = new AlignedDataList<>(new LongDataType(), new OffHeapMemory());
+  public SortedLongFixedSizeDataMap(DataStore<T> values) {
+    this(new MemoryAlignedDataStore<>(new LongDataType()),
+        new MemoryAlignedDataStore<>(new LongDataType()), values);
+  }
+
+  /**
+   * Constructs a map.
+   *
+   * @param keys the list of keys
+   * @param values the list of values
+   */
+  public SortedLongFixedSizeDataMap(DataStore<Long> offsets, DataStore<Long> keys,
+      DataStore<T> values) {
+    this.offsets = offsets;
     this.keys = keys;
     this.values = values;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void put(long key, T value) {
     long index = keys.size();
@@ -52,10 +65,13 @@ public class LongDataSortedMap<T> implements LongDataMap<T> {
       }
       lastChunk = chunk;
     }
-    long position = values.add(value);
-    keys.add(new Pair<>(key, position));
+    keys.add(key);
+    values.add(value);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public T get(long key) {
     long chunk = key >>> 8;
@@ -63,22 +79,23 @@ public class LongDataSortedMap<T> implements LongDataMap<T> {
       return null;
     }
     long lo = offsets.get(chunk);
-    long hi =
-        Math.min(keys.size(), chunk >= offsets.size() - 1 ? keys.size() : offsets.get(chunk + 1))
-            - 1;
+    long hi = Math.min(
+        keys.size(),
+        chunk >= offsets.size() - 1 ? keys.size() : offsets.get(chunk + 1))
+        - 1;
     while (lo <= hi) {
       long index = (lo + hi) >>> 1;
-      Pair<Long, Long> pair = keys.get(index);
-      long value = pair.left();
+      long value = keys.get(index);
       if (value < key) {
         lo = index + 1;
       } else if (value > key) {
         hi = index - 1;
       } else {
         // found
-        return values.get(pair.right());
+        return values.get(index);
       }
     }
     return null;
   }
+
 }

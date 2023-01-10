@@ -22,21 +22,26 @@ public class GeometryDataType implements DataType<Geometry> {
 
   @Override
   public int size(Geometry value) {
-    return 4 + GeometryUtils.serialize(value).length;
+    return Integer.BYTES + GeometryUtils.serialize(value).length;
+  }
+
+  @Override
+  public int size(ByteBuffer buffer, int position) {
+    return buffer.getInt(position);
   }
 
   @Override
   public void write(ByteBuffer buffer, int position, Geometry value) {
     byte[] bytes = GeometryUtils.serialize(value);
-    buffer.putInt(position, bytes.length);
-    buffer.put(position + 4, bytes);
+    buffer.putInt(position, Integer.BYTES + bytes.length);
+    buffer.put(position + Integer.BYTES, bytes);
   }
 
   @Override
   public Geometry read(ByteBuffer buffer, int position) {
-    int length = buffer.getInt(position);
-    byte[] bytes = new byte[length];
-    buffer.get(position + 4, bytes);
+    int size = size(buffer, position);
+    byte[] bytes = new byte[size - Integer.BYTES];
+    buffer.get(position + Integer.BYTES, bytes);
     return GeometryUtils.deserialize(bytes);
   }
 }
