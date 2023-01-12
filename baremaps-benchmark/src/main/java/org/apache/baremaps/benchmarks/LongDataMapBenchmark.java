@@ -19,8 +19,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
-import org.apache.baremaps.collection.LongMap;
-import org.apache.baremaps.collection.MemoryAlignedLongFixedSizeDataMap;
+import org.apache.baremaps.collection.DataMap;
+import org.apache.baremaps.collection.MemoryAlignedDataMap;
 import org.apache.baremaps.collection.memory.MappedMemory;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
@@ -45,7 +45,7 @@ public class LongDataMapBenchmark {
 
   private static final long N = 1 << 25;
 
-  private void benchmark(LongMap<Long> store, long n) {
+  private void benchmark(DataMap<Long> store, long n) {
     for (long i = 0; i < n; i++) {
       store.put(i, i);
     }
@@ -59,7 +59,7 @@ public class LongDataMapBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void onHeap() {
-    benchmark(new MemoryAlignedLongFixedSizeDataMap<>(new LongDataType(), new OnHeapMemory()), N);
+    benchmark(new MemoryAlignedDataMap<>(new LongDataType(), new OnHeapMemory()), N);
   }
 
   @Benchmark
@@ -67,7 +67,7 @@ public class LongDataMapBenchmark {
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
   public void offHeap() {
-    benchmark(new MemoryAlignedLongFixedSizeDataMap<>(new LongDataType(), new OffHeapMemory()), N);
+    benchmark(new MemoryAlignedDataMap<>(new LongDataType(), new OffHeapMemory()), N);
   }
 
   @Benchmark
@@ -76,7 +76,7 @@ public class LongDataMapBenchmark {
   @Measurement(iterations = 5)
   public void onDisk() throws IOException {
     Path file = Files.createTempFile(Paths.get("."), "baremaps_", ".tmp");
-    benchmark(new MemoryAlignedLongFixedSizeDataMap<>(new LongDataType(), new MappedMemory(file)),
+    benchmark(new MemoryAlignedDataMap<>(new LongDataType(), new MappedMemory(file)),
         N);
     Files.delete(file);
   }

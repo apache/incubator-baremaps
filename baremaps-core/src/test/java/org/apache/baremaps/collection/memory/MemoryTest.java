@@ -30,7 +30,7 @@ class MemoryTest {
   void capacity(Memory memory) throws IOException {
     assertEquals(SEGMENT_BYTES, memory.segmentSize());
     memory.close();
-    memory.clean();
+    memory.clear();
   }
 
   @ParameterizedTest
@@ -42,6 +42,6 @@ class MemoryTest {
       assertNotSame(memory.segment(i), memory.segment(i + 1));
     }
     memory.close();
-    memory.clean();
+    memory.clear();
   }
 }

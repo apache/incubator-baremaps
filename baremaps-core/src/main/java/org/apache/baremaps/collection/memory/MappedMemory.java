@@ -20,7 +20,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import org.apache.baremaps.collection.store.DataStoreException;
+import org.apache.baremaps.collection.DataCollectionException;
 import org.apache.baremaps.collection.utils.FileUtils;
 import org.apache.baremaps.collection.utils.MappedByteBufferUtils;
 
@@ -58,7 +58,7 @@ public class MappedMemory extends Memory<MappedByteBuffer> {
         return channel.map(MapMode.READ_WRITE, (long) index * size, size);
       }
     } catch (IOException e) {
-      throw new DataStoreException(e);
+      throw new DataCollectionException(e);
     }
   }
 
@@ -70,7 +70,9 @@ public class MappedMemory extends Memory<MappedByteBuffer> {
 
   /** {@inheritDoc} */
   @Override
-  public void clean() throws IOException {
+  public void clear() throws IOException {
+    MappedByteBufferUtils.unmap(segments);
+    segments.clear();
     FileUtils.deleteRecursively(file);
   }
 }

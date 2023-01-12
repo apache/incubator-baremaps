@@ -21,9 +21,9 @@ import org.apache.baremaps.collection.type.LongDataType;
 /**
  * A list of longs backed by a {@link Memory}.
  */
-public class LongLongMap extends MemoryAlignedLongFixedSizeDataMap<Long> {
+public class LongDataMap extends MemoryAlignedDataMap<Long> {
 
-  public LongLongMap() {
+  public LongDataMap() {
     this(new OffHeapMemory());
   }
 
@@ -32,7 +32,7 @@ public class LongLongMap extends MemoryAlignedLongFixedSizeDataMap<Long> {
    *
    * @param memory the memory
    */
-  public LongLongMap(Memory memory) {
+  public LongDataMap(Memory memory) {
     super(new LongDataType(), memory);
   }
 }

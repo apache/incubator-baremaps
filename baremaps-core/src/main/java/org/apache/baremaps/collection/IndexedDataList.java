@@ -10,27 +10,25 @@
  * the License.
  */
 
-package org.apache.baremaps.collection.store;
+package org.apache.baremaps.collection;
 
 
 
-import java.io.IOException;
+public class IndexedDataList<T> extends DataList<T> {
 
-public class IndexedDataStore<T> implements DataStore<T> {
+  private final MemoryAlignedDataList<Long> index;
 
-  private final MemoryAlignedDataStore<Long> index;
+  private final AppendOnlyBuffer<T> values;
 
-  private final AppendOnlyCollection<T> values;
-
-  public IndexedDataStore(MemoryAlignedDataStore<Long> index, AppendOnlyCollection<T> values) {
+  public IndexedDataList(MemoryAlignedDataList<Long> index, AppendOnlyBuffer<T> values) {
     this.index = index;
     this.values = values;
   }
 
   @Override
-  public long add(T value) {
+  public long append(T value) {
     long position = values.append(value);
-    return index.add(position);
+    return index.append(position);
   }
 
   @Override
@@ -42,22 +40,17 @@ public class IndexedDataStore<T> implements DataStore<T> {
   @Override
   public T get(long index) {
     long position = this.index.get(index);
-    return values.read(position);
+    return values.get(position);
   }
 
   @Override
-  public long size() {
-    return index.size();
+  public long sizeAsLong() {
+    return index.sizeAsLong();
   }
 
   @Override
-  public void close() throws IOException {
-    index.close();
-    values.close();
-  }
-
-  @Override
-  public void clean() throws IOException {
-
+  public void clear() {
+    index.clear();
+    values.clear();
   }
 }

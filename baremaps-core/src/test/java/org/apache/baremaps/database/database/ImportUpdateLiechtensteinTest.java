@@ -18,10 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.apache.baremaps.collection.LongMap;
-import org.apache.baremaps.collection.LongOpenHashMap;
+import org.apache.baremaps.collection.AppendOnlyBuffer;
+import org.apache.baremaps.collection.DataMap;
+import org.apache.baremaps.collection.IndexedDataMap;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
-import org.apache.baremaps.collection.store.AppendOnlyCollection;
 import org.apache.baremaps.collection.type.CoordinateDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
 import org.apache.baremaps.database.DiffService;
@@ -48,10 +48,10 @@ class ImportUpdateLiechtensteinTest extends DatabaseContainerTest {
     PostgresWayRepository wayRepository = new PostgresWayRepository(dataSource());
     PostgresRelationRepository relationRepository = new PostgresRelationRepository(dataSource());
 
-    LongMap<Coordinate> coordinateMap =
-        new LongOpenHashMap<>(new AppendOnlyCollection<>(new CoordinateDataType(), new OnHeapMemory()));
-    LongMap<List<Long>> referenceMap =
-        new LongOpenHashMap<>(new AppendOnlyCollection<>(new LongListDataType(), new OnHeapMemory()));
+    DataMap<Coordinate> coordinateMap =
+        new IndexedDataMap<>(new AppendOnlyBuffer<>(new CoordinateDataType(), new OnHeapMemory()));
+    DataMap<List<Long>> referenceMap =
+        new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
     new ImportService(LIECHTENSTEIN_OSM_PBF, coordinateMap, referenceMap, headerRepository,

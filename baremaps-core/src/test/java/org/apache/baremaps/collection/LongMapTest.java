@@ -16,8 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
-import org.apache.baremaps.collection.store.AppendOnlyCollection;
-import org.apache.baremaps.collection.store.MemoryAlignedDataStore;
 import org.apache.baremaps.collection.type.LongDataType;
 import org.apache.baremaps.collection.type.PairDataType;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,7 +26,7 @@ class LongMapTest {
 
   @ParameterizedTest
   @MethodSource("mapProvider")
-  void test(LongMap<Long> map) {
+  void test(DataMap<Long> map) {
     for (long i = 0; i < 1 << 20; i++) {
       map.put(i, i);
     }
@@ -40,17 +38,17 @@ class LongMapTest {
   static Stream<Arguments> mapProvider() {
     return Stream
         .of(Arguments.of(
-            new LongOpenHashMap<>(new AppendOnlyCollection<>(new LongDataType(), new OffHeapMemory()))),
-            Arguments.of(new SortedLongFixedSizeDataMap<>(
-                new MemoryAlignedDataStore<>(new LongDataType(), new OffHeapMemory()))),
-            Arguments.of(new SortedLongVariableSizeDataMap<>(
-                new MemoryAlignedDataStore<>(
+            new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()))),
+            Arguments.of(new MonotonicFixedSizeDataMap<>(
+                new MemoryAlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
+            Arguments.of(new MonotonicDataMap<>(
+                new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()),
+                new MemoryAlignedDataList<>(
                     new PairDataType<>(new LongDataType(), new LongDataType()),
-                    new OffHeapMemory()),
-                new AppendOnlyCollection<>(new LongDataType(), new OffHeapMemory()))),
-            Arguments.of(new SparseLongFixedSizeDataMap<>(
-                new MemoryAlignedDataStore<>(new LongDataType(), new OffHeapMemory()))),
+                    new OffHeapMemory()))),
+            Arguments.of(new MonotonicSparseDataMap<>(
+                new MemoryAlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
             Arguments.of(
-                new MemoryAlignedLongFixedSizeDataMap<>(new LongDataType(), new OffHeapMemory())));
+                new MemoryAlignedDataMap<>(new LongDataType(), new OffHeapMemory())));
   }
 }

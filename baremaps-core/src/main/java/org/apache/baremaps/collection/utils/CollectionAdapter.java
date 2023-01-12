@@ -16,33 +16,33 @@ package org.apache.baremaps.collection.utils;
 
 import java.util.Collection;
 import java.util.Iterator;
-import org.apache.baremaps.collection.store.DataStore;
+import org.apache.baremaps.collection.DataList;
 
 public class CollectionAdapter<T> implements Collection<T> {
 
-  private final DataStore<T> dataList;
+  private final DataList<T> dataList;
 
-  public CollectionAdapter(DataStore<T> dataList) {
+  public CollectionAdapter(DataList<T> dataList) {
     this.dataList = dataList;
   }
 
   @Override
   public int size() {
-    if (dataList.size() > Integer.MAX_VALUE) {
+    if (dataList.sizeAsLong() > Integer.MAX_VALUE) {
       throw new IllegalStateException(
           "The collection is too large to be represented as an integer.");
     }
-    return (int) dataList.size();
+    return (int) dataList.sizeAsLong();
   }
 
   @Override
   public boolean isEmpty() {
-    return dataList.size() == 0;
+    return dataList.sizeAsLong() == 0;
   }
 
   @Override
   public boolean contains(Object o) {
-    for (long i = 0; i < dataList.size(); i++) {
+    for (long i = 0; i < dataList.sizeAsLong(); i++) {
       if (dataList.get(i).equals(o)) {
         return true;
       }
@@ -58,7 +58,7 @@ public class CollectionAdapter<T> implements Collection<T> {
 
       @Override
       public boolean hasNext() {
-        return index < dataList.size();
+        return index < dataList.sizeAsLong();
       }
 
       @Override
@@ -83,7 +83,7 @@ public class CollectionAdapter<T> implements Collection<T> {
 
   @Override
   public boolean add(T t) {
-    dataList.add(t);
+    dataList.append(t);
     return true;
   }
 

@@ -25,11 +25,11 @@ import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import org.apache.baremaps.collection.LongMap;
-import org.apache.baremaps.collection.LongOpenHashMap;
+import org.apache.baremaps.collection.AppendOnlyBuffer;
+import org.apache.baremaps.collection.DataMap;
+import org.apache.baremaps.collection.IndexedDataMap;
 import org.apache.baremaps.collection.memory.MappedMemory;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
-import org.apache.baremaps.collection.store.AppendOnlyCollection;
 import org.apache.baremaps.collection.type.CoordinateDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
 import org.apache.baremaps.openstreetmap.model.Node;
@@ -76,10 +76,10 @@ public class OpenStreetMapGeometriesBenchmark {
   @Measurement(iterations = 3)
   public void store() throws IOException {
     Path file = Files.createTempFile(Paths.get("."), "baremaps_", ".tmp");
-    LongMap<Coordinate> coordinateMap = new LongOpenHashMap<>(
-        new AppendOnlyCollection<>(new CoordinateDataType(), new MappedMemory(file)));
-    LongMap<List<Long>> referenceMap =
-        new LongOpenHashMap<>(new AppendOnlyCollection<>(new LongListDataType(), new OnHeapMemory()));
+    DataMap<Coordinate> coordinateMap = new IndexedDataMap<>(
+        new AppendOnlyBuffer<>(new CoordinateDataType(), new MappedMemory(file)));
+    DataMap<List<Long>> referenceMap =
+        new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
     AtomicLong nodes = new AtomicLong(0);
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);

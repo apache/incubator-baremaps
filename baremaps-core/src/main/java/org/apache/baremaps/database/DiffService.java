@@ -26,7 +26,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.collection.LongMap;
+import org.apache.baremaps.collection.DataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
 import org.apache.baremaps.database.tile.Tile;
@@ -45,8 +45,8 @@ public class DiffService implements Callable<List<Tile>> {
 
   private static final Logger logger = LoggerFactory.getLogger(DiffService.class);
 
-  private final LongMap<Coordinate> coordinateMap;
-  private final LongMap<List<Long>> referenceMap;
+  private final DataMap<Coordinate> coordinateMap;
+  private final DataMap<List<Long>> referenceMap;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
@@ -54,7 +54,7 @@ public class DiffService implements Callable<List<Tile>> {
   private final int srid;
   private final int zoom;
 
-  public DiffService(LongMap<Coordinate> coordinateMap, LongMap<List<Long>> referenceMap,
+  public DiffService(DataMap<Coordinate> coordinateMap, DataMap<List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository, int srid,
       int zoom) {

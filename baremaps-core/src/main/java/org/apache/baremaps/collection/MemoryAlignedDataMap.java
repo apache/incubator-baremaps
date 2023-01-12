@@ -15,8 +15,8 @@ package org.apache.baremaps.collection;
 
 
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 import org.apache.baremaps.collection.memory.Memory;
-import org.apache.baremaps.collection.store.DataStoreException;
 import org.apache.baremaps.collection.type.FixedSizeDataType;
 
 /**
@@ -28,7 +28,7 @@ import org.apache.baremaps.collection.type.FixedSizeDataType;
  * <p>
  * Copyright (c) Planetiler.
  */
-public class MemoryAlignedLongFixedSizeDataMap<T> implements LongMap<T> {
+public class MemoryAlignedDataMap<T> extends DataMap<T> {
 
   private final FixedSizeDataType<T> dataType;
 
@@ -46,12 +46,12 @@ public class MemoryAlignedLongFixedSizeDataMap<T> implements LongMap<T> {
    * @param dataType the data type
    * @param memory the memory
    */
-  public MemoryAlignedLongFixedSizeDataMap(FixedSizeDataType<T> dataType, Memory memory) {
+  public MemoryAlignedDataMap(FixedSizeDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
-      throw new DataStoreException("The values are too big");
+      throw new DataCollectionException("The values are too big");
     }
     if (memory.segmentSize() % dataType.size() != 0) {
-      throw new DataStoreException("The segment size and data type size must be aligned");
+      throw new DataCollectionException("The segment size and data type size must be aligned");
     }
     this.dataType = dataType;
     this.memory = memory;
@@ -61,22 +61,62 @@ public class MemoryAlignedLongFixedSizeDataMap<T> implements LongMap<T> {
   }
 
   /** {@inheritDoc} */
-  @Override
-  public void put(long key, T value) {
+  public T put(Long key, T value) {
     long position = key << valueShift;
     int segmentIndex = (int) (position >>> segmentShift);
     int segmentOffset = (int) (position & segmentMask);
     ByteBuffer segment = memory.segment(segmentIndex);
+    T previous = dataType.read(segment, segmentOffset);
     dataType.write(segment, segmentOffset, value);
+    return previous;
+  }
+
+  @Override
+  public T remove(Object key) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void clear() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public int size() {
+    return 0;
+  }
+
+  @Override
+  public boolean containsKey(Object key) {
+    return false;
+  }
+
+  @Override
+  public boolean containsValue(Object value) {
+    return false;
   }
 
   /** {@inheritDoc} */
-  @Override
-  public T get(long key) {
-    long position = key << valueShift;
+  public T get(Object key) {
+    long position = (long) key << valueShift;
     int segmentIndex = (int) (position >>> segmentShift);
     int segmentOffset = (int) (position & segmentMask);
     ByteBuffer segment = memory.segment(segmentIndex);
     return dataType.read(segment, segmentOffset);
+  }
+
+  @Override
+  protected Iterator<Long> keyIterator() {
+    return null;
+  }
+
+  @Override
+  protected Iterator<T> valueIterator() {
+    return null;
+  }
+
+  @Override
+  protected Iterator<Entry<Long, T>> entryIterator() {
+    return null;
   }
 }

@@ -15,13 +15,13 @@ package org.apache.baremaps.collection.memory;
 
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.baremaps.collection.Cleanable;
 
 /** A base class to manage segments of on-heap, off-heap, or on-disk memory. */
-public abstract class Memory<T extends ByteBuffer> implements Closeable, Cleanable {
+public abstract class Memory<T extends ByteBuffer> implements Closeable {
 
   private final int segmentSize;
 
@@ -105,4 +105,9 @@ public abstract class Memory<T extends ByteBuffer> implements Closeable, Cleanab
    * @return the segment
    */
   protected abstract T allocate(int index, int size);
+
+  /**
+   * Clears the memory and the underlying resources.
+   */
+  public abstract void clear() throws IOException;
 }

@@ -25,7 +25,7 @@ import java.util.List;
 public class MappedByteBufferUtils {
 
   /**
-   * Attempt to force-unmap a list of memory-mapped file segments so it can safely be deleted.
+   * Attempt to force-unmap a list of memory-mapped file segments, so it can safely be deleted.
    *
    * @param segments The segments to unmap
    * @throws IOException If any error occurs unmapping the segment
@@ -52,7 +52,8 @@ public class MappedByteBufferUtils {
         }
       }
     } catch (Exception e) {
-      throw new IOException("Unable to unmap", e);
+      // failed to unmap, but we can still delete the file
+      // throw new IOException("Unable to unmap", e);
     }
   }
 }

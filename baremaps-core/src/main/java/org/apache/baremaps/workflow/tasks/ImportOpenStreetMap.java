@@ -14,8 +14,8 @@ package org.apache.baremaps.workflow.tasks;
 
 import org.apache.baremaps.collection.*;
 import org.apache.baremaps.collection.memory.MappedMemory;
-import org.apache.baremaps.collection.store.AppendOnlyCollection;
-import org.apache.baremaps.collection.store.MemoryAlignedDataStore;
+import org.apache.baremaps.collection.AppendOnlyBuffer;
+import org.apache.baremaps.collection.MemoryAlignedDataList;
 import org.apache.baremaps.collection.type.LonLatDataType;
 import org.apache.baremaps.collection.type.LongDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
@@ -63,37 +63,37 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
 
     var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
 
-    LongMap<Coordinate> coordinateMap;
+    DataMap<Coordinate> coordinateMap;
     if (Files.size(path) > 1 << 30) {
       var coordinatesFile = Files.createFile(cacheDir.resolve("coordinates"));
-      coordinateMap = new MemoryAlignedLongFixedSizeDataMap<>(
+      coordinateMap = new MemoryAlignedDataMap<>(
         new LonLatDataType(),
         new MappedMemory(coordinatesFile));
     } else {
       var coordinatesKeysFile = Files.createFile(cacheDir.resolve("coordinates_keys"));
       var coordinatesValsFile = Files.createFile(cacheDir.resolve("coordinates_vals"));
       coordinateMap =
-        new SortedLongVariableSizeDataMap<>(
-          new MemoryAlignedDataStore<>(
+        new MonotonicDataMap<>(
+                new AppendOnlyBuffer<>(
+                  new LonLatDataType(),
+                  new MappedMemory(coordinatesValsFile)), new MemoryAlignedDataList<>(
             new PairDataType<>(new LongDataType(), new LongDataType()),
             new MappedMemory(coordinatesKeysFile)
-          ),
-          new AppendOnlyCollection<>(
-            new LonLatDataType(),
-            new MappedMemory(coordinatesValsFile)));
+          )
+        );
     }
 
     var referencesKeysDir = Files.createFile(cacheDir.resolve("references_keys"));
     var referencesValuesDir = Files.createFile(cacheDir.resolve("references_vals"));
     var referenceMap =
-      new SortedLongVariableSizeDataMap<>(
-        new MemoryAlignedDataStore<>(
+      new MonotonicDataMap<>(
+              new AppendOnlyBuffer<>(
+                new LongListDataType(),
+                new MappedMemory(referencesValuesDir)), new MemoryAlignedDataList<>(
           new PairDataType<>(new LongDataType(), new LongDataType()),
           new MappedMemory(referencesKeysDir)
-        ),
-        new AppendOnlyCollection<>(
-          new LongListDataType(),
-          new MappedMemory(referencesValuesDir)));
+        )
+      );
 
     new ImportService(
       path,

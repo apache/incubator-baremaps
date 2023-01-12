@@ -15,7 +15,7 @@ package org.apache.baremaps.openstreetmap.function;
 
 
 import java.util.function.Consumer;
-import org.apache.baremaps.collection.LongMap;
+import org.apache.baremaps.collection.DataMap;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.locationtech.jts.geom.Coordinate;
@@ -23,14 +23,14 @@ import org.locationtech.jts.geom.Coordinate;
 /** A consumer that stores openstreetmap coordinates in a map. */
 public class CoordinateMapBuilder implements Consumer<Entity> {
 
-  private final LongMap<Coordinate> coordinateMap;
+  private final DataMap<Coordinate> coordinateMap;
 
   /**
    * Constructs a {@code CacheBlockConsumer} with the provided map.
    *
    * @param coordinateMap the map of coordinates
    */
-  public CoordinateMapBuilder(LongMap<Coordinate> coordinateMap) {
+  public CoordinateMapBuilder(DataMap<Coordinate> coordinateMap) {
     this.coordinateMap = coordinateMap;
   }
 

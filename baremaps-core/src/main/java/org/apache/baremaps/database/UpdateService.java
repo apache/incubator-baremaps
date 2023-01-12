@@ -21,7 +21,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.collection.LongMap;
+import org.apache.baremaps.collection.DataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
 import org.apache.baremaps.openstreetmap.function.ChangeEntitiesHandler;
@@ -37,15 +37,15 @@ import org.locationtech.jts.geom.Coordinate;
 
 public class UpdateService implements Callable<Void> {
 
-  private final LongMap<Coordinate> coordinateMap;
-  private final LongMap<List<Long>> referenceMap;
+  private final DataMap<Coordinate> coordinateMap;
+  private final DataMap<List<Long>> referenceMap;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
   private final Repository<Long, Relation> relationRepository;
   private final int srid;
 
-  public UpdateService(LongMap<Coordinate> coordinateMap, LongMap<List<Long>> referenceMap,
+  public UpdateService(DataMap<Coordinate> coordinateMap, DataMap<List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository,
       int srid) {

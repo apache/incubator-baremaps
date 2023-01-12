@@ -10,20 +10,18 @@
  * the License.
  */
 
-package org.apache.baremaps.collection.store;
+package org.apache.baremaps.collection;
 
 
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
-import org.apache.baremaps.collection.Cleanable;
 import org.apache.baremaps.collection.memory.Memory;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
 import org.apache.baremaps.collection.type.FixedSizeDataType;
 
-public class MemoryAlignedDataStore<T> implements DataStore<T>, Closeable, Cleanable {
+public class MemoryAlignedDataList<T> extends DataList<T> {
 
   private final FixedSizeDataType<T> dataType;
 
@@ -37,33 +35,30 @@ public class MemoryAlignedDataStore<T> implements DataStore<T>, Closeable, Clean
 
   private AtomicLong size;
 
-
   /**
    * Constructs a list.
    *
    * @param dataType the data type
-   * @param memory the memory
    */
-  public MemoryAlignedDataStore(FixedSizeDataType<T> dataType) {
+  public MemoryAlignedDataList(FixedSizeDataType<T> dataType) {
     this(dataType, new OffHeapMemory());
   }
 
-
   /**
    * Constructs a list.
    *
    * @param dataType the data type
    * @param memory the memory
    */
-  public MemoryAlignedDataStore(FixedSizeDataType<T> dataType, Memory memory) {
+  public MemoryAlignedDataList(FixedSizeDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
-      throw new DataStoreException("The segment size is too small for the data type");
+      throw new DataCollectionException("The segment size is too small for the data type");
     }
     if ((dataType.size() & -dataType.size()) != dataType.size()) {
       throw new IllegalArgumentException("The data type size must be a fixed power of 2");
     }
     if (memory.segmentSize() % dataType.size() != 0) {
-      throw new DataStoreException("The segment size and data type size must be aligned");
+      throw new DataCollectionException("The segment size and data type size must be aligned");
     }
     this.dataType = dataType;
     this.memory = memory;
@@ -82,15 +77,16 @@ public class MemoryAlignedDataStore<T> implements DataStore<T>, Closeable, Clean
   }
 
   /** {@inheritDoc} */
-  public long add(T value) {
+  public long append(T value) {
     long index = size.getAndIncrement();
     write(index, value);
     return index;
   }
 
+  /** {@inheritDoc} */
   public void set(long index, T value) {
     if (index >= size.get()) {
-      throw new IndexOutOfBoundsException();
+      size.set(index + 1);
     }
     write(index, value);
   }
@@ -105,19 +101,18 @@ public class MemoryAlignedDataStore<T> implements DataStore<T>, Closeable, Clean
   }
 
   /** {@inheritDoc} */
-  public long size() {
+  public long sizeAsLong() {
     return size.get();
   }
 
-  /** {@inheritDoc} */
   @Override
-  public void close() throws IOException {
-    memory.close();
+  public void clear() {
+    size.set(0);
+    try {
+      memory.clear();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
-  /** {@inheritDoc} */
-  @Override
-  public void clean() throws IOException {
-    memory.clean();
-  }
 }

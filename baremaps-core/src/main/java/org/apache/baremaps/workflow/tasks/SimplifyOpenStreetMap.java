@@ -29,10 +29,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.*;
+import org.apache.baremaps.collection.AppendOnlyBuffer;
+import org.apache.baremaps.collection.MemoryAlignedDataList;
 import org.apache.baremaps.collection.memory.MappedMemory;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
-import org.apache.baremaps.collection.store.AppendOnlyCollection;
-import org.apache.baremaps.collection.store.MemoryAlignedDataStore;
 import org.apache.baremaps.collection.type.*;
 import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.workflow.Task;
@@ -57,32 +57,32 @@ public record SimplifyOpenStreetMap(Path file, String database, Integer database
         var coordinatesKeysFile = Files.createFile(cacheDir.resolve("coordinates_keys"));
         var coordinatesValsFile = Files.createFile(cacheDir.resolve("coordinates_vals"));
         var coordinateMap =
-                new SortedLongVariableSizeDataMap<>(
-                        new MemoryAlignedDataStore<>(
+                new MonotonicDataMap<>(
+                        new AppendOnlyBuffer<>(
+                                new LonLatDataType(),
+                                new MappedMemory(coordinatesValsFile)), new MemoryAlignedDataList<>(
                                 new PairDataType<>(
                                         new LongDataType(),
                                         new LongDataType()
-                                ), new MappedMemory(coordinatesKeysFile)),
-                        new AppendOnlyCollection<>(
-                                new LonLatDataType(),
-                                new MappedMemory(coordinatesValsFile)));
+                                ), new MappedMemory(coordinatesKeysFile))
+                );
 
         var referencesKeysFile = Files.createFile(cacheDir.resolve("references_keys"));
         var referencesValuesFile = Files.createFile(cacheDir.resolve("references_vals"));
         var referenceMap =
-                new SortedLongVariableSizeDataMap<>(
-                        new MemoryAlignedDataStore<>(
+                new MonotonicDataMap<>(
+                        new AppendOnlyBuffer<>(
+                                new LongListDataType(),
+                                new MappedMemory(referencesValuesFile)), new MemoryAlignedDataList<>(
                                 new PairDataType<>(
                                         new LongDataType(),
                                         new LongDataType()
-                                ), new MappedMemory(referencesKeysFile)),
-                        new AppendOnlyCollection<>(
-                                new LongListDataType(),
-                                new MappedMemory(referencesValuesFile)));
+                                ), new MappedMemory(referencesKeysFile))
+                );
 
-        var collection = new IndexedLongMap<>(
-                new LongLongMap(new OffHeapMemory()),
-                new AppendOnlyCollection<>(new GeometryDataType(), new OffHeapMemory()));
+        var collection = new IndexedDataMap<>(
+                new LongDataMap(new OffHeapMemory()),
+                new AppendOnlyBuffer<>(new GeometryDataType(), new OffHeapMemory()));
 
 
 //        new PbfEntityReader(

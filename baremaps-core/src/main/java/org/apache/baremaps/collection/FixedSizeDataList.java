@@ -10,19 +10,17 @@
  * the License.
  */
 
-package org.apache.baremaps.collection.store;
+package org.apache.baremaps.collection;
 
 
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
-import org.apache.baremaps.collection.Cleanable;
 import org.apache.baremaps.collection.memory.Memory;
 import org.apache.baremaps.collection.type.FixedSizeDataType;
 
-public class FixedSizeDataStore<T> implements DataStore<T>, Closeable, Cleanable {
+public class FixedSizeDataList<T> extends DataList<T> {
 
   private final FixedSizeDataType<T> dataType;
 
@@ -36,9 +34,9 @@ public class FixedSizeDataStore<T> implements DataStore<T>, Closeable, Cleanable
    * @param dataType the data type
    * @param memory the memory
    */
-  public FixedSizeDataStore(FixedSizeDataType<T> dataType, Memory memory) {
+  public FixedSizeDataList(FixedSizeDataType<T> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
-      throw new DataStoreException("The segment size is too small for the data type");
+      throw new DataCollectionException("The segment size is too small for the data type");
     }
     this.dataType = dataType;
     this.memory = memory;
@@ -57,15 +55,18 @@ public class FixedSizeDataStore<T> implements DataStore<T>, Closeable, Cleanable
    * {@inheritDoc}
    */
   @Override
-  public long add(T value) {
+  public long append(T value) {
     long index = size.getAndIncrement();
     write(index, value);
     return index;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void set(long index, T value) {
-    if (index >= size.get()) {
+    if (index >= sizeAsLong()) {
       throw new IndexOutOfBoundsException();
     }
     write(index, value);
@@ -87,7 +88,7 @@ public class FixedSizeDataStore<T> implements DataStore<T>, Closeable, Cleanable
    * {@inheritDoc}
    */
   @Override
-  public long size() {
+  public long sizeAsLong() {
     return size.get();
   }
 
@@ -95,15 +96,11 @@ public class FixedSizeDataStore<T> implements DataStore<T>, Closeable, Cleanable
    * {@inheritDoc}
    */
   @Override
-  public void close() throws IOException {
-    memory.close();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public void clean() throws IOException {
-    memory.clean();
+  public void clear() {
+    try {
+      memory.clear();
+    } catch (IOException e) {
+      throw new DataCollectionException(e);
+    }
   }
 }

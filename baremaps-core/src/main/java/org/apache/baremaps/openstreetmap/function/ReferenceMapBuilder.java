@@ -16,21 +16,21 @@ package org.apache.baremaps.openstreetmap.function;
 
 import java.util.List;
 import java.util.function.Consumer;
-import org.apache.baremaps.collection.LongMap;
+import org.apache.baremaps.collection.DataMap;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Way;
 
 /** A consumer that stores openstreetmap references in a map. */
 public class ReferenceMapBuilder implements Consumer<Entity> {
 
-  private final LongMap<List<Long>> referenceMap;
+  private final DataMap<List<Long>> referenceMap;
 
   /**
    * Constructs a {@code CacheBlockConsumer} with the provided map.
    *
    * @param referenceMap the map of references
    */
-  public ReferenceMapBuilder(LongMap<List<Long>> referenceMap) {
+  public ReferenceMapBuilder(DataMap<List<Long>> referenceMap) {
     this.referenceMap = referenceMap;
   }
 

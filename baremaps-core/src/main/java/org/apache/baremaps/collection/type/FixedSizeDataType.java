@@ -60,4 +60,5 @@ public abstract class FixedSizeDataType<T> implements DataType<T> {
   public int size() {
     return size;
   }
+
 }

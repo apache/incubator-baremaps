@@ -17,7 +17,7 @@ import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Stream;
-import org.apache.baremaps.collection.LongMap;
+import org.apache.baremaps.collection.DataMap;
 import org.apache.baremaps.openstreetmap.OsmReader;
 import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Block;
@@ -33,9 +33,9 @@ public class PbfBlockReader implements OsmReader<Block> {
 
   private int srid = 4326;
 
-  private LongMap<Coordinate> coordinateMap;
+  private DataMap<Coordinate> coordinateMap;
 
-  private LongMap<List<Long>> referenceMap;
+  private DataMap<List<Long>> referenceMap;
 
   /**
    * Gets the number of blobs buffered by the parser to parallelize deserialization.
@@ -102,7 +102,7 @@ public class PbfBlockReader implements OsmReader<Block> {
    *
    * @return the map of coordinates
    */
-  public LongMap<Coordinate> coordinateMap() {
+  public DataMap<Coordinate> coordinateMap() {
     return coordinateMap;
   }
 
@@ -112,7 +112,7 @@ public class PbfBlockReader implements OsmReader<Block> {
    * @param coordinateMap the map of coordinates
    * @return the parser
    */
-  public PbfBlockReader coordinateMap(LongMap<Coordinate> coordinateMap) {
+  public PbfBlockReader coordinateMap(DataMap<Coordinate> coordinateMap) {
     this.coordinateMap = coordinateMap;
     return this;
   }
@@ -122,7 +122,7 @@ public class PbfBlockReader implements OsmReader<Block> {
    *
    * @return the map of references
    */
-  public LongMap<List<Long>> referenceMap() {
+  public DataMap<List<Long>> referenceMap() {
     return referenceMap;
   }
 
@@ -132,7 +132,7 @@ public class PbfBlockReader implements OsmReader<Block> {
    * @param referenceMap the map of references
    * @return the parser
    */
-  public PbfBlockReader referenceMap(LongMap<List<Long>> referenceMap) {
+  public PbfBlockReader referenceMap(DataMap<List<Long>> referenceMap) {
     this.referenceMap = referenceMap;
     return this;
   }

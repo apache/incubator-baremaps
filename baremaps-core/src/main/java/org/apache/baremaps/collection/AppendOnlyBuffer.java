@@ -10,26 +10,24 @@
  * the License.
  */
 
-package org.apache.baremaps.collection.store;
+package org.apache.baremaps.collection;
 
 
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.AbstractCollection;
 import java.util.Iterator;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import org.apache.baremaps.collection.Cleanable;
 import org.apache.baremaps.collection.memory.Memory;
+import org.apache.baremaps.collection.memory.OffHeapMemory;
 import org.apache.baremaps.collection.type.DataType;
 
 /**
  * A data log backed by a {@link DataType} and a {@link Memory}. Elements are appended to the store
  * and can be accessed by their position in the {@link Memory}.
  */
-public class AppendOnlyCollection<T> extends AbstractCollection<T> implements Closeable, Cleanable {
+public class AppendOnlyBuffer<T> extends DataList<T> {
 
   private final DataType<T> dataType;
   private final Memory memory;
@@ -40,12 +38,21 @@ public class AppendOnlyCollection<T> extends AbstractCollection<T> implements Cl
   private Lock lock = new ReentrantLock();
 
   /**
-   * Constructs a data store.
+   * Constructs a data list.
+   *
+   * @param dataType the data type
+   */
+  public AppendOnlyBuffer(DataType<T> dataType) {
+    this(dataType, new OffHeapMemory());
+  }
+
+  /**
+   * Constructs a data list.
    *
    * @param dataType the data type
    * @param memory the memory
    */
-  public AppendOnlyCollection(DataType<T> dataType, Memory memory) {
+  public AppendOnlyBuffer(DataType<T> dataType, Memory memory) {
     this.dataType = dataType;
     this.memory = memory;
     this.segmentSize = memory.segmentSize();
@@ -59,10 +66,11 @@ public class AppendOnlyCollection<T> extends AbstractCollection<T> implements Cl
    * @param value the value
    * @return the position of the value in the memory.
    */
+  @Override
   public long append(T value) {
     int valueSize = dataType.size(value);
     if (valueSize > segmentSize) {
-      throw new DataStoreException("The value is too big to fit in a segment");
+      throw new DataCollectionException("The value is too big to fit in a segment");
     }
 
     lock.lock();
@@ -90,7 +98,7 @@ public class AppendOnlyCollection<T> extends AbstractCollection<T> implements Cl
    * @param position the position of the value
    * @return the value
    */
-  public T read(long position) {
+  public T get(long position) {
     long segmentIndex = position / segmentSize;
     long segmentOffset = position % segmentSize;
     ByteBuffer buffer = memory.segment((int) segmentIndex);
@@ -108,14 +116,12 @@ public class AppendOnlyCollection<T> extends AbstractCollection<T> implements Cl
 
   /** {@inheritDoc} */
   @Override
-  public void clean() throws IOException {
-    memory.clean();
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void close() throws IOException {
-    memory.close();
+  public void clear() {
+    try {
+      memory.clear();
+    } catch (IOException e) {
+      throw new DataCollectionException(e);
+    }
   }
 
   /**
@@ -125,6 +131,11 @@ public class AppendOnlyCollection<T> extends AbstractCollection<T> implements Cl
   public boolean add(T value) {
     append(value);
     return true;
+  }
+
+  @Override
+  public void set(long index, T value) {
+    throw new UnsupportedOperationException();
   }
 
   /**
@@ -140,6 +151,7 @@ public class AppendOnlyCollection<T> extends AbstractCollection<T> implements Cl
    */
   @Override
   public Iterator<T> iterator() {
+    final long size = sizeAsLong();
     return new Iterator<>() {
 
       private long position = 0;
