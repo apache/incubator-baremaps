@@ -21,7 +21,7 @@ import org.apache.baremaps.collection.type.IntegerDataType;
 import org.apache.baremaps.collection.type.IntegerListDataType;
 import org.junit.jupiter.api.Test;
 
-class AppendStoreTest {
+class AppendOnlyBufferTest {
 
   @Test
   void addFixedSizeData() {

@@ -98,7 +98,7 @@ public class MemoryAlignedDataMap<T> extends DataMap<T> {
 
   @Override
   public boolean containsValue(Object value) {
-    return false;
+    return values().contains(value);
   }
 
   @Override

@@ -45,7 +45,7 @@ public class IndexedDataMap<T> extends DataMap<T> {
   @Override
   public T get(Object key) {
     var position = index.get(key);
-    return store.get(position);
+    return position == null ? null : store.get(position);
   }
 
   @Override
@@ -60,10 +60,10 @@ public class IndexedDataMap<T> extends DataMap<T> {
 
   @Override
   protected Iterator<Entry<Long, T>> entryIterator() {
-    return Streams.stream(keyIterator()).map(this::entry).iterator();
+    return Streams.stream(keyIterator()).map(this::entryV).iterator();
   }
 
-  private Entry<Long, T> entry(long key) {
+  private Entry<Long, T> entryV(long key) {
     return new Entry() {
       @Override
       public Long getKey() {
