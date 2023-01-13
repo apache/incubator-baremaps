@@ -101,6 +101,7 @@ public class MemoryAlignedDataList<T> extends DataList<T> {
   }
 
   /** {@inheritDoc} */
+  @Override
   public long sizeAsLong() {
     return size.get();
   }

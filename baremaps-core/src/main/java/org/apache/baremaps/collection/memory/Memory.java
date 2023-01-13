@@ -97,6 +97,11 @@ public abstract class Memory<T extends ByteBuffer> implements Closeable {
     return segment;
   }
 
+  /** Returns the size of the allocated memory. */
+  public long size() {
+    return (long) segments.size() * (long) segmentSize;
+  }
+
   /**
    * Allocates a segment for a given index and size.
    *
@@ -110,4 +115,7 @@ public abstract class Memory<T extends ByteBuffer> implements Closeable {
    * Clears the memory and the underlying resources.
    */
   public abstract void clear() throws IOException;
+
+
+
 }

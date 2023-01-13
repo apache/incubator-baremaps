@@ -18,10 +18,10 @@ import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import org.apache.baremaps.collection.DataCollectionException;
-import org.apache.baremaps.collection.utils.FileUtils;
 import org.apache.baremaps.collection.utils.MappedByteBufferUtils;
 
 /** A memory that stores segments on-disk using mapped byte buffers in a file. */
@@ -65,14 +65,16 @@ public class MappedMemory extends Memory<MappedByteBuffer> {
   /** {@inheritDoc} */
   @Override
   public void close() throws IOException {
-    MappedByteBufferUtils.unmap(segments);
+    for (MappedByteBuffer buffer : segments) {
+      MappedByteBufferUtils.unmap(buffer);
+    }
   }
 
   /** {@inheritDoc} */
   @Override
   public void clear() throws IOException {
-    MappedByteBufferUtils.unmap(segments);
+    close();
     segments.clear();
-    FileUtils.deleteRecursively(file);
+    Files.delete(file);
   }
 }

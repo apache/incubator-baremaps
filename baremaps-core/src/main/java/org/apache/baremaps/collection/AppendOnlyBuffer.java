@@ -17,6 +17,7 @@ package org.apache.baremaps.collection;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.apache.baremaps.collection.memory.Memory;
@@ -154,19 +155,25 @@ public class AppendOnlyBuffer<T> extends DataList<T> {
     final long size = sizeAsLong();
     return new Iterator<>() {
 
+      private long index = 0;
+
       private long position = 0;
 
       @Override
       public boolean hasNext() {
-        return position < size;
+        return index < size;
       }
 
       @Override
       public T next() {
+        if (!hasNext()) {
+          throw new NoSuchElementException();
+        }
         long segmentIndex = position / segmentSize;
         long segmentOffset = position % segmentSize;
         ByteBuffer buffer = memory.segment((int) segmentIndex);
         position += dataType.size(buffer, (int) segmentOffset);
+        index++;
         return dataType.read(buffer, (int) segmentOffset);
       }
     };

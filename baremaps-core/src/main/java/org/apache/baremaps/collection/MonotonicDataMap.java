@@ -138,8 +138,8 @@ public class MonotonicDataMap<T> extends DataMap<T> {
   }
 
   @Override
-  public int size() {
-    return keys.size();
+  public long sizeAsLong() {
+    return keys.sizeAsLong();
   }
 
   @Override

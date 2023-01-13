@@ -83,13 +83,17 @@ public class IndexedDataMap<T> extends DataMap<T> {
   }
 
   @Override
-  public int size() {
-    return index.size();
+  public boolean isEmpty() {
+    return index.isEmpty();
   }
 
   @Override
-  public boolean isEmpty() {
-    return index.isEmpty();
+  public long sizeAsLong() {
+    if (index instanceof DataMap<Long> dataMap) {
+      return dataMap.sizeAsLong();
+    } else {
+      return index.size();
+    }
   }
 
   @Override

@@ -50,7 +50,10 @@ public class LongDataMapBenchmark {
       store.put(i, i);
     }
     for (long i = 0; i < n; i++) {
-      store.get(i);
+      long v = store.get(i);
+      if (v != i) {
+        throw new RuntimeException("Invalid value");
+      }
     }
   }
 

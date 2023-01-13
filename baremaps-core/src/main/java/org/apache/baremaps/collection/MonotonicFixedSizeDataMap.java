@@ -88,7 +88,7 @@ public class MonotonicFixedSizeDataMap<T> extends DataMap<T> {
     long size = keys.sizeAsLong();
     long chunk = key >>> 8;
     if (chunk != lastChunk) {
-      while (offsets.size() <= chunk) {
+      while (offsets.sizeAsLong() <= chunk) {
         offsets.add(size);
       }
       lastChunk = chunk;
@@ -112,8 +112,8 @@ public class MonotonicFixedSizeDataMap<T> extends DataMap<T> {
    * {@inheritDoc}
    */
   @Override
-  public int size() {
-    return keys.size();
+  public long sizeAsLong() {
+    return keys.sizeAsLong();
   }
 
   /**

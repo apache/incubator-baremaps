@@ -16,6 +16,7 @@ package org.apache.baremaps.collection.utils;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import org.apache.baremaps.collection.DataList;
 
 public class CollectionAdapter<T> implements Collection<T> {
@@ -56,6 +57,8 @@ public class CollectionAdapter<T> implements Collection<T> {
 
       private long index = 0;
 
+      private long size = dataList.sizeAsLong();
+
       @Override
       public boolean hasNext() {
         return index < dataList.sizeAsLong();
@@ -63,6 +66,9 @@ public class CollectionAdapter<T> implements Collection<T> {
 
       @Override
       public T next() {
+        if (!hasNext()) {
+          throw new NoSuchElementException();
+        }
         return dataList.get(index++);
       }
     };

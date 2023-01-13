@@ -80,12 +80,12 @@ public class PostgresReferenceMap extends DataMap<List<Long>> {
   }
 
   @Override
-  public int size() {
+  public long sizeAsLong() {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_SIZE)) {
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
-          return result.getInt(1);
+          return result.getLong(1);
         } else {
           throw new DataCollectionException();
         }

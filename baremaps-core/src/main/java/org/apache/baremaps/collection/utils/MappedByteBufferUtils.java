@@ -19,7 +19,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.MappedByteBuffer;
-import java.util.List;
 
 /** Utilities for working with memory-mapped files. */
 public class MappedByteBufferUtils {
@@ -27,10 +26,10 @@ public class MappedByteBufferUtils {
   /**
    * Attempt to force-unmap a list of memory-mapped file segments, so it can safely be deleted.
    *
-   * @param segments The segments to unmap
+   * @param buffer The buffer to unmap
    * @throws IOException If any error occurs unmapping the segment
    */
-  public static void unmap(List<MappedByteBuffer> segments) throws IOException {
+  public static void unmap(MappedByteBuffer buffer) throws IOException {
     try {
       // attempt to force-unmap the file, so we can delete it later
       // https://stackoverflow.com/questions/2972986/how-to-unmap-a-file-from-memory-mapped-using-filechannel-in-java
@@ -45,11 +44,9 @@ public class MappedByteBufferUtils {
       Field theUnsafeField = unsafeClass.getDeclaredField("theUnsafe");
       theUnsafeField.setAccessible(true);
       Object theUnsafe = theUnsafeField.get(null);
-      for (MappedByteBuffer buffer : segments) {
-        if (buffer != null) {
-          buffer.force();
-          clean.invoke(theUnsafe, buffer);
-        }
+      if (buffer != null) {
+        buffer.force();
+        clean.invoke(theUnsafe, buffer);
       }
     } catch (Exception e) {
       // failed to unmap, but we can still delete the file

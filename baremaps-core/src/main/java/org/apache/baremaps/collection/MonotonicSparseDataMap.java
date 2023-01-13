@@ -14,10 +14,12 @@ package org.apache.baremaps.collection;
 
 
 
+import com.google.common.collect.Streams;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -102,7 +104,7 @@ public class MonotonicSparseDataMap<T> extends DataMap<T> {
 
   @Override
   protected Iterator<Long> keyIterator() {
-    return new Iterator<Long>() {
+    return new Iterator<>() {
       int currentChunk = 0;
       int currentOffset = offsetStartPad.getByte(0) & 255;
 
@@ -135,12 +137,16 @@ public class MonotonicSparseDataMap<T> extends DataMap<T> {
 
   @Override
   protected Iterator<Entry<Long, T>> entryIterator() {
-    return null;
+    return Streams.zip(
+        Streams.stream(keyIterator()),
+        Streams.stream(valueIterator()),
+        Map::entry)
+        .iterator();
   }
 
   @Override
-  public int size() {
-    return values.size();
+  public long sizeAsLong() {
+    return values.sizeAsLong();
   }
 
   @Override

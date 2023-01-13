@@ -16,6 +16,8 @@ package org.apache.baremaps.collection;
 
 import java.nio.ByteBuffer;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import org.apache.baremaps.collection.memory.Memory;
 import org.apache.baremaps.collection.type.FixedSizeDataType;
 
@@ -71,31 +73,6 @@ public class MemoryAlignedDataMap<T> extends DataMap<T> {
     return previous;
   }
 
-  @Override
-  public T remove(Object key) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void clear() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public int size() {
-    return 0;
-  }
-
-  @Override
-  public boolean containsKey(Object key) {
-    return false;
-  }
-
-  @Override
-  public boolean containsValue(Object value) {
-    return false;
-  }
-
   /** {@inheritDoc} */
   public T get(Object key) {
     long position = (long) key << valueShift;
@@ -106,17 +83,101 @@ public class MemoryAlignedDataMap<T> extends DataMap<T> {
   }
 
   @Override
+  public T remove(Object key) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean containsKey(Object keyObject) {
+    if (keyObject instanceof Long key) {
+      return key >= 0 && key < size();
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public boolean containsValue(Object value) {
+    return false;
+  }
+
+  @Override
+  public long sizeAsLong() {
+    return memory.size() / dataType.size();
+  }
+
+  @Override
+  public void clear() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   protected Iterator<Long> keyIterator() {
-    return null;
+    return new Iterator<>() {
+
+      private long index = 0;
+
+      private long size = sizeAsLong();
+
+      @Override
+      public boolean hasNext() {
+        return index < size;
+      }
+
+      @Override
+      public Long next() {
+        if (!hasNext()) {
+          throw new NoSuchElementException();
+        }
+        return index++;
+      }
+    };
   }
 
   @Override
   protected Iterator<T> valueIterator() {
-    return null;
+    return new Iterator<>() {
+
+      private long index = 0;
+
+      private long size = sizeAsLong();
+
+      @Override
+      public boolean hasNext() {
+        return index < size;
+      }
+
+      @Override
+      public T next() {
+        if (!hasNext()) {
+          throw new NoSuchElementException();
+        }
+        return get(index++);
+      }
+    };
   }
 
   @Override
   protected Iterator<Entry<Long, T>> entryIterator() {
-    return null;
+    return new Iterator<>() {
+
+      private long index = 0;
+
+      private long size = sizeAsLong();
+
+      @Override
+      public boolean hasNext() {
+        return index < size;
+      }
+
+      @Override
+      public Entry<Long, T> next() {
+        if (!hasNext()) {
+          throw new NoSuchElementException();
+        }
+        long key = index++;
+        return Map.entry(key, get(key));
+      }
+    };
   }
 }

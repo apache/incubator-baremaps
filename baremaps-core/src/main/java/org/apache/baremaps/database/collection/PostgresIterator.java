@@ -17,6 +17,7 @@ package org.apache.baremaps.database.collection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import org.apache.baremaps.collection.DataCollectionException;
 
@@ -46,6 +47,9 @@ class PostgresIterator<T> implements Iterator<T> {
 
   @Override
   public T next() {
+    if (!hasNext()) {
+      throw new NoSuchElementException();
+    }
     return mapper.apply(resultSet);
   }
 }

@@ -43,7 +43,7 @@ public class MockDataMap<T> extends DataMap<T> {
   }
 
   @Override
-  public int size() {
+  public long sizeAsLong() {
     return values.size();
   }
 

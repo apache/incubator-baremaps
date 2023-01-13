@@ -33,6 +33,12 @@ public abstract class DataMap<T> implements Map<Long, T> {
     return size() == 0;
   }
 
+  public abstract long sizeAsLong();
+
+  public int size() {
+    return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
+  }
+
   protected abstract Iterator<Long> keyIterator();
 
   @Override
@@ -87,32 +93,6 @@ public abstract class DataMap<T> implements Map<Long, T> {
     @Override
     public int size() {
       return DataMap.this.size();
-    }
-  }
-
-  private class SimpleEntry implements Map.Entry<Long, T> {
-
-    private final long key;
-
-    private SimpleEntry(long key) {
-      this.key = key;
-    }
-
-    @Override
-    public Long getKey() {
-      return key;
-    }
-
-    @Override
-    public T getValue() {
-      return DataMap.this.get(key);
-    }
-
-    @Override
-    public T setValue(T value) {
-      var oldValue = DataMap.this.get(key);
-      DataMap.this.put(key, value);
-      return oldValue;
     }
   }
 }

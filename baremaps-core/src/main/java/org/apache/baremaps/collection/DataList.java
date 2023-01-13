@@ -16,6 +16,7 @@ package org.apache.baremaps.collection;
 
 import java.util.AbstractCollection;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public abstract class DataList<T> extends AbstractCollection<T> {
 
@@ -34,9 +35,9 @@ public abstract class DataList<T> extends AbstractCollection<T> {
 
   public abstract T get(long index);
 
-  public abstract long sizeAsLong();
-
   public abstract void clear();
+
+  public abstract long sizeAsLong();
 
   public int size() {
     return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
@@ -44,22 +45,24 @@ public abstract class DataList<T> extends AbstractCollection<T> {
 
   @Override
   public Iterator<T> iterator() {
-    return new Iter();
-  }
+    return new Iterator<T>() {
 
-  private class Iter implements Iterator<T> {
-    private long index = 0;
+      private long index = 0;
 
-    private long size = sizeAsLong();
+      private long size = sizeAsLong();
 
-    @Override
-    public boolean hasNext() {
-      return index < size;
-    }
+      @Override
+      public boolean hasNext() {
+        return index < size;
+      }
 
-    @Override
-    public T next() {
-      return get(index++);
-    }
+      @Override
+      public T next() {
+        if (!hasNext()) {
+          throw new NoSuchElementException();
+        }
+        return get(index++);
+      }
+    };
   }
 }
