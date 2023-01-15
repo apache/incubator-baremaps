@@ -86,12 +86,12 @@ public class MonotonicDataMap<E> extends DataMap<E> {
     long chunk = key >>> 8;
     if (chunk != lastChunk) {
       while (offsets.sizeAsLong() <= chunk) {
-        offsets.addIndexed(index);
+        offsets.add(index);
       }
       lastChunk = chunk;
     }
     long position = values.addPositioned(value);
-    keys.addIndexed(new Pair<>(key, position));
+    keys.add(new Pair<>(key, position));
     return value;
   }
 

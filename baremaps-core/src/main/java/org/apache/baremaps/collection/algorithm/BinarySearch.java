@@ -32,7 +32,7 @@ public class BinarySearch {
    * @param <E> the type of the elements in the list
    */
   public static <E> Long binarySearch(DataList<E> list, E value, Comparator<E> comparator) {
-    return binarySearch(list, value, comparator, 0, list.size() - 1);
+    return binarySearch(list, value, comparator, 0, list.sizeAsLong() - 1l);
   }
 
   /**
