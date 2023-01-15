@@ -166,6 +166,8 @@ class DataMapTest {
                 new MemoryAlignedDataList<>(
                     new PairDataType<>(new LongDataType(), new LongDataType()),
                     new OffHeapMemory()),
-                new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()))));
+                new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()))),
+            Arguments.of(new MonotonicPairedDataMap<>(new MemoryAlignedDataList<>(
+                new PairDataType<>(new LongDataType(), new LongDataType())))));
   }
 }

@@ -24,8 +24,6 @@ import org.apache.baremaps.collection.type.LongDataType;
  * their key and inserted in a monotonic way. The elements cannot be removed or updated once
  * inserted.
  *
- * Data lists are used to access data elements efficiently.
- *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
  *
