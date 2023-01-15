@@ -16,10 +16,15 @@ package org.apache.baremaps.collection;
 
 import com.google.common.collect.Streams;
 import java.util.Iterator;
+import java.util.Map;
 import org.apache.baremaps.collection.type.LongDataType;
 
 /**
- * A sorted map of data backed by {@link DataList}s for storing keys and values.
+ * A map that can hold a large number of fixed-size data elements. The elements must be sorted by
+ * their key and inserted in a monotonic way. The elements cannot be removed or updated once
+ * inserted.
+ *
+ * Data lists are used to access data elements efficiently.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
@@ -27,14 +32,19 @@ import org.apache.baremaps.collection.type.LongDataType;
  * <p>
  * Copyright (c) Planetiler.
  */
-public class MonotonicFixedSizeDataMap<T> extends DataMap<T> {
+public class MonotonicFixedSizeDataMap<E> extends DataMap<E> {
 
   private final DataList<Long> offsets;
   private final DataList<Long> keys;
-  private final DataList<T> values;
+  private final DataList<E> values;
   private long lastChunk = -1;
 
-  public MonotonicFixedSizeDataMap(DataList<T> values) {
+  /**
+   * Constructs a map with default lists for storing offsets and keys.
+   *
+   * @param values the list of values
+   */
+  public MonotonicFixedSizeDataMap(DataList<E> values) {
     this(new MemoryAlignedDataList<>(new LongDataType()),
         new MemoryAlignedDataList<>(new LongDataType()), values);
   }
@@ -42,23 +52,21 @@ public class MonotonicFixedSizeDataMap<T> extends DataMap<T> {
   /**
    * Constructs a map.
    *
+   * @param offsets the list of offsets
    * @param keys the list of keys
    * @param values the list of values
    */
   public MonotonicFixedSizeDataMap(
       DataList<Long> offsets,
       DataList<Long> keys,
-      DataList<T> values) {
+      DataList<E> values) {
     this.offsets = offsets;
     this.keys = keys;
     this.values = values;
   }
 
-
-  /**
-   * {@inheritDoc}
-   */
-  public T get(Object keyObject) {
+  /** {@inheritDoc} */
+  public E get(Object keyObject) {
     long key = (long) keyObject;
     long chunk = key >>> 8;
     if (chunk >= offsets.size()) {
@@ -81,10 +89,8 @@ public class MonotonicFixedSizeDataMap<T> extends DataMap<T> {
     return null;
   }
 
-  /**
-   * {@inheritDoc}
-   */
-  public T put(Long key, T value) {
+  /** {@inheritDoc} */
+  public E put(Long key, E value) {
     long size = keys.sizeAsLong();
     long chunk = key >>> 8;
     if (chunk != lastChunk) {
@@ -98,80 +104,52 @@ public class MonotonicFixedSizeDataMap<T> extends DataMap<T> {
     return null;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
-  public T remove(Object key) {
+  public E remove(Object key) {
     throw new UnsupportedOperationException();
   }
 
-
-
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public long sizeAsLong() {
     return keys.sizeAsLong();
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean containsKey(Object key) {
     return keys.contains(key);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public boolean containsValue(Object value) {
     return values.contains(value);
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Iterator<Long> keyIterator() {
     return keys.iterator();
   }
 
+  /** {@inheritDoc} */
   @Override
-  protected Iterator<T> valueIterator() {
+  protected Iterator<E> valueIterator() {
     return values.iterator();
   }
 
+  /** {@inheritDoc} */
   @Override
-  protected Iterator<Entry<Long, T>> entryIterator() {
+  protected Iterator<Entry<Long, E>> entryIterator() {
     return Streams.zip(
         Streams.stream(keyIterator()),
         Streams.stream(valueIterator()),
-        this::newEntry).iterator();
+        (k, v) -> Map.entry(k, v)).iterator();
   }
 
-  private Entry<Long, T> newEntry(Long key, T value) {
-    return new Entry<Long, T>() {
-      @Override
-      public Long getKey() {
-        return key;
-      }
-
-      @Override
-      public T getValue() {
-        return value;
-      }
-
-      @Override
-      public T setValue(T value) {
-        throw new UnsupportedOperationException();
-      }
-    };
-  }
-
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void clear() {
     offsets.clear();

@@ -17,30 +17,55 @@ package org.apache.baremaps.collection;
 import com.google.common.collect.Streams;
 import java.util.*;
 
-public abstract class DataMap<T> implements Map<Long, T> {
+/**
+ * An abstract map of data elements that can hold a large number of elements.
+ *
+ * @param <E> The type of the elements.
+ */
+public abstract class DataMap<E> implements Map<Long, E> {
 
+  /** {@inheritDoc} */
   @Override
-  public void putAll(Map<? extends Long, ? extends T> m) {
+  public void putAll(Map<? extends Long, ? extends E> m) {
     m.forEach(this::put);
   }
 
-  public List<T> getAll(List<Long> keys) {
+  /**
+   * Returns the value associated with the specified key or null if the key is not present.
+   *
+   * @param keys the keys
+   * @return the values
+   */
+  public List<E> getAll(List<Long> keys) {
     return Streams.stream(keys).map(this::get).toList();
   }
 
+  /** {@inheritDoc} */
   @Override
   public boolean isEmpty() {
     return size() == 0;
   }
 
+  /**
+   * Returns the size of the map as a long.
+   *
+   * @return the size of the map
+   */
   public abstract long sizeAsLong();
 
+  /** {@inheritDoc} */
   public int size() {
     return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
   }
 
+  /**
+   * Returns an iterator over the keys of the map.
+   *
+   * @return an iterator
+   */
   protected abstract Iterator<Long> keyIterator();
 
+  /** {@inheritDoc} */
   @Override
   public Set<Long> keySet() {
     return new KeySet();
@@ -58,16 +83,22 @@ public abstract class DataMap<T> implements Map<Long, T> {
     }
   }
 
-  protected abstract Iterator<T> valueIterator();
+  /**
+   * Returns an iterator over the values of the map.
+   *
+   * @return an iterator
+   */
+  protected abstract Iterator<E> valueIterator();
 
+  /** {@inheritDoc} */
   @Override
-  public Collection<T> values() {
+  public Collection<E> values() {
     return new ValueCollection();
   }
 
-  private class ValueCollection extends AbstractCollection<T> {
+  private class ValueCollection extends AbstractCollection<E> {
     @Override
-    public Iterator<T> iterator() {
+    public Iterator<E> iterator() {
       return valueIterator();
     }
 
@@ -77,16 +108,22 @@ public abstract class DataMap<T> implements Map<Long, T> {
     }
   }
 
-  protected abstract Iterator<Entry<Long, T>> entryIterator();
+  /**
+   * Returns an iterator over the entries of the map.
+   *
+   * @return an iterator
+   */
+  protected abstract Iterator<Entry<Long, E>> entryIterator();
 
+  /** {@inheritDoc} */
   @Override
-  public Set<Entry<Long, T>> entrySet() {
+  public Set<Entry<Long, E>> entrySet() {
     return new EntrySet();
   }
 
-  private class EntrySet extends AbstractSet<Entry<Long, T>> {
+  private class EntrySet extends AbstractSet<Entry<Long, E>> {
     @Override
-    public Iterator<Entry<Long, T>> iterator() {
+    public Iterator<Entry<Long, E>> iterator() {
       return entryIterator();
     }
 

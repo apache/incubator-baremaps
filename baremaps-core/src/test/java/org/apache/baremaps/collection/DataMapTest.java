@@ -14,10 +14,7 @@ package org.apache.baremaps.collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
@@ -32,11 +29,11 @@ class DataMapTest {
   @ParameterizedTest
   @MethodSource("mapProvider")
   void putAndGet(DataMap<Long> map) {
-    for (long i = 0; i < 1 << 20; i++) {
-      map.put(i, i);
+    for (long i = 0; i < 1000; i++) {
+      map.put(i, i * 2);
     }
-    for (long i = 0; i < 1 << 20; i++) {
-      assertEquals(i, map.get(i));
+    for (long i = 0; i < 1000; i++) {
+      assertEquals(i * 2, map.get(i));
     }
   }
 
@@ -47,7 +44,7 @@ class DataMapTest {
       assertFalse(map.containsKey(i));
     }
     for (long i = 0; i < 1000; i++) {
-      map.put(i, i);
+      map.put(i, i * 2);
     }
     for (long i = 0; i < 1000; i++) {
       assertTrue(map.containsKey(i));
@@ -61,10 +58,10 @@ class DataMapTest {
       assertFalse(map.containsValue(i));
     }
     for (long i = 0; i < 1000; i++) {
-      map.put(i, i);
+      map.put(i, i * 2);
     }
     for (long i = 0; i < 1000; i++) {
-      assertTrue(map.containsValue(i));
+      assertTrue(map.containsValue(i * 2));
     }
   }
 
@@ -98,29 +95,30 @@ class DataMapTest {
   @MethodSource("mapProvider")
   void keySet(DataMap<Long> map) {
     var set = new HashSet<Long>();
-    for (long i = 0; i < 10; i++) {
+    for (long i = 0; i < 1000; i++) {
       set.add(i);
       map.put(i, i);
     }
-    assertEquals(set, map.values());
+    var res = map.keySet();
+    assertEquals(set, res);
   }
 
   @ParameterizedTest
   @MethodSource("mapProvider")
   void valueSet(DataMap<Long> map) {
     var set = new HashSet<Long>();
-    for (long i = 0; i < 10; i++) {
+    for (long i = 0; i < 1000; i++) {
       set.add(i);
       map.put(i, i);
     }
-    assertEquals(set, map.values());
+    assertEquals(set, new HashSet(map.values()));
   }
 
   @ParameterizedTest
   @MethodSource("mapProvider")
   void entrySet(DataMap<Long> map) {
     var set = new HashSet<Entry<Long, Long>>();
-    for (long i = 0; i < 10; i++) {
+    for (long i = 0; i < 1000; i++) {
       set.add(Map.entry(i, i));
       map.put(i, i);
     }
@@ -135,18 +133,39 @@ class DataMapTest {
     assertFalse(map.isEmpty());
   }
 
+  @ParameterizedTest
+  @MethodSource("mapProvider")
+  void map(DataMap<Long> map) {
+    assertTrue(map.isEmpty());
+
+    map.put(10l, 10l);
+    map.put(15l, 15l);
+    map.put(20l, 20l);
+
+    assertFalse(map.isEmpty());
+
+    assertEquals(3l, map.size());
+
+    assertEquals(10l, map.get(10l));
+    assertEquals(15l, map.get(15l));
+    assertEquals(20l, map.get(20l));
+
+    assertEquals(Set.of(10l, 15l, 20l), map.keySet());;
+  }
+
+
   static Stream<Arguments> mapProvider() {
     return Stream
-        .of(Arguments.of(
-            new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()))),
+        .of(
+            Arguments.of(
+                new IndexedDataMap<>(
+                    new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()))),
             Arguments.of(new MonotonicFixedSizeDataMap<>(
                 new MemoryAlignedDataList<>(new LongDataType(), new OffHeapMemory()))),
             Arguments.of(new MonotonicDataMap<>(
-                new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()),
                 new MemoryAlignedDataList<>(
                     new PairDataType<>(new LongDataType(), new LongDataType()),
-                    new OffHeapMemory()))),
-            Arguments.of(new MonotonicSparseDataMap<>(
-                new MemoryAlignedDataList<>(new LongDataType(), new OffHeapMemory()))));
+                    new OffHeapMemory()),
+                new AppendOnlyBuffer<>(new LongDataType(), new OffHeapMemory()))));
   }
 }

@@ -20,6 +20,7 @@ import org.locationtech.jts.geom.Coordinate;
 /** A {@link DataType} for reading and writing {@link Coordinate}s in {@link ByteBuffer}s. */
 public class CoordinateDataType extends MemoryAlignedDataType<Coordinate> {
 
+  /** Constructs a {@link CoordinateDataType}. */
   public CoordinateDataType() {
     super(Double.BYTES * 2);
   }

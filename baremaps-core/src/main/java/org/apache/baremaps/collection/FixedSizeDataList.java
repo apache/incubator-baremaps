@@ -18,11 +18,19 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicLong;
 import org.apache.baremaps.collection.memory.Memory;
+import org.apache.baremaps.collection.memory.OffHeapMemory;
 import org.apache.baremaps.collection.type.FixedSizeDataType;
 
-public class FixedSizeDataList<T> extends DataList<T> {
+/**
+ * A list that can hold a large number of fixed size data elements.
+ *
+ * This list is backed by a memory that can be either heap, off-heap, or memory mapped.
+ *
+ * @param <E> The type of the elements.
+ */
+public class FixedSizeDataList<E> extends DataList<E> {
 
-  private final FixedSizeDataType<T> dataType;
+  private final FixedSizeDataType<E> dataType;
 
   private final Memory memory;
 
@@ -32,9 +40,18 @@ public class FixedSizeDataList<T> extends DataList<T> {
    * Constructs a list.
    *
    * @param dataType the data type
+   */
+  public FixedSizeDataList(FixedSizeDataType<E> dataType) {
+    this(dataType, new OffHeapMemory());
+  }
+
+  /**
+   * Constructs a list.
+   *
+   * @param dataType the data type
    * @param memory the memory
    */
-  public FixedSizeDataList(FixedSizeDataType<T> dataType, Memory memory) {
+  public FixedSizeDataList(FixedSizeDataType<E> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new DataCollectionException("The segment size is too small for the data type");
     }
@@ -43,7 +60,7 @@ public class FixedSizeDataList<T> extends DataList<T> {
     this.size = new AtomicLong(0);
   }
 
-  private void write(long index, T value) {
+  private void write(long index, E value) {
     long position = index * dataType.size();
     int segmentIndex = (int) (position / dataType.size());
     int segmentOffset = (int) (position % dataType.size());
@@ -55,7 +72,7 @@ public class FixedSizeDataList<T> extends DataList<T> {
    * {@inheritDoc}
    */
   @Override
-  public long append(T value) {
+  public long addIndexed(E value) {
     long index = size.getAndIncrement();
     write(index, value);
     return index;
@@ -65,7 +82,7 @@ public class FixedSizeDataList<T> extends DataList<T> {
    * {@inheritDoc}
    */
   @Override
-  public void set(long index, T value) {
+  public void set(long index, E value) {
     if (index >= sizeAsLong()) {
       throw new IndexOutOfBoundsException();
     }
@@ -76,7 +93,7 @@ public class FixedSizeDataList<T> extends DataList<T> {
    * {@inheritDoc}
    */
   @Override
-  public T get(long index) {
+  public E get(long index) {
     long position = index * dataType.size();
     int segmentIndex = (int) (position / dataType.size());
     int segmentOffset = (int) (position % dataType.size());
@@ -98,6 +115,7 @@ public class FixedSizeDataList<T> extends DataList<T> {
   @Override
   public void clear() {
     try {
+      size.set(0);
       memory.clear();
     } catch (IOException e) {
       throw new DataCollectionException(e);

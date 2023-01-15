@@ -10,31 +10,29 @@
  * the License.
  */
 
-package org.apache.baremaps.collection.type;
+package org.apache.baremaps.collection;
 
 
 
-import java.nio.ByteBuffer;
+import java.util.AbstractCollection;
 
 /**
- * A {@link DataType} for reading and writing integers in {@link ByteBuffer}s.
+ * A abstract collection of data elements that can hold a large number of elements.
+ *
+ * @param <E> The type of the data.
  */
-public class IntegerDataType extends MemoryAlignedDataType<Integer> {
+public abstract class DataCollection<E> extends AbstractCollection<E> {
 
-  /** Constructs a {@link IntegerDataType}. */
-  public IntegerDataType() {
-    super(Integer.BYTES);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void write(ByteBuffer buffer, int position, Integer value) {
-    buffer.putInt(position, value);
-  }
+  /**
+   * Returns the number of values stored in the data store.
+   *
+   * @return the number of values
+   */
+  public abstract long sizeAsLong();
 
   /** {@inheritDoc} */
-  @Override
-  public Integer read(ByteBuffer buffer, int position) {
-    return buffer.getInt(position);
+  public int size() {
+    return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
   }
+
 }

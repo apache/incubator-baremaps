@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.collection.sort;
+package org.apache.baremaps.collection.algorithm;
 
 
 
@@ -21,10 +21,7 @@ import java.util.stream.Stream;
 import org.apache.baremaps.collection.DataList;
 
 /**
- * External merge sort algorithm adapted
- *
- * <p>
- * This code has been adapted from
+ * An external merge sort algorithm adapted from
  * <a href="https://github.com/lemire/externalsortinginjava">externalsortinginjava</a> (public
  * domain).
  */
@@ -90,7 +87,7 @@ public class ExternalMergeSort {
       while (queue.size() > 0) {
         DataStack<T> stack = queue.poll();
         T value = stack.pop();
-        output.append(value);
+        output.addIndexed(value);
         ++counter;
         if (stack.empty()) {
           stack.close();
@@ -103,7 +100,7 @@ public class ExternalMergeSort {
       if (queue.size() > 0) {
         DataStack<T> stack = queue.poll();
         last = stack.pop();
-        output.append(last);
+        output.addIndexed(last);
         ++counter;
         if (stack.empty()) {
           stack.close();
@@ -116,7 +113,7 @@ public class ExternalMergeSort {
         T value = stack.pop();
         // Skip duplicate lines
         if (comparator.compare(value, last) != 0) {
-          output.append(value);
+          output.addIndexed(value);
           last = value;
         }
         ++counter;
@@ -196,7 +193,50 @@ public class ExternalMergeSort {
     if (distinct) {
       tmpStream = tmpStream.distinct();
     }
-    tmpStream.forEachOrdered(output::append);
+    tmpStream.forEachOrdered(output::addIndexed);
     return output;
+  }
+
+  /**
+   * A wrapper on top of a {@link DataList} which keeps the last data record in memory.
+   *
+   * @param <T>
+   */
+  static final class DataStack<T> implements AutoCloseable {
+
+    private DataList<T> list;
+
+    private Long index = 0l;
+
+    private T cache;
+
+    public DataStack(DataList<T> list) {
+      this.list = list;
+      reload();
+    }
+
+    public boolean empty() {
+      return this.index > list.sizeAsLong();
+    }
+
+    public T peek() {
+      return this.cache;
+    }
+
+    public T pop() {
+      T answer = peek(); // make a copy
+      reload();
+      return answer;
+    }
+
+    private void reload() {
+      this.cache = this.list.get(index);
+      index++;
+    }
+
+    @Override
+    public void close() {
+      this.list.clear();
+    }
   }
 }

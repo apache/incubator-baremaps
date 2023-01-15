@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 import org.apache.baremaps.collection.DataMap;
 import org.apache.baremaps.collection.MemoryAlignedDataMap;
-import org.apache.baremaps.collection.memory.MappedMemory;
+import org.apache.baremaps.collection.memory.MemoryMappedFile;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
 import org.apache.baremaps.collection.type.LongDataType;
@@ -79,7 +79,7 @@ public class LongDataMapBenchmark {
   @Measurement(iterations = 5)
   public void onDisk() throws IOException {
     Path file = Files.createTempFile(Paths.get("."), "baremaps_", ".tmp");
-    benchmark(new MemoryAlignedDataMap<>(new LongDataType(), new MappedMemory(file)),
+    benchmark(new MemoryAlignedDataMap<>(new LongDataType(), new MemoryMappedFile(file)),
         N);
     Files.delete(file);
   }

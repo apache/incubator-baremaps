@@ -24,6 +24,11 @@ import java.nio.ByteBuffer;
  */
 public abstract class MemoryAlignedDataType<T> extends FixedSizeDataType<T> {
 
+  /**
+   * Constructs a {@link MemoryAlignedDataType}.
+   *
+   * @param size
+   */
   public MemoryAlignedDataType(int size) {
     super(size);
     if ((size & -size) != size) {

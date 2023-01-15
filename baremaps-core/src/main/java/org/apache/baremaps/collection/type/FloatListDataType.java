@@ -27,6 +27,7 @@ public class FloatListDataType implements DataType<List<Float>> {
     return Integer.BYTES + values.size() * Float.BYTES;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(ByteBuffer buffer, int position) {
     return buffer.getInt(position);

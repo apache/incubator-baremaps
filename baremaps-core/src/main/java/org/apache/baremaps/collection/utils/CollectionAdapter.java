@@ -89,7 +89,7 @@ public class CollectionAdapter<T> implements Collection<T> {
 
   @Override
   public boolean add(T t) {
-    dataList.append(t);
+    dataList.addIndexed(t);
     return true;
   }
 

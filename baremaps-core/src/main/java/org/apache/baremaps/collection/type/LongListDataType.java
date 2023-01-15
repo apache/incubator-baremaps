@@ -27,6 +27,7 @@ public class LongListDataType implements DataType<List<Long>> {
     return Integer.BYTES + values.size() * Long.BYTES;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(ByteBuffer buffer, int position) {
     return buffer.getInt(position);

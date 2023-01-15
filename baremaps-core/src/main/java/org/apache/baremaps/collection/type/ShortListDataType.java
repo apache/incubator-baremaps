@@ -27,6 +27,7 @@ public class ShortListDataType implements DataType<List<Short>> {
     return Integer.BYTES + values.size() * Short.BYTES;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(ByteBuffer buffer, int position) {
     return buffer.getInt(position);

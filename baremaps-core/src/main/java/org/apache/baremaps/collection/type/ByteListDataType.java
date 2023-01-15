@@ -31,6 +31,9 @@ public class ByteListDataType implements DataType<List<Byte>> {
     return Integer.BYTES + values.size() * Byte.BYTES;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int size(ByteBuffer buffer, int position) {
     return buffer.getInt(position);

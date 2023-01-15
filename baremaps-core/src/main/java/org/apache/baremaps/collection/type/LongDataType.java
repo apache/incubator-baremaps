@@ -26,12 +26,14 @@ public class LongDataType extends MemoryAlignedDataType<Long> {
   /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, Long value) {
+    value = value == null ? Long.MIN_VALUE : value;
     buffer.putLong(position, value);
   }
 
   /** {@inheritDoc} */
   @Override
   public Long read(ByteBuffer buffer, int position) {
-    return buffer.getLong(position);
+    long value = buffer.getLong(position);
+    return value == Long.MIN_VALUE ? null : value;
   }
 }

@@ -70,6 +70,7 @@ public class PairDataType<L, R> extends FixedSizeDataType<Pair<L, R>> {
       return right;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
       if (this == o) {
@@ -88,6 +89,7 @@ public class PairDataType<L, R> extends FixedSizeDataType<Pair<L, R>> {
       return Objects.equals(right, pair.right);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
       int result = left != null ? left.hashCode() : 0;

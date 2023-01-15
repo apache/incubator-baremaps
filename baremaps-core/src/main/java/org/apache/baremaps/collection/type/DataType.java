@@ -32,6 +32,13 @@ public interface DataType<T> {
    */
   int size(T value);
 
+  /**
+   * Returns the size of the value stored at the specified position in a {@link ByteBuffer}.
+   *
+   * @param buffer the buffer
+   * @param position the position
+   * @return the size of the value
+   */
   int size(ByteBuffer buffer, int position);
 
   /**

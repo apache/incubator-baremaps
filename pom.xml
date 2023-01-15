@@ -93,6 +93,7 @@
     <version.lib.postgresql>42.5.0</version.lib.postgresql>
     <version.lib.proj4j>1.1.5</version.lib.proj4j>
     <version.lib.protobuf>3.21.6</version.lib.protobuf>
+    <version.lib.roaringbitmap>0.9.38</version.lib.roaringbitmap>
     <version.lib.servicetalk>0.42.18</version.lib.servicetalk>
     <version.lib.servlet>3.1.0</version.lib.servlet>
     <version.lib.slf4j>2.0.3</version.lib.slf4j>
@@ -438,6 +439,11 @@
         <version>${version.lib.postgresql}</version>
       </dependency>
       <dependency>
+        <groupId>org.roaringbitmap</groupId>
+        <artifactId>RoaringBitmap</artifactId>
+        <version>${version.lib.roaringbitmap}</version>
+      </dependency>
+      <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jul-to-slf4j</artifactId>
         <version>${version.lib.slf4j}</version>
@@ -523,6 +529,10 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.roaringbitmap</groupId>
+      <artifactId>RoaringBitmap</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

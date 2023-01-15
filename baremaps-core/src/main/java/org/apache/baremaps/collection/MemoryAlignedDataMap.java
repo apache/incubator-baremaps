@@ -22,17 +22,14 @@ import org.apache.baremaps.collection.memory.Memory;
 import org.apache.baremaps.collection.type.FixedSizeDataType;
 
 /**
- * A dense map of data backed by a {@link FixedSizeDataType} and a {@link Memory}.
+ * A map that can hold a large number of fixed-size memory-aligned data elements.
  *
  * <p>
  * This code has been adapted from Planetiler (Apache license).
- *
- * <p>
- * Copyright (c) Planetiler.
  */
-public class MemoryAlignedDataMap<T> extends DataMap<T> {
+public class MemoryAlignedDataMap<E> extends DataMap<E> {
 
-  private final FixedSizeDataType<T> dataType;
+  private final FixedSizeDataType<E> dataType;
 
   private final Memory memory;
 
@@ -48,9 +45,12 @@ public class MemoryAlignedDataMap<T> extends DataMap<T> {
    * @param dataType the data type
    * @param memory the memory
    */
-  public MemoryAlignedDataMap(FixedSizeDataType<T> dataType, Memory memory) {
+  public MemoryAlignedDataMap(FixedSizeDataType<E> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
-      throw new DataCollectionException("The values are too big");
+      throw new DataCollectionException("The segment size is too small for the data type");
+    }
+    if ((dataType.size() & -dataType.size()) != dataType.size()) {
+      throw new IllegalArgumentException("The data type size must be a fixed power of 2");
     }
     if (memory.segmentSize() % dataType.size() != 0) {
       throw new DataCollectionException("The segment size and data type size must be aligned");
@@ -63,18 +63,20 @@ public class MemoryAlignedDataMap<T> extends DataMap<T> {
   }
 
   /** {@inheritDoc} */
-  public T put(Long key, T value) {
+  @Override
+  public E put(Long key, E value) {
     long position = key << valueShift;
     int segmentIndex = (int) (position >>> segmentShift);
     int segmentOffset = (int) (position & segmentMask);
     ByteBuffer segment = memory.segment(segmentIndex);
-    T previous = dataType.read(segment, segmentOffset);
+    E previous = dataType.read(segment, segmentOffset);
     dataType.write(segment, segmentOffset, value);
     return previous;
   }
 
   /** {@inheritDoc} */
-  public T get(Object key) {
+  @Override
+  public E get(Object key) {
     long position = (long) key << valueShift;
     int segmentIndex = (int) (position >>> segmentShift);
     int segmentOffset = (int) (position & segmentMask);
@@ -82,11 +84,13 @@ public class MemoryAlignedDataMap<T> extends DataMap<T> {
     return dataType.read(segment, segmentOffset);
   }
 
+  /** {@inheritDoc} */
   @Override
-  public T remove(Object key) {
+  public E remove(Object key) {
     throw new UnsupportedOperationException();
   }
 
+  /** {@inheritDoc} */
   @Override
   public boolean containsKey(Object keyObject) {
     if (keyObject instanceof Long key) {
@@ -96,21 +100,25 @@ public class MemoryAlignedDataMap<T> extends DataMap<T> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public boolean containsValue(Object value) {
     return values().contains(value);
   }
 
+  /** {@inheritDoc} */
   @Override
   public long sizeAsLong() {
     return memory.size() / dataType.size();
   }
 
+  /** {@inheritDoc} */
   @Override
   public void clear() {
     throw new UnsupportedOperationException();
   }
 
+  /** {@inheritDoc} */
   @Override
   protected Iterator<Long> keyIterator() {
     return new Iterator<>() {
@@ -134,8 +142,9 @@ public class MemoryAlignedDataMap<T> extends DataMap<T> {
     };
   }
 
+  /** {@inheritDoc} */
   @Override
-  protected Iterator<T> valueIterator() {
+  protected Iterator<E> valueIterator() {
     return new Iterator<>() {
 
       private long index = 0;
@@ -148,7 +157,7 @@ public class MemoryAlignedDataMap<T> extends DataMap<T> {
       }
 
       @Override
-      public T next() {
+      public E next() {
         if (!hasNext()) {
           throw new NoSuchElementException();
         }
@@ -157,8 +166,9 @@ public class MemoryAlignedDataMap<T> extends DataMap<T> {
     };
   }
 
+  /** {@inheritDoc} */
   @Override
-  protected Iterator<Entry<Long, T>> entryIterator() {
+  protected Iterator<Entry<Long, E>> entryIterator() {
     return new Iterator<>() {
 
       private long index = 0;
@@ -171,7 +181,7 @@ public class MemoryAlignedDataMap<T> extends DataMap<T> {
       }
 
       @Override
-      public Entry<Long, T> next() {
+      public Entry<Long, E> next() {
         if (!hasNext()) {
           throw new NoSuchElementException();
         }

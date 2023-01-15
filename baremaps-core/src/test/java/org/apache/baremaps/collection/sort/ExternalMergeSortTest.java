@@ -25,6 +25,7 @@ import org.apache.baremaps.collection.AppendOnlyBuffer;
 import org.apache.baremaps.collection.DataList;
 import org.apache.baremaps.collection.IndexedDataList;
 import org.apache.baremaps.collection.MemoryAlignedDataList;
+import org.apache.baremaps.collection.algorithm.ExternalMergeSort;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
 import org.apache.baremaps.collection.type.LongDataType;
 import org.apache.baremaps.collection.type.StringDataType;
@@ -49,7 +50,7 @@ class ExternalMergeSortTest {
     input = supplier.get();
     output = supplier.get();
     for (var string : strings) {
-      input.append(string);
+      input.addIndexed(string);
     }
   }
 
@@ -95,7 +96,7 @@ class ExternalMergeSortTest {
   void sortRandomString() throws IOException {
     var random = new Random(0);
     for (int i = 0; i < 1_000_000; i++) {
-      input.append(randomString(random));
+      input.addIndexed(randomString(random));
     }
     ExternalMergeSort.sort(input, output, Comparator.naturalOrder(), supplier, 100_000, false,
         true);

@@ -27,6 +27,7 @@ public class DoubleListDataType implements DataType<List<Double>> {
     return Integer.BYTES + values.size() * Double.BYTES;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(ByteBuffer buffer, int position) {
     return buffer.getInt(position);

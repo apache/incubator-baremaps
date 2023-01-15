@@ -27,10 +27,10 @@ class AppendOnlyBufferTest {
   void addFixedSizeData() {
     var store = new AppendOnlyBuffer<>(new IntegerDataType(), new OffHeapMemory(1 << 10));
     for (int i = 0; i < 1 << 20; i++) {
-      assertEquals(i << 2, store.append(i));
+      assertEquals(i << 2, store.addPositioned(i));
     }
     for (int i = 0; i < 1 << 20; i++) {
-      assertEquals(i, store.get(i << 2));
+      assertEquals(i, store.read(i << 2));
     }
   }
 
@@ -46,11 +46,11 @@ class AppendOnlyBufferTest {
       for (int j = 0; j < size; j++) {
         value.add(random.nextInt(1 << 20));
       }
-      positions.add(store.append(value));
+      positions.add(store.addPositioned(value));
       values.add(value);
     }
     for (int i = 0; i < positions.size(); i++) {
-      var value = store.get(positions.get(i));
+      var value = store.read(positions.get(i));
       assertEquals(values.get(i), value);
     }
   }

@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 /** A {@link DataType} for reading and writing shorts in {@link ByteBuffer}s. */
 public class ShortDataType extends FixedSizeDataType<Short> {
 
+  /** Constructs a {@link ShortDataType}. */
   public ShortDataType() {
     super(Short.BYTES);
   }

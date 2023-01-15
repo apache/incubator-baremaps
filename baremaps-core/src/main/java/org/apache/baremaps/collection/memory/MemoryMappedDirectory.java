@@ -18,47 +18,48 @@ import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileChannel.MapMode;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import org.apache.baremaps.collection.DataCollectionException;
+import org.apache.baremaps.collection.utils.FileUtils;
 import org.apache.baremaps.collection.utils.MappedByteBufferUtils;
 
-/** A memory that stores segments on-disk using mapped byte buffers in a file. */
-public class MappedMemory extends Memory<MappedByteBuffer> {
+/** A memory that stores segments on-disk using mapped byte buffers in a directory of files. */
+public class MemoryMappedDirectory extends Memory<MappedByteBuffer> {
 
-  private final Path file;
+  private final Path directory;
 
   /**
-   * Constructs an {@link MappedMemory} with a custom file and a default segment size of 1gb.
+   * Constructs an {@link MemoryMappedDirectory} with a custom directory and a default segment size
+   * of 1gb.
    *
-   * @param file the file that stores the data
+   * @param directory the directory that stores the data
    */
-  public MappedMemory(Path file) {
-    this(file, 1 << 30);
+  public MemoryMappedDirectory(Path directory) {
+    this(directory, 1 << 30);
   }
 
   /**
-   * Constructs an {@link MappedMemory} with a custom file and a custom segment size.
+   * Constructs an {@link MemoryMappedDirectory} with a custom directory and a custom segment size.
    *
-   * @param file the file that stores the data
+   * @param directory the directory that stores the data
    * @param segmentBytes the size of the segments in bytes
    */
-  public MappedMemory(Path file, int segmentBytes) {
+  public MemoryMappedDirectory(Path directory, int segmentBytes) {
     super(segmentBytes);
-    this.file = file;
+    this.directory = directory;
   }
 
   /** {@inheritDoc} */
   @Override
   protected MappedByteBuffer allocate(int index, int size) {
     try {
+      Path file = directory.resolve(String.format("%s.part", index));
       try (FileChannel channel = FileChannel.open(file, StandardOpenOption.CREATE,
           StandardOpenOption.READ, StandardOpenOption.WRITE)) {
-        return channel.map(MapMode.READ_WRITE, (long) index * size, size);
+        return channel.map(MapMode.READ_WRITE, 0, size);
       }
     } catch (IOException e) {
-      throw new DataCollectionException(e);
+      throw new MemoryException(e);
     }
   }
 
@@ -75,6 +76,7 @@ public class MappedMemory extends Memory<MappedByteBuffer> {
   public void clear() throws IOException {
     close();
     segments.clear();
-    Files.delete(file);
+    FileUtils.deleteRecursively(directory);
   }
+
 }

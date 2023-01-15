@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.baremaps.collection.AppendOnlyBuffer;
 import org.apache.baremaps.collection.DataMap;
 import org.apache.baremaps.collection.IndexedDataMap;
-import org.apache.baremaps.collection.memory.MappedMemory;
+import org.apache.baremaps.collection.memory.MemoryMappedFile;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
 import org.apache.baremaps.collection.type.CoordinateDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
@@ -77,7 +77,7 @@ public class OpenStreetMapGeometriesBenchmark {
   public void store() throws IOException {
     Path file = Files.createTempFile(Paths.get("."), "baremaps_", ".tmp");
     DataMap<Coordinate> coordinateMap = new IndexedDataMap<>(
-        new AppendOnlyBuffer<>(new CoordinateDataType(), new MappedMemory(file)));
+        new AppendOnlyBuffer<>(new CoordinateDataType(), new MemoryMappedFile(file)));
     DataMap<List<Long>> referenceMap =
         new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
     AtomicLong nodes = new AtomicLong(0);

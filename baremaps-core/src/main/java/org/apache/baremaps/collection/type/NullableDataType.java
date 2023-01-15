@@ -16,24 +16,33 @@ package org.apache.baremaps.collection.type;
 
 import java.nio.ByteBuffer;
 
+/** A {@link DataType} for reading and writing nullable values in {@link ByteBuffer}s. */
 public class NullableDataType<T> implements DataType<T> {
 
   private final DataType<T> dataType;
 
+  /**
+   * Constructs a {@link NullableDataType} with a data type.
+   *
+   * @param dataType the data type of the values
+   */
   public NullableDataType(DataType<T> dataType) {
     this.dataType = dataType;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(T value) {
     return Byte.BYTES + dataType.size(value);
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(ByteBuffer buffer, int position) {
     return Byte.BYTES + dataType.size(buffer, position + 1);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, T value) {
     if (value == null) {
@@ -44,6 +53,7 @@ public class NullableDataType<T> implements DataType<T> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public T read(ByteBuffer buffer, int position) {
     if (buffer.get(position) == 0) {

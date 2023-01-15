@@ -31,9 +31,10 @@ import java.util.stream.Stream;
 import org.apache.baremaps.collection.*;
 import org.apache.baremaps.collection.AppendOnlyBuffer;
 import org.apache.baremaps.collection.MemoryAlignedDataList;
-import org.apache.baremaps.collection.memory.MappedMemory;
+import org.apache.baremaps.collection.memory.MemoryMappedFile;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
 import org.apache.baremaps.collection.type.*;
+import org.apache.baremaps.collection.utils.FileUtils;
 import org.apache.baremaps.openstreetmap.model.Element;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
@@ -58,31 +59,33 @@ public record SimplifyOpenStreetMap(Path file, String database, Integer database
         var coordinatesValsFile = Files.createFile(cacheDir.resolve("coordinates_vals"));
         var coordinateMap =
                 new MonotonicDataMap<>(
-                        new AppendOnlyBuffer<>(
+                        new MemoryAlignedDataList<>(
+                        new PairDataType<>(
+                                new LongDataType(),
+                                new LongDataType()
+                        ), new MemoryMappedFile(coordinatesKeysFile)), new AppendOnlyBuffer<>(
                                 new LonLatDataType(),
-                                new MappedMemory(coordinatesValsFile)), new MemoryAlignedDataList<>(
-                                new PairDataType<>(
-                                        new LongDataType(),
-                                        new LongDataType()
-                                ), new MappedMemory(coordinatesKeysFile))
+                                new MemoryMappedFile(coordinatesValsFile))
                 );
 
         var referencesKeysFile = Files.createFile(cacheDir.resolve("references_keys"));
         var referencesValuesFile = Files.createFile(cacheDir.resolve("references_vals"));
         var referenceMap =
                 new MonotonicDataMap<>(
-                        new AppendOnlyBuffer<>(
+                        new MemoryAlignedDataList<>(
+                        new PairDataType<>(
+                                new LongDataType(),
+                                new LongDataType()
+                        ), new MemoryMappedFile(referencesKeysFile)), new AppendOnlyBuffer<>(
                                 new LongListDataType(),
-                                new MappedMemory(referencesValuesFile)), new MemoryAlignedDataList<>(
-                                new PairDataType<>(
-                                        new LongDataType(),
-                                        new LongDataType()
-                                ), new MappedMemory(referencesKeysFile))
+                                new MemoryMappedFile(referencesValuesFile))
                 );
 
         var collection = new IndexedDataMap<>(
                 new LongDataMap(new OffHeapMemory()),
                 new AppendOnlyBuffer<>(new GeometryDataType(), new OffHeapMemory()));
+
+        FileUtils.deleteRecursively(cacheDir);
 
 
 //        new PbfEntityReader(

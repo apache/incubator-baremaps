@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 /** A {@link DataType} for reading and writing doubles in {@link ByteBuffer}s. */
 public class DoubleDataType extends MemoryAlignedDataType<Double> {
 
+  /** Constructs a {@link DoubleDataType}. */
   public DoubleDataType() {
     super(Double.BYTES);
   }

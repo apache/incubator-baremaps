@@ -13,7 +13,7 @@
 package org.apache.baremaps.workflow.tasks;
 
 import org.apache.baremaps.collection.*;
-import org.apache.baremaps.collection.memory.MappedMemory;
+import org.apache.baremaps.collection.memory.MemoryMappedFile;
 import org.apache.baremaps.collection.AppendOnlyBuffer;
 import org.apache.baremaps.collection.MemoryAlignedDataList;
 import org.apache.baremaps.collection.type.LonLatDataType;
@@ -68,18 +68,18 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
       var coordinatesFile = Files.createFile(cacheDir.resolve("coordinates"));
       coordinateMap = new MemoryAlignedDataMap<>(
         new LonLatDataType(),
-        new MappedMemory(coordinatesFile));
+        new MemoryMappedFile(coordinatesFile));
     } else {
       var coordinatesKeysFile = Files.createFile(cacheDir.resolve("coordinates_keys"));
       var coordinatesValsFile = Files.createFile(cacheDir.resolve("coordinates_vals"));
       coordinateMap =
         new MonotonicDataMap<>(
-                new AppendOnlyBuffer<>(
+                new MemoryAlignedDataList<>(
+          new PairDataType<>(new LongDataType(), new LongDataType()),
+          new MemoryMappedFile(coordinatesKeysFile)
+        ), new AppendOnlyBuffer<>(
                   new LonLatDataType(),
-                  new MappedMemory(coordinatesValsFile)), new MemoryAlignedDataList<>(
-            new PairDataType<>(new LongDataType(), new LongDataType()),
-            new MappedMemory(coordinatesKeysFile)
-          )
+                  new MemoryMappedFile(coordinatesValsFile))
         );
     }
 
@@ -87,12 +87,12 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
     var referencesValuesDir = Files.createFile(cacheDir.resolve("references_vals"));
     var referenceMap =
       new MonotonicDataMap<>(
-              new AppendOnlyBuffer<>(
+              new MemoryAlignedDataList<>(
+        new PairDataType<>(new LongDataType(), new LongDataType()),
+        new MemoryMappedFile(referencesKeysDir)
+      ), new AppendOnlyBuffer<>(
                 new LongListDataType(),
-                new MappedMemory(referencesValuesDir)), new MemoryAlignedDataList<>(
-          new PairDataType<>(new LongDataType(), new LongDataType()),
-          new MappedMemory(referencesKeysDir)
-        )
+                new MemoryMappedFile(referencesValuesDir))
       );
 
     new ImportService(

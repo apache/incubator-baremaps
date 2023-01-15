@@ -25,12 +25,15 @@ import org.apache.baremaps.collection.memory.OffHeapMemory;
 import org.apache.baremaps.collection.type.DataType;
 
 /**
- * A data log backed by a {@link DataType} and a {@link Memory}. Elements are appended to the store
- * and can be accessed by their position in the {@link Memory}.
+ * A buffer of elements backed by a {@link DataType} and a {@link Memory}. Elements are appended to
+ * the buffer and can be accessed by their position in the {@link Memory}. Appending elements to the
+ * buffer is thread-safe.
+ *
+ * @param <E> The type of the data.
  */
-public class AppendOnlyBuffer<T> extends DataList<T> {
+public class AppendOnlyBuffer<E> extends DataCollection<E> {
 
-  private final DataType<T> dataType;
+  private final DataType<E> dataType;
   private final Memory memory;
   private final long segmentSize;
   private long offset;
@@ -39,21 +42,21 @@ public class AppendOnlyBuffer<T> extends DataList<T> {
   private Lock lock = new ReentrantLock();
 
   /**
-   * Constructs a data list.
+   * Constructs an append only buffer.
    *
    * @param dataType the data type
    */
-  public AppendOnlyBuffer(DataType<T> dataType) {
+  public AppendOnlyBuffer(DataType<E> dataType) {
     this(dataType, new OffHeapMemory());
   }
 
   /**
-   * Constructs a data list.
+   * Constructs an append only buffer.
    *
    * @param dataType the data type
    * @param memory the memory
    */
-  public AppendOnlyBuffer(DataType<T> dataType, Memory memory) {
+  public AppendOnlyBuffer(DataType<E> dataType, Memory memory) {
     this.dataType = dataType;
     this.memory = memory;
     this.segmentSize = memory.segmentSize();
@@ -62,13 +65,12 @@ public class AppendOnlyBuffer<T> extends DataList<T> {
   }
 
   /**
-   * Appends a value to the data store and returns its position in the memory.
+   * Appends the value to the buffer and returns its position in the memory.
    *
    * @param value the value
    * @return the position of the value in the memory.
    */
-  @Override
-  public long append(T value) {
+  public long addPositioned(E value) {
     int valueSize = dataType.size(value);
     if (valueSize > segmentSize) {
       throw new DataCollectionException("The value is too big to fit in a segment");
@@ -94,23 +96,28 @@ public class AppendOnlyBuffer<T> extends DataList<T> {
   }
 
   /**
-   * Returns a values by its position in memory.
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean add(E value) {
+    addPositioned(value);
+    return true;
+  }
+
+  /**
+   * Returns a values at the specified position in the memory.
    *
    * @param position the position of the value
    * @return the value
    */
-  public T get(long position) {
+  public E read(long position) {
     long segmentIndex = position / segmentSize;
     long segmentOffset = position % segmentSize;
     ByteBuffer buffer = memory.segment((int) segmentIndex);
     return dataType.read(buffer, (int) segmentOffset);
   }
 
-  /**
-   * Returns the number of values stored in the data store.
-   *
-   * @return the number of values
-   */
+  /** {@inheritDoc} */
   public long sizeAsLong() {
     return size;
   }
@@ -129,29 +136,7 @@ public class AppendOnlyBuffer<T> extends DataList<T> {
    * {@inheritDoc}
    */
   @Override
-  public boolean add(T value) {
-    append(value);
-    return true;
-  }
-
-  @Override
-  public void set(long index, T value) {
-    throw new UnsupportedOperationException();
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public int size() {
-    return (int) Math.min(size, Integer.MAX_VALUE);
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Iterator<T> iterator() {
+  public Iterator<E> iterator() {
     final long size = sizeAsLong();
     return new Iterator<>() {
 
@@ -165,7 +150,7 @@ public class AppendOnlyBuffer<T> extends DataList<T> {
       }
 
       @Override
-      public T next() {
+      public E next() {
         if (!hasNext()) {
           throw new NoSuchElementException();
         }

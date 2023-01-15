@@ -37,7 +37,7 @@ class SizedDataListTest {
   void appendFixedSizeValues(Memory memory) throws IOException {
     var list = new FixedSizeDataList<>(new LongDataType(), memory);
     for (int i = 0; i < 1 << 10; i++) {
-      assertEquals(i, list.append((long) i));
+      assertEquals(i, list.addIndexed((long) i));
     }
     for (int i = 0; i < 1 << 10; i++) {
       assertEquals(i, list.get(i));

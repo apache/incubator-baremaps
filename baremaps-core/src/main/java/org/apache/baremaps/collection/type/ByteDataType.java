@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 /** A {@link DataType} for reading and writing bytes in {@link ByteBuffer}s. */
 public class ByteDataType extends MemoryAlignedDataType<Byte> {
 
+  /** Constructs a {@link ByteDataType}. */
   public ByteDataType() {
     super(Byte.BYTES);
   }

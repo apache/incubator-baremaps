@@ -19,74 +19,94 @@ import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public class IndexedDataMap<T> extends DataMap<T> {
+/**
+ * A map that can hold a large number of variable size data elements.
+ *
+ * This map is backed by an index and a buffer that can be either heap, off-heap, or memory mapped.
+ *
+ * @param <E> The type of the elements.
+ */
+public class IndexedDataMap<E> extends DataMap<E> {
 
   private final Map<Long, Long> index;
 
-  private final AppendOnlyBuffer<T> store;
+  private final AppendOnlyBuffer<E> values;
 
-  public IndexedDataMap(AppendOnlyBuffer<T> store) {
-    this(new Long2LongOpenHashMap(), store);
+  /**
+   * Constructs a map.
+   *
+   * @param values the values
+   */
+  public IndexedDataMap(AppendOnlyBuffer<E> values) {
+    this(new Long2LongOpenHashMap(), values);
   }
 
-  public IndexedDataMap(Map<Long, Long> index, AppendOnlyBuffer<T> store) {
+  /**
+   * Constructs a map.
+   *
+   * @param index the index
+   * @param values the values
+   */
+  public IndexedDataMap(Map<Long, Long> index, AppendOnlyBuffer<E> values) {
     this.index = index;
-    this.store = store;
+    this.values = values;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public T put(Long key, T value) {
+  public E put(Long key, E value) {
     var oldIndex = index.get(key);
-    var position = store.append(value);
+    var position = values.addPositioned(value);
     index.put(key, position);
-    return oldIndex == null ? null : store.get(oldIndex);
+    return oldIndex == null ? null : values.read(oldIndex);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public T get(Object key) {
+  public E get(Object key) {
     var position = index.get(key);
-    return position == null ? null : store.get(position);
+    return position == null ? null : values.read(position);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   protected Iterator<Long> keyIterator() {
     return index.keySet().iterator();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  protected Iterator<T> valueIterator() {
+  protected Iterator<E> valueIterator() {
     return Streams.stream(keyIterator()).map(this::get).iterator();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  protected Iterator<Entry<Long, T>> entryIterator() {
-    return Streams.stream(keyIterator()).map(this::entryV).iterator();
+  protected Iterator<Entry<Long, E>> entryIterator() {
+    return Streams.stream(keyIterator()).map(k -> Map.entry(k, get(k))).iterator();
   }
 
-  private Entry<Long, T> entryV(long key) {
-    return new Entry() {
-      @Override
-      public Long getKey() {
-        return key;
-      }
-
-      @Override
-      public T getValue() {
-        return get(key);
-      }
-
-      @Override
-      public T setValue(Object value) {
-        return put(key, (T) value);
-      }
-    };
-  }
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isEmpty() {
     return index.isEmpty();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long sizeAsLong() {
     if (index instanceof DataMap<Long> dataMap) {
@@ -96,24 +116,36 @@ public class IndexedDataMap<T> extends DataMap<T> {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean containsKey(Object key) {
     return index.containsKey(key);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean containsValue(Object value) {
-    return index.values().stream().map(store::get).anyMatch(value::equals);
+    return index.values().stream().map(values::read).anyMatch(value::equals);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public T remove(Object key) {
-    return store.get(index.remove(key));
+  public E remove(Object key) {
+    return values.read(index.remove(key));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void clear() {
     index.clear();
-    store.clear();
+    values.clear();
   }
 }

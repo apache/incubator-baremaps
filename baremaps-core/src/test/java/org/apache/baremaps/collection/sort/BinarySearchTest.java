@@ -10,32 +10,25 @@
  * the License.
  */
 
-package org.apache.baremaps.collection;
+package org.apache.baremaps.collection.sort;
 
+import static org.junit.jupiter.api.Assertions.*;
 
-
-import org.apache.baremaps.collection.memory.Memory;
-import org.apache.baremaps.collection.memory.OffHeapMemory;
+import org.apache.baremaps.collection.MemoryAlignedDataList;
+import org.apache.baremaps.collection.algorithm.BinarySearch;
 import org.apache.baremaps.collection.type.LongDataType;
+import org.junit.jupiter.api.Test;
 
-/**
- * A list of longs.
- */
-public class LongDataMap extends MemoryAlignedDataMap<Long> {
+class BinarySearchTest {
 
-  /**
-   * Constructs a list.
-   */
-  public LongDataMap() {
-    this(new OffHeapMemory());
-  }
-
-  /**
-   * Constructs a list.
-   *
-   * @param memory the memory
-   */
-  public LongDataMap(Memory memory) {
-    super(new LongDataType(), memory);
+  @Test
+  void binarySearch() {
+    var list = new MemoryAlignedDataList<>(new LongDataType());
+    for (long i = 0; i < 1000; i++) {
+      list.add(i);
+    }
+    for (long i = 0; i < 1000; i++) {
+      assertEquals(i, BinarySearch.binarySearch(list, i, Long::compare));
+    }
   }
 }

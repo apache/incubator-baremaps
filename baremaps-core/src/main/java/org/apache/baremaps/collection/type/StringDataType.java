@@ -17,18 +17,24 @@ package org.apache.baremaps.collection.type;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * A {@link DataType} for reading and writing strings in {@link ByteBuffer}s.
+ */
 public class StringDataType implements DataType<String> {
 
+  /** {@inheritDoc} */
   @Override
   public int size(String value) {
     return Integer.BYTES + value.getBytes(StandardCharsets.UTF_8).length;
   }
 
+  /** {@inheritDoc} */
   @Override
   public int size(ByteBuffer buffer, int position) {
     return buffer.getInt(position);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, String value) {
     var bytes = value.getBytes(StandardCharsets.UTF_8);
@@ -38,6 +44,7 @@ public class StringDataType implements DataType<String> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public String read(ByteBuffer buffer, int position) {
     var size = size(buffer, position);

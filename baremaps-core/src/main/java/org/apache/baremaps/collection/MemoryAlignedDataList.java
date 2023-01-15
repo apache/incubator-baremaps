@@ -21,9 +21,16 @@ import org.apache.baremaps.collection.memory.Memory;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
 import org.apache.baremaps.collection.type.FixedSizeDataType;
 
-public class MemoryAlignedDataList<T> extends DataList<T> {
+/**
+ * A list that can hold a large number of fixed-size memory-aligned data elements.
+ *
+ * This list is backed by a memory that can be either heap, off-heap, or memory mapped.
+ *
+ * @param <E> The type of the elements.
+ */
+public class MemoryAlignedDataList<E> extends DataList<E> {
 
-  private final FixedSizeDataType<T> dataType;
+  private final FixedSizeDataType<E> dataType;
 
   private final Memory memory;
 
@@ -40,7 +47,7 @@ public class MemoryAlignedDataList<T> extends DataList<T> {
    *
    * @param dataType the data type
    */
-  public MemoryAlignedDataList(FixedSizeDataType<T> dataType) {
+  public MemoryAlignedDataList(FixedSizeDataType<E> dataType) {
     this(dataType, new OffHeapMemory());
   }
 
@@ -50,7 +57,7 @@ public class MemoryAlignedDataList<T> extends DataList<T> {
    * @param dataType the data type
    * @param memory the memory
    */
-  public MemoryAlignedDataList(FixedSizeDataType<T> dataType, Memory memory) {
+  public MemoryAlignedDataList(FixedSizeDataType<E> dataType, Memory memory) {
     if (dataType.size() > memory.segmentSize()) {
       throw new DataCollectionException("The segment size is too small for the data type");
     }
@@ -68,7 +75,7 @@ public class MemoryAlignedDataList<T> extends DataList<T> {
     this.size = new AtomicLong(0);
   }
 
-  private void write(long index, T value) {
+  private void write(long index, E value) {
     long position = index << valueShift;
     int segmentIndex = (int) (position >>> segmentShift);
     int segmentOffset = (int) (position & segmentMask);
@@ -77,14 +84,14 @@ public class MemoryAlignedDataList<T> extends DataList<T> {
   }
 
   /** {@inheritDoc} */
-  public long append(T value) {
+  public long addIndexed(E value) {
     long index = size.getAndIncrement();
     write(index, value);
     return index;
   }
 
   /** {@inheritDoc} */
-  public void set(long index, T value) {
+  public void set(long index, E value) {
     if (index >= size.get()) {
       size.set(index + 1);
     }
@@ -92,7 +99,7 @@ public class MemoryAlignedDataList<T> extends DataList<T> {
   }
 
   /** {@inheritDoc} */
-  public T get(long index) {
+  public E get(long index) {
     long position = index << valueShift;
     int segmentIndex = (int) (position >> segmentShift);
     int segmentOffset = (int) (position & segmentMask);
@@ -106,6 +113,7 @@ public class MemoryAlignedDataList<T> extends DataList<T> {
     return size.get();
   }
 
+  /** {@inheritDoc} */
   @Override
   public void clear() {
     size.set(0);

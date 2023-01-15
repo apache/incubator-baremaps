@@ -14,40 +14,80 @@ package org.apache.baremaps.collection;
 
 
 
-public class IndexedDataList<T> extends DataList<T> {
+import org.apache.baremaps.collection.type.LongDataType;
 
-  private final MemoryAlignedDataList<Long> index;
+/**
+ * A list that can hold a large number of variable size data elements.
+ *
+ * This list is backed by an index and a buffer that can be either heap, off-heap, or memory mapped.
+ *
+ * @param <E> The type of the elements.
+ */
+public class IndexedDataList<E> extends DataList<E> {
 
-  private final AppendOnlyBuffer<T> values;
+  private final DataList<Long> index;
 
-  public IndexedDataList(MemoryAlignedDataList<Long> index, AppendOnlyBuffer<T> values) {
+  private final AppendOnlyBuffer<E> values;
+
+
+  /**
+   * Constructs a list.
+   *
+   * @param values the values
+   */
+  public IndexedDataList(AppendOnlyBuffer<E> values) {
+    this(new MemoryAlignedDataList<>(new LongDataType()), values);
+  }
+
+  /**
+   * Constructs a list.
+   *
+   * @param index the index
+   * @param values the values
+   */
+  public IndexedDataList(DataList<Long> index, AppendOnlyBuffer<E> values) {
     this.index = index;
     this.values = values;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public long append(T value) {
-    long position = values.append(value);
-    return index.append(position);
+  public long addIndexed(E value) {
+    long position = values.addPositioned(value);
+    return index.addIndexed(position);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public void set(long index, T value) {
-    long position = values.append(value);
+  public void set(long index, E value) {
+    long position = values.addPositioned(value);
     this.index.set(index, position);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public T get(long index) {
+  public E get(long index) {
     long position = this.index.get(index);
-    return values.get(position);
+    return values.read(position);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long sizeAsLong() {
     return index.sizeAsLong();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void clear() {
     index.clear();

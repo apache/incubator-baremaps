@@ -14,38 +14,57 @@ package org.apache.baremaps.collection;
 
 
 
-import java.util.AbstractCollection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public abstract class DataList<T> extends AbstractCollection<T> {
+/**
+ * An abstract list of data elements that can hold a large number of elements.
+ *
+ * @param <E> The type of the data.
+ */
+public abstract class DataList<E> extends DataCollection<E> {
 
-  public abstract long append(T value);
+  /**
+   * Appends a value to the list and returns its index.
+   *
+   * @param value the value
+   * @return the index of the value.
+   */
+  public abstract long addIndexed(E value);
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public boolean add(T value) {
-    append(value);
+  public boolean add(E value) {
+    addIndexed(value);
     return true;
   }
 
-  public abstract void set(long index, T value);
+  /**
+   * Sets the value at the specified index.
+   *
+   * @param index the index
+   * @param value the value
+   */
+  public abstract void set(long index, E value);
 
-  public abstract T get(long index);
+  /**
+   * Returns the value at the specified index.
+   *
+   * @param index the index
+   * @return the value
+   */
+  public abstract E get(long index);
 
+  /** {@inheritDoc} */
+  @Override
   public abstract void clear();
 
-  public abstract long sizeAsLong();
-
-  public int size() {
-    return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
-  }
-
+  /** {@inheritDoc} */
   @Override
-  public Iterator<T> iterator() {
-    return new Iterator<T>() {
+  public Iterator<E> iterator() {
+    return new Iterator<>() {
 
       private long index = 0;
 
@@ -57,7 +76,7 @@ public abstract class DataList<T> extends AbstractCollection<T> {
       }
 
       @Override
-      public T next() {
+      public E next() {
         if (!hasNext()) {
           throw new NoSuchElementException();
         }

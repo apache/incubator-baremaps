@@ -25,13 +25,16 @@ public class ListDataType<T> implements DataType<List<T>> {
 
   public final DataType<T> dataType;
 
+  /**
+   * Constructs a {@link ListDataType} with a data type.
+   *
+   * @param dataType the data type of the values
+   */
   public ListDataType(DataType<T> dataType) {
     this.dataType = dataType;
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public int size(List<T> values) {
     int size = Integer.BYTES;
@@ -46,9 +49,7 @@ public class ListDataType<T> implements DataType<List<T>> {
     return buffer.getInt(position);
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, List<T> values) {
     buffer.putInt(position, size(values));
@@ -58,9 +59,7 @@ public class ListDataType<T> implements DataType<List<T>> {
     }
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public List<T> read(ByteBuffer buffer, int position) {
     var size = buffer.getInt(position);

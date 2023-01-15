@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
  */
 public class FloatDataType extends MemoryAlignedDataType<Float> {
 
+  /** Constructs a {@link FloatDataType}. */
   public FloatDataType() {
     super(Float.BYTES);
   }
