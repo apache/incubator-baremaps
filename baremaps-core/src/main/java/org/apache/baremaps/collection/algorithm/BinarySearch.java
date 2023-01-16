@@ -15,6 +15,7 @@ package org.apache.baremaps.collection.algorithm;
 
 
 import java.util.Comparator;
+import java.util.function.Function;
 import org.apache.baremaps.collection.DataList;
 
 /**
@@ -52,14 +53,84 @@ public class BinarySearch {
     long hi = toIndex;
     while (lo <= hi) {
       long mi = (lo + hi) >>> 1;
-      E v = list.get(mi);
-      int cmp = comparator.compare(v, value);
+      E e = list.get(mi);
+      int cmp = comparator.compare(e, value);
       if (cmp < 0) {
         lo = mi + 1;
       } else if (cmp > 0) {
         hi = mi - 1;
       } else {
         return mi; // key found
+      }
+    }
+    return null; // key not found.
+  }
+
+  /**
+   * Returns the value corresponding the search key, if it is contained in the list; null otherwise.
+   *
+   * @param list the list to search
+   * @param extractor the attribute extractor
+   * @param value the value to search for
+   * @param comparator the comparator
+   * @return the index of the search key
+   * @param <E> the type of the elements in the list
+   */
+  public static <E, A> E binarySearchAttribute(
+      DataList<E> list,
+      Function<E, A> extractor,
+      A value,
+      Comparator<A> comparator) {
+    long lo = 0;
+    long hi = list.sizeAsLong() - 1l;
+    while (lo <= hi) {
+      long mi = (lo + hi) >>> 1;
+      E e = list.get(mi);
+      A a = extractor.apply(e);
+      int cmp = comparator.compare(a, value);
+      if (cmp < 0) {
+        lo = mi + 1;
+      } else if (cmp > 0) {
+        hi = mi - 1;
+      } else {
+        return e; // key found
+      }
+    }
+    return null; // key not found.
+  }
+
+  /**
+   * Returns the value corresponding the search key, if it is contained in the list; null otherwise.
+   *
+   * @param list the list to search
+   * @param extractor the attribute extractor
+   * @param value the value to search for
+   * @param comparator the comparator
+   * @param fromIndex the low index
+   * @param toIndex the high index
+   * @return the index of the search key
+   * @param <E> the type of the elements in the list
+   */
+  public static <E, A> E binarySearchAttribute(
+      DataList<E> list,
+      Function<E, A> extractor,
+      A value,
+      Comparator<A> comparator,
+      long fromIndex,
+      long toIndex) {
+    long lo = fromIndex;
+    long hi = toIndex;
+    while (lo <= hi) {
+      long mi = (lo + hi) >>> 1;
+      E e = list.get(mi);
+      A a = extractor.apply(e);
+      int cmp = comparator.compare(a, value);
+      if (cmp < 0) {
+        lo = mi + 1;
+      } else if (cmp > 0) {
+        hi = mi - 1;
+      } else {
+        return e; // key found
       }
     }
     return null; // key not found.

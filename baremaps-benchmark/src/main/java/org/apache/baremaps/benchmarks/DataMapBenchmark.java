@@ -14,26 +14,12 @@ package org.apache.baremaps.benchmarks;
 
 
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
-import org.apache.baremaps.collection.DataMap;
-import org.apache.baremaps.collection.MemoryAlignedDataMap;
-import org.apache.baremaps.collection.memory.MemoryMappedFile;
+import org.apache.baremaps.collection.*;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
-import org.apache.baremaps.collection.memory.OnHeapMemory;
 import org.apache.baremaps.collection.type.LongDataType;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Warmup;
+import org.apache.baremaps.collection.type.PairDataType;
+import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
@@ -41,11 +27,11 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @State(Scope.Benchmark)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @Fork(1)
-public class LongDataMapBenchmark {
+public class DataMapBenchmark {
 
   private static final long N = 1 << 25;
 
-  private void benchmark(DataMap<Long> store, long n) {
+  private static void benchmark(DataMap<Long> store, long n) {
     for (long i = 0; i < n; i++) {
       store.put(i, i);
     }
@@ -61,15 +47,7 @@ public class LongDataMapBenchmark {
   @BenchmarkMode(Mode.SingleShotTime)
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
-  public void onHeap() {
-    benchmark(new MemoryAlignedDataMap<>(new LongDataType(), new OnHeapMemory()), N);
-  }
-
-  @Benchmark
-  @BenchmarkMode(Mode.SingleShotTime)
-  @Warmup(iterations = 2)
-  @Measurement(iterations = 5)
-  public void offHeap() {
+  public void memoryAlignedDataMap() {
     benchmark(new MemoryAlignedDataMap<>(new LongDataType(), new OffHeapMemory()), N);
   }
 
@@ -77,16 +55,35 @@ public class LongDataMapBenchmark {
   @BenchmarkMode(Mode.SingleShotTime)
   @Warmup(iterations = 2)
   @Measurement(iterations = 5)
-  public void onDisk() throws IOException {
-    Path file = Files.createTempFile(Paths.get("."), "baremaps_", ".tmp");
-    benchmark(new MemoryAlignedDataMap<>(new LongDataType(), new MemoryMappedFile(file)),
-        N);
-    Files.delete(file);
+  public void monotonicDataMap() {
+    benchmark(new MonotonicDataMap<>(new AppendOnlyBuffer<>(new LongDataType())), N);
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.SingleShotTime)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
+  public void monotonicPairedDataMap() {
+    benchmark(new MonotonicPairedDataMap<>(
+        new MemoryAlignedDataList<>(
+            new PairDataType<>(new LongDataType(), new LongDataType()),
+            new OffHeapMemory())), N);
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.SingleShotTime)
+  @Warmup(iterations = 2)
+  @Measurement(iterations = 5)
+  public void monotonicFixedSizeDataMap() {
+    benchmark(new MonotonicFixedSizeDataMap<>(
+        new MemoryAlignedDataList<>(new LongDataType()),
+        new MemoryAlignedDataList<>(new LongDataType()),
+        new MemoryAlignedDataList<>(new LongDataType())), N);
   }
 
   public static void main(String[] args) throws RunnerException {
     org.openjdk.jmh.runner.options.Options opt =
-        new OptionsBuilder().include(LongDataMapBenchmark.class.getSimpleName()).forks(1).build();
+        new OptionsBuilder().include(DataMapBenchmark.class.getSimpleName()).forks(1).build();
     new Runner(opt).run();
   }
 }

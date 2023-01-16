@@ -32,12 +32,6 @@ public class PairDataType<L, R> extends FixedSizeDataType<Pair<L, R>> {
 
   /** {@inheritDoc} */
   @Override
-  public int size(Pair<L, R> value) {
-    return left.size() + right.size();
-  }
-
-  /** {@inheritDoc} */
-  @Override
   public void write(ByteBuffer buffer, int position, Pair<L, R> value) {
     left.write(buffer, position, value.left());
     right.write(buffer, position + left.size(), value.right());
@@ -46,9 +40,9 @@ public class PairDataType<L, R> extends FixedSizeDataType<Pair<L, R>> {
   /** {@inheritDoc} */
   @Override
   public Pair<L, R> read(ByteBuffer buffer, int position) {
-    L l = left.read(buffer, position);
-    R r = right.read(buffer, position + left.size());
-    return new Pair<>(l, r);
+    return new Pair<>(
+        left.read(buffer, position),
+        right.read(buffer, position + left.size()));
   }
 
   public static class Pair<L, R> {
