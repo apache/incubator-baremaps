@@ -12,24 +12,33 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
+
+import java.io.BufferedInputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.List;
+import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.collection.DataMap;
-import org.apache.baremaps.database.UpdateService;
+import org.apache.baremaps.database.ChangeImporter;
 import org.apache.baremaps.database.collection.PostgresCoordinateMap;
 import org.apache.baremaps.database.collection.PostgresReferenceMap;
 import org.apache.baremaps.database.repository.*;
+import org.apache.baremaps.openstreetmap.function.ChangeEntitiesHandler;
+import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
+import org.apache.baremaps.openstreetmap.function.EntityProjectionTransformer;
+import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.openstreetmap.state.StateReader;
+import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.List;
 
 public record UpdateOpenStreetMap(String database, Integer databaseSrid) implements Task {
 
@@ -45,8 +54,7 @@ public record UpdateOpenStreetMap(String database, Integer databaseSrid) impleme
     Repository<Long, Node> nodeRepository = new PostgresNodeRepository(datasource);
     Repository<Long, Way> wayRepository = new PostgresWayRepository(datasource);
     Repository<Long, Relation> relationRepository = new PostgresRelationRepository(datasource);
-    var action =
-      new UpdateService(
+    execute(
         coordinateMap,
         referenceMap,
         headerRepository,
@@ -55,18 +63,42 @@ public record UpdateOpenStreetMap(String database, Integer databaseSrid) impleme
         relationRepository,
         databaseSrid
       );
-    action.call();
     logger.info("Finished updating {}", database);
   }
 
-  public URL resolve(String replicationUrl, Long sequenceNumber, String extension)
-    throws MalformedURLException {
-    String s = String.format("%09d", sequenceNumber);
-    String uri =
-      String.format(
-        "%s/%s/%s/%s.%s",
-        replicationUrl, s.substring(0, 3), s.substring(3, 6), s.substring(6, 9), extension
-      );
+  public static void execute(DataMap<Coordinate> coordinateMap, DataMap<List<Long>> referenceMap,
+                          HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
+                          Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository,
+                          int srid) throws Exception {
+    var header = headerRepository.selectLatest();
+    var replicationUrl = header.getReplicationUrl();
+    var sequenceNumber = header.getReplicationSequenceNumber() + 1;
+
+    var createGeometry = new EntityGeometryBuilder(coordinateMap, referenceMap);
+    var reprojectGeometry = new EntityProjectionTransformer(4326, srid);
+    var prepareGeometries = new ChangeEntitiesHandler(createGeometry.andThen(reprojectGeometry));
+    var prepareChange = consumeThenReturn(prepareGeometries);
+    var saveChange = new ChangeImporter(nodeRepository, wayRepository, relationRepository);
+
+    var changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
+    try (var changeInputStream =
+                 new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
+      new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(saveChange);
+    }
+
+    var stateUrl = resolve(replicationUrl, sequenceNumber, "state.txt");
+    try (var stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
+      var state = new StateReader().state(stateInputStream);
+      headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),
+              header.getReplicationUrl(), header.getSource(), header.getWritingProgram()));
+    }
+  }
+
+  public static URL resolve(String replicationUrl, Long sequenceNumber, String extension)
+          throws MalformedURLException {
+    var s = String.format("%09d", sequenceNumber);
+    var uri = String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
+            s.substring(6, 9), extension);
     return URI.create(uri).toURL();
   }
 }

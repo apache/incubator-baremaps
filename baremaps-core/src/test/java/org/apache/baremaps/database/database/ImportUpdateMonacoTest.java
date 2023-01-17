@@ -23,8 +23,6 @@ import org.apache.baremaps.collection.memory.OnHeapMemory;
 import org.apache.baremaps.collection.type.CoordinateDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
 import org.apache.baremaps.database.DiffService;
-import org.apache.baremaps.database.ImportService;
-import org.apache.baremaps.database.UpdateService;
 import org.apache.baremaps.database.collection.PostgresCoordinateMap;
 import org.apache.baremaps.database.collection.PostgresReferenceMap;
 import org.apache.baremaps.database.repository.PostgresHeaderRepository;
@@ -33,6 +31,8 @@ import org.apache.baremaps.database.repository.PostgresRelationRepository;
 import org.apache.baremaps.database.repository.PostgresWayRepository;
 import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.testing.TestFiles;
+import org.apache.baremaps.workflow.tasks.ImportOpenStreetMap;
+import org.apache.baremaps.workflow.tasks.UpdateOpenStreetMap;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -53,9 +53,8 @@ class ImportUpdateMonacoTest extends DatabaseContainerTest {
         new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
-    new ImportService(TestFiles.resolve("monaco/monaco-210801.osm.pbf"), coordinateMap,
-        referenceMap, headerRepository, nodeRepository, wayRepository, relationRepository, 3857)
-            .call();
+    ImportOpenStreetMap.execute(TestFiles.resolve("monaco/monaco-210801.osm.pbf"), coordinateMap,
+        referenceMap, headerRepository, nodeRepository, wayRepository, relationRepository, 3857);
 
     assertEquals(3047l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
@@ -72,8 +71,8 @@ class ImportUpdateMonacoTest extends DatabaseContainerTest {
     while (replicationSequenceNumber < 3075) {
       new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository, wayRepository,
           relationRepository, 3857, 14).call();
-      new UpdateService(coordinateMap, referenceMap, headerRepository, nodeRepository,
-          wayRepository, relationRepository, 3857).call();
+      UpdateOpenStreetMap.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
+          wayRepository, relationRepository, 3857);
       long nextReplicationSequenceNumber =
           headerRepository.selectLatest().getReplicationSequenceNumber();
       assertEquals(replicationSequenceNumber + 1, nextReplicationSequenceNumber);

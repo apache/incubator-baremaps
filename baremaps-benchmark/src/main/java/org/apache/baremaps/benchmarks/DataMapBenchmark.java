@@ -67,7 +67,8 @@ public class DataMapBenchmark {
     benchmark(new MonotonicPairedDataMap<>(
         new MemoryAlignedDataList<>(
             new PairDataType<>(new LongDataType(), new LongDataType()),
-            new OffHeapMemory())), N);
+            new OffHeapMemory())),
+        N);
   }
 
   @Benchmark

@@ -25,8 +25,6 @@ import org.apache.baremaps.collection.IndexedDataMap;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
 import org.apache.baremaps.collection.type.CoordinateDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
-import org.apache.baremaps.database.ImportService;
-import org.apache.baremaps.database.UpdateService;
 import org.apache.baremaps.database.collection.PostgresCoordinateMap;
 import org.apache.baremaps.database.collection.PostgresReferenceMap;
 import org.apache.baremaps.database.repository.PostgresHeaderRepository;
@@ -36,6 +34,8 @@ import org.apache.baremaps.database.repository.PostgresWayRepository;
 import org.apache.baremaps.openstreetmap.model.Header;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.workflow.tasks.ImportOpenStreetMap;
+import org.apache.baremaps.workflow.tasks.UpdateOpenStreetMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -57,8 +57,8 @@ class ImportUpdateDataTest extends DatabaseContainerTest {
         new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
-    new ImportService(SIMPLE_DATA_OSM_PBF, coordinateMap, referenceMap, headerRepository,
-        nodeRepository, wayRepository, relationRepository, 3857).call();
+    ImportOpenStreetMap.execute(SIMPLE_DATA_OSM_PBF, coordinateMap, referenceMap, headerRepository,
+        nodeRepository, wayRepository, relationRepository, 3857);
 
     headerRepository.put(new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0),
         "file:///" + SIMPLE_DATA_DIR, "", ""));
@@ -90,9 +90,9 @@ class ImportUpdateDataTest extends DatabaseContainerTest {
     assertNotNull(way);
 
     // Update the database
-    new UpdateService(new PostgresCoordinateMap(dataSource()),
+    UpdateOpenStreetMap.execute(new PostgresCoordinateMap(dataSource()),
         new PostgresReferenceMap(dataSource()), headerRepository, nodeRepository, wayRepository,
-        relationRepository, 3857).call();
+        relationRepository, 3857);
 
     // Check deletions
     assertNull(nodeRepository.get(0l));

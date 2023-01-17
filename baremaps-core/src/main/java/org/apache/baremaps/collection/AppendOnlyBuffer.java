@@ -156,10 +156,18 @@ public class AppendOnlyBuffer<E> extends DataCollection<E> {
         }
         long segmentIndex = position / segmentSize;
         long segmentOffset = position % segmentSize;
-        ByteBuffer buffer = memory.segment((int) segmentIndex);
-        position += dataType.size(buffer, (int) segmentOffset);
+        ByteBuffer segment = memory.segment((int) segmentIndex);
+        int size = dataType.size(segment, (int) segmentOffset);
+        if (size == 0) {
+          segmentIndex = segmentIndex + 1;
+          segmentOffset = 0;
+          position = segmentIndex * segmentSize;
+          segment = memory.segment((int) segmentIndex);
+          size = dataType.size(segment, (int) segmentOffset);
+        }
+        position += size;
         index++;
-        return dataType.read(buffer, (int) segmentOffset);
+        return dataType.read(segment, (int) segmentOffset);
       }
     };
   }

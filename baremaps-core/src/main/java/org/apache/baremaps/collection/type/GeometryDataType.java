@@ -44,7 +44,7 @@ public class GeometryDataType implements DataType<Geometry> {
   /** {@inheritDoc} */
   @Override
   public Geometry read(ByteBuffer buffer, int position) {
-    int size = size(buffer, position);
+    int size = buffer.getInt(position);
     byte[] bytes = new byte[size - Integer.BYTES];
     buffer.get(position + Integer.BYTES, bytes);
     return GeometryUtils.deserialize(bytes);

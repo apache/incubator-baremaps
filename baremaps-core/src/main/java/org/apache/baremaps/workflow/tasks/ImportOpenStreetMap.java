@@ -12,102 +12,141 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
+import static org.apache.baremaps.stream.StreamUtils.batch;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import org.apache.baremaps.collection.*;
-import org.apache.baremaps.collection.memory.MemoryMappedFile;
 import org.apache.baremaps.collection.AppendOnlyBuffer;
 import org.apache.baremaps.collection.MemoryAlignedDataList;
+import org.apache.baremaps.collection.memory.MemoryMappedFile;
 import org.apache.baremaps.collection.type.LonLatDataType;
 import org.apache.baremaps.collection.type.LongDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
 import org.apache.baremaps.collection.type.PairDataType;
 import org.apache.baremaps.collection.utils.FileUtils;
-import org.apache.baremaps.database.ImportService;
+import org.apache.baremaps.database.BlockImporter;
 import org.apache.baremaps.database.repository.*;
+import org.apache.baremaps.openstreetmap.function.*;
+import org.apache.baremaps.openstreetmap.model.Node;
+import org.apache.baremaps.openstreetmap.model.Relation;
+import org.apache.baremaps.openstreetmap.model.Way;
+import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public record ImportOpenStreetMap(Path file, String database, Integer databaseSrid)
-  implements Task {
+        implements Task {
 
-  private static final Logger logger = LoggerFactory.getLogger(ImportOpenStreetMap.class);
+    private static final Logger logger = LoggerFactory.getLogger(ImportOpenStreetMap.class);
 
-  @Override
-  public void execute(WorkflowContext context) throws Exception {
-    logger.info("Importing {} into {}", file, database);
+    @Override
+    public void execute(WorkflowContext context) throws Exception {
+        logger.info("Importing {} into {}", file, database);
 
-    var dataSource = context.getDataSource(database);
-    var path = file.toAbsolutePath();
+        var dataSource = context.getDataSource(database);
+        var path = file.toAbsolutePath();
 
-    var headerRepository = new PostgresHeaderRepository(dataSource);
-    var nodeRepository = new PostgresNodeRepository(dataSource);
-    var wayRepository = new PostgresWayRepository(dataSource);
-    var relationRepository = new PostgresRelationRepository(dataSource);
+        var headerRepository = new PostgresHeaderRepository(dataSource);
+        var nodeRepository = new PostgresNodeRepository(dataSource);
+        var wayRepository = new PostgresWayRepository(dataSource);
+        var relationRepository = new PostgresRelationRepository(dataSource);
 
-    headerRepository.drop();
-    nodeRepository.drop();
-    wayRepository.drop();
-    relationRepository.drop();
+        headerRepository.drop();
+        nodeRepository.drop();
+        wayRepository.drop();
+        relationRepository.drop();
 
-    headerRepository.create();
-    nodeRepository.create();
-    wayRepository.create();
-    relationRepository.create();
+        headerRepository.create();
+        nodeRepository.create();
+        wayRepository.create();
+        relationRepository.create();
 
-    var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
+        var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
 
-    DataMap<Coordinate> coordinateMap;
-    if (Files.size(path) > 1 << 30) {
-      var coordinatesFile = Files.createFile(cacheDir.resolve("coordinates"));
-      coordinateMap = new MemoryAlignedDataMap<>(
-        new LonLatDataType(),
-        new MemoryMappedFile(coordinatesFile));
-    } else {
-      var coordinatesKeysFile = Files.createFile(cacheDir.resolve("coordinates_keys"));
-      var coordinatesValsFile = Files.createFile(cacheDir.resolve("coordinates_vals"));
-      coordinateMap =
-        new MonotonicDataMap<>(
-                new MemoryAlignedDataList<>(
-          new PairDataType<>(new LongDataType(), new LongDataType()),
-          new MemoryMappedFile(coordinatesKeysFile)
-        ), new AppendOnlyBuffer<>(
-                  new LonLatDataType(),
-                  new MemoryMappedFile(coordinatesValsFile))
+        DataMap<Coordinate> coordinateMap;
+        if (Files.size(path) > 1 << 30) {
+            var coordinatesFile = Files.createFile(cacheDir.resolve("coordinates"));
+            coordinateMap = new MemoryAlignedDataMap<>(
+                    new LonLatDataType(),
+                    new MemoryMappedFile(coordinatesFile));
+        } else {
+            var coordinatesKeysFile = Files.createFile(cacheDir.resolve("coordinates_keys"));
+            var coordinatesValsFile = Files.createFile(cacheDir.resolve("coordinates_vals"));
+            coordinateMap =
+                    new MonotonicDataMap<>(
+                            new MemoryAlignedDataList<>(
+                                    new PairDataType<>(new LongDataType(), new LongDataType()),
+                                    new MemoryMappedFile(coordinatesKeysFile)
+                            ), new AppendOnlyBuffer<>(
+                            new LonLatDataType(),
+                            new MemoryMappedFile(coordinatesValsFile))
+                    );
+        }
+
+        var referencesKeysDir = Files.createFile(cacheDir.resolve("references_keys"));
+        var referencesValuesDir = Files.createFile(cacheDir.resolve("references_vals"));
+        var referenceMap =
+                new MonotonicDataMap<>(
+                        new MemoryAlignedDataList<>(
+                                new PairDataType<>(new LongDataType(), new LongDataType()),
+                                new MemoryMappedFile(referencesKeysDir)
+                        ), new AppendOnlyBuffer<>(
+                        new LongListDataType(),
+                        new MemoryMappedFile(referencesValuesDir))
+                );
+
+        ImportOpenStreetMap.execute(
+                path,
+                coordinateMap,
+                referenceMap,
+                headerRepository,
+                nodeRepository,
+                wayRepository,
+                relationRepository,
+                databaseSrid
         );
+
+        FileUtils.deleteRecursively(cacheDir);
+
+        logger.info("Finished importing {} into {}", file, database);
     }
 
-    var referencesKeysDir = Files.createFile(cacheDir.resolve("references_keys"));
-    var referencesValuesDir = Files.createFile(cacheDir.resolve("references_vals"));
-    var referenceMap =
-      new MonotonicDataMap<>(
-              new MemoryAlignedDataList<>(
-        new PairDataType<>(new LongDataType(), new LongDataType()),
-        new MemoryMappedFile(referencesKeysDir)
-      ), new AppendOnlyBuffer<>(
-                new LongListDataType(),
-                new MemoryMappedFile(referencesValuesDir))
-      );
+    public static void execute(
+            Path path,
+            DataMap<Coordinate> coordinateMap,
+            DataMap<List<Long>> referenceMap,
+            HeaderRepository headerRepository,
+            Repository<Long, Node> nodeRepository,
+            Repository<Long, Way> wayRepository,
+            Repository<Long, Relation> relationRepository,
+            Integer databaseSrid) throws IOException {
+// Initialize and chain the entity handlers
+        var coordinateMapBuilder = new CoordinateMapBuilder(coordinateMap);
+        var referenceMapBuilder = new ReferenceMapBuilder(referenceMap);
+        var entityGeometryBuilder = new EntityGeometryBuilder(coordinateMap, referenceMap);
+        var entityProjectionTransformer = new EntityProjectionTransformer(4326, databaseSrid);
+        var entityHandler = coordinateMapBuilder
+                .andThen(referenceMapBuilder)
+                .andThen(entityGeometryBuilder)
+                .andThen(entityProjectionTransformer);
 
-    new ImportService(
-      path,
-      coordinateMap,
-      referenceMap,
-      headerRepository,
-      nodeRepository,
-      wayRepository,
-      relationRepository,
-      databaseSrid
-    ).call();
+        // Initialize the block mapper
+        var blockMapper = consumeThenReturn(new BlockEntitiesHandler(entityHandler));
+        var blockImporter =
+                new BlockImporter(headerRepository, nodeRepository, wayRepository, relationRepository);
 
-    FileUtils.deleteRecursively(cacheDir);
-
-    logger.info("Finished importing {} into {}", file, database);
-  }
+        // Process the blocks
+        try (InputStream inputStream = Files.newInputStream(path)) {
+            batch(new PbfBlockReader().stream(inputStream).map(blockMapper)).forEach(blockImporter);
+        }
+    }
 }
