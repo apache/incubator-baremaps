@@ -12,21 +12,23 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import static org.junit.jupiter.api.Assertions.*;
+
 
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.workflow.WorkflowContext;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 class SimplifyOpenStreetMapTest extends PostgresContainerTest {
 
   @Test
+  @Tag("integration")
   void execute() throws Exception {
-    var task = new SimplifyOpenStreetMap(
-        TestFiles.resolve("liechtenstein/liechtenstein.osm.pbf"),
-        jdbcUrl(),
-        3857);
+    var file = TestFiles.resolve("data.osm.pbf");
+    var jdbcUrl = jdbcUrl();
+    var srid = 3857;
+    var task = new SimplifyOpenStreetMap(file, jdbcUrl, srid);
     task.execute(new WorkflowContext());
   }
 }

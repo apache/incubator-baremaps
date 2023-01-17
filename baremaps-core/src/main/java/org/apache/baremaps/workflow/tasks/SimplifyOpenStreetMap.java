@@ -13,8 +13,8 @@
 package org.apache.baremaps.workflow.tasks;
 
 
-
 import com.google.common.base.Predicates;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,6 +30,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
 import org.apache.baremaps.collection.*;
 import org.apache.baremaps.collection.AppendOnlyBuffer;
 import org.apache.baremaps.collection.MemoryAlignedDataList;
@@ -50,41 +51,59 @@ import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record SimplifyOpenStreetMap(Path file,String database,Integer databaseSrid)implements Task{
+public record SimplifyOpenStreetMap(Path file, String database, Integer databaseSrid)
+        implements Task {
 
-private static final Logger logger=LoggerFactory.getLogger(ImportOpenStreetMap.class);
+    private static final Logger logger = LoggerFactory.getLogger(ImportOpenStreetMap.class);
 
-@Override public void execute(WorkflowContext context)throws Exception{logger.info("Importing {} into {}",file,database);
+    @Override
+    public void execute(WorkflowContext context) throws Exception {
+        logger.info("Importing {} into {}", file, database);
 
-var path=file.toAbsolutePath();
+        var path = file.toAbsolutePath();
 
-var cacheDir=Files.createTempDirectory(Paths.get("."),"cache_");
+        var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
 
-var coordinatesKeysFile=Files.createFile(cacheDir.resolve("coordinates_keys"));var coordinatesValsFile=Files.createFile(cacheDir.resolve("coordinates_vals"));var coordinateMap=new MonotonicDataMap<>(new MemoryAlignedDataList<>(new PairDataType<>(new LongDataType(),new LongDataType()),new MemoryMappedFile(coordinatesKeysFile)),new AppendOnlyBuffer<>(new LonLatDataType(),new MemoryMappedFile(coordinatesValsFile)));
+        var coordinatesKeysFile = Files.createFile(cacheDir.resolve("coordinates_keys"));
+        var coordinatesValsFile = Files.createFile(cacheDir.resolve("coordinates_vals"));
+        var coordinateMap = new MonotonicDataMap<>(new MemoryAlignedDataList<>(new PairDataType<>(new LongDataType(), new LongDataType()), new MemoryMappedFile(coordinatesKeysFile)), new AppendOnlyBuffer<>(new LonLatDataType(), new MemoryMappedFile(coordinatesValsFile)));
 
-var referencesKeysFile=Files.createFile(cacheDir.resolve("references_keys"));var referencesValuesFile=Files.createFile(cacheDir.resolve("references_vals"));var referenceMap=new MonotonicDataMap<>(new MemoryAlignedDataList<>(new PairDataType<>(new LongDataType(),new LongDataType()),new MemoryMappedFile(referencesKeysFile)),new AppendOnlyBuffer<>(new LongListDataType(),new MemoryMappedFile(referencesValuesFile)));
+        var referencesKeysFile = Files.createFile(cacheDir.resolve("references_keys"));
+        var referencesValuesFile = Files.createFile(cacheDir.resolve("references_vals"));
+        var referenceMap = new MonotonicDataMap<>(new MemoryAlignedDataList<>(new PairDataType<>(new LongDataType(), new LongDataType()), new MemoryMappedFile(referencesKeysFile)), new AppendOnlyBuffer<>(new LongListDataType(), new MemoryMappedFile(referencesValuesFile)));
 
-var collection=new AppendOnlyBuffer<>(new GeometryDataType(),new OffHeapMemory());
+        var collection = new AppendOnlyBuffer<>(new GeometryDataType(), new OffHeapMemory());
+        var projectionTransform = new ProjectionTransformer(4326, databaseSrid);
+        new PbfEntityReader(new PbfBlockReader().geometries(true)
+                .coordinateMap(coordinateMap)
+                .referenceMap(referenceMap))
+                .stream(Files.newInputStream(path)).filter(Element.class::isInstance).map(Element.class::cast).filter(element -> element.getTags().containsKey("building")).map(Element::getGeometry).filter(Predicates.notNull()).map(projectionTransform::transform).forEach(collection::add);
+        var unionedGeometry = new CascadedPolygonUnion(collection).union();
 
-var projectionTransform=new ProjectionTransformer(4326,databaseSrid);
+        var dataSource = context.getDataSource(database);
+        var postgresDatabase = new PostgresDatabase(dataSource);
 
-new PbfEntityReader(new PbfBlockReader().geometries(true).coordinateMap(coordinateMap).referenceMap(referenceMap)).stream(Files.newInputStream(path)).filter(Element.class::isInstance).map(Element.class::cast).filter(element->element.getTags().containsKey("building")).map(Element::getGeometry).filter(Predicates.notNull()).map(projectionTransform::transform).forEach(collection::add);
+        var featureType = new FeatureType("buildings", Map.of("geom", new PropertyType("geom", Geometry.class)));
+        Stream<Feature> stream = IntStream.range(0, unionedGeometry.getNumGeometries()).mapToObj(unionedGeometry::getGeometryN).map(geometry -> new FeatureImpl(featureType, Map.of("geom", geometry)));
 
-var unionedGeometry=new CascadedPolygonUnion(collection).union();
+        postgresDatabase.write(new ReadableFeatureSet() {
+            @Override
+            public FeatureType getType() throws IOException {
+                return featureType;
+            }
 
-var dataSource=context.getDataSource(database);var postgresDatabase=new PostgresDatabase(dataSource);
+            @Override
+            public Stream<Feature> read() throws IOException {
+                return stream;
+            }
+        });
 
-var featureType=new FeatureType("buildings",Map.of("geom",new PropertyType("geom",Geometry.class)));Stream<Feature>stream=IntStream.range(0,unionedGeometry.getNumGeometries()).mapToObj(unionedGeometry::getGeometryN).map(geometry->new FeatureImpl(featureType,Map.of("geom",geometry)));
+        FileUtils.deleteRecursively(cacheDir);
 
-postgresDatabase.write(new ReadableFeatureSet(){@Override public FeatureType getType()throws IOException{return featureType;}
+        logger.info("Finished importing {} into {}", file, database);
+    }
 
-@Override public Stream<Feature>read()throws IOException{return stream;}});
-
-FileUtils.deleteRecursively(cacheDir);
-
-logger.info("Finished importing {} into {}",file,database);}
-
-public static class PolygonUnionConsumer implements Consumer<Element> {
+    public static class PolygonUnionConsumer implements Consumer<Element> {
 
         private final Map<Map<String, Object>, Collection<Element>> groups = new ConcurrentHashMap<>();
 
@@ -119,4 +138,5 @@ public static class PolygonUnionConsumer implements Consumer<Element> {
                                 .mapToObj(geometry::getGeometryN);
                     });
         }
-    }}
+    }
+}
