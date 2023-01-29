@@ -22,11 +22,10 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -73,32 +72,35 @@ public record SimplifyOpenStreetMap(Path file, String database, Integer database
         var referenceMap = new MonotonicDataMap<>(new MemoryAlignedDataList<>(new PairDataType<>(new LongDataType(), new LongDataType()), new MemoryMappedFile(referencesKeysFile)), new AppendOnlyBuffer<>(new LongListDataType(), new MemoryMappedFile(referencesValuesFile)));
 
         var collection = new AppendOnlyBuffer<>(new GeometryDataType(), new OffHeapMemory());
-        var projectionTransform = new ProjectionTransformer(4326, databaseSrid);
+        var projectionTransformer = new ProjectionTransformer(4326, databaseSrid);
         new PbfEntityReader(new PbfBlockReader().geometries(true)
                 .coordinateMap(coordinateMap)
                 .referenceMap(referenceMap))
-                .stream(Files.newInputStream(path)).filter(Element.class::isInstance).map(Element.class::cast).filter(element -> element.getTags().containsKey("building")).map(Element::getGeometry).filter(Predicates.notNull()).map(projectionTransform::transform).forEach(collection::add);
+                .stream(Files.newInputStream(path)).filter(Element.class::isInstance).map(Element.class::cast).filter(element -> element.getTags().containsKey("building")).map(Element::getGeometry).filter(Predicates.notNull()).map(projectionTransformer::transform).forEach(collection::add);
         var unionedGeometry = new CascadedPolygonUnion(collection).union();
 
         var dataSource = context.getDataSource(database);
         var postgresDatabase = new PostgresDatabase(dataSource);
 
         var featureType = new FeatureType("buildings", Map.of("geom", new PropertyType("geom", Geometry.class)));
-        Stream<Feature> stream = IntStream.range(0, unionedGeometry.getNumGeometries()).mapToObj(unionedGeometry::getGeometryN).map(geometry -> new FeatureImpl(featureType, Map.of("geom", geometry)));
+        Stream<Feature> stream = IntStream.range(0, unionedGeometry.getNumGeometries())
+                .mapToObj(unionedGeometry::getGeometryN)
+                .map(geometry -> new FeatureImpl(featureType, Map.of("geom", geometry)));
 
         postgresDatabase.write(new ReadableFeatureSet() {
             @Override
-            public FeatureType getType() throws IOException {
+            public FeatureType getType() {
                 return featureType;
             }
 
             @Override
-            public Stream<Feature> read() throws IOException {
+            public Stream<Feature> read() {
                 return stream;
             }
         });
 
         FileUtils.deleteRecursively(cacheDir);
+
 
         logger.info("Finished importing {} into {}", file, database);
     }

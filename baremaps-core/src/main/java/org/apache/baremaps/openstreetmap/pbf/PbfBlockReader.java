@@ -144,8 +144,10 @@ public class PbfBlockReader implements OsmReader<Block> {
    * @return a stream of blocks
    */
   public Stream<Block> stream(InputStream inputStream) {
-    var blocks = StreamUtils.bufferInSourceOrder(StreamUtils.stream(new BlobIterator(inputStream)),
-        new BlobToBlockMapper(), Runtime.getRuntime().availableProcessors());
+    var blocks = StreamUtils.bufferInSourceOrder(
+        StreamUtils.stream(new BlobIterator(inputStream)),
+        new BlobToBlockMapper(),
+        Runtime.getRuntime().availableProcessors());
     if (geometry) {
       // Initialize and chain the entity handlers
       var coordinateMapBuilder = new CoordinateMapBuilder(coordinateMap);
