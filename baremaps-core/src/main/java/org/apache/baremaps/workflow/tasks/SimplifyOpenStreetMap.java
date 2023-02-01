@@ -73,10 +73,18 @@ public record SimplifyOpenStreetMap(Path file, String database, Integer database
 
         var collection = new AppendOnlyBuffer<>(new GeometryDataType(), new OffHeapMemory());
         var projectionTransformer = new ProjectionTransformer(4326, databaseSrid);
-        new PbfEntityReader(new PbfBlockReader().geometries(true)
+        new PbfEntityReader()
+                .geometries(true)
                 .coordinateMap(coordinateMap)
-                .referenceMap(referenceMap))
-                .stream(Files.newInputStream(path)).filter(Element.class::isInstance).map(Element.class::cast).filter(element -> element.getTags().containsKey("building")).map(Element::getGeometry).filter(Predicates.notNull()).map(projectionTransformer::transform).forEach(collection::add);
+                .referenceMap(referenceMap)
+                .stream(Files.newInputStream(path))
+                .filter(Element.class::isInstance)
+                .map(Element.class::cast)
+                .filter(element -> element.getTags().containsKey("building"))
+                .map(Element::getGeometry)
+                .filter(Predicates.notNull())
+                .map(projectionTransformer::transform)
+                .forEach(collection::add);
         var unionedGeometry = new CascadedPolygonUnion(collection).union();
 
         var dataSource = context.getDataSource(database);
@@ -100,7 +108,6 @@ public record SimplifyOpenStreetMap(Path file, String database, Integer database
         });
 
         FileUtils.deleteRecursively(cacheDir);
-
 
         logger.info("Finished importing {} into {}", file, database);
     }

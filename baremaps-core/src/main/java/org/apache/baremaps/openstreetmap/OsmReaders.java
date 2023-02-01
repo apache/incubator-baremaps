@@ -15,6 +15,7 @@ package org.apache.baremaps.openstreetmap;
 
 
 import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
+import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
 import org.apache.baremaps.openstreetmap.state.StateReader;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
 import org.apache.baremaps.openstreetmap.xml.XmlEntityReader;
@@ -28,6 +29,10 @@ public class OsmReaders {
 
   public static PbfBlockReader pbf() {
     return new PbfBlockReader();
+  }
+
+  public static PbfEntityReader entities() {
+    return new PbfEntityReader();
   }
 
   public static XmlEntityReader xml() {

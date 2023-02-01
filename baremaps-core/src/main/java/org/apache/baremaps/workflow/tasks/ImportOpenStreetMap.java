@@ -129,7 +129,7 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
             Repository<Long, Way> wayRepository,
             Repository<Long, Relation> relationRepository,
             Integer databaseSrid) throws IOException {
-// Initialize and chain the entity handlers
+        // Initialize and chain the entity handlers
         var coordinateMapBuilder = new CoordinateMapBuilder(coordinateMap);
         var referenceMapBuilder = new ReferenceMapBuilder(referenceMap);
         var entityGeometryBuilder = new EntityGeometryBuilder(coordinateMap, referenceMap);

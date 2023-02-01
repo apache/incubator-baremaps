@@ -39,7 +39,6 @@ import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.State;
 import org.apache.baremaps.openstreetmap.model.Way;
-import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
 import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
 import org.apache.baremaps.openstreetmap.state.StateReader;
 import org.apache.baremaps.openstreetmap.xml.XmlChangeReader;
@@ -88,14 +87,14 @@ class OpenStreetMapTest {
   @Test
   void dataOsmPbf() throws IOException {
     try (InputStream input = Files.newInputStream(DATA_OSM_PBF)) {
-      assertEquals(72002, new PbfEntityReader(new PbfBlockReader()).stream(input).count());
+      assertEquals(72002, new PbfEntityReader().stream(input).count());
     }
   }
 
   @Test
   void denseNodesOsmPbf() throws IOException {
     try (InputStream input = Files.newInputStream(DENSE_NODES_OSM_PBF)) {
-      assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).stream(input)
+      assertEquals(8000, new PbfEntityReader().stream(input)
           .filter(e -> e instanceof Node).count());
     }
   }
@@ -103,7 +102,7 @@ class OpenStreetMapTest {
   @Test
   void waysOsmPbf() throws IOException {
     try (InputStream input = Files.newInputStream(WAYS_OSM_PBF)) {
-      assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).stream(input)
+      assertEquals(8000, new PbfEntityReader().stream(input)
           .filter(e -> e instanceof Way).count());
     }
   }
@@ -111,7 +110,7 @@ class OpenStreetMapTest {
   @Test
   void relationsOsmPbf() throws IOException {
     try (InputStream input = Files.newInputStream(RELATIONS_OSM_PBF)) {
-      assertEquals(8000, new PbfEntityReader(new PbfBlockReader()).stream(input)
+      assertEquals(8000, new PbfEntityReader().stream(input)
           .filter(e -> e instanceof Relation).count());
     }
   }
@@ -128,7 +127,7 @@ class OpenStreetMapTest {
   @Test
   void monacoOsmPbf() throws IOException, URISyntaxException {
     try (InputStream inputStream = Files.newInputStream(MONACO_OSM_PBF)) {
-      Stream<Entity> stream = new PbfEntityReader(new PbfBlockReader()).stream(inputStream);
+      Stream<Entity> stream = new PbfEntityReader().stream(inputStream);
       process(stream, 1, 1, 25002, 4018, 243);
     }
   }

@@ -35,7 +35,6 @@ import org.apache.baremaps.collection.type.LongListDataType;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
-import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
 import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
 import org.locationtech.jts.geom.Coordinate;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -84,8 +83,11 @@ public class OpenStreetMapGeometriesBenchmark {
     AtomicLong ways = new AtomicLong(0);
     AtomicLong relations = new AtomicLong(0);
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      new PbfEntityReader(new PbfBlockReader().coordinateMap(coordinateMap)
-          .referenceMap(referenceMap).projection(4326)).stream(inputStream).forEach(entity -> {
+      new PbfEntityReader()
+          .coordinateMap(coordinateMap)
+          .referenceMap(referenceMap)
+          .projection(4326)
+          .stream(inputStream).forEach(entity -> {
             if (entity instanceof Node node) {
               nodes.incrementAndGet();
             } else if (entity instanceof Way way) {
