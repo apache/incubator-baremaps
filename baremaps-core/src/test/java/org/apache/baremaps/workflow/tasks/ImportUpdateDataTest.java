@@ -10,11 +10,12 @@
  * the License.
  */
 
-package org.apache.baremaps.database.database;
+package org.apache.baremaps.workflow.tasks;
 
-import static org.apache.baremaps.testing.TestFiles.LIECHTENSTEIN_DIR;
-import static org.apache.baremaps.testing.TestFiles.LIECHTENSTEIN_OSM_PBF;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.apache.baremaps.testing.TestFiles.SIMPLE_DATA_DIR;
+import static org.apache.baremaps.testing.TestFiles.SIMPLE_DATA_OSM_PBF;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,25 +25,26 @@ import org.apache.baremaps.collection.IndexedDataMap;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
 import org.apache.baremaps.collection.type.CoordinateDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
-import org.apache.baremaps.database.DiffService;
 import org.apache.baremaps.database.collection.PostgresCoordinateMap;
 import org.apache.baremaps.database.collection.PostgresReferenceMap;
+import org.apache.baremaps.database.database.DatabaseContainerTest;
 import org.apache.baremaps.database.repository.PostgresHeaderRepository;
 import org.apache.baremaps.database.repository.PostgresNodeRepository;
 import org.apache.baremaps.database.repository.PostgresRelationRepository;
 import org.apache.baremaps.database.repository.PostgresWayRepository;
 import org.apache.baremaps.openstreetmap.model.Header;
-import org.apache.baremaps.workflow.tasks.ImportOpenStreetMap;
-import org.apache.baremaps.workflow.tasks.UpdateOpenStreetMap;
+import org.apache.baremaps.openstreetmap.model.Node;
+import org.apache.baremaps.openstreetmap.model.Way;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 
-class ImportUpdateLiechtensteinTest extends DatabaseContainerTest {
+class ImportUpdateDataTest extends DatabaseContainerTest {
 
   @Test
   @Tag("integration")
-  void liechtenstein() throws Exception {
+  void data() throws Exception {
     PostgresHeaderRepository headerRepository = new PostgresHeaderRepository(dataSource());
     PostgresNodeRepository nodeRepository = new PostgresNodeRepository(dataSource());
     PostgresWayRepository wayRepository = new PostgresWayRepository(dataSource());
@@ -54,42 +56,50 @@ class ImportUpdateLiechtensteinTest extends DatabaseContainerTest {
         new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
-    ImportOpenStreetMap.execute(LIECHTENSTEIN_OSM_PBF, coordinateMap, referenceMap,
-        headerRepository,
+    ImportOpenStreetMap.execute(SIMPLE_DATA_OSM_PBF, coordinateMap, referenceMap, headerRepository,
         nodeRepository, wayRepository, relationRepository, 3857);
 
-    assertEquals(2434l, headerRepository.selectLatest().getReplicationSequenceNumber());
+    headerRepository.put(new Header(0l, LocalDateTime.of(2020, 1, 1, 0, 0, 0, 0),
+        "file:///" + SIMPLE_DATA_DIR, "", ""));
 
-    // Fix the replicationUrl so that we can update the database with local files
-    headerRepository.put(new Header(2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0),
-        "file:///" + LIECHTENSTEIN_DIR, "", ""));
+    // Check node importation
+    assertNull(nodeRepository.get(0l));
+    assertNotNull(nodeRepository.get(1l));
+    assertNotNull(nodeRepository.get(2l));
+    assertNotNull(nodeRepository.get(3l));
+    assertNull(nodeRepository.get(4l));
 
-    coordinateMap = new PostgresCoordinateMap(dataSource());
-    referenceMap = new PostgresReferenceMap(dataSource());
+    // Check way importation
+    assertNull(wayRepository.get(0l));
+    assertNotNull(wayRepository.get(1l));
+    assertNull(wayRepository.get(2l));
 
-    assertEquals(0, new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository,
-        wayRepository, relationRepository, 3857, 14).call().size());
+    // Check relation importation
+    assertNull(relationRepository.get(0l));
+    assertNotNull(relationRepository.get(1l));
+    assertNull(relationRepository.get(2l));
+
+    // Check node properties
+    Node node = nodeRepository.get(1l);
+    Assertions.assertEquals(1, node.getLon());
+    Assertions.assertEquals(1, node.getLat());
+
+    // Check way properties
+    Way way = wayRepository.get(1l);
+    assertNotNull(way);
 
     // Update the database
-    UpdateOpenStreetMap.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
-        wayRepository,
+    UpdateOpenStreetMap.execute(new PostgresCoordinateMap(dataSource()),
+        new PostgresReferenceMap(dataSource()), headerRepository, nodeRepository, wayRepository,
         relationRepository, 3857);
-    assertEquals(2435l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
-    assertEquals(2, new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository,
-        wayRepository, relationRepository, 3857, 14).call().size());
+    // Check deletions
+    assertNull(nodeRepository.get(0l));
+    assertNull(nodeRepository.get(1l));
 
-    UpdateOpenStreetMap.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
-        wayRepository,
-        relationRepository, 3857);
-    assertEquals(2436l, headerRepository.selectLatest().getReplicationSequenceNumber());
-
-    assertEquals(0, new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository,
-        wayRepository, relationRepository, 3857, 14).call().size());
-
-    UpdateOpenStreetMap.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
-        wayRepository,
-        relationRepository, 3857);
-    assertEquals(2437l, headerRepository.selectLatest().getReplicationSequenceNumber());
+    // Check insertions
+    assertNotNull(nodeRepository.get(2l));
+    assertNotNull(nodeRepository.get(3l));
+    assertNotNull(nodeRepository.get(4l));
   }
 }

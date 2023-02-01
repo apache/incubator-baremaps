@@ -10,8 +10,10 @@
  * the License.
  */
 
-package org.apache.baremaps.database.database;
+package org.apache.baremaps.workflow.tasks;
 
+import static org.apache.baremaps.testing.TestFiles.LIECHTENSTEIN_DIR;
+import static org.apache.baremaps.testing.TestFiles.LIECHTENSTEIN_OSM_PBF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
@@ -25,23 +27,21 @@ import org.apache.baremaps.collection.type.LongListDataType;
 import org.apache.baremaps.database.DiffService;
 import org.apache.baremaps.database.collection.PostgresCoordinateMap;
 import org.apache.baremaps.database.collection.PostgresReferenceMap;
+import org.apache.baremaps.database.database.DatabaseContainerTest;
 import org.apache.baremaps.database.repository.PostgresHeaderRepository;
 import org.apache.baremaps.database.repository.PostgresNodeRepository;
 import org.apache.baremaps.database.repository.PostgresRelationRepository;
 import org.apache.baremaps.database.repository.PostgresWayRepository;
 import org.apache.baremaps.openstreetmap.model.Header;
-import org.apache.baremaps.testing.TestFiles;
-import org.apache.baremaps.workflow.tasks.ImportOpenStreetMap;
-import org.apache.baremaps.workflow.tasks.UpdateOpenStreetMap;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 
-class ImportUpdateMonacoTest extends DatabaseContainerTest {
+class ImportUpdateLiechtensteinTest extends DatabaseContainerTest {
 
   @Test
   @Tag("integration")
-  void monaco() throws Exception {
+  void liechtenstein() throws Exception {
     PostgresHeaderRepository headerRepository = new PostgresHeaderRepository(dataSource());
     PostgresNodeRepository nodeRepository = new PostgresNodeRepository(dataSource());
     PostgresWayRepository wayRepository = new PostgresWayRepository(dataSource());
@@ -53,30 +53,42 @@ class ImportUpdateMonacoTest extends DatabaseContainerTest {
         new IndexedDataMap<>(new AppendOnlyBuffer<>(new LongListDataType(), new OnHeapMemory()));
 
     // Import data
-    ImportOpenStreetMap.execute(TestFiles.resolve("monaco/monaco-210801.osm.pbf"), coordinateMap,
-        referenceMap, headerRepository, nodeRepository, wayRepository, relationRepository, 3857);
+    ImportOpenStreetMap.execute(LIECHTENSTEIN_OSM_PBF, coordinateMap, referenceMap,
+        headerRepository,
+        nodeRepository, wayRepository, relationRepository, 3857);
 
-    assertEquals(3047l, headerRepository.selectLatest().getReplicationSequenceNumber());
+    assertEquals(2434l, headerRepository.selectLatest().getReplicationSequenceNumber());
 
     // Fix the replicationUrl so that we can update the database with local files
-    headerRepository.delete(3047l);
-    headerRepository.put(new Header(3047l, LocalDateTime.of(2021, 8, 01, 20, 21, 41, 0),
-        "file:///" + TestFiles.resolve("monaco"), "", ""));
+    headerRepository.put(new Header(2434l, LocalDateTime.of(2019, 11, 18, 21, 19, 5, 0),
+        "file:///" + LIECHTENSTEIN_DIR, "", ""));
 
     coordinateMap = new PostgresCoordinateMap(dataSource());
     referenceMap = new PostgresReferenceMap(dataSource());
 
-    // Generate the diff and update the database
-    long replicationSequenceNumber = headerRepository.selectLatest().getReplicationSequenceNumber();
-    while (replicationSequenceNumber < 3075) {
-      new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository, wayRepository,
-          relationRepository, 3857, 14).call();
-      UpdateOpenStreetMap.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
-          wayRepository, relationRepository, 3857);
-      long nextReplicationSequenceNumber =
-          headerRepository.selectLatest().getReplicationSequenceNumber();
-      assertEquals(replicationSequenceNumber + 1, nextReplicationSequenceNumber);
-      replicationSequenceNumber = nextReplicationSequenceNumber;
-    }
+    assertEquals(0, new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository,
+        wayRepository, relationRepository, 3857, 14).call().size());
+
+    // Update the database
+    UpdateOpenStreetMap.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
+        wayRepository,
+        relationRepository, 3857);
+    assertEquals(2435l, headerRepository.selectLatest().getReplicationSequenceNumber());
+
+    assertEquals(2, new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository,
+        wayRepository, relationRepository, 3857, 14).call().size());
+
+    UpdateOpenStreetMap.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
+        wayRepository,
+        relationRepository, 3857);
+    assertEquals(2436l, headerRepository.selectLatest().getReplicationSequenceNumber());
+
+    assertEquals(0, new DiffService(coordinateMap, referenceMap, headerRepository, nodeRepository,
+        wayRepository, relationRepository, 3857, 14).call().size());
+
+    UpdateOpenStreetMap.execute(coordinateMap, referenceMap, headerRepository, nodeRepository,
+        wayRepository,
+        relationRepository, 3857);
+    assertEquals(2437l, headerRepository.selectLatest().getReplicationSequenceNumber());
   }
 }
