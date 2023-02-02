@@ -12,18 +12,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import static org.apache.baremaps.stream.ConsumerUtils.consumeThenReturn;
-import static org.apache.baremaps.stream.StreamUtils.batch;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 import org.apache.baremaps.collection.*;
-import org.apache.baremaps.collection.AppendOnlyBuffer;
-import org.apache.baremaps.collection.MemoryAlignedDataList;
 import org.apache.baremaps.collection.memory.MemoryMappedFile;
 import org.apache.baremaps.collection.type.LonLatDataType;
 import org.apache.baremaps.collection.type.LongDataType;
@@ -32,16 +21,22 @@ import org.apache.baremaps.collection.type.PairDataType;
 import org.apache.baremaps.collection.utils.FileUtils;
 import org.apache.baremaps.database.BlockImporter;
 import org.apache.baremaps.database.repository.*;
-import org.apache.baremaps.openstreetmap.function.*;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
+import org.apache.baremaps.stream.StreamUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 public record ImportOpenStreetMap(Path file, String database, Integer databaseSrid)
         implements Task {
@@ -129,24 +124,24 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
             Repository<Long, Way> wayRepository,
             Repository<Long, Relation> relationRepository,
             Integer databaseSrid) throws IOException {
-        // Initialize and chain the entity handlers
-        var coordinateMapBuilder = new CoordinateMapBuilder(coordinateMap);
-        var referenceMapBuilder = new ReferenceMapBuilder(referenceMap);
-        var entityGeometryBuilder = new EntityGeometryBuilder(coordinateMap, referenceMap);
-        var entityProjectionTransformer = new EntityProjectionTransformer(4326, databaseSrid);
-        var entityHandler = coordinateMapBuilder
-                .andThen(referenceMapBuilder)
-                .andThen(entityGeometryBuilder)
-                .andThen(entityProjectionTransformer);
 
-        // Initialize the block mapper
-        var blockMapper = consumeThenReturn(new BlockEntitiesHandler(entityHandler));
-        var blockImporter =
-                new BlockImporter(headerRepository, nodeRepository, wayRepository, relationRepository);
+        // configure the block reader
+        var reader = new PbfBlockReader()
+                .geometries(true)
+                .projection(databaseSrid)
+                .coordinateMap(coordinateMap)
+                .referenceMap(referenceMap);
 
-        // Process the blocks
-        try (InputStream inputStream = Files.newInputStream(path)) {
-            batch(new PbfBlockReader().stream(inputStream).map(blockMapper)).forEach(blockImporter);
+        // configure the block importer
+        var importer = new BlockImporter(
+                headerRepository,
+                nodeRepository,
+                wayRepository,
+                relationRepository);
+
+        // Stream and process the blocks
+        try (var input = Files.newInputStream(path)) {
+            StreamUtils.batch(reader.stream(input)).forEach(importer);
         }
     }
 }
