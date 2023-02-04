@@ -1,0 +1,19 @@
+# Baremaps
+
+Baremaps is a toolkit for creating custom vector tiles from OpenStreetMap and other data sources with Postgis and Java.
+The project is licensed under Apache License 2.0.
+
+In order to build Baremaps from source, you first need to install Java 17 and Maven 3.8.1.
+Then, you can build Baremaps with the following command:
+
+    $ mvn clean install
+
+To install the distribution, run the following command:
+
+    $ unzip baremaps-cli/target/baremaps-[VERSION]-incubating-src.zip
+
+You can then add the `bin` directory to your `PATH` environment variable.
+
+    $ export PATH=$PATH:`pwd`/baremaps/bin
+
+We appreciate any feedback, bug reports, and pull requests. Don't hesitate to reach out!
