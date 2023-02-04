@@ -99,7 +99,7 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
                         new MemoryMappedFile(referencesValuesDir))
                 );
 
-        ImportOpenStreetMap.execute(
+        execute(
                 path,
                 coordinateMap,
                 referenceMap,

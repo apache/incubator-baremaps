@@ -18,10 +18,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import org.apache.baremaps.collection.AppendOnlyBuffer;
-import org.apache.baremaps.collection.DataMap;
-import org.apache.baremaps.collection.MemoryAlignedDataList;
-import org.apache.baremaps.collection.MonotonicDataMap;
+
+import org.apache.baremaps.collection.*;
 import org.apache.baremaps.collection.memory.MemoryMappedFile;
 import org.apache.baremaps.collection.type.LonLatDataType;
 import org.apache.baremaps.collection.type.LongDataType;
@@ -33,7 +31,17 @@ public class CollectionUtils {
 
   private CollectionUtils() {}
 
-  public static DataMap<Coordinate> coordinateMap() throws IOException {
+
+  public static DataMap<Coordinate> denseCoordinateMap() throws IOException {
+    var cacheDir = Files.createTempDirectory(Paths.get("."), "coordinates_");
+    var coordinatesFile = Files.createFile(cacheDir.resolve("values"));
+    var coordinateMap = new MemoryAlignedDataMap<>(
+            new LonLatDataType(),
+            new MemoryMappedFile(coordinatesFile));
+    return coordinateMap;
+  }
+
+  public static DataMap<Coordinate> sparseCoordinateMap() throws IOException {
     var cacheDir = Files.createTempDirectory(Paths.get("."), "coordinates_");
     var coordinatesKeysFile = Files.createFile(cacheDir.resolve("keys"));
     var coordinatesValsFile = Files.createFile(cacheDir.resolve("values"));
@@ -47,7 +55,7 @@ public class CollectionUtils {
     return coordinateMap;
   }
 
-  public static DataMap<List<Long>> referenceMap() throws IOException {
+  public static DataMap<List<Long>> sparseReferenceMap() throws IOException {
     var cacheDir = Files.createTempDirectory(Paths.get("."), "references_");
     var referencesKeysFile = Files.createFile(cacheDir.resolve("keys"));
     var referencesValuesFile = Files.createFile(cacheDir.resolve("values"));
