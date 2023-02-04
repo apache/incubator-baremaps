@@ -1,7 +1,7 @@
-# Baremaps
+# Apache Baremaps (incubating)
 
-Baremaps is a toolkit for creating custom vector tiles from OpenStreetMap and other data sources with Postgis and Java.
-The project is licensed under Apache License 2.0.
+Apache Baremaps (incubating) is a toolkit for creating custom vector tiles from OpenStreetMap
+and other data sources with Postgis and Java.
 
 In order to build Baremaps from source, you first need to install Java 17 and Maven 3.8.1.
 Then, you can build Baremaps with the following command:
