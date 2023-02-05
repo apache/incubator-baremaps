@@ -1,19 +1,17 @@
 # Apache Baremaps (incubating)
 
-Apache Baremaps (incubating) is a toolkit for creating custom vector tiles from OpenStreetMap
+Apache Baremaps is a toolkit for creating custom vector tiles from OpenStreetMap
 and other data sources with Postgis and Java.
 
 In order to build Baremaps from source, you first need to install Java 17 and Maven 3.8.1.
-Then, you can build Baremaps with the following command:
+Then, from this directory, you can build Baremaps with the following command:
 
     $ mvn clean install
 
-To install the distribution, run the following command:
+More information about Baremaps can be found on our website:
 
-    $ unzip baremaps-cli/target/baremaps-[VERSION]-incubating-src.zip
+    https://baremaps.apache.org
 
-You can then add the `bin` directory to your `PATH` environment variable.
+We appreciate any feedback, bug reports, and pull requests, so don't hesitate to reach out!
 
-    $ export PATH=$PATH:`pwd`/baremaps/bin
-
-We appreciate any feedback, bug reports, and pull requests. Don't hesitate to reach out!
+Happy mapping!
