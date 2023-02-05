@@ -15,7 +15,7 @@
 
   <groupId>org.apache.baremaps</groupId>
   <artifactId>baremaps</artifactId>
-  <version>0.7.1-rc2</version>
+  <version>0.7.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>baremaps</name>
   <description>Apache Baremaps (incubating) is a toolkit and a set of infrastructure components for creating, publishing, and operating online maps.</description>
@@ -53,7 +53,7 @@
   <scm>
     <connection>scm:git:git@github.com:baremaps/baremaps.git</connection>
     <developerConnection>scm:git:git@github.com:baremaps/baremaps.git</developerConnection>
-    <tag>v0.7.1-rc2</tag>
+    <tag>v0.2.3</tag>
     <url>scm:git:git@github.com:baremaps/baremaps.git</url>
   </scm>
 
