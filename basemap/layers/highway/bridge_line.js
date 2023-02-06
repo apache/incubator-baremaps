@@ -104,5 +104,14 @@ export default {
             'line-color': 'rgb(159, 126, 57)',
             'road-width': 2,
         },
+        {
+            filter: [
+                'any',
+                ['==', ['get', 'highway'], 'footway'],
+                ['==', ['get', 'highway'], 'path'],
+            ],
+            'line-color': 'rgb(255, 255, 255)',
+            'road-width': 2,
+        },
     ],
 }

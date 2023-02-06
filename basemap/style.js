@@ -12,6 +12,7 @@ import natural_background from "./layers/natural/background.js";
 import natural_overlay from "./layers/natural/overlay.js";
 import natural_tree from "./layers/natural/tree.js";
 import natural_trunk from "./layers/natural/trunk.js";
+import natural_water from "./layers/natural/water.js";
 import power_background from "./layers/power/background.js";
 import power_tower from "./layers/power/tower.js";
 import power_cable from "./layers/power/cable.js";
@@ -32,7 +33,7 @@ import ocean_background from './layers/ocean/background.js';
 import route_line from "./layers/route/style.js"
 import building_shape from "./layers/building/shape.js";
 import building_number from "./layers/building/number.js";
-import man_made_bridge from "./layers/man_made/bridge.js";
+import man_made_polygon from "./layers/man_made/polygon.js";
 import man_made_pier_line from "./layers/man_made/pier_line.js";
 import man_made_pier_label from "./layers/man_made/pier_label.js";
 import waterway_line from "./layers/waterway/line.js"
@@ -57,6 +58,7 @@ export default {
     "glyphs": "https://tiles.baremaps.com/fonts/{fontstack}/{range}.pbf",
     "layers": [
         background,
+        layer(natural_water),
         layer(power_background),
         layer(amenity_background),
         layer(landuse_background),
@@ -69,18 +71,18 @@ export default {
         layer(waterway_line),
         layer(waterway_tunnel_casing),
         layer(waterway_tunnel_line),
-        layer(man_made_bridge),
+        layer(man_made_polygon),
         layer(amenity_fountain),
         layer(highway_tunnel_outline),
         layer(highway_tunnel_line),
         layer(railway_tunnel),
+        layer(highway_bridge_outline),
+        layer(highway_bridge_line),
         layer(highway_outline),
         layer(highway_line),
         layer(highway_dash),
         layer(highway_pedestrian_area),
         layer(railway_line),
-        layer(highway_bridge_outline),
-        layer(highway_bridge_line),
         layer(highway_label),
         layer(route_line),
         layer(power_cable),

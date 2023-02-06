@@ -15,11 +15,6 @@ export default {
             'fill-color': 'rgb(255, 241, 186)'
         },
         {
-            filter: ['==', ['get', 'natural'], 'water'],
-            'fill-color': 'rgb(170, 211, 223)',
-            'fill-sort-key': 10,
-        },
-        {
             filter: ['==', ['get', 'natural'], 'wetland'],
             'fill-color': 'rgb(213, 231, 211)'
         },

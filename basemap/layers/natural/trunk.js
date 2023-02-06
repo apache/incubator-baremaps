@@ -8,6 +8,7 @@ export default {
         visibility: 'visible',
     },
     paint: {
+        'circle-pitch-alignment': 'map',
         'circle-color': 'rgb(129, 94, 39)',
         'circle-radius': [
             'interpolate',
