@@ -32,6 +32,7 @@ import ocean_background from './layers/ocean/background.js';
 import route_line from "./layers/route/style.js"
 import building_shape from "./layers/building/shape.js";
 import building_number from "./layers/building/number.js";
+import man_made_bridge from "./layers/man_made/bridge.js";
 import man_made_pier_line from "./layers/man_made/pier_line.js";
 import man_made_pier_label from "./layers/man_made/pier_label.js";
 import waterway_line from "./layers/waterway/line.js"
@@ -68,6 +69,7 @@ export default {
         layer(waterway_line),
         layer(waterway_tunnel_casing),
         layer(waterway_tunnel_line),
+        layer(man_made_bridge),
         layer(amenity_fountain),
         layer(highway_tunnel_outline),
         layer(highway_tunnel_line),
