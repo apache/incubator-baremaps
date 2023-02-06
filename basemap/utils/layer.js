@@ -148,9 +148,9 @@ function roadGapWidth(layer) {
 }
 
 function mergeInterpolatedDirective(layer, property, alias, value) {
-    let cases = layer['directives'].flatMap((rule) => {
-        if (rule[property]) {
-            return [rule['filter'], rule[property]]
+    let cases = layer['directives'].flatMap((directive) => {
+        if (directive[property]) {
+            return [directive['filter'], directive[property]]
         } else {
             return []
         }
@@ -161,10 +161,10 @@ function mergeInterpolatedDirective(layer, property, alias, value) {
     return {
         [alias]: [
             'interpolate',
-            ['exponential', 1.2],
+            ['exponential', 1.1],
             ['zoom'],
             5,
-            0.2,
+            0.1,
             20,
             ['case', ...cases, value],
         ],

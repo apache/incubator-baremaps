@@ -6,9 +6,10 @@ export default {
     layout: {
         visibility: 'visible',
     },
+    filter: ['==', ['geometry-type'], 'Polygon'],
     directives: [
         {
-            filter: ['==', ['get', 'man_made'], 'bridge'],
+            filter: ['in', ['get', 'man_made'], ['literal', ['bridge', 'breakwater']]],
             'fill-color': 'rgb(184, 184, 184)',
         },
     ],
