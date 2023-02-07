@@ -1,3 +1,13 @@
+import {withFillSortKey} from "../../utils/utils.js";
+
+let directives = [
+    {
+        filter: ['==', ['get', 'ocean'], 'water'],
+        'fill-color': 'rgb(170, 211, 223)',
+        'fill-sort-key': 10,
+    },
+];
+
 export default {
     id: 'ocean',
     type: 'fill',
@@ -9,11 +19,5 @@ export default {
     paint: {
         'fill-antialias': true,
     },
-    directives: [
-        {
-            filter: ['==', ['get', 'ocean'], 'water'],
-            'fill-color': 'rgb(170, 211, 223)',
-            'fill-sort-key': 10,
-        },
-    ]
+    directives: directives.map(withFillSortKey),
 }

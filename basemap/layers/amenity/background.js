@@ -1,3 +1,40 @@
+import {withFillSortKey} from "../../utils/utils.js";
+
+let directives = [
+    {
+        filter: ['==', ['get', 'amenity'], 'kindergarten'],
+        'fill-color': 'rgb(255, 255, 228)',
+    },
+    {
+        filter: ['==', ['get', 'amenity'], 'school'],
+        'fill-color': 'rgb(255, 255, 228)',
+    },
+    {
+        filter: ['==', ['get', 'amenity'], 'college'],
+        'fill-color': 'rgb(255, 255, 228)',
+    },
+    {
+        filter: ['==', ['get', 'amenity'], 'university'],
+        'fill-color': 'rgb(255, 255, 228)',
+    },
+    {
+        filter: ['==', ['get', 'amenity'], 'hospital'],
+        'fill-color': 'rgb(255, 255, 228)',
+    },
+    {
+        filter: ['==', ['get', 'amenity'], 'grave_yard'],
+        'fill-color': 'rgb(170, 203, 175)',
+    },
+    {
+        filter: ['==', ['get', 'amenity'], 'parking'],
+        'fill-color': 'rgb(238, 238, 238)',
+    },
+    {
+        filter: ['==', ['get', 'amenity'], 'motorcycle_parking'],
+        'fill-color': 'rgb(238, 238, 238)',
+    },
+];
+
 export default {
     id: 'amenity_fill_1',
     type: 'fill',
@@ -9,38 +46,5 @@ export default {
     paint: {
         'fill-antialias': true,
     },
-    directives: [
-        {
-            filter: ['==', ['get', 'amenity'], 'kindergarten'],
-            'fill-color': 'rgb(255, 255, 228)',
-        },
-        {
-            filter: ['==', ['get', 'amenity'], 'school'],
-            'fill-color': 'rgb(255, 255, 228)',
-        },
-        {
-            filter: ['==', ['get', 'amenity'], 'college'],
-            'fill-color': 'rgb(255, 255, 228)',
-        },
-        {
-            filter: ['==', ['get', 'amenity'], 'university'],
-            'fill-color': 'rgb(255, 255, 228)',
-        },
-        {
-            filter: ['==', ['get', 'amenity'], 'hospital'],
-            'fill-color': 'rgb(255, 255, 228)',
-        },
-        {
-            filter: ['==', ['get', 'amenity'], 'grave_yard'],
-            'fill-color': 'rgb(170, 203, 175)',
-        },
-        {
-            filter: ['==', ['get', 'amenity'], 'parking'],
-            'fill-color': 'rgb(238, 238, 238)',
-        },
-        {
-            filter: ['==', ['get', 'amenity'], 'motorcycle_parking'],
-            'fill-color': 'rgb(238, 238, 238)',
-        },
-    ],
+    directives: directives.map(withFillSortKey),
 }

@@ -1,3 +1,12 @@
+import {withFillSortKey} from "../../utils/utils.js";
+
+let directives = [
+    {
+        filter: ['==', ['get', 'man_made'], 'bridge'],
+        'fill-color': 'rgb(184, 184, 184)',
+    },
+];
+
 export default {
     id: 'man_made_bridge',
     type: 'fill',
@@ -6,13 +15,7 @@ export default {
     layout: {
         visibility: 'visible',
     },
-    filter: ['==', ['geometry-type'], 'Polygon'],
-    directives: [
-        {
-            filter: ['in', ['get', 'man_made'], ['literal', ['bridge', 'breakwater']]],
-            'fill-color': 'rgb(184, 184, 184)',
-        },
-    ],
+    directives: directives.map(withFillSortKey),
     paint: {
         'fill-antialias': true,
     },
