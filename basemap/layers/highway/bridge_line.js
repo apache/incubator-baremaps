@@ -72,17 +72,17 @@ let directives = [
         'road-width': 2,
     },
     {
+        filter: ['==', ['get', 'highway'], 'raceway'],
+        'line-color': 'rgb(255, 147, 166)',
+        'road-width': 4,
+    },
+    {
         filter: [
             'all',
             ['==', ['get', 'highway'], 'pedestrian'],
             ['!=', ['get', '$type'], 'Polygon'],
         ],
         'line-color': 'rgb(194, 194, 212)',
-        'road-width': 2,
-    },
-    {
-        filter: ['==', ['get', 'highway'], 'raceway'],
-        'line-color': 'rgb(255, 147, 166)',
         'road-width': 2,
     },
 ]
