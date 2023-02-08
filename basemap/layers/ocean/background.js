@@ -1,4 +1,4 @@
-import {withFillSortKey} from "../../utils/utils.js";
+import {withSortKeys, asLayerObject} from "../../utils/utils.js";
 
 let directives = [
     {
@@ -8,7 +8,7 @@ let directives = [
     },
 ];
 
-export default {
+export default asLayerObject(withSortKeys(directives), {
     id: 'ocean',
     type: 'fill',
     source: 'baremaps',
@@ -19,5 +19,4 @@ export default {
     paint: {
         'fill-antialias': true,
     },
-    directives: directives.map(withFillSortKey),
-}
+});

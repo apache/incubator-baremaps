@@ -1,4 +1,4 @@
-import {withFillSortKey} from "../../utils/utils.js";
+import {withFillSortKey, asLayoutProperty, asPaintProperty} from "../../utils/utils.js";
 
 let directives = [
     {
@@ -101,18 +101,17 @@ let directives = [
         filter: ['==', ['get', 'landuse'], 'pedestrian'],
         'fill-color': 'rgb(221, 221, 233)',
     },
-];
+].map(withFillSortKey);
 
 export default {
     id: 'landuse_background',
     type: 'fill',
     source: 'baremaps',
     'source-layer': 'landuse',
-    layout: {
+    layout: asLayoutProperty(directives, {
         visibility: 'visible',
-    },
-    directives: directives.map(withFillSortKey),
-    paint: {
+    }),
+    paint: asPaintProperty(directives, {
         'fill-antialias': true,
-    },
+    }),
 }

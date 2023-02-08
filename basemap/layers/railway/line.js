@@ -1,6 +1,6 @@
-import {withLineSortKey} from "../../utils/utils.js";
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 
-let directive = [
+export let directives = [
     {
         'filter': [
             'all',
@@ -75,7 +75,7 @@ let directive = [
     },
 ];
 
-export default {
+export default asLayerObject(withSortKeys(directives), {
     'id': 'railway_line',
     'source': 'baremaps',
     'source-layer': 'railway',
@@ -86,5 +86,4 @@ export default {
         'line-cap': 'round',
         'line-join': 'round',
     },
-    'directives': directive.map(withLineSortKey),
-}
+});

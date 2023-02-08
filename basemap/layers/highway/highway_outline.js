@@ -1,4 +1,4 @@
-import {withLineSortKey} from "../../utils/utils.js";
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 
 let directives =[
     {
@@ -96,7 +96,7 @@ let directives =[
     },
 ]
 
-export default {
+export default asLayerObject(withSortKeys(directives), {
     id: 'highway_outline',
     source: 'baremaps',
     'source-layer': 'highway',
@@ -113,5 +113,4 @@ export default {
         ['!=', ['get', 'layer'], '-1'],
         ['!=', ['get', 'covered'], 'yes'],
     ],
-    directives: directives.map(withLineSortKey),
-}
+});

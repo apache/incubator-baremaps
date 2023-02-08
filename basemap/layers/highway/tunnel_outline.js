@@ -1,4 +1,4 @@
-import {withLineSortKey} from "../../utils/utils.js";
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 
 let directives = [
     {
@@ -87,7 +87,7 @@ let directives = [
     },
 ];
 
-export default {
+export default asLayerObject(withSortKeys(directives), {
     id: 'tunnel_outline',
     source: 'baremaps',
     'source-layer': 'highway',
@@ -106,5 +106,4 @@ export default {
     paint: {
         'line-dasharray': [1, 1],
     },
-    directives: directives.map(withLineSortKey),
-}
+});

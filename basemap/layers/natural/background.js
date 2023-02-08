@@ -1,4 +1,4 @@
-import {withFillSortKey} from "../../utils/utils.js";
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 
 let directives = [
     {
@@ -35,7 +35,7 @@ let directives = [
     },
 ];
 
-export default {
+export default asLayerObject(withSortKeys(directives), {
     id: 'natural',
     type: 'fill',
     //filter: ['==', ['get', 'type'], 'Polygon'],
@@ -47,5 +47,4 @@ export default {
     paint: {
         'fill-antialias': true,
     },
-    directives: directives.map(withFillSortKey),
-}
+});

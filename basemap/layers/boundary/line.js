@@ -1,4 +1,4 @@
-import {withLineSortKey} from "../../utils/utils.js";
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 
 let directives = [
     {
@@ -19,7 +19,7 @@ let directives = [
     },
 ];
 
-export default {
+export default asLayerObject(withSortKeys(directives), {
     id: 'boundary',
     type: 'line',
     source: 'baremaps',
@@ -30,6 +30,4 @@ export default {
     paint: {
         'line-dasharray': [4, 1, 1, 1],
     },
-    directives: directives.map(withLineSortKey),
-
-}
+});

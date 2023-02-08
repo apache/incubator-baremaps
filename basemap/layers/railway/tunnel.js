@@ -1,6 +1,8 @@
-import line from './line.js'
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 
-export default {
+import {directives} from './line.js'
+
+export default asLayerObject(withSortKeys(directives), {
     'id': 'railway_tunnel',
     'source': 'baremaps',
     'source-layer': 'railway',
@@ -14,5 +16,4 @@ export default {
     'paint': {
         'line-dasharray': [1,2]
     },
-    'directives': line.directives
-}
+});

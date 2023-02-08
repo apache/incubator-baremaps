@@ -1,4 +1,4 @@
-import {withFillSortKey} from "../../utils/utils.js";
+import {withFillSortKey, asLayerObject, withSortKeys} from "../../utils/utils.js";
 
 let directives = [
     {
@@ -35,16 +35,9 @@ let directives = [
     },
 ];
 
-export default {
+export default asLayerObject(withSortKeys(directives), {
     id: 'amenity_fill_1',
     type: 'fill',
     source: 'baremaps',
     'source-layer': 'amenity',
-    layout: {
-        visibility: 'visible',
-    },
-    paint: {
-        'fill-antialias': true,
-    },
-    directives: directives.map(withFillSortKey),
-}
+});

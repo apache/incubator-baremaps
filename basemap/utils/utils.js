@@ -1,13 +1,198 @@
+
+export function withSortKeys(directives) {
+    return directives
+        .map(withFillSortKey)
+        .map(withLineSortKey);
+}
+
 export function withFillSortKey(directive, index, array) {
-    return {
+    return directive['fill-color'] ?{
         ...directive,
         'fill-sort-key': array.length - index - 1,
-    }
+    } : directive;
 }
 
 export function withLineSortKey(directive, index, array) {
-    return {
+    return directive['line-width'] ? {
         ...directive,
         'line-sort-key': array.length - index - 1,
+    } : directive;
+}
+
+export function asLayerObject(directives = [], baseLayer = {}) {
+    return {
+        ...baseLayer,
+        filter: asFilterProperty(directives, baseLayer['filter']),
+        layout: asLayoutProperty(directives, baseLayer['layout']),
+        paint: asPaintProperty(directives, baseLayer['paint']),
+    };
+}
+
+export function asLayoutProperty(directives = [], baseLayout = {}) {
+    return Object.assign(
+        {
+            ...textFont(directives),
+            ...textField(directives),
+            ...textSize(directives),
+            ...textMaxWidth(directives),
+            ...iconImage(directives),
+            ...lineSortKey(directives),
+            ...fillSortKey(directives),
+        },
+        baseLayout,
+    )
+}
+
+export function asPaintProperty(directives = [], basePaint = {}) {
+    return Object.assign(
+        {
+            ...textColor(directives),
+            ...textHaloColor(directives),
+            ...textHaloWidth(directives),
+            ...iconColor(directives),
+            ...fillColor(directives),
+            ...fillOutlineColor(directives),
+            ...lineColor(directives),
+            ...lineWidth(directives),
+            ...lineGapWidth(directives),
+            ...roadWidth(directives),
+            ...roadGapWidth(directives),
+        },
+        basePaint,
+    )
+}
+
+export function asFilterProperty(directives = [], filter = []) {
+    if (directives.length > 0 && filter.length > 0) {
+        return [
+            'all',
+            filter,
+            ['any', ...directives.map((rule) => rule['filter'])],
+        ];
+    } else if (directives.length > 0) {
+        return ['any', ...directives.map((rule) => rule['filter'])];
+    } else if (filter.length > 0) {
+        return filter;
+    } else {
+        return [];
     }
+}
+
+function iconImage(directives) {
+    return mergeDirectives(directives, 'icon-image', 'none')
+}
+
+function iconColor(directives) {
+    return mergeDirectives(directives, 'icon-color', 'rgba(0, 0, 0, 0)')
+}
+
+function textFont(directives) {
+    return mergeDirectives(directives, 'text-font', "Arial")
+}
+
+function textField(directives) {
+    return mergeDirectives(directives, 'text-field', null)
+}
+
+function textSize(directives) {
+    return mergeDirectives(directives, 'text-size', 12)
+}
+
+function textMaxWidth(directives) {
+    return mergeDirectives(directives, 'text-max-width', 4)
+}
+
+function textColor(directives) {
+    return mergeDirectives(directives, 'text-color', 'rgba(0, 0, 0, 0)')
+}
+
+function textHaloColor(directives) {
+    return mergeDirectives(directives, 'text-halo-color', 'rgba(0, 0, 0, 0)')
+}
+
+function textHaloWidth(directives) {
+    return mergeDirectives(directives, 'text-halo-width', 0)
+}
+
+function fillColor(directives) {
+    return mergeDirectives(directives, 'fill-color', 'rgba(0, 0, 0, 0)')
+}
+
+function fillOutlineColor(directives) {
+    return mergeDirectives(directives, 'fill-outline-color', 'rgba(0, 0, 0, 0)')
+}
+
+function lineColor(directives) {
+    return mergeDirectives(directives, 'line-color', 'rgba(0, 0, 0, 0)')
+}
+
+function lineWidth(directives) {
+    return mergeDirectives(directives, 'line-width', 0)
+}
+
+function lineGapWidth(directives) {
+    return mergeDirectives(directives, 'line-gap-width', 0)
+}
+
+function lineSortKey(directives) {
+    return mergeDirectives(directives, 'line-sort-key', 0)
+}
+
+function fillSortKey(directives) {
+    return mergeDirectives(directives, 'fill-sort-key', 0)
+}
+
+function mergeDirectives(directives, property, value) {
+    let cases = directives.flatMap((rule) => {
+        if (rule[property]) {
+            return [rule['filter'], rule[property]]
+        } else {
+            return []
+        }
+    })
+    if (cases.length == 0) {
+        return {}
+    }
+    return {
+        [property]: ['case', ...cases, value],
+    }
+}
+
+function roadWidth(directives) {
+    return mergeInterpolatedDirective(directives, 'road-width', 'line-width', 1)
+}
+
+function roadGapWidth(directives) {
+    return mergeInterpolatedDirective(directives, 'road-gap-width', 'line-gap-width', 1)
+}
+
+function mergeInterpolatedDirective(directives, property, alias, value) {
+    let cases = directives.flatMap((rule) => {
+        if (rule[property]) {
+            return [rule['filter'], rule[property]]
+        } else {
+            return []
+        }
+    })
+    if (cases.length == 0) {
+        return {}
+    }
+    return {
+        [alias]: [
+            'interpolate',
+            ['exponential', 1.2],
+            ['zoom'],
+            5,
+            0.2,
+            20,
+            ['case', ...cases, value],
+        ],
+    }
+}
+
+function groupBy(xs, key) {
+    return xs.reduce(function (rv, x) {
+        ;(rv[x[key]] = rv[x[key]] || []).push(x)
+        return rv
+    }, {})
 }

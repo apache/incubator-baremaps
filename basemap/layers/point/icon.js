@@ -1,3 +1,5 @@
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
+
 let directives = [
     // Amenity: sustenance
     {
@@ -866,7 +868,7 @@ let directives = [
     },
 ];
 
-export default {
+export default asLayerObject(withSortKeys(directives), {
     id: 'icon',
     type: 'symbol',
     source: 'baremaps',
@@ -891,5 +893,4 @@ export default {
         'text-halo-width': 1,
         'text-halo-color': 'rgba(255, 255, 255, 0.8)',
     },
-    directives: directives,
-}
+});

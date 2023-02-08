@@ -1,4 +1,4 @@
-import {withFillSortKey} from "../../utils/utils.js";
+import {asLayerObject} from "../../utils/utils.js";
 
 let directives = [
     {
@@ -7,7 +7,7 @@ let directives = [
     },
 ];
 
-export default {
+export default asLayerObject(directives, {
     id: 'man_made_bridge',
     type: 'fill',
     source: 'baremaps',
@@ -15,8 +15,7 @@ export default {
     layout: {
         visibility: 'visible',
     },
-    directives: directives.map(withFillSortKey),
     paint: {
         'fill-antialias': true,
     },
-}
+});
