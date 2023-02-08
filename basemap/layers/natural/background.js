@@ -30,10 +30,6 @@ let directives = [
         'fill-color': 'rgb(232, 223, 216)'
     },
     {
-        filter: ['==', ['get', 'natural'], 'sand'],
-        'fill-color': 'rgb(240, 229, 196)'
-    },
-    {
         filter: [
             'all',
             ['==', ['get', 'natural'], 'water'],
