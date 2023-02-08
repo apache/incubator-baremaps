@@ -40,6 +40,7 @@ let directives = [
     {
         filter: ['==', ['get', 'leisure'], 'track'],
         'fill-color': 'rgb(196, 224, 203)',
+        'fill-outline-color': 'rgba(101, 206, 166, 1.0)',
     },
     {
         filter: ['==', ['get', 'leisure'], 'sports_centre'],

@@ -1,6 +1,7 @@
 import config from "./config.js";
 
 import aerialway from "./layers/aerialway/tileset.js";
+import aeroway from "./layers/aeroway/tileset.js";
 import amenity from "./layers/amenity/tileset.js";
 import attraction from "./layers/attraction/tileset.js";
 import barrier from "./layers/barrier/tileset.js";
@@ -29,6 +30,7 @@ export default {
   attribution: '© <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
   "vector_layers": [
     aerialway,
+    aeroway,
     amenity,
     attraction,
     barrier,

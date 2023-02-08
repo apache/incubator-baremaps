@@ -33,6 +33,14 @@ let directives = [
         filter: ['==', ['get', 'natural'], 'sand'],
         'fill-color': 'rgb(240, 229, 196)'
     },
+    {
+        filter: [
+            'all',
+            ['==', ['get', 'natural'], 'water'],
+            ['==', ['get', 'water'], 'lake'],
+        ],
+        'fill-color': 'rgb(170, 211, 223)',
+    },
 ];
 
 export default asLayerObject(withSortKeys(directives), {

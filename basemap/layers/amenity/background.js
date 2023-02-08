@@ -1,4 +1,4 @@
-import {withFillSortKey, asLayerObject, withSortKeys} from "../../utils/utils.js";
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 
 let directives = [
     {
@@ -25,18 +25,10 @@ let directives = [
         filter: ['==', ['get', 'amenity'], 'grave_yard'],
         'fill-color': 'rgb(170, 203, 175)',
     },
-    {
-        filter: ['==', ['get', 'amenity'], 'parking'],
-        'fill-color': 'rgb(238, 238, 238)',
-    },
-    {
-        filter: ['==', ['get', 'amenity'], 'motorcycle_parking'],
-        'fill-color': 'rgb(238, 238, 238)',
-    },
 ];
 
 export default asLayerObject(withSortKeys(directives), {
-    id: 'amenity_fill_1',
+    id: 'amenity_background',
     type: 'fill',
     source: 'baremaps',
     'source-layer': 'amenity',

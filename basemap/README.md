@@ -32,7 +32,7 @@ The development server can be started with the following command.
 baremaps map dev --log-level DEBUG \
   --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
   --tileset 'tileset.js' \
-  --style 'style.js'
+  --style 'line.js'
 ```
 
 ## Editing the tileset
@@ -63,7 +63,7 @@ Simply put, it adds in the ability to describe the `vector_tiles` and their cont
 
 ## Editing the style
 
-The configuration format used in the `style.js` file follows the [Mapbox style specification](https://github.com/mapbox/mapbox-gl-js).
+The configuration format used in the `line.js` file follows the [Mapbox style specification](https://github.com/mapbox/mapbox-gl-js).
 Baremaps integrates [Maputnik](https://maputnik.github.io/) and most of the modifications will take place in the browser.
 
 ## Tools
