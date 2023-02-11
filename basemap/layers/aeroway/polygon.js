@@ -2,17 +2,16 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 
 let directives = [
     {
-        filter: ['==', ['get', 'leisure'], 'marina'],
-        'fill-color': 'rgb(181, 208, 208)',
-        'fill-outline-color': 'rgb(164, 187, 212)',
+        filter: ['==', ['geometry-type'], 'Polygon'],
+        'fill-color': 'rgba(187, 187, 204, 1.0)',
     },
 ];
 
 export default asLayerObject(withSortKeys(directives), {
-    id: 'leisure_overlay',
+    id: 'aeroway_polygon',
     type: 'fill',
     source: 'baremaps',
-    'source-layer': 'leisure',
+    'source-layer': 'aeroway',
     layout: {
         visibility: 'visible',
     },

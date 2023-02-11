@@ -2,17 +2,16 @@ import {asLayerObject} from "../../utils/utils.js";
 
 let directives = [
     {
-        filter: ['==', ['get', 'amenity'], 'fountain'],
-        'fill-color': 'rgb(170, 211, 223)',
-        'fill-outline-color': 'rgb(170, 211, 223)',
+        filter: ['==', ['get', 'man_made'], 'bridge'],
+        'fill-color': 'rgb(184, 184, 184)',
     },
 ];
 
 export default asLayerObject(directives, {
-    id: 'amenity_fill_2',
+    id: 'man_made_bridge',
     type: 'fill',
     source: 'baremaps',
-    'source-layer': 'amenity',
+    'source-layer': 'man_made',
     layout: {
         visibility: 'visible',
     },

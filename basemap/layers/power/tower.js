@@ -14,10 +14,14 @@ export default {
         "visibility": "visible"
     },
     "paint": {
+        'circle-pitch-alignment': 'map',
         "circle-color": "rgb(171, 171, 171)",
         "circle-radius": [
-            "interpolate", ["exponential", 1], ["zoom"], 13, 1,
-            14, 2, 15, 3, 16, 4, 17, 5, 18, 6
+            "interpolate",
+            ["exponential", 1],
+            ["zoom"],
+            14, 1,
+            20, 8
         ]
     }
 }
