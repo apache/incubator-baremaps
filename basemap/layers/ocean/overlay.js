@@ -9,7 +9,7 @@ let directives = [
 ];
 
 export default asLayerObject(withSortKeys(directives), {
-    id: 'ocean',
+    id: 'ocean_overlay',
     type: 'fill',
     source: 'baremaps',
     'source-layer': 'ocean',
