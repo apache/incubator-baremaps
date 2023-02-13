@@ -12,6 +12,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import java.nio.file.Path;
 import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
 import org.apache.baremaps.storage.FeatureSetProjectionTransform;
 import org.apache.baremaps.storage.postgres.PostgresDatabase;
@@ -19,14 +20,12 @@ import org.apache.baremaps.storage.shapefile.ShapefileFeatureSet;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
-
-import java.nio.file.Path;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public record ImportShapefile(Path file, String database, Integer sourceSRID, Integer targetSRID)
-  implements Task {
+    implements
+      Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportShapefile.class);
 
@@ -38,7 +37,7 @@ public record ImportShapefile(Path file, String database, Integer sourceSRID, In
       var dataSource = context.getDataSource(database);
       var postgresDatabase = new PostgresDatabase(dataSource);
       postgresDatabase.write(new FeatureSetProjectionTransform(
-        featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
+          featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
       logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {
       logger.error("Failed importing {} into {}", file, database);

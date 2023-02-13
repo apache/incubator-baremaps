@@ -12,15 +12,13 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import org.apache.baremaps.workflow.Task;
-import org.apache.baremaps.workflow.WorkflowContext;
-
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import org.apache.baremaps.workflow.Task;
+import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

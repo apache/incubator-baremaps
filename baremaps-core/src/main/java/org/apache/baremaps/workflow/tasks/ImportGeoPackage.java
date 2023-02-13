@@ -12,6 +12,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import java.nio.file.Path;
 import org.apache.baremaps.feature.ReadableFeatureSet;
 import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
 import org.apache.baremaps.storage.FeatureSetProjectionTransform;
@@ -20,13 +21,12 @@ import org.apache.baremaps.storage.postgres.PostgresDatabase;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
-
-import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public record ImportGeoPackage(Path file, String database, Integer sourceSRID, Integer targetSRID)
-  implements Task {
+    implements
+      Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportGeoPackage.class);
 

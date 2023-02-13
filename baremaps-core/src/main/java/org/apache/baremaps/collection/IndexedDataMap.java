@@ -109,7 +109,7 @@ public class IndexedDataMap<E> extends DataMap<E> {
    */
   @Override
   public long sizeAsLong() {
-    if (index instanceof DataMap<Long> dataMap) {
+    if (index instanceof DataMap<Long>dataMap) {
       return dataMap.sizeAsLong();
     } else {
       return index.size();

@@ -121,7 +121,7 @@
     <version.plugin.openapi-generator-maven-plugin>5.1.0</version.plugin.openapi-generator-maven-plugin>
     <version.plugin.os-maven-plugin>1.7.0</version.plugin.os-maven-plugin>
     <version.plugin.protobuf-maven-plugin>0.6.1</version.plugin.protobuf-maven-plugin>
-    <version.plugin.spotless-maven-plugin>2.22.1</version.plugin.spotless-maven-plugin>
+    <version.plugin.spotless-maven-plugin>2.33.0</version.plugin.spotless-maven-plugin>
   </properties>
 
   <dependencyManagement>
@@ -604,7 +604,8 @@
             <importOrder></importOrder>
             <removeUnusedImports></removeUnusedImports>
             <eclipse>
-              <version>4.21.0</version>
+              <!-- versions 4.20.0 and newer don't with records -->
+              <version>4.19.0</version>
               <file>${maven.multiModuleProjectDirectory}/codestyle.xml</file>
             </eclipse>
             <licenseHeader>

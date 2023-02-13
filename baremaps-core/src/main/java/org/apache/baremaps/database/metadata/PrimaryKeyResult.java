@@ -13,9 +13,10 @@
 package org.apache.baremaps.database.metadata;
 
 public record PrimaryKeyResult(
-  String tableCat,
-  String tableSchem,
-  String tableName,
-  String columnName,
-  short keySeq,
-  String pkName) {}
+    String tableCat,
+    String tableSchem,
+    String tableName,
+    String columnName,
+    short keySeq,
+    String pkName) {
+}

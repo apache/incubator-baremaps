@@ -61,15 +61,14 @@ public record UpdateOpenStreetMap(String database, Integer databaseSrid) impleme
         nodeRepository,
         wayRepository,
         relationRepository,
-        databaseSrid
-      );
+        databaseSrid);
     logger.info("Finished updating {}", database);
   }
 
   public static void execute(DataMap<Coordinate> coordinateMap, DataMap<List<Long>> referenceMap,
-                          HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
-                          Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository,
-                          int srid) throws Exception {
+      HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
+      Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository,
+      int srid) throws Exception {
     var header = headerRepository.selectLatest();
     var replicationUrl = header.getReplicationUrl();
     var sequenceNumber = header.getReplicationSequenceNumber() + 1;
@@ -82,7 +81,7 @@ public record UpdateOpenStreetMap(String database, Integer databaseSrid) impleme
 
     var changeUrl = resolve(replicationUrl, sequenceNumber, "osc.gz");
     try (var changeInputStream =
-                 new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
+        new GZIPInputStream(new BufferedInputStream(changeUrl.openStream()))) {
       new XmlChangeReader().stream(changeInputStream).map(prepareChange).forEach(saveChange);
     }
 
@@ -90,15 +89,15 @@ public record UpdateOpenStreetMap(String database, Integer databaseSrid) impleme
     try (var stateInputStream = new BufferedInputStream(stateUrl.openStream())) {
       var state = new StateReader().state(stateInputStream);
       headerRepository.put(new Header(state.getSequenceNumber(), state.getTimestamp(),
-              header.getReplicationUrl(), header.getSource(), header.getWritingProgram()));
+          header.getReplicationUrl(), header.getSource(), header.getWritingProgram()));
     }
   }
 
   public static URL resolve(String replicationUrl, Long sequenceNumber, String extension)
-          throws MalformedURLException {
+      throws MalformedURLException {
     var s = String.format("%09d", sequenceNumber);
     var uri = String.format("%s/%s/%s/%s.%s", replicationUrl, s.substring(0, 3), s.substring(3, 6),
-            s.substring(6, 9), extension);
+        s.substring(6, 9), extension);
     return URI.create(uri).toURL();
   }
 }

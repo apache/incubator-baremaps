@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-
 import org.apache.baremaps.collection.*;
 import org.apache.baremaps.collection.memory.MemoryMappedFile;
 import org.apache.baremaps.collection.type.LonLatDataType;
@@ -36,8 +35,8 @@ public class CollectionUtils {
     var cacheDir = Files.createTempDirectory(Paths.get("."), "coordinates_");
     var coordinatesFile = Files.createFile(cacheDir.resolve("values"));
     var coordinateMap = new MemoryAlignedDataMap<>(
-            new LonLatDataType(),
-            new MemoryMappedFile(coordinatesFile));
+        new LonLatDataType(),
+        new MemoryMappedFile(coordinatesFile));
     return coordinateMap;
   }
 

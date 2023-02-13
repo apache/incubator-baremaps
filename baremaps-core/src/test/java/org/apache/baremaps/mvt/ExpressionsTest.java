@@ -19,32 +19,33 @@ import java.util.List;
 import java.util.Map;
 import org.apache.baremaps.feature.Feature;
 import org.apache.baremaps.feature.FeatureType;
-import org.apache.baremaps.mvt.Expressions.*;
+import org.apache.baremaps.mvt.expression.Expressions;
+import org.apache.baremaps.mvt.expression.Expressions.*;
 import org.junit.jupiter.api.Test;
 
 class ExpressionsTest {
 
   record FeatureMock(Map<String, Object> properties) implements Feature {
 
-  @Override
-  public FeatureType getType() {
-    throw new UnsupportedOperationException();
-  }
+    @Override
+    public FeatureType getType() {
+      throw new UnsupportedOperationException();
+    }
 
-  @Override
-  public void setProperty(String name, Object value) {
-    properties.put(name, value);
-  }
+    @Override
+    public void setProperty(String name, Object value) {
+      properties.put(name, value);
+    }
 
-  @Override
-  public Object getProperty(String name) {
-    return properties.get(name);
-  }
+    @Override
+    public Object getProperty(String name) {
+      return properties.get(name);
+    }
 
-  @Override
-  public Map<String, Object> getProperties() {
-    return properties;
-  }
+    @Override
+    public Map<String, Object> getProperties() {
+      return properties;
+    }
 
   }
 

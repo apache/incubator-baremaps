@@ -12,9 +12,12 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import org.apache.baremaps.geocoder.GeocoderConstants;
 import org.apache.baremaps.geocoder.GeonamesDocumentMapper;
 import org.apache.baremaps.geocoder.GeonamesReader;
-import org.apache.baremaps.geocoder.GeocoderConstants;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.lucene.document.Document;
@@ -23,10 +26,6 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.MMapDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * A task that creates a geonames index.
@@ -43,11 +42,11 @@ public record CreateGeonamesIndex(Path dataFile, Path indexDirectory) implements
     var config = new IndexWriterConfig(GeocoderConstants.ANALYZER);
 
     try (var indexWriter = new IndexWriter(directory, config);
-      var inputStream = Files.newInputStream(dataFile)) {
+        var inputStream = Files.newInputStream(dataFile)) {
       indexWriter.deleteAll();
       var documents = new GeonamesReader()
-        .stream(inputStream)
-        .map(new GeonamesDocumentMapper());
+          .stream(inputStream)
+          .map(new GeonamesDocumentMapper());
       indexWriter.addDocuments((Iterable<Document>) documents::iterator);
     } catch (IOException exception) {
       throw new RuntimeException();

@@ -45,14 +45,14 @@ public class ImportResource {
     /*
      * TODO: replace GeoTools with Apache SIS // Read FeatureCollection FeatureJSON fjson = new
      * FeatureJSON(); var fc = fjson.readFeatureCollection(fileInputStream);
-     * 
+     *
      * // Setup Collection String fileName = fileMetaData.getFileName(); Collection collection = new
      * Collection() .id(UUID.randomUUID()) .title(fileName.substring(0, fileName.lastIndexOf(".") -
      * 1)) .extent( new Extent() .spatial( new ExtentSpatial() .bbox( List.of( List.of(
      * fc.getBounds().getMinX(), fc.getBounds().getMinY(), fc.getBounds().getMaxX(),
      * fc.getBounds().getMaxY()))))) .count(fc.size()) .created(new Date()) .geometryType(
      * fc.getSchema().getGeometryDescriptor().getType().getBinding().getSimpleName());
-     * 
+     *
      * // Load data jdbi.useTransaction( handle -> { // Create collection handle .createUpdate(
      * "insert into collections (id, collection) values (:id, CAST(:collection AS jsonb))")
      * .bind("id", collection.getId()) .bindByType("collection", collection, COLLECTION) .execute();
@@ -67,7 +67,7 @@ public class ImportResource {
      * "insert into \"%s\" (tags, geom) values (:tags, ST_Transform(ST_SetSRID(CAST(:geom as geometry), 4326), 3857))"
      * , collection.getId())) .bind("tags", properties) .bind("geom", geom.toString()) .execute(); }
      * });
-     * 
+     *
      * return Response.created(URI.create("collections/" + collection.getId())).build();
      */
     return Response.ok().build();
