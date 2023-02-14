@@ -53,9 +53,10 @@ public class ListDataType<T> implements DataType<List<T>> {
   @Override
   public void write(ByteBuffer buffer, int position, List<T> values) {
     buffer.putInt(position, size(values));
+    position += Integer.BYTES;
     for (T value : values) {
-      position += dataType.size(value);
       dataType.write(buffer, position, value);
+      position += dataType.size(value);
     }
   }
 

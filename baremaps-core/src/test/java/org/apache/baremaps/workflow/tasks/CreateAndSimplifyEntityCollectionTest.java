@@ -14,21 +14,30 @@ package org.apache.baremaps.workflow.tasks;
 
 
 
+import java.nio.file.Paths;
+import org.apache.baremaps.mvt.expression.Expressions.Has;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.workflow.WorkflowContext;
+import org.apache.baremaps.workflow.tasks.SimplifyEntityCollection.Operation;
+import org.apache.baremaps.workflow.tasks.SimplifyEntityCollection.Recipe;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class SimplifyOpenStreetMapTest extends PostgresContainerTest {
+class CreateAndSimplifyEntityCollectionTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
   void execute() throws Exception {
-    var file = TestFiles.resolve("data.osm.pbf");
+    var file = TestFiles.resolve("monaco/monaco.osm.pbf");
+    var collection = Paths.get("entity_collection");
     var jdbcUrl = jdbcUrl();
-    var srid = 3857;
-    var task = new SimplifyOpenStreetMap(file, jdbcUrl, srid);
-    task.execute(new WorkflowContext());
+
+    var createTask = new CreateEntityCollection(file, collection, 3857);
+    createTask.execute(new WorkflowContext());
+
+    var simplifyTask = new SimplifyEntityCollection(collection, jdbcUrl,
+        new Recipe("building", new Has("building"), Operation.union));
+    simplifyTask.execute(new WorkflowContext());
   }
 }

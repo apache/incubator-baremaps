@@ -30,7 +30,6 @@ public class CollectionUtils {
 
   private CollectionUtils() {}
 
-
   public static DataMap<Coordinate> denseCoordinateMap() throws IOException {
     var cacheDir = Files.createTempDirectory(Paths.get("."), "coordinates_");
     var coordinatesFile = Files.createFile(cacheDir.resolve("values"));

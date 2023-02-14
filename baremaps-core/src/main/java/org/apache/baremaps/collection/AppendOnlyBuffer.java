@@ -60,8 +60,8 @@ public class AppendOnlyBuffer<E> extends DataCollection<E> {
     this.dataType = dataType;
     this.memory = memory;
     this.segmentSize = memory.segmentSize();
-    this.offset = 0;
-    this.size = 0;
+    this.offset = Long.BYTES;
+    this.size = memory.segment(0).getLong(0);
   }
 
   /**
@@ -122,6 +122,10 @@ public class AppendOnlyBuffer<E> extends DataCollection<E> {
     return size;
   }
 
+  public void close() {
+    memory.segment(0).putLong(0, size);
+  }
+
   /** {@inheritDoc} */
   @Override
   public void clear() {
@@ -142,7 +146,7 @@ public class AppendOnlyBuffer<E> extends DataCollection<E> {
 
       private long index = 0;
 
-      private long position = 0;
+      private long position = Long.BYTES;
 
       @Override
       public boolean hasNext() {

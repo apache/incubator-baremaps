@@ -15,6 +15,7 @@ package org.apache.baremaps.collection.type;
 
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.provider.Arguments;
 import org.locationtech.jts.geom.Coordinate;
@@ -23,7 +24,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 public class DataTypeProvider {
 
   private static Stream<Arguments> dataTypes() {
-    return Stream.of(Arguments.of(new StringDataType(), "Hello, World!"),
+    return Stream.of(
+        Arguments.of(new StringDataType(), "Hello, World!"),
         Arguments.of(new ByteDataType(), (byte) 1),
         Arguments.of(new ByteListDataType(), List.of((byte) 1, (byte) 2, (byte) 3)),
         Arguments.of(new DoubleDataType(), (double) 1),
@@ -42,6 +44,9 @@ public class DataTypeProvider {
         Arguments.of(new ShortDataType(), (short) 1),
         Arguments.of(new ShortListDataType(), List.of((short) 1, (short) 2, (short) 3)),
         Arguments.of(new ListDataType<>(new IntegerDataType()), List.of(1, 2, 3)),
+        Arguments.of(new ListDataType<>(new StringDataType()), List.of("aaaa", "bbbb", "cccc")),
+        Arguments.of(new MapDataType<>(new StringDataType(), new IntegerDataType()),
+            Map.of("a", 1, "b", 2, "c", 3)),
         Arguments.of(new CoordinateDataType(), new Coordinate(-180, -90)),
         Arguments.of(new CoordinateDataType(), new Coordinate(180, 90)),
         Arguments.of(new LonLatDataType(), new Coordinate(-180, -90)),
@@ -70,7 +75,8 @@ public class DataTypeProvider {
         Arguments.of(new SmallLongDataType(7), (long) -Math.pow(2, 55)),
         Arguments.of(new SmallLongDataType(8), Long.MAX_VALUE),
         Arguments.of(new SmallLongDataType(8), Long.MIN_VALUE),
-        Arguments.of(new PairDataType<>(new LongDataType(), new LongDataType()),
+        Arguments.of(
+            new PairDataType<>(new LongDataType(), new LongDataType()),
             new PairDataType.Pair<>(1l, 2l)));
   }
 }

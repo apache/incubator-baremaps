@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import org.apache.baremaps.feature.Feature;
+import org.locationtech.jts.geom.*;
 
 public interface Expressions {
 
@@ -378,6 +379,36 @@ public interface Expressions {
     }
   }
 
+  record GeometryType(Expression expression) implements Expression<String> {
+
+    @Override
+    public String name() {
+      return "geometry-type";
+    }
+
+    @Override
+    public String evaluate(Feature feature) {
+      Object property = feature.getProperty("geom");
+      if (property instanceof Point) {
+        return "Point";
+      } else if (property instanceof LineString) {
+        return "LineString";
+      } else if (property instanceof Polygon) {
+        return "Polygon";
+      } else if (property instanceof MultiPoint) {
+        return "MultiPoint";
+      } else if (property instanceof MultiLineString) {
+        return "MultiLineString";
+      } else if (property instanceof MultiPolygon) {
+        return "MultiPolygon";
+      } else if (property instanceof GeometryCollection) {
+        return "GeometryCollection";
+      } else {
+        return "Unknown";
+      }
+    }
+  }
+
 
   class ExpressionSerializer extends StdSerializer<Expression> {
 
@@ -406,7 +437,6 @@ public interface Expressions {
       jsonGenerator.writeEndArray();
     }
   }
-
 
   class ExpressionDeserializer extends StdDeserializer<Expression> {
 

@@ -46,7 +46,7 @@ import org.locationtech.proj4j.CoordinateTransform;
 import org.locationtech.proj4j.Proj4jException;
 import org.locationtech.proj4j.ProjCoordinate;
 
-class EntityGeometryBuilderTest {
+class EntityDataTypeGeometryBuilderTest {
 
   static final CRSFactory CRS_FACTORY = new CRSFactory();
 

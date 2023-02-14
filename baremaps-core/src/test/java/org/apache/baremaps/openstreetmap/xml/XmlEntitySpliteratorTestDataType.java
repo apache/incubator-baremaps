@@ -26,7 +26,7 @@ import org.apache.baremaps.stream.AccumulatingConsumer;
 import org.apache.baremaps.stream.HoldingConsumer;
 import org.junit.jupiter.api.Test;
 
-class XmlEntitySpliteratorTest {
+class XmlEntitySpliteratorTestDataType {
 
   @Test
   void tryAdvance() throws IOException {
