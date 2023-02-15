@@ -13,23 +13,24 @@
 package org.apache.baremaps.workflow.tasks;
 
 
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Map;
-import java.util.function.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import org.apache.baremaps.collection.*;
 import org.apache.baremaps.collection.AppendOnlyBuffer;
 import org.apache.baremaps.collection.memory.MemoryMappedFile;
-import org.apache.baremaps.collection.type.*;
 import org.apache.baremaps.feature.*;
 import org.apache.baremaps.mvt.expression.Expressions.Expression;
 import org.apache.baremaps.storage.postgres.PostgresDatabase;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.GeometryFixer;
+import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,43 +50,61 @@ public record SimplifyEntityCollection(Path collection, String database,
   @Override
   public void execute(WorkflowContext context) throws Exception {
     // read the original collection
-    var entities =
-        new AppendOnlyBuffer<>(new EntityDataType(), new MemoryMappedFile(collection));
+    var entities = new AppendOnlyBuffer<>(new EntityDataType(), new MemoryMappedFile(collection));
 
-    // filter the entities of the collection
-    var filteredEntities = entities.stream()
+    var geometries = switch (recipe.operation()) {
+      case union -> union(entities);
+      case merge -> merge(entities);
+      case none -> none(entities);
+    };
+
+    var featureType =
+        new FeatureType(recipe.name, Map.of("geom", new PropertyType("geom", Geometry.class)));
+    var featureStream =
+        geometries.map(geometry -> new FeatureImpl(featureType, Map.of("geom", geometry)));
+    var featureSet = new ReadableFeatureStream(featureType, featureStream);
+
+    var dataSource = context.getDataSource(database);
+    var postgresDatabase = new PostgresDatabase(dataSource);
+    postgresDatabase.write(featureSet);
+  }
+
+  private Stream<Geometry> union(Collection<Entity> entities) throws IOException {
+    var geometries = entities.stream()
         .filter(entity -> recipe.filter.evaluate(entity))
-        .toList();
-
-    var geometries = filteredEntities.stream()
         .map(Entity::getGeometry)
         .filter(Polygon.class::isInstance)
         .map(Polygon.class::cast)
         .map(GeometryFixer::fix)
         .toList();
 
-    // Apply the operation to each recipe and store the result in the collection
     var unionedGeometry = new CascadedPolygonUnion(geometries).union();
 
-    var featureType =
-        new FeatureType(recipe.name, Map.of("geom", new PropertyType("geom", Geometry.class)));
-
-    Stream<Feature> stream = IntStream.range(0, unionedGeometry.getNumGeometries())
-        .mapToObj(unionedGeometry::getGeometryN)
-        .map(geometry -> new FeatureImpl(featureType, Map.of("geom", geometry)));
-
-    var dataSource = context.getDataSource(database);
-    var postgresDatabase = new PostgresDatabase(dataSource);
-    postgresDatabase.write(new ReadableFeatureSet() {
-      @Override
-      public FeatureType getType() {
-        return featureType;
-      }
-
-      @Override
-      public Stream<Feature> read() {
-        return stream;
-      }
-    });
+    return IntStream.range(0, unionedGeometry.getNumGeometries())
+        .mapToObj(unionedGeometry::getGeometryN);
   }
+
+  private Stream<Geometry> merge(Collection<Entity> entities) throws IOException {
+    var geometries = entities.stream()
+        .filter(entity -> recipe.filter.evaluate(entity))
+        .map(Entity::getGeometry)
+        .filter(LineString.class::isInstance)
+        .map(LineString.class::cast)
+        .map(GeometryFixer::fix)
+        .toList();
+
+    var lineMerger = new LineMerger();
+    lineMerger.add(geometries);
+    var mergedGeometries = lineMerger.getMergedLineStrings();
+
+    return mergedGeometries.stream();
+  }
+
+  private Stream<Geometry> none(Collection<Entity> entities) throws IOException {
+    return entities.stream()
+        .filter(entity -> recipe.filter.evaluate(entity))
+        .map(Entity::getGeometry)
+        .map(GeometryFixer::fix);
+  }
+
 }

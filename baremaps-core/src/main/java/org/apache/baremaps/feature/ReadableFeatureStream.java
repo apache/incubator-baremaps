@@ -12,13 +12,26 @@
 
 package org.apache.baremaps.feature;
 
-
-
-import java.io.IOException;
 import java.util.stream.Stream;
 
-public interface ReadableFeatureSet extends FeatureSet {
+public class ReadableFeatureStream implements ReadableFeatureSet {
 
-  Stream<? extends Feature> read() throws IOException;
+  private final FeatureType featureType;
 
+  private final Stream<? extends Feature> stream;
+
+  public ReadableFeatureStream(FeatureType featureType, Stream<? extends Feature> stream) {
+    this.featureType = featureType;
+    this.stream = stream;
+  }
+
+  @Override
+  public FeatureType getType() {
+    return featureType;
+  }
+
+  @Override
+  public Stream<? extends Feature> read() {
+    return stream;
+  }
 }
