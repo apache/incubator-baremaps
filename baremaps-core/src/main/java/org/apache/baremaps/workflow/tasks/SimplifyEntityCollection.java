@@ -13,10 +13,11 @@
 package org.apache.baremaps.workflow.tasks;
 
 
-import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.AppendOnlyBuffer;
@@ -40,7 +41,8 @@ public record SimplifyEntityCollection(Path collection, String database,
 
   private static final Logger logger = LoggerFactory.getLogger(ImportOpenStreetMap.class);
 
-  record Recipe(String name, Expression<Boolean> filter, Operation operation) {
+  record Recipe(String name, Expression<Boolean> filter, List<String> groupBy,
+      Operation operation) {
   }
 
   enum Operation {
@@ -49,19 +51,20 @@ public record SimplifyEntityCollection(Path collection, String database,
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    // read the original collection
-    var entities = new AppendOnlyBuffer<>(new EntityDataType(), new MemoryMappedFile(collection));
+    var featureType = new FeatureType(recipe.name, propertyTypes());
 
-    var geometries = switch (recipe.operation()) {
-      case union -> union(entities);
-      case merge -> merge(entities);
-      case none -> none(entities);
-    };
+    var groups =
+        new AppendOnlyBuffer<>(new EntityDataType(), new MemoryMappedFile(collection)).stream()
+            .filter(this::filter)
+            .collect(Collectors.groupingBy(this::propertyValues));
 
-    var featureType =
-        new FeatureType(recipe.name, Map.of("geom", new PropertyType("geom", Geometry.class)));
-    var featureStream =
-        geometries.map(geometry -> new FeatureImpl(featureType, Map.of("geom", geometry)));
+    var featureStream = groups.entrySet().stream().flatMap(entry -> {
+      var group = entry.getKey();
+      var entities = entry.getValue();
+      var geometries = simplify(entities.stream().map(Entity::getGeometry));
+      return geometries.map(geometry -> new Entity(0, group, geometry));
+    });
+
     var featureSet = new ReadableFeatureStream(featureType, featureStream);
 
     var dataSource = context.getDataSource(database);
@@ -69,42 +72,64 @@ public record SimplifyEntityCollection(Path collection, String database,
     postgresDatabase.write(featureSet);
   }
 
-  private Stream<Geometry> union(Collection<Entity> entities) throws IOException {
-    var geometries = entities.stream()
-        .filter(entity -> recipe.filter.evaluate(entity))
-        .map(Entity::getGeometry)
+  private Stream<Geometry> simplify(Stream<Geometry> geometries) {
+    return switch (recipe.operation()) {
+      case union -> union(geometries);
+      case merge -> merge(geometries);
+      case none -> none(geometries);
+    };
+  }
+
+  private Map<String, PropertyType> propertyTypes() {
+    var map = new HashMap<String, PropertyType>();
+    for (var property : recipe.groupBy()) {
+      map.put(property, new PropertyType<>(property, String.class));
+    }
+    map.put("geometry", new PropertyType<>("geometry", Geometry.class));
+    return map;
+  }
+
+  private Map<String, String> propertyValues(Entity entity) {
+    var map = new HashMap<String, String>();
+    for (var property : recipe.groupBy()) {
+      map.put(property, entity.getProperty(property).toString());
+    }
+    return map;
+  }
+
+  private Stream<Geometry> union(Stream<Geometry> geometries) {
+    var filtered = geometries
         .filter(Polygon.class::isInstance)
         .map(Polygon.class::cast)
         .map(GeometryFixer::fix)
         .toList();
 
-    var unionedGeometry = new CascadedPolygonUnion(geometries).union();
+    var unionedGeometry = new CascadedPolygonUnion(filtered).union();
 
     return IntStream.range(0, unionedGeometry.getNumGeometries())
         .mapToObj(unionedGeometry::getGeometryN);
   }
 
-  private Stream<Geometry> merge(Collection<Entity> entities) throws IOException {
-    var geometries = entities.stream()
-        .filter(entity -> recipe.filter.evaluate(entity))
-        .map(Entity::getGeometry)
+  private Stream<Geometry> merge(Stream<Geometry> geometries) {
+    var filtered = geometries
         .filter(LineString.class::isInstance)
         .map(LineString.class::cast)
         .map(GeometryFixer::fix)
         .toList();
 
     var lineMerger = new LineMerger();
-    lineMerger.add(geometries);
+    lineMerger.add(filtered);
     var mergedGeometries = lineMerger.getMergedLineStrings();
 
     return mergedGeometries.stream();
   }
 
-  private Stream<Geometry> none(Collection<Entity> entities) throws IOException {
-    return entities.stream()
-        .filter(entity -> recipe.filter.evaluate(entity))
-        .map(Entity::getGeometry)
-        .map(GeometryFixer::fix);
+  private Stream<Geometry> none(Stream<Geometry> geometries) {
+    throw new UnsupportedOperationException();
+  }
+
+  private boolean filter(Entity entity) {
+    return recipe.filter.evaluate(entity);
   }
 
 }

@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 import org.apache.baremaps.collection.AppendOnlyBuffer;
 import org.apache.baremaps.collection.MemoryAlignedDataList;
 import org.apache.baremaps.collection.MonotonicDataMap;
@@ -60,7 +61,6 @@ public record CreateEntityCollection(Path file, Path collection,
 
     Files.deleteIfExists(collection);
 
-
     var entityCollection =
         new AppendOnlyBuffer<>(new EntityDataType(), new MemoryMappedFile(collection));
 
@@ -85,7 +85,7 @@ public record CreateEntityCollection(Path file, Path collection,
           }
           return new Entity(element.id(), tags, geometry);
         })
-        .forEach(entityCollection::add);
+        .collect(Collectors.toCollection(() -> entityCollection));
 
     entityCollection.close();
 
