@@ -27,10 +27,10 @@ class AppendOnlyBufferTest {
   void addFixedSizeData() {
     var store = new AppendOnlyBuffer<>(new IntegerDataType(), new OffHeapMemory(1 << 10));
     for (int i = 0; i < 1 << 20; i++) {
-      assertEquals(i << 2, store.addPositioned(i));
+      assertEquals(Long.BYTES + (i << 2), store.addPositioned(i));
     }
     for (int i = 0; i < 1 << 20; i++) {
-      assertEquals(i, store.read(i << 2));
+      assertEquals(i, store.read(Long.BYTES + (i << 2)));
     }
   }
 

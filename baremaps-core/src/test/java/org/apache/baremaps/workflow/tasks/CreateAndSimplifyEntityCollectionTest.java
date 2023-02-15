@@ -14,6 +14,7 @@ package org.apache.baremaps.workflow.tasks;
 
 
 
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import org.apache.baremaps.mvt.expression.Expressions.Has;
 import org.apache.baremaps.testing.PostgresContainerTest;
@@ -39,5 +40,7 @@ class CreateAndSimplifyEntityCollectionTest extends PostgresContainerTest {
     var simplifyTask = new SimplifyEntityCollection(collection, jdbcUrl,
         new Recipe("building", new Has("building"), Operation.union));
     simplifyTask.execute(new WorkflowContext());
+
+    Files.delete(collection);
   }
 }

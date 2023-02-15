@@ -48,7 +48,7 @@ public class StringDataType implements DataType<String> {
   @Override
   public String read(ByteBuffer buffer, int position) {
     var size = size(buffer, position);
-    var bytes = new byte[size - Integer.BYTES];
+    var bytes = new byte[Math.max(size - Integer.BYTES, 0)];
     for (int i = 0; i < bytes.length; i++) {
       bytes[i] = buffer.get(position + Integer.BYTES + i);
     }
