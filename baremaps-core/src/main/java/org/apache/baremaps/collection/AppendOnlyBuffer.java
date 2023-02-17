@@ -80,6 +80,7 @@ public class AppendOnlyBuffer<E> extends DataCollection<E> {
     long position = offset;
     long segmentIndex = position / segmentSize;
     long segmentOffset = position % segmentSize;
+
     if (segmentOffset + valueSize > segmentSize) {
       segmentOffset = 0;
       segmentIndex = segmentIndex + 1;
@@ -160,9 +161,17 @@ public class AppendOnlyBuffer<E> extends DataCollection<E> {
         }
         long segmentIndex = position / segmentSize;
         long segmentOffset = position % segmentSize;
+
         ByteBuffer segment = memory.segment((int) segmentIndex);
-        int size = dataType.size(segment, (int) segmentOffset);
-        if (size == 0) {
+
+        int size;
+        try {
+          size = dataType.size(segment, (int) segmentOffset);
+        } catch (IndexOutOfBoundsException e) {
+          size = 0;
+        }
+
+        if (segmentOffset + size > segmentSize || size == 0) {
           segmentIndex = segmentIndex + 1;
           segmentOffset = 0;
           position = segmentIndex * segmentSize;
@@ -171,6 +180,7 @@ public class AppendOnlyBuffer<E> extends DataCollection<E> {
         }
         position += size;
         index++;
+
         return dataType.read(segment, (int) segmentOffset);
       }
     };

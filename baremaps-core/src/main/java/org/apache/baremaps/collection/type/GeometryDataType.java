@@ -45,7 +45,7 @@ public class GeometryDataType implements DataType<Geometry> {
   @Override
   public Geometry read(ByteBuffer buffer, int position) {
     int size = buffer.getInt(position);
-    byte[] bytes = new byte[size - Integer.BYTES];
+    byte[] bytes = new byte[Math.max(size - Integer.BYTES, 0)];
     buffer.get(position + Integer.BYTES, bytes);
     return GeometryUtils.deserialize(bytes);
   }

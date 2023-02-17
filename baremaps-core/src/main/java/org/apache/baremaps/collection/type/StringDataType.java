@@ -39,9 +39,7 @@ public class StringDataType implements DataType<String> {
   public void write(ByteBuffer buffer, int position, String value) {
     var bytes = value.getBytes(StandardCharsets.UTF_8);
     buffer.putInt(position, size(value));
-    for (int i = 0; i < bytes.length; i++) {
-      buffer.put(position + Integer.BYTES + i, bytes[i]);
-    }
+    buffer.put(position + Integer.BYTES, bytes, 0, bytes.length);
   }
 
   /** {@inheritDoc} */
@@ -49,9 +47,7 @@ public class StringDataType implements DataType<String> {
   public String read(ByteBuffer buffer, int position) {
     var size = size(buffer, position);
     var bytes = new byte[Math.max(size - Integer.BYTES, 0)];
-    for (int i = 0; i < bytes.length; i++) {
-      bytes[i] = buffer.get(position + Integer.BYTES + i);
-    }
+    buffer.get(position + Integer.BYTES, bytes);
     return new String(bytes, StandardCharsets.UTF_8);
   }
 }

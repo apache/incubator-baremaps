@@ -17,26 +17,29 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.Random;
 import org.apache.baremaps.collection.memory.OffHeapMemory;
+import org.apache.baremaps.collection.type.DataType;
 import org.apache.baremaps.collection.type.IntegerDataType;
 import org.apache.baremaps.collection.type.IntegerListDataType;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class AppendOnlyBufferTest {
 
   @Test
   void addFixedSizeData() {
-    var store = new AppendOnlyBuffer<>(new IntegerDataType(), new OffHeapMemory(1 << 10));
+    var collection = new AppendOnlyBuffer<>(new IntegerDataType(), new OffHeapMemory(1 << 10));
     for (int i = 0; i < 1 << 20; i++) {
-      assertEquals(Long.BYTES + (i << 2), store.addPositioned(i));
+      assertEquals(Long.BYTES + (i << 2), collection.addPositioned(i));
     }
     for (int i = 0; i < 1 << 20; i++) {
-      assertEquals(i, store.read(Long.BYTES + (i << 2)));
+      assertEquals(i, collection.read(Long.BYTES + (i << 2)));
     }
   }
 
   @Test
   void addVariableSizeValues() {
-    var store = new AppendOnlyBuffer<>(new IntegerListDataType(), new OffHeapMemory(1 << 10));
+    var collection = new AppendOnlyBuffer<>(new IntegerListDataType(), new OffHeapMemory(1 << 10));
     var random = new Random(0);
     var positions = new ArrayList<Long>();
     var values = new ArrayList<ArrayList<Integer>>();
@@ -46,12 +49,35 @@ class AppendOnlyBufferTest {
       for (int j = 0; j < size; j++) {
         value.add(random.nextInt(1 << 20));
       }
-      positions.add(store.addPositioned(value));
+      positions.add(collection.addPositioned(value));
       values.add(value);
     }
     for (int i = 0; i < positions.size(); i++) {
-      var value = store.read(positions.get(i));
+      var value = collection.read(positions.get(i));
       assertEquals(values.get(i), value);
     }
+  }
+
+  @ParameterizedTest
+  @MethodSource("org.apache.baremaps.collection.type.DataTypeProvider#dataTypes")
+  void testAllDataTypes(DataType dataType, Object value) {
+    var num = 1 << 10;
+    var collection = new AppendOnlyBuffer<>(dataType, new OffHeapMemory(1 << 8));
+
+    // write values
+    for (int i = 0; i < num; i++) {
+      collection.addPositioned(value);
+    }
+    collection.close();
+
+    // read values
+    int count = 0;
+    for (var v : collection) {
+      assertEquals(value, v);
+      count++;
+    }
+
+    // check count
+    assertEquals(num, count);
   }
 }

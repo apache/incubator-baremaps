@@ -1,0 +1,47 @@
+{
+  "steps": [
+    {
+      "id": "download",
+      "needs": [],
+      "tasks": [
+        {
+          "type": "DownloadUrl",
+          "url": "https://download.geofabrik.de/europe/switzerland-latest.osm.pbf",
+          "path": "switzerland-latest.osm.pbf"
+        }
+      ]
+    },
+    {
+      "id": "collection",
+      "needs": [
+        "download"
+      ],
+      "tasks": [
+        {
+          "type": "CreateEntityCollection",
+          "file": "switzerland-latest.osm.pbf",
+          "collection": "collection",
+          "srid": 3857
+        }
+      ]
+    },
+    {
+      "id": "simplify",
+      "needs": [
+        "collection"
+      ],
+      "tasks": [
+        {
+          "type": "SimplifyEntityCollection",
+          "collection": "collection",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+          "recipe": {
+            "name": "building",
+            "filter": ["has", "building"],
+            "operation": "union"
+          }
+        }
+      ]
+    }
+  ]
+}

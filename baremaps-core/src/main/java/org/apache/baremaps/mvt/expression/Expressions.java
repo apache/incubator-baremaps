@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -528,5 +529,10 @@ public interface Expressions {
     };
   }
 
+  public static Module jacksonModule() {
+    var simpleModule = new SimpleModule("SimpleModule", new Version(1, 0, 0, null));
+    simpleModule.addDeserializer(Expression.class, new ExpressionDeserializer());
+    return simpleModule;
+  }
 
 }

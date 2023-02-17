@@ -21,12 +21,12 @@ import org.apache.baremaps.mvt.expression.Expressions.Has;
 import org.apache.baremaps.testing.PostgresContainerTest;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.workflow.WorkflowContext;
-import org.apache.baremaps.workflow.tasks.SimplifyEntityCollection.Operation;
-import org.apache.baremaps.workflow.tasks.SimplifyEntityCollection.Recipe;
+import org.apache.baremaps.workflow.tasks.TransformEntityCollection.Operation;
+import org.apache.baremaps.workflow.tasks.TransformEntityCollection.Recipe;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class CreateAndSimplifyEntityCollectionTest extends PostgresContainerTest {
+class CreateAndTransformEntityCollectionTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
@@ -38,7 +38,7 @@ class CreateAndSimplifyEntityCollectionTest extends PostgresContainerTest {
     var createTask = new CreateEntityCollection(file, collection, 3857);
     createTask.execute(new WorkflowContext());
 
-    var simplifyTask = new SimplifyEntityCollection(collection, jdbcUrl,
+    var simplifyTask = new TransformEntityCollection(collection, jdbcUrl,
         new Recipe("building", new Has("landuse"), List.of("landuse"),
             Operation.union));
     simplifyTask.execute(new WorkflowContext());

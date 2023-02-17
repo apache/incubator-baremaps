@@ -36,7 +36,7 @@ import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record SimplifyEntityCollection(Path collection, String database,
+public record TransformEntityCollection(Path collection, String database,
     Recipe recipe) implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportOpenStreetMap.class);
@@ -51,12 +51,14 @@ public record SimplifyEntityCollection(Path collection, String database,
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
+    logger.info("Transform {} with {}", collection, recipe);
+
     var featureType = new FeatureType(recipe.name, propertyTypes());
 
-    var groups =
-        new AppendOnlyBuffer<>(new EntityDataType(), new MemoryMappedFile(collection)).stream()
-            .filter(this::filter)
-            .collect(Collectors.groupingBy(this::propertyValues));
+    var coll = new AppendOnlyBuffer<>(new EntityDataType(), new MemoryMappedFile(collection));
+    var groups = coll.stream()
+        .filter(this::filter)
+        .collect(Collectors.groupingBy(this::propertyValues));
 
     var featureStream = groups.entrySet().stream().flatMap(entry -> {
       var group = entry.getKey();
@@ -76,13 +78,17 @@ public record SimplifyEntityCollection(Path collection, String database,
     return switch (recipe.operation()) {
       case union -> union(geometries);
       case merge -> merge(geometries);
-      case none -> none(geometries);
+      case none -> geometries;
     };
+  }
+
+  private List<String> groupBy() {
+    return recipe.groupBy() == null ? List.of() : recipe.groupBy();
   }
 
   private Map<String, PropertyType> propertyTypes() {
     var map = new HashMap<String, PropertyType>();
-    for (var property : recipe.groupBy()) {
+    for (var property : groupBy()) {
       map.put(property, new PropertyType<>(property, String.class));
     }
     map.put("geometry", new PropertyType<>("geometry", Geometry.class));
@@ -91,7 +97,7 @@ public record SimplifyEntityCollection(Path collection, String database,
 
   private Map<String, String> propertyValues(Entity entity) {
     var map = new HashMap<String, String>();
-    for (var property : recipe.groupBy()) {
+    for (var property : groupBy()) {
       map.put(property, entity.getProperty(property).toString());
     }
     return map;
@@ -122,10 +128,6 @@ public record SimplifyEntityCollection(Path collection, String database,
     var mergedGeometries = lineMerger.getMergedLineStrings();
 
     return mergedGeometries.stream();
-  }
-
-  private Stream<Geometry> none(Stream<Geometry> geometries) {
-    throw new UnsupportedOperationException();
   }
 
   private boolean filter(Entity entity) {

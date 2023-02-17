@@ -14,8 +14,8 @@ package org.apache.baremaps.collection.type;
 
 
 
+import com.google.common.primitives.Bytes;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,11 +45,8 @@ public class ByteListDataType implements DataType<List<Byte>> {
   @Override
   public void write(ByteBuffer buffer, int position, List<Byte> values) {
     buffer.putInt(position, size(values));
-    position += Integer.BYTES;
-    for (Byte value : values) {
-      buffer.put(position, value);
-      position += Byte.BYTES;
-    }
+    byte[] bytes = Bytes.toArray(values);
+    buffer.put(position + Integer.BYTES, bytes, 0, bytes.length);
   }
 
   /**
@@ -58,10 +55,8 @@ public class ByteListDataType implements DataType<List<Byte>> {
   @Override
   public List<Byte> read(ByteBuffer buffer, int position) {
     int size = buffer.getInt(position);
-    var list = new ArrayList<Byte>(size);
-    for (var p = position + Integer.BYTES; p < position + size; p += Byte.BYTES) {
-      list.add(buffer.get(p));
-    }
-    return list;
+    var bytes = new byte[Math.max(size - Integer.BYTES, 0)];
+    buffer.get(position + Integer.BYTES, bytes);
+    return Bytes.asList(bytes);
   }
 }

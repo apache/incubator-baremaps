@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 
 public record CreateEntityCollection(Path file, Path collection,
-    Integer targetSrid) implements Task {
+    Integer srid) implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportOpenStreetMap.class);
 
@@ -64,7 +64,7 @@ public record CreateEntityCollection(Path file, Path collection,
     var entityCollection =
         new AppendOnlyBuffer<>(new EntityDataType(), new MemoryMappedFile(collection));
 
-    var projectionTransformer = new ProjectionTransformer(4326, targetSrid);
+    var projectionTransformer = new ProjectionTransformer(4326, srid);
 
     // Read the PBF file and dispatch the elements to the consumers
     new PbfEntityReader()
