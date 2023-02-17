@@ -6,8 +6,8 @@
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://download.geofabrik.de/europe/switzerland-latest.osm.pbf",
-          "path": "switzerland-latest.osm.pbf"
+          "url": "https://download.geofabrik.de/europe/monaco-latest.osm.pbf",
+          "path": "monaco-latest.osm.pbf"
         }
       ]
     },
@@ -19,7 +19,7 @@
       "tasks": [
         {
           "type": "CreateEntityCollection",
-          "file": "switzerland-latest.osm.pbf",
+          "file": "monaco-latest.osm.pbf",
           "collection": "collection",
           "srid": 3857
         }
