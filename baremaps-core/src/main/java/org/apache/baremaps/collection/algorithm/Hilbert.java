@@ -25,9 +25,9 @@ public class Hilbert {
 
   final static int HILBERT_MAX = (1 << 16) - 1;
 
-    /**
-     * A comparator for
-     */
+  /**
+   * A comparator for
+   */
   public static class HilberComparator implements Comparator<Geometry> {
 
     private final double minX;
@@ -35,13 +35,14 @@ public class Hilbert {
     private final double width;
     private final double height;
 
-      /**
-       * Constructs a new Hilbert comparator.
-       * @param minX
-       * @param minY
-       * @param width
-       * @param height
-       */
+    /**
+     * Constructs a new Hilbert comparator.
+     * 
+     * @param minX
+     * @param minY
+     * @param width
+     * @param height
+     */
     public HilberComparator(double minX, double minY, double width, double height) {
       this.minX = minX;
       this.minY = minY;
