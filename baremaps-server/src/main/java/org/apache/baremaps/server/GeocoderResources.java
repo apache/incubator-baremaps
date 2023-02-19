@@ -36,10 +36,12 @@ import org.apache.lucene.search.SearcherManager;
 @javax.ws.rs.Path("/")
 public class GeocoderResources {
 
-  record GeocoderResponse(List<GeocoderResult> results) {}
+  record GeocoderResponse(List<GeocoderResult> results) {
+  }
 
 
-  record GeocoderResult(float score, Map<String, Object> data) {}
+  record GeocoderResult(float score, Map<String, Object> data) {
+  }
 
 
   private final SearcherManager searcherManager;

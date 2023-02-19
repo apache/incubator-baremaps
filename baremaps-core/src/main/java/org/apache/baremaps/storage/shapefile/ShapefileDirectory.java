@@ -17,18 +17,11 @@ package org.apache.baremaps.storage.shapefile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import org.apache.sis.storage.Aggregate;
-import org.apache.sis.storage.DataStoreException;
-import org.apache.sis.storage.Resource;
-import org.apache.sis.storage.event.StoreEvent;
-import org.apache.sis.storage.event.StoreListener;
-import org.opengis.metadata.Metadata;
-import org.opengis.util.GenericName;
+import java.util.stream.Stream;
+import org.apache.baremaps.feature.ReadableAggregate;
+import org.apache.baremaps.feature.Resource;
 
-public class ShapefileDirectory implements Aggregate {
+public class ShapefileDirectory implements ReadableAggregate {
 
   private final Path directory;
 
@@ -37,34 +30,10 @@ public class ShapefileDirectory implements Aggregate {
   }
 
   @Override
-  public Collection<? extends Resource> components() throws DataStoreException {
-    try (var list = Files.list(directory)) {
-      return list.filter(file -> file.toString().toLowerCase().endsWith(".shp"))
-          .map(file -> new ShapefileFeatureSet(file)).collect(Collectors.toList());
-    } catch (IOException e) {
-      throw new DataStoreException(e);
-    }
-  }
+  public Stream<Resource> read() throws IOException {
+    return Files.list(directory)
+        .filter(file -> file.toString().toLowerCase().endsWith(".shp"))
+        .map(file -> new ShapefileFeatureSet(file));
 
-  @Override
-  public Optional<GenericName> getIdentifier() throws DataStoreException {
-    return Optional.empty();
-  }
-
-  @Override
-  public Metadata getMetadata() throws DataStoreException {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public <T extends StoreEvent> void addListener(Class<T> eventType,
-      StoreListener<? super T> listener) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public <T extends StoreEvent> void removeListener(Class<T> eventType,
-      StoreListener<? super T> listener) {
-    throw new UnsupportedOperationException();
   }
 }

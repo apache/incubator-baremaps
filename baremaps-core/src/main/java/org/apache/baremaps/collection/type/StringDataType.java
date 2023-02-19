@@ -17,29 +17,37 @@ package org.apache.baremaps.collection.type;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * A {@link DataType} for reading and writing strings in {@link ByteBuffer}s.
+ */
 public class StringDataType implements DataType<String> {
 
+  /** {@inheritDoc} */
   @Override
   public int size(String value) {
-    return 8 + value.getBytes(StandardCharsets.UTF_8).length;
+    return Integer.BYTES + value.getBytes(StandardCharsets.UTF_8).length;
   }
 
+  /** {@inheritDoc} */
+  @Override
+  public int size(ByteBuffer buffer, int position) {
+    return buffer.getInt(position);
+  }
+
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, String value) {
     var bytes = value.getBytes(StandardCharsets.UTF_8);
-    buffer.putInt(position, bytes.length);
-    for (int i = 0; i < bytes.length; i++) {
-      buffer.put(position + 8 + i, bytes[i]);
-    }
+    buffer.putInt(position, size(value));
+    buffer.put(position + Integer.BYTES, bytes, 0, bytes.length);
   }
 
+  /** {@inheritDoc} */
   @Override
   public String read(ByteBuffer buffer, int position) {
-    var length = buffer.getInt(position);
-    var bytes = new byte[length];
-    for (int i = 0; i < bytes.length; i++) {
-      bytes[i] = buffer.get(position + 8 + i);
-    }
+    var size = size(buffer, position);
+    var bytes = new byte[Math.max(size - Integer.BYTES, 0)];
+    buffer.get(position + Integer.BYTES, bytes);
     return new String(bytes, StandardCharsets.UTF_8);
   }
 }

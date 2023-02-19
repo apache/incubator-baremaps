@@ -14,21 +14,16 @@ package org.apache.baremaps.storage.geopackage;
 
 
 
+import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import mil.nga.geopackage.GeoPackage;
 import mil.nga.geopackage.GeoPackageManager;
-import org.apache.sis.storage.Aggregate;
-import org.apache.sis.storage.DataStoreException;
-import org.apache.sis.storage.Resource;
-import org.apache.sis.storage.event.StoreEvent;
-import org.apache.sis.storage.event.StoreListener;
-import org.opengis.metadata.Metadata;
-import org.opengis.util.GenericName;
+import org.apache.baremaps.feature.ReadableAggregate;
+import org.apache.baremaps.feature.Resource;
 
-public class GeoPackageDatabase implements Aggregate, AutoCloseable {
+
+public class GeoPackageDatabase implements ReadableAggregate, AutoCloseable {
 
   private final GeoPackage geoPackage;
 
@@ -37,32 +32,9 @@ public class GeoPackageDatabase implements Aggregate, AutoCloseable {
   }
 
   @Override
-  public Optional<GenericName> getIdentifier() throws DataStoreException {
-    return Optional.empty();
-  }
-
-  @Override
-  public Metadata getMetadata() throws DataStoreException {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public <T extends StoreEvent> void addListener(Class<T> eventType,
-      StoreListener<? super T> listener) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public <T extends StoreEvent> void removeListener(Class<T> eventType,
-      StoreListener<? super T> listener) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Collection<? extends Resource> components() throws DataStoreException {
+  public Stream<Resource> read() throws IOException {
     return geoPackage.getFeatureTables().stream()
-        .map(table -> new GeoPackageTable(geoPackage.getFeatureDao(table)))
-        .collect(Collectors.toList());
+        .map(table -> new GeoPackageTable(geoPackage.getFeatureDao(table)));
   }
 
   @Override

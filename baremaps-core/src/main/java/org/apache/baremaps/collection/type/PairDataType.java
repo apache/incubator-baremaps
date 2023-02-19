@@ -19,20 +19,15 @@ import java.util.Objects;
 import org.apache.baremaps.collection.type.PairDataType.Pair;
 
 /** A {@link DataType} for reading and writing pairs of values in {@link ByteBuffer}s. */
-public class PairDataType<L, R> implements SizedDataType<Pair<L, R>> {
+public class PairDataType<L, R> extends FixedSizeDataType<Pair<L, R>> {
 
-  private final SizedDataType<L> left;
-  private final SizedDataType<R> right;
+  private final FixedSizeDataType<L> left;
+  private final FixedSizeDataType<R> right;
 
-  public PairDataType(SizedDataType<L> left, SizedDataType<R> right) {
+  public PairDataType(FixedSizeDataType<L> left, FixedSizeDataType<R> right) {
+    super(left.size() + right.size());
     this.left = left;
     this.right = right;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public int size(Pair<L, R> value) {
-    return left.size() + right.size();
   }
 
   /** {@inheritDoc} */
@@ -45,9 +40,9 @@ public class PairDataType<L, R> implements SizedDataType<Pair<L, R>> {
   /** {@inheritDoc} */
   @Override
   public Pair<L, R> read(ByteBuffer buffer, int position) {
-    L l = left.read(buffer, position);
-    R r = right.read(buffer, position + left.size());
-    return new Pair<>(l, r);
+    return new Pair<>(
+        left.read(buffer, position),
+        right.read(buffer, position + left.size()));
   }
 
   public static class Pair<L, R> {
@@ -69,6 +64,7 @@ public class PairDataType<L, R> implements SizedDataType<Pair<L, R>> {
       return right;
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object o) {
       if (this == o) {
@@ -87,6 +83,7 @@ public class PairDataType<L, R> implements SizedDataType<Pair<L, R>> {
       return Objects.equals(right, pair.right);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
       int result = left != null ? left.hashCode() : 0;

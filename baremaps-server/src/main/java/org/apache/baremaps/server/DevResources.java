@@ -41,8 +41,8 @@ import javax.ws.rs.sse.SseEventSink;
 import org.apache.baremaps.database.tile.PostgresTileStore;
 import org.apache.baremaps.database.tile.Tile;
 import org.apache.baremaps.database.tile.TileStore;
-import org.apache.baremaps.style.Style;
-import org.apache.baremaps.tileset.Tileset;
+import org.apache.baremaps.mvt.style.Style;
+import org.apache.baremaps.mvt.tileset.Tileset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

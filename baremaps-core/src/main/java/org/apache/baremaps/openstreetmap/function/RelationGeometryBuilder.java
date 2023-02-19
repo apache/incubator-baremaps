@@ -16,7 +16,7 @@ import static org.apache.baremaps.openstreetmap.utils.GeometryUtils.GEOMETRY_FAC
 
 import java.util.*;
 import java.util.function.Consumer;
-import org.apache.baremaps.collection.LongDataMap;
+import org.apache.baremaps.collection.DataMap;
 import org.apache.baremaps.openstreetmap.model.Member;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.stream.StreamException;
@@ -36,8 +36,8 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
 
   private static final Logger logger = LoggerFactory.getLogger(RelationGeometryBuilder.class);
 
-  private final LongDataMap<Coordinate> coordinateMap;
-  private final LongDataMap<List<Long>> referenceMap;
+  private final DataMap<Coordinate> coordinateMap;
+  private final DataMap<List<Long>> referenceMap;
 
   /**
    * Constructs a relation geometry builder.
@@ -45,8 +45,8 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
    * @param coordinateMap the coordinates map
    * @param referenceMap the references map
    */
-  public RelationGeometryBuilder(LongDataMap<Coordinate> coordinateMap,
-      LongDataMap<List<Long>> referenceMap) {
+  public RelationGeometryBuilder(DataMap<Coordinate> coordinateMap,
+      DataMap<List<Long>> referenceMap) {
     this.coordinateMap = coordinateMap;
     this.referenceMap = referenceMap;
   }
@@ -55,7 +55,7 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
   @Override
   public void accept(Relation relation) {
     try {
-      Map<String, String> tags = relation.getTags();
+      Map<String, Object> tags = relation.getTags();
 
       // Filter multipolygon geometries
       if (!"multipolygon".equals(tags.get("type"))) {
@@ -87,7 +87,7 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
         relation.setGeometry(multiPolygon);
       }
     } catch (Exception e) {
-      logger.warn("Unable to build the geometry for relation #" + relation.getId(), e);
+      logger.warn("Unable to build the geometry for relation #" + relation.id(), e);
     }
   }
 

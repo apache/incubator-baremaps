@@ -130,7 +130,7 @@ public class DataBlockReader {
         lon = denseNodes.getLon(i) + lon;
 
         // If empty, assume that nothing here has keys or vals.
-        Map<String, String> tags = new HashMap<>();
+        Map<String, Object> tags = new HashMap<>();
         if (denseNodes.getKeysValsCount() > 0) {
           while (denseNodes.getKeysVals(j) != 0) {
             int keyid = denseNodes.getKeysVals(j++);
@@ -159,7 +159,7 @@ public class DataBlockReader {
         LocalDateTime timestamp = getTimestamp(node.getInfo().getTimestamp());
         long changeset = node.getInfo().getChangeset();
         int uid = node.getInfo().getUid();
-        Map<String, String> tags = new HashMap<>();
+        Map<String, Object> tags = new HashMap<>();
         for (int t = 0; t < node.getKeysList().size(); t++) {
           tags.put(getString(node.getKeysList().get(t)), getString(node.getKeysList().get(t)));
         }
@@ -185,7 +185,7 @@ public class DataBlockReader {
         LocalDateTime timestamp = getTimestamp(way.getInfo().getTimestamp());
         long changeset = way.getInfo().getChangeset();
         int uid = way.getInfo().getUid();
-        Map<String, String> tags = getTags(way.getKeysList(), way.getValsList());
+        Map<String, Object> tags = getTags(way.getKeysList(), way.getValsList());
         long nid = 0;
         List<Long> nodes = new ArrayList<>();
         for (int index = 0; index < way.getRefsCount(); index++) {
@@ -212,7 +212,7 @@ public class DataBlockReader {
         LocalDateTime timestamp = getTimestamp(relation.getInfo().getTimestamp());
         long changeset = relation.getInfo().getChangeset();
         int uid = relation.getInfo().getUid();
-        Map<String, String> tags = getTags(relation.getKeysList(), relation.getValsList());
+        Map<String, Object> tags = getTags(relation.getKeysList(), relation.getValsList());
 
         long mid = 0;
         List<Member> members = new ArrayList<>();
@@ -255,8 +255,8 @@ public class DataBlockReader {
         TimeZone.getDefault().toZoneId());
   }
 
-  private Map<String, String> getTags(List<Integer> keys, List<Integer> vals) {
-    Map<String, String> tags = new HashMap<>();
+  private Map<String, Object> getTags(List<Integer> keys, List<Integer> vals) {
+    Map<String, Object> tags = new HashMap<>();
     for (int t = 0; t < keys.size(); t++) {
       tags.put(getString(keys.get(t)), getString(vals.get(t)));
     }

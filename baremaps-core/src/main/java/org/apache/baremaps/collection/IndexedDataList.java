@@ -14,48 +14,83 @@ package org.apache.baremaps.collection;
 
 
 
-import java.io.IOException;
+import org.apache.baremaps.collection.type.LongDataType;
 
-public class IndexedDataList<T> implements DataList<T> {
+/**
+ * A list that can hold a large number of variable size data elements.
+ *
+ * This list is backed by an index and a buffer that can be either heap, off-heap, or memory mapped.
+ *
+ * @param <E> The type of the elements.
+ */
+public class IndexedDataList<E> extends DataList<E> {
 
-  private final LongList index;
+  private final DataList<Long> index;
 
-  private final DataStore<T> store;
+  private final AppendOnlyBuffer<E> values;
 
-  public IndexedDataList(LongList index, DataStore<T> store) {
+
+  /**
+   * Constructs a list.
+   *
+   * @param values the values
+   */
+  public IndexedDataList(AppendOnlyBuffer<E> values) {
+    this(new MemoryAlignedDataList<>(new LongDataType()), values);
+  }
+
+  /**
+   * Constructs a list.
+   *
+   * @param index the index
+   * @param values the values
+   */
+  public IndexedDataList(DataList<Long> index, AppendOnlyBuffer<E> values) {
     this.index = index;
-    this.store = store;
+    this.values = values;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public long add(T value) {
-    return index.add(store.add(value));
+  public long addIndexed(E value) {
+    long position = values.addPositioned(value);
+    return index.addIndexed(position);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public void add(long idx, T value) {
-    index.add(idx, store.add(value));
+  public void set(long index, E value) {
+    long position = values.addPositioned(value);
+    this.index.set(index, position);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public T get(long idx) {
-    return store.get(index.get(idx));
+  public E get(long index) {
+    long position = this.index.get(index);
+    return values.read(position);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public long size() {
-    return index.size();
+  public long sizeAsLong() {
+    return index.sizeAsLong();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public void close() throws IOException {
-    index.close();
-    store.close();
-  }
-
-  @Override
-  public void clean() throws IOException {
-    index.clean();
-    store.clean();
+  public void clear() {
+    index.clear();
+    values.clear();
   }
 }

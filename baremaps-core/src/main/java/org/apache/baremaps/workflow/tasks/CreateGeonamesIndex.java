@@ -12,9 +12,12 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import org.apache.baremaps.geocoder.GeocoderConstants;
 import org.apache.baremaps.geocoder.GeonamesDocumentMapper;
 import org.apache.baremaps.geocoder.GeonamesReader;
-import org.apache.baremaps.geocoder.GeocoderConstants;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.lucene.document.Document;
@@ -24,14 +27,10 @@ import org.apache.lucene.store.MMapDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 /**
  * A task that creates a geonames index.
  */
-public record CreateGeonamesIndex(String dataFile, String indexDirectory) implements Task {
+public record CreateGeonamesIndex(Path dataFile, Path indexDirectory) implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateGeonamesIndex.class);
 
@@ -39,17 +38,15 @@ public record CreateGeonamesIndex(String dataFile, String indexDirectory) implem
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Indexing {}", dataFile);
 
-    var dataPath = Paths.get(dataFile);
-    var indexPath = Paths.get(indexDirectory);
-    var directory = MMapDirectory.open(indexPath);
+    var directory = MMapDirectory.open(indexDirectory);
     var config = new IndexWriterConfig(GeocoderConstants.ANALYZER);
 
     try (var indexWriter = new IndexWriter(directory, config);
-      var inputStream = Files.newInputStream(dataPath)) {
+        var inputStream = Files.newInputStream(dataFile)) {
       indexWriter.deleteAll();
       var documents = new GeonamesReader()
-        .stream(inputStream)
-        .map(new GeonamesDocumentMapper());
+          .stream(inputStream)
+          .map(new GeonamesDocumentMapper());
       indexWriter.addDocuments((Iterable<Document>) documents::iterator);
     } catch (IOException exception) {
       throw new RuntimeException();

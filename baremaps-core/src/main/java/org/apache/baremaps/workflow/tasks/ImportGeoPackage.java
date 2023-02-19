@@ -12,6 +12,8 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import java.nio.file.Path;
+import org.apache.baremaps.feature.ReadableFeatureSet;
 import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
 import org.apache.baremaps.storage.FeatureSetProjectionTransform;
 import org.apache.baremaps.storage.geopackage.GeoPackageDatabase;
@@ -19,29 +21,27 @@ import org.apache.baremaps.storage.postgres.PostgresDatabase;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
-
-import java.nio.file.Paths;
-
-import org.apache.sis.storage.FeatureSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record ImportGeoPackage(String file, String database, Integer sourceSRID, Integer targetSRID)
-  implements Task {
+public record ImportGeoPackage(Path file, String database, Integer sourceSRID, Integer targetSRID)
+    implements
+      Task {
 
   private static final Logger logger = LoggerFactory.getLogger(ImportGeoPackage.class);
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Importing {} into {}", file, database);
-    var path = Paths.get(file).toAbsolutePath();
+    var path = file.toAbsolutePath();
     try (var geoPackageStore = new GeoPackageDatabase(path)) {
       var dataSource = context.getDataSource(database);
       var postgresDatabase = new PostgresDatabase(dataSource);
-      for (var resource : geoPackageStore.components()) {
-        if (resource instanceof FeatureSet featureSet) {
-          postgresDatabase.add(new FeatureSetProjectionTransform(
-            featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
+      for (var resource : geoPackageStore.read().toList()) {
+        if (resource instanceof ReadableFeatureSet featureSet) {
+          var transformer = new ProjectionTransformer(sourceSRID, targetSRID);
+          var transformedFeatureSet = new FeatureSetProjectionTransform(featureSet, transformer);
+          postgresDatabase.write(transformedFeatureSet);
         }
       }
       logger.info("Finished importing {} into {}", file, database);

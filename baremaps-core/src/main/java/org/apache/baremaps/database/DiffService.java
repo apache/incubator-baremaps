@@ -26,7 +26,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
-import org.apache.baremaps.collection.LongDataMap;
+import org.apache.baremaps.collection.DataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
 import org.apache.baremaps.database.tile.Tile;
@@ -45,8 +45,8 @@ public class DiffService implements Callable<List<Tile>> {
 
   private static final Logger logger = LoggerFactory.getLogger(DiffService.class);
 
-  private final LongDataMap<Coordinate> coordinateMap;
-  private final LongDataMap<List<Long>> referenceMap;
+  private final DataMap<Coordinate> coordinateMap;
+  private final DataMap<List<Long>> referenceMap;
   private final HeaderRepository headerRepository;
   private final Repository<Long, Node> nodeRepository;
   private final Repository<Long, Way> wayRepository;
@@ -54,7 +54,7 @@ public class DiffService implements Callable<List<Tile>> {
   private final int srid;
   private final int zoom;
 
-  public DiffService(LongDataMap<Coordinate> coordinateMap, LongDataMap<List<Long>> referenceMap,
+  public DiffService(DataMap<Coordinate> coordinateMap, DataMap<List<Long>> referenceMap,
       HeaderRepository headerRepository, Repository<Long, Node> nodeRepository,
       Repository<Long, Way> wayRepository, Repository<Long, Relation> relationRepository, int srid,
       int zoom) {
@@ -115,13 +115,13 @@ public class DiffService implements Callable<List<Tile>> {
   private Optional<Geometry> geometriesForPreviousVersion(Entity entity) {
     try {
       if (entity instanceof Node node) {
-        var previousNode = nodeRepository.get(node.getId());
+        var previousNode = nodeRepository.get(node.id());
         return Optional.ofNullable(previousNode).map(Node::getGeometry);
       } else if (entity instanceof Way way) {
-        var previousWay = wayRepository.get(way.getId());
+        var previousWay = wayRepository.get(way.id());
         return Optional.ofNullable(previousWay).map(Way::getGeometry);
       } else if (entity instanceof Relation relation) {
-        var previousRelation = relationRepository.get(relation.getId());
+        var previousRelation = relationRepository.get(relation.id());
         return Optional.ofNullable(previousRelation).map(Relation::getGeometry);
       } else {
         return Optional.empty();

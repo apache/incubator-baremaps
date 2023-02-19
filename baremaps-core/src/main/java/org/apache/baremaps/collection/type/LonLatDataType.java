@@ -21,11 +21,16 @@ import org.locationtech.jts.geom.Coordinate;
  * A {@link DataType} for reading and writing longitude/latitude coordinates in {@link ByteBuffer}s.
  * An integer is used to compress the coordinates to the detriment of precision (centimeters).
  */
-public class LonLatDataType implements SizedDataType<Coordinate> {
+public class LonLatDataType extends MemoryAlignedDataType<Coordinate> {
 
   private static final double BITS = Math.pow(2, 31);
   private static final long SHIFT = 32;
   private static final long MASK = (1L << 32) - 1L;
+
+  /** Constructs a {@link LonLatDataType}. */
+  public LonLatDataType() {
+    super(Long.BYTES);
+  }
 
   public static long encodeLonLat(double lon, double lat) {
     long x = (long) (((lon + 180) / 360) * BITS);
@@ -47,12 +52,6 @@ public class LonLatDataType implements SizedDataType<Coordinate> {
 
   /** {@inheritDoc} */
   @Override
-  public int size(Coordinate value) {
-    return 8;
-  }
-
-  /** {@inheritDoc} */
-  @Override
   public void write(ByteBuffer buffer, int position, Coordinate value) {
     buffer.putLong(position, encodeLonLat(value.x, value.y));
   }
@@ -60,7 +59,7 @@ public class LonLatDataType implements SizedDataType<Coordinate> {
   /** {@inheritDoc} */
   @Override
   public Coordinate read(ByteBuffer buffer, int position) {
-    long value = buffer.getLong(position);
+    var value = buffer.getLong(position);
     return new Coordinate(decodeLon(value), decodeLat(value));
   }
 }

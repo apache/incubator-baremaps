@@ -14,78 +14,45 @@ package org.apache.baremaps.storage;
 
 
 
-import java.util.Optional;
+import java.io.IOException;
 import java.util.stream.Stream;
+import org.apache.baremaps.feature.Feature;
+import org.apache.baremaps.feature.FeatureType;
+import org.apache.baremaps.feature.ReadableFeatureSet;
 import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
-import org.apache.sis.storage.DataStoreException;
-import org.apache.sis.storage.FeatureSet;
-import org.apache.sis.storage.event.StoreEvent;
-import org.apache.sis.storage.event.StoreListener;
 import org.locationtech.jts.geom.Geometry;
-import org.opengis.feature.Feature;
-import org.opengis.feature.FeatureType;
-import org.opengis.geometry.Envelope;
-import org.opengis.metadata.Metadata;
-import org.opengis.util.GenericName;
 
-public class FeatureSetProjectionTransform implements FeatureSet {
+public class FeatureSetProjectionTransform implements ReadableFeatureSet {
 
-  private final FeatureSet featureSet;
+  private final ReadableFeatureSet featureSetReader;
 
   private final ProjectionTransformer projectionTransformer;
 
-  public FeatureSetProjectionTransform(FeatureSet featureSet,
+  public FeatureSetProjectionTransform(ReadableFeatureSet featureSetReader,
       ProjectionTransformer projectionTransformer) {
-    this.featureSet = featureSet;
+    this.featureSetReader = featureSetReader;
     this.projectionTransformer = projectionTransformer;
   }
 
   @Override
-  public FeatureType getType() throws DataStoreException {
-    return featureSet.getType();
+  public FeatureType getType() throws IOException {
+    return featureSetReader.getType();
   }
 
   @Override
-  public Stream<Feature> features(boolean parallel) throws DataStoreException {
-    return featureSet.features(parallel).map(this::transformProjection);
+  public Stream<Feature> read() throws IOException {
+    return featureSetReader.read().map(this::transformProjection);
   }
 
   public Feature transformProjection(Feature feature) {
-    for (var property : feature.getType().getProperties(true)) {
-      var name = property.getName().toString();
-      var value = feature.getPropertyValue(name);
+    for (var property : feature.getType().getProperties().values()) {
+      var name = property.getName();
+      var value = feature.getProperty(name);
       if (value instanceof Geometry geometry) {
         var projectedGeometry = projectionTransformer.transform(geometry);
-        feature.setPropertyValue(name, projectedGeometry);
+        feature.setProperty(name, projectedGeometry);
       }
     }
     return feature;
-  }
-
-  @Override
-  public Optional<Envelope> getEnvelope() throws DataStoreException {
-    return featureSet.getEnvelope();
-  }
-
-  @Override
-  public Optional<GenericName> getIdentifier() throws DataStoreException {
-    return featureSet.getIdentifier();
-  }
-
-  @Override
-  public Metadata getMetadata() throws DataStoreException {
-    return featureSet.getMetadata();
-  }
-
-  @Override
-  public <T extends StoreEvent> void addListener(Class<T> eventType,
-      StoreListener<? super T> listener) {
-    featureSet.addListener(eventType, listener);
-  }
-
-  @Override
-  public <T extends StoreEvent> void removeListener(Class<T> eventType,
-      StoreListener<? super T> listener) {
-    featureSet.removeListener(eventType, listener);
   }
 }

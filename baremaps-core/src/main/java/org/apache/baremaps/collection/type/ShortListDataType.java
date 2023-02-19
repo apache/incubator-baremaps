@@ -24,29 +24,33 @@ public class ShortListDataType implements DataType<List<Short>> {
   /** {@inheritDoc} */
   @Override
   public int size(List<Short> values) {
-    return 4 + values.size() * 2;
+    return Integer.BYTES + values.size() * Short.BYTES;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public int size(ByteBuffer buffer, int position) {
+    return buffer.getInt(position);
   }
 
   /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, List<Short> values) {
-    buffer.putInt(position, values.size());
-    position += 4;
+    buffer.putInt(position, size(values));
+    position += Integer.BYTES;
     for (Short value : values) {
       buffer.putShort(position, value);
-      position += 2;
+      position += Short.BYTES;
     }
   }
 
   /** {@inheritDoc} */
   @Override
   public List<Short> read(ByteBuffer buffer, int position) {
-    int size = buffer.getInt(position);
-    position += 4;
-    List<Short> list = new ArrayList<>(size);
-    for (int i = 0; i < size; i++) {
-      list.add(buffer.getShort(position));
-      position += 2;
+    var size = buffer.getInt(position);
+    var list = new ArrayList<Short>(size);
+    for (var p = position + Integer.BYTES; p < position + size; p += Short.BYTES) {
+      list.add(buffer.getShort(p));
     }
     return list;
   }

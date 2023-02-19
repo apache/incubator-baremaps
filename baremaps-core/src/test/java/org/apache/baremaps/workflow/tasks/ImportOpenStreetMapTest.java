@@ -25,8 +25,10 @@ class ImportOpenStreetMapTest extends PostgresContainerTest {
   @Test
   @Tag("integration")
   void execute() throws Exception {
-    var task =
-        new ImportOpenStreetMap(TestFiles.resolve("data.osm.pbf").toString(), jdbcUrl(), 3857);
+    var file = TestFiles.resolve("data.osm.pbf");
+    var jdbcUrl = jdbcUrl();
+    var srid = 3857;
+    var task = new ImportOpenStreetMap(file, jdbcUrl, srid);
     task.execute(new WorkflowContext());
   }
 }

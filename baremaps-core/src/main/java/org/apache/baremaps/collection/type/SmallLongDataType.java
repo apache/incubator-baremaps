@@ -17,7 +17,7 @@ package org.apache.baremaps.collection.type;
 import java.nio.ByteBuffer;
 
 /** A {@link DataType} for reading and writing small longs in {@link ByteBuffer}s. */
-public class SmallLongDataType implements SizedDataType<Long> {
+public class SmallLongDataType extends FixedSizeDataType<Long> {
 
   private final int n;
 
@@ -27,6 +27,7 @@ public class SmallLongDataType implements SizedDataType<Long> {
    * @param n the number of bytes used to store the integer
    */
   public SmallLongDataType(int n) {
+    super(n);
     if (n < 1 || n > 8) {
       throw new IllegalArgumentException(
           "The number of bytes used to store small longs must be comprised between 1 and 8");

@@ -14,40 +14,49 @@ package org.apache.baremaps.collection.type;
 
 
 
+import com.google.common.primitives.Bytes;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
-/** A {@link DataType} for reading and writing lists of bytes in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing lists of bytes in {@link ByteBuffer}s.
+ */
 public class ByteListDataType implements DataType<List<Byte>> {
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int size(List<Byte> values) {
-    return 4 + values.size();
+    return Integer.BYTES + values.size() * Byte.BYTES;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int size(ByteBuffer buffer, int position) {
+    return buffer.getInt(position);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void write(ByteBuffer buffer, int position, List<Byte> values) {
-    buffer.putInt(position, values.size());
-    position += 4;
-    for (Byte value : values) {
-      buffer.put(position, value);
-      position++;
-    }
+    buffer.putInt(position, size(values));
+    byte[] bytes = Bytes.toArray(values);
+    buffer.put(position + Integer.BYTES, bytes, 0, bytes.length);
   }
 
-  /** {@inheritDoc} */
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public List<Byte> read(ByteBuffer buffer, int position) {
     int size = buffer.getInt(position);
-    position += 4;
-    List<Byte> list = new ArrayList<>(size);
-    for (int i = 0; i < size; i++) {
-      list.add(buffer.get(position));
-      position++;
-    }
-    return list;
+    var bytes = new byte[Math.max(size - Integer.BYTES, 0)];
+    buffer.get(position + Integer.BYTES, bytes);
+    return Bytes.asList(bytes);
   }
 }

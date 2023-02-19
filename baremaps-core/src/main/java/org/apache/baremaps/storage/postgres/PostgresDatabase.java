@@ -15,40 +15,20 @@ package org.apache.baremaps.storage.postgres;
 
 
 import de.bytefish.pgbulkinsert.pgsql.handlers.*;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.copy.CopyWriter;
 import org.apache.baremaps.database.copy.PostgisGeometryValueHandler;
-import org.apache.sis.feature.builder.FeatureTypeBuilder;
-import org.apache.sis.storage.DataStoreException;
-import org.apache.sis.storage.FeatureSet;
-import org.apache.sis.storage.Resource;
-import org.apache.sis.storage.WritableAggregate;
-import org.apache.sis.storage.event.StoreEvent;
-import org.apache.sis.storage.event.StoreListener;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.opengis.feature.AttributeType;
-import org.opengis.feature.FeatureType;
-import org.opengis.feature.PropertyType;
-import org.opengis.metadata.Metadata;
-import org.opengis.util.GenericName;
+import org.apache.baremaps.feature.*;
+import org.locationtech.jts.geom.*;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
@@ -108,51 +88,19 @@ public class PostgresDatabase implements WritableAggregate {
     this.dataSource = dataSource;
   }
 
-  @Override
-  public Collection<? extends Resource> components() throws DataStoreException {
-    throw new UnsupportedOperationException();
+  private FeatureType createFeatureType(FeatureType featureType) {
+    var name = featureType.getName().replaceAll("[^a-zA-Z0-9]", "_");
+    var properties = featureType.getProperties().values().stream()
+        .filter(type -> typeToName.containsKey(type.getType()))
+        .collect(Collectors.toMap(k -> k.getName(), v -> v));
+    return new FeatureType(name, properties);
   }
 
   @Override
-  public Optional<GenericName> getIdentifier() throws DataStoreException {
-    return Optional.empty();
-  }
-
-  @Override
-  public Metadata getMetadata() throws DataStoreException {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public <T extends StoreEvent> void addListener(Class<T> eventType,
-      StoreListener<? super T> listener) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public <T extends StoreEvent> void removeListener(Class<T> eventType,
-      StoreListener<? super T> listener) {
-    throw new UnsupportedOperationException();
-  }
-
-  public FeatureType createFeatureType(FeatureType featureType) {
-    var featureTypeBuilder = new FeatureTypeBuilder();
-    featureTypeBuilder.setName(featureType.getName().toString().replaceAll("[^a-zA-Z0-9]", "_"));
-    for (var attribute : featureType.getProperties(false)) {
-      if (attribute instanceof AttributeType attributeType
-          && typeToName.containsKey(attributeType.getValueClass())) {
-        featureTypeBuilder.addAttribute(attributeType.getValueClass()).setName(attribute.getName());
-      }
-    }
-    return featureTypeBuilder.build();
-  }
-
-  @Override
-  public Resource add(Resource resource) throws DataStoreException {
-    if (resource instanceof FeatureSet featureSet) {
-
+  public void write(Resource resource) throws IOException {
+    if (resource instanceof ReadableFeatureSet featureSetReader) {
       try (var connection = dataSource.getConnection()) {
-        var featureType = createFeatureType(featureSet.getType());
+        var featureType = createFeatureType(featureSetReader.getType());
 
         // Drop the table if it exists
         var dropQuery = dropTable(featureType);
@@ -171,14 +119,14 @@ public class PostgresDatabase implements WritableAggregate {
         var copyQuery = copyTable(featureType);
         try (var writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copyQuery))) {
           writer.writeHeader();
-          var featureIterator = featureSet.features(false).iterator();
+          var featureIterator = featureSetReader.read().iterator();
           while (featureIterator.hasNext()) {
             var feature = featureIterator.next();
             var attributes = getAttributes(featureType);
             writer.startRow(attributes.size());
             for (var attribute : attributes) {
               var name = attribute.getName().toString();
-              var value = feature.getPropertyValue(name);
+              var value = feature.getProperty(name);
               if (value == null) {
                 writer.writeNull();
               } else {
@@ -187,31 +135,19 @@ public class PostgresDatabase implements WritableAggregate {
             }
           }
         }
-
-        return null;
-      } catch (Exception e) {
-        throw new DataStoreException(e);
+      } catch (SQLException e) {
+        throw new IOException(e);
       }
-    } else {
-      throw new DataStoreException("Unsupported resource type");
     }
   }
 
-  private List<AttributeType> getAttributes(FeatureType featureType) {
-    return featureType.getProperties(false).stream().filter(this::isAttribute)
-        .map(this::asAttribute).filter(this::isSupported).collect(Collectors.toList());
+  private List<PropertyType> getAttributes(FeatureType featureType) {
+    return featureType.getProperties().values().stream()
+        .filter(this::isSupported).collect(Collectors.toList());
   }
 
-  private boolean isAttribute(PropertyType propertyType) {
-    return propertyType instanceof AttributeType;
-  }
-
-  private AttributeType asAttribute(PropertyType propertyType) {
-    return (AttributeType) propertyType;
-  }
-
-  private boolean isSupported(AttributeType attributeType) {
-    return typeToName.containsKey(attributeType.getValueClass());
+  private boolean isSupported(PropertyType propertyType) {
+    return typeToName.containsKey(propertyType.getType());
   }
 
   private String createTable(FeatureType featureType) {
@@ -219,9 +155,9 @@ public class PostgresDatabase implements WritableAggregate {
     builder.append("CREATE TABLE ");
     builder.append(featureType.getName());
     builder.append(" (");
-    builder.append(featureType.getProperties(false).stream().filter(AttributeType.class::isInstance)
-        .map(AttributeType.class::cast).map(attributeType -> attributeType.getName().toString()
-            + " " + typeToName.get(attributeType.getValueClass()))
+    builder.append(featureType.getProperties().values().stream()
+        .map(attributeType -> attributeType.getName()
+            + " " + typeToName.get(attributeType.getType()))
         .collect(Collectors.joining(", ")));
     builder.append(")");
     return builder.toString();
@@ -232,15 +168,15 @@ public class PostgresDatabase implements WritableAggregate {
     builder.append("COPY ");
     builder.append(featureType.getName());
     builder.append(" (");
-    builder.append(featureType.getProperties(false).stream().filter(AttributeType.class::isInstance)
-        .map(AttributeType.class::cast).map(attributeType -> attributeType.getName().toString())
+    builder.append(featureType.getProperties().values().stream()
+        .map(propertyType -> propertyType.getName())
         .collect(Collectors.joining(", ")));
     builder.append(") FROM STDIN BINARY");
     return builder.toString();
   }
 
   @Override
-  public void remove(Resource resource) throws DataStoreException {
+  public void remove(Resource resource) throws IOException {
     if (resource instanceof FeatureSet featureSet) {
       var type = featureSet.getType();
       try (var connection = dataSource.getConnection();
@@ -249,8 +185,6 @@ public class PostgresDatabase implements WritableAggregate {
       } catch (SQLException e) {
         throw new RuntimeException(e);
       }
-    } else {
-      throw new DataStoreException("Unsupported resource type");
     }
   }
 

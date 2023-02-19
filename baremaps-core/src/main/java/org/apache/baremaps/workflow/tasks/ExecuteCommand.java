@@ -13,8 +13,6 @@
 package org.apache.baremaps.workflow.tasks;
 
 import org.apache.baremaps.workflow.Task;
-import java.io.IOException;
-
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

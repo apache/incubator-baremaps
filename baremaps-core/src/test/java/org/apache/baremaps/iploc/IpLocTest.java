@@ -64,7 +64,7 @@ class IpLocTest {
 
     // Create the geonames index
     var data = TestFiles.resolve("geonames/geocoder_sample.txt");
-    var task = new CreateGeonamesIndex(data.toString(), directory.toString());
+    var task = new CreateGeonamesIndex(data, directory);
     task.execute(new WorkflowContext());
 
     // Create the IPLoc service

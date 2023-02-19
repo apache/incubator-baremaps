@@ -14,43 +14,74 @@ package org.apache.baremaps.collection;
 
 
 
-import java.io.Closeable;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
- * A list of data.
+ * An abstract list of data elements that can hold a large number of elements.
  *
- * @param <T>
+ * @param <E> The type of the data.
  */
-public interface DataList<T> extends Closeable, Cleanable {
+public abstract class DataList<E> extends DataCollection<E> {
 
   /**
-   * Adds a value to the list and returns its index.
+   * Appends a value to the list and returns its index.
    *
    * @param value the value
-   * @return the index of the value
+   * @return the index of the value.
    */
-  long add(T value);
+  public abstract long addIndexed(E value);
 
   /**
-   * Inserts the specified element at the specified position in this list.
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean add(E value) {
+    addIndexed(value);
+    return true;
+  }
+
+  /**
+   * Sets the value at the specified index.
    *
-   * @param index the index of the value
+   * @param index the index
    * @param value the value
    */
-  void add(long index, T value);
+  public abstract void set(long index, E value);
 
   /**
-   * Returns a values by its index.
+   * Returns the value at the specified index.
    *
-   * @param index the index of the value
+   * @param index the index
    * @return the value
    */
-  T get(long index);
+  public abstract E get(long index);
 
-  /**
-   * Returns the size of the list.
-   *
-   * @return the size of the list.
-   */
-  long size();
+  /** {@inheritDoc} */
+  @Override
+  public abstract void clear();
+
+  /** {@inheritDoc} */
+  @Override
+  public Iterator<E> iterator() {
+    return new Iterator<>() {
+
+      private long index = 0;
+
+      private long size = sizeAsLong();
+
+      @Override
+      public boolean hasNext() {
+        return index < size;
+      }
+
+      @Override
+      public E next() {
+        if (!hasNext()) {
+          throw new NoSuchElementException();
+        }
+        return get(index++);
+      }
+    };
+  }
 }

@@ -28,7 +28,7 @@ class UnzipFileTest {
   void execute() throws Exception {
     var zip = TestFiles.resolve("monaco-shapefile.zip");
     var directory = Files.createTempDirectory("tmp_");
-    var task = new UnzipFile(zip.toString(), directory.toString());
+    var task = new UnzipFile(zip, directory);
     task.execute(new WorkflowContext());
     FileUtils.deleteRecursively(directory);
   }

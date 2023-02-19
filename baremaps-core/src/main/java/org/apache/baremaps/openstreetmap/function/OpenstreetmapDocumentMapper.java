@@ -34,10 +34,10 @@ public class OpenstreetmapDocumentMapper implements Function<Element, Document> 
   public Document apply(Element element) {
     var document = new Document();
 
-    document.add(new StoredField("id", element.getId()));
+    document.add(new StoredField("id", element.id()));
 
     element.getTags().forEach((key, value) -> {
-      document.add(new StoredField(key, value));
+      document.add(new StoredField(key, value.toString()));
     });
 
     var geometry = element.getGeometry();

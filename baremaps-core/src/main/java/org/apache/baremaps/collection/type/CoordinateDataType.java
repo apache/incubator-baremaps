@@ -18,26 +18,25 @@ import java.nio.ByteBuffer;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A {@link DataType} for reading and writing {@link Coordinate}s in {@link ByteBuffer}s. */
-public class CoordinateDataType implements SizedDataType<Coordinate> {
+public class CoordinateDataType extends MemoryAlignedDataType<Coordinate> {
 
-  /** {@inheritDoc} */
-  @Override
-  public int size(Coordinate value) {
-    return 16;
+  /** Constructs a {@link CoordinateDataType}. */
+  public CoordinateDataType() {
+    super(Double.BYTES * 2);
   }
 
   /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, Coordinate value) {
     buffer.putDouble(position, value.x);
-    buffer.putDouble(position + 8, value.y);
+    buffer.putDouble(position + Double.BYTES, value.y);
   }
 
   /** {@inheritDoc} */
   @Override
   public Coordinate read(ByteBuffer buffer, int position) {
     double x = buffer.getDouble(position);
-    double y = buffer.getDouble(position + 8);
+    double y = buffer.getDouble(position + Double.BYTES);
     return new Coordinate(x, y);
   }
 }

@@ -18,11 +18,18 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A {@link DataType} for reading and writing lists of objects in {@link ByteBuffer}s. */
+/**
+ * A {@link DataType} for reading and writing lists of objects in {@link ByteBuffer}s.
+ */
 public class ListDataType<T> implements DataType<List<T>> {
 
   public final DataType<T> dataType;
 
+  /**
+   * Constructs a {@link ListDataType} with a data type.
+   *
+   * @param dataType the data type of the values
+   */
   public ListDataType(DataType<T> dataType) {
     this.dataType = dataType;
   }
@@ -30,33 +37,36 @@ public class ListDataType<T> implements DataType<List<T>> {
   /** {@inheritDoc} */
   @Override
   public int size(List<T> values) {
-    int size = 4;
+    int size = Integer.BYTES;
     for (T value : values) {
       size += dataType.size(value);
     }
     return size;
   }
 
+  @Override
+  public int size(ByteBuffer buffer, int position) {
+    return buffer.getInt(position);
+  }
+
   /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, List<T> values) {
-    buffer.putInt(position, values.size());
+    buffer.putInt(position, size(values));
+    position += Integer.BYTES;
     for (T value : values) {
-      position += dataType.size(value);
       dataType.write(buffer, position, value);
+      position += dataType.size(value);
     }
   }
 
   /** {@inheritDoc} */
   @Override
   public List<T> read(ByteBuffer buffer, int position) {
-    int size = buffer.getInt(position);
-    position += 4;
-    List<T> list = new ArrayList<>(size);
-    for (int i = 0; i < size; i++) {
-      T value = dataType.read(buffer, position);
-      position += dataType.size(value);
-      list.add(value);
+    var size = buffer.getInt(position);
+    var list = new ArrayList<T>(size);
+    for (var p = position + Integer.BYTES; p < position + size; p += dataType.size(buffer, p)) {
+      list.add(dataType.read(buffer, p));
     }
     return list;
   }

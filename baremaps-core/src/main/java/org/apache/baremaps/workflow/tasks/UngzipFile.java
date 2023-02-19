@@ -12,29 +12,29 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import java.io.BufferedInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.zip.GZIPInputStream;
-
-public record UngzipFile(String file, String directory) implements Task {
+public record UngzipFile(Path file, Path directory) implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(UngzipFile.class);
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Unzipping {} to {}", file, directory);
-    var filePath = Paths.get(file);
-    var directoryPath = Paths.get(directory);
+    var filePath = file.toAbsolutePath();
+    var directoryPath = directory.toAbsolutePath();
     try (var zis = new GZIPInputStream(new BufferedInputStream(Files.newInputStream(filePath)))) {
-      var file = directoryPath.resolve(filePath.getFileName().toString().substring(0, filePath.getFileName().toString().length() - 3));
+      var file = directoryPath.resolve(filePath.getFileName().toString().substring(0,
+          filePath.getFileName().toString().length() - 3));
       Files.copy(zis, file, StandardCopyOption.REPLACE_EXISTING);
       logger.info("Finished unzipping {} to {}", file, directory);
     } catch (Exception e) {

@@ -29,8 +29,14 @@ public class LongListDataType implements DataType<List<Long>> {
 
   /** {@inheritDoc} */
   @Override
+  public int size(ByteBuffer buffer, int position) {
+    return buffer.getInt(position);
+  }
+
+  /** {@inheritDoc} */
+  @Override
   public void write(ByteBuffer buffer, int position, List<Long> values) {
-    buffer.putInt(position, values.size());
+    buffer.putInt(position, size(values));
     position += Integer.BYTES;
     for (Long value : values) {
       buffer.putLong(position, value);
@@ -41,12 +47,10 @@ public class LongListDataType implements DataType<List<Long>> {
   /** {@inheritDoc} */
   @Override
   public List<Long> read(ByteBuffer buffer, int position) {
-    int size = buffer.getInt(position);
-    position += Integer.BYTES;
-    List<Long> list = new ArrayList<>(size);
-    for (int i = 0; i < size; i++) {
-      list.add(buffer.getLong(position));
-      position += Long.BYTES;
+    var size = buffer.getInt(position);
+    var list = new ArrayList<Long>(size);
+    for (var p = position + Integer.BYTES; p < position + size; p += Long.BYTES) {
+      list.add(buffer.getLong(p));
     }
     return list;
   }

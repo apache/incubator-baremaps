@@ -12,24 +12,16 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import java.io.*;
+import java.nio.file.*;
+import java.util.zip.ZipFile;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public record UnzipFile(String file, String directory) implements Task {
+public record UnzipFile(Path file, Path directory) implements Task {
 
   private static final long THRESHOLD_ENTRIES = 10000;
   private static final long THRESHOLD_SIZE = 10l << 30;
@@ -41,10 +33,10 @@ public record UnzipFile(String file, String directory) implements Task {
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Unzipping {} to {}", file, directory);
 
-    var filePath = Paths.get(file).toAbsolutePath();
-    var directoryPath = Paths.get(directory).toAbsolutePath();
+    var filePath = file.toAbsolutePath();
+    var directoryPath = directory.toAbsolutePath();
 
-    try(var zipFile = new ZipFile(filePath.toFile())) {
+    try (var zipFile = new ZipFile(filePath.toFile())) {
       var entries = zipFile.entries();
       long totalSizeArchive = 0;
       long totalEntryArchive = 0;
@@ -53,15 +45,17 @@ public record UnzipFile(String file, String directory) implements Task {
         var ze = entries.nextElement();
         var file = directoryPath.resolve(ze.getName());
 
-        if (!file.toFile().getCanonicalPath().startsWith(directoryPath.toFile().getCanonicalPath())) {
+        if (!file.toFile().getCanonicalPath()
+            .startsWith(directoryPath.toFile().getCanonicalPath())) {
           throw new IOException("Entry is outside of the target directory");
         }
 
         Files.createDirectories(file.getParent());
-        Files.write(file, new byte[]{}, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+        Files.write(file, new byte[] {}, StandardOpenOption.CREATE,
+            StandardOpenOption.TRUNCATE_EXISTING);
 
-        try(var input = new BufferedInputStream(zipFile.getInputStream(ze));
-        var output = new BufferedOutputStream(new FileOutputStream(file.toFile()))) {
+        try (var input = new BufferedInputStream(zipFile.getInputStream(ze));
+            var output = new BufferedOutputStream(new FileOutputStream(file.toFile()))) {
 
           totalEntryArchive++;
 

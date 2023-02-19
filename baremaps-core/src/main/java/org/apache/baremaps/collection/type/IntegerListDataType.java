@@ -24,29 +24,32 @@ public class IntegerListDataType implements DataType<List<Integer>> {
   /** {@inheritDoc} */
   @Override
   public int size(List<Integer> values) {
-    return 4 + values.size() * 4;
+    return Integer.BYTES + values.size() * Integer.BYTES;
+  }
+
+  @Override
+  public int size(ByteBuffer buffer, int position) {
+    return buffer.getInt(position);
   }
 
   /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, List<Integer> values) {
-    buffer.putInt(position, values.size());
-    position += 4;
+    buffer.putInt(position, size(values));
+    position += Integer.BYTES;
     for (Integer value : values) {
       buffer.putInt(position, value);
-      position += 4;
+      position += Integer.BYTES;
     }
   }
 
   /** {@inheritDoc} */
   @Override
   public List<Integer> read(ByteBuffer buffer, int position) {
-    int size = buffer.getInt(position);
-    position += 4;
-    List<Integer> list = new ArrayList<>(size);
-    for (int i = 0; i < size; i++) {
-      list.add(buffer.getInt(position));
-      position += 4;
+    var size = size(buffer, position);
+    var list = new ArrayList<Integer>();
+    for (var p = position + Integer.BYTES; p < position + size; p += Integer.BYTES) {
+      list.add(buffer.getInt(p));
     }
     return list;
   }

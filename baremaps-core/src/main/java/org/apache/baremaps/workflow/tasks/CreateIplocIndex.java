@@ -12,6 +12,12 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 import org.apache.baremaps.iploc.IpLoc;
 import org.apache.baremaps.iploc.data.IpLocStats;
 import org.apache.baremaps.iploc.database.SqliteUtils;
@@ -25,19 +31,10 @@ import org.apache.lucene.store.MMapDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-
 public record CreateIplocIndex(
-  String geonamesIndexPath,
-  List<String> nicPaths,
-  String targetIplocIndexPath
-) implements Task {
+    Path geonamesIndexPath,
+    List<Path> nicPaths,
+    Path targetIplocIndexPath) implements Task {
 
   private static final Logger logger = LoggerFactory.getLogger(CreateIplocIndex.class);
 
@@ -46,9 +43,8 @@ public record CreateIplocIndex(
     logger.info("Generating Iploc from {} {}", geonamesIndexPath, nicPaths);
 
     try (
-      var directory = MMapDirectory.open(Paths.get(geonamesIndexPath));
-      var searcherManager = new SearcherManager(directory, new SearcherFactory())
-    ) {
+        var directory = MMapDirectory.open(geonamesIndexPath);
+        var searcherManager = new SearcherManager(directory, new SearcherFactory())) {
       logger.info("Creating the Iploc database");
       String jdbcUrl = String.format("JDBC:sqlite:%s", targetIplocIndexPath);
 
@@ -57,7 +53,7 @@ public record CreateIplocIndex(
 
       logger.info("Generating NIC objects stream");
       nicPaths.stream().parallel().forEach(path -> {
-        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(Path.of(path)));) {
+        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
           var nicObjects = NicParser.parse(inputStream);
           logger.info("Inserting the nic objects into the Iploc database");
           ipLoc.insertNicObjects(nicObjects);
@@ -68,19 +64,18 @@ public record CreateIplocIndex(
 
       IpLocStats ipLocStats = ipLoc.getIplocStats();
       logger.info(
-        """
-          IpLoc stats
-          -----------
-          inetnumInsertedByAddress : {}
-          inetnumInsertedByDescr : {}
-          inetnumInsertedByCountry : {}
-          inetnumInsertedByCountryCode : {}
-          inetnumInsertedByGeoloc : {}
-          inetnumNotInserted : {}""",
-        ipLocStats.getInsertedByAddressCount(), ipLocStats.getInsertedByDescrCount(),
-        ipLocStats.getInsertedByCountryCount(), ipLocStats.getInsertedByCountryCodeCount(),
-        ipLocStats.getInsertedByGeolocCount(), ipLocStats.getNotInsertedCount()
-      );
+          """
+              IpLoc stats
+              -----------
+              inetnumInsertedByAddress : {}
+              inetnumInsertedByDescr : {}
+              inetnumInsertedByCountry : {}
+              inetnumInsertedByCountryCode : {}
+              inetnumInsertedByGeoloc : {}
+              inetnumNotInserted : {}""",
+          ipLocStats.getInsertedByAddressCount(), ipLocStats.getInsertedByDescrCount(),
+          ipLocStats.getInsertedByCountryCount(), ipLocStats.getInsertedByCountryCodeCount(),
+          ipLocStats.getInsertedByGeolocCount(), ipLocStats.getNotInsertedCount());
     }
 
     logger.info("IpLoc database created successfully {}", targetIplocIndexPath);

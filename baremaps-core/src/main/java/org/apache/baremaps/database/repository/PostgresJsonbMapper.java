@@ -33,7 +33,7 @@ class PostgresJsonbMapper {
    * @return a Json string representing the object
    * @throws JsonProcessingException
    */
-  public static String toJson(Map<String, String> input) throws JsonProcessingException {
+  public static String toJson(Map<String, Object> input) throws JsonProcessingException {
     return mapper.writeValueAsString(input);
   }
 
@@ -44,8 +44,8 @@ class PostgresJsonbMapper {
    * @return a map with the entry of the objects
    * @throws JsonProcessingException
    */
-  public static Map<String, String> toMap(String input) throws JsonProcessingException {
-    TypeReference<HashMap<String, String>> typeRef = new TypeReference<>() {};
+  public static Map<String, Object> toMap(String input) throws JsonProcessingException {
+    TypeReference<HashMap<String, Object>> typeRef = new TypeReference<>() {};
     return mapper.readValue(input, typeRef);
   }
 }

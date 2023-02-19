@@ -42,7 +42,7 @@ public class ImportOpenStreetMap implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    new org.apache.baremaps.workflow.tasks.ImportOpenStreetMap(file.toAbsolutePath().toString(),
+    new org.apache.baremaps.workflow.tasks.ImportOpenStreetMap(file.toAbsolutePath(),
         database, srid).execute(new WorkflowContext());
     return 0;
   }

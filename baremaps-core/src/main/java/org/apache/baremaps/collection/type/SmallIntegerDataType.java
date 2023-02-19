@@ -17,7 +17,7 @@ package org.apache.baremaps.collection.type;
 import java.nio.ByteBuffer;
 
 /** A {@link DataType} for reading and writing small integers in {@link ByteBuffer}s. */
-public class SmallIntegerDataType implements SizedDataType<Integer> {
+public class SmallIntegerDataType extends FixedSizeDataType<Integer> {
 
   private final int n;
 
@@ -27,17 +27,12 @@ public class SmallIntegerDataType implements SizedDataType<Integer> {
    * @param n the number of bytes used to store the integer
    */
   public SmallIntegerDataType(int n) {
+    super(n);
     if (n < 1 || n > 4) {
       throw new IllegalArgumentException(
           "The number of bytes used to store small integers must be comprised between 1 and 4");
     }
     this.n = n;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public int size(Integer value) {
-    return n;
   }
 
   /** {@inheritDoc} */

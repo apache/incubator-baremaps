@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import org.apache.sis.feature.DefaultFeatureType;
+import org.apache.baremaps.feature.FeatureType;
 
 /**
  * Provides a ShapeFile Reader.
@@ -44,7 +44,7 @@ public class ShapefileReader {
   private File shapeFileIndex;
 
   /** Type of the features contained in this shapefile. */
-  private DefaultFeatureType featuresType;
+  private FeatureType featuresType;
 
   /** Shapefile descriptor. */
   private ShapefileDescriptor shapefileDescriptor;
@@ -117,7 +117,7 @@ public class ShapefileReader {
    *
    * @return Feature type.
    */
-  public DefaultFeatureType getFeaturesType() {
+  public FeatureType getFeaturesType() {
     return this.featuresType;
   }
 

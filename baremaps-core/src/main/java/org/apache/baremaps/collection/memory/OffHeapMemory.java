@@ -48,7 +48,7 @@ public class OffHeapMemory extends Memory<ByteBuffer> {
 
   /** {@inheritDoc} */
   @Override
-  public void clean() throws IOException {
+  public void clear() throws IOException {
     // Nothing to clean
   }
 }

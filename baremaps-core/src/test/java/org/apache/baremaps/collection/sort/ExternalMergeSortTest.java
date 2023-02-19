@@ -21,11 +21,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
+import org.apache.baremaps.collection.AppendOnlyBuffer;
 import org.apache.baremaps.collection.DataList;
-import org.apache.baremaps.collection.DataStore;
 import org.apache.baremaps.collection.IndexedDataList;
-import org.apache.baremaps.collection.LongList;
+import org.apache.baremaps.collection.MemoryAlignedDataList;
+import org.apache.baremaps.collection.algorithm.ExternalMergeSort;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
+import org.apache.baremaps.collection.type.LongDataType;
 import org.apache.baremaps.collection.type.StringDataType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,26 +38,25 @@ class ExternalMergeSortTest {
   List<String> stringsAsc = strings.stream().sorted(Comparator.naturalOrder()).toList();
   List<String> stringsDsc = strings.stream().sorted(Comparator.reverseOrder()).toList();;
   List<String> stringsDistinct = stringsAsc.stream().distinct().toList();
+  Supplier<DataList<String>> supplier;
   DataList<String> input;
   DataList<String> output;
-  Supplier<DataList<String>> supplier;
 
   @BeforeEach
   void before() {
-    input = new IndexedDataList<>(new LongList(new OnHeapMemory()),
-        new DataStore<>(new StringDataType(), new OnHeapMemory()));
-    output = new IndexedDataList<>(new LongList(new OnHeapMemory()),
-        new DataStore<>(new StringDataType(), new OnHeapMemory()));
-    supplier = () -> new IndexedDataList<>(new LongList(new OnHeapMemory()),
-        new DataStore<>(new StringDataType(), new OnHeapMemory()));
+    supplier = () -> new IndexedDataList<>(
+        new MemoryAlignedDataList<>(new LongDataType(), new OnHeapMemory()),
+        new AppendOnlyBuffer<>(new StringDataType(), new OnHeapMemory()));
+    input = supplier.get();
+    output = supplier.get();
     for (var string : strings) {
-      input.add(string);
+      input.addIndexed(string);
     }
   }
 
   public List<String> stringList(DataList<String> list) {
     var l = new ArrayList<String>();
-    for (long i = 0; i < list.size(); i++) {
+    for (long i = 0; i < list.sizeAsLong(); i++) {
       l.add(list.get(i));
     }
     return l;
@@ -95,7 +96,7 @@ class ExternalMergeSortTest {
   void sortRandomString() throws IOException {
     var random = new Random(0);
     for (int i = 0; i < 1_000_000; i++) {
-      input.add(randomString(random));
+      input.addIndexed(randomString(random));
     }
     ExternalMergeSort.sort(input, output, Comparator.naturalOrder(), supplier, 100_000, false,
         true);

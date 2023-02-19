@@ -29,9 +29,9 @@ class ImportShapefileTest extends PostgresContainerTest {
   void execute() throws Exception {
     var zip = TestFiles.resolve("monaco-shapefile.zip");
     var directory = Files.createTempDirectory("tmp_");
-    var unzip = new UnzipFile(zip.toString(), directory.toString());
+    var unzip = new UnzipFile(zip, directory);
     unzip.execute(new WorkflowContext());
-    var task = new ImportShapefile(directory.resolve("gis_osm_buildings_a_free_1.shp").toString(),
+    var task = new ImportShapefile(directory.resolve("gis_osm_buildings_a_free_1.shp"),
         jdbcUrl(), 4326, 3857);
     task.execute(new WorkflowContext());
     FileUtils.deleteRecursively(directory);

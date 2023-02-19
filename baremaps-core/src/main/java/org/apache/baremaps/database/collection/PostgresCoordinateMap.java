@@ -14,27 +14,58 @@ package org.apache.baremaps.database.collection;
 
 
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.*;
+import java.util.*;
 import javax.sql.DataSource;
-import org.apache.baremaps.collection.LongDataMap;
-import org.apache.baremaps.collection.StoreException;
+import org.apache.baremaps.collection.DataCollectionException;
+import org.apache.baremaps.collection.DataMap;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- * A read-only {@link LongDataMap} for coordinates baked by OpenStreetMap nodes stored in
- * PostgreSQL.
+ * A read-only {@link DataMap} for coordinates baked by OpenStreetMap nodes stored in PostgreSQL.
  */
-public class PostgresCoordinateMap implements LongDataMap<Coordinate> {
+public class PostgresCoordinateMap extends DataMap<Coordinate> {
 
-  private static final String SELECT = "SELECT lon, lat FROM osm_nodes WHERE id = ?";
+  public static final String SELECT_CONTAINS_KEY = """
+      SELECT 1
+      FROM osm_nodes
+      WHERE id = ? LIMIT 1""";
 
-  private static final String SELECT_IN = "SELECT id, lon, lat FROM osm_nodes WHERE id = ANY (?)";
+  public static final String SELECT_CONTAINS_VALUE = """
+      SELECT 1
+      FROM osm_nodes
+      WHERE nodes = ? LIMIT 1""";
+
+  private static final String SELECT_IN = """
+      SELECT id, lon, lat
+      FROM osm_nodes
+      WHERE id
+      WHERE id = ANY (?)""";
+
+  private static final String SELECT_BY_ID = """
+      SELECT lon, lat
+      FROM osm_nodes
+      WHERE id = ?""";
+
+  private static final String SELECT_SIZE = """
+      SELECT count()
+      FROM osm_nodes
+      """;
+
+  private static final String SELECT_KEYS = """
+      SELECT id
+      FROM osm_nodes
+      """;
+
+  private static final String SELECT_VALUES = """
+      SELECT lon, lat
+      FROM osm_nodes
+      """;
+
+  private static final String SELECT_ENTRIES = """
+      SELECT id, lon, lat
+      FROM osm_nodes
+      """;
 
   private final DataSource dataSource;
 
@@ -45,10 +76,10 @@ public class PostgresCoordinateMap implements LongDataMap<Coordinate> {
 
   /** {@inheritDoc} */
   @Override
-  public Coordinate get(long key) {
+  public Coordinate get(Object key) {
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT)) {
-      statement.setLong(1, key);
+        PreparedStatement statement = connection.prepareStatement(SELECT_BY_ID)) {
+      statement.setLong(1, (Long) key);
       try (ResultSet result = statement.executeQuery()) {
         if (result.next()) {
           double lon = result.getDouble(1);
@@ -59,13 +90,13 @@ public class PostgresCoordinateMap implements LongDataMap<Coordinate> {
         }
       }
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DataCollectionException(e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
-  public List<Coordinate> get(List<Long> keys) {
+  public List<Coordinate> getAll(List<Long> keys) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_IN)) {
       statement.setArray(1, connection.createArrayOf("int8", keys.toArray()));
@@ -80,13 +111,126 @@ public class PostgresCoordinateMap implements LongDataMap<Coordinate> {
         return keys.stream().map(nodes::get).toList();
       }
     } catch (SQLException e) {
-      throw new StoreException(e);
+      throw new DataCollectionException(e);
     }
   }
 
-  /** {@inheritDoc} */
   @Override
-  public void put(long key, Coordinate value) {
+  protected Iterator<Long> keyIterator() {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(SELECT_KEYS)) {
+      ResultSet result = statement.executeQuery();
+      return new PostgresIterator<>(result, this::key);
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  private Long key(ResultSet resultSet) {
+    try {
+      return resultSet.getLong(1);
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  @Override
+  protected Iterator<Coordinate> valueIterator() {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(SELECT_VALUES)) {
+      ResultSet result = statement.executeQuery();
+      return new PostgresIterator<>(result, this::value);
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  private Coordinate value(ResultSet resultSet) {
+    try {
+      double lon = resultSet.getDouble(1);
+      double lat = resultSet.getDouble(2);
+      return new Coordinate(lon, lat);
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  @Override
+  protected Iterator<Entry<Long, Coordinate>> entryIterator() {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(SELECT_ENTRIES)) {
+      ResultSet result = statement.executeQuery();
+      return new PostgresIterator<>(result, this::entry);
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  private Entry<Long, Coordinate> entry(ResultSet resultSet) {
+    try {
+      long key = resultSet.getLong(1);
+      double lon = resultSet.getDouble(1);
+      double lat = resultSet.getDouble(2);
+      return Map.entry(key, new Coordinate(lon, lat));
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  @Override
+  public long sizeAsLong() {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(SELECT_SIZE)) {
+      try (ResultSet result = statement.executeQuery()) {
+        if (result.next()) {
+          return result.getLong(1);
+        } else {
+          throw new DataCollectionException();
+        }
+      }
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  @Override
+  public boolean containsKey(Object key) {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(SELECT_CONTAINS_KEY)) {
+      statement.setLong(1, (Long) key);
+      try (ResultSet result = statement.executeQuery()) {
+        return result.next();
+      }
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  @Override
+  public boolean containsValue(Object value) {
+    try (Connection connection = dataSource.getConnection();
+        PreparedStatement statement = connection.prepareStatement(SELECT_CONTAINS_VALUE)) {
+      statement.setArray(1, connection.createArrayOf("int8", (Long[]) value));
+      try (ResultSet result = statement.executeQuery()) {
+        return result.next();
+      }
+    } catch (SQLException e) {
+      throw new DataCollectionException(e);
+    }
+  }
+
+  @Override
+  public Coordinate put(Long key, Coordinate value) {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Coordinate remove(Object key) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void clear() {
+
   }
 }

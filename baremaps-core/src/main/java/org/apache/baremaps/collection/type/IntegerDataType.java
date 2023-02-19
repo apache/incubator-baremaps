@@ -16,13 +16,14 @@ package org.apache.baremaps.collection.type;
 
 import java.nio.ByteBuffer;
 
-/** A {@link DataType} for reading and writing integers in {@link ByteBuffer}s. */
-public class IntegerDataType implements SizedDataType<Integer> {
+/**
+ * A {@link DataType} for reading and writing integers in {@link ByteBuffer}s.
+ */
+public class IntegerDataType extends MemoryAlignedDataType<Integer> {
 
-  /** {@inheritDoc} */
-  @Override
-  public int size(Integer value) {
-    return 4;
+  /** Constructs a {@link IntegerDataType}. */
+  public IntegerDataType() {
+    super(Integer.BYTES);
   }
 
   /** {@inheritDoc} */

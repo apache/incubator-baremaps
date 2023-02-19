@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 import org.apache.baremaps.workflow.tasks.DownloadUrl;
 import org.apache.baremaps.workflow.tasks.ImportOpenStreetMap;
@@ -33,9 +34,9 @@ public class ObjectMapperTest {
             new Step("download", List.of(),
                 List.of(new DownloadUrl(
                     "https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
-                    "liechtenstein-latest.osm.pbf"))),
+                    Paths.get("liechtenstein-latest.osm.pbf")))),
             new Step("import", List.of("download"),
-                List.of(new ImportOpenStreetMap("liechtenstein-latest.osm.pbf",
+                List.of(new ImportOpenStreetMap(Paths.get("liechtenstein-latest.osm.pbf"),
                     "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
                     3857)))));
     var json = mapper.writeValueAsString(workflow1);

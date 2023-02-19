@@ -14,41 +14,28 @@ package org.apache.baremaps.collection;
 
 
 
-import java.util.List;
+import org.apache.baremaps.collection.memory.Memory;
+import org.apache.baremaps.collection.memory.OffHeapMemory;
+import org.apache.baremaps.collection.type.LongDataType;
 
 /**
- * A map of data.
- *
- * @param <T>
+ * A list of longs.
  */
-public interface LongDataMap<T> {
+public class LongDataMap extends MemoryAlignedDataMap<Long> {
 
   /**
-   * Associates the specified value with the specified key in this map.
-   *
-   * @param key the key with which the specified value is to be associated
-   * @param value the value to be associated with the specified key
+   * Constructs a list.
    */
-  void put(long key, T value);
+  public LongDataMap() {
+    this(new OffHeapMemory());
+  }
 
   /**
-   * Returns the value to which the specified key is mapped, or null if this map contains no mapping
-   * for the key.
+   * Constructs a list.
    *
-   * @param key the key whose associated value is to be returned
-   * @return the value to which the specified key is mapped, or null if this map contains no mapping
-   *         for the key
+   * @param memory the memory
    */
-  T get(long key);
-
-  /**
-   * Returns the list of values to which the specified keys are mapped, or null if this map contains
-   * no mapping for the key.
-   *
-   * @param keys the keys whose associated value are to be returned
-   * @return the values to which the specified keys are mapped
-   */
-  default List<T> get(List<Long> keys) {
-    return keys.stream().map(this::get).toList();
+  public LongDataMap(Memory memory) {
+    super(new LongDataType(), memory);
   }
 }

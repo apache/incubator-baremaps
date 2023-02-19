@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
-import org.apache.baremaps.openstreetmap.pbf.PbfBlockReader;
 import org.apache.baremaps.openstreetmap.pbf.PbfEntityReader;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -71,7 +70,7 @@ public class OpenStreetMapBenchmark {
     AtomicLong relations = new AtomicLong(0);
 
     try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-      new PbfEntityReader(new PbfBlockReader()).stream(inputStream).forEach(entity -> {
+      new PbfEntityReader().stream(inputStream).forEach(entity -> {
         if (entity instanceof Node node) {
           nodes.incrementAndGet();
         } else if (entity instanceof Way way) {

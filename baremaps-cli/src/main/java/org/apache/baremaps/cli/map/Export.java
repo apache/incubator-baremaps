@@ -63,8 +63,8 @@ public class Export implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    new ExportVectorTiles(database, tileset.toAbsolutePath().toString(),
-        repository.toAbsolutePath().toString(), batchArraySize, batchArrayIndex, mbtiles)
+    new ExportVectorTiles(database, tileset.toAbsolutePath(),
+        repository.toAbsolutePath(), batchArraySize, batchArrayIndex, mbtiles)
             .execute(new WorkflowContext());
     return 0;
   }

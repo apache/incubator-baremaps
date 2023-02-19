@@ -41,7 +41,7 @@ class PostgresNodeRepositoryTest extends DatabaseContainerTest {
   @Tag("integration")
   void insert() throws RepositoryException {
     nodeRepository.put(Constants.NODE_0);
-    assertEquals(Constants.NODE_0, nodeRepository.get(Constants.NODE_0.getId()));
+    assertEquals(Constants.NODE_0, nodeRepository.get(Constants.NODE_0.id()));
   }
 
   @Test
@@ -50,15 +50,15 @@ class PostgresNodeRepositoryTest extends DatabaseContainerTest {
     List<Node> nodes = Arrays.asList(Constants.NODE_0, Constants.NODE_1, Constants.NODE_2);
     nodeRepository.put(nodes);
     assertIterableEquals(nodes,
-        nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeRepository.get(nodes.stream().map(e -> e.id()).collect(Collectors.toList())));
   }
 
   @Test
   @Tag("integration")
   void delete() throws RepositoryException {
     nodeRepository.put(Constants.NODE_0);
-    nodeRepository.delete(Constants.NODE_0.getId());
-    assertNull(nodeRepository.get(Constants.NODE_0.getId()));
+    nodeRepository.delete(Constants.NODE_0.id());
+    assertNull(nodeRepository.get(Constants.NODE_0.id()));
   }
 
   @Test
@@ -66,9 +66,9 @@ class PostgresNodeRepositoryTest extends DatabaseContainerTest {
   void deleteAll() throws RepositoryException {
     List<Node> nodes = Arrays.asList(Constants.NODE_0, Constants.NODE_1, Constants.NODE_2);
     nodeRepository.put(nodes);
-    nodeRepository.delete(nodes.stream().map(e -> e.getId()).collect(Collectors.toList()));
+    nodeRepository.delete(nodes.stream().map(e -> e.id()).collect(Collectors.toList()));
     assertIterableEquals(Arrays.asList(null, null, null),
-        nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeRepository.get(nodes.stream().map(e -> e.id()).collect(Collectors.toList())));
   }
 
   @Test
@@ -77,6 +77,6 @@ class PostgresNodeRepositoryTest extends DatabaseContainerTest {
     List<Node> nodes = Arrays.asList(Constants.NODE_0, Constants.NODE_1, Constants.NODE_2);
     nodeRepository.copy(nodes);
     assertIterableEquals(nodes,
-        nodeRepository.get(nodes.stream().map(e -> e.getId()).collect(Collectors.toList())));
+        nodeRepository.get(nodes.stream().map(e -> e.id()).collect(Collectors.toList())));
   }
 }

@@ -18,25 +18,35 @@ import java.nio.ByteBuffer;
 import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
 import org.locationtech.jts.geom.Geometry;
 
+/** A {@link DataType} for reading and writing {@link Geometry} in {@link ByteBuffer}s. */
 public class GeometryDataType implements DataType<Geometry> {
 
+  /** {@inheritDoc} */
   @Override
   public int size(Geometry value) {
-    return 4 + GeometryUtils.serialize(value).length;
+    return Integer.BYTES + GeometryUtils.serialize(value).length;
   }
 
+  /** {@inheritDoc} */
+  @Override
+  public int size(ByteBuffer buffer, int position) {
+    return buffer.getInt(position);
+  }
+
+  /** {@inheritDoc} */
   @Override
   public void write(ByteBuffer buffer, int position, Geometry value) {
     byte[] bytes = GeometryUtils.serialize(value);
-    buffer.putInt(position, bytes.length);
-    buffer.put(position + 4, bytes);
+    buffer.putInt(position, Integer.BYTES + bytes.length);
+    buffer.put(position + Integer.BYTES, bytes);
   }
 
+  /** {@inheritDoc} */
   @Override
   public Geometry read(ByteBuffer buffer, int position) {
-    int length = buffer.getInt(position);
-    byte[] bytes = new byte[length];
-    buffer.get(position + 4, bytes);
+    int size = buffer.getInt(position);
+    byte[] bytes = new byte[Math.max(size - Integer.BYTES, 0)];
+    buffer.get(position + Integer.BYTES, bytes);
     return GeometryUtils.deserialize(bytes);
   }
 }

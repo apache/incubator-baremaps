@@ -25,12 +25,21 @@ import java.nio.ByteBuffer;
 public interface DataType<T> {
 
   /**
-   * Returns the size of the value in memory.
+   * Returns the size of the value.
    *
    * @param value the value
-   * @return the size of the value in memory.
+   * @return the size of the value
    */
   int size(T value);
+
+  /**
+   * Returns the size of the value stored at the specified position in a {@link ByteBuffer}.
+   *
+   * @param buffer the buffer
+   * @param position the position
+   * @return the size of the value
+   */
+  int size(ByteBuffer buffer, int position);
 
   /**
    * Write a value.
