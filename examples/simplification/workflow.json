@@ -1,34 +1,8 @@
 {
   "steps": [
     {
-      "id": "download",
-      "needs": [],
-      "tasks": [
-        {
-          "type": "DownloadUrl",
-          "url": "https://download.geofabrik.de/europe/monaco-latest.osm.pbf",
-          "path": "monaco-latest.osm.pbf"
-        }
-      ]
-    },
-    {
-      "id": "collection",
-      "needs": [
-        "download"
-      ],
-      "tasks": [
-        {
-          "type": "CreateEntityCollection",
-          "file": "monaco-latest.osm.pbf",
-          "collection": "collection",
-          "srid": 3857
-        }
-      ]
-    },
-    {
       "id": "simplify",
       "needs": [
-        "collection"
       ],
       "tasks": [
         {

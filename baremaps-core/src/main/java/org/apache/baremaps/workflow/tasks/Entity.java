@@ -47,17 +47,27 @@ public class Entity implements Feature {
 
   @Override
   public void setProperty(String name, Object value) {
-    tags.put(name, value.toString());
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public Object getProperty(String name) {
-    return tags.get(name);
+    if (name.equals("id")) {
+      return id;
+    } else if (name.equals("geometry")) {
+      return geometry;
+    } else {
+      return tags.get(name);
+    }
   }
 
   @Override
   public Map<String, Object> getProperties() {
-    return Map.copyOf(tags);
+    var map = new HashMap<String, Object>();
+    map.put("id", id);
+    map.putAll(tags);
+    map.put("geometry", geometry);
+    return map;
   }
 
   public long getId() {

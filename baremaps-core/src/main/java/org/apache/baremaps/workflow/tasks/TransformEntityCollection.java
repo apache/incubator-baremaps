@@ -14,6 +14,7 @@ package org.apache.baremaps.workflow.tasks;
 
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.AppendOnlyBuffer;
+import org.apache.baremaps.collection.algorithm.UnionStream;
 import org.apache.baremaps.collection.memory.MemoryMappedFile;
 import org.apache.baremaps.feature.*;
 import org.apache.baremaps.mvt.expression.Expressions.Expression;
@@ -32,14 +34,13 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.operation.linemerge.LineMerger;
-import org.locationtech.jts.operation.union.CascadedPolygonUnion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public record TransformEntityCollection(Path collection, String database,
     Recipe recipe) implements Task {
 
-  private static final Logger logger = LoggerFactory.getLogger(ImportOpenStreetMap.class);
+  private static final Logger logger = LoggerFactory.getLogger(TransformEntityCollection.class);
 
   record Recipe(String name, Expression<Boolean> filter, List<String> groupBy,
       Operation operation) {
@@ -55,8 +56,8 @@ public record TransformEntityCollection(Path collection, String database,
 
     var featureType = new FeatureType(recipe.name, propertyTypes());
 
-    var coll = new AppendOnlyBuffer<>(new EntityDataType(), new MemoryMappedFile(collection));
-    var groups = coll.stream()
+    var groups = new AppendOnlyBuffer<>(new EntityDataType(), new MemoryMappedFile(collection))
+        .stream()
         .filter(this::filter)
         .collect(Collectors.groupingBy(this::propertyValues));
 
@@ -108,12 +109,9 @@ public record TransformEntityCollection(Path collection, String database,
         .filter(Polygon.class::isInstance)
         .map(Polygon.class::cast)
         .map(GeometryFixer::fix)
-        .toList();
-
-    var unionedGeometry = new CascadedPolygonUnion(filtered).union();
-
-    return IntStream.range(0, unionedGeometry.getNumGeometries())
-        .mapToObj(unionedGeometry::getGeometryN);
+        .filter(Geometry::isValid)
+        .collect(Collectors.toCollection(ArrayList::new));
+    return new UnionStream(filtered).union();
   }
 
   private Stream<Geometry> merge(Stream<Geometry> geometries) {

@@ -141,48 +141,61 @@ public class AppendOnlyBuffer<E> extends DataCollection<E> {
    * {@inheritDoc}
    */
   @Override
-  public Iterator<E> iterator() {
+  public BufferIterator iterator() {
     final long size = sizeAsLong();
-    return new Iterator<>() {
+    return new BufferIterator(size);
+  }
 
-      private long index = 0;
+  public class BufferIterator implements Iterator<E> {
 
-      private long position = Long.BYTES;
+    private final long size;
+    private long index;
 
-      @Override
-      public boolean hasNext() {
-        return index < size;
+    private long position;
+
+    public BufferIterator(long size) {
+      this.size = size;
+      index = 0;
+      position = Long.BYTES;
+    }
+
+    @Override
+    public boolean hasNext() {
+      return index < size;
+    }
+
+    @Override
+    public E next() {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
+      long segmentIndex = position / segmentSize;
+      long segmentOffset = position % segmentSize;
+
+      ByteBuffer segment = memory.segment((int) segmentIndex);
+
+      int size;
+      try {
+        size = dataType.size(segment, (int) segmentOffset);
+      } catch (IndexOutOfBoundsException e) {
+        size = 0;
       }
 
-      @Override
-      public E next() {
-        if (!hasNext()) {
-          throw new NoSuchElementException();
-        }
-        long segmentIndex = position / segmentSize;
-        long segmentOffset = position % segmentSize;
-
-        ByteBuffer segment = memory.segment((int) segmentIndex);
-
-        int size;
-        try {
-          size = dataType.size(segment, (int) segmentOffset);
-        } catch (IndexOutOfBoundsException e) {
-          size = 0;
-        }
-
-        if (segmentOffset + size > segmentSize || size == 0) {
-          segmentIndex = segmentIndex + 1;
-          segmentOffset = 0;
-          position = segmentIndex * segmentSize;
-          segment = memory.segment((int) segmentIndex);
-          size = dataType.size(segment, (int) segmentOffset);
-        }
-        position += size;
-        index++;
-
-        return dataType.read(segment, (int) segmentOffset);
+      if (segmentOffset + size > segmentSize || size == 0) {
+        segmentIndex = segmentIndex + 1;
+        segmentOffset = 0;
+        position = segmentIndex * segmentSize;
+        segment = memory.segment((int) segmentIndex);
+        size = dataType.size(segment, (int) segmentOffset);
       }
-    };
+      position += size;
+      index++;
+
+      return dataType.read(segment, (int) segmentOffset);
+    }
+
+    public long getPosition() {
+      return position;
+    }
   }
 }
