@@ -3,18 +3,18 @@ export default {
     queries: [
         {
             minzoom: 1,
-            maxzoom: 5,
+            maxzoom: 6,
             sql:
-                "SELECT id, tags, geom FROM osm_boundary_z$zoom WHERE tags ->> 'boundary' IN ('administrative') AND tags ->> 'admin_level' IN ('1', '2')",
+                "SELECT fid as id, jsonb_build_object('boundary', 'administrative', 'admin_level', '0') as tags, geom FROM globaladm0_z$zoom",
         },
         {
-            minzoom: 5,
-            maxzoom: 13,
+            minzoom: 6,
+            maxzoom: 14,
             sql:
-                "SELECT id, tags, geom FROM osm_boundary_z$zoom WHERE tags ->> 'boundary' IN ('administrative') AND tags ->> 'admin_level' IN ('1', '2', '3', '4')",
+                "SELECT fid as id, jsonb_build_object('boundary', 'administrative', 'admin_level', '1') as tags, geom FROM globaladm1_z$zoom",
         },
         {
-            minzoom: 13,
+            minzoom: 14,
             maxzoom: 20,
             sql:
                 "SELECT id, tags, geom FROM osm_ways_z$zoom WHERE tags ? 'boundary'",

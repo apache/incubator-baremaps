@@ -27,7 +27,7 @@ export default {
   "tiles": [
     `${config.host}/tiles/{z}/{x}/{y}.mvt`
   ],
-  attribution: '© <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+  attribution: '© <a href="https://www.openstreetmap.org/">OpenStreetMap</a> © <a href="https://www.geoboundaries.org">geoBoundaries</a>',
   "vector_layers": [
     aerialway,
     aeroway,

@@ -2,6 +2,10 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 
 let directives = [
     {
+        filter: ['==', ['get', 'admin_level'], "0"],
+        'line-color': 'rgb(207, 155, 203)',
+    },
+    {
         filter: ['==', ['get', 'admin_level'], "1"],
         'line-color': 'rgb(207, 155, 203)',
     },

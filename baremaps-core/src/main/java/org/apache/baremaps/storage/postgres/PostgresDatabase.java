@@ -181,7 +181,7 @@ public class PostgresDatabase implements WritableAggregate {
       var type = featureSet.getType();
       try (var connection = dataSource.getConnection();
           var statement = connection.createStatement()) {
-        statement.executeQuery(String.format("DROP TABLE IF EXISTS %s", type.getName()));
+        statement.executeQuery(String.format("DROP TABLE IF EXISTS %s CASCADE", type.getName()));
       } catch (SQLException e) {
         throw new RuntimeException(e);
       }
@@ -189,7 +189,7 @@ public class PostgresDatabase implements WritableAggregate {
   }
 
   private String dropTable(FeatureType type) {
-    return String.format("DROP TABLE IF EXISTS %s", type.getName());
+    return String.format("DROP TABLE IF EXISTS %s CASCADE", type.getName());
   }
 
 }
