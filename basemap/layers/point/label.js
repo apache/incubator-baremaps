@@ -1,15 +1,10 @@
-import {asLayerObject, withSortKeys} from "../../utils/utils.js";
+import {asLayerObject, withSymbolSortKeys} from "../../utils/utils.js";
 
 let directives = [
     {
-        filter: ['==', ['get', 'place'], 'city'],
-        'text-size': 16,
-        'text-color': 'rgb(25, 25, 25)',
-    },
-    {
-        filter: ['==', ['get', 'place'], 'town'],
-        'text-size': 14,
-        'text-color': 'rgb(50,50,50)',
+        filter: ['==', ['get', 'place'], 'locality'],
+        'text-size': 12,
+        'text-color': 'rgb(75,75,75)',
     },
     {
         filter: ['==', ['get', 'place'], 'village'],
@@ -17,9 +12,14 @@ let directives = [
         'text-color': 'rgb(75,75,75)',
     },
     {
-        filter: ['==', ['get', 'place'], 'locality'],
-        'text-size': 12,
-        'text-color': 'rgb(75,75,75)',
+        filter: ['==', ['get', 'place'], 'town'],
+        'text-size': 14,
+        'text-color': 'rgb(50,50,50)',
+    },
+    {
+        filter: ['==', ['get', 'place'], 'city'],
+        'text-size': 16,
+        'text-color': 'rgb(25, 25, 25)',
     },
     // {
     //     filter: [
@@ -41,7 +41,7 @@ let directives = [
 
 ];
 
-export default asLayerObject(withSortKeys(directives), {
+export default asLayerObject(withSymbolSortKeys(directives), {
     id: 'label',
     type: 'symbol',
     source: 'baremaps',
