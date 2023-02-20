@@ -17,7 +17,20 @@ let directives = [
         'text-color': 'rgb(50,50,50)',
     },
     {
-        filter: ['==', ['get', 'place'], 'city'],
+        filter: [
+            'all',
+            ['!=', ['get', 'capital'], 'yes'],
+            ['==', ['get', 'place'], 'city']
+        ],
+        'text-size': 16,
+        'text-color': 'rgb(25, 25, 25)',
+    },
+    {
+        filter: [
+            'all',
+            ['==', ['get', 'capital'], 'yes'],
+            ['==', ['get', 'place'], 'city']
+        ],
         'text-size': 16,
         'text-color': 'rgb(25, 25, 25)',
     },
