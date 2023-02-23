@@ -199,3 +199,17 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+   THIRD PARTY LICENSES: This project bundles third party code and data
+
+   Code and data produced outside the ASF that is included in the
+   distribution of this product is subject to the following
+   additional license terms:
+
+       - OSMPBF, MIT License
+       - Palantir Streams, Apache License 2.0
+       - Planetiler, Apache License 2.0
+       - EPSG, EPSG Terms of Use
+       - OpenStreetMap, Open Data Commons Open Database License (ODbL)
+       - GeoNames, Creative Commons Attribution 4.0 License
+       - RIPE NCC, RIPE NCC Terms and Conditions
