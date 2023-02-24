@@ -45,7 +45,7 @@ public class FeatureSetProjectionTransform implements ReadableFeatureSet {
   }
 
   public Feature transformProjection(Feature feature) {
-    for (var property : feature.getType().getProperties().values()) {
+    for (var property : feature.getType().getPropertyTypes().values()) {
       var name = property.getName();
       var value = feature.getProperty(name);
       if (value instanceof Geometry geometry) {

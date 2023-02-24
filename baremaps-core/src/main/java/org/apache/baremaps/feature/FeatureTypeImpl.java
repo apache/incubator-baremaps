@@ -15,41 +15,37 @@ package org.apache.baremaps.feature;
 
 
 import com.google.common.collect.ImmutableMap;
-import java.util.HashMap;
 import java.util.Map;
 
-public final class FeatureImpl implements Feature {
+public class FeatureTypeImpl implements FeatureType {
 
-  private FeatureType type;
+  private final String name;
 
-  private Map<String, Object> properties;
+  private final Map<String, PropertyType> propertyTypes;
 
-  public FeatureImpl(FeatureType type) {
-    this(type, new HashMap<>());
-  }
-
-  public FeatureImpl(FeatureType type, Map<String, Object> properties) {
-    this.type = type;
-    this.properties = properties;
+  public FeatureTypeImpl(String name, Map<String, PropertyType> propertyTypes) {
+    this.name = name;
+    this.propertyTypes = propertyTypes;
   }
 
   @Override
-  public FeatureType getType() {
-    return type;
+  public String getName() {
+    return name;
   }
 
   @Override
-  public void setProperty(String name, Object value) {
-    properties.put(name, value);
+  public Map<String, PropertyType> getPropertyTypes() {
+    return ImmutableMap.copyOf(propertyTypes);
   }
 
   @Override
-  public Object getProperty(String name) {
-    return properties.get(name);
+  public PropertyType getPropertyType(String name) {
+    return propertyTypes.get(name);
   }
 
-  public Map<String, Object> getProperties() {
-    return ImmutableMap.copyOf(properties);
+  @Override
+  public Feature newInstance() {
+    return new FeatureImpl(this);
   }
 
 }

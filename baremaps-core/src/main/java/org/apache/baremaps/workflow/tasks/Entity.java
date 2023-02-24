@@ -16,16 +16,17 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.baremaps.feature.Feature;
 import org.apache.baremaps.feature.FeatureType;
+import org.apache.baremaps.feature.FeatureTypeImpl;
 import org.apache.baremaps.feature.PropertyType;
 import org.locationtech.jts.geom.Geometry;
 
 public class Entity implements Feature {
 
-  private final long id;
+  private long id;
 
-  private final Map<String, String> tags;
+  private Map<String, String> tags;
 
-  private final Geometry geometry;
+  private Geometry geometry;
 
   public Entity(long id, Map<String, String> tags, Geometry geometry) {
     this.id = id;
@@ -42,12 +43,12 @@ public class Entity implements Feature {
       map.put(entry.getKey(), new PropertyType<>(entry.getKey(), String.class));
     }
     map.put("geometry", new PropertyType<>("geometry", Geometry.class));
-    return new FeatureType("entity", map);
+    return new FeatureTypeImpl("entity", map);
   }
 
   @Override
   public void setProperty(String name, Object value) {
-    throw new UnsupportedOperationException();
+    tags.put(name, value.toString());
   }
 
   @Override

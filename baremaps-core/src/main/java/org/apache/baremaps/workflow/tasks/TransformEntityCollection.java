@@ -53,7 +53,7 @@ public record TransformEntityCollection(Path collection, String database,
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Transform {} with {}", collection, recipe);
 
-    var featureType = new FeatureType(recipe.name, propertyTypes());
+    var featureType = new FeatureTypeImpl(recipe.name, propertyTypes());
 
     var groups = new AppendOnlyBuffer<>(new EntityDataType(), new MemoryMappedFile(collection))
         .stream()

@@ -12,36 +12,14 @@
 
 package org.apache.baremaps.feature;
 
-
-
-import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 
-public class FeatureType {
+public interface FeatureType {
+  String getName();
 
-  private final String name;
+  Map<String, PropertyType> getPropertyTypes();
 
-  private final Map<String, PropertyType> properties;
+  PropertyType getPropertyType(String name);
 
-  public FeatureType(String name, Map<String, PropertyType> properties) {
-    this.name = name;
-    this.properties = properties;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public Map<String, PropertyType> getProperties() {
-    return ImmutableMap.copyOf(properties);
-  }
-
-  public PropertyType getProperty(String name) {
-    return properties.get(name);
-  }
-
-  public Feature newInstance() {
-    return new FeatureImpl(this);
-  }
-
+  Feature newInstance();
 }

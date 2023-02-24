@@ -22,10 +22,7 @@ import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
-import org.apache.baremaps.feature.Feature;
-import org.apache.baremaps.feature.FeatureType;
-import org.apache.baremaps.feature.PropertyType;
-import org.apache.baremaps.feature.ReadableFeatureSet;
+import org.apache.baremaps.feature.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
@@ -56,7 +53,7 @@ public class GeoPackageTable implements ReadableFeatureSet {
       var propertyType = classType(column);
       properties.put(propertyName, new PropertyType(propertyName, propertyType));
     }
-    featureType = new FeatureType(name, properties);
+    featureType = new FeatureTypeImpl(name, properties);
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
   }
 

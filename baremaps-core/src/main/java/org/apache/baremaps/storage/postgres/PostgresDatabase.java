@@ -34,6 +34,7 @@ import org.postgresql.copy.PGCopyOutputStream;
 
 public class PostgresDatabase implements WritableAggregate {
 
+  // TODO: Instantiate with Map.of()
   private static Map<Class, String> typeToName = new HashMap<>();
 
   static {
@@ -58,6 +59,7 @@ public class PostgresDatabase implements WritableAggregate {
     typeToName.put(LocalDateTime.class, "timestamp");
   }
 
+  // TODO: Instantiate with Map.of()
   private static Map<Class, BaseValueHandler> typeToHandler = new HashMap<>();
 
   static {
@@ -90,10 +92,10 @@ public class PostgresDatabase implements WritableAggregate {
 
   private FeatureType createFeatureType(FeatureType featureType) {
     var name = featureType.getName().replaceAll("[^a-zA-Z0-9]", "_");
-    var properties = featureType.getProperties().values().stream()
+    var properties = featureType.getPropertyTypes().values().stream()
         .filter(type -> typeToName.containsKey(type.getType()))
         .collect(Collectors.toMap(k -> k.getName(), v -> v));
-    return new FeatureType(name, properties);
+    return new FeatureTypeImpl(name, properties);
   }
 
   @Override
@@ -142,7 +144,7 @@ public class PostgresDatabase implements WritableAggregate {
   }
 
   private List<PropertyType> getAttributes(FeatureType featureType) {
-    return featureType.getProperties().values().stream()
+    return featureType.getPropertyTypes().values().stream()
         .filter(this::isSupported).collect(Collectors.toList());
   }
 
@@ -155,7 +157,7 @@ public class PostgresDatabase implements WritableAggregate {
     builder.append("CREATE TABLE ");
     builder.append(featureType.getName());
     builder.append(" (");
-    builder.append(featureType.getProperties().values().stream()
+    builder.append(featureType.getPropertyTypes().values().stream()
         .map(attributeType -> attributeType.getName()
             + " " + typeToName.get(attributeType.getType()))
         .collect(Collectors.joining(", ")));
@@ -168,7 +170,7 @@ public class PostgresDatabase implements WritableAggregate {
     builder.append("COPY ");
     builder.append(featureType.getName());
     builder.append(" (");
-    builder.append(featureType.getProperties().values().stream()
+    builder.append(featureType.getPropertyTypes().values().stream()
         .map(propertyType -> propertyType.getName())
         .collect(Collectors.joining(", ")));
     builder.append(") FROM STDIN BINARY");

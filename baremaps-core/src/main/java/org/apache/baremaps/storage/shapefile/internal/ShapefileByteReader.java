@@ -21,6 +21,7 @@ import java.nio.channels.FileChannel;
 import java.util.*;
 import org.apache.baremaps.feature.Feature;
 import org.apache.baremaps.feature.FeatureType;
+import org.apache.baremaps.feature.FeatureTypeImpl;
 import org.apache.baremaps.feature.PropertyType;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
@@ -152,7 +153,7 @@ public class ShapefileByteReader extends CommonByteReader {
     // Add geometry field.
     properties.put(GEOMETRY_NAME, new PropertyType(GEOMETRY_NAME, Geometry.class));
 
-    return new FeatureType(name, properties);
+    return new FeatureTypeImpl(name, properties);
   }
 
   /** Load shapefile descriptor. */
