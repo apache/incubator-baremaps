@@ -13,13 +13,12 @@
 package org.apache.baremaps.storage.postgres;
 
 
-
 import de.bytefish.pgbulkinsert.pgsql.handlers.*;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +26,12 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.copy.CopyWriter;
 import org.apache.baremaps.database.copy.PostgisGeometryValueHandler;
-import org.apache.baremaps.feature.*;
+import org.apache.baremaps.dataframe.*;
 import org.locationtech.jts.geom.*;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 
-public class PostgresDatabase implements WritableAggregate {
+public class PostgresDatabase implements DataStore {
 
   // TODO: Instantiate with Map.of()
   private static Map<Class, String> typeToName = new HashMap<>();
@@ -90,108 +89,112 @@ public class PostgresDatabase implements WritableAggregate {
     this.dataSource = dataSource;
   }
 
-  private FeatureType createFeatureType(FeatureType featureType) {
-    var name = featureType.getName().replaceAll("[^a-zA-Z0-9]", "_");
-    var properties = featureType.getPropertyTypes().values().stream()
-        .filter(type -> typeToName.containsKey(type.getType()))
-        .collect(Collectors.toMap(k -> k.getName(), v -> v));
-    return new FeatureTypeImpl(name, properties);
+  private DataType adaptDataType(DataType datatype) {
+    var name = datatype.name().replaceAll("[^a-zA-Z0-9]", "_");
+    var properties = datatype.columns().stream()
+        .filter(columnType -> typeToName.containsKey(columnType.type()))
+        .toList();
+    return new DataTypeImpl(name, properties);
   }
 
   @Override
-  public void write(Resource resource) throws IOException {
-    if (resource instanceof ReadableFeatureSet featureSetReader) {
-      try (var connection = dataSource.getConnection()) {
-        var featureType = createFeatureType(featureSetReader.getType());
+  public Collection<DataFrame> list() throws DataFrameException {
+    throw new UnsupportedOperationException();
+  }
 
-        // Drop the table if it exists
-        var dropQuery = dropTable(featureType);
-        try (var dropStatement = connection.prepareStatement(dropQuery)) {
-          dropStatement.execute();
-        }
+  @Override
+  public DataFrame get(String name) throws DataFrameException {
+    throw new UnsupportedOperationException();
+  }
 
-        // Create the table
-        var createQuery = createTable(featureType);
-        try (var createStatement = connection.prepareStatement(createQuery)) {
-          createStatement.execute();
-        }
+  @Override
+  public void add(DataFrame dataFrame) {
+    try (var connection = dataSource.getConnection()) {
+      var dataType = adaptDataType(dataFrame.dataType());
 
-        // Populate the table with a copy query
-        PGConnection pgConnection = connection.unwrap(PGConnection.class);
-        var copyQuery = copyTable(featureType);
-        try (var writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copyQuery))) {
-          writer.writeHeader();
-          var featureIterator = featureSetReader.read().iterator();
-          while (featureIterator.hasNext()) {
-            var feature = featureIterator.next();
-            var attributes = getAttributes(featureType);
-            writer.startRow(attributes.size());
-            for (var attribute : attributes) {
-              var name = attribute.getName().toString();
-              var value = feature.getProperty(name);
-              if (value == null) {
-                writer.writeNull();
-              } else {
-                writer.write(typeToHandler.get(value.getClass()), value);
-              }
+      // Drop the table if it exists
+      var dropQuery = dropTable(dataType);
+      try (var dropStatement = connection.prepareStatement(dropQuery)) {
+        dropStatement.execute();
+      }
+
+      // Create the table
+      var createQuery = createTable(dataType);
+      try (var createStatement = connection.prepareStatement(createQuery)) {
+        createStatement.execute();
+      }
+
+      // Populate the table with a copy query
+      PGConnection pgConnection = connection.unwrap(PGConnection.class);
+      var copyQuery = copyTable(dataType);
+      try (var writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copyQuery))) {
+        writer.writeHeader();
+        var featureIterator = dataFrame.iterator();
+        while (featureIterator.hasNext()) {
+          var feature = featureIterator.next();
+          var attributes = getAttributes(dataType);
+          writer.startRow(attributes.size());
+          for (var attribute : attributes) {
+            var name = attribute.name().toString();
+            var value = feature.get(name);
+            if (value == null) {
+              writer.writeNull();
+            } else {
+              writer.write(typeToHandler.get(value.getClass()), value);
             }
           }
         }
-      } catch (SQLException e) {
-        throw new IOException(e);
       }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
 
-  private List<PropertyType> getAttributes(FeatureType featureType) {
-    return featureType.getPropertyTypes().values().stream()
+  private List<Column> getAttributes(DataType dataType) {
+    return dataType.columns().stream()
         .filter(this::isSupported).collect(Collectors.toList());
   }
 
-  private boolean isSupported(PropertyType propertyType) {
-    return typeToName.containsKey(propertyType.getType());
+  private boolean isSupported(Column column) {
+    return typeToName.containsKey(column.type());
   }
 
-  private String createTable(FeatureType featureType) {
+  private String createTable(DataType dataType) {
     StringBuilder builder = new StringBuilder();
     builder.append("CREATE TABLE ");
-    builder.append(featureType.getName());
+    builder.append(dataType.name());
     builder.append(" (");
-    builder.append(featureType.getPropertyTypes().values().stream()
-        .map(attributeType -> attributeType.getName()
-            + " " + typeToName.get(attributeType.getType()))
+    builder.append(dataType.columns().stream()
+        .map(column -> column.name()
+            + " " + typeToName.get(column.type()))
         .collect(Collectors.joining(", ")));
     builder.append(")");
     return builder.toString();
   }
 
-  private String copyTable(FeatureType featureType) {
+  private String copyTable(DataType dataType) {
     StringBuilder builder = new StringBuilder();
     builder.append("COPY ");
-    builder.append(featureType.getName());
+    builder.append(dataType.name());
     builder.append(" (");
-    builder.append(featureType.getPropertyTypes().values().stream()
-        .map(propertyType -> propertyType.getName())
+    builder.append(dataType.columns().stream()
+        .map(column -> column.name())
         .collect(Collectors.joining(", ")));
     builder.append(") FROM STDIN BINARY");
     return builder.toString();
   }
 
   @Override
-  public void remove(Resource resource) throws IOException {
-    if (resource instanceof FeatureSet featureSet) {
-      var type = featureSet.getType();
-      try (var connection = dataSource.getConnection();
-          var statement = connection.createStatement()) {
-        statement.executeQuery(String.format("DROP TABLE IF EXISTS %s CASCADE", type.getName()));
-      } catch (SQLException e) {
-        throw new RuntimeException(e);
-      }
+  public void remove(String name) {
+    try (var connection = dataSource.getConnection();
+        var statement = connection.createStatement()) {
+      statement.executeQuery(String.format("DROP TABLE IF EXISTS %s CASCADE", name));
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
     }
   }
 
-  private String dropTable(FeatureType type) {
-    return String.format("DROP TABLE IF EXISTS %s CASCADE", type.getName());
+  private String dropTable(DataType type) {
+    return String.format("DROP TABLE IF EXISTS %s CASCADE", type.name());
   }
-
 }

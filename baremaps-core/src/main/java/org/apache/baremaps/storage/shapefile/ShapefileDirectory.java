@@ -17,11 +17,12 @@ package org.apache.baremaps.storage.shapefile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Stream;
-import org.apache.baremaps.feature.ReadableAggregate;
-import org.apache.baremaps.feature.Resource;
+import java.util.Collection;
+import org.apache.baremaps.dataframe.DataFrame;
+import org.apache.baremaps.dataframe.DataFrameException;
+import org.apache.baremaps.dataframe.DataStore;
 
-public class ShapefileDirectory implements ReadableAggregate {
+public class ShapefileDirectory implements DataStore {
 
   private final Path directory;
 
@@ -30,10 +31,33 @@ public class ShapefileDirectory implements ReadableAggregate {
   }
 
   @Override
-  public Stream<Resource> read() throws IOException {
-    return Files.list(directory)
-        .filter(file -> file.toString().toLowerCase().endsWith(".shp"))
-        .map(file -> new ShapefileFeatureSet(file));
+  public Collection<DataFrame> list() {
+    try {
+      return Files.list(directory)
+          .filter(file -> file.toString().toLowerCase().endsWith(".shp"))
+          .map(file -> new ShapefileDataFrame(file))
+          .map(DataFrame.class::cast)
+          .toList();
+    } catch (IOException e) {
+      throw new DataFrameException(e);
+    }
+  }
 
+  @Override
+  public DataFrame get(String name) {
+    return list().stream()
+        .filter(dataFrame -> dataFrame.dataType().name().equals(name))
+        .findFirst()
+        .orElseThrow(() -> new DataFrameException());
+  }
+
+  @Override
+  public void add(DataFrame value) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void remove(String name) {
+    throw new UnsupportedOperationException();
   }
 }

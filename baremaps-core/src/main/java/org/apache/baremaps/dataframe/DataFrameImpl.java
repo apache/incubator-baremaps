@@ -10,24 +10,25 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.dataframe;
 
-public class PropertyType<T> {
+import java.util.ArrayList;
 
-  private final String name;
-  private final Class<T> type;
+public class DataFrameImpl extends ArrayList<Row> implements DataFrame {
 
-  public PropertyType(String name, Class<T> type) {
-    this.name = name;
-    this.type = type;
+  private final DataType dataType;
+
+  public DataFrameImpl(DataType dataType) {
+    this.dataType = dataType;
   }
 
-  public String getName() {
-    return name;
+  @Override
+  public long sizeAsLong() {
+    return size();
   }
 
-  public Class<T> getType() {
-    return type;
+  @Override
+  public DataType dataType() {
+    return dataType;
   }
-
 }

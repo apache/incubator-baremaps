@@ -13,47 +13,33 @@
 package org.apache.baremaps.storage.geopackage;
 
 
-
-import java.io.IOException;
 import java.util.*;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
-import org.apache.baremaps.feature.*;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.apache.baremaps.collection.AbstractDataCollection;
+import org.apache.baremaps.dataframe.*;
+import org.locationtech.jts.geom.*;
 
-public class GeoPackageTable implements ReadableFeatureSet {
+public class GeoPackageTable extends AbstractDataCollection<Row> implements DataFrame {
 
   private final FeatureDao featureDao;
 
-  private final FeatureType featureType;
+  private final DataType featureType;
 
   private final GeometryFactory geometryFactory;
 
   protected GeoPackageTable(FeatureDao featureDao) {
     this.featureDao = featureDao;
     var name = featureDao.getTableName();
-    var properties = new HashMap<String, PropertyType>();
+    var columns = new ArrayList<Column>();
     for (FeatureColumn column : featureDao.getColumns()) {
       var propertyName = column.getName();
       var propertyType = classType(column);
-      properties.put(propertyName, new PropertyType(propertyName, propertyType));
+      columns.add(new ColumnImpl(propertyName, propertyType));
     }
-    featureType = new FeatureTypeImpl(name, properties);
+    featureType = new DataTypeImpl(name, columns);
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
   }
 
@@ -66,27 +52,31 @@ public class GeoPackageTable implements ReadableFeatureSet {
   }
 
   @Override
-  public FeatureType getType() throws IOException {
-    return featureType;
+  public Iterator<Row> iterator() {
+    return new FeatureIterator(featureDao.queryForAll(), featureType);
   }
 
   @Override
-  public Stream<Feature> read() throws IOException {
-    var featureIterator = new FeatureIterator(featureDao.queryForAll(), featureType);
-    return StreamSupport.stream(Spliterators.spliteratorUnknownSize(featureIterator, 0), false);
+  public long sizeAsLong() {
+    return 0;
   }
 
-  public class FeatureIterator implements Iterator<Feature> {
+  @Override
+  public DataType dataType() {
+    return null;
+  }
+
+  public class FeatureIterator implements Iterator<Row> {
 
     private final FeatureResultSet featureResultSet;
 
-    private final FeatureType featureType;
+    private final DataType dataType;
 
     private boolean hasNext;
 
-    public FeatureIterator(FeatureResultSet featureResultSet, FeatureType featureType) {
+    public FeatureIterator(FeatureResultSet featureResultSet, DataType dataType) {
       this.featureResultSet = featureResultSet;
-      this.featureType = featureType;
+      this.dataType = dataType;
       this.hasNext = featureResultSet.moveToFirst();
     }
 
@@ -96,19 +86,19 @@ public class GeoPackageTable implements ReadableFeatureSet {
     }
 
     @Override
-    public Feature next() {
+    public Row next() {
       if (!hasNext) {
         throw new NoSuchElementException();
       }
-      Feature feature = featureType.newInstance();
+      Row row = dataType.newInstance();
       for (FeatureColumn featureColumn : featureResultSet.getColumns().getColumns()) {
         var value = featureResultSet.getValue(featureColumn);
         if (value != null) {
-          feature.setProperty(featureColumn.getName(), asValue(value));
+          row.set(featureColumn.getName(), asValue(value));
         }
       }
       hasNext = featureResultSet.moveToNext();
-      return feature;
+      return row;
     }
   }
 

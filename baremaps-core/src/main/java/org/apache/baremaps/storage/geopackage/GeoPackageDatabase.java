@@ -13,17 +13,16 @@
 package org.apache.baremaps.storage.geopackage;
 
 
-
-import java.io.IOException;
 import java.nio.file.Path;
-import java.util.stream.Stream;
+import java.util.Collection;
 import mil.nga.geopackage.GeoPackage;
 import mil.nga.geopackage.GeoPackageManager;
-import org.apache.baremaps.feature.ReadableAggregate;
-import org.apache.baremaps.feature.Resource;
+import org.apache.baremaps.dataframe.DataFrame;
+import org.apache.baremaps.dataframe.DataFrameException;
+import org.apache.baremaps.dataframe.DataStore;
 
 
-public class GeoPackageDatabase implements ReadableAggregate, AutoCloseable {
+public class GeoPackageDatabase implements DataStore, AutoCloseable {
 
   private final GeoPackage geoPackage;
 
@@ -32,13 +31,33 @@ public class GeoPackageDatabase implements ReadableAggregate, AutoCloseable {
   }
 
   @Override
-  public Stream<Resource> read() throws IOException {
-    return geoPackage.getFeatureTables().stream()
-        .map(table -> new GeoPackageTable(geoPackage.getFeatureDao(table)));
+  public void close() throws Exception {
+    geoPackage.close();
   }
 
   @Override
-  public void close() throws Exception {
-    geoPackage.close();
+  public Collection<DataFrame> list() throws DataFrameException {
+    return geoPackage.getFeatureTables().stream()
+        .map(table -> new GeoPackageTable(geoPackage.getFeatureDao(table)))
+        .map(DataFrame.class::cast)
+        .toList();
+  }
+
+  @Override
+  public DataFrame get(String name) throws DataFrameException {
+    return list().stream()
+        .filter(dataFrame -> dataFrame.dataType().name().equals(name))
+        .findFirst()
+        .orElseThrow(() -> new DataFrameException());
+  }
+
+  @Override
+  public void add(DataFrame value) throws DataFrameException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void remove(String name) throws DataFrameException {
+    throw new UnsupportedOperationException();
   }
 }

@@ -10,20 +10,8 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.dataframe;
 
-
-
-import java.util.Map;
-
-public interface Feature {
-
-  FeatureType getType();
-
-  void setProperty(String name, Object value);
-
-  Object getProperty(String name);
-
-  Map<String, Object> getProperties();
+public record ColumnImpl(String name, Class type) implements Column {
 
 }

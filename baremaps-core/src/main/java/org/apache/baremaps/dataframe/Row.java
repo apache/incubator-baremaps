@@ -10,15 +10,18 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.dataframe;
 
+import java.util.List;
 
+public interface Row {
 
-import java.io.IOException;
-import java.util.stream.Stream;
+  DataType dataType();
 
-public interface ReadableFeatureSet extends FeatureSet {
+  List<Object> values();
 
-  Stream<? extends Feature> read() throws IOException;
+  Object get(String name);
+
+  void set(String name, Object value);
 
 }

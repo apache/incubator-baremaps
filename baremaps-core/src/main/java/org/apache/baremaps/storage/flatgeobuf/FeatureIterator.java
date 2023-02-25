@@ -18,17 +18,16 @@ import java.nio.ByteOrder;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Spliterator;
-import java.util.function.Consumer;
-import org.apache.baremaps.feature.FeatureType;
+import org.apache.baremaps.dataframe.DataType;
+import org.apache.baremaps.dataframe.Row;
 import org.wololo.flatgeobuf.HeaderMeta;
 import org.wololo.flatgeobuf.generated.Feature;
 
-public class FeatureIterator implements Iterator<org.apache.baremaps.feature.Feature> {
+public class FeatureIterator implements Iterator<Row> {
 
   private final HeaderMeta headerMeta;
 
-  private final FeatureType featureType;
+  private final DataType dataType;
 
   private final SeekableByteChannel channel;
 
@@ -37,10 +36,10 @@ public class FeatureIterator implements Iterator<org.apache.baremaps.feature.Fea
   private long cursor = 0;
 
   public FeatureIterator(SeekableByteChannel channel, HeaderMeta headerMeta,
-                         FeatureType featureType) {
+      DataType dataType) {
     this.channel = channel;
     this.headerMeta = headerMeta;
-    this.featureType = featureType;
+    this.dataType = dataType;
     this.buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
   }
 
@@ -50,21 +49,21 @@ public class FeatureIterator implements Iterator<org.apache.baremaps.feature.Fea
   }
 
   @Override
-  public org.apache.baremaps.feature.Feature next() {
+  public Row next() {
     try {
       channel.read(buffer);
       buffer.flip();
 
       var featureSize = buffer.getInt();
-      var feature =
-              FeatureConversions.asFeature(headerMeta, featureType, Feature.getRootAsFeature(buffer));
+      var row =
+          RowConversions.asFeature(headerMeta, dataType, Feature.getRootAsFeature(buffer));
 
       buffer.position(Integer.BYTES + featureSize);
       buffer.compact();
 
       cursor++;
 
-      return feature;
+      return row;
     } catch (IOException e) {
       throw new NoSuchElementException(e);
     }

@@ -10,38 +10,38 @@
  * the License.
  */
 
-package org.apache.baremaps.collection;
+package org.apache.baremaps.dataframe;
 
-/** Signals that an exception occurred in a store. */
-public class DataCollectionException extends RuntimeException {
-  /** Constructs a {@code DataCollectionException} with {@code null} as its error detail message. */
-  public DataCollectionException() {}
+/** Signals that an exception occurred in a data frame. */
+public class DataFrameException extends RuntimeException {
+  /** Constructs a {@code DataFrameException} with {@code null} as its error detail message. */
+  public DataFrameException() {}
 
   /**
-   * Constructs an {@code DataCollectionException} with the specified detail message.
+   * Constructs an {@code DataFrameException} with the specified detail message.
    *
    * @param message the message
    */
-  public DataCollectionException(String message) {
+  public DataFrameException(String message) {
     super(message);
   }
 
   /**
-   * Constructs a {@code DataCollectionException} with the specified cause.
+   * Constructs a {@code DataFrameException} with the specified cause.
    *
    * @param cause the cause
    */
-  public DataCollectionException(Throwable cause) {
+  public DataFrameException(Throwable cause) {
     super(cause);
   }
 
   /**
-   * Constructs a {@code DataCollectionException} with the specified detail message and cause.
+   * Constructs a {@code DataFrameException} with the specified detail message and cause.
    *
    * @param message the message
    * @param cause the cause
    */
-  public DataCollectionException(String message, Throwable cause) {
+  public DataFrameException(String message, Throwable cause) {
     super(message, cause);
   }
 }

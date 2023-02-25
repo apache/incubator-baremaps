@@ -12,15 +12,13 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import org.apache.baremaps.feature.Feature;
-import org.apache.baremaps.feature.FeatureType;
-import org.apache.baremaps.feature.FeatureTypeImpl;
-import org.apache.baremaps.feature.PropertyType;
+import org.apache.baremaps.dataframe.*;
 import org.locationtech.jts.geom.Geometry;
 
-public class Entity implements Feature {
+public class Entity implements Row {
 
   private long id;
 
@@ -36,23 +34,23 @@ public class Entity implements Feature {
 
 
   @Override
-  public FeatureType getType() {
-    var map = new HashMap<String, PropertyType>();
-    map.put("id", new PropertyType<>("id", Long.class));
+  public DataType dataType() {
+    var columns = new ArrayList<Column>();
+    columns.add(new ColumnImpl("id", Long.class));
+    columns.add(new ColumnImpl("geometry", Geometry.class));
     for (var entry : tags.entrySet()) {
-      map.put(entry.getKey(), new PropertyType<>(entry.getKey(), String.class));
+      columns.add(new ColumnImpl(entry.getKey(), String.class));
     }
-    map.put("geometry", new PropertyType<>("geometry", Geometry.class));
-    return new FeatureTypeImpl("entity", map);
+    return new DataTypeImpl("entity", columns);
   }
 
   @Override
-  public void setProperty(String name, Object value) {
+  public void set(String name, Object value) {
     tags.put(name, value.toString());
   }
 
   @Override
-  public Object getProperty(String name) {
+  public Object get(String name) {
     if (name.equals("id")) {
       return id;
     } else if (name.equals("geometry")) {
@@ -63,11 +61,11 @@ public class Entity implements Feature {
   }
 
   @Override
-  public Map<String, Object> getProperties() {
-    var map = new HashMap<String, Object>();
-    map.put("id", id);
-    map.putAll(tags);
-    map.put("geometry", geometry);
+  public List<Object> values() {
+    var map = new ArrayList();
+    map.add(id);
+    map.add(geometry);
+    map.addAll(tags.values());
     return map;
   }
 

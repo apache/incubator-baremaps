@@ -14,9 +14,9 @@ package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
 import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
-import org.apache.baremaps.storage.FeatureSetProjectionTransform;
+import org.apache.baremaps.storage.DataFrameProjectionTransform;
 import org.apache.baremaps.storage.postgres.PostgresDatabase;
-import org.apache.baremaps.storage.shapefile.ShapefileFeatureSet;
+import org.apache.baremaps.storage.shapefile.ShapefileDataFrame;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
@@ -32,10 +32,10 @@ public record ImportShapefile(Path file, String database, Integer sourceSRID, In
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var path = file.toAbsolutePath();
-    try (var featureSet = new ShapefileFeatureSet(path)) {
+    try (var featureSet = new ShapefileDataFrame(path)) {
       var dataSource = context.getDataSource(database);
       var postgresDatabase = new PostgresDatabase(dataSource);
-      postgresDatabase.write(new FeatureSetProjectionTransform(
+      postgresDatabase.add(new DataFrameProjectionTransform(
           featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
     } catch (Exception e) {
       throw new WorkflowException(e);

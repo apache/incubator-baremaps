@@ -17,34 +17,34 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.apache.baremaps.feature.Feature;
-import org.apache.baremaps.feature.FeatureType;
+import org.apache.baremaps.dataframe.DataType;
+import org.apache.baremaps.dataframe.Row;
 import org.apache.baremaps.mvt.expression.Expressions;
 import org.apache.baremaps.mvt.expression.Expressions.*;
 import org.junit.jupiter.api.Test;
 
 class ExpressionsTest {
 
-  record FeatureMock(Map<String, Object> properties) implements Feature {
+  record RowMock(Map<String, Object> properties) implements Row {
 
     @Override
-    public FeatureType getType() {
+    public DataType dataType() {
       throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setProperty(String name, Object value) {
+    public List<Object> values() {
+      return properties.values().stream().toList();
+    }
+
+    @Override
+    public void set(String name, Object value) {
       properties.put(name, value);
     }
 
     @Override
-    public Object getProperty(String name) {
+    public Object get(String name) {
       return properties.get(name);
-    }
-
-    @Override
-    public Map<String, Object> getProperties() {
-      return properties;
     }
 
   }
@@ -68,15 +68,15 @@ class ExpressionsTest {
   @Test
   public void get() throws IOException {
     assertEquals("value",
-        new Get("key").evaluate(new FeatureMock(Map.of("key", "value"))));
-    assertEquals(null, new Get("key").evaluate(new FeatureMock(Map.of())));
+        new Get("key").evaluate(new RowMock(Map.of("key", "value"))));
+    assertEquals(null, new Get("key").evaluate(new RowMock(Map.of())));
   }
 
   @Test
   public void has() throws IOException {
     assertEquals(true,
-        new Has("key").evaluate(new FeatureMock(Map.of("key", "value"))));
-    assertEquals(false, new Has("key").evaluate(new FeatureMock(Map.of())));
+        new Has("key").evaluate(new RowMock(Map.of("key", "value"))));
+    assertEquals(false, new Has("key").evaluate(new RowMock(Map.of())));
   }
 
   @Test

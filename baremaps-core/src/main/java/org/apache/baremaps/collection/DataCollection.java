@@ -12,16 +12,9 @@
 
 package org.apache.baremaps.collection;
 
+import java.util.Collection;
 
-
-import java.util.AbstractCollection;
-
-/**
- * A abstract collection of data elements that can hold a large number of elements.
- *
- * @param <E> The type of the data.
- */
-public abstract class DataCollection<E> extends AbstractCollection<E> {
+public interface DataCollection<E> extends Collection<E> {
 
   /**
    * Returns the number of values stored in the data store.
@@ -31,7 +24,7 @@ public abstract class DataCollection<E> extends AbstractCollection<E> {
   public abstract long sizeAsLong();
 
   /** {@inheritDoc} */
-  public int size() {
+  default int size() {
     return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
   }
 

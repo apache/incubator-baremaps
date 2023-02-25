@@ -10,15 +10,12 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.dataframe;
 
+import org.apache.baremaps.collection.DataCollection;
 
+public interface DataFrame extends DataCollection<Row> {
 
-import java.io.IOException;
-import java.util.Collection;
-
-public interface FeatureCollection extends Collection<Feature> {
-
-  FeatureType getType() throws IOException;
+  DataType dataType();
 
 }

@@ -10,15 +10,15 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.dataframe;
 
+import java.util.ArrayList;
+import java.util.List;
 
+public record DataTypeImpl(String name, List<Column> columns) implements DataType {
 
-import java.io.IOException;
-import java.util.stream.Stream;
-
-public interface WritableFeatureSet extends FeatureSet {
-
-  void write(Stream<Feature> features) throws IOException;
-
+  @Override
+  public Row newInstance() {
+    return new RowImpl(this, new ArrayList(columns.size()));
+  }
 }

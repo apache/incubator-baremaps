@@ -14,44 +14,40 @@ package org.apache.baremaps.storage.flatgeobuf;
 
 
 import com.google.flatbuffers.FlatBufferBuilder;
-import org.apache.baremaps.feature.FeatureType;
-import org.apache.baremaps.feature.FeatureTypeImpl;
-import org.apache.baremaps.feature.PropertyType;
-import org.wololo.flatgeobuf.ColumnMeta;
-import org.wololo.flatgeobuf.GeometryConversions;
-import org.wololo.flatgeobuf.HeaderMeta;
-import org.wololo.flatgeobuf.generated.Column;
-import org.wololo.flatgeobuf.generated.ColumnType;
-import org.wololo.flatgeobuf.generated.Crs;
-import org.wololo.flatgeobuf.generated.Header;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.apache.baremaps.dataframe.*;
+import org.wololo.flatgeobuf.ColumnMeta;
+import org.wololo.flatgeobuf.GeometryConversions;
+import org.wololo.flatgeobuf.HeaderMeta;
+import org.wololo.flatgeobuf.generated.ColumnType;
+import org.wololo.flatgeobuf.generated.Crs;
+import org.wololo.flatgeobuf.generated.Feature;
+import org.wololo.flatgeobuf.generated.Header;
 
-public class FeatureConversions {
+public class RowConversions {
 
-  public static FeatureType asFeatureType(HeaderMeta headerMeta) {
+  public static DataType asFeatureType(HeaderMeta headerMeta) {
     var name = headerMeta.name;
-    var properties = headerMeta.columns.stream().collect(
-        Collectors.toMap(
-            column -> column.name,
-            column -> new PropertyType(column.name, column.getBinding())));
-    return new FeatureTypeImpl(name, properties);
+    var columns = headerMeta.columns.stream()
+        .map(column -> new ColumnImpl(column.name, column.getBinding()))
+        .map(Column.class::cast)
+        .toList();
+    return new DataTypeImpl(name, columns);
   }
 
-  public static org.apache.baremaps.feature.Feature asFeature(HeaderMeta headerMeta,
-      FeatureType featureType, org.wololo.flatgeobuf.generated.Feature feature) {
-    var properties = new HashMap<String, Object>();
+  public static RowImpl asFeature(HeaderMeta headerMeta, DataType dataType, Feature feature) {
+    var values = new ArrayList();
 
     var geometryBuffer = feature.geometry();
     var geometry = GeometryConversions.deserialize(geometryBuffer, geometryBuffer.type());
-    properties.put("geometry", geometry);
+    values.add(geometry);
 
     if (feature.propertiesLength() > 0) {
       var propertiesBuffer = feature.propertiesAsByteBuffer();
@@ -59,25 +55,26 @@ public class FeatureConversions {
         var type = propertiesBuffer.getShort();
         var column = headerMeta.columns.get(type);
         var value = readValue(propertiesBuffer, column);
-        properties.put(column.name, value);
+        values.add(value);
       }
     }
 
-    return new org.apache.baremaps.feature.FeatureImpl(featureType, properties);
+    return new RowImpl(dataType, values);
   }
 
   public static void writeHeaderMeta(HeaderMeta headerMeta, WritableByteChannel channel,
-                           FlatBufferBuilder builder) throws IOException {
+      FlatBufferBuilder builder) throws IOException {
     int[] columnsArray = headerMeta.columns.stream().mapToInt(c -> {
       int nameOffset = builder.createString(c.name);
       int type = c.type;
-      return Column.createColumn(builder, nameOffset, type, 0, 0, c.width, c.precision, c.scale, c.nullable, c.unique,
-              c.primary_key, 0);
+      return org.wololo.flatgeobuf.generated.Column.createColumn(builder, nameOffset, type, 0, 0,
+          c.width, c.precision, c.scale, c.nullable, c.unique,
+          c.primary_key, 0);
     }).toArray();
     int columnsOffset = Header.createColumnsVector(builder, columnsArray);
 
     int nameOffset = 0;
-    if (headerMeta.name!=null) {
+    if (headerMeta.name != null) {
       nameOffset = builder.createString(headerMeta.name);
     }
     int crsOffset = 0;
@@ -89,11 +86,12 @@ public class FeatureConversions {
     int envelopeOffset = 0;
     if (headerMeta.envelope != null) {
       envelopeOffset = Header.createEnvelopeVector(builder,
-              new double[] { headerMeta.envelope.getMinX(), headerMeta.envelope.getMinY(), headerMeta.envelope.getMaxX(), headerMeta.envelope.getMaxY() });
+          new double[] {headerMeta.envelope.getMinX(), headerMeta.envelope.getMinY(),
+              headerMeta.envelope.getMaxX(), headerMeta.envelope.getMaxY()});
     }
     Header.startHeader(builder);
     Header.addGeometryType(builder, headerMeta.geometryType);
-    Header.addIndexNodeSize(builder, headerMeta.indexNodeSize );
+    Header.addIndexNodeSize(builder, headerMeta.indexNodeSize);
     Header.addColumns(builder, columnsOffset);
     Header.addEnvelope(builder, envelopeOffset);
     Header.addName(builder, nameOffset);
@@ -138,7 +136,8 @@ public class FeatureConversions {
       case ColumnType.Json -> writeJson(propertiesBuffer, value);
       case ColumnType.DateTime -> writeDateTime(propertiesBuffer, value);
       case ColumnType.Binary -> writeBinary(propertiesBuffer, value);
-      default -> {}
+      default -> {
+      }
     };
   }
 
@@ -189,19 +188,19 @@ public class FeatureConversions {
       Double.class, ColumnType.Double,
       String.class, ColumnType.String);
 
-  public static List<ColumnMeta> asColumns(Map<String, PropertyType> propertyTypes) {
-    return propertyTypes.values().stream()
-        .map(FeatureConversions::asColumn)
+  public static List<ColumnMeta> asColumns(List<Column> columns) {
+    return columns.stream()
+        .map(RowConversions::asColumn)
         .collect(Collectors.toList());
   }
 
-  public static ColumnMeta asColumn(PropertyType propertyType) {
-    var type = types.get(propertyType.getType());
+  public static ColumnMeta asColumn(Column column) {
+    var type = types.get(column.type());
     if (type == null) {
-      throw new IllegalArgumentException("Unsupported type " + propertyType);
+      throw new IllegalArgumentException("Unsupported type " + type);
     }
     var columnMeta = new ColumnMeta();
-    columnMeta.name = propertyType.getName();
+    columnMeta.name = column.name();
     columnMeta.type = type.byteValue();
     return columnMeta;
   }

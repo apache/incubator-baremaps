@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.List;
-import org.apache.baremaps.feature.Feature;
-import org.apache.baremaps.feature.FeatureType;
+import org.apache.baremaps.dataframe.DataType;
+import org.apache.baremaps.dataframe.Row;
 
 /**
  * Input Stream of features.
@@ -48,7 +48,7 @@ public class InputFeatureStream extends InputStream {
   private boolean hasShapefileIndex;
 
   /** Type of the features contained in this shapefile. */
-  private FeatureType featuresType;
+  private DataType dataType;
 
   /** Shapefile reader. */
   private ShapefileByteReader shapefileReader;
@@ -74,7 +74,7 @@ public class InputFeatureStream extends InputStream {
 
     this.shapefileReader =
         new ShapefileByteReader(this.shapefile, this.databaseFile, this.shapefileIndex);
-    this.featuresType = this.shapefileReader.getFeaturesType();
+    this.dataType = this.shapefileReader.getDataType();
   }
 
   /**
@@ -113,7 +113,7 @@ public class InputFeatureStream extends InputStream {
    * @throws ShapefileException if the current connection used to query the shapefile has been
    *         closed.
    */
-  public Feature readFeature() throws ShapefileException {
+  public Row readFeature() throws ShapefileException {
     return internalReadFeature();
   }
 
@@ -122,8 +122,8 @@ public class InputFeatureStream extends InputStream {
    *
    * @return Features type.
    */
-  public FeatureType getFeaturesType() {
-    return featuresType;
+  public DataType getDataType() {
+    return dataType;
   }
 
   /**
@@ -160,14 +160,14 @@ public class InputFeatureStream extends InputStream {
    * @throws SQLFeatureNotSupportedException if a SQL ability is not currently available through
    *         this driver.
    */
-  private Feature internalReadFeature() throws ShapefileException {
+  private Row internalReadFeature() throws ShapefileException {
     if (!this.dbaseReader.nextRowAvailable()) {
       return null;
     }
-    Feature feature = this.featuresType.newInstance();
-    this.dbaseReader.loadRowIntoFeature(feature);
+    Row row = this.dataType.newInstance();
+    this.dbaseReader.loadRow(row);
     this.shapefileReader.setRowNum(this.dbaseReader.getRowNum());
-    this.shapefileReader.completeFeature(feature);
-    return feature;
+    this.shapefileReader.completeFeature(row);
+    return row;
   }
 }

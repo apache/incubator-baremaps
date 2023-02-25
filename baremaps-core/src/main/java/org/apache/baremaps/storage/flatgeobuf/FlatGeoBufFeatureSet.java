@@ -13,7 +13,6 @@
 package org.apache.baremaps.storage.flatgeobuf;
 
 import com.google.flatbuffers.FlatBufferBuilder;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -21,11 +20,9 @@ import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Map.Entry;
-
-import org.apache.baremaps.collection.DataCollection;
-import org.apache.baremaps.feature.Feature;
-import org.apache.baremaps.feature.FeatureType;
+import org.apache.baremaps.collection.AbstractDataCollection;
+import org.apache.baremaps.dataframe.DataType;
+import org.apache.baremaps.dataframe.Row;
 import org.locationtech.jts.geom.Geometry;
 import org.wololo.flatgeobuf.Constants;
 import org.wololo.flatgeobuf.GeometryConversions;
@@ -35,124 +32,125 @@ import org.wololo.flatgeobuf.generated.GeometryType;
 
 public class FlatGeoBufFeatureSet {
 
-    private final SeekableByteChannel channel;
+  private final SeekableByteChannel channel;
 
-    private HeaderMeta headerMeta;
+  private HeaderMeta headerMeta;
 
-    private FeatureType featureType;
+  private DataType dataType;
 
-    public FlatGeoBufFeatureSet(SeekableByteChannel channel) {
-        this.channel = channel;
-    }
+  public FlatGeoBufFeatureSet(SeekableByteChannel channel) {
+    this.channel = channel;
+  }
 
-    public FlatGeoBufFeatureSet(SeekableByteChannel channel, FeatureType featureType) {
-        this.channel = channel;
-        this.featureType = featureType;
-    }
+  public FlatGeoBufFeatureSet(SeekableByteChannel channel, DataType dataType) {
+    this.channel = channel;
+    this.dataType = dataType;
+  }
 
-    public FeatureType getType() throws IOException {
-        readHeaderMeta();
-        return featureType;
-    }
+  public DataType getType() throws IOException {
+    readHeaderMeta();
+    return dataType;
+  }
 
-    public Collection<Feature> read() throws IOException {
-        readHeaderMeta();
+  public Collection<Row> read() throws IOException {
+    readHeaderMeta();
 
-        return new DataCollection<>() {
+    return new AbstractDataCollection<>() {
 
-            @Override
-            public Iterator<Feature> iterator() {
-                try {
-                    channel.position(headerMeta.offset);
+      @Override
+      public Iterator<Row> iterator() {
+        try {
+          channel.position(headerMeta.offset);
 
-                    // skip the index
-                    var indexSize =
-                            (int) PackedRTree.calcSize((int) headerMeta.featuresCount, headerMeta.indexNodeSize);
-                    channel.position(headerMeta.offset + indexSize);
+          // skip the index
+          var indexSize =
+              (int) PackedRTree.calcSize((int) headerMeta.featuresCount, headerMeta.indexNodeSize);
+          channel.position(headerMeta.offset + indexSize);
 
-                    // create the feature stream
-                    return new FeatureIterator(channel, headerMeta, featureType);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            @Override
-            public long sizeAsLong() {
-                return headerMeta.featuresCount;
-            }
-
-        };
-    }
-
-    public void readHeaderMeta() throws IOException {
-        channel.position(0);
-        var headerMetaBuffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
-        channel.read(headerMetaBuffer);
-        headerMetaBuffer.flip();
-        headerMeta = HeaderMeta.read(headerMetaBuffer);
-        featureType = FeatureConversions.asFeatureType(headerMeta);
-    }
-
-    public void write(Collection<Feature> features) throws IOException {
-        channel.position(0);
-
-        var outputStream = Channels.newOutputStream(channel);
-
-        outputStream.write(Constants.MAGIC_BYTES);
-
-        var bufferBuilder = new FlatBufferBuilder();
-
-        var headerMeta = new HeaderMeta();
-        headerMeta.geometryType = GeometryType.Unknown;
-        headerMeta.indexNodeSize = 16;
-        headerMeta.featuresCount = features instanceof DataCollection<Feature> c ? c.sizeAsLong() : features.size();
-        headerMeta.name = featureType.getName();
-        headerMeta.columns = FeatureConversions.asColumns(featureType.getPropertyTypes());
-
-        HeaderMeta.write(headerMeta, outputStream, bufferBuilder);
-
-        var indexSize =
-                (int) PackedRTree.calcSize((int) headerMeta.featuresCount, headerMeta.indexNodeSize);
-
-        for (int i = 0; i < indexSize; i++) {
-            outputStream.write(0);
+          // create the feature stream
+          return new FeatureIterator(channel, headerMeta, dataType);
+        } catch (IOException e) {
+          throw new RuntimeException(e);
         }
+      }
 
-        var iterator = features.iterator();
-        while (iterator.hasNext()) {
-            var feature = iterator.next();
+      @Override
+      public long sizeAsLong() {
+        return headerMeta.featuresCount;
+      }
 
-            var featureBuilder = new FlatBufferBuilder();
-            var geometryOffset = 0;
-            var propertiesOffset = 0;
-            var propertiesBuffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
-            var i = 0;
-            for (Entry<String, Object> entry : feature.getProperties().entrySet()) {
-                if (entry.getValue() instanceof Geometry) {
-                    try {
-                        var geometry = (Geometry) entry.getValue();
-                        geometryOffset = GeometryConversions.serialize(featureBuilder, geometry, headerMeta.geometryType);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    var column = headerMeta.columns.get(i);
-                    var value = feature.getProperty(column.name);
-                    propertiesBuffer.putShort((short) i);
-                    FeatureConversions.writeValue(propertiesBuffer, column, value);
-                    i++;
-                }
-            }
-            propertiesBuffer.flip();
-            propertiesOffset = org.wololo.flatgeobuf.generated.Feature.createPropertiesVector(featureBuilder, propertiesBuffer);
+    };
+  }
 
-            var featureOffset =
-                    org.wololo.flatgeobuf.generated.Feature.createFeature(featureBuilder, geometryOffset, propertiesOffset, 0);
+  public void readHeaderMeta() throws IOException {
+    channel.position(0);
+    var headerMetaBuffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
+    channel.read(headerMetaBuffer);
+    headerMetaBuffer.flip();
+    headerMeta = HeaderMeta.read(headerMetaBuffer);
+    dataType = RowConversions.asFeatureType(headerMeta);
+  }
 
-            featureBuilder.finishSizePrefixed(featureOffset);
+  public void write(Collection<Row> features) throws IOException {
+    channel.position(0);
 
-            channel.write(featureBuilder.dataBuffer());
-        }
+    var outputStream = Channels.newOutputStream(channel);
+
+    outputStream.write(Constants.MAGIC_BYTES);
+
+    var bufferBuilder = new FlatBufferBuilder();
+
+    var headerMeta = new HeaderMeta();
+    headerMeta.geometryType = GeometryType.Unknown;
+    headerMeta.indexNodeSize = 16;
+    headerMeta.featuresCount =
+        features instanceof AbstractDataCollection<Row>c ? c.sizeAsLong() : features.size();
+    headerMeta.name = dataType.name();
+    headerMeta.columns = RowConversions.asColumns(dataType.columns());
+
+    HeaderMeta.write(headerMeta, outputStream, bufferBuilder);
+
+    var indexSize =
+        (int) PackedRTree.calcSize((int) headerMeta.featuresCount, headerMeta.indexNodeSize);
+
+    for (int i = 0; i < indexSize; i++) {
+      outputStream.write(0);
     }
+
+    var iterator = features.iterator();
+    while (iterator.hasNext()) {
+      var row = iterator.next();
+      var featureBuilder = new FlatBufferBuilder();
+      var geometryOffset = 0;
+      var propertiesOffset = 0;
+      var propertiesBuffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
+      var i = 0;
+      for (Object value : row.values()) {
+        if (value instanceof Geometry geometry) {
+          try {
+            geometryOffset =
+                GeometryConversions.serialize(featureBuilder, geometry, headerMeta.geometryType);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        } else {
+          var column = headerMeta.columns.get(i);
+          propertiesBuffer.putShort((short) i);
+          RowConversions.writeValue(propertiesBuffer, column, value);
+          i++;
+        }
+      }
+      propertiesBuffer.flip();
+      propertiesOffset = org.wololo.flatgeobuf.generated.Feature
+          .createPropertiesVector(featureBuilder, propertiesBuffer);
+
+      var featureOffset =
+          org.wololo.flatgeobuf.generated.Feature.createFeature(featureBuilder, geometryOffset,
+              propertiesOffset, 0);
+
+      featureBuilder.finishSizePrefixed(featureOffset);
+
+      channel.write(featureBuilder.dataBuffer());
+    }
+  }
 }

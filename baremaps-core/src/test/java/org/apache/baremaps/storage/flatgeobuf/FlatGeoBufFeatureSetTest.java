@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
@@ -29,8 +28,8 @@ class FlatGeoBufFeatureSetTest {
     try (var channel = FileChannel.open(TestFiles.resolve("countries.fgb"))) {
       var featureSet = new FlatGeoBufFeatureSet(channel);
       var featureType = featureSet.getType();
-      assertEquals(featureType.getName(), null);
-      assertEquals(featureType.getPropertyTypes().size(), 2);
+      assertEquals(featureType.name(), null);
+      assertEquals(featureType.columns().size(), 2);
     }
   }
 
@@ -48,7 +47,7 @@ class FlatGeoBufFeatureSetTest {
     var file = Files.createTempFile("countries", ".fgb");
     file.toFile().deleteOnExit();
     try (var channel1 = FileChannel.open(TestFiles.resolve("countries.fgb"));
-         var channel2 = FileChannel.open(file, StandardOpenOption.WRITE)) {
+        var channel2 = FileChannel.open(file, StandardOpenOption.WRITE)) {
       var featureSet1 = new FlatGeoBufFeatureSet(channel1);
       var featureList = featureSet1.read().stream().toList();
       var featureSet2 = new FlatGeoBufFeatureSet(channel2, featureSet1.getType());

@@ -32,7 +32,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import org.apache.baremaps.feature.Feature;
+import org.apache.baremaps.dataframe.Row;
 import org.locationtech.jts.geom.*;
 
 public interface Expressions {
@@ -41,7 +41,7 @@ public interface Expressions {
 
     String name();
 
-    T evaluate(Feature feature);
+    T evaluate(Row feature);
 
   }
 
@@ -53,7 +53,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Feature feature) {
+    public Object evaluate(Row row) {
       return value;
     }
   }
@@ -66,8 +66,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Feature feature) {
-      Object value = expression.evaluate(feature);
+    public Object evaluate(Row row) {
+      Object value = expression.evaluate(row);
       if (value instanceof List list && index >= 0 && index < list.size()) {
         return list.get(index);
       }
@@ -83,8 +83,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Feature feature) {
-      return feature.getProperty(property);
+    public Object evaluate(Row row) {
+      return row.get(property);
     }
   }
 
@@ -96,8 +96,8 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Feature feature) {
-      return feature.getProperty(property) != null;
+    public Boolean evaluate(Row row) {
+      return row.get(property) != null;
     }
   }
 
@@ -109,8 +109,8 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Feature feature) {
-      var expressionValue = expression.evaluate(feature);
+    public Boolean evaluate(Row row) {
+      var expressionValue = expression.evaluate(row);
       if (expressionValue instanceof List list) {
         return list.contains(value);
       } else if (expressionValue instanceof String string) {
@@ -129,8 +129,8 @@ public interface Expressions {
     }
 
     @Override
-    public Integer evaluate(Feature feature) {
-      var expressionValue = expression.evaluate(feature);
+    public Integer evaluate(Row row) {
+      var expressionValue = expression.evaluate(row);
       if (expressionValue instanceof List list) {
         return list.indexOf(value);
       } else if (expressionValue instanceof String string) {
@@ -149,8 +149,8 @@ public interface Expressions {
     }
 
     @Override
-    public Integer evaluate(Feature feature) {
-      Object value = expression.evaluate(feature);
+    public Integer evaluate(Row row) {
+      Object value = expression.evaluate(row);
       if (value instanceof String string) {
         return string.length();
       } else if (value instanceof List list) {
@@ -173,14 +173,14 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Feature feature) {
-      Object value = expression.evaluate(feature);
-      var startIndex = (Integer) start.evaluate(feature);
+    public Object evaluate(Row row) {
+      Object value = expression.evaluate(row);
+      var startIndex = (Integer) start.evaluate(row);
       if (value instanceof String string) {
-        var endIndex = end == null ? string.length() : (Integer) end.evaluate(feature);
+        var endIndex = end == null ? string.length() : (Integer) end.evaluate(row);
         return string.substring(startIndex, endIndex);
       } else if (value instanceof List list) {
-        var endIndex = end == null ? list.size() : (Integer) end.evaluate(feature);
+        var endIndex = end == null ? list.size() : (Integer) end.evaluate(row);
         return list.subList(startIndex, endIndex);
       } else {
         return List.of();
@@ -196,8 +196,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Feature feature) {
-      return !(boolean) expression.evaluate(feature);
+    public Object evaluate(Row row) {
+      return !(boolean) expression.evaluate(row);
     }
   }
 
@@ -209,8 +209,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Feature feature) {
-      return new Not(new Equal(left, right)).evaluate(feature);
+    public Object evaluate(Row row) {
+      return new Not(new Equal(left, right)).evaluate(row);
     }
   }
 
@@ -222,8 +222,8 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Feature feature) {
-      return (double) left.evaluate(feature) < (double) right.evaluate(feature);
+    public Boolean evaluate(Row row) {
+      return (double) left.evaluate(row) < (double) right.evaluate(row);
     }
   }
 
@@ -235,8 +235,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Feature feature) {
-      return (double) left.evaluate(feature) <= (double) right.evaluate(feature);
+    public Object evaluate(Row row) {
+      return (double) left.evaluate(row) <= (double) right.evaluate(row);
     }
   }
 
@@ -248,8 +248,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Feature feature) {
-      return left.evaluate(feature).equals(right.evaluate(feature));
+    public Object evaluate(Row row) {
+      return left.evaluate(row).equals(right.evaluate(row));
     }
   }
 
@@ -261,8 +261,8 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Feature feature) {
-      return (double) left.evaluate(feature) > (double) right.evaluate(feature);
+    public Boolean evaluate(Row row) {
+      return (double) left.evaluate(row) > (double) right.evaluate(row);
     }
   }
 
@@ -274,8 +274,8 @@ public interface Expressions {
     }
 
     @Override
-    public Boolean evaluate(Feature feature) {
-      return (double) left.evaluate(feature) >= (double) right.evaluate(feature);
+    public Boolean evaluate(Row row) {
+      return (double) left.evaluate(row) >= (double) right.evaluate(row);
     }
   }
 
@@ -287,8 +287,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Feature feature) {
-      return expressions.stream().allMatch(expression -> (boolean) expression.evaluate(feature));
+    public Object evaluate(Row row) {
+      return expressions.stream().allMatch(expression -> (boolean) expression.evaluate(row));
     }
   }
 
@@ -300,8 +300,8 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Feature feature) {
-      return expressions.stream().anyMatch(expression -> (boolean) expression.evaluate(feature));
+    public Object evaluate(Row row) {
+      return expressions.stream().anyMatch(expression -> (boolean) expression.evaluate(row));
     }
   }
 
@@ -313,11 +313,11 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Feature feature) {
-      if ((boolean) condition.evaluate(feature)) {
-        return then.evaluate(feature);
+    public Object evaluate(Row row) {
+      if ((boolean) condition.evaluate(row)) {
+        return then.evaluate(row);
       } else {
-        return otherwise.evaluate(feature);
+        return otherwise.evaluate(row);
       }
     }
   }
@@ -330,9 +330,9 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Feature feature) {
+    public Object evaluate(Row row) {
       for (Expression expression : expressions) {
-        Object value = expression.evaluate(feature);
+        Object value = expression.evaluate(row);
         if (value != null) {
           return value;
         }
@@ -350,20 +350,20 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Feature feature) {
+    public Object evaluate(Row row) {
       if (cases.size() % 2 != 0) {
         throw new IllegalArgumentException(
             "match expression must have an even number of arguments");
       }
-      var inputValue = input.evaluate(feature);
+      var inputValue = input.evaluate(row);
       for (int i = 0; i < cases.size(); i += 2) {
         Expression condition = cases.get(i);
         Expression then = cases.get(i + 1);
-        if (inputValue.equals(condition.evaluate(feature))) {
-          return then.evaluate(feature);
+        if (inputValue.equals(condition.evaluate(row))) {
+          return then.evaluate(row);
         }
       }
-      return fallback.evaluate(feature);
+      return fallback.evaluate(row);
     }
   }
 
@@ -375,7 +375,7 @@ public interface Expressions {
     }
 
     @Override
-    public Object evaluate(Feature feature) {
+    public Object evaluate(Row row) {
       throw new UnsupportedOperationException("within expression is not supported");
     }
   }
@@ -388,8 +388,8 @@ public interface Expressions {
     }
 
     @Override
-    public String evaluate(Feature feature) {
-      Object property = feature.getProperty("geom");
+    public String evaluate(Row row) {
+      Object property = row.get("geom");
       if (property instanceof Point) {
         return "Point";
       } else if (property instanceof LineString) {
@@ -518,9 +518,9 @@ public interface Expressions {
     return mapper.writeValueAsString(expression);
   }
 
-  static Predicate<Feature> asPredicate(Expression expression) {
-    return feature -> {
-      var result = expression.evaluate(feature);
+  static Predicate<Row> asPredicate(Expression expression) {
+    return row -> {
+      var result = expression.evaluate(row);
       if (result instanceof Boolean booleanResult) {
         return booleanResult;
       }

@@ -10,7 +10,18 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.dataframe;
 
-public interface Aggregate extends Resource {
+import java.util.Collection;
+
+public interface DataStore {
+
+  Collection<DataFrame> list() throws DataFrameException;
+
+  DataFrame get(String name) throws DataFrameException;
+
+  void add(DataFrame value) throws DataFrameException;
+
+  void remove(String name) throws DataFrameException;
+
 }

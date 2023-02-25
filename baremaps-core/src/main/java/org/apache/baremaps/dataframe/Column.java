@@ -10,14 +10,12 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.dataframe;
 
+public interface Column {
 
+  String name();
 
-import java.io.IOException;
-
-public interface FeatureSet extends Resource {
-
-  FeatureType getType() throws IOException;
+  Class type();
 
 }

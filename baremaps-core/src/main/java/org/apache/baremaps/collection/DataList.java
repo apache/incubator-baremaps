@@ -22,7 +22,7 @@ import java.util.NoSuchElementException;
  *
  * @param <E> The type of the data.
  */
-public abstract class DataList<E> extends DataCollection<E> {
+public abstract class DataList<E> extends AbstractDataCollection<E> {
 
   /**
    * Appends a value to the list and returns its index.

@@ -14,27 +14,32 @@ package org.apache.baremaps.storage.postgres;
 
 
 
-import java.io.IOException;
-import java.util.stream.Stream;
-import org.apache.baremaps.feature.Feature;
-import org.apache.baremaps.feature.FeatureType;
-import org.apache.baremaps.feature.WritableFeatureSet;
+import java.util.Iterator;
+import org.apache.baremaps.collection.AbstractDataCollection;
+import org.apache.baremaps.dataframe.DataFrame;
+import org.apache.baremaps.dataframe.DataType;
+import org.apache.baremaps.dataframe.Row;
 
-public class PostgresTable implements WritableFeatureSet {
+public class PostgresDataFrame extends AbstractDataCollection<Row> implements DataFrame {
 
-  private final FeatureType featureType;
+  private final DataType dataType;
 
-  public PostgresTable(FeatureType featureType) {
-    this.featureType = featureType;
+  public PostgresDataFrame(DataType dataType) {
+    this.dataType = dataType;
   }
 
   @Override
-  public FeatureType getType() throws IOException {
-    return featureType;
+  public Iterator<Row> iterator() {
+    return null;
   }
 
   @Override
-  public void write(Stream<Feature> features) throws IOException {
-    throw new UnsupportedOperationException();
+  public long sizeAsLong() {
+    return 0;
+  }
+
+  @Override
+  public DataType dataType() {
+    return dataType();
   }
 }

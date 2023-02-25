@@ -13,9 +13,8 @@
 package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
-import org.apache.baremaps.feature.ReadableFeatureSet;
 import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
-import org.apache.baremaps.storage.FeatureSetProjectionTransform;
+import org.apache.baremaps.storage.DataFrameProjectionTransform;
 import org.apache.baremaps.storage.geopackage.GeoPackageDatabase;
 import org.apache.baremaps.storage.postgres.PostgresDatabase;
 import org.apache.baremaps.workflow.Task;
@@ -36,12 +35,10 @@ public record ImportGeoPackage(Path file, String database, Integer sourceSRID, I
     try (var geoPackageStore = new GeoPackageDatabase(path)) {
       var dataSource = context.getDataSource(database);
       var postgresDatabase = new PostgresDatabase(dataSource);
-      for (var resource : geoPackageStore.read().toList()) {
-        if (resource instanceof ReadableFeatureSet featureSet) {
-          var transformer = new ProjectionTransformer(sourceSRID, targetSRID);
-          var transformedFeatureSet = new FeatureSetProjectionTransform(featureSet, transformer);
-          postgresDatabase.write(transformedFeatureSet);
-        }
+      for (var dataFrame : geoPackageStore.list()) {
+        var transformer = new ProjectionTransformer(sourceSRID, targetSRID);
+        var transformedDataFrame = new DataFrameProjectionTransform(dataFrame, transformer);
+        postgresDatabase.add(transformedDataFrame);
       }
     } catch (Exception e) {
       throw new WorkflowException(e);

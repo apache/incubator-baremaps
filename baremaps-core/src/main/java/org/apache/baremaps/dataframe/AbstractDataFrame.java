@@ -10,16 +10,10 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.dataframe;
 
+import org.apache.baremaps.collection.AbstractDataCollection;
 
-
-import java.io.IOException;
-
-public interface WritableAggregate extends Aggregate {
-
-  void write(Resource resource) throws IOException;
-
-  void remove(Resource resource) throws IOException;
+public abstract class AbstractDataFrame extends AbstractDataCollection<Row> implements DataFrame {
 
 }
