@@ -17,15 +17,15 @@ package org.apache.baremaps.storage.postgres;
 import java.util.Iterator;
 import org.apache.baremaps.collection.AbstractDataCollection;
 import org.apache.baremaps.dataframe.DataFrame;
-import org.apache.baremaps.dataframe.DataType;
 import org.apache.baremaps.dataframe.Row;
+import org.apache.baremaps.dataframe.Schema;
 
 public class PostgresDataFrame extends AbstractDataCollection<Row> implements DataFrame {
 
-  private final DataType dataType;
+  private final Schema schema;
 
-  public PostgresDataFrame(DataType dataType) {
-    this.dataType = dataType;
+  public PostgresDataFrame(Schema schema) {
+    this.schema = schema;
   }
 
   @Override
@@ -39,7 +39,7 @@ public class PostgresDataFrame extends AbstractDataCollection<Row> implements Da
   }
 
   @Override
-  public DataType dataType() {
-    return dataType();
+  public Schema schema() {
+    return schema();
   }
 }

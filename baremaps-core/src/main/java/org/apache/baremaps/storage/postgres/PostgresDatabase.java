@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,54 +33,48 @@ import org.postgresql.copy.PGCopyOutputStream;
 public class PostgresDatabase implements DataStore {
 
   // TODO: Instantiate with Map.of()
-  private static Map<Class, String> typeToName = new HashMap<>();
-
-  static {
-    typeToName.put(String.class, "varchar");
-    typeToName.put(Short.class, "int2");
-    typeToName.put(Integer.class, "int4");
-    typeToName.put(Long.class, "int8");
-    typeToName.put(Float.class, "float4");
-    typeToName.put(Double.class, "float8");
-    typeToName.put(Geometry.class, "geometry");
-    typeToName.put(Point.class, "geometry");
-    typeToName.put(MultiPoint.class, "geometry");
-    typeToName.put(Point.class, "geometry");
-    typeToName.put(LineString.class, "geometry");
-    typeToName.put(MultiLineString.class, "geometry");
-    typeToName.put(Polygon.class, "geometry");
-    typeToName.put(MultiPolygon.class, "geometry");
-    typeToName.put(LinearRing.class, "geometry");
-    typeToName.put(GeometryCollection.class, "geometry");
-    typeToName.put(LocalDate.class, "date");
-    typeToName.put(LocalTime.class, "time");
-    typeToName.put(LocalDateTime.class, "timestamp");
-  }
+  private static Map<Class, String> typeToName = Map.ofEntries(
+      Map.entry(String.class, "varchar"),
+      Map.entry(Short.class, "int2"),
+      Map.entry(Integer.class, "int4"),
+      Map.entry(Long.class, "int8"),
+      Map.entry(Float.class, "float4"),
+      Map.entry(Double.class, "float8"),
+      Map.entry(Geometry.class, "geometry"),
+      Map.entry(Point.class, "geometry"),
+      Map.entry(MultiPoint.class, "geometry"),
+      Map.entry(Point.class, "geometry"),
+      Map.entry(LineString.class, "geometry"),
+      Map.entry(MultiLineString.class, "geometry"),
+      Map.entry(Polygon.class, "geometry"),
+      Map.entry(MultiPolygon.class, "geometry"),
+      Map.entry(LinearRing.class, "geometry"),
+      Map.entry(GeometryCollection.class, "geometry"),
+      Map.entry(LocalDate.class, "date"),
+      Map.entry(LocalTime.class, "time"),
+      Map.entry(LocalDateTime.class, "timestamp"));
 
   // TODO: Instantiate with Map.of()
-  private static Map<Class, BaseValueHandler> typeToHandler = new HashMap<>();
-
-  static {
-    typeToHandler.put(String.class, new StringValueHandler());
-    typeToHandler.put(Short.class, new ShortValueHandler());
-    typeToHandler.put(Integer.class, new IntegerValueHandler());
-    typeToHandler.put(Long.class, new LongValueHandler());
-    typeToHandler.put(Float.class, new FloatValueHandler());
-    typeToHandler.put(Double.class, new DoubleValueHandler());
-    typeToHandler.put(Geometry.class, new PostgisGeometryValueHandler());
-    typeToHandler.put(Point.class, new PostgisGeometryValueHandler());
-    typeToHandler.put(MultiPoint.class, new PostgisGeometryValueHandler());
-    typeToHandler.put(Point.class, new PostgisGeometryValueHandler());
-    typeToHandler.put(LineString.class, new PostgisGeometryValueHandler());
-    typeToHandler.put(MultiLineString.class, new PostgisGeometryValueHandler());
-    typeToHandler.put(Polygon.class, new PostgisGeometryValueHandler());
-    typeToHandler.put(MultiPolygon.class, new PostgisGeometryValueHandler());
-    typeToHandler.put(LinearRing.class, new PostgisGeometryValueHandler());
-    typeToHandler.put(GeometryCollection.class, new PostgisGeometryValueHandler());
-    typeToHandler.put(LocalDate.class, new LocalDateValueHandler());
-    typeToHandler.put(LocalTime.class, new LocalTimeValueHandler());
-    typeToHandler.put(LocalDateTime.class, new LocalDateTimeValueHandler());
-  }
+  private static Map<Class, BaseValueHandler> typeToHandler = Map.ofEntries(
+      Map.entry(String.class, new StringValueHandler()),
+      Map.entry(Short.class, new ShortValueHandler()),
+      Map.entry(Integer.class, new IntegerValueHandler()),
+      Map.entry(Long.class, new LongValueHandler()),
+      Map.entry(Float.class, new FloatValueHandler()),
+      Map.entry(Double.class, new DoubleValueHandler()),
+      Map.entry(Geometry.class, new PostgisGeometryValueHandler()),
+      Map.entry(Point.class, new PostgisGeometryValueHandler()),
+      Map.entry(MultiPoint.class, new PostgisGeometryValueHandler()),
+      Map.entry(Point.class, new PostgisGeometryValueHandler()),
+      Map.entry(LineString.class, new PostgisGeometryValueHandler()),
+      Map.entry(MultiLineString.class, new PostgisGeometryValueHandler()),
+      Map.entry(Polygon.class, new PostgisGeometryValueHandler()),
+      Map.entry(MultiPolygon.class, new PostgisGeometryValueHandler()),
+      Map.entry(LinearRing.class, new PostgisGeometryValueHandler()),
+      Map.entry(GeometryCollection.class, new PostgisGeometryValueHandler()),
+      Map.entry(LocalDate.class, new LocalDateValueHandler()),
+      Map.entry(LocalTime.class, new LocalTimeValueHandler()),
+      Map.entry(LocalDateTime.class, new LocalDateTimeValueHandler()));
 
   private final DataSource dataSource;
 
@@ -89,16 +82,16 @@ public class PostgresDatabase implements DataStore {
     this.dataSource = dataSource;
   }
 
-  private DataType adaptDataType(DataType datatype) {
+  private Schema adaptDataType(Schema datatype) {
     var name = datatype.name().replaceAll("[^a-zA-Z0-9]", "_");
     var properties = datatype.columns().stream()
         .filter(columnType -> typeToName.containsKey(columnType.type()))
         .toList();
-    return new DataTypeImpl(name, properties);
+    return new SchemaImpl(name, properties);
   }
 
   @Override
-  public Collection<DataFrame> list() throws DataFrameException {
+  public Collection<String> list() throws DataFrameException {
     throw new UnsupportedOperationException();
   }
 
@@ -110,33 +103,33 @@ public class PostgresDatabase implements DataStore {
   @Override
   public void add(DataFrame dataFrame) {
     try (var connection = dataSource.getConnection()) {
-      var dataType = adaptDataType(dataFrame.dataType());
+      var schema = adaptDataType(dataFrame.schema());
 
       // Drop the table if it exists
-      var dropQuery = dropTable(dataType);
+      var dropQuery = dropTable(schema);
       try (var dropStatement = connection.prepareStatement(dropQuery)) {
         dropStatement.execute();
       }
 
       // Create the table
-      var createQuery = createTable(dataType);
+      var createQuery = createTable(schema);
       try (var createStatement = connection.prepareStatement(createQuery)) {
         createStatement.execute();
       }
 
       // Populate the table with a copy query
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
-      var copyQuery = copyTable(dataType);
+      var copyQuery = copyTable(schema);
       try (var writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copyQuery))) {
         writer.writeHeader();
-        var featureIterator = dataFrame.iterator();
-        while (featureIterator.hasNext()) {
-          var feature = featureIterator.next();
-          var attributes = getAttributes(dataType);
-          writer.startRow(attributes.size());
-          for (var attribute : attributes) {
-            var name = attribute.name().toString();
-            var value = feature.get(name);
+        var rowIterator = dataFrame.iterator();
+        while (rowIterator.hasNext()) {
+          var row = rowIterator.next();
+          var columns = getColumns(schema);
+          writer.startRow(columns.size());
+          for (var column : columns) {
+            var name = column.name().toString();
+            var value = row.get(name);
             if (value == null) {
               writer.writeNull();
             } else {
@@ -150,21 +143,22 @@ public class PostgresDatabase implements DataStore {
     }
   }
 
-  private List<Column> getAttributes(DataType dataType) {
-    return dataType.columns().stream()
-        .filter(this::isSupported).collect(Collectors.toList());
+  private List<Column> getColumns(Schema schema) {
+    return schema.columns().stream()
+        .filter(this::isSupported)
+        .collect(Collectors.toList());
   }
 
   private boolean isSupported(Column column) {
     return typeToName.containsKey(column.type());
   }
 
-  private String createTable(DataType dataType) {
+  private String createTable(Schema schema) {
     StringBuilder builder = new StringBuilder();
     builder.append("CREATE TABLE ");
-    builder.append(dataType.name());
+    builder.append(schema.name());
     builder.append(" (");
-    builder.append(dataType.columns().stream()
+    builder.append(schema.columns().stream()
         .map(column -> column.name()
             + " " + typeToName.get(column.type()))
         .collect(Collectors.joining(", ")));
@@ -172,12 +166,12 @@ public class PostgresDatabase implements DataStore {
     return builder.toString();
   }
 
-  private String copyTable(DataType dataType) {
+  private String copyTable(Schema schema) {
     StringBuilder builder = new StringBuilder();
     builder.append("COPY ");
-    builder.append(dataType.name());
+    builder.append(schema.name());
     builder.append(" (");
-    builder.append(dataType.columns().stream()
+    builder.append(schema.columns().stream()
         .map(column -> column.name())
         .collect(Collectors.joining(", ")));
     builder.append(") FROM STDIN BINARY");
@@ -194,7 +188,7 @@ public class PostgresDatabase implements DataStore {
     }
   }
 
-  private String dropTable(DataType type) {
-    return String.format("DROP TABLE IF EXISTS %s CASCADE", type.name());
+  private String dropTable(Schema schema) {
+    return String.format("DROP TABLE IF EXISTS %s CASCADE", schema.name());
   }
 }

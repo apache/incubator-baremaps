@@ -15,10 +15,20 @@ package org.apache.baremaps.dataframe;
 import java.util.ArrayList;
 import java.util.List;
 
-public record DataTypeImpl(String name, List<Column> columns) implements DataType {
+/**
+ * A schema defines the structure of a data frame.
+ */
+public record SchemaImpl(String name, List<Column> columns) implements Schema {
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Row newInstance() {
-    return new RowImpl(this, new ArrayList(columns.size()));
+  public Row createRow() {
+    var values = new ArrayList<>(columns.size());
+    for (int i = 0; i < columns.size(); i++) {
+      values.add(null);
+    }
+    return new RowImpl(this, values);
   }
 }

@@ -13,51 +13,50 @@
 package org.apache.baremaps.storage;
 
 
-
 import java.util.Iterator;
 import org.apache.baremaps.collection.AbstractDataCollection;
 import org.apache.baremaps.dataframe.Column;
 import org.apache.baremaps.dataframe.DataFrame;
-import org.apache.baremaps.dataframe.DataType;
 import org.apache.baremaps.dataframe.Row;
-import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
+import org.apache.baremaps.dataframe.Schema;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.util.GeometryTransformer;
 
-public class DataFrameProjectionTransform extends AbstractDataCollection<Row> implements DataFrame {
+public class DataFrameGeometryTransformer extends AbstractDataCollection<Row> implements DataFrame {
 
   private final DataFrame dataFrame;
 
-  private final ProjectionTransformer projectionTransformer;
+  private final GeometryTransformer transformer;
 
-  public DataFrameProjectionTransform(DataFrame dataFrame,
-      ProjectionTransformer projectionTransformer) {
+  public DataFrameGeometryTransformer(DataFrame dataFrame,
+      GeometryTransformer geometryTransformer) {
     this.dataFrame = dataFrame;
-    this.projectionTransformer = projectionTransformer;
+    this.transformer = geometryTransformer;
   }
 
   @Override
-  public DataType dataType() {
-    return dataFrame.dataType();
+  public Schema schema() {
+    return dataFrame.schema();
   }
 
-  public Row transformProjection(Row row) {
-    var columns = dataType().columns().stream()
+  public Row transform(Row row) {
+    var columns = schema().columns().stream()
         .filter(column -> column.type().isInstance(Geometry.class)).toList();
     for (Column column : columns) {
       var name = column.name();
       var geometry = (Geometry) row.get(name);
-      row.set(name, projectionTransformer.transform(geometry));
+      row.set(name, transformer.transform(geometry));
     }
     return row;
   }
 
   @Override
   public Iterator<Row> iterator() {
-    return dataFrame.stream().map(this::transformProjection).iterator();
+    return dataFrame.stream().map(this::transform).iterator();
   }
 
   @Override
   public long sizeAsLong() {
-    return 0;
+    return dataFrame.sizeAsLong();
   }
 }

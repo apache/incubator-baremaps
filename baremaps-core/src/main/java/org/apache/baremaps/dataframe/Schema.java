@@ -14,12 +14,30 @@ package org.apache.baremaps.dataframe;
 
 import java.util.List;
 
-public interface DataType {
+/**
+ * A schema defines the structure of a data frame.
+ */
+public interface Schema {
 
+  /**
+   * Returns the name of the schema.
+   * 
+   * @return the name of the schema
+   */
   String name();
 
+  /**
+   * Returns the columns of the schema.
+   * 
+   * @return the columns of the schema
+   */
   List<Column> columns();
 
-  Row newInstance();
+  /**
+   * Creates a new row of the schema.
+   * 
+   * @return a new row of the schema
+   */
+  Row createRow();
 
 }

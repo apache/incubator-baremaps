@@ -12,10 +12,23 @@
 
 package org.apache.baremaps.dataframe;
 
+/**
+ * A column in a data frame.
+ */
 public interface Column {
 
+  /**
+   * Returns the name of the column.
+   *
+   * @return the name of the column
+   */
   String name();
 
+  /**
+   * Returns the type of the column.
+   *
+   * @return the type of the column
+   */
   Class type();
 
 }

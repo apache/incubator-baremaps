@@ -36,19 +36,13 @@ public class GeoPackageDatabase implements DataStore, AutoCloseable {
   }
 
   @Override
-  public Collection<DataFrame> list() throws DataFrameException {
-    return geoPackage.getFeatureTables().stream()
-        .map(table -> new GeoPackageTable(geoPackage.getFeatureDao(table)))
-        .map(DataFrame.class::cast)
-        .toList();
+  public Collection<String> list() throws DataFrameException {
+    return geoPackage.getFeatureTables();
   }
 
   @Override
   public DataFrame get(String name) throws DataFrameException {
-    return list().stream()
-        .filter(dataFrame -> dataFrame.dataType().name().equals(name))
-        .findFirst()
-        .orElseThrow(() -> new DataFrameException());
+    return new GeoPackageTable(geoPackage.getFeatureDao(name));
   }
 
   @Override

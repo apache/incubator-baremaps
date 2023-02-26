@@ -14,21 +14,35 @@ package org.apache.baremaps.dataframe;
 
 import java.util.ArrayList;
 
+/**
+ * A data frame is a collection of rows respecting a schema.
+ */
 public class DataFrameImpl extends ArrayList<Row> implements DataFrame {
 
-  private final DataType dataType;
+  private final Schema dataType;
 
-  public DataFrameImpl(DataType dataType) {
-    this.dataType = dataType;
+  /**
+   * Constructs a data frame with the specified schema.
+   *
+   * @param schema the schema of the data frame
+   */
+  public DataFrameImpl(Schema schema) {
+    this.dataType = schema;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long sizeAsLong() {
     return size();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public DataType dataType() {
+  public Schema schema() {
     return dataType;
   }
 }

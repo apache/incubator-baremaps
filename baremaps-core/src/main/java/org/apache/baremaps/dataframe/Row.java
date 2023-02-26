@@ -14,14 +14,39 @@ package org.apache.baremaps.dataframe;
 
 import java.util.List;
 
+/**
+ * A row in a data frame.
+ */
 public interface Row {
 
-  DataType dataType();
+  /**
+   * Returns the schema of the row.
+   * 
+   * @return the schema of the row
+   */
+  Schema dataType();
 
-  List<Object> values();
+  /**
+   * Returns the values of the columns in the row.
+   * 
+   * @return the values of the columns in the row
+   */
+  List values();
 
-  Object get(String name);
+  /**
+   * Returns the value of the specified column.
+   * 
+   * @param column the column
+   * @return the value of the specified column
+   */
+  Object get(String column);
 
-  void set(String name, Object value);
+  /**
+   * Sets the value of the specified column.
+   * 
+   * @param column the column
+   * @param value the value
+   */
+  void set(String column, Object value);
 
 }

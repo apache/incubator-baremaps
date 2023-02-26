@@ -44,8 +44,8 @@ public class ShapefileByteReader extends CommonByteReader {
   /** Database Field descriptors. */
   private List<DBaseFieldDescriptor> databaseFieldsDescriptors;
 
-  /** Type of the features contained in this shapefile. */
-  private DataType dataType;
+  /** Schema of the features contained in this shapefile. */
+  private Schema schema;
 
   /** Shapefile index. */
   private File shapeFileIndex;
@@ -80,7 +80,7 @@ public class ShapefileByteReader extends CommonByteReader {
       loadShapefileIndexes();
     }
 
-    this.dataType = getDataType(shapefile.getName());
+    this.schema = getSchema(shapefile.getName());
   }
 
   /**
@@ -102,12 +102,12 @@ public class ShapefileByteReader extends CommonByteReader {
   }
 
   /**
-   * Returns the type of the features contained in this shapefile.
+   * Returns the schema of the data contained in this shapefile.
    *
-   * @return Features type.
+   * @return the schema
    */
-  public DataType getDataType() {
-    return this.dataType;
+  public Schema getSchema() {
+    return this.schema;
   }
 
   /**
@@ -116,14 +116,14 @@ public class ShapefileByteReader extends CommonByteReader {
    * @param name Name of the field.
    * @return The feature type.
    */
-  private DataType getDataType(final String name) {
+  private Schema getSchema(final String name) {
     Objects.requireNonNull(name, "The feature name cannot be null.");
 
     var columns = new ArrayList<Column>();
     for (int i = 0; i < databaseFieldsDescriptors.size(); i++) {
       var fieldDescriptor = this.databaseFieldsDescriptors.get(i);
-      var propertyName = fieldDescriptor.getName();
-      var propertyType = switch (fieldDescriptor.getType()) {
+      var columnName = fieldDescriptor.getName();
+      var columnType = switch (fieldDescriptor.getType()) {
         case Character -> String.class;
         case Number -> fieldDescriptor.getDecimalCount() == 0 ? Long.class : Double.class;
         case Currency -> Double.class;
@@ -143,13 +143,13 @@ public class ShapefileByteReader extends CommonByteReader {
         case DateTime -> String.class;
       };
 
-      columns.add(new ColumnImpl(propertyName, propertyType));
+      columns.add(new ColumnImpl(columnName, columnType));
     }
 
     // Add geometry column.
     columns.add(new ColumnImpl(GEOMETRY_NAME, Geometry.class));
 
-    return new DataTypeImpl(name, columns);
+    return new SchemaImpl(name, columns);
   }
 
   /** Load shapefile descriptor. */

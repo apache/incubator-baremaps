@@ -20,8 +20,8 @@ import java.util.NoSuchElementException;
 import org.apache.baremaps.collection.AbstractDataCollection;
 import org.apache.baremaps.dataframe.DataFrame;
 import org.apache.baremaps.dataframe.DataFrameException;
-import org.apache.baremaps.dataframe.DataType;
 import org.apache.baremaps.dataframe.Row;
+import org.apache.baremaps.dataframe.Schema;
 import org.apache.baremaps.storage.shapefile.internal.InputFeatureStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
 
@@ -35,9 +35,9 @@ public class ShapefileDataFrame extends AbstractDataCollection<Row>
   }
 
   @Override
-  public DataType dataType() throws DataFrameException {
+  public Schema schema() throws DataFrameException {
     try (var input = shapeFile.read()) {
-      return input.getDataType();
+      return input.getSchema();
     } catch (IOException e) {
       throw new DataFrameException(e);
     }
@@ -72,14 +72,13 @@ public class ShapefileDataFrame extends AbstractDataCollection<Row>
       this.inputFeatureStream = inputFeatureStream;
     }
 
-
     @Override
     public boolean hasNext() {
       try {
         if (next == null) {
-          next = inputFeatureStream.readFeature();
+          next = inputFeatureStream.readRow();
         }
-        return true;
+        return next != null;
       } catch (IOException exception) {
         return false;
       }
@@ -89,7 +88,7 @@ public class ShapefileDataFrame extends AbstractDataCollection<Row>
     public Row next() {
       try {
         if (next == null) {
-          next = inputFeatureStream.readFeature();
+          next = inputFeatureStream.readRow();
         }
         Row current = next;
         next = null;

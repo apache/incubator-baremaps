@@ -53,7 +53,7 @@ public record TransformEntityCollection(Path collection, String database,
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Transform {} with {}", collection, recipe);
 
-    var dataType = new DataTypeImpl(recipe.name, columns());
+    var dataType = new SchemaImpl(recipe.name, columns());
 
     var groups = new AppendOnlyBuffer<>(new EntityDataType(), new MemoryMappedFile(collection))
         .stream()
@@ -71,7 +71,7 @@ public record TransformEntityCollection(Path collection, String database,
     var dataFrame = new AbstractDataFrame() {
 
       @Override
-      public DataType dataType() {
+      public Schema schema() {
         return dataType;
       }
 

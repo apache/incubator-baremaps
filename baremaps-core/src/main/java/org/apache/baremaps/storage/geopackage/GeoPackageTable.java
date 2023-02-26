@@ -26,7 +26,7 @@ public class GeoPackageTable extends AbstractDataCollection<Row> implements Data
 
   private final FeatureDao featureDao;
 
-  private final DataType featureType;
+  private final Schema schema;
 
   private final GeometryFactory geometryFactory;
 
@@ -39,7 +39,7 @@ public class GeoPackageTable extends AbstractDataCollection<Row> implements Data
       var propertyType = classType(column);
       columns.add(new ColumnImpl(propertyName, propertyType));
     }
-    featureType = new DataTypeImpl(name, columns);
+    schema = new SchemaImpl(name, columns);
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
   }
 
@@ -53,30 +53,30 @@ public class GeoPackageTable extends AbstractDataCollection<Row> implements Data
 
   @Override
   public Iterator<Row> iterator() {
-    return new FeatureIterator(featureDao.queryForAll(), featureType);
+    return new FeatureIterator(featureDao.queryForAll(), schema);
   }
 
   @Override
   public long sizeAsLong() {
-    return 0;
+    return featureDao.count();
   }
 
   @Override
-  public DataType dataType() {
-    return null;
+  public Schema schema() {
+    return schema;
   }
 
   public class FeatureIterator implements Iterator<Row> {
 
     private final FeatureResultSet featureResultSet;
 
-    private final DataType dataType;
+    private final Schema schema;
 
     private boolean hasNext;
 
-    public FeatureIterator(FeatureResultSet featureResultSet, DataType dataType) {
+    public FeatureIterator(FeatureResultSet featureResultSet, Schema schema) {
       this.featureResultSet = featureResultSet;
-      this.dataType = dataType;
+      this.schema = schema;
       this.hasNext = featureResultSet.moveToFirst();
     }
 
@@ -90,7 +90,7 @@ public class GeoPackageTable extends AbstractDataCollection<Row> implements Data
       if (!hasNext) {
         throw new NoSuchElementException();
       }
-      Row row = dataType.newInstance();
+      Row row = schema.createRow();
       for (FeatureColumn featureColumn : featureResultSet.getColumns().getColumns()) {
         var value = featureResultSet.getValue(featureColumn);
         if (value != null) {

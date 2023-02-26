@@ -17,8 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.apache.baremaps.dataframe.DataType;
 import org.apache.baremaps.dataframe.Row;
+import org.apache.baremaps.dataframe.Schema;
 import org.apache.baremaps.mvt.expression.Expressions;
 import org.apache.baremaps.mvt.expression.Expressions.*;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ class ExpressionsTest {
   record RowMock(Map<String, Object> properties) implements Row {
 
     @Override
-    public DataType dataType() {
+    public Schema dataType() {
       throw new UnsupportedOperationException();
     }
 
@@ -38,13 +38,13 @@ class ExpressionsTest {
     }
 
     @Override
-    public void set(String name, Object value) {
-      properties.put(name, value);
+    public void set(String column, Object value) {
+      properties.put(column, value);
     }
 
     @Override
-    public Object get(String name) {
-      return properties.get(name);
+    public Object get(String column) {
+      return properties.get(column);
     }
 
   }

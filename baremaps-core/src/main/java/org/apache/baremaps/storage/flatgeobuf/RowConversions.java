@@ -33,16 +33,16 @@ import org.wololo.flatgeobuf.generated.Header;
 
 public class RowConversions {
 
-  public static DataType asFeatureType(HeaderMeta headerMeta) {
+  public static Schema asFeatureType(HeaderMeta headerMeta) {
     var name = headerMeta.name;
     var columns = headerMeta.columns.stream()
         .map(column -> new ColumnImpl(column.name, column.getBinding()))
         .map(Column.class::cast)
         .toList();
-    return new DataTypeImpl(name, columns);
+    return new SchemaImpl(name, columns);
   }
 
-  public static RowImpl asFeature(HeaderMeta headerMeta, DataType dataType, Feature feature) {
+  public static Row asRow(HeaderMeta headerMeta, Schema dataType, Feature feature) {
     var values = new ArrayList();
 
     var geometryBuffer = feature.geometry();

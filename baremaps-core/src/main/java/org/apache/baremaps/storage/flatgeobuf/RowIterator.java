@@ -18,16 +18,16 @@ import java.nio.ByteOrder;
 import java.nio.channels.SeekableByteChannel;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.apache.baremaps.dataframe.DataType;
 import org.apache.baremaps.dataframe.Row;
+import org.apache.baremaps.dataframe.Schema;
 import org.wololo.flatgeobuf.HeaderMeta;
 import org.wololo.flatgeobuf.generated.Feature;
 
-public class FeatureIterator implements Iterator<Row> {
+public class RowIterator implements Iterator<Row> {
 
   private final HeaderMeta headerMeta;
 
-  private final DataType dataType;
+  private final Schema dataType;
 
   private final SeekableByteChannel channel;
 
@@ -35,8 +35,8 @@ public class FeatureIterator implements Iterator<Row> {
 
   private long cursor = 0;
 
-  public FeatureIterator(SeekableByteChannel channel, HeaderMeta headerMeta,
-      DataType dataType) {
+  public RowIterator(SeekableByteChannel channel, HeaderMeta headerMeta,
+      Schema dataType) {
     this.channel = channel;
     this.headerMeta = headerMeta;
     this.dataType = dataType;
@@ -56,7 +56,7 @@ public class FeatureIterator implements Iterator<Row> {
 
       var featureSize = buffer.getInt();
       var row =
-          RowConversions.asFeature(headerMeta, dataType, Feature.getRootAsFeature(buffer));
+          RowConversions.asRow(headerMeta, dataType, Feature.getRootAsFeature(buffer));
 
       buffer.position(Integer.BYTES + featureSize);
       buffer.compact();

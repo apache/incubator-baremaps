@@ -21,8 +21,8 @@ import java.nio.channels.SeekableByteChannel;
 import java.util.Collection;
 import java.util.Iterator;
 import org.apache.baremaps.collection.AbstractDataCollection;
-import org.apache.baremaps.dataframe.DataType;
 import org.apache.baremaps.dataframe.Row;
+import org.apache.baremaps.dataframe.Schema;
 import org.locationtech.jts.geom.Geometry;
 import org.wololo.flatgeobuf.Constants;
 import org.wololo.flatgeobuf.GeometryConversions;
@@ -30,26 +30,26 @@ import org.wololo.flatgeobuf.HeaderMeta;
 import org.wololo.flatgeobuf.PackedRTree;
 import org.wololo.flatgeobuf.generated.GeometryType;
 
-public class FlatGeoBufFeatureSet {
+public class FlatGeoBufDataFrame {
 
   private final SeekableByteChannel channel;
 
   private HeaderMeta headerMeta;
 
-  private DataType dataType;
+  private Schema schema;
 
-  public FlatGeoBufFeatureSet(SeekableByteChannel channel) {
+  public FlatGeoBufDataFrame(SeekableByteChannel channel) {
     this.channel = channel;
   }
 
-  public FlatGeoBufFeatureSet(SeekableByteChannel channel, DataType dataType) {
+  public FlatGeoBufDataFrame(SeekableByteChannel channel, Schema schema) {
     this.channel = channel;
-    this.dataType = dataType;
+    this.schema = schema;
   }
 
-  public DataType getType() throws IOException {
+  public Schema getSchema() throws IOException {
     readHeaderMeta();
-    return dataType;
+    return schema;
   }
 
   public Collection<Row> read() throws IOException {
@@ -68,7 +68,7 @@ public class FlatGeoBufFeatureSet {
           channel.position(headerMeta.offset + indexSize);
 
           // create the feature stream
-          return new FeatureIterator(channel, headerMeta, dataType);
+          return new RowIterator(channel, headerMeta, schema);
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
@@ -88,7 +88,7 @@ public class FlatGeoBufFeatureSet {
     channel.read(headerMetaBuffer);
     headerMetaBuffer.flip();
     headerMeta = HeaderMeta.read(headerMetaBuffer);
-    dataType = RowConversions.asFeatureType(headerMeta);
+    schema = RowConversions.asFeatureType(headerMeta);
   }
 
   public void write(Collection<Row> features) throws IOException {
@@ -105,8 +105,8 @@ public class FlatGeoBufFeatureSet {
     headerMeta.indexNodeSize = 16;
     headerMeta.featuresCount =
         features instanceof AbstractDataCollection<Row>c ? c.sizeAsLong() : features.size();
-    headerMeta.name = dataType.name();
-    headerMeta.columns = RowConversions.asColumns(dataType.columns());
+    headerMeta.name = schema.name();
+    headerMeta.columns = RowConversions.asColumns(schema.columns());
 
     HeaderMeta.write(headerMeta, outputStream, bufferBuilder);
 

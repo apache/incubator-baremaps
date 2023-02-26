@@ -31,12 +31,11 @@ public class ShapefileDirectory implements DataStore {
   }
 
   @Override
-  public Collection<DataFrame> list() {
+  public Collection<String> list() {
     try {
       return Files.list(directory)
           .filter(file -> file.toString().toLowerCase().endsWith(".shp"))
-          .map(file -> new ShapefileDataFrame(file))
-          .map(DataFrame.class::cast)
+          .map(file -> file.getFileName().toString())
           .toList();
     } catch (IOException e) {
       throw new DataFrameException(e);
@@ -45,10 +44,7 @@ public class ShapefileDirectory implements DataStore {
 
   @Override
   public DataFrame get(String name) {
-    return list().stream()
-        .filter(dataFrame -> dataFrame.dataType().name().equals(name))
-        .findFirst()
-        .orElseThrow(() -> new DataFrameException());
+    return new ShapefileDataFrame(directory.resolve(name));
   }
 
   @Override

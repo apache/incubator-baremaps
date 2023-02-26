@@ -14,27 +14,36 @@ package org.apache.baremaps.dataframe;
 
 import java.util.List;
 
-public record RowImpl(DataType dataType, List values) implements Row {
+/**
+ * A row in a data frame.
+ */
+public record RowImpl(Schema dataType, List values) implements Row {
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Object get(String name) {
+  public Object get(String column) {
     for (int i = 0; i < dataType().columns().size(); i++) {
-      if (dataType().columns().get(i).name().equals(name)) {
+      if (dataType().columns().get(i).name().equals(column)) {
         return values.get(i);
       }
     }
-    throw new IllegalArgumentException("Column " + name + " not found.");
+    throw new IllegalArgumentException("Column " + column + " not found.");
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public void set(String name, Object value) {
+  public void set(String column, Object value) {
     for (int i = 0; i < dataType().columns().size(); i++) {
-      if (dataType().columns().get(i).name().equals(name)) {
+      if (dataType().columns().get(i).name().equals(column)) {
         values.set(i, value);
         return;
       }
     }
-    throw new IllegalArgumentException("Column " + name + " not found.");
+    throw new IllegalArgumentException("Column " + column + " not found.");
   }
 
 }

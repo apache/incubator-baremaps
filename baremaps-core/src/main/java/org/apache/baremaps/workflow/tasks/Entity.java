@@ -34,29 +34,29 @@ public class Entity implements Row {
 
 
   @Override
-  public DataType dataType() {
+  public Schema dataType() {
     var columns = new ArrayList<Column>();
     columns.add(new ColumnImpl("id", Long.class));
     columns.add(new ColumnImpl("geometry", Geometry.class));
     for (var entry : tags.entrySet()) {
       columns.add(new ColumnImpl(entry.getKey(), String.class));
     }
-    return new DataTypeImpl("entity", columns);
+    return new SchemaImpl("entity", columns);
   }
 
   @Override
-  public void set(String name, Object value) {
-    tags.put(name, value.toString());
+  public void set(String column, Object value) {
+    tags.put(column, value.toString());
   }
 
   @Override
-  public Object get(String name) {
-    if (name.equals("id")) {
+  public Object get(String column) {
+    if (column.equals("id")) {
       return id;
-    } else if (name.equals("geometry")) {
+    } else if (column.equals("geometry")) {
       return geometry;
     } else {
-      return tags.get(name);
+      return tags.get(column);
     }
   }
 
