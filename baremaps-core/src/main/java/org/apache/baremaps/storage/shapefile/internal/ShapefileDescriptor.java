@@ -35,7 +35,7 @@ public class ShapefileDescriptor {
   private int version; // little
 
   /** Shapefile type. */
-  private ShapeType shapeType; // little
+  private ShapefileGeometryType shapefileGeometryType; // little
 
   /** X Min. */
   private double xmin; // little
@@ -77,7 +77,7 @@ public class ShapefileDescriptor {
 
     byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
     this.version = byteBuffer.getInt();
-    this.shapeType = ShapeType.get(byteBuffer.getInt());
+    this.shapefileGeometryType = ShapefileGeometryType.get(byteBuffer.getInt());
     this.xmin = byteBuffer.getDouble();
     this.ymin = byteBuffer.getDouble();
     this.xmax = byteBuffer.getDouble();
@@ -105,8 +105,8 @@ public class ShapefileDescriptor {
    *
    * @return Shape type.
    */
-  public ShapeType getShapeType() {
-    return this.shapeType;
+  public ShapefileGeometryType getShapeType() {
+    return this.shapefileGeometryType;
   }
 
   /**
@@ -190,7 +190,7 @@ public class ShapefileDescriptor {
     s.append("FileCode: ").append(this.fileCode).append(lineSeparator);
     s.append("FileLength: ").append(this.fileLength).append(lineSeparator);
     s.append("Version: ").append(this.version).append(lineSeparator);
-    s.append("ShapeType: ").append(this.shapeType).append(lineSeparator);
+    s.append("ShapeType: ").append(this.shapefileGeometryType).append(lineSeparator);
     s.append("xmin: ").append(this.xmin).append(lineSeparator);
     s.append("ymin: ").append(this.ymin).append(lineSeparator);
     s.append("xmax: ").append(this.xmax).append(lineSeparator);

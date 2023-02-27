@@ -22,7 +22,7 @@ import org.apache.baremaps.dataframe.DataFrame;
 import org.apache.baremaps.dataframe.DataFrameException;
 import org.apache.baremaps.dataframe.Row;
 import org.apache.baremaps.dataframe.Schema;
-import org.apache.baremaps.storage.shapefile.internal.InputFeatureStream;
+import org.apache.baremaps.storage.shapefile.internal.ShapefileInputStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
 
 public class ShapefileDataFrame extends AbstractDataCollection<Row>
@@ -64,22 +64,23 @@ public class ShapefileDataFrame extends AbstractDataCollection<Row>
 
   static class RowIterator implements Iterator<Row> {
 
-    private final InputFeatureStream inputFeatureStream;
+    private final ShapefileInputStream shapefileInputStream;
 
     private Row next;
 
-    public RowIterator(InputFeatureStream inputFeatureStream) {
-      this.inputFeatureStream = inputFeatureStream;
+    public RowIterator(ShapefileInputStream shapefileInputStream) {
+      this.shapefileInputStream = shapefileInputStream;
     }
 
     @Override
     public boolean hasNext() {
       try {
         if (next == null) {
-          next = inputFeatureStream.readRow();
+          next = shapefileInputStream.readRow();
         }
         return next != null;
       } catch (IOException exception) {
+        shapefileInputStream.close();
         return false;
       }
     }
@@ -88,12 +89,13 @@ public class ShapefileDataFrame extends AbstractDataCollection<Row>
     public Row next() {
       try {
         if (next == null) {
-          next = inputFeatureStream.readRow();
+          next = shapefileInputStream.readRow();
         }
         Row current = next;
         next = null;
         return current;
       } catch (Exception e) {
+        shapefileInputStream.close();
         throw new NoSuchElementException();
       }
     }

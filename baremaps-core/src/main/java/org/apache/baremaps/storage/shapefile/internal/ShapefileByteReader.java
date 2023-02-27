@@ -44,7 +44,7 @@ public class ShapefileByteReader extends CommonByteReader {
   /** Database Field descriptors. */
   private List<DBaseFieldDescriptor> databaseFieldsDescriptors;
 
-  /** Schema of the features contained in this shapefile. */
+  /** Schema of the rows contained in this shapefile. */
   private Schema schema;
 
   /** Shapefile index. */
@@ -111,13 +111,13 @@ public class ShapefileByteReader extends CommonByteReader {
   }
 
   /**
-   * Create a feature descriptor.
+   * Create a row descriptor.
    *
    * @param name Name of the field.
-   * @return The feature type.
+   * @return The row type.
    */
   private Schema getSchema(final String name) {
-    Objects.requireNonNull(name, "The feature name cannot be null.");
+    Objects.requireNonNull(name, "The row name cannot be null.");
 
     var columns = new ArrayList<Column>();
     for (int i = 0; i < databaseFieldsDescriptors.size(); i++) {
@@ -222,7 +222,7 @@ public class ShapefileByteReader extends CommonByteReader {
   }
 
   /**
-   * Direct access to a feature by its record number.
+   * Direct access to a row by its record number.
    *
    * @param recordNumber Record number.
    */
@@ -252,63 +252,63 @@ public class ShapefileByteReader extends CommonByteReader {
   }
 
   /**
-   * Complete a feature with shapefile content.
+   * Complete a row with shapefile content.
    *
-   * @param feature Feature to complete.
+   * @param row the row to complete
    */
-  public void completeFeature(Row feature) throws ShapefileException {
+  public void completeRow(Row row) throws ShapefileException {
     // insert points into some type of list
     int RecordNumber = getByteBuffer().getInt();
     int ContentLength = getByteBuffer().getInt();
 
     getByteBuffer().order(ByteOrder.LITTLE_ENDIAN);
-    int iShapeType = getByteBuffer().getInt();
+    int shapeTypeId = getByteBuffer().getInt();
 
-    ShapeType type = ShapeType.get(iShapeType);
+    ShapefileGeometryType shapefileGeometryType = ShapefileGeometryType.get(shapeTypeId);
 
-    if (type == null) {
+    if (shapefileGeometryType == null) {
       throw new ShapefileException(
-          "The shapefile feature type doesn''t match to any known feature type.");
+          "The shapefile row type doesn''t match to any known row type.");
     }
 
-    switch (type) {
+    switch (shapefileGeometryType) {
       case Point:
-        loadPointFeature(feature);
+        loadPointRow(row);
         break;
 
       case Polygon:
-        loadPolygonFeature(feature);
+        loadPolygonRow(row);
         break;
 
       case PolyLine:
-        loadPolylineFeature(feature);
+        loadPolylineRow(row);
         break;
 
       default:
-        throw new ShapefileException("Unsupported shapefile type: " + iShapeType);
+        throw new ShapefileException("Unsupported shapefile type: " + shapeTypeId);
     }
 
     getByteBuffer().order(ByteOrder.BIG_ENDIAN);
   }
 
   /**
-   * Load point feature.
+   * Load point row.
    *
-   * @param feature Feature to fill.
+   * @param row the row to fill.
    */
-  private void loadPointFeature(Row feature) {
+  private void loadPointRow(Row row) {
     double x = getByteBuffer().getDouble();
     double y = getByteBuffer().getDouble();
     Point pnt = geometryFactory.createPoint(new Coordinate(x, y));
-    feature.set(GEOMETRY_NAME, pnt);
+    row.set(GEOMETRY_NAME, pnt);
   }
 
   /**
-   * Load polygon feature.
+   * Load polygon row.
    *
-   * @param feature Feature to fill.
+   * @param row the row to fill.
    */
-  private void loadPolygonFeature(Row feature) {
+  private void loadPolygonRow(Row row) {
     double xmin = getByteBuffer().getDouble();
     double ymin = getByteBuffer().getDouble();
     double xmax = getByteBuffer().getDouble();
@@ -319,7 +319,7 @@ public class ShapefileByteReader extends CommonByteReader {
 
     Geometry multiPolygon = readMultiplePolygon(numParts, numPoints);
 
-    feature.set(GEOMETRY_NAME, multiPolygon);
+    row.set(GEOMETRY_NAME, multiPolygon);
   }
 
   /**
@@ -380,11 +380,11 @@ public class ShapefileByteReader extends CommonByteReader {
   }
 
   /**
-   * Load polyline feature.
+   * Load polyline row.
    *
-   * @param feature Feature to fill.
+   * @param row the row to fill.
    */
-  private void loadPolylineFeature(Row feature) {
+  private void loadPolylineRow(Row row) {
     /* double xmin = */ getByteBuffer().getDouble();
     /* double ymin = */ getByteBuffer().getDouble();
     /* double xmax = */ getByteBuffer().getDouble();
@@ -416,7 +416,7 @@ public class ShapefileByteReader extends CommonByteReader {
       }
     }
 
-    feature.set(GEOMETRY_NAME,
+    row.set(GEOMETRY_NAME,
         geometryFactory.createLineString(coordinates.toCoordinateArray()));
   }
 }

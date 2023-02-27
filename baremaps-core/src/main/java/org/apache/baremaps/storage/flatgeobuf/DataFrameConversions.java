@@ -31,7 +31,7 @@ import org.wololo.flatgeobuf.generated.Crs;
 import org.wololo.flatgeobuf.generated.Feature;
 import org.wololo.flatgeobuf.generated.Header;
 
-public class RowConversions {
+public class DataFrameConversions {
 
   public static Schema asFeatureType(HeaderMeta headerMeta) {
     var name = headerMeta.name;
@@ -190,7 +190,7 @@ public class RowConversions {
 
   public static List<ColumnMeta> asColumns(List<Column> columns) {
     return columns.stream()
-        .map(RowConversions::asColumn)
+        .map(DataFrameConversions::asColumn)
         .collect(Collectors.toList());
   }
 

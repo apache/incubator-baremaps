@@ -171,9 +171,9 @@ public class ShapefileReader {
    *
    * @return Features
    */
-  public InputFeatureStream read() throws IOException {
-    InputFeatureStream is =
-        new InputFeatureStream(this.shapefile, this.databaseFile, this.shapeFileIndex);
+  public ShapefileInputStream read() throws IOException {
+    ShapefileInputStream is =
+        new ShapefileInputStream(this.shapefile, this.databaseFile, this.shapeFileIndex);
     this.schema = is.getSchema();
     this.shapefileDescriptor = is.getShapefileDescriptor();
     this.databaseFieldsDescriptors = is.getDatabaseFieldsDescriptors();
@@ -186,7 +186,7 @@ public class ShapefileReader {
    */
   public void loadDescriptors() throws IOException {
     // Doing a simple query will init the internal descriptors.
-    try (InputFeatureStream is = read()) {
+    try (ShapefileInputStream is = read()) {
     }
   }
 }

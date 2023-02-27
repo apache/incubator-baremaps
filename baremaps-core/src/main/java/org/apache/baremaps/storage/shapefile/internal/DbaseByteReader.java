@@ -108,8 +108,8 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
 
     var check = nextRowAvailable();
 
-    for (DBaseFieldDescriptor fd : this.fieldsDescriptors) {
-      byte[] data = new byte[fd.getLength()];
+    for (DBaseFieldDescriptor fieldDescriptor : this.fieldsDescriptors) {
+      byte[] data = new byte[fieldDescriptor.getLength()];
       getByteBuffer().get(data);
 
       int length = data.length;
@@ -120,9 +120,9 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
       String value = new String(data, 0, length);
 
       // TODO: move somewhere else
-      Object object = switch (fd.getType()) {
+      Object object = switch (fieldDescriptor.getType()) {
         case Character -> value;
-        case Number -> getNumber(fd, value);
+        case Number -> getNumber(fieldDescriptor, value);
         case Currency -> Double.parseDouble(value.trim());
         case Integer -> Integer.parseInt(value.trim());
         case Double -> Double.parseDouble(value.trim());
@@ -138,7 +138,7 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
         case DateTime -> value;
       };
 
-      row.set(fd.getName(), object);
+      row.set(fieldDescriptor.getName(), object);
     }
   }
 
@@ -163,9 +163,6 @@ public class DbaseByteReader extends CommonByteReader implements AutoCloseable {
 
     // 2) Check that the immediate next byte read isn't the EOF signal.
     byte eofCheck = getByteBuffer().get();
-
-    boolean isEOF = (eofCheck == 0x1A);
-
     if (eofCheck == 0x1A) {
       return false;
     } else {

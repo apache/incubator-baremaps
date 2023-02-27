@@ -30,7 +30,7 @@ import org.apache.baremaps.dataframe.Schema;
  *
  * @author Marc Le Bihan
  */
-public class InputFeatureStream extends InputStream {
+public class ShapefileInputStream extends InputStream {
 
   private DbaseByteReader dbaseReader;
 
@@ -59,7 +59,8 @@ public class InputFeatureStream extends InputStream {
    * @param dbaseFile Database file.
    * @param shpfileIndex Shapefile index, null if none provided, will be checked for existence.
    */
-  public InputFeatureStream(File shapefile, File dbaseFile, File shpfileIndex) throws IOException {
+  public ShapefileInputStream(File shapefile, File dbaseFile, File shpfileIndex)
+      throws IOException {
     this.shapefile = shapefile;
     this.databaseFile = dbaseFile;
     this.dbaseReader = new DbaseByteReader(dbaseFile, null);
@@ -83,7 +84,7 @@ public class InputFeatureStream extends InputStream {
    * @param shpfile Shapefile.
    * @param dbaseFile Database file.
    */
-  public InputFeatureStream(File shpfile, File dbaseFile) throws IOException {
+  public ShapefileInputStream(File shpfile, File dbaseFile) throws IOException {
     this(shpfile, dbaseFile, null);
   }
 
@@ -119,7 +120,7 @@ public class InputFeatureStream extends InputStream {
     Row row = this.schema.createRow();
     this.dbaseReader.loadRow(row);
     this.shapefileReader.setRowNum(this.dbaseReader.getRowNum());
-    this.shapefileReader.completeFeature(row);
+    this.shapefileReader.completeRow(row);
     return row;
   }
 

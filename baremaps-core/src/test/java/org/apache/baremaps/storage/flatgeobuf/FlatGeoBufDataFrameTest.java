@@ -15,9 +15,7 @@ package org.apache.baremaps.storage.flatgeobuf;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
-import java.nio.channels.FileChannel;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
@@ -25,39 +23,31 @@ class FlatGeoBufDataFrameTest {
 
   @Test
   void getType() throws IOException {
-    try (var channel = FileChannel.open(TestFiles.resolve("countries.fgb"))) {
-      var featureSet = new FlatGeoBufDataFrame(channel);
-      var featureType = featureSet.getSchema();
-      assertEquals(featureType.name(), null);
-      assertEquals(featureType.columns().size(), 2);
-    }
+    var featureSet = new FlatGeoBufDataFrame(TestFiles.resolve("countries.fgb"));
+    var featureType = featureSet.getSchema();
+    assertEquals(featureType.name(), null);
+    assertEquals(featureType.columns().size(), 2);
   }
 
   @Test
   void read() throws IOException {
-    try (var channel = FileChannel.open(TestFiles.resolve("countries.fgb"))) {
-      var featureSet = new FlatGeoBufDataFrame(channel);
-      assertEquals(179, featureSet.read().size());
-      assertEquals(179, featureSet.read().stream().count());
-    }
+    var featureSet = new FlatGeoBufDataFrame(TestFiles.resolve("countries.fgb"));
+    assertEquals(179, featureSet.sizeAsLong());
+    assertEquals(179, featureSet.stream().count());
+
   }
 
   @Test
   void write() throws IOException {
     var file = Files.createTempFile("countries", ".fgb");
     file.toFile().deleteOnExit();
-    try (var channel1 = FileChannel.open(TestFiles.resolve("countries.fgb"));
-        var channel2 = FileChannel.open(file, StandardOpenOption.WRITE)) {
-      var featureSet1 = new FlatGeoBufDataFrame(channel1);
-      var featureList = featureSet1.read().stream().toList();
-      var featureSet2 = new FlatGeoBufDataFrame(channel2, featureSet1.getSchema());
-      featureSet2.write(featureList);
-    }
+    var featureSet1 = new FlatGeoBufDataFrame(TestFiles.resolve("countries.fgb"));
+    var featureList = featureSet1.stream().toList();
+    var featureSet2 = new FlatGeoBufDataFrame(file, featureSet1.getSchema());
+    featureSet2.write(featureList);
 
-    try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
-      var featureSet = new FlatGeoBufDataFrame(channel);
-      assertEquals(179, featureSet.read().size());
-    }
+    var featureSet = new FlatGeoBufDataFrame(file);
+    assertEquals(179, featureSet.stream().count());
   }
 
 

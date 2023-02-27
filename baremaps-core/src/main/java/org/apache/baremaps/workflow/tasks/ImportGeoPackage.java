@@ -32,12 +32,13 @@ public record ImportGeoPackage(Path file, String database, Integer sourceSRID, I
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var path = file.toAbsolutePath();
-    try (var geoPackageStore = new GeoPackageDatabase(path)) {
+    try (var geoPackageDatabase = new GeoPackageDatabase(path)) {
       var dataSource = context.getDataSource(database);
       var postgresDatabase = new PostgresDatabase(dataSource);
-      for (var dataFrame : geoPackageStore.list()) {
+      for (var name : geoPackageDatabase.list()) {
         var transformer = new ProjectionTransformer(sourceSRID, targetSRID);
-        var transformedDataFrame = new DataFrameGeometryTransformer(dataFrame, transformer);
+        var transformedDataFrame =
+            new DataFrameGeometryTransformer(geoPackageDatabase.get(name), transformer);
         postgresDatabase.add(transformedDataFrame);
       }
     } catch (Exception e) {
