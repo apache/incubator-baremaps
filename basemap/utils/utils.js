@@ -8,15 +8,26 @@ export function withSortKeys(directives) {
 export function withFillSortKey(directive, index, array) {
     return directive['fill-color'] ?{
         ...directive,
-        'fill-sort-key': array.length - index - 1,
+        'fill-sort-key': array.length - index,
     } : directive;
 }
 
 export function withLineSortKey(directive, index, array) {
     return directive['line-width'] ? {
         ...directive,
-        'line-sort-key': array.length - index - 1,
+        'line-sort-key': array.length - index,
     } : directive;
+}
+
+export function withSymbolSortKeys(directives) {
+    return directives.map(withSymbolSortKey);
+}
+
+export function withSymbolSortKey(directive, index) {
+    return directive['symbol-sort-key'] ? directive : {
+        ...directive,
+        'symbol-sort-key': index,
+    };
 }
 
 export function asLayerObject(directives = [], baseLayer = {}) {
@@ -38,6 +49,7 @@ export function asLayoutProperty(directives = [], baseLayout = {}) {
             ...iconImage(directives),
             ...lineSortKey(directives),
             ...fillSortKey(directives),
+            ...symbolSortKey(directives),
         },
         baseLayout,
     )
@@ -140,6 +152,10 @@ function lineSortKey(directives) {
 
 function fillSortKey(directives) {
     return mergeDirectives(directives, 'fill-sort-key', 0)
+}
+
+function symbolSortKey(directives) {
+    return mergeDirectives(directives, 'symbol-sort-key', 0)
 }
 
 function mergeDirectives(directives, property, value) {
