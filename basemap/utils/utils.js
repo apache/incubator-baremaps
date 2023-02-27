@@ -23,10 +23,10 @@ export function withSymbolSortKeys(directives) {
     return directives.map(withSymbolSortKey);
 }
 
-export function withSymbolSortKey(directive, index, array) {
-    return {
+export function withSymbolSortKey(directive, index) {
+    return directive['symbol-sort-key'] ? directive : {
         ...directive,
-        'symbol-sort-key': array.length - index,
+        'symbol-sort-key': index,
     };
 }
 

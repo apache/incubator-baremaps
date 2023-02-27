@@ -2,19 +2,14 @@ import {asLayerObject, withSymbolSortKeys} from "../../utils/utils.js";
 
 let directives = [
     {
-        filter: ['==', ['get', 'place'], 'locality'],
-        'text-size': 12,
-        'text-color': 'rgb(75,75,75)',
-    },
-    {
-        filter: ['==', ['get', 'place'], 'village'],
-        'text-size': 12,
-        'text-color': 'rgb(75,75,75)',
-    },
-    {
-        filter: ['==', ['get', 'place'], 'town'],
-        'text-size': 14,
-        'text-color': 'rgb(50,50,50)',
+        filter: [
+            'all',
+            ['==', ['get', 'capital'], 'yes'],
+            ['==', ['get', 'place'], 'city']
+        ],
+        'text-size': 16,
+        'text-color': 'rgb(25, 25, 25)',
+        'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
     },
     {
         filter: [
@@ -24,15 +19,22 @@ let directives = [
         ],
         'text-size': 16,
         'text-color': 'rgb(25, 25, 25)',
+        'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
     },
     {
-        filter: [
-            'all',
-            ['==', ['get', 'capital'], 'yes'],
-            ['==', ['get', 'place'], 'city']
-        ],
-        'text-size': 16,
-        'text-color': 'rgb(25, 25, 25)',
+        filter: ['==', ['get', 'place'], 'town'],
+        'text-size': 14,
+        'text-color': 'rgb(50,50,50)',
+    },
+    {
+        filter: ['==', ['get', 'place'], 'village'],
+        'text-size': 12,
+        'text-color': 'rgb(75,75,75)',
+    },
+    {
+        filter: ['==', ['get', 'place'], 'locality'],
+        'text-size': 12,
+        'text-color': 'rgb(75,75,75)',
     },
     // {
     //     filter: [
