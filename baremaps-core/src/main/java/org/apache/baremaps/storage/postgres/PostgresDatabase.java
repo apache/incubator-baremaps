@@ -29,10 +29,13 @@ import org.apache.baremaps.dataframe.*;
 import org.locationtech.jts.geom.*;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PostgresDatabase implements DataStore {
 
-  // TODO: Instantiate with Map.of()
+  private static final Logger logger = LoggerFactory.getLogger(PostgresDatabase.class);
+
   private static Map<Class, String> typeToName = Map.ofEntries(
       Map.entry(String.class, "varchar"),
       Map.entry(Short.class, "int2"),
@@ -54,7 +57,6 @@ public class PostgresDatabase implements DataStore {
       Map.entry(LocalTime.class, "time"),
       Map.entry(LocalDateTime.class, "timestamp"));
 
-  // TODO: Instantiate with Map.of()
   private static Map<Class, BaseValueHandler> typeToHandler = Map.ofEntries(
       Map.entry(String.class, new StringValueHandler()),
       Map.entry(Short.class, new ShortValueHandler()),
@@ -107,12 +109,14 @@ public class PostgresDatabase implements DataStore {
 
       // Drop the table if it exists
       var dropQuery = dropTable(schema);
+      logger.info(dropQuery);
       try (var dropStatement = connection.prepareStatement(dropQuery)) {
         dropStatement.execute();
       }
 
       // Create the table
       var createQuery = createTable(schema);
+      logger.info(createQuery);
       try (var createStatement = connection.prepareStatement(createQuery)) {
         createStatement.execute();
       }

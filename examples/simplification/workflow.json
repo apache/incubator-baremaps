@@ -1,17 +1,65 @@
 {
   "steps": [
     {
-      "id": "simplify",
+      "id": "download",
+      "needs": [],
+      "tasks": [
+        {
+          "type": "DownloadUrl",
+          "url": "https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
+          "path": "liechtenstein-latest.osm.pbf"
+        }
+      ]
+    },
+    {
+      "id": "import",
       "needs": [
+        "download"
       ],
       "tasks": [
         {
-          "type": "SimplifyEntityCollection",
+          "type": "CreateEntityCollection",
+          "file": "liechtenstein-latest.osm.pbf",
+          "collection": "collection",
+          "srid": 3857
+        }
+      ]
+    },
+    {
+      "id": "transform",
+      "needs": [
+        "import"
+      ],
+      "tasks": [
+        {
+          "type": "TransformEntityCollection",
           "collection": "collection",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
           "recipe": {
             "name": "building",
             "filter": ["has", "building"],
+            "operation": "union"
+          }
+        },
+        {
+          "type": "TransformEntityCollection",
+          "collection": "collection",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+          "recipe": {
+            "name": "landuse",
+            "filter": ["has", "landuse"],
+            "groupBy": ["landuse"],
+            "operation": "union"
+          }
+        },
+        {
+          "type": "TransformEntityCollection",
+          "collection": "collection",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+          "recipe": {
+            "name": "natural",
+            "filter": ["has", "natural"],
+            "groupBy": ["natural"],
             "operation": "union"
           }
         }
