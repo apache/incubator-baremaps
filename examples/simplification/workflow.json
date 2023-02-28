@@ -38,6 +38,7 @@
           "recipe": {
             "name": "building",
             "filter": ["has", "building"],
+            "groupBy": [],
             "operation": "union"
           }
         },

@@ -106,7 +106,7 @@ public class PostgresDatabase implements DataStore {
       var schema = adaptDataType(dataFrame.schema());
 
       // Drop the table if it exists
-      var dropQuery = dropTable(schema);
+      var dropQuery = dropTable(schema.name());
       logger.info(dropQuery);
       try (var dropStatement = connection.prepareStatement(dropQuery)) {
         dropStatement.execute();
@@ -122,6 +122,7 @@ public class PostgresDatabase implements DataStore {
       // Populate the table with a copy query
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       var copyQuery = copyTable(schema);
+      logger.info(copyQuery);
       try (var writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copyQuery))) {
         writer.writeHeader();
         var rowIterator = dataFrame.iterator();
@@ -157,12 +158,12 @@ public class PostgresDatabase implements DataStore {
 
   private String createTable(Schema schema) {
     StringBuilder builder = new StringBuilder();
-    builder.append("CREATE TABLE ");
+    builder.append("CREATE TABLE \"");
     builder.append(schema.name());
-    builder.append(" (");
+    builder.append("\" (");
     builder.append(schema.columns().stream()
-        .map(column -> column.name()
-            + " " + typeToName.get(column.type()))
+        .map(column -> "\"" + column.name()
+            + "\" " + typeToName.get(column.type()))
         .collect(Collectors.joining(", ")));
     builder.append(")");
     return builder.toString();
@@ -170,11 +171,11 @@ public class PostgresDatabase implements DataStore {
 
   private String copyTable(Schema schema) {
     StringBuilder builder = new StringBuilder();
-    builder.append("COPY ");
+    builder.append("COPY \"");
     builder.append(schema.name());
-    builder.append(" (");
+    builder.append("\" (");
     builder.append(schema.columns().stream()
-        .map(column -> column.name())
+        .map(column -> "\"" + column.name() + "\"")
         .collect(Collectors.joining(", ")));
     builder.append(") FROM STDIN BINARY");
     return builder.toString();
@@ -184,13 +185,13 @@ public class PostgresDatabase implements DataStore {
   public void remove(String name) {
     try (var connection = dataSource.getConnection();
         var statement = connection.createStatement()) {
-      statement.executeQuery(String.format("DROP TABLE IF EXISTS %s CASCADE", name));
+      statement.executeQuery(dropTable(name));
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }
 
-  private String dropTable(Schema schema) {
-    return String.format("DROP TABLE IF EXISTS %s CASCADE", schema.name());
+  private String dropTable(String name) {
+    return String.format("DROP TABLE IF EXISTS \"%s\" CASCADE", name);
   }
 }
