@@ -37,7 +37,7 @@ If you want to contribute to the code you can refer to the following developer g
 
 - [Project structure](https://baremaps.apache.org/developer-manual/project-structure/)
 - [How to build with Maven](https://baremaps.apache.org/developer-manual/how-to-build-with-maven/)
-- [Set up in IntelliJ IDEA](https://baremaps.apache.org/developer-manual/setup-with-intellij/)
+- [Set up in IntelliJ IDEA](https://baremaps.apache.org/developer-manual/setup-in-intellij/)
 - [Geocoder](https://baremaps.apache.org/developer-manual/geocoder/)
 - [IP to location](https://baremaps.apache.org/developer-manual/ip-to-location/)
 - [Stylesheet](https://baremaps.apache.org/developer-manual/stylesheet/)
