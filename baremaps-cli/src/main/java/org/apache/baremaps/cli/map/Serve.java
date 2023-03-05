@@ -21,6 +21,7 @@ import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
+import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.database.PostgresUtils;
 import org.apache.baremaps.database.tile.PostgresTileStore;
@@ -29,6 +30,7 @@ import org.apache.baremaps.database.tile.TileStore;
 import org.apache.baremaps.mvt.tileset.Tileset;
 import org.apache.baremaps.server.ConfigReader;
 import org.apache.baremaps.server.CorsFilter;
+import org.apache.baremaps.server.SearchResources;
 import org.apache.baremaps.server.ServerResources;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -80,13 +82,18 @@ public class Serve implements Callable<Integer> {
 
     // Configure the application
     var application =
-        new ResourceConfig().register(CorsFilter.class).register(ServerResources.class)
-            .register(contextResolverFor(objectMapper)).register(new AbstractBinder() {
+        new ResourceConfig()
+            .register(CorsFilter.class)
+            .register(SearchResources.class)
+            .register(ServerResources.class)
+            .register(contextResolverFor(objectMapper))
+            .register(new AbstractBinder() {
               @Override
               protected void configure() {
                 bind(Serve.this.tileset).to(Path.class).named("tileset");
                 bind(style).to(Path.class).named("style");
                 bind(tileCache).to(TileStore.class);
+                bind(datasource).to(DataSource.class);
                 bind(objectMapper).to(ObjectMapper.class);
               }
             });

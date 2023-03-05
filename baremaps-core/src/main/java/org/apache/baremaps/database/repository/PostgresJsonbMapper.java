@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 
-class PostgresJsonbMapper {
+public class PostgresJsonbMapper {
 
   private static final ObjectMapper mapper = new ObjectMapper();
 
