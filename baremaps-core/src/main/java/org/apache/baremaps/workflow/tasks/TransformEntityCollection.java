@@ -139,6 +139,7 @@ public record TransformEntityCollection(Path collection, String database,
 
     var lineMerger = new LineMerger();
     lineMerger.add(filtered);
+
     var mergedGeometries = lineMerger.getMergedLineStrings();
 
     return mergedGeometries.stream();

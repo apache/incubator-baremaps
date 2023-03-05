@@ -63,6 +63,17 @@
             "groupBy": ["natural"],
             "operation": "union"
           }
+        },
+        {
+          "type": "TransformEntityCollection",
+          "collection": "collection",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+          "recipe": {
+            "name": "highway",
+            "filter": ["has", "highway"],
+            "groupBy": ["highway"],
+            "operation": "merge"
+          }
         }
       ]
     }
