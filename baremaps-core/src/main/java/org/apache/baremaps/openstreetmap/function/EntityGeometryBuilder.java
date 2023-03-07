@@ -17,11 +17,14 @@ package org.apache.baremaps.openstreetmap.function;
 import java.util.List;
 import java.util.function.Consumer;
 import org.apache.baremaps.collection.DataMap;
+import org.apache.baremaps.database.DiffService;
 import org.apache.baremaps.openstreetmap.model.Entity;
 import org.apache.baremaps.openstreetmap.model.Node;
 import org.apache.baremaps.openstreetmap.model.Relation;
 import org.apache.baremaps.openstreetmap.model.Way;
 import org.locationtech.jts.geom.Coordinate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** A consumer that builds and sets the geometry of OpenStreetMap entities via side effects. */
 public class EntityGeometryBuilder implements Consumer<Entity> {
@@ -52,8 +55,6 @@ public class EntityGeometryBuilder implements Consumer<Entity> {
       wayGeometryBuilder.accept(way);
     } else if (entity instanceof Relation relation) {
       relationGeometryBuilder.accept(relation);
-    } else {
-      // do nothing
     }
   }
 }

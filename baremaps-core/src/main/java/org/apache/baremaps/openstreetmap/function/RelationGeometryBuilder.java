@@ -55,6 +55,8 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
   @Override
   public void accept(Relation relation) {
     try {
+      var start = System.currentTimeMillis();
+
       Map<String, Object> tags = relation.getTags();
 
       // Filter multipolygon geometries
@@ -85,6 +87,12 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
         MultiPolygon multiPolygon =
             GEOMETRY_FACTORY_WGS84.createMultiPolygon(polygons.toArray(new Polygon[0]));
         relation.setGeometry(multiPolygon);
+      }
+
+      var end = System.currentTimeMillis();
+      var duration = end - start;
+      if (duration > 60 * 1000) {
+        logger.debug("Relation #{} processed in {} ms", relation.id(), duration);
       }
     } catch (Exception e) {
       logger.warn("Unable to build the geometry for relation #" + relation.id(), e);
