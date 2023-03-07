@@ -51,10 +51,9 @@
   </modules>
 
   <scm>
-    <connection>scm:git:git@github.com:baremaps/baremaps.git</connection>
-    <developerConnection>scm:git:git@github.com:baremaps/baremaps.git</developerConnection>
-    <tag>v0.2.3</tag>
-    <url>scm:git:git@github.com:baremaps/baremaps.git</url>
+    <connection>scm:git:git@github.com:apache/baremaps.git</connection>
+    <developerConnection>scm:git:git@github.com:apache/baremaps.git</developerConnection>
+    <url>scm:git:git@github.com:apache/baremaps.git</url>
   </scm>
 
   <distributionManagement>
