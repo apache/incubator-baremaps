@@ -28,6 +28,7 @@
                 <include>codestyle.xml</include>
                 <include>DISCLAIMER-WIP</include>
                 <include>LICENSE</include>
+                <include>LICENSE.header</include>
                 <include>NOTICE</include>
                 <include>README</include>
             </includes>
