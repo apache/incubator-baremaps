@@ -103,6 +103,3 @@ This file can typically used to [configure](https://www.jetbrains.com/help/idea/
 You can run `mvn spotless:apply` to format your code automatically.
 Finally, verify that your contribution passes all the tests (integration included).
 Once your everything looks good, we'll merge it.
-
-
-

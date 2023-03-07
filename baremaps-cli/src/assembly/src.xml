@@ -16,7 +16,7 @@
     <id>zip</id>
     <includeBaseDirectory>true</includeBaseDirectory>
     <formats>
-        <format>zip</format>
+        <format>tar.gz</format>
     </formats>
     <fileSets>
         <fileSet>
@@ -28,6 +28,7 @@
                 <include>codestyle.xml</include>
                 <include>DISCLAIMER-WIP</include>
                 <include>LICENSE</include>
+                <include>LICENSE.header</include>
                 <include>NOTICE</include>
                 <include>README</include>
             </includes>
