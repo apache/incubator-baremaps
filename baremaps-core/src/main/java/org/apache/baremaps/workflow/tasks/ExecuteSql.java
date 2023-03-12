@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
@@ -29,7 +30,8 @@ public record ExecuteSql(String database, Path file, boolean parallel) implement
   @Override
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Executing {}", file);
-    var queries = Arrays.stream(Files.readString(file).split(";"));
+    var sql = removeComments(Files.readString(file));
+    var queries = Arrays.stream(sql.split(";"));
     if (parallel) {
       queries = queries.parallel();
     }
@@ -44,6 +46,28 @@ public record ExecuteSql(String database, Path file, boolean parallel) implement
           }
         });
     logger.info("Finished executing {}", file);
+  }
+
+  /**
+   * Remove comments from a SQL string.
+   *
+   * @param sql The SQL string.
+   * @return The SQL string without comments.
+   */
+  public static String removeComments(String sql) {
+    var result = sql;
+
+    // remove single line comments
+    var singleLineCommentPattern = Pattern.compile("--.*", Pattern.MULTILINE);
+    var singleLineCommentMatcher = singleLineCommentPattern.matcher(result);
+    result = singleLineCommentMatcher.replaceAll("");
+
+    // remove multi line comments
+    var multiLineCommentPattern = Pattern.compile("/\\*.*?\\*/", Pattern.DOTALL);
+    var multiLineMatcher = multiLineCommentPattern.matcher(result);
+    result = multiLineMatcher.replaceAll("");
+
+    return result;
   }
 
 }
