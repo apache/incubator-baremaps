@@ -75,6 +75,22 @@ git push origin
 - [ ] Notify the community of the release by sending a message to the mailing list.
 - [ ] Clean up all the release candidate branches and tags.
 
+## Verifying the release artifacts
+
+Verify the GPG signature of the release artifacts:
+
+```bash
+gpg --verify baremaps-<version>-incubating-bin.tar.gz.asc
+gpg --verify baremaps-<version>-incubating-src.tar.gz.asc
+```
+
+Verify the SHA512 checksum of the release artifacts:
+
+```bash
+shasum -a 512 -c baremaps-<version>-incubating-bin.tar.gz.sha512
+shasum -a 512 -c baremaps-<version>-incubating-src.tar.gz.sha512
+```
+
 ## Email template
 
 subject: [VOTE] Release Apache Baremaps <version>-rc<number> (incubating)
@@ -103,7 +119,7 @@ The hashes of the artifacts are as follows:
 <bin>
 
 Release artifacts are signed with the following key:
-http://people.apache.org/keys/committer/bchapuis.asc
+http://people.apache.org/keys/committer/<username>.asc
 https://downloads.apache.org/incubator/baremaps/KEYS
 
 The README file for the src distribution contains instructions for building and testing the release.
