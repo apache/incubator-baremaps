@@ -2,6 +2,9 @@
 .idea/
 *.iml
 *.iws
+
+# vscode
+/.vscode/
  
 # Mac
 .DS_Store
@@ -16,6 +19,8 @@ examples/output/
 
 # Map
 /basemap/data/
+/basemap/cache_*/
+/basemap/local.*
 
 # JMH
 jmh-result.json

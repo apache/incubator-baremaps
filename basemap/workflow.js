@@ -174,7 +174,7 @@ export default {
         {
           "type": "ExecuteSql",
           "file": "queries/osm_water_index.sql",
-          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps"
+          "database": config.database
         }
       ]
     },
@@ -212,7 +212,7 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://download.geofabrik.de/europe/switzerland-latest.osm.pbf",
+          "url": config.osmPbfUrl,
           "path": "data/data.osm.pbf"
         },
         {
