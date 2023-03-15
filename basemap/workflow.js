@@ -174,7 +174,7 @@ export default {
         {
           "type": "ExecuteSql",
           "file": "queries/osm_water_index.sql",
-          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps"
+          "database": config.database
         }
       ]
     },
