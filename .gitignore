@@ -20,6 +20,7 @@ examples/output/
 # Map
 /basemap/data/
 /basemap/cache_*/
+/basemap/local.*
 
 # JMH
 jmh-result.json

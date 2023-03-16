@@ -212,7 +212,7 @@ export default {
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://download.geofabrik.de/europe/switzerland-latest.osm.pbf",
+          "url": config.osmPbfUrl,
           "path": "data/data.osm.pbf"
         },
         {
