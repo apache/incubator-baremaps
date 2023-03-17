@@ -99,7 +99,7 @@
             </goals>
             <phase>package</phase>
             <configuration>
-              <finalName>${project.parent.artifactId}-${project.parent.version}-incubating-src</finalName>
+              <finalName>apache-${project.parent.artifactId}-${project.parent.version}-incubating-src</finalName>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
                 <descriptor>src/assembly/src.xml</descriptor>
@@ -113,7 +113,7 @@
             </goals>
             <phase>package</phase>
             <configuration>
-              <finalName>${project.parent.artifactId}-${project.parent.version}-incubating-bin</finalName>
+              <finalName>apache-${project.parent.artifactId}-${project.parent.version}-incubating-bin</finalName>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
                 <descriptor>src/assembly/bin.xml</descriptor>
