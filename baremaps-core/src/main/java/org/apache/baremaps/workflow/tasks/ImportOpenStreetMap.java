@@ -45,8 +45,6 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Importing {} into {}", file, database);
-
     var dataSource = context.getDataSource(database);
     var path = file.toAbsolutePath();
 
@@ -108,8 +106,6 @@ public record ImportOpenStreetMap(Path file, String database, Integer databaseSr
         databaseSrid);
 
     FileUtils.deleteRecursively(cacheDir);
-
-    logger.info("Finished importing {} into {}", file, database);
   }
 
   public static void execute(
