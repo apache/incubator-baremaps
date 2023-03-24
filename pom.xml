@@ -89,6 +89,7 @@ limitations under the License.
     <version.lib.commons-compress>1.21</version.lib.commons-compress>
     <version.lib.fastutil>8.5.9</version.lib.fastutil>
     <version.lib.flatgeobuf>3.24.0</version.lib.flatgeobuf>
+    <version.lib.gdal>3.6.3</version.lib.gdal>
     <version.lib.geopackage>6.5.0</version.lib.geopackage>
     <version.lib.graalvm>22.2.0</version.lib.graalvm>
     <version.lib.guava>31.1-jre</version.lib.guava>
@@ -392,6 +393,11 @@ limitations under the License.
         <artifactId>awaitility</artifactId>
         <version>${version.lib.awaitability}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.gdal</groupId>
+        <artifactId>gdal</artifactId>
+        <version>${version.lib.gdal}</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
