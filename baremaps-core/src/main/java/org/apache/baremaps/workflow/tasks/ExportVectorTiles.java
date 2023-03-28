@@ -54,7 +54,6 @@ public record ExportVectorTiles(
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Exporting vector tiles from {} to {}", database, repository);
     var datasource = context.getDataSource(database);
     var mapper =
         new ObjectMapper()
@@ -79,8 +78,6 @@ public record ExportVectorTiles(
             .peek(new StreamProgress<>(count, 5000));
 
     StreamUtils.batch(stream, 10).forEach(new TileChannel(tileSource, tileTarget));
-
-    logger.info("Finished exporting vector tiles from {} to {}", database, repository);
   }
 
   private TileStore sourceTileStore(Tileset tileset, DataSource datasource) {

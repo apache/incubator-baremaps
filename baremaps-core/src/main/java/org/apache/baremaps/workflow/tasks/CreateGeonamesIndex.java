@@ -36,8 +36,6 @@ public record CreateGeonamesIndex(Path dataFile, Path indexDirectory) implements
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Indexing {}", dataFile);
-
     var directory = MMapDirectory.open(indexDirectory);
     var config = new IndexWriterConfig(GeocoderConstants.ANALYZER);
 
@@ -51,7 +49,5 @@ public record CreateGeonamesIndex(Path dataFile, Path indexDirectory) implements
     } catch (IOException exception) {
       throw new RuntimeException();
     }
-
-    logger.info("Finished indexing {}", indexDirectory);
   }
 }

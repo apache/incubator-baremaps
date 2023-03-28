@@ -23,7 +23,6 @@ public record ExecuteCommand(String command) implements Task {
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Executing '{}'", command);
     new ProcessBuilder().command("/bin/sh", "-c", command).start().waitFor();
   }
 }

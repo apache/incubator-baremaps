@@ -32,7 +32,6 @@ public record ImportGeoPackage(Path file, String database, Integer sourceSRID, I
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Importing {} into {}", file, database);
     var path = file.toAbsolutePath();
     try (var geoPackageStore = new GeoPackageDatabase(path)) {
       var dataSource = context.getDataSource(database);
@@ -44,9 +43,7 @@ public record ImportGeoPackage(Path file, String database, Integer sourceSRID, I
           postgresDatabase.write(transformedFeatureSet);
         }
       }
-      logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {
-      logger.error("Failed importing {} into {}", file, database);
       throw new WorkflowException(e);
     }
   }

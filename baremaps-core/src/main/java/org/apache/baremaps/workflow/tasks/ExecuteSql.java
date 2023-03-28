@@ -29,7 +29,6 @@ public record ExecuteSql(String database, Path file, boolean parallel) implement
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Executing {}", file);
     var sql = removeComments(Files.readString(file));
     var queries = Arrays.stream(sql.split(";"));
     if (parallel) {
@@ -41,11 +40,9 @@ public record ExecuteSql(String database, Path file, boolean parallel) implement
           try (var connection = dataSource.getConnection()) {
             connection.createStatement().execute(query);
           } catch (SQLException e) {
-            logger.error("Failed executing {}", query);
             throw new WorkflowException(e);
           }
         });
-    logger.info("Finished executing {}", file);
   }
 
   /**

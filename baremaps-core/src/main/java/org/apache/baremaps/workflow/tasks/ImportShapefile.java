@@ -31,16 +31,13 @@ public record ImportShapefile(Path file, String database, Integer sourceSRID, In
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Importing {} into {}", file, database);
     var path = file.toAbsolutePath();
     try (var featureSet = new ShapefileFeatureSet(path)) {
       var dataSource = context.getDataSource(database);
       var postgresDatabase = new PostgresDatabase(dataSource);
       postgresDatabase.write(new FeatureSetProjectionTransform(
           featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
-      logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {
-      logger.error("Failed importing {} into {}", file, database);
       throw new WorkflowException(e);
     }
   }

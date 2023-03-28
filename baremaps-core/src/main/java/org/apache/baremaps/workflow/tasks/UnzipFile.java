@@ -31,8 +31,6 @@ public record UnzipFile(Path file, Path directory) implements Task {
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Unzipping {} to {}", file, directory);
-
     var filePath = file.toAbsolutePath();
     var directoryPath = directory.toAbsolutePath();
 

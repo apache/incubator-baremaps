@@ -46,7 +46,6 @@ public record UpdateOpenStreetMap(String database, Integer databaseSrid) impleme
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Updating {}", database);
     var datasource = context.getDataSource(database);
     DataMap<Coordinate> coordinateMap = new PostgresCoordinateMap(datasource);
     DataMap<List<Long>> referenceMap = new PostgresReferenceMap(datasource);
@@ -62,7 +61,6 @@ public record UpdateOpenStreetMap(String database, Integer databaseSrid) impleme
         wayRepository,
         relationRepository,
         databaseSrid);
-    logger.info("Finished updating {}", database);
   }
 
   public static void execute(DataMap<Coordinate> coordinateMap, DataMap<List<Long>> referenceMap,
