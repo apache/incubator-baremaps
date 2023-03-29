@@ -42,7 +42,6 @@ public class VectorTileUtils {
    */
   public static Geometry asVectorTileGeom(Geometry geometry, Envelope envelope, int extent,
       int buffer, boolean clipGeom) {
-
     // Scale the geometry to the extent of the tile
     double scaleX = extent / envelope.getWidth();
     double scaleY = extent / envelope.getHeight();
@@ -58,6 +57,28 @@ public class VectorTileUtils {
     } else {
       return scaledGeometry;
     }
+  }
+
+  /**
+   * Transforms a geometry into a vector tile geometry.
+   *
+   * @param geometry The geometry to transform
+   * @param envelope The envelope of the tile
+   * @param extent The extent of the tile
+   * @return The transformed geometry
+   */
+  public static Geometry fromVectorTileGeom(Geometry geometry, Envelope envelope, int extent) {
+    // Scale the geometry to the extent of the tile
+    double scaleX = extent / envelope.getWidth();
+    double scaleY = extent / envelope.getHeight();
+    AffineTransformation affineTransformation = new AffineTransformation();
+    affineTransformation.translate(0, -extent);
+    affineTransformation.scale(1 / scaleX, -1 / scaleY);
+    affineTransformation.translate(envelope.getMinX(), envelope.getMinY());
+    Geometry scaledGeometry = affineTransformation.transform(geometry);
+
+    // Build the final geometry
+    return scaledGeometry;
   }
 
   /**

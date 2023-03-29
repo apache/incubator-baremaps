@@ -45,13 +45,13 @@ public class VectorTileDecoder {
    */
   public VectorTileDecoder() {}
 
-    /**
-     * Decodes a vector tile.
-     *
-     * @param buffer The bytes of the vector tile
-     * @return The decoded vector tile
-     * @throws IOException If an error occurs while decoding the vector tile
-     */
+  /**
+   * Decodes a vector tile.
+   *
+   * @param buffer The bytes of the vector tile
+   * @return The decoded vector tile
+   * @throws IOException If an error occurs while decoding the vector tile
+   */
   public Tile decodeTile(ByteBuffer buffer) throws IOException {
     try {
       VectorTile.Tile tile = VectorTile.Tile.parseFrom(buffer);

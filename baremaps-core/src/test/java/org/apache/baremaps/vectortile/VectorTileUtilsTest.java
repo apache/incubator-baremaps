@@ -20,7 +20,7 @@ import org.locationtech.jts.geom.*;
 class VectorTileUtilsTest {
 
   @Test
-  void asMvtGeom() {
+  void vectorTileGeom() {
     // Create a test geometry (a simple square)
     var coordinates = new Coordinate[] {
         new Coordinate(1, 1),
@@ -37,7 +37,7 @@ class VectorTileUtilsTest {
     var buffer = 10;
     var clipGeom = true;
 
-    // Transform the input geometry using asMvtGeom
+    // Transform the input geometry into a vector tile geometry
     var outputGeom =
         VectorTileUtils.asVectorTileGeom(inputGeom, envelope, extent, buffer, clipGeom);
 
@@ -47,7 +47,7 @@ class VectorTileUtilsTest {
     // Check if the output geometry is a valid Geometry
     assertTrue(outputGeom.isValid());
 
-    // Define expected coordinates for the transformed geometry
+    // Define the expected coordinates for the transformed geometry
     Coordinate[] expectedCoordinates = new Coordinate[] {
         new Coordinate(10, 90),
         new Coordinate(90, 90),
@@ -60,5 +60,8 @@ class VectorTileUtilsTest {
     Polygon expectedGeom = geometryFactory.createPolygon(expectedShell);
     assertTrue(outputGeom.equalsTopo(expectedGeom));
 
+    // Transform back the vector tile geometry into the original geometry
+    var backToInputGeom = VectorTileUtils.fromVectorTileGeom(outputGeom, envelope, extent);
+    assertTrue(backToInputGeom.equalsTopo(inputGeom));
   }
 }
