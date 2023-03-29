@@ -95,7 +95,7 @@ public class VectorTileUtils {
    * @return The clipped geometry
    */
   private static Geometry clipToTile(Geometry geometry, int extent, int buffer) {
-    Envelope envelope = new Envelope(0 - buffer, extent + buffer, 0 - buffer, extent + buffer);
+    Envelope envelope = new Envelope((0 - buffer), (extent + buffer), (0 - buffer), (extent + buffer));
     GeometryFactory geometryFactory = new GeometryFactory();
     Geometry tile = geometryFactory.toGeometry(envelope);
     return geometry.intersection(tile);
