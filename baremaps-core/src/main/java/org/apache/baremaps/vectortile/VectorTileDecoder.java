@@ -14,6 +14,9 @@ package org.apache.baremaps.vectortile;
 
 import static org.apache.baremaps.vectortile.VectorTileUtils.*;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.baremaps.mvt.binary.VectorTile;
@@ -24,7 +27,7 @@ import org.locationtech.jts.geom.*;
 /**
  * A vector tile decoder.
  *
- * This implementation is based on the Vector Tile Specification 2.1.
+ * This implementation is based on the Vector Tile Specification.
  */
 public class VectorTileDecoder {
   private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
@@ -42,11 +45,28 @@ public class VectorTileDecoder {
    */
   public VectorTileDecoder() {}
 
+    /**
+     * Decodes a vector tile.
+     *
+     * @param buffer The bytes of the vector tile
+     * @return The decoded vector tile
+     * @throws IOException If an error occurs while decoding the vector tile
+     */
+  public Tile decodeTile(ByteBuffer buffer) throws IOException {
+    try {
+      VectorTile.Tile tile = VectorTile.Tile.parseFrom(buffer);
+      return decodeTile(tile);
+    } catch (InvalidProtocolBufferException e) {
+      throw new IOException(e);
+    }
+  }
+
   /**
    * Decodes a vector tile.
    *
-   * @param tile The vector tile to decode.
-   * @return The decoded vector tile.
+   * @param tile The vector tile to decode
+   * @return The decoded vector tile
+   * @throws IOException If an error occurs while decoding the vector tile layer
    */
   public Tile decodeTile(VectorTile.Tile tile) {
     List<Layer> layers = tile.getLayersList().stream()
@@ -58,8 +78,23 @@ public class VectorTileDecoder {
   /**
    * Decodes a vector tile layer.
    *
-   * @param layer The vector tile layer.
-   * @return The decoded layer.
+   * @param buffer The bytes of the vector tile layer
+   * @return The decoded layer
+   */
+  public Layer decodeLayer(ByteBuffer buffer) throws IOException {
+    try {
+      VectorTile.Tile.Layer layer = VectorTile.Tile.Layer.parseFrom(buffer);
+      return decodeLayer(layer);
+    } catch (InvalidProtocolBufferException e) {
+      throw new IOException(e);
+    }
+  }
+
+  /**
+   * Decodes a vector tile layer.
+   *
+   * @param layer The vector tile layer
+   * @return The decoded layer
    */
   public Layer decodeLayer(VectorTile.Tile.Layer layer) {
     String name = layer.getName();
@@ -83,8 +118,8 @@ public class VectorTileDecoder {
   /**
    * Decodes a vector tile value into a Java object.
    *
-   * @param value The vector tile value.
-   * @return The Java object.
+   * @param value The vector tile value
+   * @return The Java object
    */
   protected Object decodeValue(Value value) {
     if (value.hasStringValue()) {

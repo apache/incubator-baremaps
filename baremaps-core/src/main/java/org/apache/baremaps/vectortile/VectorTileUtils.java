@@ -63,12 +63,12 @@ public class VectorTileUtils {
   /**
    * Transforms a tile into a vector tile.
    *
-   * @param tile The tile to transform
+   * @param vectorTile The tile to transform
    * @return The transformed tile
    */
-  public static ByteBuffer asVectorTile(Tile tile) {
+  public static ByteBuffer asVectorTile(Tile vectorTile) {
     return new VectorTileEncoder()
-        .encodeTile(tile)
+        .encodeTile(vectorTile)
         .toByteString()
         .asReadOnlyByteBuffer();
   }
@@ -95,7 +95,8 @@ public class VectorTileUtils {
    * @return The clipped geometry
    */
   private static Geometry clipToTile(Geometry geometry, int extent, int buffer) {
-    Envelope envelope = new Envelope((0 - buffer), (extent + buffer), (0 - buffer), (extent + buffer));
+    Envelope envelope =
+        new Envelope((0 - buffer), (extent + buffer), (0 - buffer), (extent + buffer));
     GeometryFactory geometryFactory = new GeometryFactory();
     Geometry tile = geometryFactory.toGeometry(envelope);
     return geometry.intersection(tile);

@@ -13,9 +13,15 @@
 package org.apache.baremaps.vectortile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -37,6 +43,18 @@ public class VectorTileTest {
     var decoded = new VectorTileDecoder().decodeTile(encoded);
 
     assertEquals(tile, decoded);
+  }
+
+  @Test
+  public void file() throws IOException {
+    var path = Path.of("src/test/resources/vectortile/14-8493-5795.mvt");
+    try (var input = new GZIPInputStream(Files.newInputStream(path))) {
+      var buffer = ByteBuffer.wrap(input.readAllBytes());
+      var parsed = org.apache.baremaps.mvt.binary.VectorTile.Tile.parseFrom(buffer);
+      var tile = new VectorTileDecoder().decodeTile(parsed);
+      assertNotNull(tile);
+      assertEquals(13, tile.getLayers().size());
+    }
   }
 
 }
