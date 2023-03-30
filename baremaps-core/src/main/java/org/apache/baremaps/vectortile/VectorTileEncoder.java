@@ -64,9 +64,6 @@ public class VectorTileEncoder {
    * @return The vector tile layer
    */
   public VectorTile.Tile.Layer encodeLayer(Layer layer) {
-    cx = 0;
-    cy = 0;
-
     keys = new ArrayList<>();
     values = new ArrayList<>();
 
@@ -119,8 +116,10 @@ public class VectorTileEncoder {
    * @param feature The feature to encode.
    */
   protected void encodeFeature(Feature feature, Consumer<VectorTile.Tile.Feature> consumer) {
-    VectorTile.Tile.Feature.Builder builder = VectorTile.Tile.Feature.newBuilder();
+    cx = 0;
+    cy = 0;
 
+    VectorTile.Tile.Feature.Builder builder = VectorTile.Tile.Feature.newBuilder();
     builder.setId(feature.getId());
     builder.setType(encodeGeometryType(feature.getGeometry()));
 

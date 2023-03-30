@@ -66,7 +66,6 @@ public class VectorTileDecoder {
    *
    * @param tile The vector tile to decode
    * @return The decoded vector tile
-   * @throws IOException If an error occurs while decoding the vector tile layer
    */
   public Tile decodeTile(VectorTile.Tile tile) {
     List<Layer> layers = tile.getLayersList().stream()
@@ -80,6 +79,7 @@ public class VectorTileDecoder {
    *
    * @param buffer The bytes of the vector tile layer
    * @return The decoded layer
+   * @throws IOException If an error occurs while decoding the vector tile layer
    */
   public Layer decodeLayer(ByteBuffer buffer) throws IOException {
     try {
@@ -148,6 +148,10 @@ public class VectorTileDecoder {
    * @return The decoded feature
    */
   protected Feature decodeFeature(VectorTile.Tile.Feature feature) {
+
+    cx = 0;
+    cy = 0;
+
     long id = feature.getId();
     Map<String, Object> tags = decodeTags(feature);
     Geometry geometry = decodeGeometry(feature);
