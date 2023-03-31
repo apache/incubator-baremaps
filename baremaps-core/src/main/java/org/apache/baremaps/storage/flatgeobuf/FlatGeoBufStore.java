@@ -12,6 +12,8 @@
 
 package org.apache.baremaps.storage.flatgeobuf;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
@@ -42,12 +44,27 @@ public class FlatGeoBufStore implements Store {
   }
 
   @Override
-  public void add(Table value) throws TableException {
-
+  public void add(Table table) throws TableException {
+    try {
+      Files.delete(file);
+      Files.createFile(file);
+      var flatGeoBufTable = new FlatGeoBufTable(file, table.schema());
+      table.forEach(flatGeoBufTable::add);
+    } catch (IOException e) {
+      throw new TableException(e);
+    }
   }
 
   @Override
   public void remove(String name) throws TableException {
-
+    if (name.equals(file.getFileName().toString())) {
+      try {
+        Files.delete(file);
+      } catch (IOException e) {
+        throw new TableException(e);
+      }
+    } else {
+      throw new TableException("Table not found");
+    }
   }
 }
