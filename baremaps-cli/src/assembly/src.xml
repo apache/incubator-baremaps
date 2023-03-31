@@ -31,7 +31,20 @@
                 <include>LICENSE.header</include>
                 <include>NOTICE</include>
                 <include>README</include>
+                <include>README.md</include>
+                <include>CODE_OF_CONDUCT.md</include>
+                <include>.asf.yaml</include>
+                <include>CONTRIBUTING.md</include>
+                <include>exemples/**</include>
+                <include>.gitignore</include>
+                <include>logo.svg</include>
+                <include>RELEASE.md</include>
+                <include>.run/**</include>
+                <include>scripts/**</include>
             </includes>
+            <excludes>
+                <exclude>**/target/**</exclude>
+            </excludes>
         </fileSet>
     </fileSets>
 </assembly>
