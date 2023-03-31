@@ -18,19 +18,19 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.apache.baremaps.collection.AbstractDataCollection;
-import org.apache.baremaps.dataframe.DataFrame;
+import org.apache.baremaps.dataframe.Table;
 import org.apache.baremaps.dataframe.DataFrameException;
 import org.apache.baremaps.dataframe.Row;
 import org.apache.baremaps.dataframe.Schema;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileInputStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
 
-public class ShapefileDataFrame extends AbstractDataCollection<Row>
-    implements DataFrame, AutoCloseable {
+public class ShapefileTable extends AbstractDataCollection<Row>
+    implements Table, AutoCloseable {
 
   private final ShapefileReader shapeFile;
 
-  public ShapefileDataFrame(Path file) {
+  public ShapefileTable(Path file) {
     this.shapeFile = new ShapefileReader(file.toString());
   }
 

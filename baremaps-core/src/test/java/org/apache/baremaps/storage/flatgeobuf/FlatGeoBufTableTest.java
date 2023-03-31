@@ -19,7 +19,7 @@ import java.nio.file.Files;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
-class FlatGeoBufDataFrameTest {
+class FlatGeoBufTableTest {
 
   @Test
   void getType() throws IOException {

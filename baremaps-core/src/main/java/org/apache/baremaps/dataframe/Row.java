@@ -15,7 +15,7 @@ package org.apache.baremaps.dataframe;
 import java.util.List;
 
 /**
- * A row in a data frame.
+ * A row in a table.
  */
 public interface Row {
 

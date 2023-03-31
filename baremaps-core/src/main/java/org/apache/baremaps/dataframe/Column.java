@@ -13,7 +13,7 @@
 package org.apache.baremaps.dataframe;
 
 /**
- * A column in a data frame.
+ * A column in a table.
  */
 public interface Column {
 

@@ -60,7 +60,7 @@ public record TransformEntityCollection(Path collection, String database,
         .filter(this::filter)
         .collect(Collectors.groupingBy(this::propertyValues));
 
-    var dataFrame = new AbstractDataFrame() {
+    var dataFrame = new AbstractTable() {
 
       @Override
       public Schema schema() {

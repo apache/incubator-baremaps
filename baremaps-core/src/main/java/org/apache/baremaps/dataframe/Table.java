@@ -15,14 +15,14 @@ package org.apache.baremaps.dataframe;
 import org.apache.baremaps.collection.DataCollection;
 
 /**
- * A data frame is a collection of rows respecting a schema.
+ * A table is a collection of rows respecting a schema.
  */
-public interface DataFrame extends DataCollection<Row> {
+public interface Table extends DataCollection<Row> {
 
   /**
-   * Returns the schema of the data frame.
+   * Returns the schema of the table.
    *
-   * @return the schema of the data frame
+   * @return the schema of the table
    */
   Schema schema();
 

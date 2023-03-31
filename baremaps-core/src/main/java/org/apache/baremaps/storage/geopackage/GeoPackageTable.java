@@ -22,7 +22,7 @@ import org.apache.baremaps.collection.AbstractDataCollection;
 import org.apache.baremaps.dataframe.*;
 import org.locationtech.jts.geom.*;
 
-public class GeoPackageTable extends AbstractDataCollection<Row> implements DataFrame {
+public class GeoPackageTable extends AbstractDataCollection<Row> implements Table {
 
   private final FeatureDao featureDao;
 

@@ -13,7 +13,7 @@
 package org.apache.baremaps.dataframe;
 
 /**
- * A A column in a data frame.
+ * A A column in a table.
  */
 public record ColumnImpl(String name, Class type) implements Column {
 

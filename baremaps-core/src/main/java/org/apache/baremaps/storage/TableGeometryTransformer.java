@@ -16,27 +16,27 @@ package org.apache.baremaps.storage;
 import java.util.Iterator;
 import org.apache.baremaps.collection.AbstractDataCollection;
 import org.apache.baremaps.dataframe.Column;
-import org.apache.baremaps.dataframe.DataFrame;
+import org.apache.baremaps.dataframe.Table;
 import org.apache.baremaps.dataframe.Row;
 import org.apache.baremaps.dataframe.Schema;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 
-public class DataFrameGeometryTransformer extends AbstractDataCollection<Row> implements DataFrame {
+public class TableGeometryTransformer extends AbstractDataCollection<Row> implements Table {
 
-  private final DataFrame dataFrame;
+  private final Table table;
 
   private final GeometryTransformer transformer;
 
-  public DataFrameGeometryTransformer(DataFrame dataFrame,
-      GeometryTransformer geometryTransformer) {
-    this.dataFrame = dataFrame;
+  public TableGeometryTransformer(Table table,
+                                  GeometryTransformer geometryTransformer) {
+    this.table = table;
     this.transformer = geometryTransformer;
   }
 
   @Override
   public Schema schema() {
-    return dataFrame.schema();
+    return table.schema();
   }
 
   public Row transform(Row row) {
@@ -52,11 +52,11 @@ public class DataFrameGeometryTransformer extends AbstractDataCollection<Row> im
 
   @Override
   public Iterator<Row> iterator() {
-    return dataFrame.stream().map(this::transform).iterator();
+    return table.stream().map(this::transform).iterator();
   }
 
   @Override
   public long sizeAsLong() {
-    return dataFrame.sizeAsLong();
+    return table.sizeAsLong();
   }
 }

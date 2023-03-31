@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import org.apache.baremaps.dataframe.DataFrame;
+import org.apache.baremaps.dataframe.Table;
 import org.apache.baremaps.dataframe.DataFrameException;
 import org.apache.baremaps.dataframe.DataStore;
 
@@ -43,12 +43,12 @@ public class ShapefileDirectory implements DataStore {
   }
 
   @Override
-  public DataFrame get(String name) {
-    return new ShapefileDataFrame(directory.resolve(name));
+  public Table get(String name) {
+    return new ShapefileTable(directory.resolve(name));
   }
 
   @Override
-  public void add(DataFrame value) {
+  public void add(Table value) {
     throw new UnsupportedOperationException();
   }
 

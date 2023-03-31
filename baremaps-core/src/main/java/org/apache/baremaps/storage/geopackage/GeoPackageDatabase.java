@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import mil.nga.geopackage.GeoPackage;
 import mil.nga.geopackage.GeoPackageManager;
-import org.apache.baremaps.dataframe.DataFrame;
+import org.apache.baremaps.dataframe.Table;
 import org.apache.baremaps.dataframe.DataFrameException;
 import org.apache.baremaps.dataframe.DataStore;
 
@@ -41,12 +41,12 @@ public class GeoPackageDatabase implements DataStore, AutoCloseable {
   }
 
   @Override
-  public DataFrame get(String name) throws DataFrameException {
+  public Table get(String name) throws DataFrameException {
     return new GeoPackageTable(geoPackage.getFeatureDao(name));
   }
 
   @Override
-  public void add(DataFrame value) throws DataFrameException {
+  public void add(Table value) throws DataFrameException {
     throw new UnsupportedOperationException();
   }
 

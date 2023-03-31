@@ -15,36 +15,36 @@ package org.apache.baremaps.dataframe;
 import java.util.Collection;
 
 /**
- * A data store is a collection of data frames.
+ * A data store is a collection of tables.
  */
 public interface DataStore {
 
   /**
-   * Lists the names of the data frames.
+   * Lists the names of the tables.
    * 
-   * @return the names of the data frames
+   * @return the names of the tables
    */
   Collection<String> list() throws DataFrameException;
 
   /**
-   * Gets a data frame by its name.
+   * Gets a table by its name.
    * 
-   * @param name the name of the data frame
-   * @return the data frame
+   * @param name the name of the table
+   * @return the table
    */
-  DataFrame get(String name) throws DataFrameException;
+  Table get(String name) throws DataFrameException;
 
   /**
-   * Adds a data frame to the data store.
+   * Adds a table to the data store.
    * 
-   * @param value the data frame
+   * @param value the table
    */
-  void add(DataFrame value) throws DataFrameException;
+  void add(Table value) throws DataFrameException;
 
   /**
-   * Removes a data frame from the data store.
+   * Removes a table from the data store.
    * 
-   * @param name the name of the data frame
+   * @param name the name of the table
    */
   void remove(String name) throws DataFrameException;
 

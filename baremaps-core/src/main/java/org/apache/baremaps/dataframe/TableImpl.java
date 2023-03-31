@@ -15,18 +15,18 @@ package org.apache.baremaps.dataframe;
 import java.util.ArrayList;
 
 /**
- * A data frame is a collection of rows respecting a schema.
+ * A table is a collection of rows respecting a schema.
  */
-public class DataFrameImpl extends ArrayList<Row> implements DataFrame {
+public class TableImpl extends ArrayList<Row> implements Table {
 
   private final Schema dataType;
 
   /**
-   * Constructs a data frame with the specified schema.
+   * Constructs a table with the specified schema.
    *
-   * @param schema the schema of the data frame
+   * @param schema the schema of the table
    */
-  public DataFrameImpl(Schema schema) {
+  public TableImpl(Schema schema) {
     this.dataType = schema;
   }
 

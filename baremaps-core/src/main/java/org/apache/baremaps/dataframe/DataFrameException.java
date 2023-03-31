@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.dataframe;
 
-/** Signals that an exception occurred in a data frame. */
+/** Signals that an exception occurred in a table. */
 public class DataFrameException extends RuntimeException {
   /** Constructs a {@code DataFrameException} with {@code null} as its error detail message. */
   public DataFrameException() {}

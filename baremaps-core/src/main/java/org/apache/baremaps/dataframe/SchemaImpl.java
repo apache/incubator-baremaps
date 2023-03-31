@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A schema defines the structure of a data frame.
+ * A schema defines the structure of a table.
  */
 public record SchemaImpl(String name, List<Column> columns) implements Schema {
 

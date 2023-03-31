@@ -15,8 +15,8 @@ package org.apache.baremaps.dataframe;
 import org.apache.baremaps.collection.AbstractDataCollection;
 
 /**
- * A data frame is a collection of rows respecting a schema.
+ * A table is a collection of rows respecting a schema.
  */
-public abstract class AbstractDataFrame extends AbstractDataCollection<Row> implements DataFrame {
+public abstract class AbstractTable extends AbstractDataCollection<Row> implements Table {
 
 }

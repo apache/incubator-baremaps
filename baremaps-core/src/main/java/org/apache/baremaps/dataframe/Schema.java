@@ -15,7 +15,7 @@ package org.apache.baremaps.dataframe;
 import java.util.List;
 
 /**
- * A schema defines the structure of a data frame.
+ * A schema defines the structure of a table.
  */
 public interface Schema {
 

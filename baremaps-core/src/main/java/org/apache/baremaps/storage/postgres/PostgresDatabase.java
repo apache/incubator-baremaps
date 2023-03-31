@@ -96,14 +96,14 @@ public class PostgresDatabase implements DataStore {
   }
 
   @Override
-  public DataFrame get(String name) throws DataFrameException {
+  public Table get(String name) throws DataFrameException {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void add(DataFrame dataFrame) {
+  public void add(Table table) {
     try (var connection = dataSource.getConnection()) {
-      var schema = adaptDataType(dataFrame.schema());
+      var schema = adaptDataType(table.schema());
 
       // Drop the table if it exists
       var dropQuery = dropTable(schema.name());
@@ -125,7 +125,7 @@ public class PostgresDatabase implements DataStore {
       logger.info(copyQuery);
       try (var writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copyQuery))) {
         writer.writeHeader();
-        var rowIterator = dataFrame.iterator();
+        var rowIterator = table.iterator();
         while (rowIterator.hasNext()) {
           var row = rowIterator.next();
           var columns = getColumns(schema);

@@ -16,15 +16,15 @@ package org.apache.baremaps.storage.postgres;
 
 import java.util.Iterator;
 import org.apache.baremaps.collection.AbstractDataCollection;
-import org.apache.baremaps.dataframe.DataFrame;
+import org.apache.baremaps.dataframe.Table;
 import org.apache.baremaps.dataframe.Row;
 import org.apache.baremaps.dataframe.Schema;
 
-public class PostgresDataFrame extends AbstractDataCollection<Row> implements DataFrame {
+public class PostgresTable extends AbstractDataCollection<Row> implements Table {
 
   private final Schema schema;
 
-  public PostgresDataFrame(Schema schema) {
+  public PostgresTable(Schema schema) {
     this.schema = schema;
   }
 
