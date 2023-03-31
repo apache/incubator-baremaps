@@ -66,9 +66,10 @@ public class FlatGeoBufDataFrame extends AbstractDataCollection<Row> {
       channel.position(headerMeta.offset);
 
       // skip the index
-      var indexSize =
-          (int) PackedRTree.calcSize((int) headerMeta.featuresCount, headerMeta.indexNodeSize);
-      channel.position(headerMeta.offset + indexSize);
+      long indexOffset = headerMeta.offset;
+      long indexSize =
+          PackedRTree.calcSize((int) headerMeta.featuresCount, headerMeta.indexNodeSize);
+      channel.position(indexOffset + indexSize);
 
       buffer.clear();
 
@@ -89,9 +90,8 @@ public class FlatGeoBufDataFrame extends AbstractDataCollection<Row> {
 
   public void write(Collection<Row> features) throws IOException {
     try (
-        var channel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
-
-      var outputStream = Channels.newOutputStream(channel);
+        var channel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+        var outputStream = Channels.newOutputStream(channel)) {
       outputStream.write(Constants.MAGIC_BYTES);
 
       var bufferBuilder = new FlatBufferBuilder();

@@ -60,14 +60,6 @@ public record TransformEntityCollection(Path collection, String database,
         .filter(this::filter)
         .collect(Collectors.groupingBy(this::propertyValues));
 
-    var entityStream = groups.entrySet().stream().flatMap(entry -> {
-      var tags = IntStream.range(0, recipe.groupBy.size()).boxed()
-          .collect(Collectors.toMap(i -> recipe.groupBy.get(i), i -> entry.getKey().get(i)));
-      var geometries = entry.getValue();
-      var simplified = simplify(geometries.stream().map(Entity::getGeometry));
-      return simplified.map(geometry -> (Row) new Entity(0, tags, geometry));
-    });
-
     var dataFrame = new AbstractDataFrame() {
 
       @Override
@@ -82,7 +74,13 @@ public record TransformEntityCollection(Path collection, String database,
 
       @Override
       public Iterator<Row> iterator() {
-        return entityStream.iterator();
+        return groups.entrySet().stream().flatMap(entry -> {
+          var tags = IntStream.range(0, recipe.groupBy.size()).boxed()
+              .collect(Collectors.toMap(i -> recipe.groupBy.get(i), i -> entry.getKey().get(i)));
+          var geometries = entry.getValue();
+          var simplified = simplify(geometries.stream().map(Entity::getGeometry));
+          return simplified.map(geometry -> (Row) new Entity(0, tags, geometry));
+        }).iterator();
       }
     };
 

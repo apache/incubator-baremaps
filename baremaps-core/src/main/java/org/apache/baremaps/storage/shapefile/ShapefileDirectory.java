@@ -32,8 +32,8 @@ public class ShapefileDirectory implements DataStore {
 
   @Override
   public Collection<String> list() {
-    try {
-      return Files.list(directory)
+    try (var files = Files.list(directory)) {
+      return files
           .filter(file -> file.toString().toLowerCase().endsWith(".shp"))
           .map(file -> file.getFileName().toString())
           .toList();

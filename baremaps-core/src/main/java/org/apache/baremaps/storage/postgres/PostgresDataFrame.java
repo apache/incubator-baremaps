@@ -40,6 +40,6 @@ public class PostgresDataFrame extends AbstractDataCollection<Row> implements Da
 
   @Override
   public Schema schema() {
-    return schema();
+    return schema;
   }
 }
