@@ -29,6 +29,6 @@ public interface Column {
    *
    * @return the type of the column
    */
-  Class type();
+  <T> Class<T> type();
 
 }
