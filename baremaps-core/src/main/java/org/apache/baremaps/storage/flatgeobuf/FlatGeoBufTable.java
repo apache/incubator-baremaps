@@ -23,8 +23,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.apache.baremaps.collection.AbstractDataCollection;
-import org.apache.baremaps.dataframe.Row;
-import org.apache.baremaps.dataframe.Schema;
+import org.apache.baremaps.storage.AbstractTable;
+import org.apache.baremaps.storage.Row;
+import org.apache.baremaps.storage.Schema;
+import org.apache.baremaps.storage.flatgeobuf.internal.TableConversions;
 import org.locationtech.jts.geom.Geometry;
 import org.wololo.flatgeobuf.Constants;
 import org.wololo.flatgeobuf.GeometryConversions;
@@ -33,26 +35,28 @@ import org.wololo.flatgeobuf.PackedRTree;
 import org.wololo.flatgeobuf.generated.Feature;
 import org.wololo.flatgeobuf.generated.GeometryType;
 
-public class FlatGeoBufDataFrame extends AbstractDataCollection<Row> {
+public class FlatGeoBufTable extends AbstractTable {
 
   private final Path file;
 
   private Schema schema;
 
-  public FlatGeoBufDataFrame(Path file) {
+  public FlatGeoBufTable(Path file) {
     this.file = file;
   }
 
-  public FlatGeoBufDataFrame(Path file, Schema schema) {
+  public FlatGeoBufTable(Path file, Schema schema) {
     this.file = file;
     this.schema = schema;
   }
 
-  public Schema getSchema() throws IOException {
+  public Schema schema() {
     try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
       var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
       HeaderMeta headerMeta = readHeaderMeta(channel, buffer);
-      return DataFrameConversions.asFeatureType(headerMeta);
+      return TableConversions.asFeatureType(headerMeta);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -102,7 +106,7 @@ public class FlatGeoBufDataFrame extends AbstractDataCollection<Row> {
       headerMeta.featuresCount =
           features instanceof AbstractDataCollection<Row>c ? c.sizeAsLong() : features.size();
       headerMeta.name = schema.name();
-      headerMeta.columns = DataFrameConversions.asColumns(schema.columns());
+      headerMeta.columns = TableConversions.asColumns(schema.columns());
       HeaderMeta.write(headerMeta, outputStream, bufferBuilder);
 
       var indexSize =
@@ -131,7 +135,7 @@ public class FlatGeoBufDataFrame extends AbstractDataCollection<Row> {
           } else {
             var column = headerMeta.columns.get(i);
             propertiesBuffer.putShort((short) i);
-            DataFrameConversions.writeValue(propertiesBuffer, column, value);
+            TableConversions.writeValue(propertiesBuffer, column, value);
             i++;
           }
         }
@@ -194,7 +198,7 @@ public class FlatGeoBufDataFrame extends AbstractDataCollection<Row> {
 
         var featureSize = buffer.getInt();
         var row =
-            DataFrameConversions.asRow(headerMeta, dataType, Feature.getRootAsFeature(buffer));
+            TableConversions.asRow(headerMeta, dataType, Feature.getRootAsFeature(buffer));
 
         buffer.position(Integer.BYTES + featureSize);
         buffer.compact();

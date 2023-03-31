@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.storage.flatgeobuf;
+package org.apache.baremaps.storage.flatgeobuf.internal;
 
 
 import com.google.flatbuffers.FlatBufferBuilder;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.baremaps.dataframe.*;
+import org.apache.baremaps.storage.*;
 import org.wololo.flatgeobuf.ColumnMeta;
 import org.wololo.flatgeobuf.GeometryConversions;
 import org.wololo.flatgeobuf.HeaderMeta;
@@ -31,7 +31,7 @@ import org.wololo.flatgeobuf.generated.Crs;
 import org.wololo.flatgeobuf.generated.Feature;
 import org.wololo.flatgeobuf.generated.Header;
 
-public class DataFrameConversions {
+public class TableConversions {
 
   public static Schema asFeatureType(HeaderMeta headerMeta) {
     var name = headerMeta.name;
@@ -190,7 +190,7 @@ public class DataFrameConversions {
 
   public static List<ColumnMeta> asColumns(List<Column> columns) {
     return columns.stream()
-        .map(DataFrameConversions::asColumn)
+        .map(TableConversions::asColumn)
         .collect(Collectors.toList());
   }
 

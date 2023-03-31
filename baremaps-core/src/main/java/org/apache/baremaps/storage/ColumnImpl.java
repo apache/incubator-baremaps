@@ -10,34 +10,11 @@
  * the License.
  */
 
-package org.apache.baremaps.dataframe;
-
-import java.util.List;
+package org.apache.baremaps.storage;
 
 /**
- * A schema defines the structure of a table.
+ * A A column in a table.
  */
-public interface Schema {
-
-  /**
-   * Returns the name of the schema.
-   * 
-   * @return the name of the schema
-   */
-  String name();
-
-  /**
-   * Returns the columns of the schema.
-   * 
-   * @return the columns of the schema
-   */
-  List<Column> columns();
-
-  /**
-   * Creates a new row of the schema.
-   * 
-   * @return a new row of the schema
-   */
-  Row createRow();
+public record ColumnImpl(String name, Class type) implements Column {
 
 }

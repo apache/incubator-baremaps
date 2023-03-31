@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.dataframe;
+package org.apache.baremaps.storage;
 
 import java.util.List;
 

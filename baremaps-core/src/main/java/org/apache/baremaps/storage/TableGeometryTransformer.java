@@ -15,10 +15,6 @@ package org.apache.baremaps.storage;
 
 import java.util.Iterator;
 import org.apache.baremaps.collection.AbstractDataCollection;
-import org.apache.baremaps.dataframe.Column;
-import org.apache.baremaps.dataframe.Table;
-import org.apache.baremaps.dataframe.Row;
-import org.apache.baremaps.dataframe.Schema;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 
@@ -29,7 +25,7 @@ public class TableGeometryTransformer extends AbstractDataCollection<Row> implem
   private final GeometryTransformer transformer;
 
   public TableGeometryTransformer(Table table,
-                                  GeometryTransformer geometryTransformer) {
+      GeometryTransformer geometryTransformer) {
     this.table = table;
     this.transformer = geometryTransformer;
   }

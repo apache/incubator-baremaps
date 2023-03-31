@@ -10,21 +10,21 @@
  * the License.
  */
 
-package org.apache.baremaps.dataframe;
+package org.apache.baremaps.storage;
 
 import java.util.Collection;
 
 /**
- * A data store is a collection of tables.
+ * A store is a collection of tables.
  */
-public interface DataStore {
+public interface Store {
 
   /**
    * Lists the names of the tables.
    * 
    * @return the names of the tables
    */
-  Collection<String> list() throws DataFrameException;
+  Collection<String> list() throws TableException;
 
   /**
    * Gets a table by its name.
@@ -32,20 +32,20 @@ public interface DataStore {
    * @param name the name of the table
    * @return the table
    */
-  Table get(String name) throws DataFrameException;
+  Table get(String name) throws TableException;
 
   /**
-   * Adds a table to the data store.
+   * Adds a table to the store.
    * 
    * @param value the table
    */
-  void add(Table value) throws DataFrameException;
+  void add(Table value) throws TableException;
 
   /**
-   * Removes a table from the data store.
+   * Removes a table from the store.
    * 
    * @param name the name of the table
    */
-  void remove(String name) throws DataFrameException;
+  void remove(String name) throws TableException;
 
 }

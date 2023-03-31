@@ -10,13 +10,25 @@
  * the License.
  */
 
-package org.apache.baremaps.dataframe;
+package org.apache.baremaps.storage;
 
-import org.apache.baremaps.collection.AbstractDataCollection;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * A table is a collection of rows respecting a schema.
+ * A schema defines the structure of a table.
  */
-public abstract class AbstractTable extends AbstractDataCollection<Row> implements Table {
+public record SchemaImpl(String name, List<Column> columns) implements Schema {
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Row createRow() {
+    var values = new ArrayList<>(columns.size());
+    for (int i = 0; i < columns.size(); i++) {
+      values.add(null);
+    }
+    return new RowImpl(this, values);
+  }
 }

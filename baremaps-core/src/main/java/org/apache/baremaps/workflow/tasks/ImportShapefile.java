@@ -15,7 +15,7 @@ package org.apache.baremaps.workflow.tasks;
 import java.nio.file.Path;
 import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
 import org.apache.baremaps.storage.TableGeometryTransformer;
-import org.apache.baremaps.storage.postgres.PostgresDatabase;
+import org.apache.baremaps.storage.postgres.PostgresStore;
 import org.apache.baremaps.storage.shapefile.ShapefileTable;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
@@ -34,7 +34,7 @@ public record ImportShapefile(Path file, String database, Integer sourceSRID, In
     var path = file.toAbsolutePath();
     try (var featureSet = new ShapefileTable(path)) {
       var dataSource = context.getDataSource(database);
-      var postgresDatabase = new PostgresDatabase(dataSource);
+      var postgresDatabase = new PostgresStore(dataSource);
       postgresDatabase.add(new TableGeometryTransformer(
           featureSet, new ProjectionTransformer(sourceSRID, targetSRID)));
     } catch (Exception e) {

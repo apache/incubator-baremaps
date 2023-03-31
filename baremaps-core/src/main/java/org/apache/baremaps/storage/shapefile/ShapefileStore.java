@@ -18,15 +18,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import org.apache.baremaps.dataframe.Table;
-import org.apache.baremaps.dataframe.DataFrameException;
-import org.apache.baremaps.dataframe.DataStore;
+import org.apache.baremaps.storage.Store;
+import org.apache.baremaps.storage.Table;
+import org.apache.baremaps.storage.TableException;
 
-public class ShapefileDirectory implements DataStore {
+public class ShapefileStore implements Store {
 
   private final Path directory;
 
-  public ShapefileDirectory(Path directory) {
+  public ShapefileStore(Path directory) {
     this.directory = directory;
   }
 
@@ -38,7 +38,7 @@ public class ShapefileDirectory implements DataStore {
           .map(file -> file.getFileName().toString())
           .toList();
     } catch (IOException e) {
-      throw new DataFrameException(e);
+      throw new TableException(e);
     }
   }
 

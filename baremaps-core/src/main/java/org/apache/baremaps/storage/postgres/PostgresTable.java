@@ -16,9 +16,9 @@ package org.apache.baremaps.storage.postgres;
 
 import java.util.Iterator;
 import org.apache.baremaps.collection.AbstractDataCollection;
-import org.apache.baremaps.dataframe.Table;
-import org.apache.baremaps.dataframe.Row;
-import org.apache.baremaps.dataframe.Schema;
+import org.apache.baremaps.storage.Row;
+import org.apache.baremaps.storage.Schema;
+import org.apache.baremaps.storage.Table;
 
 public class PostgresTable extends AbstractDataCollection<Row> implements Table {
 

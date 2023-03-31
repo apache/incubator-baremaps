@@ -17,10 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.apache.baremaps.dataframe.Row;
-import org.apache.baremaps.dataframe.Schema;
 import org.apache.baremaps.mvt.expression.Expressions;
 import org.apache.baremaps.mvt.expression.Expressions.*;
+import org.apache.baremaps.storage.Row;
+import org.apache.baremaps.storage.Schema;
 import org.junit.jupiter.api.Test;
 
 class ExpressionsTest {

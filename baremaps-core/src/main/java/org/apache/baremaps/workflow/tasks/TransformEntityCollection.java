@@ -23,9 +23,9 @@ import java.util.stream.Stream;
 import org.apache.baremaps.collection.AppendOnlyBuffer;
 import org.apache.baremaps.collection.algorithm.UnionStream;
 import org.apache.baremaps.collection.memory.MemoryMappedFile;
-import org.apache.baremaps.dataframe.*;
 import org.apache.baremaps.mvt.expression.Expressions.Expression;
-import org.apache.baremaps.storage.postgres.PostgresDatabase;
+import org.apache.baremaps.storage.*;
+import org.apache.baremaps.storage.postgres.PostgresStore;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Geometry;
@@ -53,18 +53,18 @@ public record TransformEntityCollection(Path collection, String database,
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Transform {} with {}", collection, recipe);
 
-    var dataType = new SchemaImpl(recipe.name, columns());
+    var schema = new SchemaImpl(recipe.name, columns());
 
     var groups = new AppendOnlyBuffer<>(new EntityDataType(), new MemoryMappedFile(collection))
         .stream()
         .filter(this::filter)
         .collect(Collectors.groupingBy(this::propertyValues));
 
-    var dataFrame = new AbstractTable() {
+    var table = new AbstractTable() {
 
       @Override
       public Schema schema() {
-        return dataType;
+        return schema;
       }
 
       @Override
@@ -85,8 +85,8 @@ public record TransformEntityCollection(Path collection, String database,
     };
 
     var dataSource = context.getDataSource(database);
-    var postgresDatabase = new PostgresDatabase(dataSource);
-    postgresDatabase.add(dataFrame);
+    var postgresDatabase = new PostgresStore(dataSource);
+    postgresDatabase.add(table);
   }
 
   private Stream<Geometry> simplify(Stream<Geometry> geometries) {

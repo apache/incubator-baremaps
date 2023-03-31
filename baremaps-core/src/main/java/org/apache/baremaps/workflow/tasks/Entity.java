@@ -15,7 +15,7 @@ package org.apache.baremaps.workflow.tasks;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.baremaps.dataframe.*;
+import org.apache.baremaps.storage.*;
 import org.locationtech.jts.geom.Geometry;
 
 public class Entity implements Row {

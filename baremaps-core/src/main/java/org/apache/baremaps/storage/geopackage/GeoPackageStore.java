@@ -17,16 +17,16 @@ import java.nio.file.Path;
 import java.util.Collection;
 import mil.nga.geopackage.GeoPackage;
 import mil.nga.geopackage.GeoPackageManager;
-import org.apache.baremaps.dataframe.Table;
-import org.apache.baremaps.dataframe.DataFrameException;
-import org.apache.baremaps.dataframe.DataStore;
+import org.apache.baremaps.storage.Store;
+import org.apache.baremaps.storage.Table;
+import org.apache.baremaps.storage.TableException;
 
 
-public class GeoPackageDatabase implements DataStore, AutoCloseable {
+public class GeoPackageStore implements Store, AutoCloseable {
 
   private final GeoPackage geoPackage;
 
-  public GeoPackageDatabase(Path path) {
+  public GeoPackageStore(Path path) {
     this.geoPackage = GeoPackageManager.open(path.toFile());
   }
 
@@ -36,22 +36,22 @@ public class GeoPackageDatabase implements DataStore, AutoCloseable {
   }
 
   @Override
-  public Collection<String> list() throws DataFrameException {
+  public Collection<String> list() throws TableException {
     return geoPackage.getFeatureTables();
   }
 
   @Override
-  public Table get(String name) throws DataFrameException {
+  public Table get(String name) throws TableException {
     return new GeoPackageTable(geoPackage.getFeatureDao(name));
   }
 
   @Override
-  public void add(Table value) throws DataFrameException {
+  public void add(Table value) throws TableException {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void remove(String name) throws DataFrameException {
+  public void remove(String name) throws TableException {
     throw new UnsupportedOperationException();
   }
 }

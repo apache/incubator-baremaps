@@ -15,8 +15,8 @@ package org.apache.baremaps.workflow.tasks;
 import java.nio.file.Path;
 import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
 import org.apache.baremaps.storage.TableGeometryTransformer;
-import org.apache.baremaps.storage.geopackage.GeoPackageDatabase;
-import org.apache.baremaps.storage.postgres.PostgresDatabase;
+import org.apache.baremaps.storage.geopackage.GeoPackageStore;
+import org.apache.baremaps.storage.postgres.PostgresStore;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
@@ -32,14 +32,14 @@ public record ImportGeoPackage(Path file, String database, Integer sourceSRID, I
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var path = file.toAbsolutePath();
-    try (var geoPackageDatabase = new GeoPackageDatabase(path)) {
+    try (var geoPackageDatabase = new GeoPackageStore(path)) {
       var dataSource = context.getDataSource(database);
-      var postgresDatabase = new PostgresDatabase(dataSource);
+      var postgresDatabase = new PostgresStore(dataSource);
       for (var name : geoPackageDatabase.list()) {
         var transformer = new ProjectionTransformer(sourceSRID, targetSRID);
-        var transformedDataFrame =
+        var transformedTable =
             new TableGeometryTransformer(geoPackageDatabase.get(name), transformer);
-        postgresDatabase.add(transformedDataFrame);
+        postgresDatabase.add(transformedTable);
       }
     } catch (Exception e) {
       throw new WorkflowException(e);

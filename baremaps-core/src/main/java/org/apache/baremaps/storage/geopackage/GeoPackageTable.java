@@ -19,7 +19,7 @@ import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
 import org.apache.baremaps.collection.AbstractDataCollection;
-import org.apache.baremaps.dataframe.*;
+import org.apache.baremaps.storage.*;
 import org.locationtech.jts.geom.*;
 
 public class GeoPackageTable extends AbstractDataCollection<Row> implements Table {

@@ -23,15 +23,15 @@ class FlatGeoBufTableTest {
 
   @Test
   void getType() throws IOException {
-    var featureSet = new FlatGeoBufDataFrame(TestFiles.resolve("countries.fgb"));
-    var featureType = featureSet.getSchema();
+    var featureSet = new FlatGeoBufTable(TestFiles.resolve("countries.fgb"));
+    var featureType = featureSet.schema();
     assertEquals(featureType.name(), null);
     assertEquals(featureType.columns().size(), 2);
   }
 
   @Test
   void read() throws IOException {
-    var featureSet = new FlatGeoBufDataFrame(TestFiles.resolve("countries.fgb"));
+    var featureSet = new FlatGeoBufTable(TestFiles.resolve("countries.fgb"));
     assertEquals(179, featureSet.sizeAsLong());
     assertEquals(179, featureSet.stream().count());
 
@@ -41,12 +41,12 @@ class FlatGeoBufTableTest {
   void write() throws IOException {
     var file = Files.createTempFile("countries", ".fgb");
     file.toFile().deleteOnExit();
-    var featureSet1 = new FlatGeoBufDataFrame(TestFiles.resolve("countries.fgb"));
+    var featureSet1 = new FlatGeoBufTable(TestFiles.resolve("countries.fgb"));
     var featureList = featureSet1.stream().toList();
-    var featureSet2 = new FlatGeoBufDataFrame(file, featureSet1.getSchema());
+    var featureSet2 = new FlatGeoBufTable(file, featureSet1.schema());
     featureSet2.write(featureList);
 
-    var featureSet = new FlatGeoBufDataFrame(file);
+    var featureSet = new FlatGeoBufTable(file);
     assertEquals(179, featureSet.stream().count());
   }
 

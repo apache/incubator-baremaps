@@ -25,16 +25,16 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.copy.CopyWriter;
 import org.apache.baremaps.database.copy.PostgisGeometryValueHandler;
-import org.apache.baremaps.dataframe.*;
+import org.apache.baremaps.storage.*;
 import org.locationtech.jts.geom.*;
 import org.postgresql.PGConnection;
 import org.postgresql.copy.PGCopyOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PostgresDatabase implements DataStore {
+public class PostgresStore implements Store {
 
-  private static final Logger logger = LoggerFactory.getLogger(PostgresDatabase.class);
+  private static final Logger logger = LoggerFactory.getLogger(PostgresStore.class);
 
   private static Map<Class, String> typeToName = Map.ofEntries(
       Map.entry(String.class, "varchar"),
@@ -78,7 +78,7 @@ public class PostgresDatabase implements DataStore {
 
   private final DataSource dataSource;
 
-  public PostgresDatabase(DataSource dataSource) {
+  public PostgresStore(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
@@ -91,12 +91,12 @@ public class PostgresDatabase implements DataStore {
   }
 
   @Override
-  public Collection<String> list() throws DataFrameException {
+  public Collection<String> list() throws TableException {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public Table get(String name) throws DataFrameException {
+  public Table get(String name) throws TableException {
     throw new UnsupportedOperationException();
   }
 

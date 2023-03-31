@@ -10,38 +10,38 @@
  * the License.
  */
 
-package org.apache.baremaps.dataframe;
+package org.apache.baremaps.storage;
 
 /** Signals that an exception occurred in a table. */
-public class DataFrameException extends RuntimeException {
-  /** Constructs a {@code DataFrameException} with {@code null} as its error detail message. */
-  public DataFrameException() {}
+public class TableException extends RuntimeException {
+  /** Constructs a {@code TableException} with {@code null} as its error detail message. */
+  public TableException() {}
 
   /**
-   * Constructs an {@code DataFrameException} with the specified detail message.
+   * Constructs an {@code TableException} with the specified detail message.
    *
    * @param message the message
    */
-  public DataFrameException(String message) {
+  public TableException(String message) {
     super(message);
   }
 
   /**
-   * Constructs a {@code DataFrameException} with the specified cause.
+   * Constructs a {@code TableException} with the specified cause.
    *
    * @param cause the cause
    */
-  public DataFrameException(Throwable cause) {
+  public TableException(Throwable cause) {
     super(cause);
   }
 
   /**
-   * Constructs a {@code DataFrameException} with the specified detail message and cause.
+   * Constructs a {@code TableException} with the specified detail message and cause.
    *
    * @param message the message
    * @param cause the cause
    */
-  public DataFrameException(String message, Throwable cause) {
+  public TableException(String message, Throwable cause) {
     super(message, cause);
   }
 }

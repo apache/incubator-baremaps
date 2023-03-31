@@ -10,25 +10,39 @@
  * the License.
  */
 
-package org.apache.baremaps.dataframe;
+package org.apache.baremaps.storage;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
- * A schema defines the structure of a table.
+ * A table is a collection of rows respecting a schema.
  */
-public record SchemaImpl(String name, List<Column> columns) implements Schema {
+public class TableImpl extends ArrayList<Row> implements Table {
+
+  private final Schema dataType;
+
+  /**
+   * Constructs a table with the specified schema.
+   *
+   * @param schema the schema of the table
+   */
+  public TableImpl(Schema schema) {
+    this.dataType = schema;
+  }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public Row createRow() {
-    var values = new ArrayList<>(columns.size());
-    for (int i = 0; i < columns.size(); i++) {
-      values.add(null);
-    }
-    return new RowImpl(this, values);
+  public long sizeAsLong() {
+    return size();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Schema schema() {
+    return dataType;
   }
 }

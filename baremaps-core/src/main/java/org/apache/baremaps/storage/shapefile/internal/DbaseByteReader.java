@@ -22,7 +22,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 import java.text.MessageFormat;
 import java.util.*;
-import org.apache.baremaps.dataframe.Row;
+import org.apache.baremaps.storage.Row;
 
 /**
  * Reader of a Database Binary content.

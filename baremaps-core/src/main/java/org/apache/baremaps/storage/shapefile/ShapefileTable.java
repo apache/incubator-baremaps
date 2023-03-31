@@ -18,10 +18,10 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.apache.baremaps.collection.AbstractDataCollection;
-import org.apache.baremaps.dataframe.Table;
-import org.apache.baremaps.dataframe.DataFrameException;
-import org.apache.baremaps.dataframe.Row;
-import org.apache.baremaps.dataframe.Schema;
+import org.apache.baremaps.storage.Row;
+import org.apache.baremaps.storage.Schema;
+import org.apache.baremaps.storage.Table;
+import org.apache.baremaps.storage.TableException;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileInputStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
 
@@ -35,11 +35,11 @@ public class ShapefileTable extends AbstractDataCollection<Row>
   }
 
   @Override
-  public Schema schema() throws DataFrameException {
+  public Schema schema() throws TableException {
     try (var input = shapeFile.read()) {
       return input.getSchema();
     } catch (IOException e) {
-      throw new DataFrameException(e);
+      throw new TableException(e);
     }
   }
 

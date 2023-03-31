@@ -10,25 +10,13 @@
  * the License.
  */
 
-package org.apache.baremaps.dataframe;
+package org.apache.baremaps.storage;
+
+import org.apache.baremaps.collection.AbstractDataCollection;
 
 /**
- * A column in a table.
+ * A table is a collection of rows respecting a schema.
  */
-public interface Column {
-
-  /**
-   * Returns the name of the column.
-   *
-   * @return the name of the column
-   */
-  String name();
-
-  /**
-   * Returns the type of the column.
-   *
-   * @return the type of the column
-   */
-  <T> Class<T> type();
+public abstract class AbstractTable extends AbstractDataCollection<Row> implements Table {
 
 }
