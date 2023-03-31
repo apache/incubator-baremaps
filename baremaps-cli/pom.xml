@@ -99,9 +99,6 @@
             </goals>
             <phase>package</phase>
             <configuration>
-              <filters>
-                <filter>src/assembly/filter.properties</filter>
-              </filters>
               <finalName>${project.parent.artifactId}-${project.parent.version}-incubating-src</finalName>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
