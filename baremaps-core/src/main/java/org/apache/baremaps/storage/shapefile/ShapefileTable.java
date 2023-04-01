@@ -17,16 +17,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.apache.baremaps.collection.AbstractDataCollection;
-import org.apache.baremaps.storage.Row;
-import org.apache.baremaps.storage.Schema;
-import org.apache.baremaps.storage.Table;
-import org.apache.baremaps.storage.TableException;
+import org.apache.baremaps.storage.*;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileInputStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
 
-public class ShapefileTable extends AbstractDataCollection<Row>
-    implements Table, AutoCloseable {
+public class ShapefileTable extends AbstractTable {
 
   private final ShapefileReader shapeFile;
 
@@ -54,12 +49,7 @@ public class ShapefileTable extends AbstractDataCollection<Row>
 
   @Override
   public long sizeAsLong() {
-    return 0;
-  }
-
-  @Override
-  public void close() throws Exception {
-
+    return Long.MAX_VALUE;
   }
 
   static class RowIterator implements Iterator<Row> {

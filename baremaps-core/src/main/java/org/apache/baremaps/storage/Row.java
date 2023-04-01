@@ -24,7 +24,7 @@ public interface Row {
    * 
    * @return the schema of the row
    */
-  Schema dataType();
+  Schema schema();
 
   /**
    * Returns the values of the columns in the row.

@@ -14,7 +14,7 @@ package org.apache.baremaps.database.metadata;
 
 import java.util.List;
 
-public record TableMetaData(
+public record TableMetadata(
     TableResult table, List<PrimaryKeyResult> primaryKeys, List<ColumnResult> columns) {
 
   public List<ColumnResult> getGeometryColumns() {

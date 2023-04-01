@@ -34,7 +34,6 @@ class FlatGeoBufTableTest {
     var featureSet = new FlatGeoBufTable(TestFiles.resolve("countries.fgb"));
     assertEquals(179, featureSet.sizeAsLong());
     assertEquals(179, featureSet.stream().count());
-
   }
 
   @Test

@@ -28,7 +28,7 @@ class ExpressionsTest {
   record RowMock(Map<String, Object> properties) implements Row {
 
     @Override
-    public Schema dataType() {
+    public Schema schema() {
       throw new UnsupportedOperationException();
     }
 

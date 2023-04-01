@@ -34,7 +34,7 @@ public class Entity implements Row {
 
 
   @Override
-  public Schema dataType() {
+  public Schema schema() {
     var columns = new ArrayList<Column>();
     columns.add(new ColumnImpl("id", Long.class));
     columns.add(new ColumnImpl("geometry", Geometry.class));

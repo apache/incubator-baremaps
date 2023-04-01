@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.copy.CopyWriter;
 import org.apache.baremaps.database.copy.PostgisGeometryValueHandler;
+import org.apache.baremaps.database.metadata.DatabaseMetadata;
 import org.apache.baremaps.storage.*;
 import org.locationtech.jts.geom.*;
 import org.postgresql.PGConnection;
@@ -36,7 +37,7 @@ public class PostgresStore implements Store {
 
   private static final Logger logger = LoggerFactory.getLogger(PostgresStore.class);
 
-  private static Map<Class, String> typeToName = Map.ofEntries(
+  protected static final Map<Class, String> typeToName = Map.ofEntries(
       Map.entry(String.class, "varchar"),
       Map.entry(Short.class, "int2"),
       Map.entry(Integer.class, "int4"),
@@ -56,7 +57,19 @@ public class PostgresStore implements Store {
       Map.entry(LocalTime.class, "time"),
       Map.entry(LocalDateTime.class, "timestamp"));
 
-  private static Map<Class, BaseValueHandler> typeToHandler = Map.ofEntries(
+  protected static final Map<String, Class> nameToType = Map.ofEntries(
+      Map.entry("varchar", String.class),
+      Map.entry("int2", Short.class),
+      Map.entry("int4", Integer.class),
+      Map.entry("int8", Long.class),
+      Map.entry("float4", Float.class),
+      Map.entry("float8", Double.class),
+      Map.entry("geometry", Geometry.class),
+      Map.entry("date", LocalDate.class),
+      Map.entry("time", LocalTime.class),
+      Map.entry("timestamp", LocalDateTime.class));
+
+  public static final Map<Class, BaseValueHandler> typeToHandler = Map.ofEntries(
       Map.entry(String.class, new StringValueHandler()),
       Map.entry(Short.class, new ShortValueHandler()),
       Map.entry(Integer.class, new IntegerValueHandler()),
@@ -82,9 +95,9 @@ public class PostgresStore implements Store {
     this.dataSource = dataSource;
   }
 
-  private Schema adaptDataType(Schema datatype) {
-    var name = datatype.name().replaceAll("[^a-zA-Z0-9]", "_");
-    var properties = datatype.columns().stream()
+  private Schema adaptDataType(Schema schema) {
+    var name = schema.name().replaceAll("[^a-zA-Z0-9]", "_");
+    var properties = schema.columns().stream()
         .filter(columnType -> typeToName.containsKey(columnType.type()))
         .toList();
     return new SchemaImpl(name, properties);
@@ -92,12 +105,21 @@ public class PostgresStore implements Store {
 
   @Override
   public Collection<String> list() throws TableException {
-    throw new UnsupportedOperationException();
+    DatabaseMetadata metadata = new DatabaseMetadata(dataSource);
+    return metadata.getTableMetaData(null, "public", null, null).stream()
+        .map(table -> table.table().tableName())
+        .collect(Collectors.toList());
   }
 
   @Override
   public Table get(String name) throws TableException {
-    throw new UnsupportedOperationException();
+    var databaseMetadata = new DatabaseMetadata(dataSource);
+    var tableMetadata = databaseMetadata.getTableMetaData(null, null, name, null)
+        .stream().findFirst();
+    if (tableMetadata.isEmpty()) {
+      throw new TableException("Table " + name + " does not exist.");
+    }
+    return new PostgresTable(dataSource, tableMetadata.get());
   }
 
   @Override
@@ -119,9 +141,9 @@ public class PostgresStore implements Store {
         createStatement.execute();
       }
 
-      // Populate the table with a copy query
+      // Copy the data
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
-      var copyQuery = copyTable(schema);
+      var copyQuery = copy(schema);
       logger.info(copyQuery);
       try (var writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copyQuery))) {
         writer.writeHeader();
@@ -130,9 +152,8 @@ public class PostgresStore implements Store {
           var row = rowIterator.next();
           var columns = getColumns(schema);
           writer.startRow(columns.size());
-          for (var column : columns) {
-            var name = column.name().toString();
-            var value = row.get(name);
+          for (Column column : columns) {
+            var value = row.get(column.name());
             if (value == null) {
               writer.writeNull();
             } else {
@@ -146,15 +167,20 @@ public class PostgresStore implements Store {
     }
   }
 
-  private List<Column> getColumns(Schema schema) {
-    return schema.columns().stream()
-        .filter(this::isSupported)
-        .collect(Collectors.toList());
+  @Override
+  public void remove(String name) {
+    try (var connection = dataSource.getConnection();
+        var statement = connection.prepareStatement(dropTable(name))) {
+      statement.execute();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 
-  private boolean isSupported(Column column) {
-    return typeToName.containsKey(column.type());
+  private String dropTable(String name) {
+    return String.format("DROP TABLE IF EXISTS \"%s\" CASCADE", name);
   }
+
 
   private String createTable(Schema schema) {
     StringBuilder builder = new StringBuilder();
@@ -169,8 +195,8 @@ public class PostgresStore implements Store {
     return builder.toString();
   }
 
-  private String copyTable(Schema schema) {
-    StringBuilder builder = new StringBuilder();
+  protected String copy(Schema schema) {
+    var builder = new StringBuilder();
     builder.append("COPY \"");
     builder.append(schema.name());
     builder.append("\" (");
@@ -181,17 +207,13 @@ public class PostgresStore implements Store {
     return builder.toString();
   }
 
-  @Override
-  public void remove(String name) {
-    try (var connection = dataSource.getConnection();
-        var statement = connection.createStatement()) {
-      statement.executeQuery(dropTable(name));
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
+  protected List<Column> getColumns(Schema schema) {
+    return schema.columns().stream()
+        .filter(this::isSupported)
+        .collect(Collectors.toList());
   }
 
-  private String dropTable(String name) {
-    return String.format("DROP TABLE IF EXISTS \"%s\" CASCADE", name);
+  protected boolean isSupported(Column column) {
+    return typeToName.containsKey(column.type());
   }
 }

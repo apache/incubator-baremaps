@@ -32,7 +32,8 @@ public record ImportShapefile(Path file, String database, Integer sourceSRID, In
   @Override
   public void execute(WorkflowContext context) throws Exception {
     var path = file.toAbsolutePath();
-    try (var featureSet = new ShapefileTable(path)) {
+    try {
+      var featureSet = new ShapefileTable(path);
       var dataSource = context.getDataSource(database);
       var postgresDatabase = new PostgresStore(dataSource);
       postgresDatabase.add(new TableGeometryTransformer(

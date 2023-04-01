@@ -28,7 +28,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 
-class Constants {
+public class Constants {
 
   public static final GeometryFactory GEOMETRY_FACTORY =
       new GeometryFactory(new PrecisionModel(), 4326);
