@@ -15,9 +15,11 @@ package org.apache.baremaps.storage.postgres;
 
 import static org.apache.baremaps.storage.postgres.PostgresStore.*;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
-import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.metadata.TableMetadata;
 import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
@@ -32,50 +34,16 @@ public class PostgresTable extends AbstractTable {
 
   private final DataSource dataSource;
 
-  private final TableMetadata tableMetadata;
-
   private final Schema schema;
 
   public PostgresTable(DataSource dataSource, TableMetadata tableMetadata) {
     this.dataSource = dataSource;
-    this.tableMetadata = tableMetadata;
-    this.schema = getSchema(tableMetadata);
+    this.schema = createSchema(tableMetadata);
   }
 
   @Override
   public Iterator<Row> iterator() {
-    try {
-      var connection = dataSource.getConnection();
-      var statement = connection.prepareStatement(select(schema));
-      var resultSet = statement.executeQuery();
-      var stream = Stream.generate(() -> {
-        try {
-          boolean next = resultSet.next();
-          if (next) {
-            List<Object> values = new ArrayList<>();
-            for (int i = 0; i < schema.columns().size(); i++) {
-              var column = schema.columns().get(i);
-              if (column.type().isAssignableFrom(Geometry.class)) {
-                values.add(GeometryUtils.deserialize(resultSet.getBytes(i + 1)));
-              } else {
-                values.add(resultSet.getObject(i + 1));
-              }
-            }
-            return (Row) new RowImpl(schema, values);
-          } else {
-            resultSet.close();
-            statement.close();
-            connection.close();
-            return null;
-          }
-        } catch (SQLException e) {
-          throw new RuntimeException(e);
-        }
-      }).takeWhile(Objects::nonNull);
-      return stream.iterator();
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
+    return new PostgresIterator();
   }
 
   @Override
@@ -137,7 +105,7 @@ public class PostgresTable extends AbstractTable {
     }
   }
 
-  protected static Schema getSchema(TableMetadata tableMetadata) {
+  protected static Schema createSchema(TableMetadata tableMetadata) {
     var name = tableMetadata.table().tableName();
     var columns = tableMetadata.columns().stream()
         .map(column -> new ColumnImpl(column.columnName(), nameToType.get(column.typeName())))
@@ -173,5 +141,73 @@ public class PostgresTable extends AbstractTable {
 
   protected String count(Schema schema) {
     return String.format("SELECT COUNT(*) FROM %s", schema.name());
+  }
+
+  public class PostgresIterator implements Iterator<Row>, AutoCloseable {
+
+    private Connection connection;
+    private Statement statement;
+    private ResultSet resultSet;
+    private boolean hasNext;
+
+    public PostgresIterator() {
+      try {
+        connection = dataSource.getConnection();
+        statement = connection.createStatement();
+        resultSet = statement.executeQuery(select(schema));
+        hasNext = resultSet.next();
+      } catch (SQLException e) {
+        close();
+        throw new RuntimeException("Error while initializing SQL query iterator", e);
+      }
+    }
+
+    @Override
+    public boolean hasNext() {
+      if (!hasNext) {
+        close();
+      }
+      return hasNext;
+    }
+
+    @Override
+    public Row next() {
+      if (!hasNext) {
+        throw new NoSuchElementException();
+      }
+      try {
+        List<Object> values = new ArrayList<>();
+        for (int i = 0; i < schema.columns().size(); i++) {
+          var column = schema.columns().get(i);
+          if (column.type().isAssignableFrom(Geometry.class)) {
+            values.add(GeometryUtils.deserialize(resultSet.getBytes(i + 1)));
+          } else {
+            values.add(resultSet.getObject(i + 1));
+          }
+        }
+        hasNext = resultSet.next();
+        return new RowImpl(schema, values);
+      } catch (SQLException e) {
+        close();
+        throw new RuntimeException("Error while fetching the next result", e);
+      }
+    }
+
+    @Override
+    public void close() {
+      try {
+        if (resultSet != null) {
+          resultSet.close();
+        }
+        if (statement != null) {
+          statement.close();
+        }
+        if (connection != null) {
+          connection.close();
+        }
+      } catch (SQLException e) {
+        throw new RuntimeException("Error while closing resources", e);
+      }
+    }
   }
 }

@@ -181,7 +181,6 @@ public class PostgresStore implements Store {
     return String.format("DROP TABLE IF EXISTS \"%s\" CASCADE", name);
   }
 
-
   private String createTable(Schema schema) {
     StringBuilder builder = new StringBuilder();
     builder.append("CREATE TABLE \"");
