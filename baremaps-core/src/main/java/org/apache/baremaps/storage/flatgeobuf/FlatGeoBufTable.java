@@ -35,22 +35,44 @@ import org.wololo.flatgeobuf.PackedRTree;
 import org.wololo.flatgeobuf.generated.Feature;
 import org.wololo.flatgeobuf.generated.GeometryType;
 
+/**
+ * A table that stores rows in a flatgeobuf file.
+ */
 public class FlatGeoBufTable extends AbstractTable {
 
   private final Path file;
 
   private Schema schema;
 
+  /**
+   * Constructs a table from a flatgeobuf file.
+   *
+   * @param file the path to the flatgeobuf file
+   */
   public FlatGeoBufTable(Path file) {
     this.file = file;
   }
 
+  /**
+   * Constructs a table from a flatgeobuf file and a schema (used for writing).
+   *
+   * @param file the path to the flatgeobuf file
+   * @param schema the schema of the table
+   */
   public FlatGeoBufTable(Path file, Schema schema) {
     this.file = file;
     this.schema = schema;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public Schema schema() {
+    if (schema != null) {
+      return schema;
+    }
+
+    // try to read the schema from the file
     try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
       var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
       HeaderMeta headerMeta = readHeaderMeta(channel, buffer);
@@ -60,6 +82,9 @@ public class FlatGeoBufTable extends AbstractTable {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Iterator<Row> iterator() {
     try {
@@ -77,6 +102,9 @@ public class FlatGeoBufTable extends AbstractTable {
 
       buffer.clear();
 
+      // read the schema
+      var schema = schema();
+
       // create the feature stream
       return new RowIterator(channel, headerMeta, schema, buffer);
     } catch (IOException e) {
@@ -84,7 +112,28 @@ public class FlatGeoBufTable extends AbstractTable {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public long sizeAsLong() {
+    try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
+      var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
+      HeaderMeta headerMeta = readHeaderMeta(channel, buffer);
+      return headerMeta.featuresCount;
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
+  /**
+   * Reads the header meta from a channel.
+   *
+   * @param channel the channel to read from
+   * @param buffer the buffer to use
+   * @return the header meta
+   * @throws IOException if an error occurs while reading the header meta
+   */
   private HeaderMeta readHeaderMeta(SeekableByteChannel channel, ByteBuffer buffer)
       throws IOException {
     channel.read(buffer);
@@ -92,6 +141,12 @@ public class FlatGeoBufTable extends AbstractTable {
     return HeaderMeta.read(buffer);
   }
 
+  /**
+   * Writes a collection of rows to a flatgeobuf file.
+   *
+   * @param features the collection of rows to write
+   * @throws IOException if an error occurs while writing the rows
+   */
   public void write(Collection<Row> features) throws IOException {
     try (
         var channel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
@@ -154,22 +209,14 @@ public class FlatGeoBufTable extends AbstractTable {
     }
   }
 
-  @Override
-  public long sizeAsLong() {
-    try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
-      var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
-      HeaderMeta headerMeta = readHeaderMeta(channel, buffer);
-      return headerMeta.featuresCount;
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
+  /**
+   * An iterator over rows in a flatgeobuf file.
+   */
   public static class RowIterator implements Iterator<Row> {
 
     private final HeaderMeta headerMeta;
 
-    private final Schema dataType;
+    private final Schema schema;
 
     private final SeekableByteChannel channel;
 
@@ -177,19 +224,33 @@ public class FlatGeoBufTable extends AbstractTable {
 
     private long cursor = 0;
 
+    /**
+     * Constructs a row iterator.
+     *
+     * @param channel the channel to read from
+     * @param headerMeta the header meta
+     * @param schema the schema of the table
+     * @param buffer the buffer to use
+     */
     public RowIterator(SeekableByteChannel channel, HeaderMeta headerMeta,
-        Schema dataType, ByteBuffer buffer) {
+        Schema schema, ByteBuffer buffer) {
       this.channel = channel;
       this.headerMeta = headerMeta;
-      this.dataType = dataType;
+      this.schema = schema;
       this.buffer = buffer;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean hasNext() {
       return cursor < headerMeta.featuresCount;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Row next() {
       try {
@@ -198,7 +259,7 @@ public class FlatGeoBufTable extends AbstractTable {
 
         var featureSize = buffer.getInt();
         var row =
-            TableConversions.asRow(headerMeta, dataType, Feature.getRootAsFeature(buffer));
+            TableConversions.asRow(headerMeta, schema, Feature.getRootAsFeature(buffer));
 
         buffer.position(Integer.BYTES + featureSize);
         buffer.compact();
@@ -211,5 +272,4 @@ public class FlatGeoBufTable extends AbstractTable {
       }
     }
   }
-
 }

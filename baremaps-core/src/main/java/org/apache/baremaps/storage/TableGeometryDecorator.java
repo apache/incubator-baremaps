@@ -18,24 +18,57 @@ import org.apache.baremaps.collection.AbstractDataCollection;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.GeometryTransformer;
 
-public class TableGeometryTransformer extends AbstractDataCollection<Row> implements Table {
+/**
+ * A decorator for a table that transforms the geometries of the rows.
+ */
+public class TableGeometryDecorator extends AbstractDataCollection<Row> implements Table {
 
   private final Table table;
 
   private final GeometryTransformer transformer;
 
-  public TableGeometryTransformer(Table table,
-      GeometryTransformer geometryTransformer) {
+  /**
+   * Constructs a new table geometry decorator.
+   *
+   * @param table the table to decorate
+   * @param geometryTransformer the geometry transformer
+   */
+  public TableGeometryDecorator(Table table, GeometryTransformer geometryTransformer) {
     this.table = table;
     this.transformer = geometryTransformer;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Schema schema() {
     return table.schema();
   }
 
-  public Row transform(Row row) {
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Iterator<Row> iterator() {
+    return table.stream().map(this::transform).iterator();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public long sizeAsLong() {
+    return table.sizeAsLong();
+  }
+
+  /**
+   * Transforms the geometry of a row.
+   *
+   * @param row The row to transform.
+   * @return The transformed row.
+   */
+  protected Row transform(Row row) {
     var columns = schema().columns().stream()
         .filter(column -> column.type().isInstance(Geometry.class)).toList();
     for (Column column : columns) {
@@ -44,15 +77,5 @@ public class TableGeometryTransformer extends AbstractDataCollection<Row> implem
       row.set(name, transformer.transform(geometry));
     }
     return row;
-  }
-
-  @Override
-  public Iterator<Row> iterator() {
-    return table.stream().map(this::transform).iterator();
-  }
-
-  @Override
-  public long sizeAsLong() {
-    return table.sizeAsLong();
   }
 }

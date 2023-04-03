@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 import org.apache.baremaps.database.copy.CopyWriter;
 import org.apache.baremaps.database.copy.PostgisGeometryValueHandler;
 import org.apache.baremaps.database.metadata.DatabaseMetadata;
+import org.apache.baremaps.database.metadata.TableMetadata;
 import org.apache.baremaps.storage.*;
 import org.locationtech.jts.geom.*;
 import org.postgresql.PGConnection;
@@ -33,6 +34,9 @@ import org.postgresql.copy.PGCopyOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A store that stores tables in a Postgres database.
+ */
 public class PostgresStore implements Store {
 
   private static final Logger logger = LoggerFactory.getLogger(PostgresStore.class);
@@ -91,18 +95,18 @@ public class PostgresStore implements Store {
 
   private final DataSource dataSource;
 
+  /**
+   * Creates a postgres store.
+   *
+   * @param dataSource the data source
+   */
   public PostgresStore(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
-  private Schema adaptDataType(Schema schema) {
-    var name = schema.name().replaceAll("[^a-zA-Z0-9]", "_");
-    var properties = schema.columns().stream()
-        .filter(columnType -> typeToName.containsKey(columnType.type()))
-        .toList();
-    return new SchemaImpl(name, properties);
-  }
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Collection<String> list() throws TableException {
     DatabaseMetadata metadata = new DatabaseMetadata(dataSource);
@@ -111,6 +115,9 @@ public class PostgresStore implements Store {
         .collect(Collectors.toList());
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Table get(String name) throws TableException {
     var databaseMetadata = new DatabaseMetadata(dataSource);
@@ -119,9 +126,13 @@ public class PostgresStore implements Store {
     if (tableMetadata.isEmpty()) {
       throw new TableException("Table " + name + " does not exist.");
     }
-    return new PostgresTable(dataSource, tableMetadata.get());
+    var schema = createSchema(tableMetadata.get());
+    return new PostgresTable(dataSource, schema);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void add(Table table) {
     try (var connection = dataSource.getConnection()) {
@@ -167,6 +178,9 @@ public class PostgresStore implements Store {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void remove(String name) {
     try (var connection = dataSource.getConnection();
@@ -177,11 +191,52 @@ public class PostgresStore implements Store {
     }
   }
 
-  private String dropTable(String name) {
+  /**
+   * Creates a schema from the metadata of a postgres table.
+   *
+   * @param tableMetadata the table metadata
+   * @return the schema
+   */
+  protected static Schema createSchema(TableMetadata tableMetadata) {
+    var name = tableMetadata.table().tableName();
+    var columns = tableMetadata.columns().stream()
+        .map(column -> new ColumnImpl(column.columnName(), nameToType.get(column.typeName())))
+        .map(Column.class::cast)
+        .toList();
+    return new SchemaImpl(name, columns);
+  }
+
+  /**
+   * Adapt the data type to postgres (e.g. use compatible names).
+   *
+   * @param schema the schema to adapt
+   * @return the adapted schema
+   */
+  protected Schema adaptDataType(Schema schema) {
+    var name = schema.name().replaceAll("[^a-zA-Z0-9]", "_");
+    var properties = schema.columns().stream()
+        .filter(columnType -> typeToName.containsKey(columnType.type()))
+        .toList();
+    return new SchemaImpl(name, properties);
+  }
+
+  /**
+   * Generate a drop table query.
+   *
+   * @param name the table name
+   * @return the query
+   */
+  protected String dropTable(String name) {
     return String.format("DROP TABLE IF EXISTS \"%s\" CASCADE", name);
   }
 
-  private String createTable(Schema schema) {
+  /**
+   * Generate a create table query.
+   *
+   * @param schema the schema
+   * @return the query
+   */
+  protected String createTable(Schema schema) {
     StringBuilder builder = new StringBuilder();
     builder.append("CREATE TABLE \"");
     builder.append(schema.name());
@@ -194,6 +249,12 @@ public class PostgresStore implements Store {
     return builder.toString();
   }
 
+  /**
+   * Generate a copy query.
+   *
+   * @param schema the schema
+   * @return the query
+   */
   protected String copy(Schema schema) {
     var builder = new StringBuilder();
     builder.append("COPY \"");
@@ -206,12 +267,24 @@ public class PostgresStore implements Store {
     return builder.toString();
   }
 
+  /**
+   * Get the columns of the schema.
+   *
+   * @param schema the schema
+   * @return the columns
+   */
   protected List<Column> getColumns(Schema schema) {
     return schema.columns().stream()
         .filter(this::isSupported)
         .collect(Collectors.toList());
   }
 
+  /**
+   * Check if the column type is supported by postgres.
+   *
+   * @param column the column
+   * @return true if the column type is supported
+   */
   protected boolean isSupported(Column column) {
     return typeToName.containsKey(column.type());
   }

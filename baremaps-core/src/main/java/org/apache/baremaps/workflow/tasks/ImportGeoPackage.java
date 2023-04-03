@@ -14,7 +14,7 @@ package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
 import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
-import org.apache.baremaps.storage.TableGeometryTransformer;
+import org.apache.baremaps.storage.TableGeometryDecorator;
 import org.apache.baremaps.storage.geopackage.GeoPackageStore;
 import org.apache.baremaps.storage.postgres.PostgresStore;
 import org.apache.baremaps.workflow.Task;
@@ -38,7 +38,7 @@ public record ImportGeoPackage(Path file, String database, Integer sourceSRID, I
       for (var name : geoPackageDatabase.list()) {
         var transformer = new ProjectionTransformer(sourceSRID, targetSRID);
         var transformedTable =
-            new TableGeometryTransformer(geoPackageDatabase.get(name), transformer);
+            new TableGeometryDecorator(geoPackageDatabase.get(name), transformer);
         postgresDatabase.add(transformedTable);
       }
     } catch (Exception e) {

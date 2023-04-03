@@ -21,14 +21,25 @@ import org.apache.baremaps.storage.*;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileInputStream;
 import org.apache.baremaps.storage.shapefile.internal.ShapefileReader;
 
+/**
+ * A table that stores rows in a shapefile.
+ */
 public class ShapefileTable extends AbstractTable {
 
   private final ShapefileReader shapeFile;
 
+  /**
+   * Constructs a table from a shapefile.
+   *
+   * @param file the path to the shapefile
+   */
   public ShapefileTable(Path file) {
     this.shapeFile = new ShapefileReader(file.toString());
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Schema schema() throws TableException {
     try (var input = shapeFile.read()) {
@@ -38,30 +49,48 @@ public class ShapefileTable extends AbstractTable {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Iterator<Row> iterator() {
     try {
-      return new RowIterator(shapeFile.read());
+      return new ShapefileIterator(shapeFile.read());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long sizeAsLong() {
     return Long.MAX_VALUE;
   }
 
-  static class RowIterator implements Iterator<Row> {
+
+  /**
+   * An iterator over the rows of a shapefile.
+   */
+  public static class ShapefileIterator implements Iterator<Row> {
 
     private final ShapefileInputStream shapefileInputStream;
 
     private Row next;
 
-    public RowIterator(ShapefileInputStream shapefileInputStream) {
+    /**
+     * Constructs an iterator from a shapefile input stream.
+     *
+     * @param shapefileInputStream the shapefile input stream
+     */
+    public ShapefileIterator(ShapefileInputStream shapefileInputStream) {
       this.shapefileInputStream = shapefileInputStream;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean hasNext() {
       try {
@@ -75,6 +104,9 @@ public class ShapefileTable extends AbstractTable {
       }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Row next() {
       try {

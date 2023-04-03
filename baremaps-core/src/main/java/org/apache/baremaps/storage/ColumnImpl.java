@@ -13,7 +13,7 @@
 package org.apache.baremaps.storage;
 
 /**
- * A A column in a table.
+ * A column in a table.
  */
 public record ColumnImpl(String name, Class type) implements Column {
 

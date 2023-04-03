@@ -22,14 +22,25 @@ import org.apache.baremaps.storage.Store;
 import org.apache.baremaps.storage.Table;
 import org.apache.baremaps.storage.TableException;
 
+/**
+ * A store corresponding to the shapefiles of a directory.
+ */
 public class ShapefileStore implements Store {
 
   private final Path directory;
 
+  /**
+   * Constructs a store from a directory.
+   *
+   * @param directory the directory
+   */
   public ShapefileStore(Path directory) {
     this.directory = directory;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Collection<String> list() {
     try (var files = Files.list(directory)) {
@@ -42,16 +53,25 @@ public class ShapefileStore implements Store {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Table get(String name) {
     return new ShapefileTable(directory.resolve(name));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void add(Table value) {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void remove(String name) {
     throw new UnsupportedOperationException();

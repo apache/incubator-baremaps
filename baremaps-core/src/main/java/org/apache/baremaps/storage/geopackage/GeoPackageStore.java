@@ -21,35 +21,57 @@ import org.apache.baremaps.storage.Store;
 import org.apache.baremaps.storage.Table;
 import org.apache.baremaps.storage.TableException;
 
-
+/**
+ * A store corresponding to a GeoPackage database.
+ */
 public class GeoPackageStore implements Store, AutoCloseable {
 
   private final GeoPackage geoPackage;
 
-  public GeoPackageStore(Path path) {
-    this.geoPackage = GeoPackageManager.open(path.toFile());
+  /**
+   * Constructs a store from a GeoPackage database.
+   *
+   * @param file the path to the GeoPackage database
+   */
+  public GeoPackageStore(Path file) {
+    this.geoPackage = GeoPackageManager.open(file.toFile());
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void close() throws Exception {
     geoPackage.close();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Collection<String> list() throws TableException {
     return geoPackage.getFeatureTables();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Table get(String name) throws TableException {
     return new GeoPackageTable(geoPackage.getFeatureDao(name));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void add(Table value) throws TableException {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void remove(String name) throws TableException {
     throw new UnsupportedOperationException();

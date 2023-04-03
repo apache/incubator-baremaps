@@ -13,39 +13,60 @@
 package org.apache.baremaps.storage.postgres;
 
 
-import static org.apache.baremaps.storage.postgres.PostgresStore.*;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javax.sql.DataSource;
-import org.apache.baremaps.database.metadata.TableMetadata;
 import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
 import org.apache.baremaps.storage.*;
 import org.locationtech.jts.geom.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * A table that stores rows in a Postgres table.
+ */
 public class PostgresTable extends AbstractTable {
-
-  private static final Logger logger = LoggerFactory.getLogger(PostgresStore.class);
 
   private final DataSource dataSource;
 
   private final Schema schema;
 
-  public PostgresTable(DataSource dataSource, TableMetadata tableMetadata) {
+  /**
+   * Constructs a table with a given name and a given schema.
+   * 
+   * @param dataSource the data source
+   * @param schema the schema of the table
+   */
+  public PostgresTable(DataSource dataSource, Schema schema) {
     this.dataSource = dataSource;
-    this.schema = createSchema(tableMetadata);
+    this.schema = schema;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Iterator<Row> iterator() {
+  public PostgresIterator iterator() {
     return new PostgresIterator();
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Stream<Row> stream() {
+    var iterator = iterator();
+    var spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
+    var stream = StreamSupport.stream(spliterator, false);
+    return stream.onClose(iterator::close);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long sizeAsLong() {
     var countQuery = count(schema);
@@ -59,11 +80,17 @@ public class PostgresTable extends AbstractTable {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Schema schema() {
     return schema;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean add(Row row) {
     var query = insert(schema);
@@ -83,6 +110,9 @@ public class PostgresTable extends AbstractTable {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean addAll(Collection<? extends Row> rows) {
     try (var connection = dataSource.getConnection();
@@ -105,15 +135,12 @@ public class PostgresTable extends AbstractTable {
     }
   }
 
-  protected static Schema createSchema(TableMetadata tableMetadata) {
-    var name = tableMetadata.table().tableName();
-    var columns = tableMetadata.columns().stream()
-        .map(column -> new ColumnImpl(column.columnName(), nameToType.get(column.typeName())))
-        .map(Column.class::cast)
-        .toList();
-    return new SchemaImpl(name, columns);
-  }
-
+  /**
+   * Generates a query that selects all the rows of a table.
+   *
+   * @param schema the schema of the table
+   * @return the query
+   */
   protected static String select(Schema schema) {
     var columns = schema.columns().stream()
         .map(column -> {
@@ -127,6 +154,12 @@ public class PostgresTable extends AbstractTable {
     return "SELECT " + String.join(", ", columns) + " FROM \"" + schema.name() + "\"";
   }
 
+  /**
+   * Generates a query that counts the number of rows of a table.
+   *
+   * @param schema the schema of the table
+   * @return the query
+   */
   protected static String insert(Schema schema) {
     var columns = schema.columns().stream()
         .map(column -> String.format("\"%s\"", column.name()))
@@ -139,10 +172,19 @@ public class PostgresTable extends AbstractTable {
         + "VALUES (" + String.join(", ", values) + ")";
   }
 
+  /**
+   * Generates a query that counts the number of rows of a table.
+   *
+   * @param schema the schema of the table
+   * @return the query
+   */
   protected String count(Schema schema) {
     return String.format("SELECT COUNT(*) FROM %s", schema.name());
   }
 
+  /**
+   * An iterator that iterates over the rows of a table.
+   */
   public class PostgresIterator implements Iterator<Row>, AutoCloseable {
 
     private Connection connection;
@@ -150,6 +192,9 @@ public class PostgresTable extends AbstractTable {
     private ResultSet resultSet;
     private boolean hasNext;
 
+    /**
+     * Constructs a new postgres iterator.
+     */
     public PostgresIterator() {
       try {
         connection = dataSource.getConnection();
@@ -162,6 +207,9 @@ public class PostgresTable extends AbstractTable {
       }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean hasNext() {
       if (!hasNext) {
@@ -170,6 +218,9 @@ public class PostgresTable extends AbstractTable {
       return hasNext;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Row next() {
       if (!hasNext) {
@@ -193,6 +244,9 @@ public class PostgresTable extends AbstractTable {
       }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() {
       try {

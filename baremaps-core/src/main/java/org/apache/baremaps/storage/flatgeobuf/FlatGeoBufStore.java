@@ -16,50 +16,70 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.List;
 import org.apache.baremaps.storage.Store;
 import org.apache.baremaps.storage.Table;
 import org.apache.baremaps.storage.TableException;
 
+/**
+ * A store corresponding to the flatgeobuf files of a directory.
+ */
 public class FlatGeoBufStore implements Store {
 
-  private final Path file;
+  private final Path directory;
 
-  public FlatGeoBufStore(Path file) {
-    this.file = file;
+  public FlatGeoBufStore(Path directory) {
+    this.directory = directory;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Collection<String> list() throws TableException {
-    return List.of(file.getFileName().toString());
-  }
-
-  @Override
-  public Table get(String name) throws TableException {
-    if (name.equals(file.getFileName().toString())) {
-      return new FlatGeoBufTable(file);
-    } else {
-      throw new TableException("Table not found");
+    try (var files = Files.list(directory)) {
+      return files
+          .filter(file -> file.toString().toLowerCase().endsWith(".fgb"))
+          .map(file -> file.getFileName().toString())
+          .toList();
+    } catch (IOException e) {
+      throw new TableException(e);
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Table get(String name) throws TableException {
+    var path = directory.resolve(name);
+    return new FlatGeoBufTable(path);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void add(Table table) throws TableException {
+    var path = directory.resolve(table.schema().name());
     try {
-      Files.delete(file);
-      Files.createFile(file);
-      var flatGeoBufTable = new FlatGeoBufTable(file, table.schema());
+      Files.delete(path);
+      Files.createFile(path);
+      var flatGeoBufTable = new FlatGeoBufTable(path, table.schema());
       table.forEach(flatGeoBufTable::add);
     } catch (IOException e) {
       throw new TableException(e);
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void remove(String name) throws TableException {
-    if (name.equals(file.getFileName().toString())) {
+    var path = directory.resolve(name);
+    if (name.equals(path.getFileName().toString())) {
       try {
-        Files.delete(file);
+        Files.delete(path);
       } catch (IOException e) {
         throw new TableException(e);
       }
