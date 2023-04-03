@@ -72,5 +72,15 @@ class PostgresTableTest extends PostgresContainerTest {
 
   @Test
   @Tag("integration")
-  void addAll() {}
+  void addAll() {
+    var table = store.get("mock");
+    var schema = table.schema();
+    var added = table.addAll(List.of(
+        new RowImpl(schema,
+            List.of("string", 6, 6.0, 6.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(6, 6)))),
+        new RowImpl(schema,
+            List.of("string", 7, 7.0, 7.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(7, 7))))));
+    assertTrue(added);
+    assertEquals(7, table.size());
+  }
 }

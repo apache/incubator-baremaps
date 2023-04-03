@@ -22,32 +22,30 @@ import org.junit.jupiter.api.Test;
 class FlatGeoBufTableTest {
 
   @Test
-  void getType() throws IOException {
-    var featureSet = new FlatGeoBufTable(TestFiles.resolve("countries.fgb"));
-    var featureType = featureSet.schema();
-    assertEquals(featureType.name(), null);
-    assertEquals(featureType.columns().size(), 2);
+  void schema() throws IOException {
+    var table = new FlatGeoBufTable(TestFiles.resolve("countries.fgb"));
+    var schema = table.schema();
+    assertEquals(schema.name(), null);
+    assertEquals(schema.columns().size(), 2);
   }
 
   @Test
   void read() throws IOException {
-    var featureSet = new FlatGeoBufTable(TestFiles.resolve("countries.fgb"));
-    assertEquals(179, featureSet.sizeAsLong());
-    assertEquals(179, featureSet.stream().count());
+    var table = new FlatGeoBufTable(TestFiles.resolve("countries.fgb"));
+    assertEquals(179, table.sizeAsLong());
+    assertEquals(179, table.stream().count());
   }
 
   @Test
   void write() throws IOException {
     var file = Files.createTempFile("countries", ".fgb");
     file.toFile().deleteOnExit();
-    var featureSet1 = new FlatGeoBufTable(TestFiles.resolve("countries.fgb"));
-    var featureList = featureSet1.stream().toList();
-    var featureSet2 = new FlatGeoBufTable(file, featureSet1.schema());
-    featureSet2.write(featureList);
+    var table1 = new FlatGeoBufTable(TestFiles.resolve("countries.fgb"));
+    var rows = table1.stream().toList();
+    var table2 = new FlatGeoBufTable(file, table1.schema());
+    table2.write(rows);
 
     var featureSet = new FlatGeoBufTable(file);
     assertEquals(179, featureSet.stream().count());
   }
-
-
 }

@@ -145,7 +145,7 @@ public class PostgresTable extends AbstractTable {
     var columns = schema.columns().stream()
         .map(column -> {
           if (column.type().isAssignableFrom(Geometry.class)) {
-            return String.format("st_asbinary(\"%s\") AS %s", column.name(), column.name());
+            return String.format("st_asbinary(\"%s\") AS \"%s\"", column.name(), column.name());
           } else {
             return String.format("\"%s\"", column.name());
           }
@@ -179,7 +179,7 @@ public class PostgresTable extends AbstractTable {
    * @return the query
    */
   protected String count(Schema schema) {
-    return String.format("SELECT COUNT(*) FROM %s", schema.name());
+    return String.format("SELECT COUNT(*) FROM \"%s\"", schema.name());
   }
 
   /**

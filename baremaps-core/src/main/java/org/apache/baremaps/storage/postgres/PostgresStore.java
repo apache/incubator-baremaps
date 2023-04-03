@@ -215,7 +215,8 @@ public class PostgresStore implements Store {
   protected Schema adaptDataType(Schema schema) {
     var name = schema.name().replaceAll("[^a-zA-Z0-9]", "_");
     var properties = schema.columns().stream()
-        .filter(columnType -> typeToName.containsKey(columnType.type()))
+        .filter(column -> typeToName.containsKey(column.type()))
+        .map(column -> (Column) new ColumnImpl(column.name(), column.type()))
         .toList();
     return new SchemaImpl(name, properties);
   }

@@ -21,7 +21,6 @@ import org.locationtech.jts.geom.Geometry;
 
 public class MockTable extends AbstractTable {
 
-
   private final Schema schema;
 
   private final List<Row> rows;
@@ -44,11 +43,6 @@ public class MockTable extends AbstractTable {
             List.of("string", 4, 4.0, 4.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(4, 4)))),
         new RowImpl(schema,
             List.of("string", 5, 5.0, 5.0f, GEOMETRY_FACTORY.createPoint(new Coordinate(5, 5)))));
-  }
-
-  public MockTable(Schema schema, List<Row> rows) {
-    this.schema = schema;
-    this.rows = rows;
   }
 
   @Override

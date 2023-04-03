@@ -45,12 +45,13 @@ public class FlatGeoBufTable extends AbstractTable {
   private Schema schema;
 
   /**
-   * Constructs a table from a flatgeobuf file.
+   * Constructs a table from a flatgeobuf file (used for reading).
    *
    * @param file the path to the flatgeobuf file
    */
   public FlatGeoBufTable(Path file) {
     this.file = file;
+    this.schema = readSchema(file);
   }
 
   /**
@@ -67,18 +68,22 @@ public class FlatGeoBufTable extends AbstractTable {
   /**
    * {@inheritDoc}
    */
+  @Override
   public Schema schema() {
-    if (schema != null) {
-      return schema;
-    }
+    return schema;
+  }
 
-    // try to read the schema from the file
+  /**
+   * {@inheritDoc}
+   */
+  public static Schema readSchema(Path file) {
     try (var channel = FileChannel.open(file, StandardOpenOption.READ)) {
+      // try to read the schema from the file
       var buffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
       HeaderMeta headerMeta = readHeaderMeta(channel, buffer);
       return TableConversions.asFeatureType(headerMeta);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      return null;
     }
   }
 
@@ -101,9 +106,6 @@ public class FlatGeoBufTable extends AbstractTable {
       channel.position(indexOffset + indexSize);
 
       buffer.clear();
-
-      // read the schema
-      var schema = schema();
 
       // create the feature stream
       return new RowIterator(channel, headerMeta, schema, buffer);
@@ -134,7 +136,7 @@ public class FlatGeoBufTable extends AbstractTable {
    * @return the header meta
    * @throws IOException if an error occurs while reading the header meta
    */
-  private HeaderMeta readHeaderMeta(SeekableByteChannel channel, ByteBuffer buffer)
+  private static HeaderMeta readHeaderMeta(SeekableByteChannel channel, ByteBuffer buffer)
       throws IOException {
     channel.read(buffer);
     buffer.flip();
