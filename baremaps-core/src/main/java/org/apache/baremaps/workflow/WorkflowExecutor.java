@@ -145,12 +145,12 @@ public class WorkflowExecutor implements AutoCloseable {
     for (var task : tasks) {
       future = future.thenRunAsync(() -> {
         try {
+          logger.info("Executing task {} of step {}", task, stepId);
           var start = System.currentTimeMillis();
           task.execute(context);
           var end = System.currentTimeMillis();
           var measure = new TaskMeasure(task, start, end);
           measures.add(measure);
-          logTaskMeasure(measure);
         } catch (Exception e) {
           throw new WorkflowException(e);
         }
@@ -198,26 +198,36 @@ public class WorkflowExecutor implements AutoCloseable {
    */
   private void logStepMeasures() {
     logger.info("----------------------------------------");
+    var workflowStart = stepMeasures.stream()
+        .mapToLong(measures -> measures.stepMeasures.stream()
+            .mapToLong(measure -> measure.start)
+            .min().getAsLong())
+        .min().getAsLong();
+    var workflowEnd = stepMeasures.stream()
+        .mapToLong(measures -> measures.stepMeasures.stream()
+            .mapToLong(measure -> measure.end)
+            .max().getAsLong())
+        .max().getAsLong();
+    var workflowDuration = Duration.ofMillis(workflowEnd - workflowStart);
     logger.info("Workflow graph: {}", this.graph);
+    logger.info("  Duration: {}", formatDuration(workflowDuration));
+
     for (var stepMeasure : this.stepMeasures) {
-      logger.info("Step: {}", stepMeasure.step.getId());
+      var stepStart =
+          stepMeasure.stepMeasures.stream().mapToLong(measure -> measure.start).min().getAsLong();
+      var stepEnd =
+          stepMeasure.stepMeasures.stream().mapToLong(measure -> measure.end).max().getAsLong();
+      var stepDuration = Duration.ofMillis(stepEnd - stepStart);
+      logger.info("Step: {}, Duration: {} ms", stepMeasure.step.getId(),
+          formatDuration(stepDuration));
+
       for (var taskMeasure : stepMeasure.stepMeasures) {
-        var duration = Duration.ofMillis(taskMeasure.end - taskMeasure.start);
+        var taskDuration = Duration.ofMillis(taskMeasure.end - taskMeasure.start);
         logger.info("  Task: {}", taskMeasure.task);
-        logger.info("    Duration: {}", formatDuration(duration));
+        logger.info("    Duration: {}", formatDuration(taskDuration));
       }
     }
     logger.info("----------------------------------------");
-  }
-
-  /**
-   * Logs a task measure.
-   * 
-   * @param taskMeasure the task measure
-   */
-  private static void logTaskMeasure(TaskMeasure taskMeasure) {
-    var duration = Duration.ofMillis(taskMeasure.end - taskMeasure.start);
-    logger.info("{} executed in {}", taskMeasure.task, formatDuration(duration));
   }
 
   /**

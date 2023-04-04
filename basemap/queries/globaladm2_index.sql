@@ -7,7 +7,7 @@
 -- is distributed on an AS IS BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 -- or implied. See the License for the specific language governing permissions and limitations under
 -- the License.
-CREATE INDEX IF NOT EXISTS globaladm2_index ON globaladm2 USING SPGIST(geom);
+CREATE INDEX IF NOT EXISTS globaladm2_index ON "globalADM2" USING SPGIST(geom);
 CREATE INDEX IF NOT EXISTS globaladm2_z12_index ON globaladm2_z12 USING SPGIST (geom);
 CREATE INDEX IF NOT EXISTS globaladm2_z11_index ON globaladm2_z11 USING SPGIST (geom);
 CREATE INDEX IF NOT EXISTS globaladm2_z10_index ON globaladm2_z10 USING SPGIST (geom);
