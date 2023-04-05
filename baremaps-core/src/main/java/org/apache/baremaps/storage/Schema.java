@@ -10,15 +10,34 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.storage;
 
+import java.util.List;
 
+/**
+ * A schema defines the structure of a table.
+ */
+public interface Schema {
 
-import java.io.IOException;
-import java.util.stream.Stream;
+  /**
+   * Returns the name of the schema.
+   * 
+   * @return the name of the schema
+   */
+  String name();
 
-public interface ReadableFeatureSet extends FeatureSet {
+  /**
+   * Returns the columns of the schema.
+   * 
+   * @return the columns of the schema
+   */
+  List<Column> columns();
 
-  Stream<? extends Feature> read() throws IOException;
+  /**
+   * Creates a new row of the schema.
+   * 
+   * @return a new row of the schema
+   */
+  Row createRow();
 
 }

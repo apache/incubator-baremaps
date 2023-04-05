@@ -10,24 +10,20 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.storage;
 
-public class PropertyType<T> {
+import org.apache.baremaps.collection.DataCollection;
 
-  private final String name;
-  private final Class<T> type;
+/**
+ * A table is a collection of rows respecting a schema.
+ */
+public interface Table extends DataCollection<Row> {
 
-  public PropertyType(String name, Class<T> type) {
-    this.name = name;
-    this.type = type;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public Class<T> getType() {
-    return type;
-  }
+  /**
+   * Returns the schema of the table.
+   *
+   * @return the schema of the table
+   */
+  Schema schema();
 
 }

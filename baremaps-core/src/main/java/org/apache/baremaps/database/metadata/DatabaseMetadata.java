@@ -30,11 +30,11 @@ public class DatabaseMetadata {
     this.dataSource = dataSource;
   }
 
-  public List<TableMetaData> getTableMetaData() {
+  public List<TableMetadata> getTableMetaData() {
     return getTableMetaData(null, null, null, null);
   }
 
-  public List<TableMetaData> getTableMetaData(String catalog, String schema,
+  public List<TableMetadata> getTableMetaData(String catalog, String schema,
       String tableNamePattern, String[] types) {
     Map<String, TableResult> descriptions = getTables(catalog, schema, tableNamePattern, types)
         .stream().collect(Collectors.toMap(TableResult::tableName, Function.identity()));
@@ -44,7 +44,7 @@ public class DatabaseMetadata {
         getPrimaryKeys(catalog, schema, tableNamePattern).stream()
             .collect(Collectors.groupingBy(PrimaryKeyResult::tableName));
     return descriptions.entrySet().stream()
-        .map(entry -> new TableMetaData(entry.getValue(),
+        .map(entry -> new TableMetadata(entry.getValue(),
             primaryKeys.getOrDefault(entry.getKey(), List.of()),
             columns.getOrDefault(entry.getKey(), List.of())))
         .toList();

@@ -15,17 +15,17 @@ package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.apache.baremaps.collection.AppendOnlyBuffer;
 import org.apache.baremaps.collection.algorithm.UnionStream;
 import org.apache.baremaps.collection.memory.MemoryMappedFile;
-import org.apache.baremaps.feature.*;
 import org.apache.baremaps.mvt.expression.Expressions.Expression;
-import org.apache.baremaps.storage.postgres.PostgresDatabase;
+import org.apache.baremaps.storage.*;
+import org.apache.baremaps.storage.postgres.PostgresStore;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Geometry;
@@ -53,25 +53,40 @@ public record TransformEntityCollection(Path collection, String database,
   public void execute(WorkflowContext context) throws Exception {
     logger.info("Transform {} with {}", collection, recipe);
 
-    var featureType = new FeatureType(recipe.name, propertyTypes());
+    var schema = new SchemaImpl(recipe.name, columns());
 
     var groups = new AppendOnlyBuffer<>(new EntityDataType(), new MemoryMappedFile(collection))
         .stream()
         .filter(this::filter)
         .collect(Collectors.groupingBy(this::propertyValues));
 
-    var featureStream = groups.entrySet().stream().flatMap(entry -> {
-      var group = entry.getKey();
-      var entities = entry.getValue();
-      var geometries = simplify(entities.stream().map(Entity::getGeometry));
-      return geometries.map(geometry -> new Entity(0, group, geometry));
-    });
+    var table = new AbstractTable() {
 
-    var featureSet = new ReadableFeatureStream(featureType, featureStream);
+      @Override
+      public Schema schema() {
+        return schema;
+      }
+
+      @Override
+      public long sizeAsLong() {
+        return 0;
+      }
+
+      @Override
+      public Iterator<Row> iterator() {
+        return groups.entrySet().stream().flatMap(entry -> {
+          var tags = IntStream.range(0, recipe.groupBy.size()).boxed()
+              .collect(Collectors.toMap(i -> recipe.groupBy.get(i), i -> entry.getKey().get(i)));
+          var geometries = entry.getValue();
+          var simplified = simplify(geometries.stream().map(Entity::getGeometry));
+          return simplified.map(geometry -> (Row) new Entity(0, tags, geometry));
+        }).iterator();
+      }
+    };
 
     var dataSource = context.getDataSource(database);
-    var postgresDatabase = new PostgresDatabase(dataSource);
-    postgresDatabase.write(featureSet);
+    var postgresDatabase = new PostgresStore(dataSource);
+    postgresDatabase.add(table);
   }
 
   private Stream<Geometry> simplify(Stream<Geometry> geometries) {
@@ -86,19 +101,19 @@ public record TransformEntityCollection(Path collection, String database,
     return recipe.groupBy() == null ? List.of() : recipe.groupBy();
   }
 
-  private Map<String, PropertyType> propertyTypes() {
-    var map = new HashMap<String, PropertyType>();
+  private List<Column> columns() {
+    var list = new ArrayList<Column>();
     for (var property : groupBy()) {
-      map.put(property, new PropertyType<>(property, String.class));
+      list.add(new ColumnImpl(property, String.class));
     }
-    map.put("geometry", new PropertyType<>("geometry", Geometry.class));
-    return map;
+    list.add(new ColumnImpl("geometry", Geometry.class));
+    return list;
   }
 
-  private Map<String, String> propertyValues(Entity entity) {
-    var map = new HashMap<String, String>();
+  private List<String> propertyValues(Entity entity) {
+    var map = new ArrayList<String>();
     for (var property : groupBy()) {
-      map.put(property, entity.getProperty(property).toString());
+      map.add(entity.get(property).toString());
     }
     return map;
   }
@@ -122,6 +137,7 @@ public record TransformEntityCollection(Path collection, String database,
 
     var lineMerger = new LineMerger();
     lineMerger.add(filtered);
+
     var mergedGeometries = lineMerger.getMergedLineStrings();
 
     return mergedGeometries.stream();

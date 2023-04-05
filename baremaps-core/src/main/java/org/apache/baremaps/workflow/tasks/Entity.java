@@ -12,20 +12,19 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import org.apache.baremaps.feature.Feature;
-import org.apache.baremaps.feature.FeatureType;
-import org.apache.baremaps.feature.PropertyType;
+import org.apache.baremaps.storage.*;
 import org.locationtech.jts.geom.Geometry;
 
-public class Entity implements Feature {
+public class Entity implements Row {
 
-  private final long id;
+  private long id;
 
-  private final Map<String, String> tags;
+  private Map<String, String> tags;
 
-  private final Geometry geometry;
+  private Geometry geometry;
 
   public Entity(long id, Map<String, String> tags, Geometry geometry) {
     this.id = id;
@@ -35,38 +34,38 @@ public class Entity implements Feature {
 
 
   @Override
-  public FeatureType getType() {
-    var map = new HashMap<String, PropertyType>();
-    map.put("id", new PropertyType<>("id", Long.class));
+  public Schema schema() {
+    var columns = new ArrayList<Column>();
+    columns.add(new ColumnImpl("id", Long.class));
+    columns.add(new ColumnImpl("geometry", Geometry.class));
     for (var entry : tags.entrySet()) {
-      map.put(entry.getKey(), new PropertyType<>(entry.getKey(), String.class));
+      columns.add(new ColumnImpl(entry.getKey(), String.class));
     }
-    map.put("geometry", new PropertyType<>("geometry", Geometry.class));
-    return new FeatureType("entity", map);
+    return new SchemaImpl("entity", columns);
   }
 
   @Override
-  public void setProperty(String name, Object value) {
-    throw new UnsupportedOperationException();
+  public void set(String column, Object value) {
+    tags.put(column, value.toString());
   }
 
   @Override
-  public Object getProperty(String name) {
-    if (name.equals("id")) {
+  public Object get(String column) {
+    if (column.equals("id")) {
       return id;
-    } else if (name.equals("geometry")) {
+    } else if (column.equals("geometry")) {
       return geometry;
     } else {
-      return tags.get(name);
+      return tags.get(column);
     }
   }
 
   @Override
-  public Map<String, Object> getProperties() {
-    var map = new HashMap<String, Object>();
-    map.put("id", id);
-    map.putAll(tags);
-    map.put("geometry", geometry);
+  public List<Object> values() {
+    var map = new ArrayList();
+    map.add(id);
+    map.add(geometry);
+    map.addAll(tags.values());
     return map;
   }
 

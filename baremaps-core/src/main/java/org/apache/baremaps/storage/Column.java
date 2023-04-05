@@ -10,15 +10,25 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.storage;
 
+/**
+ * A column in a table.
+ */
+public interface Column {
 
+  /**
+   * Returns the name of the column.
+   *
+   * @return the name of the column
+   */
+  String name();
 
-import java.io.IOException;
-import java.util.Collection;
-
-public interface FeatureCollection extends Collection<Feature> {
-
-  FeatureType getType() throws IOException;
+  /**
+   * Returns the type of the column.
+   *
+   * @return the type of the column
+   */
+  <T> Class<T> type();
 
 }

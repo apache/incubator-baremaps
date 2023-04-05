@@ -17,10 +17,9 @@ package org.apache.baremaps.storage.shapefile.internal;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.List;
-import org.apache.baremaps.feature.Feature;
-import org.apache.baremaps.feature.FeatureType;
+import org.apache.baremaps.storage.Row;
+import org.apache.baremaps.storage.Schema;
 
 /**
  * Input Stream of features.
@@ -31,7 +30,7 @@ import org.apache.baremaps.feature.FeatureType;
  *
  * @author Marc Le Bihan
  */
-public class InputFeatureStream extends InputStream {
+public class ShapefileInputStream extends InputStream {
 
   private DbaseByteReader dbaseReader;
 
@@ -47,8 +46,8 @@ public class InputFeatureStream extends InputStream {
   /** Indicates that the shape file has a valid index provided with it. */
   private boolean hasShapefileIndex;
 
-  /** Type of the features contained in this shapefile. */
-  private FeatureType featuresType;
+  /** Schema of the features contained in this shapefile. */
+  private Schema schema;
 
   /** Shapefile reader. */
   private ShapefileByteReader shapefileReader;
@@ -60,7 +59,8 @@ public class InputFeatureStream extends InputStream {
    * @param dbaseFile Database file.
    * @param shpfileIndex Shapefile index, null if none provided, will be checked for existence.
    */
-  public InputFeatureStream(File shapefile, File dbaseFile, File shpfileIndex) throws IOException {
+  public ShapefileInputStream(File shapefile, File dbaseFile, File shpfileIndex)
+      throws IOException {
     this.shapefile = shapefile;
     this.databaseFile = dbaseFile;
     this.dbaseReader = new DbaseByteReader(dbaseFile, null);
@@ -74,7 +74,7 @@ public class InputFeatureStream extends InputStream {
 
     this.shapefileReader =
         new ShapefileByteReader(this.shapefile, this.databaseFile, this.shapefileIndex);
-    this.featuresType = this.shapefileReader.getFeaturesType();
+    this.schema = this.shapefileReader.getSchema();
   }
 
   /**
@@ -84,7 +84,7 @@ public class InputFeatureStream extends InputStream {
    * @param shpfile Shapefile.
    * @param dbaseFile Database file.
    */
-  public InputFeatureStream(File shpfile, File dbaseFile) throws IOException {
+  public ShapefileInputStream(File shpfile, File dbaseFile) throws IOException {
     this(shpfile, dbaseFile, null);
   }
 
@@ -113,17 +113,24 @@ public class InputFeatureStream extends InputStream {
    * @throws ShapefileException if the current connection used to query the shapefile has been
    *         closed.
    */
-  public Feature readFeature() throws ShapefileException {
-    return internalReadFeature();
+  public Row readRow() throws ShapefileException {
+    if (!this.dbaseReader.nextRowAvailable()) {
+      return null;
+    }
+    Row row = this.schema.createRow();
+    this.dbaseReader.loadRow(row);
+    this.shapefileReader.setRowNum(this.dbaseReader.getRowNum());
+    this.shapefileReader.completeRow(row);
+    return row;
   }
 
   /**
-   * Return the features type.
+   * Returns the schema.
    *
-   * @return Features type.
+   * @return the schema.
    */
-  public FeatureType getFeaturesType() {
-    return featuresType;
+  public Schema getSchema() {
+    return schema;
   }
 
   /**
@@ -153,21 +160,4 @@ public class InputFeatureStream extends InputStream {
     return this.hasShapefileIndex;
   }
 
-  /**
-   * Read next feature responding to the SQL query.
-   *
-   * @return Feature, null if no more feature is available.
-   * @throws SQLFeatureNotSupportedException if a SQL ability is not currently available through
-   *         this driver.
-   */
-  private Feature internalReadFeature() throws ShapefileException {
-    if (!this.dbaseReader.nextRowAvailable()) {
-      return null;
-    }
-    Feature feature = this.featuresType.newInstance();
-    this.dbaseReader.loadRowIntoFeature(feature);
-    this.shapefileReader.setRowNum(this.dbaseReader.getRowNum());
-    this.shapefileReader.completeFeature(feature);
-    return feature;
-  }
 }

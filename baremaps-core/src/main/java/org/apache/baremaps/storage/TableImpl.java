@@ -10,28 +10,39 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.storage;
 
-import java.util.stream.Stream;
+import java.util.ArrayList;
 
-public class ReadableFeatureStream implements ReadableFeatureSet {
+/**
+ * A table is a collection of rows respecting a schema.
+ */
+public class TableImpl extends ArrayList<Row> implements Table {
 
-  private final FeatureType featureType;
+  private final Schema dataType;
 
-  private final Stream<? extends Feature> stream;
-
-  public ReadableFeatureStream(FeatureType featureType, Stream<? extends Feature> stream) {
-    this.featureType = featureType;
-    this.stream = stream;
+  /**
+   * Constructs a table with the specified schema.
+   *
+   * @param schema the schema of the table
+   */
+  public TableImpl(Schema schema) {
+    this.dataType = schema;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public FeatureType getType() {
-    return featureType;
+  public long sizeAsLong() {
+    return size();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Stream<? extends Feature> read() {
-    return stream;
+  public Schema schema() {
+    return dataType;
   }
 }

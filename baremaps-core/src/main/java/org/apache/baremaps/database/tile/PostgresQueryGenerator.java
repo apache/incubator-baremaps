@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.database.metadata.DatabaseMetadata;
-import org.apache.baremaps.database.metadata.TableMetaData;
+import org.apache.baremaps.database.metadata.TableMetadata;
 
 /**
  * A generator that uses PostgreSQL metadata to generate input queries for a {@code
@@ -84,7 +84,7 @@ public class PostgresQueryGenerator {
         .filter(table -> table.getGeometryColumns().size() == 1).map(this::getLayer).toList();
   }
 
-  private PostgresQuery getLayer(TableMetaData table) {
+  private PostgresQuery getLayer(TableMetadata table) {
     String tableSchema = table.table().tableSchem();
     String tableName = table.table().tableName();
     String layer = String.format("%s.%s", tableSchema, tableName);

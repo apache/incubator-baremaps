@@ -31,7 +31,7 @@ import org.apache.baremaps.collection.type.DataType;
  *
  * @param <E> The type of the data.
  */
-public class AppendOnlyBuffer<E> extends DataCollection<E> {
+public class AppendOnlyBuffer<E> extends AbstractDataCollection<E> {
 
   private final DataType<E> dataType;
   private final Memory memory;

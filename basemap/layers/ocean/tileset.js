@@ -15,12 +15,12 @@ export default {
         {
             "minzoom": 0,
             "maxzoom": 10,
-            "sql": "SELECT row_number() OVER () as id, '{\"ocean\":\"water\"}'::jsonb, geometry FROM simplified_water_polygons_shp"
+            "sql": "SELECT row_number() OVER () as id, '{\"ocean\":\"water\"}'::jsonb, st_setsrid(geometry, 3857) FROM simplified_water_polygons_shp"
         },
         {
             "minzoom": 10,
             "maxzoom": 20,
-            "sql": "SELECT row_number() OVER () as id, '{\"ocean\":\"water\"}'::jsonb, geometry FROM water_polygons_shp"
+            "sql": "SELECT row_number() OVER () as id, '{\"ocean\":\"water\"}'::jsonb, st_setsrid(geometry, 3857) FROM water_polygons_shp"
         }
     ]
 }

@@ -43,7 +43,7 @@ The development server can be started with the following command.
 baremaps map dev --log-level DEBUG \
   --database 'jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps' \
   --tileset 'tileset.js' \
-  --style 'line.js'
+  --style 'style.js'
 ```
 
 ## Editing the tileset

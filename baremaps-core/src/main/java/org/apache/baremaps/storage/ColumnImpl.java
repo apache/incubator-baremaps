@@ -10,14 +10,11 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.storage;
 
-
-
-import java.io.IOException;
-
-public interface FeatureSet extends Resource {
-
-  FeatureType getType() throws IOException;
+/**
+ * A column in a table.
+ */
+public record ColumnImpl(String name, Class type) implements Column {
 
 }

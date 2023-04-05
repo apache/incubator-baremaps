@@ -10,15 +10,27 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.collection;
 
 
 
-import java.io.IOException;
-import java.util.stream.Stream;
+import java.util.AbstractCollection;
 
-public interface ReadableAggregate extends Aggregate {
+/**
+ * An abstract collection of data elements that can hold a large number of elements.
+ *
+ * @param <E> The type of the data.
+ */
+public abstract class AbstractDataCollection<E> extends AbstractCollection<E>
+    implements DataCollection<E> {
 
-  Stream<Resource> read() throws IOException;
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int size() {
+    return (int) Math.min(sizeAsLong(), Integer.MAX_VALUE);
+  }
 
 }

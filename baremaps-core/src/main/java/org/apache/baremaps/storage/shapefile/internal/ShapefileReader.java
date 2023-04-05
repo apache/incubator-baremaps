@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import org.apache.baremaps.feature.FeatureType;
+import org.apache.baremaps.storage.Schema;
 
 /**
  * Provides a ShapeFile Reader.
@@ -44,7 +44,7 @@ public class ShapefileReader {
   private File shapeFileIndex;
 
   /** Type of the features contained in this shapefile. */
-  private FeatureType featuresType;
+  private Schema schema;
 
   /** Shapefile descriptor. */
   private ShapefileDescriptor shapefileDescriptor;
@@ -113,12 +113,12 @@ public class ShapefileReader {
   }
 
   /**
-   * Return the default feature type.
+   * Return the schema.
    *
-   * @return Feature type.
+   * @return the schema.
    */
-  public FeatureType getFeaturesType() {
-    return this.featuresType;
+  public Schema getSchema() {
+    return this.schema;
   }
 
   /**
@@ -171,10 +171,10 @@ public class ShapefileReader {
    *
    * @return Features
    */
-  public InputFeatureStream read() throws IOException {
-    InputFeatureStream is =
-        new InputFeatureStream(this.shapefile, this.databaseFile, this.shapeFileIndex);
-    this.featuresType = is.getFeaturesType();
+  public ShapefileInputStream read() throws IOException {
+    ShapefileInputStream is =
+        new ShapefileInputStream(this.shapefile, this.databaseFile, this.shapeFileIndex);
+    this.schema = is.getSchema();
     this.shapefileDescriptor = is.getShapefileDescriptor();
     this.databaseFieldsDescriptors = is.getDatabaseFieldsDescriptors();
     return is;
@@ -186,7 +186,7 @@ public class ShapefileReader {
    */
   public void loadDescriptors() throws IOException {
     // Doing a simple query will init the internal descriptors.
-    try (InputFeatureStream is = read()) {
+    try (ShapefileInputStream is = read()) {
     }
   }
 }

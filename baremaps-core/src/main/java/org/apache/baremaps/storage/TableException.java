@@ -10,38 +10,38 @@
  * the License.
  */
 
-package org.apache.baremaps.collection;
+package org.apache.baremaps.storage;
 
-/** Signals that an exception occurred in a store. */
-public class DataCollectionException extends RuntimeException {
-  /** Constructs a {@code DataCollectionException} with {@code null} as its error detail message. */
-  public DataCollectionException() {}
+/** Signals that an exception occurred in a table. */
+public class TableException extends RuntimeException {
+  /** Constructs a {@code TableException} with {@code null} as its error detail message. */
+  public TableException() {}
 
   /**
-   * Constructs an {@code DataCollectionException} with the specified detail message.
+   * Constructs an {@code TableException} with the specified detail message.
    *
    * @param message the message
    */
-  public DataCollectionException(String message) {
+  public TableException(String message) {
     super(message);
   }
 
   /**
-   * Constructs a {@code DataCollectionException} with the specified cause.
+   * Constructs a {@code TableException} with the specified cause.
    *
    * @param cause the cause
    */
-  public DataCollectionException(Throwable cause) {
+  public TableException(Throwable cause) {
     super(cause);
   }
 
   /**
-   * Constructs a {@code DataCollectionException} with the specified detail message and cause.
+   * Constructs a {@code TableException} with the specified detail message and cause.
    *
    * @param message the message
    * @param cause the cause
    */
-  public DataCollectionException(String message, Throwable cause) {
+  public TableException(String message, Throwable cause) {
     super(message, cause);
   }
 }

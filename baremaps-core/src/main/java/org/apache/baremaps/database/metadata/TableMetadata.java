@@ -10,20 +10,14 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.database.metadata;
 
+import java.util.List;
 
+public record TableMetadata(
+    TableResult table, List<PrimaryKeyResult> primaryKeys, List<ColumnResult> columns) {
 
-import java.util.Map;
-
-public interface Feature {
-
-  FeatureType getType();
-
-  void setProperty(String name, Object value);
-
-  Object getProperty(String name);
-
-  Map<String, Object> getProperties();
-
+  public List<ColumnResult> getGeometryColumns() {
+    return columns.stream().filter(column -> "geometry".equals(column.typeName())).toList();
+  }
 }

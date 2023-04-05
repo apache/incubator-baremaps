@@ -10,16 +10,25 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.storage;
 
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * A schema defines the structure of a table.
+ */
+public record SchemaImpl(String name, List<Column> columns) implements Schema {
 
-import java.io.IOException;
-
-public interface WritableAggregate extends Aggregate {
-
-  void write(Resource resource) throws IOException;
-
-  void remove(Resource resource) throws IOException;
-
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Row createRow() {
+    var values = new ArrayList<>(columns.size());
+    for (int i = 0; i < columns.size(); i++) {
+      values.add(null);
+    }
+    return new RowImpl(this, values);
+  }
 }

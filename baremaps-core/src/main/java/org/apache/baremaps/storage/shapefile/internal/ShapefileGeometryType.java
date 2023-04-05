@@ -29,7 +29,7 @@ import java.util.Map;
  * @see <a href="http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf">ESRI Shapefile
  *      Specification</a>
  */
-public enum ShapeType {
+public enum ShapefileGeometryType {
   NullShape(0), Point(1), PolyLine(3), Polygon(5), MultiPoint(8), PointZ(11), PolyLineZ(
       13), PolygonZ(15), MultiPointZ(
           18), PointM(21), PolyLineM(23), PolygonM(25), MultiPointM(28), MultiPatch(31);
@@ -37,7 +37,7 @@ public enum ShapeType {
   // used for initializing the enumeration
   private int value;
 
-  private ShapeType(int value) {
+  private ShapefileGeometryType(int value) {
     this.value = value;
   }
 
@@ -45,15 +45,16 @@ public enum ShapeType {
     return value;
   }
 
-  private static final Map<Integer, ShapeType> lookup = new HashMap<Integer, ShapeType>();
+  private static final Map<Integer, ShapefileGeometryType> lookup =
+      new HashMap<Integer, ShapefileGeometryType>();
 
   static {
-    for (ShapeType ste : EnumSet.allOf(ShapeType.class)) {
+    for (ShapefileGeometryType ste : EnumSet.allOf(ShapefileGeometryType.class)) {
       lookup.put(ste.getValue(), ste);
     }
   }
 
-  public static ShapeType get(int value) {
+  public static ShapefileGeometryType get(int value) {
     return lookup.get(value);
   }
 }

@@ -10,7 +10,13 @@
  * the License.
  */
 
-package org.apache.baremaps.feature;
+package org.apache.baremaps.storage;
 
-public interface Aggregate extends Resource {
+import org.apache.baremaps.collection.AbstractDataCollection;
+
+/**
+ * A table is a collection of rows respecting a schema.
+ */
+public abstract class AbstractTable extends AbstractDataCollection<Row> implements Table {
+
 }
