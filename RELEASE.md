@@ -55,13 +55,13 @@ git tag -a v[version]
 git push origin v[version]
 ```
 
-- [ ] Publish the artifacts:
+- [ ] Move the artifacts into the release directory with svn:
 
 ```bash
-svn co https://dist.apache.org/repos/dist/release/incubator/baremaps/ baremaps-release
-mkdir baremaps-release/<version>
-cp ./baremaps-cli/target/baremaps-<version>-incubating-* baremaps-release/<version>/.
-svn commit -m "Baremaps <version>"
+svn mv -m "Baremaps <version>" \
+  https://dist.apache.org/repos/dist/dev/incubator/baremaps/<version>-rc<number>/ \
+  https://dist.apache.org/repos/dist/release/incubator/baremaps/<version>/
+```
 
 - [ ] Set the version of the next iteration and commit the changes:
 
@@ -91,7 +91,7 @@ shasum -a 512 -c baremaps-<version>-incubating-bin.tar.gz.sha512
 shasum -a 512 -c baremaps-<version>-incubating-src.tar.gz.sha512
 ```
 
-## Email template
+## Vote template
 
 subject: [VOTE] Release Apache Baremaps <version>-rc<number> (incubating)
 
@@ -136,4 +136,48 @@ Here is my vote:
 
 +1 (binding)
 
-[Release manager name]
+<release_manager_name>
+
+
+## Announce template
+
+subject: [ANNOUNCE] Apache Baremaps <version> (incubating) released
+
+Hello Everyone,
+
+The Apache Baremaps community is pleased to announce the release of Apache Baremaps 0.7.1 (incubating).
+Apache Baremaps is a toolkit and a set of infrastructure components for creating, publishing, and operating online maps.
+
+This is our first release since joining the Apache Software Foundation and an important milestone in the project's history.
+Thank you to everyone who contributed to this release and thank you to the mentors for their guidance and support.
+
+We are looking to grow the community and welcome new contributors.
+If you are interested in contributing to the project, please contact us on the mailing list or on GitHub.
+We will be happy to help you get started.
+
+The release notes are available here:
+https://github.com/apache/incubator-baremaps/releases/tag/v<version>
+
+The artifacts are available here:
+https://dist.apache.org/repos/dist/release/incubator/baremaps/<version>
+
+The hashes of the artifacts are as follows:
+<src>
+<bin>
+
+The repository is available here:
+https://github.com/apache/incubator-baremaps
+
+The documentation is available here:
+https://baremaps.apache.org
+
+The mailing list is available here:
+https://lists.apache.org/list.html?dev@baremaps.apache.org
+
+The issue tracker is available here:
+https://github.com/apache/incubator-baremaps/issues
+
+Best regards,
+
+<release_manager_name>
+
