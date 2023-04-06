@@ -10,31 +10,32 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
+import theme from "../../theme.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'amenity'], 'kindergarten'],
-        'fill-color': 'rgb(255, 255, 228)',
+        'fill-color': theme.directivesKinderGartenFillColor,
     },
     {
         filter: ['==', ['get', 'amenity'], 'school'],
-        'fill-color': 'rgb(255, 255, 228)',
+        'fill-color': theme.directivesSchoolFillColor,
     },
     {
         filter: ['==', ['get', 'amenity'], 'college'],
-        'fill-color': 'rgb(255, 255, 228)',
+        'fill-color': theme.directivesCollegeFillColor,
     },
     {
         filter: ['==', ['get', 'amenity'], 'university'],
-        'fill-color': 'rgb(255, 255, 228)',
+        'fill-color': theme.directivesUniversityFillColor,
     },
     {
         filter: ['==', ['get', 'amenity'], 'hospital'],
-        'fill-color': 'rgb(255, 255, 228)',
+        'fill-color': theme.directivesHospitalFillColor,
     },
     {
         filter: ['==', ['get', 'amenity'], 'grave_yard'],
-        'fill-color': 'rgb(170, 203, 175)',
+        'fill-color': theme.directivesGraveYardFillColor,
     },
 ];
 

@@ -9,6 +9,8 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
+ import theme from "../../theme.js";
+
 export default [
     {
         id: 'barrier_guard_rail',
@@ -17,7 +19,7 @@ export default [
         source: 'baremaps',
         'source-layer': 'barrier',
         paint: {
-            'line-color': 'rgba(139, 177, 162, 1)',
+            'line-color': theme.barrierGuardRailLineColor,
         },
     },
 ]

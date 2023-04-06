@@ -9,6 +9,8 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
+ import theme from "../../theme.js";
+
 export default [
     {
         id: 'water_slide_casing',
@@ -35,7 +37,7 @@ export default [
         source: 'baremaps',
         'source-layer': 'attraction',
         paint: {
-            'line-color': 'rgba(170, 224, 203, 1)',
+            'line-color': theme.attractionWaterSlideLineColor,
             'line-width': [
                 'interpolate',
                 ['exponential', 1],

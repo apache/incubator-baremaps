@@ -10,35 +10,36 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
+import theme from "../../theme.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'natural'], 'glacier'],
-        'fill-color': 'rgb(221, 236, 236)'
+        'fill-color': theme.directivesGlacierFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'wood'],
-        'fill-color': 'rgb(157, 202, 138)'
+        'fill-color': theme.directivesWoodFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'heath'],
-        'fill-color': 'rgb(214, 217, 159)'
+        'fill-color': theme.directivesHeathFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'grassland'],
-        'fill-color': 'rgb(207, 236, 177)'
+        'fill-color': theme.directivesGrasslandFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'bare_rock'],
-        'fill-color': 'rgb(217, 212, 206)'
+        'fill-color': theme.directivesBareRockFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'scree'],
-        'fill-color': 'rgb(232, 223, 216)'
+        'fill-color': theme.directivesScreeFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'shingle'],
-        'fill-color': 'rgb(232, 223, 216)'
+        'fill-color': theme.directivesShingleFillColor
     },
     {
         filter: [
@@ -46,7 +47,7 @@ let directives = [
             ['==', ['get', 'natural'], 'water'],
             ['==', ['get', 'water'], 'lake'],
         ],
-        'fill-color': 'rgb(170, 211, 223)',
+        'fill-color': theme.directivesWaterFillColor,
     },
 ];
 

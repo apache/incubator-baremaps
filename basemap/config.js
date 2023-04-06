@@ -12,7 +12,7 @@
 export default {
     "host": "http://localhost:9000",
     "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
-    "osmPbfUrl": "https://download.geofabrik.de/europe/switzerland-latest.osm.pbf",
-    "center": [6.6323, 46.5197],
+    "osmPbfUrl": "https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
+    "center": [9.555, 47.164696],
     "zoom": 14,
 }

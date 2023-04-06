@@ -9,6 +9,8 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
+ import theme from "../../theme.js";
+
 export default {
     id: 'highway_label',
     type: 'symbol',
@@ -23,8 +25,8 @@ export default {
         visibility: 'visible',
     },
     paint: {
-        'text-color': 'rgb(96,96,96)',
-        'text-halo-color': 'rgba(255,255,255,0.8)',
+        'text-color': theme.highwayLabelPaintTextColor,
+        'text-halo-color': theme.highwayLabelPaintTextHaloColor,
         'text-halo-width': 1.2,
     },
 }

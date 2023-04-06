@@ -10,11 +10,12 @@
  the License.
  **/
 import {withSortKeys, asLayerObject} from "../../utils/utils.js";
+import theme from "../../theme.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'ocean'], 'water'],
-        'fill-color': 'rgb(170, 211, 223)',
+        'fill-color': theme.waterFillColor,
         'fill-sort-key': 10,
     },
 ];

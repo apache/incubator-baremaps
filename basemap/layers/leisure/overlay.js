@@ -10,12 +10,13 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
+import theme from "../../theme.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'leisure'], 'marina'],
-        'fill-color': 'rgb(181, 208, 208)',
-        'fill-outline-color': 'rgb(164, 187, 212)',
+        'fill-color': theme.marinaFillColor,
+        'fill-outline-color': theme.marinaFillOutlineColor,
     },
 ];
 

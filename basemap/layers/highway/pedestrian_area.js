@@ -9,6 +9,8 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
+ import theme from "../../theme.js";
+
 export default {
     id: 'pedestrian_area',
     source: 'baremaps',
@@ -31,7 +33,7 @@ export default {
         ],
     ],
     paint: {
-        'fill-color': 'rgb(221, 221, 231)',
+        'fill-color': theme.pedestrianAreaPaintFillColor,
         'fill-antialias': true,
     },
 }

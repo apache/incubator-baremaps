@@ -9,6 +9,8 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
+ import theme from "../../theme.js";
+
 export default {
     "id": "waterway_tunnel",
     "type": "line",
@@ -31,6 +33,6 @@ export default {
             ["zoom"],
             4, 0, 20, 8
         ],
-        "line-color": "rgb(243, 247, 247)"
+        "line-color": theme.waterwayTunnelLineLineColor
     }
 }

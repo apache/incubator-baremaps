@@ -10,60 +10,61 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
+import theme from "../../theme.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'leisure'], 'swimming_pool'],
-        'fill-color': 'rgb(170, 211, 223)',
-        'fill-outline-color': 'rgb(120, 183, 202)',
+        'fill-color': theme.directivesSwimmingPoolFillColor,
+        'fill-outline-color': theme.directivesSwimmingPoolFillOutlineColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'miniature_golf'],
-        'fill-color': 'rgb(181, 226, 181)',
+        'fill-color': theme.directivesMiniatureGolfFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'ice_rink'],
-        'fill-color': 'rgb(221, 236, 236)',
-        'fill-outline-color': 'rgb(140, 220, 189)',
+        'fill-color': theme.directivesIceRinkFillColor,
+        'fill-outline-color': theme.directivesIceRinkFillOutlineColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'golf_course'],
-        'fill-color': 'rgb(181, 226, 181)',
+        'fill-color': theme.directivesGolfCourseFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'garden'],
-        'fill-color': 'rgb(205, 235, 176)',
+        'fill-color': theme.directivesGardenFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'dog_park'],
-        'fill-color': 'rgb(224, 252, 227)',
+        'fill-color': theme.directivesDogParkFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'playground'],
-        'fill-color': 'rgb(223, 252, 226)',
-        'fill-outline-color': 'rgb(164, 221, 169)',
+        'fill-color': theme.directivesPlayGroundFillColor,
+        'fill-outline-color': theme.directivesPlayGroundFillOutlineColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'pitch'],
-        'fill-color': 'rgb(170, 224, 203)',
-        'fill-outline-color': 'rgb(151, 212, 186)',
+        'fill-color': theme.directivesPitchFillColor,
+        'fill-outline-color': theme.directivesPitchFillOutlineColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'track'],
-        'fill-color': 'rgb(196, 224, 203)',
-        'fill-outline-color': 'rgba(101, 206, 166, 1.0)',
+        'fill-color': theme.directivesTrackFillColor,
+        'fill-outline-color': theme.directivesTrackFillOutlineColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'sports_centre'],
-        'fill-color': 'rgb(223, 252, 226)',
+        'fill-color': theme.directivesSportsCentreFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'stadium'],
-        'fill-color': 'rgb(223, 252, 226)',
+        'fill-color': theme.directivesStadiumFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'park'],
-        'fill-color': 'rgb(200, 250, 204)',
+        'fill-color': theme.directivesParkFillColor,
     },
 ];
 

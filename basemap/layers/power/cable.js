@@ -9,6 +9,8 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
+ import theme from "../../theme.js";
+
 export default {
     id: 'power_cable',
     type: 'line',
@@ -27,6 +29,6 @@ export default {
     },
     paint: {
         'line-width': ['interpolate', ['exponential', 1.2], ['zoom'], 4, 0, 20, 4],
-        'line-color': 'rgb(171, 171, 171)',
+        'line-color': theme.powerCableLineColor,
     },
 }
