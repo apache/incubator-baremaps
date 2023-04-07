@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.baremaps.storage.*;
 import org.wololo.flatgeobuf.ColumnMeta;
@@ -191,13 +192,14 @@ public class TableConversions {
   public static List<ColumnMeta> asColumns(List<Column> columns) {
     return columns.stream()
         .map(TableConversions::asColumn)
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 
   public static ColumnMeta asColumn(Column column) {
     var type = types.get(column.type());
     if (type == null) {
-      throw new IllegalArgumentException("Unsupported type " + type);
+      return null;
     }
     var columnMeta = new ColumnMeta();
     columnMeta.name = column.name();

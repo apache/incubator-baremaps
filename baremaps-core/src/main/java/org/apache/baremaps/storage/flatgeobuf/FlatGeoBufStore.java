@@ -60,12 +60,14 @@ public class FlatGeoBufStore implements Store {
    */
   @Override
   public void add(Table table) throws TableException {
-    var path = directory.resolve(table.schema().name());
+    var filename = table.schema().name();
+    filename = filename.endsWith(".fgb") ? filename : filename + ".fgb";
+    var path = directory.resolve(filename);
     try {
-      Files.delete(path);
+      Files.deleteIfExists(path);
       Files.createFile(path);
       var flatGeoBufTable = new FlatGeoBufTable(path, table.schema());
-      table.forEach(flatGeoBufTable::add);
+      flatGeoBufTable.write(table);
     } catch (IOException e) {
       throw new TableException(e);
     }
