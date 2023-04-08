@@ -100,8 +100,10 @@ public class PolygonDataType implements DataType<Polygon> {
    */
   @Override
   public Polygon read(ByteBuffer buffer, int position) {
-    var size = buffer.getInt(position);
+    var size = size(buffer, position);
+    var limit = position + size;
     position += Integer.BYTES;
+
 
     // Read the exterior ring
     var exteriorRingCoordinates = coordinateArrayDataType.read(buffer, position);
@@ -110,7 +112,7 @@ public class PolygonDataType implements DataType<Polygon> {
 
     // Read the interior rings
     var interiorRings = new ArrayList<LineString>();
-    while (position < size) {
+    while (position < limit) {
       var interiorRingCoordinates = coordinateArrayDataType.read(buffer, position);
       var interiorRing = geometryFactory.createLinearRing(interiorRingCoordinates);
       interiorRings.add(interiorRing);

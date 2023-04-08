@@ -96,10 +96,11 @@ public class GeometryCollectionDataType implements DataType<GeometryCollection> 
    */
   @Override
   public GeometryCollection read(ByteBuffer buffer, int position) {
-    var size = buffer.getInt(position);
+    var size = size(buffer, position);
+    var limit = position + size;
     position += Integer.BYTES;
     var geometries = new ArrayList<Geometry>();
-    while (position < size) {
+    while (position < limit) {
       var geometry = geometryDataType.read(buffer, position);
       geometries.add(geometry);
       position += geometryDataType.size(geometry);

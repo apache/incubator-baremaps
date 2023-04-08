@@ -83,10 +83,11 @@ public class MultiLineStringDataType implements DataType<MultiLineString> {
    */
   @Override
   public MultiLineString read(ByteBuffer buffer, int position) {
-    int size = buffer.getInt(position);
+    var size = size(buffer, position);
+    var limit = position + size;
     position += Integer.BYTES;
     var lineStrings = new ArrayList<LineString>();
-    while (position < size) {
+    while (position < limit) {
       var lineString = lineStringDataType.read(buffer, position);
       lineStrings.add(lineString);
       position += lineStringDataType.size(buffer, position);

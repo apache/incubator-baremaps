@@ -81,10 +81,11 @@ public class MultiPolygonDataType implements DataType<MultiPolygon> {
    */
   @Override
   public MultiPolygon read(ByteBuffer buffer, int position) {
-    int size = buffer.getInt(position);
+    var size = size(buffer, position);
+    var limit = position + size;
     position += Integer.BYTES;
     var polygons = new ArrayList<Polygon>();
-    while (position < size) {
+    while (position < limit) {
       var polygon = polygonDataType.read(buffer, position);
       polygons.add(polygon);
       position += polygonDataType.size(buffer, position);
