@@ -22,8 +22,6 @@ import org.locationtech.jts.geom.*;
  */
 public class GeometryDataType implements DataType<Geometry> {
 
-  private final GeometryFactory geometryFactory;
-
   private final PointDataType pointDataType;
 
   private final LineStringDataType lineStringDataType;
@@ -51,7 +49,6 @@ public class GeometryDataType implements DataType<Geometry> {
    * @param geometryFactory
    */
   public GeometryDataType(GeometryFactory geometryFactory) {
-    this.geometryFactory = geometryFactory;
     this.pointDataType = new PointDataType(geometryFactory);
     this.lineStringDataType = new LineStringDataType(geometryFactory);
     this.polygonDataType = new PolygonDataType(geometryFactory);
@@ -132,34 +129,34 @@ public class GeometryDataType implements DataType<Geometry> {
   @Override
   public void write(ByteBuffer buffer, int position, Geometry value) {
     // Write the geometry
-    if (value instanceof Point) {
+    if (value instanceof Point point) {
       buffer.put(position, (byte) 1);
       position += Byte.BYTES;
-      pointDataType.write(buffer, position, (Point) value);
-    } else if (value instanceof LineString) {
+      pointDataType.write(buffer, position, point);
+    } else if (value instanceof LineString lineString) {
       buffer.put(position, (byte) 2);
       position += Byte.BYTES;
-      lineStringDataType.write(buffer, position, (LineString) value);
-    } else if (value instanceof Polygon) {
+      lineStringDataType.write(buffer, position, lineString);
+    } else if (value instanceof Polygon polygon) {
       buffer.put(position, (byte) 3);
       position += Byte.BYTES;
-      polygonDataType.write(buffer, position, (Polygon) value);
-    } else if (value instanceof MultiPoint) {
+      polygonDataType.write(buffer, position, polygon);
+    } else if (value instanceof MultiPoint multiPoint) {
       buffer.put(position, (byte) 4);
       position += Byte.BYTES;
-      multiPointDataType.write(buffer, position, (MultiPoint) value);
-    } else if (value instanceof MultiLineString) {
+      multiPointDataType.write(buffer, position, multiPoint);
+    } else if (value instanceof MultiLineString multiLineString) {
       buffer.put(position, (byte) 5);
       position += Byte.BYTES;
-      multiLineStringDataType.write(buffer, position, (MultiLineString) value);
-    } else if (value instanceof MultiPolygon) {
+      multiLineStringDataType.write(buffer, position, multiLineString);
+    } else if (value instanceof MultiPolygon multiPolygon) {
       buffer.put(position, (byte) 6);
       position += Byte.BYTES;
-      multiPolygonDataType.write(buffer, position, (MultiPolygon) value);
-    } else if (value instanceof GeometryCollection) {
+      multiPolygonDataType.write(buffer, position, multiPolygon);
+    } else if (value instanceof GeometryCollection geometryCollection) {
       buffer.put(position, (byte) 7);
       position += Byte.BYTES;
-      geometryCollectionDataType.write(buffer, position, (GeometryCollection) value);
+      geometryCollectionDataType.write(buffer, position, geometryCollection);
     } else {
       throw new IllegalArgumentException("Unsupported geometry type: " + value.getClass());
     }
