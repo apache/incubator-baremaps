@@ -199,9 +199,10 @@ public class FlatGeoBufTable extends AbstractTable {
         var geometry = row.values().stream()
             .filter(v -> v instanceof Geometry)
             .map(Geometry.class::cast)
-            .findFirst().get();
-        var geometryOffset = geometry != null
-            ? GeometryConversions.serialize(featureBuilder, geometry, headerMeta.geometryType)
+            .findFirst();
+
+        var geometryOffset = geometry.isPresent()
+            ? GeometryConversions.serialize(featureBuilder, geometry.get(), headerMeta.geometryType)
             : 0;
 
         var featureOffset =
