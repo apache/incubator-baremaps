@@ -129,7 +129,9 @@ public class GeometryDataType implements DataType<Geometry> {
   @Override
   public void write(ByteBuffer buffer, int position, Geometry value) {
     // Write the geometry
-    if (value instanceof Point point) {
+    if (value == null) {
+      buffer.put(position, (byte) 0);
+    } else if (value instanceof Point point) {
       buffer.put(position, (byte) 1);
       position += Byte.BYTES;
       pointDataType.write(buffer, position, point);
@@ -172,7 +174,9 @@ public class GeometryDataType implements DataType<Geometry> {
     position += Byte.BYTES;
 
     // Read the geometry
-    if (type == 1) {
+    if (type == 0) {
+      return null;
+    } else if (type == 1) {
       return pointDataType.read(buffer, position);
     } else if (type == 2) {
       return lineStringDataType.read(buffer, position);
