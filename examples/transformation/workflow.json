@@ -36,10 +36,43 @@
           "collection": "collection",
           "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
           "recipe": {
+            "name": "building",
+            "filter": ["has", "building"],
+            "groupBy": [],
+            "operation": "union"
+          }
+        },
+        {
+          "type": "TransformEntityCollection",
+          "collection": "collection",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+          "recipe": {
             "name": "landuse",
             "filter": ["has", "landuse"],
             "groupBy": ["landuse"],
             "operation": "union"
+          }
+        },
+        {
+          "type": "TransformEntityCollection",
+          "collection": "collection",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+          "recipe": {
+            "name": "natural",
+            "filter": ["has", "natural"],
+            "groupBy": ["natural"],
+            "operation": "union"
+          }
+        },
+        {
+          "type": "TransformEntityCollection",
+          "collection": "collection",
+          "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
+          "recipe": {
+            "name": "highway",
+            "filter": ["has", "highway"],
+            "groupBy": ["highway"],
+            "operation": "merge"
           }
         }
       ]
