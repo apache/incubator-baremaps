@@ -15,6 +15,7 @@ package org.apache.baremaps.workflow.tasks;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import org.apache.baremaps.collection.type.*;
+import org.apache.baremaps.collection.type.geometry.GeometryDataType;
 import org.locationtech.jts.geom.Geometry;
 
 public class EntityDataType implements DataType<Entity> {
@@ -29,7 +30,8 @@ public class EntityDataType implements DataType<Entity> {
   @Override
   public int size(Entity value) {
     int size = 0;
-    size += idType.size();
+    size += Integer.BYTES;
+    size += idType.size(value.getId());
     size += tagsType.size(value.getTags());
     size += geometryType.size(value.getGeometry());
     return size;

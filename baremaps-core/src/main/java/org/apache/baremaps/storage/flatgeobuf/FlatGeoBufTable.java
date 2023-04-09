@@ -27,7 +27,7 @@ import org.apache.baremaps.storage.AbstractTable;
 import org.apache.baremaps.storage.Row;
 import org.apache.baremaps.storage.Schema;
 import org.apache.baremaps.storage.flatgeobuf.internal.TableConversions;
-import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.*;
 import org.wololo.flatgeobuf.Constants;
 import org.wololo.flatgeobuf.GeometryConversions;
 import org.wololo.flatgeobuf.HeaderMeta;
@@ -160,6 +160,7 @@ public class FlatGeoBufTable extends AbstractTable {
       var headerMeta = new HeaderMeta();
       headerMeta.geometryType = GeometryType.Unknown;
       headerMeta.indexNodeSize = 16;
+      headerMeta.srid = 3857;
       headerMeta.featuresCount =
           features instanceof AbstractDataCollection<Row>c ? c.sizeAsLong() : features.size();
       headerMeta.name = schema.name();
@@ -175,38 +176,44 @@ public class FlatGeoBufTable extends AbstractTable {
 
       var iterator = features.iterator();
       while (iterator.hasNext()) {
+        var featureBuilder = new FlatBufferBuilder(4096);
+
         var row = iterator.next();
-        var featureBuilder = new FlatBufferBuilder();
-        var geometryOffset = 0;
-        var propertiesOffset = 0;
+
         var propertiesBuffer = ByteBuffer.allocate(1 << 20).order(ByteOrder.LITTLE_ENDIAN);
-        var i = 0;
-        for (Object value : row.values()) {
-          if (value instanceof Geometry geometry) {
-            try {
-              geometryOffset =
-                  GeometryConversions.serialize(featureBuilder, geometry, headerMeta.geometryType);
-            } catch (IOException e) {
-              throw new RuntimeException(e);
-            }
-          } else {
-            var column = headerMeta.columns.get(i);
-            propertiesBuffer.putShort((short) i);
-            TableConversions.writeValue(propertiesBuffer, column, value);
-            i++;
-          }
+        var properties = row.values().stream()
+            .filter(v -> !(v instanceof Geometry))
+            .toList();
+        for (int i = 0; i < properties.size(); i++) {
+          var column = headerMeta.columns.get(i);
+          var value = properties.get(i);
+          propertiesBuffer.putShort((short) i);
+          TableConversions.writeValue(propertiesBuffer, column, value);
         }
-        propertiesBuffer.flip();
-        propertiesOffset = org.wololo.flatgeobuf.generated.Feature
+        if (propertiesBuffer.position() > 0) {
+          propertiesBuffer.flip();
+        }
+        var propertiesOffset = org.wololo.flatgeobuf.generated.Feature
             .createPropertiesVector(featureBuilder, propertiesBuffer);
+
+        var geometry = row.values().stream()
+            .filter(v -> v instanceof Geometry)
+            .map(Geometry.class::cast)
+            .findFirst();
+
+        var geometryOffset = geometry.isPresent()
+            ? GeometryConversions.serialize(featureBuilder, geometry.get(), headerMeta.geometryType)
+            : 0;
 
         var featureOffset =
             org.wololo.flatgeobuf.generated.Feature.createFeature(featureBuilder, geometryOffset,
                 propertiesOffset, 0);
-
         featureBuilder.finishSizePrefixed(featureOffset);
 
-        channel.write(featureBuilder.dataBuffer());
+        ByteBuffer data = featureBuilder.dataBuffer();
+        while (data.hasRemaining()) {
+          channel.write(data);
+        }
       }
     }
   }

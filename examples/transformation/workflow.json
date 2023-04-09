@@ -6,8 +6,8 @@
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://download.geofabrik.de/europe/liechtenstein-latest.osm.pbf",
-          "path": "liechtenstein-latest.osm.pbf"
+          "url": "https://download.geofabrik.de/europe/switzerland-latest.osm.pbf",
+          "path": "data.osm.pbf"
         }
       ]
     },
@@ -19,7 +19,7 @@
       "tasks": [
         {
           "type": "CreateEntityCollection",
-          "file": "liechtenstein-latest.osm.pbf",
+          "file": "data.osm.pbf",
           "collection": "collection",
           "srid": 3857
         }

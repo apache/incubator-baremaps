@@ -31,7 +31,7 @@ public interface Row {
    * 
    * @return the values of the columns in the row
    */
-  List values();
+  List<?> values();
 
   /**
    * Returns the value of the specified column.

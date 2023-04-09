@@ -19,12 +19,13 @@ import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
 import org.locationtech.jts.geom.Geometry;
 
 /** A {@link DataType} for reading and writing {@link Geometry} in {@link ByteBuffer}s. */
-public class GeometryDataType implements DataType<Geometry> {
+public class WKBDataType implements DataType<Geometry> {
 
   /** {@inheritDoc} */
   @Override
   public int size(Geometry value) {
-    return Integer.BYTES + GeometryUtils.serialize(value).length;
+    byte[] bytes = GeometryUtils.serialize(value);
+    return Integer.BYTES + bytes.length;
   }
 
   /** {@inheritDoc} */
