@@ -140,14 +140,14 @@ public class PostgresStore implements Store {
 
       // Drop the table if it exists
       var dropQuery = dropTable(schema.name());
-      logger.info(dropQuery);
+      logger.debug(dropQuery);
       try (var dropStatement = connection.prepareStatement(dropQuery)) {
         dropStatement.execute();
       }
 
       // Create the table
       var createQuery = createTable(schema);
-      logger.info(createQuery);
+      logger.debug(createQuery);
       try (var createStatement = connection.prepareStatement(createQuery)) {
         createStatement.execute();
       }
@@ -155,7 +155,7 @@ public class PostgresStore implements Store {
       // Copy the data
       PGConnection pgConnection = connection.unwrap(PGConnection.class);
       var copyQuery = copy(schema);
-      logger.info(copyQuery);
+      logger.debug(copyQuery);
       try (var writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copyQuery))) {
         writer.writeHeader();
         var rowIterator = table.iterator();

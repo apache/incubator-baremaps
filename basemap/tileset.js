@@ -33,7 +33,7 @@ import waterway from "./layers/waterway/tileset.js";
 export default {
   "tilejson": "2.2.0",
   "center": [...config.center, config.zoom],
-  "minzoom": 1.0,
+  "minzoom": 0.0,
   "maxzoom": 14.0,
   "tiles": [
     `${config.host}/tiles/{z}/{x}/{y}.mvt`
@@ -45,7 +45,7 @@ export default {
     amenity,
     attraction,
     barrier,
-    boundary,
+    // boundary,
     building,
     highway,
     landuse,
