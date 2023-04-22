@@ -10,7 +10,6 @@
 
 -- ('grassland', 'heath', 'scrub', 'wood', 'bay', 'beach', 'glacier', 'mud', 'shingle', 'shoal', 'strait', 'water', 'wetland', 'bare_rock', 'sand', 'scree');
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_filtered CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_filtered AS
 SELECT
     tags -> 'natural' AS natural_value,
@@ -22,7 +21,6 @@ WHERE geom IS NOT NULL
 CREATE INDEX IF NOT EXISTS osm_natural_filtered_geom_idx ON osm_natural_filtered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_filtered_tags_idx ON osm_natural_filtered (natural_value);
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_clustered CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_clustered AS
 SELECT
     natural_value,
@@ -33,7 +31,6 @@ WHERE geom IS NOT NULL;
 CREATE INDEX IF NOT EXISTS osm_natural_clustered_geom_idx ON osm_natural_clustered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_clustered_tags_idx ON osm_natural_clustered (natural_value);
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_grouped CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_grouped AS
 SELECT
     natural_value,
@@ -41,21 +38,18 @@ SELECT
 FROM osm_natural_clustered
 GROUP BY natural_value, cluster;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_buffered CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_buffered AS
 SELECT
     natural_value,
     st_buffer(geom, 0, 'join=mitre') AS geom
 FROM osm_natural_grouped;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_exploded CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_exploded AS
 SELECT
     natural_value,
     (st_dump(geom)).geom AS geom
 FROM osm_natural_buffered;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural CASCADE;
 CREATE MATERIALIZED VIEW osm_natural AS
 SELECT
     row_number() OVER () AS id,
@@ -65,7 +59,6 @@ FROM osm_natural_exploded;
 CREATE INDEX IF NOT EXISTS osm_natural_geom_idx ON osm_natural_filtered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_tags_idx ON osm_natural_filtered USING GIN (natural_value);
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_medium_filtered CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_medium_filtered AS
 SELECT
     id,
@@ -76,7 +69,6 @@ WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 8), 2);
 CREATE INDEX IF NOT EXISTS osm_natural_medium_filtered_geom_idx ON osm_natural_medium_filtered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_medium_filtered_tags_idx ON osm_natural_medium_filtered (natural_value);
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_medium_clustered CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_medium_clustered AS
 SELECT
     natural_value,
@@ -86,7 +78,6 @@ FROM osm_natural_medium_filtered;
 CREATE INDEX IF NOT EXISTS osm_natural_medium_clustered_geom_idx ON osm_natural_medium_clustered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_medium_clustered_tags_idx ON osm_natural_medium_clustered (natural_value);
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_medium_grouped CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_medium_grouped AS
 SELECT
     natural_value,
@@ -95,21 +86,18 @@ SELECT
 FROM osm_natural_medium_clustered
 GROUP BY natural_value, cluster;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_medium_buffered CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_medium_buffered AS
 SELECT
     natural_value,
     st_buffer(geom, -78270 / power(2, 8), 'join=mitre') AS geom
 FROM osm_natural_medium_grouped;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_medium_exploded CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_medium_exploded AS
 SELECT
     natural_value,
     (st_dump(geom)).geom AS geom
 FROM osm_natural_medium_buffered;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_medium CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_medium AS
 SELECT
     row_number() OVER () AS id,
@@ -119,7 +107,6 @@ FROM osm_natural_medium_buffered;
 CREATE INDEX IF NOT EXISTS osm_natural_medium_geom_idx ON osm_natural_medium USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_medium_tags_idx ON osm_natural_medium USING GIN (tags);
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_small_filtered CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_small_filtered AS
 SELECT
     id,
@@ -130,7 +117,6 @@ WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 4), 2);
 CREATE INDEX IF NOT EXISTS osm_natural_small_filtered_geom_idx ON osm_natural_small_filtered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_small_filtered_tags_idx ON osm_natural_small_filtered (natural_value);
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_small_clustered CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_small_clustered AS
 SELECT
     natural_value,
@@ -140,7 +126,6 @@ FROM osm_natural_small_filtered;
 CREATE INDEX IF NOT EXISTS osm_natural_small_clustered_geom_idx ON osm_natural_small_clustered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_small_clustered_tags_idx ON osm_natural_small_clustered (natural_value);
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_small_grouped CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_small_grouped AS
 SELECT
     natural_value,
@@ -149,21 +134,18 @@ SELECT
 FROM osm_natural_small_clustered
 GROUP BY natural_value, cluster;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_small_buffered CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_small_buffered AS
 SELECT
     natural_value,
     st_buffer(geom, -78270 / power(2, 4), 'join=mitre') AS geom
 FROM osm_natural_small_grouped;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_small_exploded CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_small_exploded AS
 SELECT
     natural_value,
     (st_dump(geom)).geom AS geom
 FROM osm_natural_small_buffered;
 
-DROP MATERIALIZED VIEW IF EXISTS osm_natural_small CASCADE;
 CREATE MATERIALIZED VIEW osm_natural_small AS
 SELECT
             row_number() OVER () AS id,

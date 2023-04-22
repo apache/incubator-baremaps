@@ -211,6 +211,7 @@ export default {
           "type": "ExecuteSql",
           "file": "queries/osm_nodes.sql",
           "database": config.database,
+          "parallel": true,
         },
       ]
     },
@@ -224,6 +225,7 @@ export default {
           "type": "ExecuteSql",
           "file": "queries/osm_ways.sql",
           "database": config.database,
+          "parallel": true,
         },
       ]
     },
@@ -237,6 +239,7 @@ export default {
           "type": "ExecuteSql",
           "file": "queries/osm_relations.sql",
           "database": config.database,
+          "parallel": true,
         },
       ]
     },
@@ -268,11 +271,13 @@ export default {
           "type": "ExecuteSql",
           "file": "layers/point/simplify.sql",
           "database": config.database,
+          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "layers/point/index.sql",
           "database": config.database,
+          "parallel": true,
         },
       ]
     },
@@ -342,11 +347,13 @@ export default {
           "type": "ExecuteSql",
           "file": "layers/highway/simplify.sql",
           "database": config.database,
+          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "layers/highway/index.sql",
           "database": config.database,
+          "parallel": true,
         },
       ]
     },
@@ -368,11 +375,13 @@ export default {
           "type": "ExecuteSql",
           "file": "layers/railway/simplify.sql",
           "database": config.database,
+          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "layers/railway/index.sql",
           "database": config.database,
+          "parallel": true,
         },
       ]
     },
@@ -394,11 +403,13 @@ export default {
           "type": "ExecuteSql",
           "file": "layers/route/simplify.sql",
           "database": config.database,
+          "parallel": true,
         },
         {
           "type": "ExecuteSql",
           "file": "layers/route/index.sql",
           "database": config.database,
+          "parallel": true,
         },
       ]
     },
@@ -420,6 +431,7 @@ export default {
           "type": "ExecuteSql",
           "file": "layers/natural/simplify.sql",
           "database": config.database,
+          "parallel": true,
         },
         {
           "type": "ExecuteSql",
@@ -449,6 +461,7 @@ export default {
           "type": "ExecuteSql",
           "file": "layers/landuse/simplify.sql",
           "database": config.database,
+          "parallel": true,
         },
         {
           "type": "ExecuteSql",
@@ -478,6 +491,7 @@ export default {
           "type": "ExecuteSql",
           "file": "layers/waterway/simplify.sql",
           "database": config.database,
+          "parallel": true,
         },
         {
           "type": "ExecuteSql",
