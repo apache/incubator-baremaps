@@ -24,7 +24,7 @@ import picocli.CommandLine.Command;
 
 @Command(name = "map", description = "Map commands.",
     subcommands = {Init.class, Export.class, Serve.class, Dev.class, StyleCommand.class,
-        MBTiles.class},
+        MBTiles.class, Contour.class},
     sortOptions = false)
 public class Map implements Runnable {
 

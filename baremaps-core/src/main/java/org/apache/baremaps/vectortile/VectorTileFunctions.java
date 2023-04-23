@@ -45,14 +45,13 @@ public class VectorTileFunctions {
    * @param clipGeom A flag to clip the geometry
    * @return The transformed geometry
    */
-  public static Geometry asVectorTileGeom(Geometry geometry, Geometry envelope, int extent,
+  public static Geometry asVectorTileGeom(Geometry geometry, Envelope envelope, int extent,
       int buffer, boolean clipGeom) {
     // Scale the geometry to the extent of the tile
-    var envelopeInternal = envelope.getEnvelopeInternal();
-    double scaleX = extent / envelopeInternal.getWidth();
-    double scaleY = extent / envelopeInternal.getHeight();
+    double scaleX = extent / envelope.getWidth();
+    double scaleY = extent / envelope.getHeight();
     AffineTransformation affineTransformation = new AffineTransformation();
-    affineTransformation.translate(-envelopeInternal.getMinX(), -envelopeInternal.getMinY());
+    affineTransformation.translate(-envelope.getMinX(), -envelope.getMinY());
     affineTransformation.scale(scaleX, -scaleY);
     affineTransformation.translate(0, extent);
     Geometry scaledGeometry = affineTransformation.transform(geometry);
@@ -94,11 +93,16 @@ public class VectorTileFunctions {
    * @return The transformed tile
    */
   public static ByteBuffer asVectorTile(Tile vectorTile) {
-    return new VectorTileEncoder()
-        .encodeTile(vectorTile)
-        .toByteString()
-        .asReadOnlyByteBuffer();
-
+    ByteBuffer original = new VectorTileEncoder()
+            .encodeTile(vectorTile)
+            .toByteString()
+            .asReadOnlyByteBuffer();
+    ByteBuffer clone = ByteBuffer.allocate(original.capacity());
+    original.rewind();// copy from the beginning
+    clone.put(original);
+    original.rewind();
+    clone.flip();
+    return clone;
   }
 
   /**
@@ -108,10 +112,18 @@ public class VectorTileFunctions {
    * @return The transformed layer
    */
   public static ByteBuffer asVectorTileLayer(Layer layer) {
-    return new VectorTileEncoder()
+    ByteBuffer original = new VectorTileEncoder()
         .encodeLayer(layer)
         .toByteString()
         .asReadOnlyByteBuffer();
+
+    ByteBuffer clone = ByteBuffer.allocate(original.capacity());
+    original.rewind();// copy from the beginning
+    clone.put(original);
+    original.rewind();
+    clone.flip();
+
+    return clone;
   }
 
   /**

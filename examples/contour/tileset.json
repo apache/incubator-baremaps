@@ -5,24 +5,17 @@
     47.166,
     14.0
   ],
-  "bounds": [
-    9.471078,
-    47.04774,
-    9.636217,
-    47.27128
-  ],
   "tiles": [
     "http://localhost:9000/tiles/{z}/{x}/{y}.mvt"
   ],
   "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps",
   "vector_layers": [
     {
-      "id": "aster_dem",
+      "id": "contours",
       "queries": [
         {
           "minzoom": 0,
-          "maxzoom": 20,
-          "sql": "SELECT ogc_fid, jsonb_build_object('elevation', elevation::text), wkb_geometry FROM aster_dem"
+          "maxzoom": 20
         }
       ]
     }

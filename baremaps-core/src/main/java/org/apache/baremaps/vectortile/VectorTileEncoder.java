@@ -125,9 +125,10 @@ public class VectorTileEncoder {
     cy = 0;
 
     VectorTile.Tile.Feature.Builder builder = VectorTile.Tile.Feature.newBuilder();
-    builder.setId(feature.getId());
+    if (feature.getId() != null) {
+      builder.setId(feature.getId());
+    }
     builder.setType(encodeGeometryType(feature.getGeometry()));
-
     encodeTag(feature.getTags(), builder::addTags);
     encodeGeometry(feature.getGeometry(), builder::addGeometry);
 

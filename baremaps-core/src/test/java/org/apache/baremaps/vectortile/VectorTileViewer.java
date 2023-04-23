@@ -19,10 +19,8 @@ package org.apache.baremaps.vectortile;
 
 import java.awt.*;
 import java.awt.Dimension;
+import java.net.URL;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.zip.GZIPInputStream;
 import javax.swing.*;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.Point;
@@ -34,10 +32,14 @@ import org.locationtech.jts.geom.Polygon;
 public class VectorTileViewer {
 
   public static void main(String... args) throws Exception {
-    String arg =
-        args.length > 0 ? args[0] : "baremaps-core/src/test/resources/vectortile/14-8493-5795.mvt";
-    var path = Path.of(arg);
-    try (var input = new GZIPInputStream(Files.newInputStream(path))) {
+    // String arg =
+    // args.length > 0 ? args[0] : "baremaps-core/src/test/resources/vectortile/14-8493-5795.mvt";
+    // var path = Path.of(arg);
+    // try (var input = new GZIPInputStream(Files.newInputStream(path))) {
+
+    var url = new URL("http://localhost:9000/tiles/14/8628/5750.mvt");
+
+    try (var input = url.openStream()) {
       var buffer = ByteBuffer.wrap(input.readAllBytes());
       var parsed = org.apache.baremaps.mvt.binary.VectorTile.Tile.parseFrom(buffer);
       var tile = new VectorTileDecoder().decodeTile(parsed);

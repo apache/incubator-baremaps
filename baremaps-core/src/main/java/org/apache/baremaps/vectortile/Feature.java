@@ -26,7 +26,7 @@ import org.locationtech.jts.geom.Geometry;
  */
 public class Feature {
 
-  private long id;
+  private Long id;
 
   private Map<String, Object> tags;
 
@@ -44,7 +44,7 @@ public class Feature {
    * @param tags The tags of the feature.
    * @param geometry The geometry of the feature.
    */
-  public Feature(long id, Map<String, Object> tags, Geometry geometry) {
+  public Feature(Long id, Map<String, Object> tags, Geometry geometry) {
     this.id = id;
     this.tags = tags;
     this.geometry = geometry;
@@ -55,7 +55,7 @@ public class Feature {
    *
    * @return The id of the feature.
    */
-  public long getId() {
+  public Long getId() {
     return id;
   }
 
@@ -64,7 +64,7 @@ public class Feature {
    *
    * @param id The id of the feature.
    */
-  public void setId(long id) {
+  public void setId(Long id) {
     this.id = id;
   }
 

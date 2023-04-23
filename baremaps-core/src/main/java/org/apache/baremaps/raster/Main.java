@@ -26,15 +26,15 @@ import org.gdal.osr.SpatialReference;
 public class Main {
 
   public static void main(String[] args) {
-     var sourceFilename = Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857.tif")
-     .toAbsolutePath().toString();
-     var hillshadeFilename =
-     Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857-hillshade.tif").toAbsolutePath()
-     .toString();
-     var outputFilename = Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857.shp")
-     .toAbsolutePath().toString();
-     var warpFilename = Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857-warp.tif")
-     .toAbsolutePath().toString();
+    var sourceFilename = Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857.tif")
+        .toAbsolutePath().toString();
+    var hillshadeFilename =
+        Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857-hillshade.tif").toAbsolutePath()
+            .toString();
+    var outputFilename = Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857.shp")
+        .toAbsolutePath().toString();
+    var warpFilename = Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857-warp.tif")
+        .toAbsolutePath().toString();
 
     var dem = Paths.get("examples/contour/dem.xml")
         .toAbsolutePath().toString();
@@ -44,10 +44,10 @@ public class Main {
 
     planetContour();
 
-   hillshade(sourceFilename, 1, hillshadeFilename, 45d, 315d);
-   contourEx(hillshadeFilename, 1, outputFilename, 50, 0);
-   warp(sourceFilename, warpFilename);
-   shadow(hillshadeFilename, outputFilename);
+    hillshade(sourceFilename, 1, hillshadeFilename, 45d, 315d);
+    contourEx(hillshadeFilename, 1, outputFilename, 50, 0);
+    warp(sourceFilename, warpFilename);
+    shadow(hillshadeFilename, outputFilename);
   }
 
   public static void planetContour() {

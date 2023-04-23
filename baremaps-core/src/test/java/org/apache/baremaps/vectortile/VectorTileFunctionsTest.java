@@ -45,7 +45,7 @@ class VectorTileFunctionsTest {
 
     // Transform the input geometry into a vector tile geometry
     var outputGeom =
-        VectorTileFunctions.asVectorTileGeom(inputGeom, envelope, extent, buffer, clipGeom);
+        VectorTileFunctions.asVectorTileGeom(inputGeom, envelope.getEnvelopeInternal(), extent, buffer, clipGeom);
 
     // Check if the output geometry is not null
     assertNotNull(outputGeom);
