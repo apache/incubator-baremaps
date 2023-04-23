@@ -60,19 +60,19 @@ export default {
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/globaladm0_clean.sql",
+          "file": "layers/boundary/globaladm0_clean.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/globaladm0_simplify.sql",
+          "file": "layers/boundary/globaladm0_simplify.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/globaladm0_index.sql",
+          "file": "layers/boundary/globaladm0_index.sql",
           "database": config.database,
           "parallel": true,
         }
@@ -96,55 +96,19 @@ export default {
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/globaladm1_clean.sql",
+          "file": "layers/boundary/globaladm1_clean.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/globaladm1_simplify.sql",
+          "file": "layers/boundary/globaladm1_simplify.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/globaladm1_index.sql",
-          "database": config.database,
-          "parallel": true,
-        }
-      ]
-    },
-    {
-      "id": "globaladm2",
-      "needs": [],
-      "tasks": [
-        {
-          "type": "DownloadUrl",
-          "url": "https://github.com/wmgeolab/geoBoundaries/raw/main/releaseData/CGAZ/geoBoundariesCGAZ_ADM2.gpkg",
-          "path": "data/geoBoundariesCGAZ_ADM2.gpkg"
-        },
-        {
-          "type": "ImportGeoPackage",
-          "file": "data/geoBoundariesCGAZ_ADM2.gpkg",
-          "database": config.database,
-          "sourceSRID": 4326,
-          "targetSRID": 3857
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/globaladm2_clean.sql",
-          "database": config.database,
-          "parallel": true,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/globaladm2_simplify.sql",
-          "database": config.database,
-          "parallel": true,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/globaladm2_index.sql",
+          "file": "layers/boundary/globaladm1_index.sql",
           "database": config.database,
           "parallel": true,
         }
@@ -171,11 +135,6 @@ export default {
           "sourceSRID": 3857,
           "targetSRID": 3857
         },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/osm_water_index.sql",
-          "database": config.database
-        }
       ]
     },
     {
@@ -199,9 +158,28 @@ export default {
           "sourceSRID": 3857,
           "targetSRID": 3857
         },
+      ]
+    },
+    {
+      "id": "openstreetmap-ocean",
+      "needs": [
+        "water-polygons",
+        "simplified-water-polygons",
+      ],
+      "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_simplified_water_index.sql",
+          "file": "layers/ocean/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/ocean/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/ocean/index.sql",
           "database": config.database,
         },
       ]
@@ -225,148 +203,157 @@ export default {
     },
     {
       "id": "openstreetmap-nodes",
-      "needs": ["openstreetmap-data"],
+      "needs": [
+          "openstreetmap-data"
+      ],
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_nodes_clean.sql",
+          "file": "queries/osm_nodes.sql",
           "database": config.database,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/osm_nodes_prepare.sql",
-          "database": config.database,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/osm_nodes_simplify.sql",
-          "database": config.database,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/osm_nodes_index.sql",
-          "database": config.database,
+          "parallel": true,
         },
       ]
     },
     {
       "id": "openstreetmap-ways",
-      "needs": ["openstreetmap-data"],
+      "needs": [
+          "openstreetmap-data"
+      ],
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_ways_clean.sql",
+          "file": "queries/osm_ways.sql",
           "database": config.database,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/osm_ways_prepare.sql",
-          "database": config.database,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/osm_ways_simplify.sql",
-          "database": config.database,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/osm_ways_index.sql",
-          "database": config.database,
+          "parallel": true,
         },
       ]
     },
     {
       "id": "openstreetmap-relations",
-      "needs": ["openstreetmap-data"],
+      "needs": [
+          "openstreetmap-data"
+      ],
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_relations_clean.sql",
+          "file": "queries/osm_relations.sql",
           "database": config.database,
+          "parallel": true,
         },
+      ]
+    },
+    {
+      "id": "openstreetmap-member",
+      "needs": [
+        "openstreetmap-data"
+      ],
+      "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_relations_prepare.sql",
-          "database": config.database,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/osm_relations_simplify.sql",
-          "database": config.database,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/osm_relations_index.sql",
+          "file": "layers/member/prepare.sql",
           "database": config.database,
         },
       ]
     },
     {
-      "id": "openstreetmap-linestring",
-      "needs": ["openstreetmap-ways"],
+      "id": "openstreetmap-point",
+      "needs": [
+        "openstreetmap-nodes"
+      ],
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_linestring.sql",
+          "file": "layers/point/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/point/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/point/index.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-linestring",
+      "needs": [
+          "openstreetmap-member"
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/linestring/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/linestring/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/linestring/index.sql",
           "database": config.database,
         },
       ]
     },
     {
       "id": "openstreetmap-polygon",
-      "needs": ["openstreetmap-ways", "openstreetmap-relations"],
+      "needs": [
+          "openstreetmap-member",
+      ],
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_polygon_prepare.sql",
+          "file": "layers/polygon/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_polygon_index.sql",
-          "database": config.database,
-        },
-      ]
-    },
-    {
-      "id": "openstreetmap-boundary",
-      "needs": ["openstreetmap-linestring"],
-      "tasks": [
-        {
-          "type": "ExecuteSql",
-          "file": "queries/osm_boundary_prepare.sql",
+          "file": "layers/polygon/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_boundary_simplify.sql",
-          "database": config.database,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/osm_boundary_index.sql",
+          "file": "layers/polygon/index.sql",
           "database": config.database,
         },
       ]
     },
     {
       "id": "openstreetmap-highway",
-      "needs": ["openstreetmap-linestring"],
+      "needs": [
+          "openstreetmap-linestring"
+      ],
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_highway_prepare.sql",
+          "file": "layers/highway/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_highway_simplify.sql",
+          "file": "layers/highway/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_highway_index.sql",
+          "file": "layers/highway/simplify.sql",
           "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/highway/index.sql",
+          "database": config.database,
+          "parallel": true,
         },
       ]
     },
@@ -376,18 +363,53 @@ export default {
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_railway_prepare.sql",
+          "file": "layers/railway/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_railway_simplify.sql",
+          "file": "layers/railway/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_railway_index.sql",
+          "file": "layers/railway/simplify.sql",
           "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/railway/index.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-route",
+      "needs": ["openstreetmap-linestring"],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/route/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/route/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/route/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/route/index.sql",
+          "database": config.database,
+          "parallel": true,
         },
       ]
     },
@@ -397,17 +419,23 @@ export default {
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_natural_prepare.sql",
+          "file": "layers/natural/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_natural_simplify.sql",
+          "file": "layers/natural/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_natural_index.sql",
+          "file": "layers/natural/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/natural/index.sql",
           "database": config.database,
           "parallel": true
         },
@@ -415,25 +443,63 @@ export default {
     },
     {
       "id": "openstreetmap-landuse",
-      "needs": ["openstreetmap-polygon"],
+      "needs": [
+          "openstreetmap-polygon"
+      ],
       "tasks": [
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_landuse_prepare.sql",
+          "file": "layers/landuse/clean.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_landuse_simplify.sql",
+          "file": "layers/landuse/prepare.sql",
           "database": config.database,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/osm_landuse_index.sql",
+          "file": "layers/landuse/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/landuse/index.sql",
           "database": config.database,
           "parallel": true
         },
       ]
-    }
+    },
+    {
+      "id": "openstreetmap-waterway",
+      "needs": [
+          "openstreetmap-linestring"
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/waterway/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/waterway/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/waterway/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/waterway/index.sql",
+          "database": config.database,
+          "parallel": true
+        },
+      ]
+    },
   ]
 }

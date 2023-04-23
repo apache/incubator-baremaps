@@ -95,7 +95,7 @@ public class RelationGeometryBuilder implements Consumer<Relation> {
         logger.debug("Relation #{} processed in {} ms", relation.id(), duration);
       }
     } catch (Exception e) {
-      logger.warn("Unable to build the geometry for relation #" + relation.id(), e);
+      logger.debug("Unable to build the geometry for relation #" + relation.id(), e);
       relation.setGeometry(GEOMETRY_FACTORY_WGS84.createEmpty(0));
     }
   }

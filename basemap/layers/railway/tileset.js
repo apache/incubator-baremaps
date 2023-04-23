@@ -14,13 +14,13 @@ export default {
     "queries": [
         {
             "minzoom": 9,
-            "maxzoom": 12,
+            "maxzoom": 13,
             "sql": "SELECT id, tags, geom FROM osm_railway_z$zoom"
         },
         {
-            "minzoom": 12,
+            "minzoom": 13,
             "maxzoom": 20,
-            "sql": "SELECT id, tags, geom FROM osm_ways_z$zoom WHERE tags ? 'railway'"
+            "sql": "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'railway'"
         }
     ]
 }

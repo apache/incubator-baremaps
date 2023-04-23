@@ -138,9 +138,16 @@ public class WorkflowExecutor implements AutoCloseable {
     // Time the execution of the tasks
     var measures = new ArrayList<TaskMeasure>();
 
+    // Get the step from the workflow and skip it if it does not exist.
+    // This allows to comment out steps in the workflow without breaking the execution.
+    var step = steps.get(stepId);
+    if (step == null) {
+      logger.warn("Step {} does not exist and will be skipped", stepId);
+      return future;
+    }
+
     // Chain the tasks of the step to the future so that they are executed
     // sequentially when the previous future step completes.
-    var step = steps.get(stepId);
     var tasks = step.getTasks();
     for (var task : tasks) {
       future = future.thenRunAsync(() -> {

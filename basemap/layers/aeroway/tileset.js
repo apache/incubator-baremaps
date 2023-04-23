@@ -13,10 +13,10 @@ export default {
     id: 'aeroway',
     queries: [
         {
-            minzoom: 12,
+            minzoom: 13,
             maxzoom: 20,
             sql:
-                "SELECT id, tags, geom FROM osm_ways_z$zoom WHERE tags ? 'aeroway'",
+                "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'aeroway'",
         },
     ],
 }
