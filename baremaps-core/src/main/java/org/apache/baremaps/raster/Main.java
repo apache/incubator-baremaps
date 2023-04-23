@@ -26,17 +26,15 @@ import org.gdal.osr.SpatialReference;
 public class Main {
 
   public static void main(String[] args) {
-
-    // var sourceFilename = Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857.tif")
-    // .toAbsolutePath().toString();
-    // var hillshadeFilename =
-    // Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857-hillshade.tif").toAbsolutePath()
-    // .toString();
-    // var outputFilename = Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857.shp")
-    // .toAbsolutePath().toString();
-    // var warpFilename = Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857-warp.tif")
-    // .toAbsolutePath().toString();
-
+     var sourceFilename = Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857.tif")
+     .toAbsolutePath().toString();
+     var hillshadeFilename =
+     Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857-hillshade.tif").toAbsolutePath()
+     .toString();
+     var outputFilename = Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857.shp")
+     .toAbsolutePath().toString();
+     var warpFilename = Paths.get("examples/contour/liecthenstein-aster-dem-v2-3857-warp.tif")
+     .toAbsolutePath().toString();
 
     var dem = Paths.get("examples/contour/dem.xml")
         .toAbsolutePath().toString();
@@ -44,15 +42,15 @@ public class Main {
     gdal.AllRegister();
     ogr.RegisterAll();
 
-    planetContour("https://s3.amazonaws.com/elevation-tiles-prod/geotiff/%s/%s/%s.tif");
+    planetContour();
 
-    // hillshade(sourceFilename, 1, hillshadeFilename, 45d, 315d);
-    // contourEx(hillshadeFilename, 1, outputFilename, 50, 0);
-    // warp(sourceFilename, warpFilename);
-    // shadow(hillshadeFilename, outputFilename);
+   hillshade(sourceFilename, 1, hillshadeFilename, 45d, 315d);
+   contourEx(hillshadeFilename, 1, outputFilename, 50, 0);
+   warp(sourceFilename, warpFilename);
+   shadow(hillshadeFilename, outputFilename);
   }
 
-  public static void planetContour(String source) {
+  public static void planetContour() {
     var file = Paths.get(String.format("%s/%s/%s.tif", 14, 8514, 5816));
     var url = String.format("https://s3.amazonaws.com/elevation-tiles-prod/geotiff/%s", file);
     System.out.println(url);
@@ -68,7 +66,6 @@ public class Main {
     } catch (Exception e) {
       e.printStackTrace();
     }
-
 
     var dataset = gdal.Open(file.toString(), gdalconstConstants.GA_ReadOnly);
 
@@ -231,9 +228,7 @@ public class Main {
 
     dataSource.delete();
     dataset.delete();
-
   }
-
 
   public static void hillshade(String source, Integer sourceBand, String target, Double azimuth,
       Double altitude) {

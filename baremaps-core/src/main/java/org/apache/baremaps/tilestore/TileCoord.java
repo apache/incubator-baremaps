@@ -198,8 +198,8 @@ public final class TileCoord implements Comparable<TileCoord> {
   public Envelope envelope() {
     double x1 = tile2lon(x, z);
     double x2 = tile2lon(x + 1, z);
-    double y1 = tile2lat(y + 1, z);
-    double y2 = tile2lat(y, z);
+    double y1 = tile2lat(y, z);
+    double y2 = tile2lat(y + 1, z);
     return new Envelope(x1, x2, y1, y2);
   }
 

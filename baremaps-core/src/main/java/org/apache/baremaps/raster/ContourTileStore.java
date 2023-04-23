@@ -12,73 +12,79 @@
 
 package org.apache.baremaps.raster;
 
-import java.net.URL;
 import java.nio.ByteBuffer;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Vector;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+
 import org.apache.baremaps.database.tile.Tile;
 import org.apache.baremaps.database.tile.TileStore;
 import org.apache.baremaps.database.tile.TileStoreException;
+import org.apache.baremaps.openstreetmap.utils.GeometryUtils;
+import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
+import org.gdal.gdal.Dataset;
+import org.gdal.gdal.WarpOptions;
 import org.gdal.gdal.gdal;
 import org.gdal.gdalconst.gdalconstConstants;
 import org.gdal.ogr.FieldDefn;
 import org.gdal.ogr.ogr;
 import org.gdal.osr.SpatialReference;
+import org.locationtech.jts.geom.util.GeometryTransformer;
+import org.locationtech.proj4j.ProjCoordinate;
 
-public class ContourTileStore implements TileStore {
+public class ContourTileStore implements TileStore, AutoCloseable {
+
+  static {
+    gdal.AllRegister();
+    ogr.RegisterAll();
+  }
+
+  private final Dataset sourceDataset;
+
+  public ContourTileStore() {
+    var dem = Paths.get("examples/contour/dem.xml").toAbsolutePath().toString();
+    sourceDataset = gdal.Open(dem, gdalconstConstants.GA_ReadOnly);
+  }
+
   @Override
   public ByteBuffer read(Tile tile) throws TileStoreException {
-    var file = Paths.get(String.format("%s/%s/%s.tif", tile.z(), tile.x(), tile.y()));
-    var source = String.format("https://s3.amazonaws.com/elevation-tiles-prod/geotiff/%s", file);
+    var sourceBand = sourceDataset.GetRasterBand(1);
+    var envelope = tile.envelope();
 
-    try {
-      Files.deleteIfExists(file);
-      Files.createDirectories(file.getParent());
-      Files.createFile(file);
-      try (var stream = new URL(source).openStream()) {
-        Files.copy(stream, file);
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    // Warp the raster to the requested extent
+    var rasterOptions = new WarpOptions(new Vector<>(List.of(
+            "-of", "MEM",
+            "-te", Double.toString(envelope.getMinX()), Double.toString(envelope.getMinY()), Double.toString(envelope.getMaxX()), Double.toString(envelope.getMaxY()),
+            "-te_srs", "EPSG:4326")));
+    var rasterDataset = gdal.Warp("", new Dataset[]{sourceDataset}, rasterOptions);
+    var rasterBand = rasterDataset.GetRasterBand(1);
 
-    var dataset = gdal.Open(file.toString(), gdalconstConstants.GA_ReadOnly);
+    // Generate the contours
+    //var wkt = rasterDataset.GetProjection();
+    //var srs = new SpatialReference(wkt);
+    var srs = new SpatialReference("EPSG:4326");
+    var vectorDriver = ogr.GetDriverByName("Memory");
+    var vectorDataSource = vectorDriver.CreateDataSource("vector");
+    var vectorLayer = vectorDataSource.CreateLayer("vector", srs, ogr.wkbLineString);
+    gdal.ContourGenerateEx(rasterBand, vectorLayer, new Vector<>(List.of("LEVEL_INTERVAL=" + 10)));
 
-    dataset.GetGeoTransform();
-    dataset.GetRasterXSize();
-    dataset.GetRasterYSize();
+    // return the contours
+    var geometries = LongStream.range(0, vectorLayer.GetFeatureCount())
+            .mapToObj(vectorLayer::GetFeature)
+            .map(feature -> feature.GetGeometryRef())
+            .map(geometry -> GeometryUtils.deserialize(geometry.ExportToWkb()))
+            .toList();
 
+    var transformer = GeometryUtils.coordinateTransform(4326, 3857);
+    var min = transformer.transform(new ProjCoordinate(envelope.getMinX(), envelope.getMinY()), new ProjCoordinate());
+    var max = transformer.transform(new ProjCoordinate(envelope.getMaxX(), envelope.getMaxY()), new ProjCoordinate());
 
-    var band = dataset.GetRasterBand(1);
+    rasterBand.delete();
+    rasterDataset.delete();
+    sourceBand.delete();
 
-    band.ReadRaster_Direct(0, 0, 100, 100);
-
-    var wkt = dataset.GetProjection();
-    var srs = new SpatialReference(wkt);
-
-    var driver = ogr.GetDriverByName("Memory");
-    var dataSource = driver.CreateDataSource("memory_name");
-
-    var layer = dataSource.CreateLayer("contour", srs, ogr.wkbLineString);
-
-    var field = new FieldDefn("ID", ogr.OFTInteger);
-    field.SetWidth(8);
-    layer.CreateField(field, 0);
-    field.delete();
-
-    gdal.ContourGenerateEx(band, layer, new Vector<>(List.of(
-        "LEVEL_INTERVAL=" + 10)));
-
-    for (int i = 0; i < layer.GetFeatureCount(); i++) {
-      var feature = layer.GetFeature(i);
-      var geometry = feature.GetGeometryRef();
-      // System.out.println(geometry.ExportToWkt());
-    }
-
-    dataSource.delete();
-    dataset.delete();
     return null;
   }
 
@@ -91,4 +97,16 @@ public class ContourTileStore implements TileStore {
   public void delete(Tile tile) throws TileStoreException {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public void close() throws Exception {
+    sourceDataset.delete();
+  }
+
+  public static void main(String[] args) throws Exception {
+    var store = new ContourTileStore();
+    store.read(new Tile(8492, 5792, 14).parent());
+  }
+
+
 }
