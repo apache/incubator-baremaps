@@ -10,16 +10,47 @@
 DROP MATERIALIZED VIEW IF EXISTS osm_waterway CASCADE;
 
 CREATE MATERIALIZED VIEW osm_waterway AS
-SELECT id, tags, geom
-FROM (
-   SELECT
-       min(id) as id,
-       jsonb_build_object('waterway', tags -> 'waterway') as tags,
-       (st_dump(st_linemerge(st_collect(geom)))).geom as geom
-   FROM osm_ways
-   WHERE tags ? 'waterway'
-   GROUP BY tags -> 'waterway'
-) AS merge;
+WITH
+    -- Filter the linestrings
+    filtered AS (
+        SELECT
+                tags -> 'waterway' AS waterway,
+                geom AS geom
+        FROM osm_linestring
+        WHERE tags ->> 'waterway' IN ('river', 'stream', 'canal', 'drain', 'ditch')
+    ),
+    -- Cluster the linestrings
+    clustered AS (
+        SELECT
+            waterway AS waterway,
+            geom as geom,
+            ST_ClusterDBSCAN(geom, 0, 1) OVER (PARTITION BY waterway) AS cluster
+        FROM
+            filtered
+    ),
+    -- Merge the linestrings into a single geometry per cluster
+    merged AS (
+        SELECT
+            waterway AS waterway,
+            ST_LineMerge(ST_Collect(geom)) AS geom
+        FROM
+            clustered
+        GROUP BY
+            waterway, cluster
+    ),
+    -- Explode the merged linestrings into individual linestrings
+    exploded AS (
+        SELECT
+            waterway AS waterway,
+            (ST_Dump(geom)).geom AS geom
+        FROM
+            merged
+    )
+SELECT
+            row_number() OVER () AS id,
+            jsonb_build_object('waterway', waterway) AS tags,
+            geom AS geom
+FROM exploded;
 
 CREATE INDEX IF NOT EXISTS osm_waterway_tags_index ON osm_waterway USING gin (tags);
 CREATE INDEX IF NOT EXISTS osm_waterway_geom_index ON osm_waterway USING gist (geom);
