@@ -14,6 +14,7 @@ package org.apache.baremaps.storage;
 
 
 import java.util.Iterator;
+import java.util.function.Function;
 import org.apache.baremaps.collection.AbstractDataCollection;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.GeometryTransformer;
@@ -21,11 +22,11 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
 /**
  * A decorator for a table that transforms the geometries of the rows.
  */
-public class TableGeometryDecorator extends AbstractDataCollection<Row> implements Table {
+public class TableDecorator extends AbstractDataCollection<Row> implements Table {
 
   private final Table table;
 
-  private final GeometryTransformer transformer;
+  private final Function<Row, Row> transformer;
 
   /**
    * Constructs a new table geometry decorator.
@@ -33,9 +34,32 @@ public class TableGeometryDecorator extends AbstractDataCollection<Row> implemen
    * @param table the table to decorate
    * @param geometryTransformer the geometry transformer
    */
-  public TableGeometryDecorator(Table table, GeometryTransformer geometryTransformer) {
+  public TableDecorator(Table table, GeometryTransformer geometryTransformer) {
+    this(table, row -> {
+      var columns = table.schema()
+          .columns().stream()
+          .filter(column -> column.type().isAssignableFrom(Geometry.class))
+          .toList();
+      for (Column column : columns) {
+        var name = column.name();
+        var geometry = (Geometry) row.get(name);
+        if (geometry != null) {
+          row.set(name, geometryTransformer.transform(geometry));
+        }
+      }
+      return row;
+    });
+  }
+
+  /**
+   * Constructs a new table decorator.
+   *
+   * @param table the table to decorate
+   * @param transformer the row transformer
+   */
+  public TableDecorator(Table table, Function<Row, Row> transformer) {
     this.table = table;
-    this.transformer = geometryTransformer;
+    this.transformer = transformer;
   }
 
   /**
@@ -51,7 +75,7 @@ public class TableGeometryDecorator extends AbstractDataCollection<Row> implemen
    */
   @Override
   public Iterator<Row> iterator() {
-    return table.stream().map(this::transform).iterator();
+    return table.stream().map(this.transformer).iterator();
   }
 
   /**
@@ -60,22 +84,5 @@ public class TableGeometryDecorator extends AbstractDataCollection<Row> implemen
   @Override
   public long sizeAsLong() {
     return table.sizeAsLong();
-  }
-
-  /**
-   * Transforms the geometry of a row.
-   *
-   * @param row The row to transform.
-   * @return The transformed row.
-   */
-  protected Row transform(Row row) {
-    var columns = schema().columns().stream()
-        .filter(column -> column.type().isInstance(Geometry.class)).toList();
-    for (Column column : columns) {
-      var name = column.name();
-      var geometry = (Geometry) row.get(name);
-      row.set(name, transformer.transform(geometry));
-    }
-    return row;
   }
 }
