@@ -34,12 +34,9 @@ const nics = [
     {url: "https://ftp.ripe.net/ripe/dbase/ripe.db.gz", filename: "ripe.db"},
 ];
 
-const geonamesUrl =
-    "https://download.geonames.org/export/dump/allCountries.zip";
-
 // Iterate over nic urls to create a list of downloads and ungzip
 const fetchAndUnzipNic = nics.map((nic, index) => ({
-    id: `fetch-nic-${index}`,
+    id: `fetch-nic-${nic.filename.replace(".", "-")}`,
     needs: [],
     tasks: [
         {
@@ -56,13 +53,13 @@ const fetchAndUnzipNic = nics.map((nic, index) => ({
 }));
 
 // Fetch and unzip Geonames
-const FetchAndUnzipGeonames = {
+const fetchAndUnzipGeonames = {
     id: "fetch-geonames-allcountries",
     needs: [],
     tasks: [
         {
             type: "DownloadUrl",
-            url: geonamesUrl,
+            url: "https://download.geonames.org/export/dump/allCountries.zip",
             path: "downloads/geonames-allcountries.zip",
             force: true
         },
@@ -77,7 +74,7 @@ const FetchAndUnzipGeonames = {
 // Create the Geocoder index
 const createGeonamesIndex = {
     id: "geocoder-index",
-    needs: [FetchAndUnzipGeonames.id],
+    needs: [fetchAndUnzipGeonames.id],
     tasks: [
         {
             type: "CreateGeonamesIndex",
@@ -90,7 +87,7 @@ const createGeonamesIndex = {
 // Create the iploc database
 const createIplocIndex = {
     id: "iploc-index",
-    needs: fetchAndUnzipNic.map(e => e.id).concat([createGeonamesIndex.id]),
+    needs: [createGeonamesIndex.id, ...fetchAndUnzipNic.map(e => e.id)],
     tasks: [
         {
             type: "CreateIplocIndex",
@@ -101,4 +98,4 @@ const createIplocIndex = {
     ]
 };
 
-export default {"steps": fetchAndUnzipNic.concat([FetchAndUnzipGeonames, createGeonamesIndex, createIplocIndex])};
+export default {"steps": [...fetchAndUnzipNic, fetchAndUnzipGeonames, createGeonamesIndex, createIplocIndex]};
