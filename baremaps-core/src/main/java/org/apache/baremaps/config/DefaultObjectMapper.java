@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.server;
+package org.apache.baremaps.config;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

@@ -399,6 +399,11 @@
         <version>${version.lib.graalvm}</version>
       </dependency>
       <dependency>
+        <groupId>org.graalvm.sdk</groupId>
+        <artifactId>graal-sdk</artifactId>
+        <version>${version.lib.graalvm}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jdbi</groupId>
         <artifactId>jdbi3-bom</artifactId>
         <version>${version.lib.jdbi}</version>

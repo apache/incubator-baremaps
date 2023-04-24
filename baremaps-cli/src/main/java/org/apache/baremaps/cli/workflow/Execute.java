@@ -12,12 +12,12 @@
 
 package org.apache.baremaps.cli.workflow;
 
-import static org.apache.baremaps.server.DefaultObjectMapper.defaultObjectMapper;
+import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
 
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.apache.baremaps.cli.Options;
-import org.apache.baremaps.server.ConfigReader;
+import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.workflow.Workflow;
 import org.apache.baremaps.workflow.WorkflowExecutor;
 import org.slf4j.Logger;
