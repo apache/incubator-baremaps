@@ -32,9 +32,13 @@ public record UngzipFile(Path file, Path directory) implements Task {
     var filePath = file.toAbsolutePath();
     var directoryPath = directory.toAbsolutePath();
     try (var zis = new GZIPInputStream(new BufferedInputStream(Files.newInputStream(filePath)))) {
-      var file = directoryPath.resolve(filePath.getFileName().toString().substring(0,
+      var decompressed = directoryPath.resolve(filePath.getFileName().toString().substring(0,
           filePath.getFileName().toString().length() - 3));
-      Files.copy(zis, file, StandardCopyOption.REPLACE_EXISTING);
+      if (!Files.exists(decompressed)) {
+        Files.createDirectories(decompressed.getParent());
+        Files.createFile(decompressed);
+      }
+      Files.copy(zis, decompressed, StandardCopyOption.REPLACE_EXISTING);
     } catch (Exception e) {
       throw new WorkflowException(e);
     }

@@ -65,11 +65,6 @@
       <artifactId>jersey-test-framework-provider-inmemory</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.graalvm.sdk</groupId>
-      <artifactId>graal-sdk</artifactId>
-      <version>${version.lib.graalvm}</version>
-    </dependency>
   </dependencies>
 
 </project>

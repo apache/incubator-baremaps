@@ -38,6 +38,7 @@ import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
+import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.database.tile.PostgresTileStore;
 import org.apache.baremaps.database.tile.Tile;
 import org.apache.baremaps.database.tile.TileStore;

@@ -29,6 +29,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.database.tile.Tile;
 import org.apache.baremaps.database.tile.TileStore;
 import org.apache.baremaps.database.tile.TileStoreException;

@@ -13,7 +13,7 @@
 package org.apache.baremaps.cli.map;
 
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
-import static org.apache.baremaps.server.DefaultObjectMapper.defaultObjectMapper;
+import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.netty.HttpServers;
