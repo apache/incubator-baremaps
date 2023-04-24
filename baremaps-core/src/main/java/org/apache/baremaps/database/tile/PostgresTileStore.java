@@ -100,16 +100,17 @@ public class PostgresTileStore implements TileStore {
         Statement statement = connection.createStatement();
         ByteArrayOutputStream data = new ByteArrayOutputStream()) {
 
-      String sql = withQuery(tile);
-      logger.debug("Executing query: {}", sql);
-
       int length = 0;
-      try (GZIPOutputStream gzip = new GZIPOutputStream(data);
-          ResultSet resultSet = statement.executeQuery(sql)) {
-        while (resultSet.next()) {
-          byte[] bytes = resultSet.getBytes(1);
-          length += bytes.length;
-          gzip.write(bytes);
+      if (queries.stream().anyMatch(query -> zoomPredicate(query, tile.z()))) {
+        String sql = withQuery(tile);
+        logger.debug("Executing query: {}", sql);
+        try (GZIPOutputStream gzip = new GZIPOutputStream(data);
+            ResultSet resultSet = statement.executeQuery(sql)) {
+          while (resultSet.next()) {
+            byte[] bytes = resultSet.getBytes(1);
+            length += bytes.length;
+            gzip.write(bytes);
+          }
         }
       }
 
