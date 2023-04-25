@@ -48,7 +48,7 @@ public class CollectionsResource implements CollectionsApi {
 
   @Override
   public Response addCollection(Collection collection) {
-    collection.setId(UUID.randomUUID());
+    collection.setId(UUID.randomUUID().toString());
     jdbi.useHandle(handle -> handle
         .createUpdate("insert into collections (id, collection) values (:id, :collection)")
         .bind("id", collection.getId()).bindByType("collection", collection, COLLECTION).execute());
