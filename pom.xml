@@ -91,7 +91,7 @@
     <version.lib.jackson>2.13.0</version.lib.jackson>
     <version.lib.jakarta>2.1.6</version.lib.jakarta>
     <version.lib.jaxb-runtime>2.3.5</version.lib.jaxb-runtime>
-    <version.lib.jdbi>3.24.1</version.lib.jdbi>
+    <version.lib.jdbi>3.37.1</version.lib.jdbi>
     <version.lib.jersey>2.35</version.lib.jersey>
     <version.lib.jmh>1.35</version.lib.jmh>
     <version.lib.jsqlparser>4.2</version.lib.jsqlparser>
@@ -105,7 +105,7 @@
     <version.lib.proj4j>1.2.3</version.lib.proj4j>
     <version.lib.protobuf>3.21.6</version.lib.protobuf>
     <version.lib.roaringbitmap>0.9.38</version.lib.roaringbitmap>
-    <version.lib.servicetalk>0.42.18</version.lib.servicetalk>
+    <version.lib.servicetalk>0.42.27</version.lib.servicetalk>
     <version.lib.servlet>3.1.0</version.lib.servlet>
     <version.lib.slf4j>2.0.3</version.lib.slf4j>
     <version.lib.sqlite>3.39.3.0</version.lib.sqlite>

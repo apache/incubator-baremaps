@@ -4,29 +4,35 @@ required:
   - links
 properties:
   id:
+    description: identifier of the collection used, for example, in URIs
     type: string
-    format: uuid
     example: address
   title:
+    description: human readable title of the collection
     type: string
     example: address
   description:
+    description: a description of the features in the collection
     type: string
-    example: An address
-  attribution:
-    type: string
-    title: attribution for the collection
+    example: An address.
   links:
     type: array
     items:
       $ref: link.yaml
+    example:
+      - href: http://data.example.com/buildings
+        rel: item
+      - href: http://example.com/concepts/buildings.html
+        rel: describedby
+        type: text/html
   extent:
     $ref: extent.yaml
   itemType:
-    description: An indicator about the type of the items in the collection
+    description: indicator about the type of the items in the collection (the default value is 'feature').
     type: string
+    default: feature
   crs:
-    description: the list of coordinate reference systems supported by the API; the first item is the default coordinate reference system
+    description: the list of coordinate reference systems supported by the service
     type: array
     items:
       type: string
@@ -35,14 +41,3 @@ properties:
     example:
       - http://www.opengis.net/def/crs/OGC/1.3/CRS84
       - http://www.opengis.net/def/crs/EPSG/0/4326
-  # additional properties
-  created:
-    description: Date of creation
-    type: string
-    format: date-time
-  count:
-    description: Feature count
-    type: integer
-  geometryType:
-    description: Geometry type of the features
-    type: string

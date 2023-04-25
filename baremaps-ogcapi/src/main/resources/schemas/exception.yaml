@@ -1,8 +1,16 @@
+title: Exception Schema
+description: JSON schema for exceptions based on RFC 7807
 type: object
 required:
-  - code
+  - type
 properties:
-  code:
+  type:
     type: string
-  description:
+  title:
+    type: string
+  status:
+    type: integer
+  detail:
+    type: string
+  instance:
     type: string

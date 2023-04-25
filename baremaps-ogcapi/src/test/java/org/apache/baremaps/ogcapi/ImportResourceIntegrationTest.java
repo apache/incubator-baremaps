@@ -33,6 +33,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
+import org.jdbi.v3.postgis.PostgisPlugin;
 import org.junit.Ignore;
 import org.junit.Test;
 

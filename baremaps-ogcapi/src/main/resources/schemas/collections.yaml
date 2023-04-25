@@ -6,8 +6,17 @@ properties:
   links:
     type: array
     items:
-      $ref: "link.yaml"
+      $ref: link.yaml
+  timeStamp:
+    type: string
+    format: date-time
+  numberMatched:
+    type: integer
+    minimum: 0
+  numberReturned:
+    type: integer
+    minimum: 0
   collections:
     type: array
     items:
-      $ref: "collection.yaml"
+      $ref: collection.yaml
