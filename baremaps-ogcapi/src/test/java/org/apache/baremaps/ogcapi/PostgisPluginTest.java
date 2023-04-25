@@ -16,6 +16,7 @@ package org.apache.baremaps.ogcapi;
 
 import java.util.List;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.postgis.PostgisPlugin;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
