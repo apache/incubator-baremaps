@@ -15,7 +15,6 @@ package org.apache.baremaps.cli.ogcapi;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
 import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.api.BlockingStreamingHttpService;
 import io.servicetalk.http.netty.HttpServers;
@@ -80,7 +79,7 @@ public class OgcApi implements Callable<Integer> {
             ConformanceResource.class, CollectionsResource.class, StylesResource.class,
             TilesetsResource.class, StudioResource.class, ImportResource.class,
             MultiPartFeature.class)
-        .register(new ApiResource("ogcapi-openapi.yaml")).register(contextResolverFor(mapper))
+        .register(new ApiResource("ogcapi.yaml")).register(contextResolverFor(mapper))
         .register(new AbstractBinder() {
           @Override
           protected void configure() {
