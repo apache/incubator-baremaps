@@ -32,7 +32,6 @@
     }
 
     #map {
-      /* position: fixed; */
       width: 100%;
       height: 100%;
     }
@@ -112,16 +111,15 @@
   // Toggle the split view from showing the maplib map (id="map") 100% to showing the maplib 50% and the OpenLayers map (id="olMap") 50% by updating the flex column flex values.
   this._button.onclick = () => {
     const olMapWrapper = document.getElementById('olMapWrapper');
-    // get the current state from the data-state attribute
     const state = olMapWrapper.getAttribute('data-state');
     if (state === 'hidden') {
-      // show the OpenLayers map
+      // Show the OpenLayers map
       olMapWrapper.setAttribute('data-state', 'visible');
       olMapWrapper.style.flex = '1';
       this._map.resize();
       this._button.style.backgroundColor = "rgb(0 0 0/20%)";
     } else {
-      // hide the OpenLayers map
+      // Hide the OpenLayers map
       olMapWrapper.setAttribute('data-state', 'hidden');
       olMapWrapper.style.flex = '0';
       this._map.resize();
@@ -173,7 +171,6 @@
     // Adjust the zoom level to match the OpenLayers zoom level.
     OLMap.getView().setZoom(zoom * SCALE_FACTOR);
     OLMap.getView().setCenter(ol.proj.fromLonLat([center.lng, center.lat]));
-    // convert the maplibregl rotation to a OpenLayers rotation
     OLMap.getView().setRotation(rotation * -Math.PI / 180);
   });
 
@@ -185,7 +182,6 @@
     // Adjust the zoom level to match the maplibregl zoom level.
     map.setZoom(zoom / SCALE_FACTOR);
     map.setCenter({lng: ol.proj.toLonLat(center)[0], lat: ol.proj.toLonLat(center)[1]});
-    // convert the OpenLayers rotation to a maplibregl rotation
     map.setBearing(rotation * -180 / Math.PI);
   });
 
