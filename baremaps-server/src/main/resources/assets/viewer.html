@@ -18,9 +18,6 @@
   <link href='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css' rel='stylesheet' />
   <link href='/maplibre-gl-inspect.css' rel='stylesheet' />
   <link href='/maplibre-gl-tile-boundaries.css' rel='stylesheet' />
-  <!-- OpenLayers -->
-  <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css">
   <style>
 
     body {
@@ -31,13 +28,7 @@
       position: relative;
     }
 
-    #map {
-      width: 100%;
-      height: 100%;
-    }
-
-    #olMap {
-      position: absolute;
+    .map {
       width: 100%;
       height: 100%;
     }
@@ -64,10 +55,10 @@
 <body>
   <div class="columns">
     <div class="column map-wrapper" id="mapWrapper">
-      <div id="map"></div>
+      <div class="map" id="map"></div>
     </div>
-    <div class="column map-wrapper" id="olMapWrapper" data-state="hidden" style="flex: 0">
-      <div id="olMap"></div>
+    <div class="column map-wrapper" id="osmMapWrapper" data-state="hidden" style="flex: 0">
+      <div class="map" id="osmMap"></div>
     </div>
   </div>
 <script>
@@ -79,10 +70,42 @@
     hash: true
   });
 
-  // Add the navigation control to the map.
+  // Split view the vector map with the osm raster map
+  const osmMap = new maplibregl.Map({
+    container: 'osmMap',
+    style: {
+      'version': 8,
+      'sources': {
+        'raster-tiles': {
+        'type': 'raster',
+        'tiles': [
+          'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+        ],
+        'tileSize': 256,
+        'attribution': '© OpenStreetMap'
+        }
+      },
+      'layers': [
+        {
+          'id': 'simple-tiles',
+          'type': 'raster',
+          'source': 'raster-tiles',
+          'minzoom': 0,
+          'maxzoom': 22
+        }
+      ]
+    },
+    center: map.getCenter(),
+    zoom: map.getZoom(),
+    bearing: map.getBearing(),
+    hash: false,
+    interactive: false,
+  })
+
+  // Add the navigation control to the map
   map.addControl(new maplibregl.NavigationControl());
 
-  // Add the inspect control to the map.
+  // Add the inspect control to the map
   map.addControl(new MaplibreInspect({
     showMapPopup: true,
     showMapPopupOnHover: false,
@@ -93,51 +116,54 @@
     })
   }));
 
-  // Add the tile boundaries control to the map.
+  // Add the tile boundaries control to the map
   map.addControl(new MaplibreTileBoundaries({
     showBoundaries: false
   }));
 
-  function OLSplitViewControl() { }
+  function OSMSplitViewControl() { }
  
-  OLSplitViewControl.prototype.onAdd = function(map) {
-  this._map = map;
-  this._container = document.createElement('div');
-  this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
-  // Add button to the container.
-  this._button = document.createElement('button');
-  this._button.type = 'button';
-  this._button.className = 'maplibregl-ctrl-icon maplibregl-ctrl-split-view';
-  // Toggle the split view from showing the maplib map (id="map") 100% to showing the maplib 50% and the OpenLayers map (id="olMap") 50% by updating the flex column flex values.
-  this._button.onclick = () => {
-    const olMapWrapper = document.getElementById('olMapWrapper');
-    const state = olMapWrapper.getAttribute('data-state');
-    if (state === 'hidden') {
-      // Show the OpenLayers map
-      olMapWrapper.setAttribute('data-state', 'visible');
-      olMapWrapper.style.flex = '1';
-      this._map.resize();
-      this._button.style.backgroundColor = "rgb(0 0 0/20%)";
-    } else {
-      // Hide the OpenLayers map
-      olMapWrapper.setAttribute('data-state', 'hidden');
-      olMapWrapper.style.flex = '0';
-      this._map.resize();
-      this._button.style.backgroundColor = "";
-    }
-  };
-  this._container.appendChild(this._button);
-  return this._container;
+  OSMSplitViewControl.prototype.onAdd = function(map) {
+    this._map = map;
+    this._container = document.createElement('div');
+    this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+    // Add button to the container
+    this._button = document.createElement('button');
+    this._button.type = 'button';
+    this._button.className = 'maplibregl-ctrl-icon maplibregl-ctrl-split-view';
+    // Toggle the split view
+    this._button.onclick = () => {
+      const osmMapWrapper = document.getElementById('osmMapWrapper');
+      const state = osmMapWrapper.getAttribute('data-state');
+      if (state === 'hidden') {
+        // Show the osm map
+        osmMapWrapper.setAttribute('data-state', 'visible');
+        osmMapWrapper.style.flex = '1';
+        this._map.resize();
+        osmMap.resize();
+        this._button.style.backgroundColor = "rgb(0 0 0/20%)";
+      } else {
+        // Hide the osm map
+        osmMapWrapper.setAttribute('data-state', 'hidden');
+        osmMapWrapper.style.flex = '0';
+        this._map.resize();
+        osmMap.resize();
+        this._button.style.backgroundColor = "";
+      }
+    };
+    this._container.appendChild(this._button);
+    return this._container;
   };
   
-  OLSplitViewControl.prototype.onRemove = function () {
-  this._container.parentNode.removeChild(this._container);
-  this._map = undefined;
+  OSMSplitViewControl.prototype.onRemove = function () {
+    this._container.parentNode.removeChild(this._container);
+    this._button = undefined;
+    this._map = undefined;
   };
 
-  map.addControl(new OLSplitViewControl());
+  map.addControl(new OSMSplitViewControl());
 
-  // Listen to configuration changes and update the map.
+  // Listen to configuration changes and update the map
   const connection = new EventSource('/changes')
   connection.onmessage = e => {
     let style = JSON.parse(e.data);
@@ -148,41 +174,16 @@
     map.setStyle(style);
   }
 
-  const SCALE_FACTOR = 1.055;
-  const OLMap = new ol.Map({
-    target: 'olMap',
-    layers: [
-      new ol.layer.Tile({
-        source: new ol.source.OSM(),
-      }),
-    ],
-    view: new ol.View({
-      center: ol.proj.fromLonLat([map.getCenter().lng, map.getCenter().lat]),
-      zoom: map.getZoom() * SCALE_FACTOR,
-      rotation: map.getBearing() * -Math.PI / 180,
-    }),
-  });
-
-  // Listen to maplibregl map view changes and update the OpenLayers map.
-  map.on('moveend', () => {
-    const center = map.getCenter();
-    const zoom = map.getZoom();
-    const rotation = map.getBearing();
-    // Adjust the zoom level to match the OpenLayers zoom level.
-    OLMap.getView().setZoom(zoom * SCALE_FACTOR);
-    OLMap.getView().setCenter(ol.proj.fromLonLat([center.lng, center.lat]));
-    OLMap.getView().setRotation(rotation * -Math.PI / 180);
-  });
-
-  // Listen to OpenLayers map view changes and update the maplibregl map.
-  OLMap.on('moveend', () => {
-    const center = OLMap.getView().getCenter();
-    const zoom = OLMap.getView().getZoom();
-    const rotation = OLMap.getView().getRotation();
-    // Adjust the zoom level to match the maplibregl zoom level.
-    map.setZoom(zoom / SCALE_FACTOR);
-    map.setCenter({lng: ol.proj.toLonLat(center)[0], lat: ol.proj.toLonLat(center)[1]});
-    map.setBearing(rotation * -180 / Math.PI);
+  // Sync the vector tile map with the raster tile map
+  map.on('move', () => {
+    if (document.getElementById('osmMapWrapper').getAttribute('data-state') === 'visible') {
+      osmMap.jumpTo({
+        center: map.getCenter(),
+        zoom: map.getZoom(),
+        bearing: map.getBearing(),
+        pitch: map.getPitch()
+      });
+    }
   });
 
 </script>
