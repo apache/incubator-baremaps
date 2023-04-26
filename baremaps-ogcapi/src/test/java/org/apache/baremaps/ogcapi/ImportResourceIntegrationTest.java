@@ -72,8 +72,8 @@ public class ImportResourceIntegrationTest extends JerseyTest {
 
   @Test
   /**
-   * TODO: the following Ignore annotation causes the whole test to not be executed. It doesn't look
-   * like it is a wanted behavior.
+   * TODO: switch to alternative to read shapefiles and other format in the storage package of
+   * baremaps-core.
    **/
   @Ignore("Geotools has been replaced with Apache SIS")
   public void test() {
