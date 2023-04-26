@@ -1,0 +1,6 @@
+name: collectionId
+in: path
+description: local identifier of a collection
+required: true
+schema:
+  type: string

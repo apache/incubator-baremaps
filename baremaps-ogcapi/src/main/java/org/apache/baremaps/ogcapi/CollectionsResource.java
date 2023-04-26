@@ -14,6 +14,7 @@ package org.apache.baremaps.ogcapi;
 
 
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
@@ -90,5 +91,16 @@ public class CollectionsResource implements CollectionsApi {
         .createUpdate("update collections set collection = :collection where id = :id")
         .bind("id", collectionId).bindByType("collection", collection, COLLECTION).execute());
     return Response.noContent().build();
+  }
+
+  @Override
+  public Response getFeature(UUID collectionId, String featureId) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public Response getFeatures(UUID collectionId, Integer limit, List<BigDecimal> bbox,
+      String datetime) {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

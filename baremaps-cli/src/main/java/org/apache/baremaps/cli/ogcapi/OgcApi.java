@@ -67,7 +67,6 @@ public class OgcApi implements Callable<Integer> {
   public Integer call() throws Exception {
     // Configure serialization
     ObjectMapper mapper = defaultObjectMapper();
-    mapper.readValue("", JsonNode.class);
 
     // Configure jdbi and set the ObjectMapper
     DataSource datasource = PostgresUtils.dataSource(this.database);
@@ -81,7 +80,7 @@ public class OgcApi implements Callable<Integer> {
             ConformanceResource.class, CollectionsResource.class, StylesResource.class,
             TilesetsResource.class, StudioResource.class, ImportResource.class,
             MultiPartFeature.class)
-        .register(new ApiResource("studio-openapi.yaml")).register(contextResolverFor(mapper))
+        .register(new ApiResource("ogcapi-openapi.yaml")).register(contextResolverFor(mapper))
         .register(new AbstractBinder() {
           @Override
           protected void configure() {
