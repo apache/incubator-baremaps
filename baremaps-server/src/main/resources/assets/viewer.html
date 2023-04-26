@@ -18,23 +18,59 @@
   <link href='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css' rel='stylesheet' />
   <link href='/maplibre-gl-inspect.css' rel='stylesheet' />
   <link href='/maplibre-gl-tile-boundaries.css' rel='stylesheet' />
+  <!-- OpenLayers -->
+  <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css">
   <style>
 
     body {
       margin: 0;
     }
 
+    .map-wrapper {
+      position: relative;
+    }
+
     #map {
-      position: fixed;
+      /* position: fixed; */
       width: 100%;
       height: 100%;
+    }
+
+    #olMap {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .columns {
+      display: flex;
+    }
+
+    .column {
+      flex: 1;
+      height: 100vh;
+    }
+
+    .maplibregl-ctrl-split-view {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M0 96C0 60.7 28.7 32 64 32H448c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zm64 64V416H224V160H64zm384 0H288V416H448V160z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-size: 20px 20px;
+      background-position: 5px 5px;      
     }
 
   </style>
   <title>Baremaps</title>
 </head>
 <body>
-<div id="map"></div>
+  <div class="columns">
+    <div class="column map-wrapper" id="mapWrapper">
+      <div id="map"></div>
+    </div>
+    <div class="column map-wrapper" id="olMapWrapper" data-state="hidden" style="flex: 0">
+      <div id="olMap"></div>
+    </div>
+  </div>
 <script>
 
   // Initialize the map.
@@ -63,6 +99,46 @@
     showBoundaries: false
   }));
 
+  function OLSplitViewControl() { }
+ 
+  OLSplitViewControl.prototype.onAdd = function(map) {
+  this._map = map;
+  this._container = document.createElement('div');
+  this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+  // Add button to the container.
+  this._button = document.createElement('button');
+  this._button.type = 'button';
+  this._button.className = 'maplibregl-ctrl-icon maplibregl-ctrl-split-view';
+  // Toggle the split view from showing the maplib map (id="map") 100% to showing the maplib 50% and the OpenLayers map (id="olMap") 50% by updating the flex column flex values.
+  this._button.onclick = () => {
+    const olMapWrapper = document.getElementById('olMapWrapper');
+    // get the current state from the data-state attribute
+    const state = olMapWrapper.getAttribute('data-state');
+    if (state === 'hidden') {
+      // show the OpenLayers map
+      olMapWrapper.setAttribute('data-state', 'visible');
+      olMapWrapper.style.flex = '1';
+      this._map.resize();
+      this._button.style.backgroundColor = "rgb(0 0 0/20%)";
+    } else {
+      // hide the OpenLayers map
+      olMapWrapper.setAttribute('data-state', 'hidden');
+      olMapWrapper.style.flex = '0';
+      this._map.resize();
+      this._button.style.backgroundColor = "";
+    }
+  };
+  this._container.appendChild(this._button);
+  return this._container;
+  };
+  
+  OLSplitViewControl.prototype.onRemove = function () {
+  this._container.parentNode.removeChild(this._container);
+  this._map = undefined;
+  };
+
+  map.addControl(new OLSplitViewControl());
+
   // Listen to configuration changes and update the map.
   const connection = new EventSource('/changes')
   connection.onmessage = e => {
@@ -73,6 +149,45 @@
     delete style.reload;
     map.setStyle(style);
   }
+
+  const SCALE_FACTOR = 1.055;
+  const OLMap = new ol.Map({
+    target: 'olMap',
+    layers: [
+      new ol.layer.Tile({
+        source: new ol.source.OSM(),
+      }),
+    ],
+    view: new ol.View({
+      center: ol.proj.fromLonLat([map.getCenter().lng, map.getCenter().lat]),
+      zoom: map.getZoom() * SCALE_FACTOR,
+      rotation: map.getBearing() * -Math.PI / 180,
+    }),
+  });
+
+  // Listen to maplibregl map view changes and update the OpenLayers map.
+  map.on('moveend', () => {
+    const center = map.getCenter();
+    const zoom = map.getZoom();
+    const rotation = map.getBearing();
+    // Adjust the zoom level to match the OpenLayers zoom level.
+    OLMap.getView().setZoom(zoom * SCALE_FACTOR);
+    OLMap.getView().setCenter(ol.proj.fromLonLat([center.lng, center.lat]));
+    // convert the maplibregl rotation to a OpenLayers rotation
+    OLMap.getView().setRotation(rotation * -Math.PI / 180);
+  });
+
+  // Listen to OpenLayers map view changes and update the maplibregl map.
+  OLMap.on('moveend', () => {
+    const center = OLMap.getView().getCenter();
+    const zoom = OLMap.getView().getZoom();
+    const rotation = OLMap.getView().getRotation();
+    // Adjust the zoom level to match the maplibregl zoom level.
+    map.setZoom(zoom / SCALE_FACTOR);
+    map.setCenter({lng: ol.proj.toLonLat(center)[0], lat: ol.proj.toLonLat(center)[1]});
+    // convert the OpenLayers rotation to a maplibregl rotation
+    map.setBearing(rotation * -180 / Math.PI);
+  });
 
 </script>
 </body>
