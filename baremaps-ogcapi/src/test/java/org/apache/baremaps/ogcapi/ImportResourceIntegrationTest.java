@@ -71,6 +71,10 @@ public class ImportResourceIntegrationTest extends JerseyTest {
   }
 
   @Test
+  /**
+   * TODO: switch to alternative to read shapefiles and other format in the storage package of
+   * baremaps-core.
+   **/
   @Ignore("Geotools has been replaced with Apache SIS")
   public void test() {
     String FILE = "features.geojson";

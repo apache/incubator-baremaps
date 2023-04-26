@@ -50,8 +50,10 @@ public class CollectionsResource implements CollectionsApi {
   public Response addCollection(Collection collection) {
     collection.setId(UUID.randomUUID().toString());
     jdbi.useHandle(handle -> handle
-        .createUpdate("insert into collections (id, collection) values (:id, :collection)")
-        .bind("id", collection.getId()).bindByType("collection", collection, COLLECTION).execute());
+        .createUpdate(
+            "insert into collections (id, collection) values (:id, CAST(:collection AS JSONB))")
+        .bind("id", UUID.fromString(collection.getId()))
+        .bindByType("collection", collection, COLLECTION).execute());
     return Response.created(URI.create("collections/" + collection.getId())).build();
   }
 
@@ -87,7 +89,8 @@ public class CollectionsResource implements CollectionsApi {
   @Override
   public Response updateCollection(UUID collectionId, Collection collection) {
     jdbi.useHandle(handle -> handle
-        .createUpdate("update collections set collection = :collection where id = :id")
+        .createUpdate(
+            "update collections set collection = CAST(:collection AS JSONB) where id = :id")
         .bind("id", collectionId).bindByType("collection", collection, COLLECTION).execute());
     return Response.noContent().build();
   }
