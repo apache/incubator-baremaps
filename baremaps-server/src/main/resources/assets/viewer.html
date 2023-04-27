@@ -116,8 +116,8 @@
     showBoundaries: false
   }));
 
-  // Add the split view control to the map
-  map.addControl(new MaplibreMapSplitViewControl({
+  // Add the split view toggle to the map
+  map.addControl(new MaplibreMapSplitViewToggle({
     splitMap: osmMap,
     splitMapContainerId: 'osmMapWrapper',
   }));

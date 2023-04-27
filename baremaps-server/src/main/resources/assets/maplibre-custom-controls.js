@@ -17,7 +17,7 @@
  * the map container between 0 and 1.
  * @see https://maplibre.org/maplibre-gl-js-docs/api/markers/#icontrol
  */
-class MaplibreMapSplitViewControl {
+class MaplibreMapSplitViewToggle {
     constructor({ splitMap, splitMapContainerId }) {
         this._splitMap = splitMap;
         this._splitMapContainerId = splitMapContainerId;
