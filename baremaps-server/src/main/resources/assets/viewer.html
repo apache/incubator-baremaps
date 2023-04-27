@@ -15,9 +15,11 @@
   <script src='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js'></script>
   <script src='/maplibre-gl-inspect.js'></script>
   <script src='/maplibre-gl-tile-boundaries.js'></script>
+  <script src='/maplibre-custom-controls.js'></script>
   <link href='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css' rel='stylesheet' />
   <link href='/maplibre-gl-inspect.css' rel='stylesheet' />
   <link href='/maplibre-gl-tile-boundaries.css' rel='stylesheet' />
+  <link href='/maplibre-custom-controls.css' rel='stylesheet' />
   <style>
 
     body {
@@ -40,13 +42,6 @@
     .column {
       flex: 1;
       height: 100vh;
-    }
-
-    .maplibregl-ctrl-split-view {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath d='M0 96C0 60.7 28.7 32 64 32H448c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zm64 64V416H224V160H64zm384 0H288V416H448V160z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-size: 20px 20px;
-      background-position: 5px 5px;      
     }
 
   </style>
@@ -121,47 +116,11 @@
     showBoundaries: false
   }));
 
-  function OSMSplitViewControl() { }
- 
-  OSMSplitViewControl.prototype.onAdd = function(map) {
-    this._map = map;
-    this._container = document.createElement('div');
-    this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
-    // Add button to the container
-    this._button = document.createElement('button');
-    this._button.type = 'button';
-    this._button.className = 'maplibregl-ctrl-icon maplibregl-ctrl-split-view';
-    // Toggle the split view
-    this._button.onclick = () => {
-      const osmMapWrapper = document.getElementById('osmMapWrapper');
-      const state = osmMapWrapper.getAttribute('data-state');
-      if (state === 'hidden') {
-        // Show the osm map
-        osmMapWrapper.setAttribute('data-state', 'visible');
-        osmMapWrapper.style.flex = '1';
-        this._map.resize();
-        osmMap.resize();
-        this._button.style.backgroundColor = "rgb(0 0 0/20%)";
-      } else {
-        // Hide the osm map
-        osmMapWrapper.setAttribute('data-state', 'hidden');
-        osmMapWrapper.style.flex = '0';
-        this._map.resize();
-        osmMap.resize();
-        this._button.style.backgroundColor = "";
-      }
-    };
-    this._container.appendChild(this._button);
-    return this._container;
-  };
-  
-  OSMSplitViewControl.prototype.onRemove = function () {
-    this._container.parentNode.removeChild(this._container);
-    this._button = undefined;
-    this._map = undefined;
-  };
-
-  map.addControl(new OSMSplitViewControl());
+  // Add the split view control to the map
+  map.addControl(new MaplibreMapSplitViewControl({
+    splitMap: osmMap,
+    splitMapContainerId: 'osmMapWrapper',
+  }));
   
   // Sync the vector tile map with the raster tile map
   map.on('move', () => {
