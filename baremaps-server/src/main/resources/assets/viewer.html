@@ -162,18 +162,7 @@
   };
 
   map.addControl(new OSMSplitViewControl());
-
-  // Listen to configuration changes and update the map
-  const connection = new EventSource('/changes')
-  connection.onmessage = e => {
-    let style = JSON.parse(e.data);
-    if (style.reload) {
-      location.reload();
-    }
-    delete style.reload;
-    map.setStyle(style);
-  }
-
+  
   // Sync the vector tile map with the raster tile map
   map.on('move', () => {
     if (document.getElementById('osmMapWrapper').getAttribute('data-state') === 'visible') {
@@ -185,6 +174,17 @@
       });
     }
   });
+
+  // Listen to configuration changes and update the map
+  const connection = new EventSource('/changes')
+  connection.onmessage = e => {
+    let style = JSON.parse(e.data);
+    if (style.reload) {
+      location.reload();
+    }
+    delete style.reload;
+    map.setStyle(style);
+  }
 
 </script>
 </body>
