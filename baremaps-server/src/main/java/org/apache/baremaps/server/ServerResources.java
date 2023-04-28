@@ -107,7 +107,7 @@ public class ServerResources {
     try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
       var bytes = inputStream.readAllBytes();
       return Response.ok().entity(bytes).build();
-    } catch (IOException e) {
+    } catch (NullPointerException | IOException e) {
       return Response.status(404).build();
     }
   }
