@@ -1,4 +1,0 @@
-description: This property indicates the time and date when the response was generated.
-type: string
-format: date-time
-example: '2017-08-17T08:05:32Z'

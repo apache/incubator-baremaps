@@ -12,48 +12,42 @@
 
 package org.apache.baremaps.ogcapi;
 
-
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import org.apache.baremaps.ogcapi.api.StylesApi;
+import org.apache.baremaps.ogcapi.api.TilesApi;
 import org.apache.baremaps.ogcapi.model.AllCollections;
-import org.apache.baremaps.ogcapi.model.Styles;
 import org.apache.baremaps.ogcapi.model.TileMatrixSets;
 import org.apache.baremaps.ogcapi.model.VectorTilesCollections;
-import org.jdbi.v3.core.Jdbi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
-public class StylesResource implements StylesApi {
+public class TilesResource implements TilesApi {
 
-  private final Jdbi jdbi;
-
-  @Context
-  UriInfo uriInfo;
+  private static final Logger logger = LoggerFactory.getLogger(TilesResource.class);
 
   @Inject
-  public StylesResource(Jdbi jdbi) {
-    this.jdbi = jdbi;
+  public TilesResource() {
+
   }
 
   @Override
-  public Response datasetStyleVectorGetTile(String tileMatrix, Integer tileRow, Integer tileCol,
+  public Response datasetVectorGetTile(String tileMatrix, Integer tileRow, Integer tileCol,
       String datetime, List<VectorTilesCollections> collections, List<String> subset, String crs,
-      String subsetCrs, Styles styleId, TileMatrixSets tileMatrixSetId, String f) {
+      String subsetCrs, TileMatrixSets tileMatrixSetId, String f) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public Response datasetStyleVectorGetTileSet(Styles styleId, List<AllCollections> collections,
+  public Response datasetVectorGetTileSet(List<AllCollections> collections,
       TileMatrixSets tileMatrixSetId, String f) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public Response datasetStyleVectorGetTileSetsList(Styles styleId, String f) {
+  public Response datasetVectorGetTileSetsList(String f) {
     throw new UnsupportedOperationException();
   }
 }

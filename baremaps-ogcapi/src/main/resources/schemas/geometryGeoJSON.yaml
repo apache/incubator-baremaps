@@ -1,8 +1,0 @@
-oneOf:
-- $ref: 'pointGeoJSON.yaml'
-- $ref: 'multipointGeoJSON.yaml'
-- $ref: 'linestringGeoJSON.yaml'
-- $ref: 'multilinestringGeoJSON.yaml'
-- $ref: 'polygonGeoJSON.yaml'
-- $ref: 'multipolygonGeoJSON.yaml'
-- $ref: 'geometrycollectionGeoJSON.yaml'

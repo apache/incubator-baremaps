@@ -19,9 +19,9 @@ import javax.inject.Singleton;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import org.apache.baremaps.api.DefaultApi;
-import org.apache.baremaps.model.LandingPage;
-import org.apache.baremaps.model.Link;
+import org.apache.baremaps.ogcapi.api.DefaultApi;
+import org.apache.baremaps.ogcapi.model.LandingPage;
+import org.apache.baremaps.ogcapi.model.Link;
 
 @Singleton
 public class RootResource implements DefaultApi {
@@ -30,21 +30,36 @@ public class RootResource implements DefaultApi {
   UriInfo uriInfo;
 
   @Override
-  public Response getLandingPage() {
-    String address = uriInfo.getBaseUri().toString();
-    LandingPage landingPage =
+  public Response getLandingPage(String f) {
+    var address = uriInfo.getBaseUri().toString();
+    var landingPage =
         new LandingPage().title("Baremaps").description("Baremaps OGC API Landing Page")
             .links(Arrays.asList(
-                new Link().title("This document (landing page)").href(address)
-                    .type("application/json").rel("self"),
-                new Link().title("Conformance declaration").href(address + "conformance")
-                    .type("application/json").rel("conformance"),
-                new Link().title("API description").href(address + "api").type("application/json")
+                new Link()
+                    .title("This document (landing page)")
+                    .href(address)
+                    .type("application/json")
+                    .rel("self"),
+                new Link()
+                    .title("Conformance declaration")
+                    .href(address + "conformance")
+                    .type("application/json")
+                    .rel("conformance"),
+                new Link()
+                    .title("API description")
+                    .href(address + "api")
+                    .type("application/json")
                     .rel("service-desc"),
-                new Link().title("API description").href(address + "api").type("application/yaml")
+                new Link()
+                    .title("API description")
+                    .href(address + "api")
+                    .type("application/yaml")
                     .rel("service-desc"),
-                new Link().title("API documentation").href(address + "swagger").type("text/html")
+                new Link()
+                    .title("API documentation")
+                    .href(address + "swagger")
+                    .type("text/html")
                     .rel("service-doc")));
-    return Response.ok().entity(landingPage).build();
+    return Response.ok(landingPage).build();
   }
 }

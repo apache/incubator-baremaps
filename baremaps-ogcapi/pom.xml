@@ -141,12 +141,12 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/ogcapi-openapi.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/ogcapi.yaml</inputSpec>
               <generatorName>jaxrs-spec</generatorName>
               <configOptions>
-                <apiPackage>org.apache.baremaps.api</apiPackage>
+                <apiPackage>org.apache.baremaps.ogcapi.api</apiPackage>
                 <interfaceOnly>true</interfaceOnly>
-                <modelPackage>org.apache.baremaps.model</modelPackage>
+                <modelPackage>org.apache.baremaps.ogcapi.model</modelPackage>
                 <returnResponse>true</returnResponse>
                 <sortModelPropertiesByRequiredFlag>false</sortModelPropertiesByRequiredFlag>
                 <sortParamsByRequiredFlag>false</sortParamsByRequiredFlag>

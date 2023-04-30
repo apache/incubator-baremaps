@@ -1,6 +1,0 @@
-name: featureId
-in: path
-description: local identifier of a feature
-required: true
-schema:
-  type: string

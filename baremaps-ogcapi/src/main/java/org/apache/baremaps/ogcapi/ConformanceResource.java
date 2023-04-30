@@ -17,24 +17,24 @@ package org.apache.baremaps.ogcapi;
 import java.util.Arrays;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
-import org.apache.baremaps.api.ConformanceApi;
-import org.apache.baremaps.model.ConfClasses;
+import org.apache.baremaps.ogcapi.api.ConformanceApi;
+import org.apache.baremaps.ogcapi.model.ConfClasses;
 
 @Singleton
 public class ConformanceResource implements ConformanceApi {
 
   @Override
-  public Response getConformanceDeclaration() {
+  public Response getConformance(String f) {
     ConfClasses confClasses = new ConfClasses();
     confClasses
-        .setConformsTo(Arrays.asList("http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
+        .setConformsTo(Arrays.asList(
+            "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
             "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/core",
             "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/json",
             "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/manage-styles",
             "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/mapbox-styles",
             "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core",
             "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset"));
-
     return Response.ok().entity(confClasses).build();
   }
 }

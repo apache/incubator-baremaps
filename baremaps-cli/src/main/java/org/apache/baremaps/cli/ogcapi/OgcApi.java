@@ -24,15 +24,7 @@ import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.database.PostgresUtils;
-import org.apache.baremaps.ogcapi.ApiResource;
-import org.apache.baremaps.ogcapi.CollectionsResource;
-import org.apache.baremaps.ogcapi.ConformanceResource;
-import org.apache.baremaps.ogcapi.ImportResource;
-import org.apache.baremaps.ogcapi.RootResource;
-import org.apache.baremaps.ogcapi.StudioResource;
-import org.apache.baremaps.ogcapi.StylesResource;
-import org.apache.baremaps.ogcapi.SwaggerResource;
-import org.apache.baremaps.ogcapi.TilesetsResource;
+import org.apache.baremaps.ogcapi.*;
 import org.apache.baremaps.server.CorsFilter;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -69,17 +61,23 @@ public class OgcApi implements Callable<Integer> {
 
     // Configure jdbi and set the ObjectMapper
     DataSource datasource = PostgresUtils.dataSource(this.database);
-    Jdbi jdbi = Jdbi.create(datasource).installPlugin(new PostgresPlugin())
+    Jdbi jdbi = Jdbi.create(datasource)
+        .installPlugin(new PostgresPlugin())
         .installPlugin(new Jackson2Plugin())
         .configure(Jackson2Config.class, config -> config.setMapper(mapper));
 
     // Initialize the application
     ResourceConfig application = new ResourceConfig()
-        .registerClasses(SwaggerResource.class, RootResource.class, CorsFilter.class,
-            ConformanceResource.class, CollectionsResource.class, StylesResource.class,
-            TilesetsResource.class, StudioResource.class, ImportResource.class,
-            MultiPartFeature.class)
-        .register(new ApiResource("ogcapi.yaml")).register(contextResolverFor(mapper))
+        .registerClasses(
+            CorsFilter.class,
+            MultiPartFeature.class,
+            RootResource.class,
+            ApiResource.class,
+            ConformanceResource.class,
+            CollectionsResource.class,
+            StylesResource.class,
+            TilesResource.class)
+        .register(contextResolverFor(mapper))
         .register(new AbstractBinder() {
           @Override
           protected void configure() {
