@@ -18,14 +18,20 @@ import java.util.Arrays;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
 import org.apache.baremaps.ogcapi.api.ConformanceApi;
-import org.apache.baremaps.ogcapi.model.ConfClasses;
+import org.apache.baremaps.ogcapi.model.ConformanceClasses;
 
+/**
+ * The conformance resource.
+ */
 @Singleton
 public class ConformanceResource implements ConformanceApi {
 
+  /**
+   * Get the conformance classes.
+   */
   @Override
   public Response getConformance() {
-    ConfClasses confClasses = new ConfClasses();
+    ConformanceClasses confClasses = new ConformanceClasses();
     confClasses.setConformsTo(Arrays.asList(
         "https://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
         "https://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/core",

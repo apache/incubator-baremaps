@@ -27,6 +27,9 @@ import org.apache.baremaps.ogcapi.model.Link;
 import org.apache.baremaps.storage.Table;
 import org.apache.baremaps.storage.postgres.PostgresStore;
 
+/**
+ * A resource that provides access to collections.
+ */
 @Singleton
 public class CollectionsResource implements CollectionsApi {
 
@@ -35,30 +38,52 @@ public class CollectionsResource implements CollectionsApi {
 
   private final PostgresStore store;
 
+  /**
+   * Constructs a {@code CollectionsResource}.
+   *
+   * @param dataSource the datasource
+   */
   @Inject
   public CollectionsResource(DataSource dataSource) {
     this.store = new PostgresStore(dataSource);
   }
 
+  /**
+   * Returns the collections.
+   *
+   * @return the collections
+   */
   @Override
   public Response getCollections() {
     Collections collections = new Collections();
     collections.setTimeStamp(new Date());
     collections.setCollections(store.list().stream()
         .map(store::get)
-        .map(this::getCollectionInfo)
+        .map(this::getCollection)
         .toList());
     return Response.ok().entity(collections).build();
   }
 
+  /**
+   * Returns the collection with the specified id.
+   *
+   * @param collectionId the collection id
+   * @return the collection
+   */
   @Override
   public Response getCollection(String collectionId) {
     var table = store.get(collectionId);
-    var collectionInfo = getCollectionInfo(table);
+    var collectionInfo = getCollection(table);
     return Response.ok().entity(collectionInfo).build();
   }
 
-  private Collection getCollectionInfo(Table table) {
+  /**
+   * Returns the collection info for the specified table.
+   *
+   * @param table the table
+   * @return the collection info
+   */
+  private Collection getCollection(Table table) {
     var name = table.schema().name();
     var collection = new Collection();
     collection.setId(name);

@@ -3,7 +3,7 @@ info:
   contact:
     email: dev@baremaps.apache.org
     name: Apache Baremaps API
-  description: "An implementation of OGC APIs for Apache Baremaps"
+  description: An implementation of OGC APIs for Apache Baremaps
   license:
     name: OGC License
     url: http://www.opengeospatial.org/legal/
@@ -95,11 +95,13 @@ paths:
       operationId: getCollection
       parameters:
         - description: Local identifier of a collection
+          explode: false
           in: path
           name: collectionId
           required: true
           schema:
             type: string
+          style: simple
       responses:
         "200":
           content:
@@ -116,6 +118,94 @@ paths:
       summary: Retrieve the description of a collection available from this service.
       tags:
         - Collections
+  /styles:
+    get:
+      description: "This operation fetches the set of styles available. For\neach\
+        \ style the id, a title, links to the stylesheet of\nthe style in each supported\
+        \ encoding, and the link to the \nmetadata is provided.\n\nTestbed-15 only\
+        \ requires support for a small number of the\nstyles. Therefore, the currently\
+        \ simple approach is sufficient,\nbut in general the operation should support\
+        \ paging (using a \nparameter `limit` and links to the `next` page in responses)."
+      operationId: getStyleSet
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/style-set'
+          description: the set of available styles
+        "400":
+          description: invalid or unknown query parameters
+        "406":
+          description: "The media types accepted by the client are not \nsupported\
+            \ for this resource"
+      summary: information about the available styles
+      tags:
+        - Styles
+  /styles/{styleId}:
+    get:
+      description: "Fetches the style with identifier `styleId`. The set of \navailable\
+        \ styles can be retrieved at `/styles`.\n\nNot all styles are available in\
+        \ all style encodings."
+      operationId: getStyle
+      parameters:
+        - description: "Local identifier of a style. \\\nA list of all available styles\
+          \ can be found \nunder the /styles path."
+          explode: false
+          in: path
+          name: styleId
+          required: true
+          schema:
+            type: string
+          style: simple
+      responses:
+        "200":
+          content:
+            application/vnd.mapbox.style+json:
+              schema:
+                $ref: '#/components/schemas/mb-style'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mb-style'
+          description: The style
+        "404":
+          description: style not found
+        "406":
+          description: "The requested style encoding is not supported \nfor this style"
+      summary: fetch a style by id
+      tags:
+        - Styles
+  /styles/{styleId}/metadata:
+    get:
+      description: "Style metadata is essential information about a style\nin order\
+        \ to support users to discover and select styles\nfor rendering their data\
+        \ and for visual style editors \nto create user interfaces for editing a style.\n\
+        \nThis operations returns the metadata for the requested\nstyle as a single\
+        \ document.\n\nThe stylesheet of the style will typically include some\nthe\
+        \ metadata, too."
+      operationId: getStyleMetadata
+      parameters:
+        - description: "Local identifier of a style. \\\nA list of all available styles\
+          \ can be found \nunder the /styles path."
+          explode: false
+          in: path
+          name: styleId
+          required: true
+          schema:
+            type: string
+          style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/style-metadata'
+          description: The metdata for the style.
+        "404":
+          description: style not found
+      summary: fetch the metadata about a style
+      tags:
+        - Styles
   /tiles:
     get:
       operationId: getTileSets
@@ -146,13 +236,14 @@ paths:
     get:
       operationId: getTileSet
       parameters:
-        - allowEmptyValue: false
-          description: Identifier for a supported TileMatrixSet
+        - description: Identifier for a supported TileMatrixSet
+          explode: false
           in: path
           name: tileSetId
           required: true
           schema:
             type: string
+          style: simple
       responses:
         "200":
           content:
@@ -181,41 +272,48 @@ paths:
     get:
       operationId: getTile
       parameters:
-        - allowEmptyValue: false
-          description: Identifier for a supported TileMatrixSet
+        - description: Identifier for a supported TileMatrixSet
+          explode: false
           in: path
           name: tileSetId
           required: true
           schema:
             type: string
+          style: simple
         - description: |-
             Identifier selecting one of the scales defined in the TileMatrixSet and representing the scaleDenominator the tile. For example,
             Ireland is fully within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and tileCol=15.
+          explode: false
           in: path
           name: tileMatrix
           required: true
           schema:
             type: string
+          style: simple
         - description: "Row index of the tile on the selected TileMatrix. It cannot\
           \ exceed the MatrixWidth-1 for the selected TileMatrix. For example, Ireland\
           \ is fully within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and\
           \ tileCol=15."
+          explode: false
           in: path
           name: tileRow
           required: true
           schema:
             minimum: 0
             type: integer
+          style: simple
         - description: "Column index of the tile on the selected TileMatrix. It cannot\
           \ exceed the MatrixHeight-1 for the selected TileMatrix. For example, Ireland\
           \ is fully within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and\
           \ tileCol=15."
+          explode: false
           in: path
           name: tileCol
           required: true
           schema:
             minimum: 0
             type: integer
+          style: simple
       responses:
         "200":
           content:
@@ -244,6 +342,146 @@ paths:
         - Vector Tiles
 components:
   parameters:
+    offset:
+      description: |-
+        The optional offset parameter indicates the index within the result set
+        from which the server shall begin presenting results in the response
+        document. The first element has an index of 0.
+
+        Minimum = 0. Default = 0.
+      explode: false
+      in: query
+      name: offset
+      required: false
+      schema:
+        default: 0
+        minimum: 0
+        type: integer
+      style: form
+    resultType:
+      description: |-
+        This service will respond to a query in one of two ways (excluding an
+        exception response). It may either generate a complete response document
+        containing resources that satisfy the operation or it may simply
+        generate an empty response container that indicates the count of the
+        total number of resources that the operation would return. Which of
+        these two responses is generated is determined by the value of the
+        optional resultType parameter.
+
+        The allowed values for this parameter are "results" and "hits".
+
+        If the value of the resultType parameter is set to "results", the server
+        will generate a complete response document containing resources that
+        satisfy the operation.
+
+        If the value of the resultType attribute is set to "hits", the server
+        will generate an empty response document containing no resource
+        instances.
+
+        The default value is "results".
+      explode: false
+      in: query
+      name: resultType
+      required: false
+      schema:
+        default: results
+        enum:
+          - hits
+          - results
+        type: string
+      style: form
+    properties:
+      description: |-
+        The properties that should be included for each feature. The parameter
+        value is a comma-separated list of property names.
+      explode: false
+      in: query
+      name: properties
+      required: false
+      schema:
+        items:
+          type: string
+        type: array
+      style: form
+    f-html-json:
+      description: "(informative) \\\nThe content type of the response. If no value\
+        \ is provided, \nthe standard http rules apply, i.e., the accept header \n\
+        will be used to determine the format."
+      explode: false
+      in: query
+      name: f
+      required: false
+      schema:
+        enum:
+          - json
+          - html
+        type: string
+      style: form
+    f-json:
+      description: "(informative) \\\nThe content type of the response. If no value\
+        \ is provided, \nthe standard http rules apply, i.e., the accept header \n\
+        will be used to determine the format."
+      explode: false
+      in: query
+      name: f
+      required: false
+      schema:
+        enum:
+          - json
+        type: string
+      style: form
+    f-style:
+      description: "(informative) \\\nThe content type of the response. If no value\
+        \ is provided, \nthe standard http rules apply, i.e., the accept header \n\
+        will be used to determine the format."
+      explode: false
+      in: query
+      name: f
+      required: false
+      schema:
+        enum:
+          - mapbox
+          - sld10
+          - sld11
+        type: string
+      style: form
+    validate:
+      description: "(part of conformance class 'style-validation') \\\n'yes' creates\
+        \ a new style after successful validation\nand returns 400, if validation\
+        \ fails,\n’no' creates the style without validation and \n'only' just validates\
+        \ the style without creating a\nnew style and returns 400, if validation fails,\n\
+        otherwise 204."
+      explode: false
+      in: query
+      name: validate
+      required: false
+      schema:
+        enum:
+          - "yes"
+          - "no"
+          - only
+        type: string
+      style: form
+    styleId:
+      description: "Local identifier of a style. \\\nA list of all available styles\
+        \ can be found \nunder the /styles path."
+      explode: false
+      in: path
+      name: styleId
+      required: true
+      schema:
+        type: string
+      style: simple
+    resourceId:
+      description: "Local identifier of a symbol resource. \\\nA list of all available\
+        \ resource can be found \nunder the /resources path."
+      explode: false
+      in: path
+      name: resourceId
+      required: true
+      schema:
+        type: string
+      style: simple
     f-metadata:
       description: "The format of the response. If no value is provided, the accept\
         \ header is used to determine the format. Accepted values are 'json' or 'html'."
@@ -259,13 +497,14 @@ components:
       style: form
     collectionId-all:
       description: Local identifier of a collection
+      explode: false
       in: path
       name: collectionId
       required: true
       schema:
         $ref: '#/components/schemas/all-collections'
+      style: simple
     collectionId-coverage:
-      allowEmptyValue: false
       description: Local identifier of a coverage collection
       explode: false
       in: path
@@ -275,13 +514,14 @@ components:
         $ref: '#/components/schemas/coverage-collections'
       style: simple
     collectionId-vectorTiles:
-      allowEmptyValue: false
       description: Local identifier of a vector tile collection
+      explode: false
       in: path
       name: collectionId
       required: true
       schema:
         $ref: '#/components/schemas/vectorTiles-collections'
+      style: simple
     collections:
       description: "The collections that should be included in the response. The parameter\
         \ value is a comma-separated list of collection identifiers. If the parameters\
@@ -388,43 +628,47 @@ components:
       description: |-
         Identifier selecting one of the scales defined in the TileMatrixSet and representing the scaleDenominator the tile. For example,
         Ireland is fully within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and tileCol=15.
-      example: "5"
+      explode: false
       in: path
       name: tileMatrix
       required: true
       schema:
         type: string
+      style: simple
     tileRow:
       description: "Row index of the tile on the selected TileMatrix. It cannot exceed\
         \ the MatrixWidth-1 for the selected TileMatrix. For example, Ireland is fully\
         \ within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and tileCol=15."
-      example: 10
+      explode: false
       in: path
       name: tileRow
       required: true
       schema:
         minimum: 0
         type: integer
+      style: simple
     tileCol:
       description: "Column index of the tile on the selected TileMatrix. It cannot\
         \ exceed the MatrixHeight-1 for the selected TileMatrix. For example, Ireland\
         \ is fully within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and\
         \ tileCol=15."
-      example: 15
+      explode: false
       in: path
       name: tileCol
       required: true
       schema:
         minimum: 0
         type: integer
+      style: simple
     tileSetId:
-      allowEmptyValue: false
       description: Identifier for a supported TileMatrixSet
+      explode: false
       in: path
       name: tileSetId
       required: true
       schema:
         $ref: '#/components/schemas/tileMatrixSets'
+      style: simple
     f-mapTile:
       description: "The format of the map tile response (e.g. png). Accepted values\
         \ are 'png', 'jpg' or 'tiff' (GeoTIFF)."
@@ -475,7 +719,7 @@ components:
       name: bgcolor
       required: false
       schema:
-        default: 0xFFFFFF
+        default: "16777215"
         type: string
       style: form
     transparent:
@@ -488,22 +732,15 @@ components:
         default: true
         type: boolean
       style: form
-    styleId:
-      allowEmptyValue: false
-      description: An identifier representing a specific style.
-      in: path
-      name: styleId
-      required: true
-      schema:
-        $ref: '#/components/schemas/styles'
     styleId-collection:
-      allowEmptyValue: false
       description: An identifier representing a specific style.
+      explode: false
       in: path
       name: styleId
       required: true
       schema:
         type: string
+      style: simple
     bbox:
       description: |-
         Only features that have a geometry that intersects the bounding box are selected. The bounding box is provided as four or six numbers, depending on whether the coordinate reference system includes a vertical axis (height or depth):
@@ -557,6 +794,15 @@ components:
       $ref: '#/components/responses/rCollectionsList'
     Collection:
       $ref: '#/components/responses/rCollection'
+    Created:
+      description: Resource created.
+      headers:
+        Location:
+          $ref: '#/components/headers/Location'
+    Updated:
+      description: The resource has been updated.
+    UnauthorizedAccess:
+      description: Unauthorized access.
     TileSetsList:
       $ref: '#/components/responses/rTileSetsList'
     TileSet:
@@ -576,31 +822,6 @@ components:
     rLandingPage:
       content:
         application/json:
-          example:
-            title: Buildings in Bonn
-            description: Access to data about buildings in the city of Bonn via a
-              Web API that conforms to the OGC API Tiles specification.
-            links:
-              - href: http://data.example.org/
-                rel: self
-                type: application/json
-                title: this document
-              - href: http://data.example.org/api
-                rel: service-desc
-                type: application/vnd.oai.openapi+json;version=3.0
-                title: the API definition
-              - href: http://data.example.org/api.html
-                rel: service-doc
-                type: text/html
-                title: the API documentation
-              - href: http://data.example.org/conformance
-                rel: conformance
-                type: application/json
-                title: OGC API conformance classes implemented by this service
-              - href: http://data.example.org/collections
-                rel: data
-                type: application/json
-                title: Information about the collections
           schema:
             $ref: '#/components/schemas/landingPage'
       description: |-
@@ -654,57 +875,6 @@ components:
     rCollectionsList:
       content:
         application/json:
-          example:
-            links:
-              - href: http://data.example.org/collections.json
-                rel: self
-                type: application/json
-                title: this document
-              - href: http://data.example.org/collections.html
-                rel: alternate
-                type: text/html
-                title: this document as HTML
-              - href: http://schemas.example.org/1.0/buildings.xsd
-                rel: describedby
-                type: application/xml
-                title: GML application schema for Acme Corporation building data
-              - href: http://download.example.org/buildings.gpkg
-                rel: enclosure
-                type: application/geopackage+sqlite3
-                title: Bulk download (GeoPackage)
-                length: 472546
-            collections:
-              - id: buildings
-                title: Buildings
-                description: Buildings in the city of Bonn.
-                extent:
-                  spatial:
-                    bbox:
-                      - - 7.01
-                        - 50.63
-                        - 7.22
-                        - 50.78
-                  temporal:
-                    interval:
-                      - - 2010-02-15T12:34:56Z
-                        - null
-                links:
-                  - href: http://data.example.org/collections/buildings/items
-                    rel: items
-                    type: application/geo+json
-                    title: Buildings
-                  - href: http://data.example.org/collections/buildings/items.html
-                    rel: items
-                    type: text/html
-                    title: Buildings
-                  - href: https://creativecommons.org/publicdomain/zero/1.0/
-                    rel: license
-                    type: text/html
-                    title: CC0-1.0
-                  - href: https://creativecommons.org/publicdomain/zero/1.0/rdf
-                    rel: license
-                    type: application/rdf+xml
-                    title: CC0-1.0
           schema:
             $ref: '#/components/schemas/collections'
         text/html:
@@ -720,38 +890,6 @@ components:
     rCollection:
       content:
         application/json:
-          example:
-            id: buildings
-            title: Buildings
-            description: Buildings in the city of Bonn.
-            extent:
-              spatial:
-                bbox:
-                  - - 7.01
-                    - 50.63
-                    - 7.22
-                    - 50.78
-              temporal:
-                interval:
-                  - - 2010-02-15T12:34:56Z
-                    - null
-            links:
-              - href: http://data.example.org/collections/buildings/items
-                rel: items
-                type: application/geo+json
-                title: Buildings
-              - href: http://data.example.org/collections/buildings/items.html
-                rel: items
-                type: text/html
-                title: Buildings
-              - href: https://creativecommons.org/publicdomain/zero/1.0/
-                rel: license
-                type: text/html
-                title: CC0-1.0
-              - href: https://creativecommons.org/publicdomain/zero/1.0/rdf
-                rel: license
-                type: application/rdf+xml
-                title: CC0-1.0
           schema:
             $ref: '#/components/schemas/collection'
       description: |-
@@ -833,6 +971,261 @@ components:
             $ref: '#/components/schemas/exception'
       description: An error occured.
   schemas:
+    style-set:
+      properties:
+        styles:
+          items:
+            $ref: '#/components/schemas/style-set-entry'
+          nullable: true
+          type: array
+      required:
+        - styles
+      type: object
+    style-set-entry:
+      nullable: true
+      properties:
+        id:
+          nullable: true
+          type: string
+        title:
+          nullable: true
+          type: string
+        links:
+          items:
+            $ref: '#/components/schemas/link_1'
+          minItems: 1
+          nullable: true
+          type: array
+      required:
+        - id
+        - links
+      type: object
+    mb-style:
+      properties:
+        version:
+          type: number
+        name:
+          type: string
+        sources:
+          $ref: '#/components/schemas/mb_style_sources'
+        sprite:
+          type: string
+        glyphs:
+          type: string
+        layers:
+          items:
+            $ref: '#/components/schemas/layers-array'
+          type: array
+      required:
+        - layers
+        - sources
+        - version
+      type: object
+    layers-array:
+      properties:
+        id:
+          type: string
+        type:
+          enum:
+            - fill
+            - line
+            - symbol
+            - circle
+            - heatmap
+            - fill-extrusion
+            - raster
+            - hillshade
+            - background
+          type: string
+        source:
+          type: string
+        source-layer:
+          type: string
+        layout:
+          type: object
+        paint:
+          $ref: '#/components/schemas/layers_array_paint'
+      required:
+        - id
+        - type
+      type: object
+    mb-sprite-index:
+      additionalProperties:
+        $ref: '#/components/schemas/mb-sprite-index-symbol'
+      type: object
+    mb-sprite-index-symbol:
+      properties:
+        width:
+          type: integer
+        height:
+          type: integer
+        x:
+          type: integer
+        "y":
+          type: integer
+        pixelRatio:
+          type: number
+      required:
+        - height
+        - pixelRatio
+        - width
+        - x
+        - "y"
+      type: object
+    svg:
+      type: string
+    bitmap:
+      format: binary
+      type: string
+    resource-set:
+      properties:
+        resources:
+          items:
+            $ref: '#/components/schemas/resource-set-entry'
+          type: array
+      required:
+        - resources
+      type: object
+    resource-set-entry:
+      properties:
+        id:
+          type: string
+        link:
+          $ref: '#/components/schemas/link_1'
+      required:
+        - id
+      type: object
+    style-metadata:
+      properties:
+        id:
+          type: string
+        title:
+          nullable: true
+          type: string
+        description:
+          nullable: true
+          type: string
+        keywords:
+          items:
+            type: string
+          nullable: true
+          type: array
+        pointOfContact:
+          nullable: true
+          type: string
+        accessConstraints:
+          enum:
+            - unclassified
+            - confidential
+            - restricted
+            - secret
+            - topSecret
+          nullable: true
+          type: string
+        dates:
+          $ref: '#/components/schemas/dates'
+        scope:
+          enum:
+            - style
+          nullable: true
+          type: string
+        version:
+          nullable: true
+          type: string
+        stylesheets:
+          items:
+            $ref: '#/components/schemas/stylesheet'
+          nullable: true
+          type: array
+        layers:
+          items:
+            $ref: '#/components/schemas/style-layer'
+          nullable: true
+          type: array
+        links:
+          description: |-
+            The links may reference related resources. It is recommended to include
+            a link to a thumbnail with link relation `preview` (specified by RFC 6903)
+            and the appropriate media type in the `type` parameter.
+            The thumbnail may be an image that is published as a resource in the API,
+            it may reference an appropriate raster tile, a map request, etc.
+          items:
+            $ref: '#/components/schemas/link_1'
+          nullable: true
+          type: array
+      required:
+        - id
+      type: object
+    dates:
+      nullable: true
+      properties:
+        creation:
+          format: date-time
+          nullable: true
+          type: string
+        publication:
+          format: date-time
+          nullable: true
+          type: string
+        revision:
+          format: date-time
+          nullable: true
+          type: string
+        validTill:
+          format: date-time
+          nullable: true
+          type: string
+        receivedOn:
+          format: date-time
+          nullable: true
+          type: string
+      type: object
+    stylesheet:
+      nullable: true
+      properties:
+        title:
+          nullable: true
+          type: string
+        version:
+          nullable: true
+          type: string
+        specification:
+          format: url
+          nullable: true
+          type: string
+        native:
+          nullable: true
+          type: boolean
+        tilingScheme:
+          nullable: true
+          type: string
+        link:
+          $ref: '#/components/schemas/link_1'
+      required:
+        - link
+      type: object
+    style-layer:
+      nullable: true
+      properties:
+        id:
+          type: string
+        description:
+          nullable: true
+          type: string
+        type:
+          enum:
+            - point
+            - line
+            - polygon
+            - geometry
+            - raster
+          nullable: true
+          type: string
+        sampleData:
+          $ref: '#/components/schemas/link'
+      required:
+        - id
+      type: object
     conformanceClasses:
       properties:
         conformsTo:
@@ -843,28 +1236,16 @@ components:
         - conformsTo
       type: object
     link:
-      example:
-        varBase: /ogcapi/vars/
-        hreflang: en
-        templated: true
-        rel: alternate
-        length: 0
-        href: http://data.example.com/buildings/123
-        type: application/geo+json
-        title: "Trierer Strasse 70, 53115 Bonn"
       properties:
         href:
           description: Supplies the URI to a remote resource (or resource fragment).
-          example: http://data.example.com/buildings/123
           type: string
         rel:
           description: The type or semantics of the relation.
-          example: alternate
           type: string
         type:
           description: A hint indicating what the media type of the result of dereferencing
             the link should be.
-          example: application/geo+json
           type: string
         templated:
           description: This flag set to true if the link is a URL template.
@@ -872,17 +1253,14 @@ components:
         varBase:
           description: A base path to retrieve semantic information about the variables
             used in URL template.
-          example: /ogcapi/vars/
           type: string
         hreflang:
           description: A hint indicating what the language of the result of dereferencing
             the link should be.
-          example: en
           type: string
         title:
           description: Used to label the destination of a link such that it can be
             used as a human-readable identifier.
-          example: "Trierer Strasse 70, 53115 Bonn"
           type: string
         length:
           type: integer
@@ -891,38 +1269,13 @@ components:
         - rel
       type: object
     landingPage:
-      example:
-        attribution: attribution
-        description: Access to data about buildings in the city of Bonn via a Web
-          API that conforms to the OGC API Common specification.
-        links:
-          - varBase: /ogcapi/vars/
-            hreflang: en
-            templated: true
-            rel: alternate
-            length: 0
-            href: http://data.example.com/buildings/123
-            type: application/geo+json
-            title: "Trierer Strasse 70, 53115 Bonn"
-          - varBase: /ogcapi/vars/
-            hreflang: en
-            templated: true
-            rel: alternate
-            length: 0
-            href: http://data.example.com/buildings/123
-            type: application/geo+json
-            title: "Trierer Strasse 70, 53115 Bonn"
-        title: Buildings in Bonn
       properties:
         title:
           description: "While a title is not required, implementors are strongly advised\
             \ to include one."
-          example: Buildings in Bonn
           title: The title of the API.
           type: string
         description:
-          example: Access to data about buildings in the city of Bonn via a Web API
-            that conforms to the OGC API Common specification.
           type: string
         attribution:
           description: "The `attribution` should be short and intended for presentation\
@@ -956,106 +1309,6 @@ components:
       title: Exception Schema
       type: object
     collections:
-      example:
-        timeStamp: 2000-01-23T04:56:07.000+00:00
-        collections:
-          - extent: null
-            itemType: unknown
-            crs:
-              - http://www.opengis.net/def/crs/OGC/1.3/CRS84
-              - http://www.opengis.net/def/crs/EPSG/0/4326
-            dataType: null
-            description: A Digital Elevation Model.
-            title: Digital Elevation Model
-            maxScaleDenominator: 1.4658129805029452
-            minScaleDenominator: 6.027456183070403
-            geometryDimension: 0
-            maxCellSize: 5.637376656633329
-            links:
-              - href: http://data.example.org/collections/dem?f=json
-                rel: self
-                type: application/json
-                title: Digital Elevation Model
-              - href: http://data.example.org/collections/dem?f=html
-                rel: alternate
-                type: application/json
-                title: Digital Elevation Model
-              - href: http://data.example.org/collections/dem/coverage
-                rel: coverage
-                type: image/tiff; application=geotiff
-                title: Digital Elevation Model
-              - href: http://data.example.org/collections/dem/coverage/domainset
-                rel: domainset
-                type: application/json
-                title: Digital Elevation Model
-              - href: http://data.example.org/collections/dem/coverage/rangetype
-                rel: rangetype
-                type: application/json
-                title: Digital Elevation Model
-              - href: http://data.example.org/collections/dem/coverage/metadata
-                rel: metadata
-                type: application/json
-                title: Digital Elevation Model
-            minCellSize: 5.962133916683182
-            id: dem
-          - extent: null
-            itemType: unknown
-            crs:
-              - http://www.opengis.net/def/crs/OGC/1.3/CRS84
-              - http://www.opengis.net/def/crs/EPSG/0/4326
-            dataType: null
-            description: A Digital Elevation Model.
-            title: Digital Elevation Model
-            maxScaleDenominator: 1.4658129805029452
-            minScaleDenominator: 6.027456183070403
-            geometryDimension: 0
-            maxCellSize: 5.637376656633329
-            links:
-              - href: http://data.example.org/collections/dem?f=json
-                rel: self
-                type: application/json
-                title: Digital Elevation Model
-              - href: http://data.example.org/collections/dem?f=html
-                rel: alternate
-                type: application/json
-                title: Digital Elevation Model
-              - href: http://data.example.org/collections/dem/coverage
-                rel: coverage
-                type: image/tiff; application=geotiff
-                title: Digital Elevation Model
-              - href: http://data.example.org/collections/dem/coverage/domainset
-                rel: domainset
-                type: application/json
-                title: Digital Elevation Model
-              - href: http://data.example.org/collections/dem/coverage/rangetype
-                rel: rangetype
-                type: application/json
-                title: Digital Elevation Model
-              - href: http://data.example.org/collections/dem/coverage/metadata
-                rel: metadata
-                type: application/json
-                title: Digital Elevation Model
-            minCellSize: 5.962133916683182
-            id: dem
-        numberReturned: 1
-        links:
-          - varBase: /ogcapi/vars/
-            hreflang: en
-            templated: true
-            rel: alternate
-            length: 0
-            href: http://data.example.com/buildings/123
-            type: application/geo+json
-            title: "Trierer Strasse 70, 53115 Bonn"
-          - varBase: /ogcapi/vars/
-            hreflang: en
-            templated: true
-            rel: alternate
-            length: 0
-            href: http://data.example.com/buildings/123
-            type: application/geo+json
-            title: "Trierer Strasse 70, 53115 Bonn"
-        numberMatched: 1
       properties:
         links:
           items:
@@ -1065,11 +1318,9 @@ components:
           format: date-time
           type: string
         numberMatched:
-          example: 1
           minimum: 0
           type: integer
         numberReturned:
-          example: 1
           minimum: 0
           type: integer
         collections:
@@ -1081,85 +1332,17 @@ components:
         - links
       type: object
     collection:
-      example:
-        extent: null
-        itemType: unknown
-        crs:
-          - http://www.opengis.net/def/crs/OGC/1.3/CRS84
-          - http://www.opengis.net/def/crs/EPSG/0/4326
-        dataType: null
-        description: A Digital Elevation Model.
-        title: Digital Elevation Model
-        maxScaleDenominator: 1.4658129805029452
-        minScaleDenominator: 6.027456183070403
-        geometryDimension: 0
-        maxCellSize: 5.637376656633329
-        links:
-          - href: http://data.example.org/collections/dem?f=json
-            rel: self
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem?f=html
-            rel: alternate
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage
-            rel: coverage
-            type: image/tiff; application=geotiff
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/domainset
-            rel: domainset
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/rangetype
-            rel: rangetype
-            type: application/json
-            title: Digital Elevation Model
-          - href: http://data.example.org/collections/dem/coverage/metadata
-            rel: metadata
-            type: application/json
-            title: Digital Elevation Model
-        minCellSize: 5.962133916683182
-        id: dem
       properties:
         id:
           description: "identifier of the collection used, for example, in URIs"
-          example: dem
           type: string
         title:
           description: human readable title of the collection
-          example: Digital Elevation Model
           type: string
         description:
           description: a description of the data in the collection
-          example: A Digital Elevation Model.
           type: string
         links:
-          example:
-            - href: http://data.example.org/collections/dem?f=json
-              rel: self
-              type: application/json
-              title: Digital Elevation Model
-            - href: http://data.example.org/collections/dem?f=html
-              rel: alternate
-              type: application/json
-              title: Digital Elevation Model
-            - href: http://data.example.org/collections/dem/coverage
-              rel: coverage
-              type: image/tiff; application=geotiff
-              title: Digital Elevation Model
-            - href: http://data.example.org/collections/dem/coverage/domainset
-              rel: domainset
-              type: application/json
-              title: Digital Elevation Model
-            - href: http://data.example.org/collections/dem/coverage/rangetype
-              rel: rangetype
-              type: application/json
-              title: Digital Elevation Model
-            - href: http://data.example.org/collections/dem/coverage/metadata
-              rel: metadata
-              type: application/json
-              title: Digital Elevation Model
           items:
             $ref: '#/components/schemas/link'
           type: array
@@ -1175,9 +1358,6 @@ components:
             - http://www.opengis.net/def/crs/OGC/1.3/CRS84
           description: the list of coordinate reference systems supported by the API;
             the first item is the default coordinate reference system
-          example:
-            - http://www.opengis.net/def/crs/OGC/1.3/CRS84
-            - http://www.opengis.net/def/crs/EPSG/0/4326
           items:
             type: string
           type: array
@@ -1255,10 +1435,6 @@ components:
                   description: |-
                     Lower and upper bound values of the interval. The values
                     are in the coordinate reference system specified in `crs`, `trs` or `vrs`.
-                  example:
-                    - 2011-11-11T12:22:11Z
-                    - 32.5
-                    - null
                   items:
                     oneOf:
                       - nullable: true
@@ -1290,11 +1466,6 @@ components:
                     description: |-
                       List of coordinates along the temporal dimension for which data organized as an irregular grid in the collection is available
                       (e.g., 2, 10, 80, 100).
-                    example:
-                      - 2
-                      - 10
-                      - 80
-                      - 100
                     items:
                       oneOf:
                         - nullable: true
@@ -1307,14 +1478,10 @@ components:
                       Number of samples available along the dimension for data organized as a regular grid.
                       For values representing the whole area of contiguous cells spanning _resolution_ units along the dimension, this will be (_upperBound_ - _lowerBound_) / _resolution_.
                       For values representing infinitely small point cells spaced by _resolution_ units along the dimension, this will be (_upperBound_ - _lowerBound_) / _resolution_ + 1.
-                    example: 50
                     type: integer
                   resolution:
                     description: Resolution of regularly gridded data along the dimension
                       in the collection
-                    example:
-                      - PT1H
-                      - 6.866455078E-4
                     oneOf:
                       - nullable: true
                         type: string
@@ -1344,7 +1511,6 @@ components:
     timeStamp:
       description: This property indicates the time and date when the response was
         generated using RFC 3339 notation.
-      example: 2017-08-17T08:05:32Z
       format: date-time
       type: string
     numberReturned:
@@ -1354,161 +1520,17 @@ components:
         about the number of features is not known or difficult to compute.
         If the value is provided, the value shall be identical to the number
         of items in the "features" array.
-      example: 10
       minimum: 0
       type: integer
     numberMatched:
       description: |-
         The number of features of the feature type that match the selection
         parameters like `bbox`.
-      example: 127
       minimum: 0
       type: integer
     tileSet:
       description: "A resource describing a tileSet based on the OGC TileSet Metadata\
         \ Standard. At least one of the 'TileMatrixSet',  or a link with 'rel' http://www.opengis.net/def/rel/ogc/1.0/tiling-scheme"
-      example:
-        boundingBox: null
-        keywords:
-          - keywords
-          - keywords
-        crs: null
-        tileMatrixSetURI: https://openapi-generator.tech
-        created: ""
-        dataType: null
-        description: description
-        tileMatrixSetLimits:
-          - tileMatrix: tileMatrix
-            maxTileRow: 0
-            minTileCol: 0
-            maxTileCol: 0
-            minTileRow: 0
-          - tileMatrix: tileMatrix
-            maxTileRow: 0
-            minTileCol: 0
-            maxTileCol: 0
-            minTileRow: 0
-        epoch: 5.637376656633329
-        title: title
-        version: version
-        centerPoint: null
-        license: license
-        mediaTypes:
-          - mediaTypes
-          - mediaTypes
-        layers:
-          - boundingBox: null
-            keywords: keywords
-            description: description
-            epoch: 7.061401241503109
-            title: title
-            featureType: featureType
-            theme: theme
-            links:
-              - varBase: /ogcapi/vars/
-                hreflang: en
-                templated: true
-                rel: alternate
-                length: 0
-                href: http://data.example.com/buildings/123
-                type: application/geo+json
-                title: "Trierer Strasse 70, 53115 Bonn"
-              - varBase: /ogcapi/vars/
-                hreflang: en
-                templated: true
-                rel: alternate
-                length: 0
-                href: http://data.example.com/buildings/123
-                type: application/geo+json
-                title: "Trierer Strasse 70, 53115 Bonn"
-            id: id
-            minTileMatrix: minTileMatrix
-            pointOfContact: pointOfContact
-            crs: null
-            created: ""
-            dataType: null
-            propertiesSchema: null
-            maxTileMatrix: maxTileMatrix
-            license: license
-            maxScaleDenominator: 3.616076749251911
-            minScaleDenominator: 9.301444243932576
-            geometryDimension: 0
-            maxCellSize: 4.145608029883936
-            attribution: attribution
-            publisher: publisher
-            minCellSize: 2.027123023002322
-            style: null
-            updated: ""
-            geoDataClasses:
-              - geoDataClasses
-              - geoDataClasses
-          - boundingBox: null
-            keywords: keywords
-            description: description
-            epoch: 7.061401241503109
-            title: title
-            featureType: featureType
-            theme: theme
-            links:
-              - varBase: /ogcapi/vars/
-                hreflang: en
-                templated: true
-                rel: alternate
-                length: 0
-                href: http://data.example.com/buildings/123
-                type: application/geo+json
-                title: "Trierer Strasse 70, 53115 Bonn"
-              - varBase: /ogcapi/vars/
-                hreflang: en
-                templated: true
-                rel: alternate
-                length: 0
-                href: http://data.example.com/buildings/123
-                type: application/geo+json
-                title: "Trierer Strasse 70, 53115 Bonn"
-            id: id
-            minTileMatrix: minTileMatrix
-            pointOfContact: pointOfContact
-            crs: null
-            created: ""
-            dataType: null
-            propertiesSchema: null
-            maxTileMatrix: maxTileMatrix
-            license: license
-            maxScaleDenominator: 3.616076749251911
-            minScaleDenominator: 9.301444243932576
-            geometryDimension: 0
-            maxCellSize: 4.145608029883936
-            attribution: attribution
-            publisher: publisher
-            minCellSize: 2.027123023002322
-            style: null
-            updated: ""
-            geoDataClasses:
-              - geoDataClasses
-              - geoDataClasses
-        attribution: attribution
-        links:
-          - varBase: /ogcapi/vars/
-            hreflang: en
-            templated: true
-            rel: alternate
-            length: 0
-            href: http://data.example.com/buildings/123
-            type: application/geo+json
-            title: "Trierer Strasse 70, 53115 Bonn"
-          - varBase: /ogcapi/vars/
-            hreflang: en
-            templated: true
-            rel: alternate
-            length: 0
-            href: http://data.example.com/buildings/123
-            type: application/geo+json
-            title: "Trierer Strasse 70, 53115 Bonn"
-        style: null
-        accessConstraints: unclassified
-        updated: ""
-        pointOfContact: pointOfContact
       properties:
         title:
           description: A title for this tileSet
@@ -1614,28 +1636,6 @@ components:
     tileSet-item:
       description: A minimal tileSet element for use within a list of tileSets linking
         to full description of those tileSets.
-      example:
-        crs: null
-        tileMatrixSetURI: https://openapi-generator.tech
-        dataType: null
-        links:
-          - varBase: /ogcapi/vars/
-            hreflang: en
-            templated: true
-            rel: alternate
-            length: 0
-            href: http://data.example.com/buildings/123
-            type: application/geo+json
-            title: "Trierer Strasse 70, 53115 Bonn"
-          - varBase: /ogcapi/vars/
-            hreflang: en
-            templated: true
-            rel: alternate
-            length: 0
-            href: http://data.example.com/buildings/123
-            type: application/geo+json
-            title: "Trierer Strasse 70, 53115 Bonn"
-        title: title
       properties:
         title:
           description: A title for this tileSet
@@ -1716,28 +1716,6 @@ components:
     tileMatrixSet-item:
       description: A minimal tile matrix set element for use within a list of tile
         matrix sets linking to a full definition.
-      example:
-        crs: null
-        links:
-          - varBase: /ogcapi/vars/
-            hreflang: en
-            templated: true
-            rel: alternate
-            length: 0
-            href: http://data.example.com/buildings/123
-            type: application/geo+json
-            title: "Trierer Strasse 70, 53115 Bonn"
-          - varBase: /ogcapi/vars/
-            hreflang: en
-            templated: true
-            rel: alternate
-            length: 0
-            href: http://data.example.com/buildings/123
-            type: application/geo+json
-            title: "Trierer Strasse 70, 53115 Bonn"
-        id: id
-        title: title
-        uri: https://openapi-generator.tech
       properties:
         id:
           description: "Optional local tile matrix set identifier, e.g. for use as\
@@ -1766,12 +1744,6 @@ components:
     tileMatrixLimits:
       description: "The limits for an individual tile matrix of a TileSet's TileMatrixSet,\
         \ as defined in the OGC 2D TileMatrixSet and TileSet Metadata Standard"
-      example:
-        tileMatrix: tileMatrix
-        maxTileRow: 0
-        minTileCol: 0
-        maxTileCol: 0
-        minTileRow: 0
       properties:
         tileMatrix:
           type: string
@@ -1795,14 +1767,14 @@ components:
         - tileMatrix
       title: TileMatrixLimits
       type: object
-    "2DPoint":
+    "Point2D":
       description: A 2D Point in the CRS indicated elsewhere
       items:
         type: number
       maxItems: 2
       minItems: 2
       type: array
-    "2DBoundingBox":
+    "BoundingBox2D":
       description: Minimum bounding rectangle surrounding a 2D resource in the CRS
         indicated elsewhere
       properties:
@@ -1853,11 +1825,6 @@ components:
       title: GeoJSON FeatureCollection
       type: object
     enumeration:
-      example:
-        type: enum
-        enum:
-          - enum
-          - enum
       properties:
         type:
           enum:
@@ -1904,52 +1871,6 @@ components:
         - WorldMercatorWGS84Quad
       type: string
     geospatialData:
-      example:
-        boundingBox: null
-        keywords: keywords
-        description: description
-        epoch: 7.061401241503109
-        title: title
-        featureType: featureType
-        theme: theme
-        links:
-          - varBase: /ogcapi/vars/
-            hreflang: en
-            templated: true
-            rel: alternate
-            length: 0
-            href: http://data.example.com/buildings/123
-            type: application/geo+json
-            title: "Trierer Strasse 70, 53115 Bonn"
-          - varBase: /ogcapi/vars/
-            hreflang: en
-            templated: true
-            rel: alternate
-            length: 0
-            href: http://data.example.com/buildings/123
-            type: application/geo+json
-            title: "Trierer Strasse 70, 53115 Bonn"
-        id: id
-        minTileMatrix: minTileMatrix
-        pointOfContact: pointOfContact
-        crs: null
-        created: ""
-        dataType: null
-        propertiesSchema: null
-        maxTileMatrix: maxTileMatrix
-        license: license
-        maxScaleDenominator: 3.616076749251911
-        minScaleDenominator: 9.301444243932576
-        geometryDimension: 0
-        maxCellSize: 4.145608029883936
-        attribution: attribution
-        publisher: publisher
-        minCellSize: 2.027123023002322
-        style: null
-        updated: ""
-        geoDataClasses:
-          - geoDataClasses
-          - geoDataClasses
       properties:
         title:
           description: "Title of this tile matrix set, normally used for display to\
@@ -2106,28 +2027,6 @@ components:
     tileMatrix:
       description: "A tile matrix, usually corresponding to a particular zoom level\
         \ of a TileMatrixSet."
-      example:
-        keywords:
-          - keywords
-          - keywords
-        scaleDenominator: 0.8008281904610115
-        description: description
-        tileWidth: 1.1465812980502945
-        title: title
-        cellSize: 6.027456183070403
-        matrixWidth: 1.2302135886934766
-        variableMatrixWidths:
-          - maxTileRow: 0.3616076749251911
-            coalesce: 2.706140124150311
-            minTileRow: 0.9301444243932576
-          - maxTileRow: 0.3616076749251911
-            coalesce: 2.706140124150311
-            minTileRow: 0.9301444243932576
-        cornerOfOrigin: topLeft
-        matrixHeight: 1.5637376656633328
-        id: id
-        pointOfOrigin: ""
-        tileHeight: 1.5962133916683183
       properties:
         title:
           description: "Title of this tile matrix, normally used for display to a\
@@ -2169,7 +2068,7 @@ components:
               \ also a corner of the (0, 0) tile. In previous version, this was 'topLeftCorner'\
               \ and 'cornerOfOrigin' did not exist."
               type: object
-            - $ref: '#/components/schemas/2DPoint'
+            - $ref: '#/components/schemas/Point2D'
         tileWidth:
           description: Width of each tile of this tile matrix in pixels
           format: integer
@@ -2227,7 +2126,7 @@ components:
         properties:
           additionalProperties:
             $ref: '#/components/schemas/propertiesSchema_properties_value'
-          default: { }
+          default: {}
           type: object
       required:
         - properties
@@ -2235,10 +2134,6 @@ components:
       type: object
     variableMatrixWidth:
       description: Variable Matrix Width data structure
-      example:
-        maxTileRow: 0.3616076749251911
-        coalesce: 2.706140124150311
-        minTileRow: 0.9301444243932576
       properties:
         coalesce:
           description: Number of tiles in width that coalesce in a single tile for
@@ -2269,82 +2164,12 @@ components:
     getConformance_200_response:
       allOf:
         - $ref: '#/components/schemas/conformanceClasses'
-      example:
-        conformsTo:
-          - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core
-          - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/json
-          - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/html
-          - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/oas30
-          - http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/collections
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileSet
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileSets-list
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/geodata-tileSets
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/dataset-tileSets
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/geodata-selection
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/jpeg
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/png
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/mvt
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/geojson
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tiff
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/netcdf
     getCollectionsList_bbox_parameter:
       items:
         format: double
         type: number
-      oneOf:
-        - maxItems: 4
-          minItems: 4
-          type: object
-        - maxItems: 6
-          minItems: 6
-          type: object
       type: array
     getTileMatrixSetsList_200_response:
-      example:
-        tileMatrixSets:
-          - crs: null
-            links:
-              - varBase: /ogcapi/vars/
-                hreflang: en
-                templated: true
-                rel: alternate
-                length: 0
-                href: http://data.example.com/buildings/123
-                type: application/geo+json
-                title: "Trierer Strasse 70, 53115 Bonn"
-              - varBase: /ogcapi/vars/
-                hreflang: en
-                templated: true
-                rel: alternate
-                length: 0
-                href: http://data.example.com/buildings/123
-                type: application/geo+json
-                title: "Trierer Strasse 70, 53115 Bonn"
-            id: id
-            title: title
-            uri: https://openapi-generator.tech
-          - crs: null
-            links:
-              - varBase: /ogcapi/vars/
-                hreflang: en
-                templated: true
-                rel: alternate
-                length: 0
-                href: http://data.example.com/buildings/123
-                type: application/geo+json
-                title: "Trierer Strasse 70, 53115 Bonn"
-              - varBase: /ogcapi/vars/
-                hreflang: en
-                templated: true
-                rel: alternate
-                length: 0
-                href: http://data.example.com/buildings/123
-                type: application/geo+json
-                title: "Trierer Strasse 70, 53115 Bonn"
-            id: id
-            title: title
-            uri: https://openapi-generator.tech
       properties:
         tileMatrixSets:
           items:
@@ -2352,67 +2177,6 @@ components:
           type: array
       type: object
     tileSets:
-      example:
-        tileSets:
-          - crs: null
-            tileMatrixSetURI: https://openapi-generator.tech
-            dataType: null
-            links:
-              - varBase: /ogcapi/vars/
-                hreflang: en
-                templated: true
-                rel: alternate
-                length: 0
-                href: http://data.example.com/buildings/123
-                type: application/geo+json
-                title: "Trierer Strasse 70, 53115 Bonn"
-              - varBase: /ogcapi/vars/
-                hreflang: en
-                templated: true
-                rel: alternate
-                length: 0
-                href: http://data.example.com/buildings/123
-                type: application/geo+json
-                title: "Trierer Strasse 70, 53115 Bonn"
-            title: title
-          - crs: null
-            tileMatrixSetURI: https://openapi-generator.tech
-            dataType: null
-            links:
-              - varBase: /ogcapi/vars/
-                hreflang: en
-                templated: true
-                rel: alternate
-                length: 0
-                href: http://data.example.com/buildings/123
-                type: application/geo+json
-                title: "Trierer Strasse 70, 53115 Bonn"
-              - varBase: /ogcapi/vars/
-                hreflang: en
-                templated: true
-                rel: alternate
-                length: 0
-                href: http://data.example.com/buildings/123
-                type: application/geo+json
-                title: "Trierer Strasse 70, 53115 Bonn"
-            title: title
-        links:
-          - varBase: /ogcapi/vars/
-            hreflang: en
-            templated: true
-            rel: alternate
-            length: 0
-            href: http://data.example.com/buildings/123
-            type: application/geo+json
-            title: "Trierer Strasse 70, 53115 Bonn"
-          - varBase: /ogcapi/vars/
-            hreflang: en
-            templated: true
-            rel: alternate
-            length: 0
-            href: http://data.example.com/buildings/123
-            type: application/geo+json
-            title: "Trierer Strasse 70, 53115 Bonn"
       properties:
         links:
           items:
@@ -2467,20 +2231,8 @@ components:
         If a feature has multiple spatial geometry properties, it is the decision of the
         server whether only a single spatial geometry property is used to determine
         the extent or all relevant geometries.
-      example:
-        - -180
-        - -90
-        - 180
-        - 90
       items:
         type: number
-      oneOf:
-        - maxItems: 4
-          minItems: 4
-          type: object
-        - maxItems: 6
-          minItems: 6
-          type: object
       type: array
     extent_spatial_grid_inner_coordinates_inner:
       oneOf:
@@ -2490,7 +2242,6 @@ components:
     extent_spatial_grid_inner_resolution:
       description: Resolution of regularly gridded data along the dimension in the
         collection
-      example: 6.866455078E-4
       oneOf:
         - nullable: true
           type: string
@@ -2501,11 +2252,6 @@ components:
           description: |-
             List of coordinates along the dimension for which data organized as an irregular grid in the collection is available
             (e.g., 2, 10, 80, 100).
-          example:
-            - 2
-            - 10
-            - 80
-            - 100
           items:
             $ref: '#/components/schemas/extent_spatial_grid_inner_coordinates_inner'
           minItems: 1
@@ -2515,7 +2261,6 @@ components:
             Number of samples available along the dimension for data organized as a regular grid.
             For values representing the whole area of contiguous cells spanning _resolution_ units along the dimension, this will be (_upperBound_ - _lowerBound_) / _resolution_.
             For values representing infinitely small point cells spaced by _resolution_ units along the dimension, this will be (_upperBound_ - _lowerBound_) / _resolution_ + 1.
-          example: 50
           type: integer
         resolution:
           $ref: '#/components/schemas/extent_spatial_grid_inner_resolution'
@@ -2564,7 +2309,6 @@ components:
     extent_temporal_grid_resolution:
       description: Resolution of regularly gridded data along the temporal dimension
         in the collection
-      example: PT1H
       oneOf:
         - nullable: true
           type: string
@@ -2578,10 +2322,6 @@ components:
           description: |-
             List of coordinates along the temporal dimension for which data organized as an irregular grid in the collection is available
             (e.g., "2017-11-14T09:00Z","2017-11-14T12:00Z","2017-11-14T15:00Z","2017-11-14T18:00Z","2017-11-14T21:00Z").
-          example:
-            - - 2020-11-12T12:15Z
-              - 2020-11-12T12:30Z
-              - 2020-11-12T12:45Z
           items:
             nullable: true
             type: string
@@ -2592,7 +2332,6 @@ components:
             Number of samples available along the temporal dimension for data organized as a regular grid.
             For values representing the whole area of contiguous cells spanning _resolution_ units along the dimension, this will be (_upperBound_ - _lowerBound_) / _resolution_.
             For values representing infinitely small point cells spaced by _resolution_ units along the dimension, this will be (_upperBound_ - _lowerBound_) / _resolution_ + 1.
-          example: 50
           type: integer
         resolution:
           $ref: '#/components/schemas/extent_temporal_grid_resolution'
@@ -2618,9 +2357,6 @@ components:
               this is the Gregorian calendar.
 
               The value `null` for start or end time is supported and indicates a half-bounded time interval.
-            example:
-              - 2011-11-11T12:22:11Z
-              - null
             items:
               format: date-time
               nullable: true
@@ -2694,7 +2430,7 @@ components:
         - description: "Minimum bounding rectangle surrounding the tile matrix set,\
           \ in the supported CRS"
           type: object
-        - $ref: '#/components/schemas/2DBoundingBox'
+        - $ref: '#/components/schemas/BoundingBox2D'
     tileSet_centerPoint:
       allOf:
         - description: Location of a tile that nicely represents the tileSet. Implementations
@@ -2901,7 +2637,7 @@ components:
       allOf:
         - description: Minimum bounding rectangle surrounding the layer
           type: object
-        - $ref: '#/components/schemas/2DBoundingBox'
+        - $ref: '#/components/schemas/BoundingBox2D'
     geospatialData_style:
       allOf:
         - description: Style used to generate the layer in the tileSet
@@ -2984,5 +2720,39 @@ components:
           type: string
         uomURI:
           format: uri
+          type: string
+      type: object
+    link_1:
+      properties:
+        href:
+          type: string
+        rel:
+          type: string
+        type:
+          type: string
+        hreflang:
+          type: string
+        title:
+          type: string
+        length:
+          type: integer
+      required:
+        - href
+      type: object
+    mb_style_sources_daraa:
+      properties:
+        type:
+          type: string
+        url:
+          type: string
+      type: object
+    mb_style_sources:
+      properties:
+        daraa:
+          $ref: '#/components/schemas/mb_style_sources_daraa'
+      type: object
+    layers_array_paint:
+      properties:
+        fill-color:
           type: string
       type: object

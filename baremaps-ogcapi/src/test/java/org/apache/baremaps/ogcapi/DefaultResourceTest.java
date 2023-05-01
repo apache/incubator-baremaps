@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.Tag;
 
 @Tag("integration")
-public class RootResourceTest extends OgcApiTest {
+public class DefaultResourceTest extends OgcApiTest {
 
   @Test
   public void getLandingPage() {

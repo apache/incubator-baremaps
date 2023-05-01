@@ -13,31 +13,74 @@
 package org.apache.baremaps.ogcapi;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import org.apache.baremaps.config.ConfigReader;
+import org.apache.baremaps.mvt.style.Style;
+import org.apache.baremaps.mvt.style.StyleSource;
 import org.apache.baremaps.ogcapi.api.StylesApi;
+import org.apache.baremaps.ogcapi.model.StyleSet;
+import org.apache.baremaps.ogcapi.model.StyleSetEntry;
 
+/**
+ * The styles resource.
+ */
 @Singleton
 public class StylesResource implements StylesApi {
 
-  @Context
-  UriInfo uriInfo;
+  private final Style style;
 
-  @Override
-  public Response getStyleTile(String styleId, String tileMatrixSetId, String tileMatrix,
-      Integer tileRow, Integer tileCol) {
-    return null;
+  /**
+   * Constructs a {@code StylesResource}.
+   *
+   * @param style
+   * @param objectMapper
+   * @throws IOException
+   */
+  @Inject
+  public StylesResource(@Context UriInfo uriInfo, @Named("style") Path style,
+      ObjectMapper objectMapper) throws IOException {
+    this.style = objectMapper.readValue(new ConfigReader().read(style), Style.class);
+    var source = new StyleSource();
+    source.setType("vector");
+    source.setUrl(uriInfo.getBaseUri().toString() + "tiles/default");
+    this.style.setSources(Map.of("baremaps", source));
   }
 
+  /**
+   * Get the style set.
+   */
   @Override
-  public Response getStyleTileSet(String styleId, String tileMatrixSetId) {
-    return null;
+  public Response getStyleSet() {
+    var styleSetEntry = new StyleSetEntry();
+    styleSetEntry.setId("default");
+    var styleSet = new StyleSet();
+    styleSet.setStyles(List.of(styleSetEntry));
+    return Response.ok(styleSet).build();
   }
 
+  /**
+   * Get the style.
+   */
   @Override
-  public Response getStyleTileSets(String styleId) {
-    return null;
+  public Response getStyle(String styleId) {
+    return Response.ok(style).build();
+  }
+
+  /**
+   * Get the style metadata.
+   */
+  @Override
+  public Response getStyleMetadata(String styleId) {
+    throw new UnsupportedOperationException();
   }
 }

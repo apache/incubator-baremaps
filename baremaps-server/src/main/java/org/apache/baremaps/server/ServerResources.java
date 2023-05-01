@@ -87,8 +87,11 @@ public class ServerResources {
       ByteBuffer blob = tileStore.read(tile);
       if (blob != null) {
         return Response.status(200) // lgtm [java/xss]
-            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(CONTENT_TYPE, TILE_TYPE)
-            .header(CONTENT_ENCODING, TILE_ENCODING).entity(blob.array()).build();
+            .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+            .header(CONTENT_TYPE, TILE_TYPE)
+            .header(CONTENT_ENCODING, TILE_ENCODING)
+            .entity(blob.array())
+            .build();
       } else {
         return Response.status(204).build();
       }

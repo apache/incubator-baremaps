@@ -43,6 +43,8 @@ public class ApiResource {
 
   private static final String SWAGGER = "swagger.html";
 
+  private static final String MAP = "map.html";
+
   private static final String OPENAPI = "ogcapi.yaml";
 
   /**
@@ -66,16 +68,30 @@ public class ApiResource {
   }
 
   /**
+   * Returns the map UI.
+   *
+   * @return the map UI
+   * @throws IOException if an I/O error occurs
+   */
+  @GET
+  @Path("/map")
+  @Produces({"text/html"})
+  public Response getMap() throws IOException {
+    try (InputStream inputStream = Resources.getResource(MAP).openStream()) {
+      return Response.ok(inputStream.readAllBytes()).build();
+    }
+  }
+
+  /**
    * Returns the OpenAPI specification in JSON format.
    *
-   * @param uriInfo the URI information
    * @return the OpenAPI specification
-   * @throws IOException
+   * @throws IOException if an I/O error occurs
    */
   @GET
   @Path("/api")
   @Produces({"application/json"})
-  public Response getJsonSpecification(@Context UriInfo uriInfo) throws IOException {
+  public Response getJsonSpecification() throws IOException {
     try (InputStream inputStream = Resources.getResource(OPENAPI).openStream()) {
       var openAPI = new OpenAPIV3Parser()
           .readContents(new String(inputStream.readAllBytes(), StandardCharsets.UTF_8))

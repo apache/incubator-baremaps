@@ -59,7 +59,7 @@ public abstract class OgcApiTest extends JerseyTest {
             ApiResource.class,
             CollectionsResource.class,
             ConformanceResource.class,
-            RootResource.class,
+            DefaultResource.class,
             StylesResource.class,
             TilesResource.class)
         .register(new AbstractBinder() {

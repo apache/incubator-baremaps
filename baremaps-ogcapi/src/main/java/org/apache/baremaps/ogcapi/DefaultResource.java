@@ -23,12 +23,20 @@ import org.apache.baremaps.ogcapi.api.DefaultApi;
 import org.apache.baremaps.ogcapi.model.LandingPage;
 import org.apache.baremaps.ogcapi.model.Link;
 
+/**
+ * Root resource (exposed at "/" path).
+ */
 @Singleton
-public class RootResource implements DefaultApi {
+public class DefaultResource implements DefaultApi {
 
   @Context
   UriInfo uriInfo;
 
+  /**
+   * Get the landing page.
+   * 
+   * @return the landing page
+   */
   @Override
   public Response getLandingPage() {
     var baseURI = uriInfo.getBaseUri().toString();
