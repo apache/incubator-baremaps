@@ -30,34 +30,34 @@ public class RootResource implements DefaultApi {
   UriInfo uriInfo;
 
   @Override
-  public Response getLandingPage(String f) {
-    var address = uriInfo.getBaseUri().toString();
+  public Response getLandingPage() {
+    var baseURI = uriInfo.getBaseUri().toString();
     var landingPage =
         new LandingPage().title("Baremaps").description("Baremaps OGC API Landing Page")
             .links(Arrays.asList(
                 new Link()
                     .title("This document (landing page)")
-                    .href(address)
+                    .href(baseURI)
                     .type("application/json")
                     .rel("self"),
                 new Link()
                     .title("Conformance declaration")
-                    .href(address + "conformance")
+                    .href(baseURI + "conformance")
                     .type("application/json")
                     .rel("conformance"),
                 new Link()
                     .title("API description")
-                    .href(address + "api")
+                    .href(baseURI + "api")
                     .type("application/json")
                     .rel("service-desc"),
                 new Link()
                     .title("API description")
-                    .href(address + "api")
+                    .href(baseURI + "api")
                     .type("application/yaml")
                     .rel("service-desc"),
                 new Link()
                     .title("API documentation")
-                    .href(address + "swagger")
+                    .href(baseURI + "swagger")
                     .type("text/html")
                     .rel("service-doc")));
     return Response.ok(landingPage).build();

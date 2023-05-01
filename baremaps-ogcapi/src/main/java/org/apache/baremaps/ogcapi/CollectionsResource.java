@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.ogcapi;
 
-
+import java.util.Date;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -21,11 +21,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.apache.baremaps.ogcapi.api.CollectionsApi;
-import org.apache.baremaps.ogcapi.model.AllCollections;
-import org.apache.baremaps.ogcapi.model.CollectionInfo;
+import org.apache.baremaps.ogcapi.model.Collection;
 import org.apache.baremaps.ogcapi.model.Collections;
+import org.apache.baremaps.ogcapi.model.Link;
+import org.apache.baremaps.storage.Table;
 import org.apache.baremaps.storage.postgres.PostgresStore;
-import org.jdbi.v3.core.Jdbi;
 
 @Singleton
 public class CollectionsResource implements CollectionsApi {
@@ -33,29 +33,42 @@ public class CollectionsResource implements CollectionsApi {
   @Context
   UriInfo uriInfo;
 
-  private final DataSource dataSource;
+  private final PostgresStore store;
 
   @Inject
   public CollectionsResource(DataSource dataSource) {
-    this.dataSource = dataSource;
+    this.store = new PostgresStore(dataSource);
   }
 
   @Override
-  public Response getCollectionsList(String datetime, List<Double> bbox, Integer limit, String f) {
-    var store = new PostgresStore(dataSource);
-    var collectionInfoList = store.list().stream().map(name -> {
-      var collection = new CollectionInfo();
-      collection.setId(name);
-      return collection;
-    }).toList();
+  public Response getCollections() {
     Collections collections = new Collections();
-    collections.setCollections(collectionInfoList);
+    collections.setTimeStamp(new Date());
+    collections.setCollections(store.list().stream()
+        .map(store::get)
+        .map(this::getCollectionInfo)
+        .toList());
     return Response.ok().entity(collections).build();
   }
 
   @Override
-  public Response getCollection(AllCollections collectionId, String f) {
-    collectionId.name()
-    throw new UnsupportedOperationException();
+  public Response getCollection(String collectionId) {
+    var table = store.get(collectionId);
+    var collectionInfo = getCollectionInfo(table);
+    return Response.ok().entity(collectionInfo).build();
+  }
+
+  private Collection getCollectionInfo(Table table) {
+    var name = table.schema().name();
+    var collection = new Collection();
+    collection.setId(name);
+    collection.setTitle(name);
+    collection.setDescription(name);
+    collection.setLinks(List.of(
+        new Link()
+            .href(uriInfo.getBaseUriBuilder().path("collections").path(name).build().toString())
+            .rel("items")
+            .type("application/json")));
+    return collection;
   }
 }

@@ -17,15 +17,12 @@ package org.apache.baremaps.ogcapi;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.io.Resources;
 import io.swagger.util.Json;
-import io.swagger.util.Yaml;
-import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.parser.OpenAPIV3Parser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Properties;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -40,6 +37,9 @@ import javax.ws.rs.core.UriInfo;
 @Singleton
 @Path("/")
 public class ApiResource {
+
+  @Context
+  UriInfo uriInfo;
 
   private static final String SWAGGER = "swagger.html";
 
@@ -58,7 +58,8 @@ public class ApiResource {
    */
   @GET
   @Path("/swagger")
-  public Response swagger() throws IOException {
+  @Produces({"text/html"})
+  public Response getSwaggerUI() throws IOException {
     try (InputStream inputStream = Resources.getResource(SWAGGER).openStream()) {
       return Response.ok().entity(inputStream.readAllBytes()).build();
     }
@@ -74,47 +75,21 @@ public class ApiResource {
   @GET
   @Path("/api")
   @Produces({"application/json"})
-  public Response getListingJson(@Context UriInfo uriInfo) throws IOException {
-    var openAPI = parseOpenAPI(uriInfo);
-    var mapper = Json.mapper();
-    mapper.registerModule(new JavaTimeModule());
-    var json = mapper.writeValueAsString(openAPI);
-    return Response.ok(json).build();
-  }
-
-  /**
-   * Returns the OpenAPI specification in YAML format.
-   *
-   * @param uriInfo the URI information
-   * @return the OpenAPI specification
-   * @throws IOException
-   */
-  @GET
-  @Path("/api")
-  @Produces({"application/yaml"})
-  public Response getListingYaml(@Context UriInfo uriInfo) throws IOException {
-    var openAPI = parseOpenAPI(uriInfo);
-    var mapper = Yaml.mapper();
-    mapper.registerModule(new JavaTimeModule());
-    var yaml = mapper.writeValueAsString(openAPI);
-    return Response.ok(yaml).build();
-  }
-
-  /**
-   * Parses the OpenAPI specification.
-   *
-   * @param uriInfo the URI information
-   * @return the OpenAPI specification
-   * @throws IOException if an I/O error occurs
-   */
-  private OpenAPI parseOpenAPI(UriInfo uriInfo) throws IOException {
+  public Response getJsonSpecification(@Context UriInfo uriInfo) throws IOException {
     try (InputStream inputStream = Resources.getResource(OPENAPI).openStream()) {
       var openAPI = new OpenAPIV3Parser()
           .readContents(new String(inputStream.readAllBytes(), StandardCharsets.UTF_8))
           .getOpenAPI();
       openAPI.setServers(List.of(new Server().url(
-          String.format("%s:%s", uriInfo.getBaseUri().getHost(), uriInfo.getBaseUri().getPort()))));
-      return openAPI;
+          String.format(
+              "%s://%s:%s/",
+              uriInfo.getBaseUri().getScheme(),
+              uriInfo.getBaseUri().getHost(),
+              uriInfo.getBaseUri().getPort()))));
+      var mapper = Json.mapper();
+      mapper.registerModule(new JavaTimeModule());
+      var json = mapper.writeValueAsString(openAPI);
+      return Response.ok(json).build();
     }
   }
 }

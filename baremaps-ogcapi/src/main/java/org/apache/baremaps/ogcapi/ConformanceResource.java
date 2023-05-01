@@ -24,17 +24,15 @@ import org.apache.baremaps.ogcapi.model.ConfClasses;
 public class ConformanceResource implements ConformanceApi {
 
   @Override
-  public Response getConformance(String f) {
+  public Response getConformance() {
     ConfClasses confClasses = new ConfClasses();
-    confClasses
-        .setConformsTo(Arrays.asList(
-            "http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
-            "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/core",
-            "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/json",
-            "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/manage-styles",
-            "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/mapbox-styles",
-            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core",
-            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset"));
+    confClasses.setConformsTo(Arrays.asList(
+        "https://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
+        "https://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/core",
+        "https://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/json",
+        "https://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/mapbox-styles",
+        "https://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core",
+        "https://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset"));
     return Response.ok().entity(confClasses).build();
   }
 }

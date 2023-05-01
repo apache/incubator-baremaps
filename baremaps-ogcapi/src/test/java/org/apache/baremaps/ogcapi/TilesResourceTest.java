@@ -12,30 +12,23 @@
 
 package org.apache.baremaps.ogcapi;
 
-import javax.inject.Singleton;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import org.apache.baremaps.ogcapi.api.TilesApi;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-@Singleton
-public class TilesResource implements TilesApi {
+import javax.ws.rs.core.MediaType;
+import org.junit.Test;
+import org.junit.jupiter.api.Tag;
 
-  @Context
-  UriInfo uriInfo;
+@Tag("integration")
+public class TilesResourceTest extends OgcApiTest {
 
-  @Override
-  public Response getTile(String tileSetId, String tileMatrix, Integer tileRow, Integer tileCol) {
-    return null;
+  @Test
+  public void getLandingPage() {
+    var response = target().path("/").request().get();
+    var body = response.readEntity(String.class);
+    assertEquals(200, response.getStatus());
+    assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getMediaType());
+    assertTrue(body.contains("Baremaps"));
   }
 
-  @Override
-  public Response getTileSet(String tileSetId) {
-    return null;
-  }
-
-  @Override
-  public Response getTileSets() {
-    return null;
-  }
 }

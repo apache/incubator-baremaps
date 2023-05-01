@@ -2,12 +2,12 @@ openapi: 3.0.0
 info:
   contact:
     email: dev@baremaps.apache.org
-    name: Apache Baremaps OGC API
-  description: "Apache Baremaps OGC API"
+    name: Apache Baremaps API
+  description: "An implementation of OGC APIs for Apache Baremaps"
   license:
     name: OGC License
     url: http://www.opengeospatial.org/legal/
-  title: Apache Baremaps OGC API
+  title: Apache Baremaps API
   version: "1.0"
 servers:
   - description: Server
@@ -16,54 +16,12 @@ paths:
   /:
     get:
       operationId: getLandingPage
-      parameters:
-        - description: "The format of the response. If no value is provided, the accept\
-          \ header is used to determine the format. Accepted values are 'json' or\
-          \ 'html'."
-          explode: false
-          in: query
-          name: f
-          required: false
-          schema:
-            enum:
-              - json
-              - html
-            type: string
-          style: form
       responses:
         "200":
           content:
             application/json:
-              example:
-                title: Buildings in Bonn
-                description: Access to data about buildings in the city of Bonn via
-                  a Web API that conforms to the OGC API Tiles specification.
-                links:
-                  - href: http://data.example.org/
-                    rel: self
-                    type: application/json
-                    title: this document
-                  - href: http://data.example.org/api
-                    rel: service-desc
-                    type: application/vnd.oai.openapi+json;version=3.0
-                    title: the API definition
-                  - href: http://data.example.org/api.html
-                    rel: service-doc
-                    type: text/html
-                    title: the API documentation
-                  - href: http://data.example.org/conformance
-                    rel: conformance
-                    type: application/json
-                    title: OGC API conformance classes implemented by this service
-                  - href: http://data.example.org/collections
-                    rel: data
-                    type: application/json
-                    title: Information about the collections
               schema:
                 $ref: '#/components/schemas/landingPage'
-            text/html:
-              schema:
-                type: string
           description: |-
             The landing page provides links to the API definition (link relation `service-desc`, in this case path `/api`),
             to the Conformance declaration (path `/conformance`, link relation `conformance`), and to the Collections of geospatial data (path `/collections`, link relation `data`).
@@ -72,9 +30,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
           description: "Content negotiation failed. For example, the `Accept` header\
             \ submitted in the request did not support any of the media types supported\
             \ by the server for the requested resource."
@@ -83,9 +38,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
           description: A server error occurred.
       summary: Retrieve the OGC API landing page for this service.
       tags:
@@ -93,20 +45,6 @@ paths:
   /conformance:
     get:
       operationId: getConformance
-      parameters:
-        - description: "The format of the response. If no value is provided, the accept\
-          \ header is used to determine the format. Accepted values are 'json' or\
-          \ 'html'."
-          explode: false
-          in: query
-          name: f
-          required: false
-          schema:
-            enum:
-              - json
-              - html
-            type: string
-          style: form
       responses:
         "200":
           content:
@@ -119,9 +57,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
           description: "Content negotiation failed. For example, the `Accept` header\
             \ submitted in the request did not support any of the media types supported\
             \ by the server for the requested resource."
@@ -130,9 +65,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
           description: A server error occurred.
       summary: Retrieve the set of OGC API conformance classes that are supported
         by this service.
@@ -140,132 +72,13 @@ paths:
         - Conformance
   /collections:
     get:
-      operationId: getCollectionsList
-      parameters:
-        - description: |-
-            Either a date-time or an interval, half-bounded or bounded. Date and time expressions
-            adhere to RFC 3339. Half-bounded intervals are expressed using double-dots.
-            
-            Examples:
-            
-            * A date-time: 2018-02-12T23:20:50Z
-            * A bounded interval: 2018-02-12T00:00:00Z/2018-03-18T12:31:12Z
-            * Half-bounded intervals: 2018-02-12T00:00:00Z/.. or ../2018-03-18T12:31:12Z
-            
-            Only features that have a temporal property that intersects the value of
-            `datetime` are selected.
-            
-            If a feature has multiple temporal properties, it is the decision of the
-            server whether only a single temporal property is used to determine
-            the extent or all relevant temporal properties.
-          explode: false
-          in: query
-          name: datetime
-          required: false
-          schema:
-            type: string
-          style: form
-        - description: |-
-            Only features that have a geometry that intersects the bounding box are selected. The bounding box is provided as four or six numbers, depending on whether the coordinate reference system includes a vertical axis (height or depth):
-            * Lower left corner, coordinate axis 1 * Lower left corner, coordinate axis 2 * Minimum value, coordinate axis 3 (optional) * Upper right corner, coordinate axis 1 * Upper right corner, coordinate axis 2 * Maximum value, coordinate axis 3 (optional)
-            The coordinate reference system of the values is WGS 84 longitude/latitude (http://www.opengis.net/def/crs/OGC/1.3/CRS84) unless a different coordinate reference system is specified in the parameter `bbox-crs`.
-            For WGS 84 longitude/latitude the values are in most cases the sequence of minimum longitude, minimum latitude, maximum longitude and maximum latitude. However, in cases where the box spans the antimeridian the first value (west-most box edge) is larger than the third value (east-most box edge).
-            If the vertical axis is included, the third and the sixth number are the bottom and the top of the 3-dimensional bounding box.
-            If a feature has multiple spatial geometry properties, it is the decision of the server whether only a single spatial geometry property is used to determine the extent or all relevant geometries.
-          explode: false
-          in: query
-          name: bbox
-          required: false
-          schema:
-            $ref: '#/components/schemas/getCollectionsList_bbox_parameter'
-          style: form
-        - description: |-
-            The optional limit parameter limits the number of collections that are presented in the response document.
-            Only items are counted that are on the first level of the collection in the response document. Nested objects contained within the explicitly requested items shall not be counted.
-            * Minimum = 1 * Maximum = 10000 * Default = 10
-          explode: false
-          in: query
-          name: limit
-          required: false
-          schema:
-            default: 10
-            maximum: 10000
-            minimum: 1
-            type: integer
-          style: form
-        - description: "The format of the response. If no value is provided, the accept\
-          \ header is used to determine the format. Accepted values are 'json' or\
-          \ 'html'."
-          explode: false
-          in: query
-          name: f
-          required: false
-          schema:
-            enum:
-              - json
-              - html
-            type: string
-          style: form
+      operationId: getCollections
       responses:
         "200":
           content:
             application/json:
-              example:
-                links:
-                  - href: http://data.example.org/collections.json
-                    rel: self
-                    type: application/json
-                    title: this document
-                  - href: http://data.example.org/collections.html
-                    rel: alternate
-                    type: text/html
-                    title: this document as HTML
-                  - href: http://schemas.example.org/1.0/buildings.xsd
-                    rel: describedby
-                    type: application/xml
-                    title: GML application schema for Acme Corporation building data
-                  - href: http://download.example.org/buildings.gpkg
-                    rel: enclosure
-                    type: application/geopackage+sqlite3
-                    title: Bulk download (GeoPackage)
-                    length: 472546
-                collections:
-                  - id: buildings
-                    title: Buildings
-                    description: Buildings in the city of Bonn.
-                    extent:
-                      spatial:
-                        bbox:
-                          - - 7.01
-                            - 50.63
-                            - 7.22
-                            - 50.78
-                      temporal:
-                        interval:
-                          - - 2010-02-15T12:34:56Z
-                            - null
-                    links:
-                      - href: http://data.example.org/collections/buildings/items
-                        rel: items
-                        type: application/geo+json
-                        title: Buildings
-                      - href: http://data.example.org/collections/buildings/items.html
-                        rel: items
-                        type: text/html
-                        title: Buildings
-                      - href: https://creativecommons.org/publicdomain/zero/1.0/
-                        rel: license
-                        type: text/html
-                        title: CC0-1.0
-                      - href: https://creativecommons.org/publicdomain/zero/1.0/rdf
-                        rel: license
-                        type: application/rdf+xml
-                        title: CC0-1.0
               schema:
                 $ref: '#/components/schemas/collections'
-            text/html:
-              schema:
-                type: string
           description: |-
             The collections of (mostly geospatial) data available from this API. The dataset contains one or more collections. This resource provides information about and access to the collections. The response contains the list of collections. Each collection is accessible via one or more OGC API set of specifications, for which a link to relevant accessible resources, e.g. /collections/{collectionId}/(items, coverage, map, tiles...) is provided, with the corresponding relation type, as well as key information about the collection. This information includes:
             * a local identifier for the collection that is unique for the dataset;
@@ -286,61 +99,13 @@ paths:
           name: collectionId
           required: true
           schema:
-            $ref: '#/components/schemas/all-collections'
-        - description: "The format of the response. If no value is provided, the accept\
-          \ header is used to determine the format. Accepted values are 'json' or\
-          \ 'html'."
-          explode: false
-          in: query
-          name: f
-          required: false
-          schema:
-            enum:
-              - json
-              - html
             type: string
-          style: form
       responses:
         "200":
           content:
             application/json:
-              example:
-                id: buildings
-                title: Buildings
-                description: Buildings in the city of Bonn.
-                extent:
-                  spatial:
-                    bbox:
-                      - - 7.01
-                        - 50.63
-                        - 7.22
-                        - 50.78
-                  temporal:
-                    interval:
-                      - - 2010-02-15T12:34:56Z
-                        - null
-                links:
-                  - href: http://data.example.org/collections/buildings/items
-                    rel: items
-                    type: application/geo+json
-                    title: Buildings
-                  - href: http://data.example.org/collections/buildings/items.html
-                    rel: items
-                    type: text/html
-                    title: Buildings
-                  - href: https://creativecommons.org/publicdomain/zero/1.0/
-                    rel: license
-                    type: text/html
-                    title: CC0-1.0
-                  - href: https://creativecommons.org/publicdomain/zero/1.0/rdf
-                    rel: license
-                    type: application/rdf+xml
-                    title: CC0-1.0
               schema:
-                $ref: '#/components/schemas/collectionInfo'
-            text/html:
-              schema:
-                type: string
+                $ref: '#/components/schemas/collection'
           description: |-
             Information about a particular collection of (mostly geospatial) data available from this API. The collection is accessible via one or more OGC API set of specifications, for which a link to relevant accessible resources, e.g. /collections/{collectionId}/(items, coverage, map, tiles...) is contained in the response, with the corresponding relation type, as well as key information about the collection. This information includes:
             * a local identifier for the collection that is unique for the dataset;
@@ -353,154 +118,79 @@ paths:
         - Collections
   /tiles:
     get:
-      operationId: .dataset.vector.getTileSetsList
-      parameters:
-        - description: "The format of the response. If no value is provided, the accept\
-          \ header is used to determine the format. Accepted values are 'json' or\
-          \ 'html'."
-          explode: false
-          in: query
-          name: f
-          required: false
-          schema:
-            enum:
-              - json
-              - html
-            type: string
-          style: form
+      operationId: getTileSets
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/_dataset_vector_getTileSetsList_200_response'
-            text/html:
-              schema:
-                type: string
-          description: List of available tilesets.
+                $ref: '#/components/schemas/tileSets'
+          description: List of available tileSets.
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
           description: "The requested resource does not exist on the server. For example,\
             \ a path parameter had an incorrect value."
-        "406":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
-          description: "Content negotiation failed. For example, the `Accept` header\
-            \ submitted in the request did not support any of the media types supported\
-            \ by the server for the requested resource."
         "500":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
           description: A server error occurred.
-      summary: Retrieve a list of available vector tilesets for the dataset
+      summary: Retrieve a list of available vector tileSets for the dataset
       tags:
         - Vector Tiles
-  /tiles/{tileMatrixSetId}:
+  /tiles/{tileSetId}:
     get:
-      operationId: .dataset.vector.getTileSet
+      operationId: getTileSet
       parameters:
-        - description: "The collections that should be included in the response. The\
-          \ parameter value is a comma-separated list of collection identifiers. If\
-          \ the parameters is missing, some or all collections will be included. The\
-          \ collection will be rendered in the order specified, with the last one\
-          \ showing on top, unless the priority is overridden by styling rules."
-          explode: false
-          in: query
-          name: collections
-          required: false
-          schema:
-            items:
-              $ref: '#/components/schemas/all-collections'
-            type: array
-          style: form
         - allowEmptyValue: false
           description: Identifier for a supported TileMatrixSet
           in: path
-          name: tileMatrixSetId
+          name: tileSetId
           required: true
           schema:
-            $ref: '#/components/schemas/tileMatrixSets'
-        - description: "The format of the response. If no value is provided, the accept\
-          \ header is used to determine the format. Accepted values are 'json' or\
-          \ 'html'."
-          explode: false
-          in: query
-          name: f
-          required: false
-          schema:
-            enum:
-              - json
-              - html
             type: string
-          style: form
       responses:
         "200":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/tileSet'
-            text/html:
-              schema:
-                type: string
-          description: Description of the tileset
+          description: Description of the tileSet
         "404":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
           description: "The requested resource does not exist on the server. For example,\
             \ a path parameter had an incorrect value."
-        "406":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
-          description: "Content negotiation failed. For example, the `Accept` header\
-            \ submitted in the request did not support any of the media types supported\
-            \ by the server for the requested resource."
         "500":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
           description: A server error occurred.
-      summary: Retrieve the vector tileset metadata for the whole dataset and the
+      summary: Retrieve the vector tileSet metadata for the whole dataset and the
         specified tiling scheme (tile matrix set)
       tags:
         - Vector Tiles
-  /tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}:
+  /tiles/{tileSetId}/{tileMatrix}/{tileRow}/{tileCol}:
     get:
-      operationId: .dataset.vector.getTile
+      operationId: getTile
       parameters:
+        - allowEmptyValue: false
+          description: Identifier for a supported TileMatrixSet
+          in: path
+          name: tileSetId
+          required: true
+          schema:
+            type: string
         - description: |-
             Identifier selecting one of the scales defined in the TileMatrixSet and representing the scaleDenominator the tile. For example,
             Ireland is fully within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and tileCol=15.
-          example: "5"
           in: path
           name: tileMatrix
           required: true
@@ -510,7 +200,6 @@ paths:
           \ exceed the MatrixWidth-1 for the selected TileMatrix. For example, Ireland\
           \ is fully within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and\
           \ tileCol=15."
-          example: 10
           in: path
           name: tileRow
           required: true
@@ -521,99 +210,12 @@ paths:
           \ exceed the MatrixHeight-1 for the selected TileMatrix. For example, Ireland\
           \ is fully within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and\
           \ tileCol=15."
-          example: 15
           in: path
           name: tileCol
           required: true
           schema:
             minimum: 0
             type: integer
-        - description: |-
-            Either a date-time or an interval, half-bounded or bounded. Date and time expressions
-            adhere to RFC 3339. Half-bounded intervals are expressed using double-dots.
-            
-            Examples:
-            
-            * A date-time: 2018-02-12T23:20:50Z
-            * A bounded interval: 2018-02-12T00:00:00Z/2018-03-18T12:31:12Z
-            * Half-bounded intervals: 2018-02-12T00:00:00Z/.. or ../2018-03-18T12:31:12Z
-            
-            Only features that have a temporal property that intersects the value of
-            `datetime` are selected.
-            
-            If a feature has multiple temporal properties, it is the decision of the
-            server whether only a single temporal property is used to determine
-            the extent or all relevant temporal properties.
-          explode: false
-          in: query
-          name: datetime
-          required: false
-          schema:
-            type: string
-          style: form
-        - description: "The collections that should be included in the response. The\
-          \ parameter value is a comma-separated list of collection identifiers. If\
-          \ the parameters is missing, some or all collections will be included. The\
-          \ collection will be rendered in the order specified, with the last one\
-          \ showing on top, unless the priority is overridden by styling rules."
-          explode: false
-          in: query
-          name: collections
-          required: false
-          schema:
-            items:
-              $ref: '#/components/schemas/vectorTiles-collections'
-            type: array
-          style: form
-        - description: |
-            Retrieve only part of the data by slicing or trimming along one or more axis
-            For trimming: {axisAbbrev}({low}:{high}) (preserves dimensionality)
-               An asterisk (`*`) can be used instead of {low} or {high} to indicate the minimum/maximum value.
-            For slicing:  {axisAbbrev}({value})      (reduces dimensionality)
-          explode: false
-          in: query
-          name: subset
-          required: false
-          schema:
-            items:
-              type: string
-            type: array
-          style: form
-        - description: reproject the output to the given crs
-          explode: true
-          in: query
-          name: crs
-          required: false
-          schema:
-            type: string
-          style: form
-        - description: crs for the specified subset
-          explode: true
-          in: query
-          name: subset-crs
-          required: false
-          schema:
-            type: string
-          style: form
-        - allowEmptyValue: false
-          description: Identifier for a supported TileMatrixSet
-          in: path
-          name: tileMatrixSetId
-          required: true
-          schema:
-            $ref: '#/components/schemas/tileMatrixSets'
-        - description: The format of the vector tile response (e.g. json). Accepted
-            values are 'mvt' (Mapbox Vector Tiles) or 'json' (GeoJSON).
-          explode: false
-          in: query
-          name: f
-          required: false
-          schema:
-            enum:
-              - mvt
-              - json
-            type: string
-          style: form
       responses:
         "200":
           content:
@@ -621,9 +223,6 @@ paths:
               schema:
                 format: binary
                 type: string
-            application/geo+json:
-              schema:
-                $ref: '#/components/schemas/_dataset_vector_getTile_200_response'
           description: A vector tile returned as a response.
         "204":
           description: No data available for this tile.
@@ -632,363 +231,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
           description: "The requested resource does not exist on the server. For example,\
             \ a path parameter had an incorrect value."
-        "406":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
-          description: "Content negotiation failed. For example, the `Accept` header\
-            \ submitted in the request did not support any of the media types supported\
-            \ by the server for the requested resource."
         "500":
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
           description: A server error occurred.
       summary: Retrieve a vector tile including one or more collections from the dataset.
-      tags:
-        - Vector Tiles
-  /styles/{styleId}/tiles:
-    get:
-      operationId: .dataset.style.vector.getTileSetsList
-      parameters:
-        - allowEmptyValue: false
-          description: An identifier representing a specific style.
-          in: path
-          name: styleId
-          required: true
-          schema:
-            $ref: '#/components/schemas/styles'
-        - description: "The format of the response. If no value is provided, the accept\
-          \ header is used to determine the format. Accepted values are 'json' or\
-          \ 'html'."
-          explode: false
-          in: query
-          name: f
-          required: false
-          schema:
-            enum:
-              - json
-              - html
-            type: string
-          style: form
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/_dataset_vector_getTileSetsList_200_response'
-            text/html:
-              schema:
-                type: string
-          description: List of available tilesets.
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
-          description: "The requested resource does not exist on the server. For example,\
-            \ a path parameter had an incorrect value."
-        "406":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
-          description: "Content negotiation failed. For example, the `Accept` header\
-            \ submitted in the request did not support any of the media types supported\
-            \ by the server for the requested resource."
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
-          description: A server error occurred.
-      summary: Retrieve the list of vector tilesets intended for use with a specified
-        style for the whole dataset
-      tags:
-        - Vector Tiles
-  /styles/{styleId}/tiles/{tileMatrixSetId}:
-    get:
-      operationId: .dataset.style.vector.getTileSet
-      parameters:
-        - allowEmptyValue: false
-          description: An identifier representing a specific style.
-          in: path
-          name: styleId
-          required: true
-          schema:
-            $ref: '#/components/schemas/styles'
-        - description: "The collections that should be included in the response. The\
-          \ parameter value is a comma-separated list of collection identifiers. If\
-          \ the parameters is missing, some or all collections will be included. The\
-          \ collection will be rendered in the order specified, with the last one\
-          \ showing on top, unless the priority is overridden by styling rules."
-          explode: false
-          in: query
-          name: collections
-          required: false
-          schema:
-            items:
-              $ref: '#/components/schemas/all-collections'
-            type: array
-          style: form
-        - allowEmptyValue: false
-          description: Identifier for a supported TileMatrixSet
-          in: path
-          name: tileMatrixSetId
-          required: true
-          schema:
-            $ref: '#/components/schemas/tileMatrixSets'
-        - description: "The format of the response. If no value is provided, the accept\
-          \ header is used to determine the format. Accepted values are 'json' or\
-          \ 'html'."
-          explode: false
-          in: query
-          name: f
-          required: false
-          schema:
-            enum:
-              - json
-              - html
-            type: string
-          style: form
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/tileSet'
-            text/html:
-              schema:
-                type: string
-          description: Description of the tileset
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
-          description: "The requested resource does not exist on the server. For example,\
-            \ a path parameter had an incorrect value."
-        "406":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
-          description: "Content negotiation failed. For example, the `Accept` header\
-            \ submitted in the request did not support any of the media types supported\
-            \ by the server for the requested resource."
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
-          description: A server error occurred.
-      summary: Retrieve a vector tileset intended for use with a specified style of
-        the whole dataset for the specified tiling scheme (tile matrix set)
-      tags:
-        - Vector Tiles
-  /styles/{styleId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow}/{tileCol}:
-    get:
-      operationId: .dataset.style.vector.getTile
-      parameters:
-        - description: |-
-            Identifier selecting one of the scales defined in the TileMatrixSet and representing the scaleDenominator the tile. For example,
-            Ireland is fully within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and tileCol=15.
-          example: "5"
-          in: path
-          name: tileMatrix
-          required: true
-          schema:
-            type: string
-        - description: "Row index of the tile on the selected TileMatrix. It cannot\
-          \ exceed the MatrixWidth-1 for the selected TileMatrix. For example, Ireland\
-          \ is fully within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and\
-          \ tileCol=15."
-          example: 10
-          in: path
-          name: tileRow
-          required: true
-          schema:
-            minimum: 0
-            type: integer
-        - description: "Column index of the tile on the selected TileMatrix. It cannot\
-          \ exceed the MatrixHeight-1 for the selected TileMatrix. For example, Ireland\
-          \ is fully within the Tile at WebMercatorQuad tileMatrix=5, tileRow=10 and\
-          \ tileCol=15."
-          example: 15
-          in: path
-          name: tileCol
-          required: true
-          schema:
-            minimum: 0
-            type: integer
-        - description: |-
-            Either a date-time or an interval, half-bounded or bounded. Date and time expressions
-            adhere to RFC 3339. Half-bounded intervals are expressed using double-dots.
-            
-            Examples:
-            
-            * A date-time: 2018-02-12T23:20:50Z
-            * A bounded interval: 2018-02-12T00:00:00Z/2018-03-18T12:31:12Z
-            * Half-bounded intervals: 2018-02-12T00:00:00Z/.. or ../2018-03-18T12:31:12Z
-            
-            Only features that have a temporal property that intersects the value of
-            `datetime` are selected.
-            
-            If a feature has multiple temporal properties, it is the decision of the
-            server whether only a single temporal property is used to determine
-            the extent or all relevant temporal properties.
-          explode: false
-          in: query
-          name: datetime
-          required: false
-          schema:
-            type: string
-          style: form
-        - description: "The collections that should be included in the response. The\
-          \ parameter value is a comma-separated list of collection identifiers. If\
-          \ the parameters is missing, some or all collections will be included. The\
-          \ collection will be rendered in the order specified, with the last one\
-          \ showing on top, unless the priority is overridden by styling rules."
-          explode: false
-          in: query
-          name: collections
-          required: false
-          schema:
-            items:
-              $ref: '#/components/schemas/vectorTiles-collections'
-            type: array
-          style: form
-        - description: |
-            Retrieve only part of the data by slicing or trimming along one or more axis
-            For trimming: {axisAbbrev}({low}:{high}) (preserves dimensionality)
-               An asterisk (`*`) can be used instead of {low} or {high} to indicate the minimum/maximum value.
-            For slicing:  {axisAbbrev}({value})      (reduces dimensionality)
-          explode: false
-          in: query
-          name: subset
-          required: false
-          schema:
-            items:
-              type: string
-            type: array
-          style: form
-        - description: reproject the output to the given crs
-          explode: true
-          in: query
-          name: crs
-          required: false
-          schema:
-            type: string
-          style: form
-        - description: crs for the specified subset
-          explode: true
-          in: query
-          name: subset-crs
-          required: false
-          schema:
-            type: string
-          style: form
-        - allowEmptyValue: false
-          description: An identifier representing a specific style.
-          in: path
-          name: styleId
-          required: true
-          schema:
-            $ref: '#/components/schemas/styles'
-        - allowEmptyValue: false
-          description: Identifier for a supported TileMatrixSet
-          in: path
-          name: tileMatrixSetId
-          required: true
-          schema:
-            $ref: '#/components/schemas/tileMatrixSets'
-        - description: The format of the vector tile response (e.g. json). Accepted
-            values are 'mvt' (Mapbox Vector Tiles) or 'json' (GeoJSON).
-          explode: false
-          in: query
-          name: f
-          required: false
-          schema:
-            enum:
-              - mvt
-              - json
-            type: string
-          style: form
-      responses:
-        "200":
-          content:
-            application/vnd.mapbox-vector-tile:
-              schema:
-                format: binary
-                type: string
-            application/geo+json:
-              schema:
-                $ref: '#/components/schemas/_dataset_vector_getTile_200_response'
-          description: A vector tile returned as a response.
-        "204":
-          description: No data available for this tile.
-        "404":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
-          description: "The requested resource does not exist on the server. For example,\
-            \ a path parameter had an incorrect value."
-        "406":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
-          description: "Content negotiation failed. For example, the `Accept` header\
-            \ submitted in the request did not support any of the media types supported\
-            \ by the server for the requested resource."
-        "500":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/exception'
-            text/html:
-              schema:
-                type: string
-          description: A server error occurred.
-      summary: Retrieve vector tiles intended for use with a specified style
       tags:
         - Vector Tiles
 components:
@@ -1166,11 +417,11 @@ components:
       schema:
         minimum: 0
         type: integer
-    tileMatrixSetId:
+    tileSetId:
       allowEmptyValue: false
       description: Identifier for a supported TileMatrixSet
       in: path
-      name: tileMatrixSetId
+      name: tileSetId
       required: true
       schema:
         $ref: '#/components/schemas/tileMatrixSets'
@@ -1352,9 +603,6 @@ components:
                 title: Information about the collections
           schema:
             $ref: '#/components/schemas/landingPage'
-        text/html:
-          schema:
-            type: string
       description: |-
         The landing page provides links to the API definition (link relation `service-desc`, in this case path `/api`),
         to the Conformance declaration (path `/conformance`, link relation `conformance`), and to the Collections of geospatial data (path `/collections`, link relation `data`).
@@ -1363,9 +611,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/exception'
-        text/html:
-          schema:
-            type: string
       description: "Content negotiation failed. For example, the `Accept` header submitted\
         \ in the request did not support any of the media types supported by the server\
         \ for the requested resource."
@@ -1374,9 +619,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/exception'
-        text/html:
-          schema:
-            type: string
       description: A server error occurred.
     rConformance:
       content:
@@ -1389,9 +631,6 @@ components:
         application/vnd.oai.openapi+json;version=3.0:
           schema:
             type: object
-        text/html:
-          schema:
-            type: string
       description: The OpenAPI definition of the API.
     rEnumeration:
       content:
@@ -1514,10 +753,7 @@ components:
                 type: application/rdf+xml
                 title: CC0-1.0
           schema:
-            $ref: '#/components/schemas/collectionInfo'
-        text/html:
-          schema:
-            type: string
+            $ref: '#/components/schemas/collection'
       description: |-
         Information about a particular collection of (mostly geospatial) data available from this API. The collection is accessible via one or more OGC API set of specifications, for which a link to relevant accessible resources, e.g. /collections/{collectionId}/(items, coverage, map, tiles...) is contained in the response, with the corresponding relation type, as well as key information about the collection. This information includes:
         * a local identifier for the collection that is unique for the dataset;
@@ -1530,9 +766,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/getTileMatrixSetsList_200_response'
-        text/html:
-          schema:
-            type: string
       description: List of tile matrix sets (tiling schemes).
     rTileMatrixSet:
       content:
@@ -1544,29 +777,20 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/_dataset_vector_getTileSetsList_200_response'
-        text/html:
-          schema:
-            type: string
-      description: List of available tilesets.
+            $ref: '#/components/schemas/tileSets'
+      description: List of available tileSets.
     rTileSet:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/tileSet'
-        text/html:
-          schema:
-            type: string
-      description: Description of the tileset
+      description: Description of the tileSet
     rVectorTile:
       content:
         application/vnd.mapbox-vector-tile:
           schema:
             format: binary
             type: string
-        application/geo+json:
-          schema:
-            $ref: '#/components/schemas/_dataset_vector_getTile_200_response'
       description: A vector tile returned as a response.
     rEmptyTile:
       description: No data available for this tile.
@@ -1601,21 +825,15 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/exception'
-        text/html:
-          schema:
-            type: string
       description: A query parameter has an invalid value.
     rException:
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/exception'
-        text/html:
-          schema:
-            type: string
       description: An error occured.
   schemas:
-    confClasses:
+    conformanceClasses:
       properties:
         conformsTo:
           items:
@@ -1856,13 +1074,13 @@ components:
           type: integer
         collections:
           items:
-            $ref: '#/components/schemas/collectionInfo'
+            $ref: '#/components/schemas/collection'
           type: array
       required:
         - collections
         - links
       type: object
-    collectionInfo:
+    collection:
       example:
         extent: null
         itemType: unknown
@@ -2147,7 +1365,7 @@ components:
       minimum: 0
       type: integer
     tileSet:
-      description: "A resource describing a tileset based on the OGC TileSet Metadata\
+      description: "A resource describing a tileSet based on the OGC TileSet Metadata\
         \ Standard. At least one of the 'TileMatrixSet',  or a link with 'rel' http://www.opengis.net/def/rel/ogc/1.0/tiling-scheme"
       example:
         boundingBox: null
@@ -2293,7 +1511,7 @@ components:
         pointOfContact: pointOfContact
       properties:
         title:
-          description: A title for this tileset
+          description: A title for this tileSet
           type: string
         description:
           description: Brief narrative description of this tile set
@@ -2315,7 +1533,7 @@ components:
             \ for a URL pointing to another representation of the TileSetMetadata\
             \ (e.g a TileJSON file); 'http://www.opengis.net/def/rel/ogc/1.0/tiling-scheme'\
             \ for a definition of the TileMatrixSet; 'http://www.opengis.net/def/rel/ogc/1.0/geodata'\
-            \ for pointing to a single collection (if the tileset represents a single\
+            \ for pointing to a single collection (if the tileSet represents a single\
             \ collection)"
           items:
             $ref: '#/components/schemas/link'
@@ -2360,7 +1578,7 @@ components:
             - topSecret
           type: string
         keywords:
-          description: keywords about this tileset
+          description: keywords about this tileSet
           items:
             type: string
           type: array
@@ -2394,8 +1612,8 @@ components:
       title: Tile Set Metadata
       type: object
     tileSet-item:
-      description: A minimal tileset element for use within a list of tilesets linking
-        to full description of those tilesets.
+      description: A minimal tileSet element for use within a list of tileSets linking
+        to full description of those tileSets.
       example:
         crs: null
         tileMatrixSetURI: https://openapi-generator.tech
@@ -2420,7 +1638,7 @@ components:
         title: title
       properties:
         title:
-          description: A title for this tileset
+          description: A title for this tileSet
           type: string
         dataType:
           $ref: '#/components/schemas/tileSet_dataType'
@@ -2433,7 +1651,7 @@ components:
           format: uri
           type: string
         links:
-          description: Links to related resources. A 'self' link to the tileset as
+          description: Links to related resources. A 'self' link to the tileSet as
             well as a 'http://www.opengis.net/def/rel/ogc/1.0/tiling-scheme' link
             to a definition of the TileMatrixSet are required.
           items:
@@ -2447,66 +1665,9 @@ components:
       type: object
     tileMatrixSet:
       description: "A definition of a tile matrix set following the Tile Matrix Set\
-        \ standard. For tileset metadata, such a description (in `tileMatrixSet` property)\
+        \ standard. For tileSet metadata, such a description (in `tileMatrixSet` property)\
         \ is only required for offline use, as an alternative to a link with a `http://www.opengis.net/def/rel/ogc/1.0/tiling-scheme`\
         \ relation type."
-      example:
-        tileMatrices:
-          - keywords:
-              - keywords
-              - keywords
-            scaleDenominator: 0.8008281904610115
-            description: description
-            tileWidth: 1.1465812980502945
-            title: title
-            cellSize: 6.027456183070403
-            matrixWidth: 1.2302135886934766
-            variableMatrixWidths:
-              - maxTileRow: 0.3616076749251911
-                coalesce: 2.706140124150311
-                minTileRow: 0.9301444243932576
-              - maxTileRow: 0.3616076749251911
-                coalesce: 2.706140124150311
-                minTileRow: 0.9301444243932576
-            cornerOfOrigin: topLeft
-            matrixHeight: 1.5637376656633328
-            id: id
-            pointOfOrigin: ""
-            tileHeight: 1.5962133916683183
-          - keywords:
-              - keywords
-              - keywords
-            scaleDenominator: 0.8008281904610115
-            description: description
-            tileWidth: 1.1465812980502945
-            title: title
-            cellSize: 6.027456183070403
-            matrixWidth: 1.2302135886934766
-            variableMatrixWidths:
-              - maxTileRow: 0.3616076749251911
-                coalesce: 2.706140124150311
-                minTileRow: 0.9301444243932576
-              - maxTileRow: 0.3616076749251911
-                coalesce: 2.706140124150311
-                minTileRow: 0.9301444243932576
-            cornerOfOrigin: topLeft
-            matrixHeight: 1.5637376656633328
-            id: id
-            pointOfOrigin: ""
-            tileHeight: 1.5962133916683183
-        boundingBox: null
-        orderedAxes:
-          - orderedAxes
-          - orderedAxes
-        keywords:
-          - keywords
-          - keywords
-        crs: null
-        description: description
-        id: id
-        title: title
-        uri: https://openapi-generator.tech
-        wellKnownScaleSet: https://openapi-generator.tech
       properties:
         title:
           description: "Title of this tile matrix set, normally used for display to\
@@ -2580,7 +1741,7 @@ components:
       properties:
         id:
           description: "Optional local tile matrix set identifier, e.g. for use as\
-            \ unspecified `{tileMatrixSetId}` parameter. Implementation of 'identifier'"
+            \ unspecified `{tileSetId}` parameter. Implementation of 'identifier'"
           type: string
         title:
           description: "Title of this tile matrix set, normally used for display to\
@@ -3066,7 +2227,7 @@ components:
         properties:
           additionalProperties:
             $ref: '#/components/schemas/propertiesSchema_properties_value'
-          default: {}
+          default: { }
           type: object
       required:
         - properties
@@ -3107,7 +2268,7 @@ components:
       type: object
     getConformance_200_response:
       allOf:
-        - $ref: '#/components/schemas/confClasses'
+        - $ref: '#/components/schemas/conformanceClasses'
       example:
         conformsTo:
           - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core
@@ -3116,10 +2277,10 @@ components:
           - http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/oas30
           - http://www.opengis.net/spec/ogcapi-common-2/1.0/conf/collections
           - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tilesets-list
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/geodata-tilesets
-          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/dataset-tilesets
+          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileSet
+          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileSets-list
+          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/geodata-tileSets
+          - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/dataset-tileSets
           - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/geodata-selection
           - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/jpeg
           - http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/png
@@ -3190,9 +2351,9 @@ components:
             $ref: '#/components/schemas/tileMatrixSet-item'
           type: array
       type: object
-    _dataset_vector_getTileSetsList_200_response:
+    tileSets:
       example:
-        tilesets:
+        tileSets:
           - crs: null
             tileMatrixSetURI: https://openapi-generator.tech
             dataType: null
@@ -3257,12 +2418,12 @@ components:
           items:
             $ref: '#/components/schemas/link'
           type: array
-        tilesets:
+        tileSets:
           items:
             $ref: '#/components/schemas/tileSet-item'
           type: array
       required:
-        - tilesets
+        - tileSets
       type: object
     _dataset_vector_getTile_200_response:
       allOf:
@@ -3520,7 +2681,7 @@ components:
       type: object
     tileSet_dataType:
       allOf:
-        - description: Type of data represented in the tileset
+        - description: Type of data represented in the tileSet
           type: object
         - $ref: '#/components/schemas/dataType'
     tileSet_crs:
@@ -3536,14 +2697,14 @@ components:
         - $ref: '#/components/schemas/2DBoundingBox'
     tileSet_centerPoint:
       allOf:
-        - description: Location of a tile that nicely represents the tileset. Implementations
+        - description: Location of a tile that nicely represents the tileSet. Implementations
             may use this center value to set the default location or to present a representative
             tile in a user interface
           type: object
         - $ref: '#/components/schemas/tilePoint'
     tileSet_style:
       allOf:
-        - description: Style involving all layers used to generate the tileset
+        - description: Style involving all layers used to generate the tileSet
           type: object
         - $ref: '#/components/schemas/style'
     GeoJSON_Feature_id:
@@ -3743,7 +2904,7 @@ components:
         - $ref: '#/components/schemas/2DBoundingBox'
     geospatialData_style:
       allOf:
-        - description: Style used to generate the layer in the tileset
+        - description: Style used to generate the layer in the tileSet
           type: object
         - $ref: '#/components/schemas/style'
     geospatialData_propertiesSchema:

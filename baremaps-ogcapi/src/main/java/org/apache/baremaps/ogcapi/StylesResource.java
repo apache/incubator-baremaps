@@ -13,47 +13,31 @@
 package org.apache.baremaps.ogcapi;
 
 
-import java.util.List;
-import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.apache.baremaps.ogcapi.api.StylesApi;
-import org.apache.baremaps.ogcapi.model.AllCollections;
-import org.apache.baremaps.ogcapi.model.Styles;
-import org.apache.baremaps.ogcapi.model.TileMatrixSets;
-import org.apache.baremaps.ogcapi.model.VectorTilesCollections;
-import org.jdbi.v3.core.Jdbi;
 
 @Singleton
 public class StylesResource implements StylesApi {
 
-  private final Jdbi jdbi;
-
   @Context
   UriInfo uriInfo;
 
-  @Inject
-  public StylesResource(Jdbi jdbi) {
-    this.jdbi = jdbi;
+  @Override
+  public Response getStyleTile(String styleId, String tileMatrixSetId, String tileMatrix,
+      Integer tileRow, Integer tileCol) {
+    return null;
   }
 
   @Override
-  public Response datasetStyleVectorGetTile(String tileMatrix, Integer tileRow, Integer tileCol,
-      String datetime, List<VectorTilesCollections> collections, List<String> subset, String crs,
-      String subsetCrs, Styles styleId, TileMatrixSets tileMatrixSetId, String f) {
-    throw new UnsupportedOperationException();
+  public Response getStyleTileSet(String styleId, String tileMatrixSetId) {
+    return null;
   }
 
   @Override
-  public Response datasetStyleVectorGetTileSet(Styles styleId, List<AllCollections> collections,
-      TileMatrixSets tileMatrixSetId, String f) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Response datasetStyleVectorGetTileSetsList(Styles styleId, String f) {
-    throw new UnsupportedOperationException();
+  public Response getStyleTileSets(String styleId) {
+    return null;
   }
 }
