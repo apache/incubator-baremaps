@@ -15,39 +15,92 @@
   <script src='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js'></script>
   <script src='/maplibre-gl-inspect.js'></script>
   <script src='/maplibre-gl-tile-boundaries.js'></script>
+  <script src='/maplibre-custom-controls.js'></script>
   <link href='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css' rel='stylesheet' />
   <link href='/maplibre-gl-inspect.css' rel='stylesheet' />
   <link href='/maplibre-gl-tile-boundaries.css' rel='stylesheet' />
+  <link href='/maplibre-custom-controls.css' rel='stylesheet' />
   <style>
 
     body {
       margin: 0;
     }
 
-    #map {
-      position: fixed;
+    .map-wrapper {
+      position: relative;
+    }
+
+    .map {
       width: 100%;
       height: 100%;
+    }
+
+    .columns {
+      display: flex;
+    }
+
+    .column {
+      flex: 1;
+      height: 100vh;
     }
 
   </style>
   <title>Baremaps</title>
 </head>
 <body>
-<div id="map"></div>
+  <div class="columns">
+    <div class="column map-wrapper" id="mapWrapper">
+      <div class="map" id="map"></div>
+    </div>
+    <div class="column map-wrapper" id="osmMapWrapper" data-state="hidden" style="flex: 0">
+      <div class="map" id="osmMap"></div>
+    </div>
+  </div>
 <script>
 
-  // Initialize the map.
+  // Initialize the map
   let map = new maplibregl.Map({
     container: 'map',
     style: '/style.json',
     hash: true
   });
 
-  // Add the navigation control to the map.
+  // Split view the vector map with the osm raster map
+  const osmMap = new maplibregl.Map({
+    container: 'osmMap',
+    style: {
+      'version': 8,
+      'sources': {
+        'raster-tiles': {
+        'type': 'raster',
+        'tiles': [
+          'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+        ],
+        'tileSize': 256,
+        'attribution': '© OpenStreetMap'
+        }
+      },
+      'layers': [
+        {
+          'id': 'simple-tiles',
+          'type': 'raster',
+          'source': 'raster-tiles',
+          'minzoom': 0,
+          'maxzoom': 22
+        }
+      ]
+    },
+    center: map.getCenter(),
+    zoom: map.getZoom(),
+    bearing: map.getBearing(),
+    hash: false,
+    interactive: false,
+  })
+
+  // Add the navigation control to the map
   map.addControl(new maplibregl.NavigationControl());
 
-  // Add the inspect control to the map.
+  // Add the inspect control to the map
   map.addControl(new MaplibreInspect({
     showMapPopup: true,
     showMapPopupOnHover: false,
@@ -58,12 +111,30 @@
     })
   }));
 
-  // Add the tile boundaries control to the map.
+  // Add the tile boundaries control to the map
   map.addControl(new MaplibreTileBoundaries({
     showBoundaries: false
   }));
 
-  // Listen to configuration changes and update the map.
+  // Add the split view toggle to the map
+  map.addControl(new MaplibreMapSplitViewToggle({
+    splitMap: osmMap,
+    splitMapContainerId: 'osmMapWrapper',
+  }));
+  
+  // Sync the vector tile map with the raster tile map
+  map.on('move', () => {
+    if (document.getElementById('osmMapWrapper').getAttribute('data-state') === 'visible') {
+      osmMap.jumpTo({
+        center: map.getCenter(),
+        zoom: map.getZoom(),
+        bearing: map.getBearing(),
+        pitch: map.getPitch()
+      });
+    }
+  });
+
+  // Listen to configuration changes and update the map
   const connection = new EventSource('/changes')
   connection.onmessage = e => {
     let style = JSON.parse(e.data);

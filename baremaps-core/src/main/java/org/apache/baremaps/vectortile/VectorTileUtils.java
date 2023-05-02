@@ -92,6 +92,7 @@ public class VectorTileUtils {
         .encodeTile(vectorTile)
         .toByteString()
         .asReadOnlyByteBuffer();
+
   }
 
   /**

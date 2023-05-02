@@ -24,6 +24,8 @@
   <name>baremaps-ogcapi</name>
 
   <dependencies>
+    <!-- This dependency is the recommended artifact when using the openapi-generator.
+    See: https://openapi-generator.tech/docs/plugins/#dependencies-->
     <dependency>
       <groupId>io.swagger.parser.v3</groupId>
       <artifactId>swagger-parser</artifactId>
@@ -152,6 +154,8 @@
                 <sortParamsByRequiredFlag>false</sortParamsByRequiredFlag>
                 <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
                 <sourceFolder>src/gen/java/main</sourceFolder>
+                <!-- defaults to true, which requires org.openapitools.jackson.nullable -->
+                <openApiNullable>false</openApiNullable>
               </configOptions>
             </configuration>
           </execution>
