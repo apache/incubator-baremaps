@@ -1409,19 +1409,6 @@ components:
         - additionalProperties:
             description: The domain intervals for any additional dimensions of the extent
               (envelope) beyond those described in temporal and spatial.
-            oneOf:
-              - required:
-                  - crs
-                  - interval
-                type: object
-              - required:
-                  - interval
-                  - trs
-                type: object
-              - required:
-                  - interval
-                  - vrs
-                type: object
             properties:
               interval:
                 description: |-

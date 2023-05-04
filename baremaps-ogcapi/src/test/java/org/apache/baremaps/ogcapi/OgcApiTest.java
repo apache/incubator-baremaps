@@ -25,6 +25,11 @@ import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.jdbi.v3.postgis.PostgisPlugin;
 import org.junit.jupiter.api.Tag;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
+
 @Tag("integration")
 public abstract class OgcApiTest extends JerseyTest {
 
@@ -53,6 +58,8 @@ public abstract class OgcApiTest extends JerseyTest {
     enable(TestProperties.LOG_TRAFFIC);
     enable(TestProperties.DUMP_ENTITY);
 
+    var objectMapper = defaultObjectMapper();
+
     return new ResourceConfig()
         .registerClasses(
             MultiPartFeature.class,
@@ -65,6 +72,8 @@ public abstract class OgcApiTest extends JerseyTest {
         .register(new AbstractBinder() {
           @Override
           protected void configure() {
+            bind(Paths.get("examples/openstreetmap/style.json")).to(Path.class).named("style");
+            bind(Paths.get("examples/openstreetmap/tileset.json")).to(Path.class).named("tileset");
             bind(dataSource).to(DataSource.class);
             bind(jdbi).to(Jdbi.class);
           }

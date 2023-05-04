@@ -35,7 +35,7 @@ class PostgresStoreTest extends PostgresContainerTest {
   @Tag("integration")
   void list() {
     var tables = store.list();
-    assertEquals(7, tables.size());
+    assertEquals(4, tables.size());
   }
 
   @Test
