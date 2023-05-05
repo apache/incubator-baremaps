@@ -19,10 +19,10 @@ import javax.ws.rs.core.MediaType;
 import org.junit.Test;
 import org.junit.jupiter.api.Tag;
 
-@Tag("integration")
 public class CollectionsResourceTest extends OgcApiTest {
 
   @Test
+  @Tag("integration")
   public void getCollections() {
     var response = target().path("/collections").request().get();
     var body = response.readEntity(String.class);
@@ -32,6 +32,7 @@ public class CollectionsResourceTest extends OgcApiTest {
   }
 
   @Test
+  @Tag("integration")
   public void getCollection() {
     var response = target().path("/collections/features").request().get();
     var body = response.readEntity(String.class);

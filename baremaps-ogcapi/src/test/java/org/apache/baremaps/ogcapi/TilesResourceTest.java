@@ -13,19 +13,29 @@
 package org.apache.baremaps.ogcapi;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import javax.ws.rs.core.MediaType;
-import org.junit.Test;
-import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-public class ConformanceResourceTest extends OgcApiTest {
+class TilesResourceTest extends OgcApiTest {
 
   @Test
-  @Tag("integration")
-  public void getConformance() {
-    var response = target().path("/conformance").request().get();
+  void getTileSets() {
+    var response = target().path("/tiles").request().get();
+    var body = response.readEntity(String.class);
     assertEquals(200, response.getStatus());
     assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getMediaType());
+    assertTrue(body.contains("default"));
   }
 
+  @Test
+  void getTileSet() {
+    var response = target().path("/tiles/default").request().get();
+    var body = response.readEntity(String.class);
+    assertEquals(200, response.getStatus());
+    assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getMediaType());
+    assertTrue(body.contains("default"));
+  }
 }

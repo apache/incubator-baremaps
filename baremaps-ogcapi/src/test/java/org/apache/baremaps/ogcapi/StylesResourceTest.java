@@ -12,20 +12,32 @@
 
 package org.apache.baremaps.ogcapi;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import javax.ws.rs.core.MediaType;
-import org.junit.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-public class ConformanceResourceTest extends OgcApiTest {
+class StylesResourceTest extends OgcApiTest {
 
   @Test
   @Tag("integration")
-  public void getConformance() {
-    var response = target().path("/conformance").request().get();
+  void getStyleSet() {
+    var response = target().path("/styles").request().get();
+    var body = response.readEntity(String.class);
     assertEquals(200, response.getStatus());
     assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getMediaType());
+    assertTrue(body.contains("default"));
+  }
+
+  @Test
+  @Tag("integration")
+  void getStyle() {
+    var response = target().path("/styles/default").request().get();
+    var body = response.readEntity(String.class);
+    assertEquals(200, response.getStatus());
+    assertEquals(MediaType.valueOf("application/vnd.mapbox.style+json"), response.getMediaType());
+    assertTrue(body.contains("default"));
   }
 
 }

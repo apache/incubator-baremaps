@@ -19,10 +19,10 @@ import javax.ws.rs.core.MediaType;
 import org.junit.Test;
 import org.junit.jupiter.api.Tag;
 
-@Tag("integration")
 public class DefaultResourceTest extends OgcApiTest {
 
   @Test
+  @Tag("integration")
   public void getLandingPage() {
     var response = target().path("/").request().get();
     var body = response.readEntity(String.class);

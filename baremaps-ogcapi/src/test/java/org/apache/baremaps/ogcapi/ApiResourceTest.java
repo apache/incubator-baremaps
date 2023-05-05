@@ -18,10 +18,10 @@ import javax.ws.rs.core.MediaType;
 import org.junit.Test;
 import org.junit.jupiter.api.Tag;
 
-@Tag("integration")
 public class ApiResourceTest extends OgcApiTest {
 
   @Test
+  @Tag("integration")
   public void getSwaggerUI() {
     var response = target().path("/swagger").request().get();
     assertEquals(200, response.getStatus());
@@ -29,6 +29,7 @@ public class ApiResourceTest extends OgcApiTest {
   }
 
   @Test
+  @Tag("integration")
   public void getJsonSpecification() {
     var response = target()
         .path("/api")

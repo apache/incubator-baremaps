@@ -24,6 +24,31 @@
   <name>baremaps-ogcapi</name>
 
   <dependencies>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-data-jackson</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-data-jackson-jersey</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-http-netty</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-http-router-jersey</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-transport-netty</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- This dependency is the recommended artifact when using the openapi-generator.
     See: https://openapi-generator.tech/docs/plugins/#dependencies-->
     <dependency>
@@ -121,7 +146,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${version.plugin.maven-surefire-plugin}</version>
         <configuration>
-          <excludes>**/*IntegrationTest.java</excludes>
+          <excludes>**/ogcapi/*Test.java</excludes>
           <excludedGroups>integration</excludedGroups>
         </configuration>
         <dependencies>

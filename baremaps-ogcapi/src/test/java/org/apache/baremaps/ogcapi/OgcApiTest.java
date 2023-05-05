@@ -12,8 +12,19 @@
 
 package org.apache.baremaps.ogcapi;
 
+import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.newContextResolver;
+import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import javax.sql.DataSource;
+import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.database.PostgresUtils;
+import org.apache.baremaps.database.tile.PostgresTileStore;
+import org.apache.baremaps.database.tile.TileStore;
+import org.apache.baremaps.mvt.tileset.Tileset;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
@@ -24,11 +35,6 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
 import org.jdbi.v3.postgis.PostgisPlugin;
 import org.junit.jupiter.api.Tag;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
 
 @Tag("integration")
 public abstract class OgcApiTest extends JerseyTest {
@@ -58,24 +64,38 @@ public abstract class OgcApiTest extends JerseyTest {
     enable(TestProperties.LOG_TRAFFIC);
     enable(TestProperties.DUMP_ENTITY);
 
+    var style = Paths.get("../examples/openstreetmap/style.json").toAbsolutePath();
+    var tileset = Paths.get("../examples/openstreetmap/tileset.json").toAbsolutePath();
+
     var objectMapper = defaultObjectMapper();
+
+    Tileset config = null;
+    try {
+      config = objectMapper.readValue(tileset.toFile(), Tileset.class);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
+    var tileStore = new PostgresTileStore(dataSource, config);
 
     return new ResourceConfig()
         .registerClasses(
             MultiPartFeature.class,
-            ApiResource.class,
-            CollectionsResource.class,
-            ConformanceResource.class,
             DefaultResource.class,
+            ApiResource.class,
+            ConformanceResource.class,
+            CollectionsResource.class,
             StylesResource.class,
             TilesResource.class)
+        .register(newContextResolver(objectMapper))
         .register(new AbstractBinder() {
           @Override
           protected void configure() {
-            bind(Paths.get("examples/openstreetmap/style.json")).to(Path.class).named("style");
-            bind(Paths.get("examples/openstreetmap/tileset.json")).to(Path.class).named("tileset");
+            bind(tileset).to(Path.class).named("tileset");
+            bind(style).to(Path.class).named("style");
             bind(dataSource).to(DataSource.class);
-            bind(jdbi).to(Jdbi.class);
+            bind(tileStore).to(TileStore.class);
+            bind(objectMapper).to(ObjectMapper.class);
           }
         });
   }

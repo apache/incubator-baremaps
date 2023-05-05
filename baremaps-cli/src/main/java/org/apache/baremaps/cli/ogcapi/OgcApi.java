@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.cli.ogcapi;
 
-import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
+import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.newContextResolver;
 import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +23,7 @@ import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import io.servicetalk.transport.api.ServerContext;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
+import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.database.PostgresUtils;
@@ -77,9 +78,9 @@ public class OgcApi implements Callable<Integer> {
     var configReader = new ConfigReader();
     var config = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
     var caffeineSpec = CaffeineSpec.parse(cache);
-    var datasource = PostgresUtils.dataSource(database);
+    var dataSource = PostgresUtils.dataSource(database);
 
-    var tileStore = new PostgresTileStore(datasource, config);
+    var tileStore = new PostgresTileStore(dataSource, config);
     var tileCache = new TileCache(tileStore, caffeineSpec);
 
     // Initialize the application
@@ -93,12 +94,13 @@ public class OgcApi implements Callable<Integer> {
             CollectionsResource.class,
             StylesResource.class,
             TilesResource.class)
-        .register(contextResolverFor(objectMapper))
+        .register(newContextResolver(objectMapper))
         .register(new AbstractBinder() {
           @Override
           protected void configure() {
             bind(tileset).to(Path.class).named("tileset");
             bind(style).to(Path.class).named("style");
+            bind(dataSource).to(DataSource.class);
             bind(tileCache).to(TileStore.class);
             bind(objectMapper).to(ObjectMapper.class);
           }
