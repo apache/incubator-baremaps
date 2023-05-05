@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.sql.DataSource;
-import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.database.PostgresUtils;
 import org.apache.baremaps.database.tile.PostgresTileStore;
 import org.apache.baremaps.database.tile.TileStore;
@@ -31,9 +30,6 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
-import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.jackson2.Jackson2Plugin;
-import org.jdbi.v3.postgis.PostgisPlugin;
 import org.junit.jupiter.api.Tag;
 
 @Tag("integration")
@@ -41,24 +37,20 @@ public abstract class OgcApiTest extends JerseyTest {
 
   private DataSource dataSource;
 
-  private Jdbi jdbi;
-
   @Override
   protected ResourceConfig configure() {
     // Create a datasource to a throwaway postgis database
     dataSource = PostgresUtils.dataSource("jdbc:tc:postgis:13-3.1:///baremaps");
 
-    // Configure JDBI
-    jdbi = Jdbi.create(dataSource)
-        .installPlugin(new Jackson2Plugin())
-        .installPlugin(new PostgisPlugin());
-
     // Initialize the database
-    jdbi.useHandle(handle -> {
-      handle.execute("create extension if not exists hstore");
-      handle.execute(
+    try (var connection = dataSource.getConnection()) {
+      connection.createStatement().execute("create extension if not exists postgis");
+      connection.createStatement().execute("create extension if not exists hstore");
+      connection.createStatement().execute(
           "create table if not exists features (id integer primary key, property varchar, geometry geometry(Point, 4326))");
-    });
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
 
     // Configure the service
     enable(TestProperties.LOG_TRAFFIC);

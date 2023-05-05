@@ -14,7 +14,6 @@ package org.apache.baremaps.ogcapi;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.*;
 
 import javax.ws.rs.core.MediaType;
 import org.junit.jupiter.api.Test;

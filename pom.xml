@@ -91,7 +91,6 @@
     <version.lib.jackson>2.13.0</version.lib.jackson>
     <version.lib.jakarta>2.1.6</version.lib.jakarta>
     <version.lib.jaxb-runtime>2.3.5</version.lib.jaxb-runtime>
-    <version.lib.jdbi>3.37.1</version.lib.jdbi>
     <version.lib.jersey>2.35</version.lib.jersey>
     <version.lib.jmh>1.35</version.lib.jmh>
     <version.lib.jsqlparser>4.2</version.lib.jsqlparser>
@@ -393,13 +392,6 @@
         <groupId>org.graalvm.sdk</groupId>
         <artifactId>graal-sdk</artifactId>
         <version>${version.lib.graalvm}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jdbi</groupId>
-        <artifactId>jdbi3-bom</artifactId>
-        <version>${version.lib.jdbi}</version>
-        <type>pom</type>
-        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
