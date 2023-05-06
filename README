@@ -1,4 +1,4 @@
-# Apache Baremaps (incubating)
+# Apache Baremaps (incubating) ${project.version}
 
 Apache Baremaps is a toolkit for creating custom vector tiles from OpenStreetMap
 and other data sources with Postgis and Java.
