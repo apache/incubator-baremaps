@@ -17,9 +17,11 @@ package org.apache.baremaps.geocoder;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
@@ -59,8 +61,11 @@ public class GeonamesReader implements OsmReader<GeonamesRecord> {
         .withColumnSeparator('\t')
         .withoutQuoteChar();
 
-    MappingIterator<GeonamesRecord> recordIterator = mapper.readerFor(GeonamesRecord.class)
-        .with(schema).readValues(new InputStreamReader(inputStream));
+    var reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+    MappingIterator<GeonamesRecord> recordIterator = mapper
+        .readerFor(GeonamesRecord.class)
+        .with(schema)
+        .readValues(reader);
     Spliterator<GeonamesRecord> recordSpliterator =
         Spliterators.spliteratorUnknownSize(recordIterator, 0);
 
