@@ -52,8 +52,6 @@ public class EntityGeometryBuilder implements Consumer<Entity> {
       wayGeometryBuilder.accept(way);
     } else if (entity instanceof Relation relation) {
       relationGeometryBuilder.accept(relation);
-    } else {
-      // do nothing
     }
   }
 }

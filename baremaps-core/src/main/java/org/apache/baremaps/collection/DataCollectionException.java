@@ -14,11 +14,11 @@ package org.apache.baremaps.collection;
 
 /** Signals that an exception occurred in a store. */
 public class DataCollectionException extends RuntimeException {
-  /** Constructs a {@code BlobStoreException} with {@code null} as its error detail message. */
+  /** Constructs a {@code DataCollectionException} with {@code null} as its error detail message. */
   public DataCollectionException() {}
 
   /**
-   * Constructs an {@code StoreException} with the specified detail message.
+   * Constructs an {@code DataCollectionException} with the specified detail message.
    *
    * @param message the message
    */
@@ -27,7 +27,7 @@ public class DataCollectionException extends RuntimeException {
   }
 
   /**
-   * Constructs a {@code StoreException} with the specified cause.
+   * Constructs a {@code DataCollectionException} with the specified cause.
    *
    * @param cause the cause
    */
@@ -36,7 +36,7 @@ public class DataCollectionException extends RuntimeException {
   }
 
   /**
-   * Constructs a {@code StoreException} with the specified detail message and cause.
+   * Constructs a {@code DataCollectionException} with the specified detail message and cause.
    *
    * @param message the message
    * @param cause the cause

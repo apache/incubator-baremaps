@@ -33,6 +33,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.glassfish.jersey.test.TestProperties;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.jackson2.Jackson2Plugin;
+import org.jdbi.v3.postgis.PostgisPlugin;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -70,6 +71,10 @@ public class ImportResourceIntegrationTest extends JerseyTest {
   }
 
   @Test
+  /**
+   * TODO: switch to alternative to read shapefiles and other format in the storage package of
+   * baremaps-core.
+   **/
   @Ignore("Geotools has been replaced with Apache SIS")
   public void test() {
     String FILE = "features.geojson";

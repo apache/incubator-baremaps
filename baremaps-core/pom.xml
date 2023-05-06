@@ -15,7 +15,7 @@
   <parent>
     <groupId>org.apache.baremaps</groupId>
     <artifactId>baremaps</artifactId>
-    <version>0.7.1-SNAPSHOT</version>
+    <version>0.7.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>baremaps-core</artifactId>
@@ -100,6 +100,10 @@
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-spatial-extras</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.graalvm.sdk</groupId>
+      <artifactId>graal-sdk</artifactId>
     </dependency>
     <dependency>
       <groupId>org.locationtech.jts</groupId>

@@ -40,8 +40,6 @@ public record CreateEntityCollection(Path file, Path collection,
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Importing {} into {}", file, collection);
-
     var path = file.toAbsolutePath();
     var cacheDir = Files.createTempDirectory(Paths.get("."), "cache_");
 
@@ -90,8 +88,6 @@ public record CreateEntityCollection(Path file, Path collection,
     entityCollection.close();
 
     FileUtils.deleteRecursively(cacheDir);
-
-    logger.info("Finished importing {} into {}", file, collection);
   }
 
 }

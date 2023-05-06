@@ -13,54 +13,45 @@
 package org.apache.baremaps.storage.geopackage;
 
 
-
-import java.io.IOException;
 import java.util.*;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import mil.nga.geopackage.features.user.FeatureColumn;
 import mil.nga.geopackage.features.user.FeatureDao;
 import mil.nga.geopackage.features.user.FeatureResultSet;
 import mil.nga.geopackage.geom.GeoPackageGeometryData;
-import org.apache.baremaps.feature.Feature;
-import org.apache.baremaps.feature.FeatureType;
-import org.apache.baremaps.feature.PropertyType;
-import org.apache.baremaps.feature.ReadableFeatureSet;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.apache.baremaps.collection.AbstractDataCollection;
+import org.apache.baremaps.storage.*;
+import org.locationtech.jts.geom.*;
 
-public class GeoPackageTable implements ReadableFeatureSet {
+/**
+ * A table that stores rows in a GeoPackage table.
+ */
+public class GeoPackageTable extends AbstractDataCollection<Row> implements Table {
 
   private final FeatureDao featureDao;
 
-  private final FeatureType featureType;
+  private final Schema schema;
 
   private final GeometryFactory geometryFactory;
 
-  protected GeoPackageTable(FeatureDao featureDao) {
+  /**
+   * Constructs a table from a feature DAO.
+   *
+   * @param featureDao the feature DAO
+   */
+  public GeoPackageTable(FeatureDao featureDao) {
     this.featureDao = featureDao;
     var name = featureDao.getTableName();
-    var properties = new HashMap<String, PropertyType>();
+    var columns = new ArrayList<Column>();
     for (FeatureColumn column : featureDao.getColumns()) {
       var propertyName = column.getName();
       var propertyType = classType(column);
-      properties.put(propertyName, new PropertyType(propertyName, propertyType));
+      columns.add(new ColumnImpl(propertyName, propertyType));
     }
-    featureType = new FeatureType(name, properties);
+    schema = new SchemaImpl(name, columns);
     geometryFactory = new GeometryFactory(new PrecisionModel(), (int) featureDao.getSrs().getId());
   }
 
-  private Class<?> classType(FeatureColumn column) {
+  protected Class<?> classType(FeatureColumn column) {
     if (column.isGeometry()) {
       return Geometry.class;
     } else {
@@ -68,54 +59,37 @@ public class GeoPackageTable implements ReadableFeatureSet {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public FeatureType getType() throws IOException {
-    return featureType;
+  public Iterator<Row> iterator() {
+    return new GeopackageIterator(featureDao.queryForAll(), schema);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public Stream<Feature> read() throws IOException {
-    var featureIterator = new FeatureIterator(featureDao.queryForAll(), featureType);
-    return StreamSupport.stream(Spliterators.spliteratorUnknownSize(featureIterator, 0), false);
+  public long sizeAsLong() {
+    return featureDao.count();
   }
 
-  public class FeatureIterator implements Iterator<Feature> {
-
-    private final FeatureResultSet featureResultSet;
-
-    private final FeatureType featureType;
-
-    private boolean hasNext;
-
-    public FeatureIterator(FeatureResultSet featureResultSet, FeatureType featureType) {
-      this.featureResultSet = featureResultSet;
-      this.featureType = featureType;
-      this.hasNext = featureResultSet.moveToFirst();
-    }
-
-    @Override
-    public boolean hasNext() {
-      return hasNext;
-    }
-
-    @Override
-    public Feature next() {
-      if (!hasNext) {
-        throw new NoSuchElementException();
-      }
-      Feature feature = featureType.newInstance();
-      for (FeatureColumn featureColumn : featureResultSet.getColumns().getColumns()) {
-        var value = featureResultSet.getValue(featureColumn);
-        if (value != null) {
-          feature.setProperty(featureColumn.getName(), asValue(value));
-        }
-      }
-      hasNext = featureResultSet.moveToNext();
-      return feature;
-    }
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Schema schema() {
+    return schema;
   }
 
-  private Object asValue(Object value) {
+  /**
+   * Converts a GeoPackage value to a Java value.
+   *
+   * @param value the GeoPackage value
+   * @return the Java value
+   */
+  private Object asJavaValue(Object value) {
     if (value instanceof GeoPackageGeometryData geometry) {
       return asJtsGeometry(geometry.getGeometry());
     } else if (value instanceof Date date) {
@@ -125,6 +99,12 @@ public class GeoPackageTable implements ReadableFeatureSet {
     }
   }
 
+  /**
+   * Converts a GeoPackage geometry to a JTS geometry.
+   *
+   * @param geometry the GeoPackage geometry
+   * @return the JTS geometry
+   */
   private Geometry asJtsGeometry(mil.nga.sf.Geometry geometry) {
     if (geometry instanceof mil.nga.sf.Point point) {
       return asJtsPoint(point);
@@ -146,6 +126,12 @@ public class GeoPackageTable implements ReadableFeatureSet {
     }
   }
 
+  /**
+   * Converts a GeoPackage geometry collection to a JTS geometry collection.
+   *
+   * @param geometryCollection the GeoPackage geometry collection
+   * @return the JTS geometry collection
+   */
   private GeometryCollection asJstGeometryCollection(
       mil.nga.sf.GeometryCollection geometryCollection) {
     List<mil.nga.sf.Geometry> geometries = geometryCollection.getGeometries();
@@ -153,21 +139,45 @@ public class GeoPackageTable implements ReadableFeatureSet {
         geometries.stream().map(this::asJtsGeometry).toArray(Geometry[]::new));
   }
 
+  /**
+   * Converts a GeoPackage multi polygon to a JTS multipolygon.
+   *
+   * @param multiPolygon the GeoPackage multipolygon
+   * @return the JTS multipolygon
+   */
   private MultiPolygon asJtsMultiPolygon(mil.nga.sf.MultiPolygon multiPolygon) {
     return geometryFactory.createMultiPolygon(
         multiPolygon.getPolygons().stream().map(this::asJtsPolygon).toArray(Polygon[]::new));
   }
 
+  /**
+   * Converts a GeoPackage multilinestring to a JTS multi line string.
+   *
+   * @param multiLineString the GeoPackage multi line string
+   * @return the JTS multi line string
+   */
   private MultiLineString asJtsMultiLineString(mil.nga.sf.MultiLineString multiLineString) {
     return geometryFactory.createMultiLineString(multiLineString.getLineStrings().stream()
         .map(this::asJtsLineString).toArray(LineString[]::new));
   }
 
+  /**
+   * Converts a GeoPackage multipoint to a JTS multipoint.
+   * 
+   * @param multiPoint the GeoPackage multipoint
+   * @return the JTS multipoint
+   */
   private MultiPoint asJtsMultiPoint(mil.nga.sf.MultiPoint multiPoint) {
     return geometryFactory.createMultiPoint(
         multiPoint.getPoints().stream().map(this::asJtsPoint).toArray(Point[]::new));
   }
 
+  /**
+   * Converts a GeoPackage polygon to a JTS polygon.
+   * 
+   * @param polygon the GeoPackage polygon
+   * @return the JTS polygon
+   */
   private Polygon asJtsPolygon(mil.nga.sf.Polygon polygon) {
     var shell = geometryFactory.createLinearRing(polygon.getExteriorRing().getPoints().stream()
         .map(point -> new Coordinate(point.getX(), point.getY())).toArray(Coordinate[]::new));
@@ -178,13 +188,77 @@ public class GeoPackageTable implements ReadableFeatureSet {
     return geometryFactory.createPolygon(shell, holes);
   }
 
+  /**
+   * Converts a GeoPackage linestring to a JTS linestring.
+   *
+   * @param lineString the GeoPackage linestring
+   * @return the JTS linestring
+   */
   private LineString asJtsLineString(mil.nga.sf.LineString lineString) {
     var coordinates = lineString.getPoints().stream()
         .map(point -> new Coordinate(point.getX(), point.getY())).toArray(Coordinate[]::new);
     return geometryFactory.createLineString(coordinates);
   }
 
+  /**
+   * Converts a GeoPackage point to a JTS point.
+   *
+   * @param point the GeoPackage point
+   * @return the JTS point
+   */
   private Point asJtsPoint(mil.nga.sf.Point point) {
     return geometryFactory.createPoint(new Coordinate(point.getX(), point.getY()));
   }
+
+  /**
+   * An iterator over the rows of a GeoPackage table.
+   */
+  public class GeopackageIterator implements Iterator<Row> {
+
+    private final FeatureResultSet featureResultSet;
+
+    private final Schema schema;
+
+    private boolean hasNext;
+
+    /**
+     * Constructs an iterator from a feature result set.
+     *
+     * @param featureResultSet the feature result set
+     * @param schema the schema of the table
+     */
+    public GeopackageIterator(FeatureResultSet featureResultSet, Schema schema) {
+      this.featureResultSet = featureResultSet;
+      this.schema = schema;
+      this.hasNext = featureResultSet.moveToFirst();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasNext() {
+      return hasNext;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Row next() {
+      if (!hasNext) {
+        throw new NoSuchElementException();
+      }
+      Row row = schema.createRow();
+      for (FeatureColumn featureColumn : featureResultSet.getColumns().getColumns()) {
+        var value = featureResultSet.getValue(featureColumn);
+        if (value != null) {
+          row.set(featureColumn.getName(), asJavaValue(value));
+        }
+      }
+      hasNext = featureResultSet.moveToNext();
+      return row;
+    }
+  }
+
 }

@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.apache.baremaps</groupId>
     <artifactId>baremaps</artifactId>
-    <version>0.7.1-SNAPSHOT</version>
+    <version>0.7.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>baremaps-cli</artifactId>
@@ -99,7 +99,7 @@
             </goals>
             <phase>package</phase>
             <configuration>
-              <finalName>${project.parent.artifactId}-${project.parent.version}-incubating-src</finalName>
+              <finalName>apache-${project.parent.artifactId}-${project.parent.version}-incubating-src</finalName>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
                 <descriptor>src/assembly/src.xml</descriptor>
@@ -113,7 +113,7 @@
             </goals>
             <phase>package</phase>
             <configuration>
-              <finalName>${project.parent.artifactId}-${project.parent.version}-incubating-bin</finalName>
+              <finalName>apache-${project.parent.artifactId}-${project.parent.version}-incubating-bin</finalName>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
                 <descriptor>src/assembly/bin.xml</descriptor>

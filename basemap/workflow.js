@@ -13,35 +13,35 @@ import config from "./config.js";
 
 export default {
   "steps": [
-    // {
-    //   "id": "natural-earth",
-    //   "needs": [],
-    //   "tasks": [
-    //     {
-    //       "type": "DownloadUrl",
-    //       "url": "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
-    //       "path": "data/natural_earth_vector.gpkg.zip"
-    //     },
-    //     {
-    //       "type": "UnzipFile",
-    //       "file": "data/natural_earth_vector.gpkg.zip",
-    //       "directory": "data/natural_earth_vector"
-    //     },
-    //     {
-    //       "type": "ImportGeoPackage",
-    //       "file": "data/natural_earth_vector/packages/natural_earth_vector.gpkg",
-    //       "database": config.database,
-    //       "sourceSRID": 4326,
-    //       "targetSRID": 3857
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/ne_index.sql",
-    //       "database": config.database,
-    //       "parallel": true,
-    //     }
-    //   ]
-    // },
+    {
+      "id": "natural-earth",
+      "needs": [],
+      "tasks": [
+        {
+          "type": "DownloadUrl",
+          "url": "https://naciscdn.org/naturalearth/packages/natural_earth_vector.gpkg.zip",
+          "path": "data/natural_earth_vector.gpkg.zip"
+        },
+        {
+          "type": "UnzipFile",
+          "file": "data/natural_earth_vector.gpkg.zip",
+          "directory": "data/natural_earth_vector"
+        },
+        {
+          "type": "ImportGeoPackage",
+          "file": "data/natural_earth_vector/packages/natural_earth_vector.gpkg",
+          "database": config.database,
+          "sourceSRID": 4326,
+          "targetSRID": 3857
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "queries/ne_index.sql",
+          "database": config.database,
+          "parallel": true,
+        }
+      ]
+    },
     {
       "id": "globaladm0",
       "needs": [],
@@ -60,19 +60,19 @@ export default {
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/globaladm0_clean.sql",
+          "file": "layers/boundary/globaladm0_clean.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/globaladm0_simplify.sql",
+          "file": "layers/boundary/globaladm0_simplify.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/globaladm0_index.sql",
+          "file": "layers/boundary/globaladm0_index.sql",
           "database": config.database,
           "parallel": true,
         }
@@ -96,344 +96,410 @@ export default {
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/globaladm1_clean.sql",
+          "file": "layers/boundary/globaladm1_clean.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/globaladm1_simplify.sql",
+          "file": "layers/boundary/globaladm1_simplify.sql",
           "database": config.database,
           "parallel": true,
         },
         {
           "type": "ExecuteSql",
-          "file": "queries/globaladm1_index.sql",
+          "file": "layers/boundary/globaladm1_index.sql",
           "database": config.database,
           "parallel": true,
         }
       ]
     },
     {
-      "id": "globaladm2",
+      "id": "water-polygons",
       "needs": [],
       "tasks": [
         {
           "type": "DownloadUrl",
-          "url": "https://github.com/wmgeolab/geoBoundaries/raw/main/releaseData/CGAZ/geoBoundariesCGAZ_ADM2.gpkg",
-          "path": "data/geoBoundariesCGAZ_ADM2.gpkg"
+          "url": "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip",
+          "path": "data/water-polygons-split-3857.zip"
         },
         {
-          "type": "ImportGeoPackage",
-          "file": "data/geoBoundariesCGAZ_ADM2.gpkg",
+          "type": "UnzipFile",
+          "file": "data/water-polygons-split-3857.zip",
+          "directory": "data"
+        },
+        {
+          "type": "ImportShapefile",
+          "file": "data/water-polygons-split-3857/water_polygons.shp",
           "database": config.database,
-          "sourceSRID": 4326,
+          "sourceSRID": 3857,
           "targetSRID": 3857
         },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/globaladm2_clean.sql",
-          "database": config.database,
-          "parallel": true,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/globaladm2_simplify.sql",
-          "database": config.database,
-          "parallel": true,
-        },
-        {
-          "type": "ExecuteSql",
-          "file": "queries/globaladm2_index.sql",
-          "database": config.database,
-          "parallel": true,
-        }
       ]
     },
-    // {
-    //   "id": "water-polygons",
-    //   "needs": [],
-    //   "tasks": [
-    //     {
-    //       "type": "DownloadUrl",
-    //       "url": "https://osmdata.openstreetmap.de/download/water-polygons-split-3857.zip",
-    //       "path": "data/water-polygons-split-3857.zip"
-    //     },
-    //     {
-    //       "type": "UnzipFile",
-    //       "file": "data/water-polygons-split-3857.zip",
-    //       "directory": "data"
-    //     },
-    //     {
-    //       "type": "ImportShapefile",
-    //       "file": "data/water-polygons-split-3857/water_polygons.shp",
-    //       "database": config.database,
-    //       "sourceSRID": 3857,
-    //       "targetSRID": 3857
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_water_index.sql",
-    //       "database": "jdbc:postgresql://localhost:5432/baremaps?&user=baremaps&password=baremaps"
-    //     }
-    //   ]
-    // },
-    // {
-    //   "id": "simplified-water-polygons",
-    //   "needs": [],
-    //   "tasks": [
-    //     {
-    //       "type": "DownloadUrl",
-    //       "url": "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
-    //       "path": "data/simplified-water-polygons-split-3857.zip"
-    //     },
-    //     {
-    //       "type": "UnzipFile",
-    //       "file": "data/simplified-water-polygons-split-3857.zip",
-    //       "directory": "data"
-    //     },
-    //     {
-    //       "type": "ImportShapefile",
-    //       "file": "data/simplified-water-polygons-split-3857/simplified_water_polygons.shp",
-    //       "database": config.database,
-    //       "sourceSRID": 3857,
-    //       "targetSRID": 3857
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_simplified_water_index.sql",
-    //       "database": config.database,
-    //     },
-    //   ]
-    // },
-    // {
-    //   "id": "openstreetmap-data",
-    //   "needs": [],
-    //   "tasks": [
-    //     {
-    //       "type": "DownloadUrl",
-    //       "url": "https://download.geofabrik.de/europe/switzerland-latest.osm.pbf",
-    //       "path": "data/data.osm.pbf"
-    //     },
-    //     {
-    //       "type": "ImportOpenStreetMap",
-    //       "file": "data/data.osm.pbf",
-    //       "database": config.database,
-    //       "databaseSrid": 3857
-    //     },
-    //   ]
-    // },
-    // {
-    //   "id": "openstreetmap-nodes",
-    //   "needs": ["openstreetmap-data"],
-    //   "tasks": [
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_nodes_clean.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_nodes_prepare.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_nodes_simplify.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_nodes_index.sql",
-    //       "database": config.database,
-    //     },
-    //   ]
-    // },
-    // {
-    //   "id": "openstreetmap-ways",
-    //   "needs": ["openstreetmap-data"],
-    //   "tasks": [
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_ways_clean.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_ways_prepare.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_ways_simplify.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_ways_index.sql",
-    //       "database": config.database,
-    //     },
-    //   ]
-    // },
-    // {
-    //   "id": "openstreetmap-relations",
-    //   "needs": ["openstreetmap-data"],
-    //   "tasks": [
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_relations_clean.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_relations_prepare.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_relations_simplify.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_relations_index.sql",
-    //       "database": config.database,
-    //     },
-    //   ]
-    // },
-    // {
-    //   "id": "openstreetmap-linestring",
-    //   "needs": ["openstreetmap-ways"],
-    //   "tasks": [
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_linestring.sql",
-    //       "database": config.database,
-    //     },
-    //   ]
-    // },
-    // {
-    //   "id": "openstreetmap-polygon",
-    //   "needs": ["openstreetmap-ways", "openstreetmap-relations"],
-    //   "tasks": [
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_polygon_prepare.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_polygon_index.sql",
-    //       "database": config.database,
-    //     },
-    //   ]
-    // },
-    // {
-    //   "id": "openstreetmap-boundary",
-    //   "needs": ["openstreetmap-linestring"],
-    //   "tasks": [
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_boundary_prepare.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_boundary_simplify.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_boundary_index.sql",
-    //       "database": config.database,
-    //     },
-    //   ]
-    // },
-    // {
-    //   "id": "openstreetmap-highway",
-    //   "needs": ["openstreetmap-linestring"],
-    //   "tasks": [
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_highway_prepare.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_highway_simplify.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_highway_index.sql",
-    //       "database": config.database,
-    //     },
-    //   ]
-    // },
-    // {
-    //   "id": "openstreetmap-railway",
-    //   "needs": ["openstreetmap-linestring"],
-    //   "tasks": [
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_railway_prepare.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_railway_simplify.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_railway_index.sql",
-    //       "database": config.database,
-    //     },
-    //   ]
-    // },
-    // {
-    //   "id": "openstreetmap-natural",
-    //   "needs": ["openstreetmap-polygon"],
-    //   "tasks": [
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_natural_prepare.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_natural_simplify.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_natural_index.sql",
-    //       "database": config.database,
-    //       "parallel": true
-    //     },
-    //   ]
-    // },
-    // {
-    //   "id": "openstreetmap-landuse",
-    //   "needs": ["openstreetmap-polygon"],
-    //   "tasks": [
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_landuse_prepare.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_landuse_simplify.sql",
-    //       "database": config.database,
-    //     },
-    //     {
-    //       "type": "ExecuteSql",
-    //       "file": "queries/osm_landuse_index.sql",
-    //       "database": config.database,
-    //       "parallel": true
-    //     },
-    //   ]
-    // }
+    {
+      "id": "simplified-water-polygons",
+      "needs": [],
+      "tasks": [
+        {
+          "type": "DownloadUrl",
+          "url": "https://osmdata.openstreetmap.de/download/simplified-water-polygons-split-3857.zip",
+          "path": "data/simplified-water-polygons-split-3857.zip"
+        },
+        {
+          "type": "UnzipFile",
+          "file": "data/simplified-water-polygons-split-3857.zip",
+          "directory": "data"
+        },
+        {
+          "type": "ImportShapefile",
+          "file": "data/simplified-water-polygons-split-3857/simplified_water_polygons.shp",
+          "database": config.database,
+          "sourceSRID": 3857,
+          "targetSRID": 3857
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-ocean",
+      "needs": [
+        "water-polygons",
+        "simplified-water-polygons",
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/ocean/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/ocean/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/ocean/index.sql",
+          "database": config.database,
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-data",
+      "needs": [],
+      "tasks": [
+        {
+          "type": "DownloadUrl",
+          "url": config.osmPbfUrl,
+          "path": "data/data.osm.pbf"
+        },
+        {
+          "type": "ImportOpenStreetMap",
+          "file": "data/data.osm.pbf",
+          "database": config.database,
+          "databaseSrid": 3857
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-nodes",
+      "needs": [
+          "openstreetmap-data"
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "queries/osm_nodes.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-ways",
+      "needs": [
+          "openstreetmap-data"
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "queries/osm_ways.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-relations",
+      "needs": [
+          "openstreetmap-data"
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "queries/osm_relations.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-member",
+      "needs": [
+        "openstreetmap-data"
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/member/prepare.sql",
+          "database": config.database,
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-point",
+      "needs": [
+        "openstreetmap-nodes"
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/point/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/point/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/point/index.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-linestring",
+      "needs": [
+          "openstreetmap-member"
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/linestring/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/linestring/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/linestring/index.sql",
+          "database": config.database,
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-polygon",
+      "needs": [
+          "openstreetmap-member",
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/polygon/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/polygon/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/polygon/index.sql",
+          "database": config.database,
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-highway",
+      "needs": [
+          "openstreetmap-linestring"
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/highway/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/highway/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/highway/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/highway/index.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-railway",
+      "needs": ["openstreetmap-linestring"],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/railway/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/railway/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/railway/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/railway/index.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-route",
+      "needs": ["openstreetmap-linestring"],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/route/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/route/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/route/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/route/index.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-natural",
+      "needs": ["openstreetmap-polygon"],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/natural/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/natural/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/natural/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/natural/index.sql",
+          "database": config.database,
+          "parallel": true
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-landuse",
+      "needs": [
+          "openstreetmap-polygon"
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/landuse/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/landuse/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/landuse/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/landuse/index.sql",
+          "database": config.database,
+          "parallel": true
+        },
+      ]
+    },
+    {
+      "id": "openstreetmap-waterway",
+      "needs": [
+          "openstreetmap-linestring"
+      ],
+      "tasks": [
+        {
+          "type": "ExecuteSql",
+          "file": "layers/waterway/clean.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/waterway/prepare.sql",
+          "database": config.database,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/waterway/simplify.sql",
+          "database": config.database,
+          "parallel": true,
+        },
+        {
+          "type": "ExecuteSql",
+          "file": "layers/waterway/index.sql",
+          "database": config.database,
+          "parallel": true
+        },
+      ]
+    },
   ]
 }

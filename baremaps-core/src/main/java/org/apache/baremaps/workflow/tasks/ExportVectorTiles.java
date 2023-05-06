@@ -12,18 +12,17 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonGenerator.Feature;
+import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
+import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.database.tile.FileTileStore;
 import org.apache.baremaps.database.tile.MBTiles;
 import org.apache.baremaps.database.tile.PostgresTileStore;
@@ -54,33 +53,26 @@ public record ExportVectorTiles(
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Exporting vector tiles from {} to {}", database, repository);
     var datasource = context.getDataSource(database);
-    var mapper =
-        new ObjectMapper()
-            .configure(Feature.IGNORE_UNKNOWN, true)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .setSerializationInclusion(Include.NON_NULL)
-            .setSerializationInclusion(Include.NON_EMPTY);
 
-    var source = mapper.readValue(Files.readAllBytes(tileset), Tileset.class);
-    var tileSource = sourceTileStore(source, datasource);
-    var tileTarget = targetTileStore(source);
+    var configReader = new ConfigReader();
+    var objectMapper = defaultObjectMapper();
+    var tileset = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
+    var sourceTileStore = sourceTileStore(tileset, datasource);
+    var targetTileStore = targetTileStore(tileset);
 
     var envelope =
         new Envelope(
-            source.getBounds().get(0), source.getBounds().get(2),
-            source.getBounds().get(1), source.getBounds().get(3));
+            tileset.getBounds().get(0), tileset.getBounds().get(2),
+            tileset.getBounds().get(1), tileset.getBounds().get(3));
 
-    var count = Tile.count(envelope, source.getMinzoom(), source.getMaxzoom());
+    var count = Tile.count(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
 
     var stream =
-        StreamUtils.stream(Tile.iterator(envelope, source.getMinzoom(), source.getMaxzoom()))
+        StreamUtils.stream(Tile.iterator(envelope, tileset.getMinzoom(), tileset.getMaxzoom()))
             .peek(new StreamProgress<>(count, 5000));
 
-    StreamUtils.batch(stream, 10).forEach(new TileChannel(tileSource, tileTarget));
-
-    logger.info("Finished exporting vector tiles from {} to {}", database, repository);
+    StreamUtils.batch(stream, 10).forEach(new TileChannel(sourceTileStore, targetTileStore));
   }
 
   private TileStore sourceTileStore(Tileset tileset, DataSource datasource) {

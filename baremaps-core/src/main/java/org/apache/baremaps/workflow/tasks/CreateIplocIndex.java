@@ -40,8 +40,6 @@ public record CreateIplocIndex(
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Generating Iploc from {} {}", geonamesIndexPath, nicPaths);
-
     try (
         var directory = MMapDirectory.open(geonamesIndexPath);
         var searcherManager = new SearcherManager(directory, new SearcherFactory())) {
@@ -65,7 +63,7 @@ public record CreateIplocIndex(
       IpLocStats ipLocStats = ipLoc.getIplocStats();
       logger.info(
           """
-              IpLoc stats
+              IpLoc measure
               -----------
               inetnumInsertedByAddress : {}
               inetnumInsertedByDescr : {}
@@ -77,7 +75,5 @@ public record CreateIplocIndex(
           ipLocStats.getInsertedByCountryCount(), ipLocStats.getInsertedByCountryCodeCount(),
           ipLocStats.getInsertedByGeolocCount(), ipLocStats.getNotInsertedCount());
     }
-
-    logger.info("IpLoc database created successfully {}", targetIplocIndexPath);
   }
 }

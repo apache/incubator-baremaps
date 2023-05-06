@@ -61,8 +61,8 @@ class AppendOnlyBufferTest {
   @ParameterizedTest
   @MethodSource("org.apache.baremaps.collection.type.DataTypeProvider#dataTypes")
   void testAllDataTypes(DataType dataType, Object value) {
-    var num = 1 << 10;
-    var collection = new AppendOnlyBuffer<>(dataType, new OffHeapMemory(1 << 8));
+    var num = 1000;
+    var collection = new AppendOnlyBuffer<>(dataType, new OffHeapMemory(1 << 22));
 
     // write values
     for (int i = 0; i < num; i++) {

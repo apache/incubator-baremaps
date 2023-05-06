@@ -13,13 +13,12 @@
 package org.apache.baremaps.collection.type;
 
 
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+import org.apache.baremaps.collection.type.geometry.*;
 import org.junit.jupiter.params.provider.Arguments;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.*;
 
 public class DataTypeProvider {
 
@@ -61,15 +60,6 @@ public class DataTypeProvider {
         Arguments.of(new FloatDataType(), -1f),
         Arguments.of(new FloatListDataType(), List.of()),
         Arguments.of(new FloatListDataType(), List.of((float) 1, (float) 2, (float) 3)),
-
-        // Geometry
-        Arguments.of(new GeometryDataType(),
-            new GeometryFactory().createEmpty(0)),
-        Arguments.of(new GeometryDataType(),
-            new GeometryFactory().createPoint(new Coordinate(1, 1))),
-        Arguments.of(new GeometryDataType(),
-            new GeometryFactory()
-                .createLineString(new Coordinate[] {new Coordinate(1, 1), new Coordinate(2, 2)})),
 
         // Integer
         Arguments.of(new IntegerDataType(), Integer.MIN_VALUE),
@@ -147,6 +137,135 @@ public class DataTypeProvider {
         Arguments.of(new SmallLongDataType(8), Long.MIN_VALUE),
         Arguments.of(
             new PairDataType<>(new LongDataType(), new LongDataType()),
-            new PairDataType.Pair<>(1l, 2l)));
+            new PairDataType.Pair<>(1l, 2l)),
+
+        // WKB (Well Known Binary)
+        Arguments.of(new WKBDataType(),
+            new GeometryFactory().createEmpty(0)),
+        Arguments.of(new WKBDataType(),
+            new GeometryFactory().createPoint(new Coordinate(1, 1))),
+        Arguments.of(new WKBDataType(),
+            new GeometryFactory()
+                .createLineString(new Coordinate[] {new Coordinate(1, 1), new Coordinate(2, 2)})),
+
+        // Point
+        Arguments.of(new PointDataType(),
+            new GeometryFactory().createPoint()),
+        Arguments.of(new PointDataType(),
+            new GeometryFactory()
+                .createPoint(new Coordinate(1, 1))),
+
+        // MultiPoint
+        Arguments.of(new MultiPointDataType(),
+            new GeometryFactory().createMultiPoint()),
+        Arguments.of(new MultiPointDataType(),
+            new GeometryFactory()
+                .createMultiPoint(new Coordinate[] {new Coordinate(1, 1), new Coordinate(2, 2)})),
+
+        // LineString
+        Arguments.of(new LineStringDataType(),
+            new GeometryFactory().createLineString()),
+        Arguments.of(new LineStringDataType(),
+            new GeometryFactory()
+                .createLineString(new Coordinate[] {new Coordinate(1, 1), new Coordinate(2, 2)})),
+
+        // MultiLineString
+        Arguments.of(new MultiLineStringDataType(),
+            new GeometryFactory().createMultiLineString()),
+        Arguments.of(new MultiLineStringDataType(),
+            new GeometryFactory()
+                .createMultiLineString(
+                    new LineString[] {
+                        new GeometryFactory()
+                            .createLineString(
+                                new Coordinate[] {new Coordinate(1, 1), new Coordinate(2, 2)}),
+                        new GeometryFactory()
+                            .createLineString(
+                                new Coordinate[] {new Coordinate(3, 3), new Coordinate(4, 4)})})),
+
+        // Polygon
+        Arguments.of(new PolygonDataType(),
+            new GeometryFactory().createPolygon()),
+        Arguments.of(new PolygonDataType(),
+            new GeometryFactory()
+                .createPolygon(
+                    new GeometryFactory()
+                        .createLinearRing(
+                            new Coordinate[] {new Coordinate(0, 0), new Coordinate(0, 3),
+                                new Coordinate(5, 3), new Coordinate(5, 0), new Coordinate(0, 0)}),
+                    new LinearRing[] {
+                        new GeometryFactory()
+                            .createLinearRing(new Coordinate[] {new Coordinate(1, 1),
+                                new Coordinate(1, 2), new Coordinate(2, 2), new Coordinate(2, 1),
+                                new Coordinate(1, 1)}),
+                        new GeometryFactory()
+                            .createLinearRing(new Coordinate[] {new Coordinate(3, 1),
+                                new Coordinate(3, 2), new Coordinate(4, 2), new Coordinate(4, 1),
+                                new Coordinate(3, 1)})})),
+
+        // MultiPolygon
+        Arguments.of(new MultiPolygonDataType(),
+            new GeometryFactory().createMultiPolygon()),
+        Arguments.of(new MultiPolygonDataType(),
+            new GeometryFactory()
+                .createMultiPolygon(
+                    new Polygon[] {
+                        new GeometryFactory()
+                            .createPolygon(
+                                new GeometryFactory()
+                                    .createLinearRing(new Coordinate[] {new Coordinate(0, 0),
+                                        new Coordinate(0, 3), new Coordinate(5, 3),
+                                        new Coordinate(5, 0), new Coordinate(0, 0)}),
+                                new LinearRing[] {
+                                    new GeometryFactory()
+                                        .createLinearRing(new Coordinate[] {new Coordinate(1, 1),
+                                            new Coordinate(1, 2), new Coordinate(2, 2),
+                                            new Coordinate(2, 1), new Coordinate(1, 1)}),
+                                    new GeometryFactory()
+                                        .createLinearRing(new Coordinate[] {new Coordinate(3, 1),
+                                            new Coordinate(3, 2), new Coordinate(4, 2),
+                                            new Coordinate(4, 1), new Coordinate(3, 1)})}),
+                        new GeometryFactory()
+                            .createPolygon(
+                                new GeometryFactory()
+                                    .createLinearRing(new Coordinate[] {new Coordinate(1, 4),
+                                        new Coordinate(1, 5), new Coordinate(2, 5),
+                                        new Coordinate(2, 4), new Coordinate(1, 4)}))})),
+
+        // GeometryCollection
+        Arguments.of(new GeometryCollectionDataType(),
+            new GeometryFactory().createGeometryCollection()),
+        Arguments.of(new GeometryCollectionDataType(),
+            new GeometryFactory()
+                .createGeometryCollection(
+                    new Geometry[] {
+                        new GeometryFactory()
+                            .createPoint(new Coordinate(1, 1)),
+                        new GeometryFactory()
+                            .createLineString(
+                                new Coordinate[] {new Coordinate(1, 1), new Coordinate(2, 2)}),
+                        new GeometryFactory()
+                            .createPolygon(
+                                new GeometryFactory()
+                                    .createLinearRing(new Coordinate[] {new Coordinate(0, 0),
+                                        new Coordinate(0, 3), new Coordinate(5, 3),
+                                        new Coordinate(5, 0), new Coordinate(0, 0)}),
+                                new LinearRing[] {
+                                    new GeometryFactory()
+                                        .createLinearRing(new Coordinate[] {new Coordinate(1, 1),
+                                            new Coordinate(1, 2), new Coordinate(2, 2),
+                                            new Coordinate(2, 1), new Coordinate(1, 1)}),
+                                    new GeometryFactory()
+                                        .createLinearRing(new Coordinate[] {new Coordinate(3, 1),
+                                            new Coordinate(3, 2), new Coordinate(4, 2),
+                                            new Coordinate(4, 1), new Coordinate(3, 1)})})})),
+
+        // Geometry
+        Arguments.of(new GeometryDataType(),
+            new GeometryFactory().createEmpty(0)),
+        Arguments.of(new GeometryDataType(),
+            new GeometryFactory()
+                .createPoint(new Coordinate(1, 1))));
+
   }
 }

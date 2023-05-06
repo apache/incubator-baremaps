@@ -15,7 +15,7 @@
 
   <groupId>org.apache.baremaps</groupId>
   <artifactId>baremaps</artifactId>
-  <version>0.7.1-SNAPSHOT</version>
+  <version>0.7.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>baremaps</name>
   <description>Apache Baremaps (incubating) is a toolkit and a set of infrastructure components for creating, publishing, and operating online maps.</description>
@@ -51,10 +51,9 @@
   </modules>
 
   <scm>
-    <connection>scm:git:git@github.com:baremaps/baremaps.git</connection>
-    <developerConnection>scm:git:git@github.com:baremaps/baremaps.git</developerConnection>
-    <tag>v0.2.3</tag>
-    <url>scm:git:git@github.com:baremaps/baremaps.git</url>
+    <connection>scm:git:git@github.com:apache/baremaps.git</connection>
+    <developerConnection>scm:git:git@github.com:apache/baremaps.git</developerConnection>
+    <url>scm:git:git@github.com:apache/baremaps.git</url>
   </scm>
 
   <distributionManagement>
@@ -92,7 +91,7 @@
     <version.lib.jackson>2.13.0</version.lib.jackson>
     <version.lib.jakarta>2.1.6</version.lib.jakarta>
     <version.lib.jaxb-runtime>2.3.5</version.lib.jaxb-runtime>
-    <version.lib.jdbi>3.24.1</version.lib.jdbi>
+    <version.lib.jdbi>3.37.1</version.lib.jdbi>
     <version.lib.jersey>2.35</version.lib.jersey>
     <version.lib.jmh>1.35</version.lib.jmh>
     <version.lib.jsqlparser>4.2</version.lib.jsqlparser>
@@ -106,12 +105,11 @@
     <version.lib.proj4j>1.2.3</version.lib.proj4j>
     <version.lib.protobuf>3.21.6</version.lib.protobuf>
     <version.lib.roaringbitmap>0.9.38</version.lib.roaringbitmap>
-    <version.lib.servicetalk>0.42.18</version.lib.servicetalk>
+    <version.lib.servicetalk>0.42.27</version.lib.servicetalk>
     <version.lib.servlet>3.1.0</version.lib.servlet>
     <version.lib.slf4j>2.0.3</version.lib.slf4j>
     <version.lib.sqlite>3.39.3.0</version.lib.sqlite>
-    <version.lib.swagger>1.6.3</version.lib.swagger>
-    <version.lib.swagger-parser>2.0.24</version.lib.swagger-parser>
+    <version.lib.swagger-parser>2.1.13</version.lib.swagger-parser>
     <version.lib.testcontainers>1.17.3</version.lib.testcontainers>
     <version.lib.validation>2.0.2</version.lib.validation>
     <version.lucene>9.4.2</version.lucene>
@@ -130,7 +128,9 @@
     <version.plugin.maven-surefire-plugin>2.22.2</version.plugin.maven-surefire-plugin>
     <version.plugin.maven-surefire-plugin.provider.junit>1.3.2</version.plugin.maven-surefire-plugin.provider.junit>
     <version.plugin.nexus-staging-maven-plugin>1.6.13</version.plugin.nexus-staging-maven-plugin>
-    <version.plugin.openapi-generator-maven-plugin>5.1.0</version.plugin.openapi-generator-maven-plugin>
+    <!-- Using version [6.3.0,6.5.0] creates an issue with usage of java.util.Arrays and missing necessary import
+     similar to https://github.com/OpenAPITools/openapi-generator/issues/8408 -->
+    <version.plugin.openapi-generator-maven-plugin>6.2.1</version.plugin.openapi-generator-maven-plugin>
     <version.plugin.os-maven-plugin>1.7.0</version.plugin.os-maven-plugin>
     <version.plugin.protobuf-maven-plugin>0.6.1</version.plugin.protobuf-maven-plugin>
     <version.plugin.spotless-maven-plugin>2.33.0</version.plugin.spotless-maven-plugin>
@@ -238,16 +238,6 @@
         <groupId>io.servicetalk</groupId>
         <artifactId>servicetalk-transport-netty</artifactId>
         <version>${version.lib.servicetalk}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.swagger</groupId>
-        <artifactId>swagger-annotations</artifactId>
-        <version>${version.lib.swagger}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.swagger</groupId>
-        <artifactId>swagger-jersey2-jaxrs</artifactId>
-        <version>${version.lib.swagger}</version>
       </dependency>
       <dependency>
         <groupId>io.swagger.parser.v3</groupId>
@@ -397,6 +387,11 @@
       <dependency>
         <groupId>org.graalvm.js</groupId>
         <artifactId>js-scriptengine</artifactId>
+        <version>${version.lib.graalvm}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.graalvm.sdk</groupId>
+        <artifactId>graal-sdk</artifactId>
         <version>${version.lib.graalvm}</version>
       </dependency>
       <dependency>

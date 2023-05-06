@@ -38,6 +38,7 @@ import javax.ws.rs.sse.OutboundSseEvent;
 import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
+import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.database.tile.PostgresTileStore;
 import org.apache.baremaps.database.tile.Tile;
 import org.apache.baremaps.database.tile.TileStore;
@@ -157,7 +158,7 @@ public class DevResources {
     try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
       var bytes = inputStream.readAllBytes();
       return Response.ok().entity(bytes).build();
-    } catch (IOException e) {
+    } catch (NullPointerException | IOException e) {
       return Response.status(404).build();
     }
   }

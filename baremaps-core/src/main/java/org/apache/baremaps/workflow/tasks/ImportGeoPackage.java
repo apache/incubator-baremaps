@@ -13,11 +13,10 @@
 package org.apache.baremaps.workflow.tasks;
 
 import java.nio.file.Path;
-import org.apache.baremaps.feature.ReadableFeatureSet;
 import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
-import org.apache.baremaps.storage.FeatureSetProjectionTransform;
-import org.apache.baremaps.storage.geopackage.GeoPackageDatabase;
-import org.apache.baremaps.storage.postgres.PostgresDatabase;
+import org.apache.baremaps.storage.TableDecorator;
+import org.apache.baremaps.storage.geopackage.GeoPackageStore;
+import org.apache.baremaps.storage.postgres.PostgresStore;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.WorkflowException;
@@ -32,21 +31,17 @@ public record ImportGeoPackage(Path file, String database, Integer sourceSRID, I
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Importing {} into {}", file, database);
     var path = file.toAbsolutePath();
-    try (var geoPackageStore = new GeoPackageDatabase(path)) {
+    try (var geoPackageDatabase = new GeoPackageStore(path)) {
       var dataSource = context.getDataSource(database);
-      var postgresDatabase = new PostgresDatabase(dataSource);
-      for (var resource : geoPackageStore.read().toList()) {
-        if (resource instanceof ReadableFeatureSet featureSet) {
-          var transformer = new ProjectionTransformer(sourceSRID, targetSRID);
-          var transformedFeatureSet = new FeatureSetProjectionTransform(featureSet, transformer);
-          postgresDatabase.write(transformedFeatureSet);
-        }
+      var postgresDatabase = new PostgresStore(dataSource);
+      for (var name : geoPackageDatabase.list()) {
+        var transformer = new ProjectionTransformer(sourceSRID, targetSRID);
+        var decoratedTable =
+            new TableDecorator(geoPackageDatabase.get(name), transformer);
+        postgresDatabase.add(decoratedTable);
       }
-      logger.info("Finished importing {} into {}", file, database);
     } catch (Exception e) {
-      logger.error("Failed importing {} into {}", file, database);
       throw new WorkflowException(e);
     }
   }

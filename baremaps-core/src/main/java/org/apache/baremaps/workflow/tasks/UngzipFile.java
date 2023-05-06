@@ -29,16 +29,17 @@ public record UngzipFile(Path file, Path directory) implements Task {
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Unzipping {} to {}", file, directory);
     var filePath = file.toAbsolutePath();
     var directoryPath = directory.toAbsolutePath();
     try (var zis = new GZIPInputStream(new BufferedInputStream(Files.newInputStream(filePath)))) {
-      var file = directoryPath.resolve(filePath.getFileName().toString().substring(0,
+      var decompressed = directoryPath.resolve(filePath.getFileName().toString().substring(0,
           filePath.getFileName().toString().length() - 3));
-      Files.copy(zis, file, StandardCopyOption.REPLACE_EXISTING);
-      logger.info("Finished unzipping {} to {}", file, directory);
+      if (!Files.exists(decompressed)) {
+        Files.createDirectories(decompressed.getParent());
+        Files.createFile(decompressed);
+      }
+      Files.copy(zis, decompressed, StandardCopyOption.REPLACE_EXISTING);
     } catch (Exception e) {
-      logger.error("Failed unzipping {} to {}", file, directory);
       throw new WorkflowException(e);
     }
   }

@@ -14,25 +14,25 @@ export default {
     queries: [
         {
             minzoom: 3,
-            maxzoom: 6,
+            maxzoom: 8,
             sql:
                 "SELECT id, tags, geom FROM osm_landuse_z$zoom WHERE tags ->> 'landuse' IN ('farmland', 'forest', 'meadow')",
         },
         {
-            minzoom: 6,
-            maxzoom: 12,
+            minzoom: 8,
+            maxzoom: 13,
             sql:
                 "SELECT id, tags, geom FROM osm_landuse_z$zoom WHERE tags ->> 'landuse' IN ('farmland', 'forest', 'meadow', 'residential', 'vineyard')",
         },
         {
-            minzoom: 12,
+            minzoom: 13,
             maxzoom: 20,
-            sql: "SELECT id, tags, geom FROM osm_ways_z$zoom WHERE tags ? 'landuse'"
+            sql: "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'landuse'"
         },
         {
-            minzoom: 12,
+            minzoom: 13,
             maxzoom: 20,
-            sql: "SELECT id, tags, geom FROM osm_relations_z$zoom WHERE tags ? 'landuse'"
+            sql: "SELECT id, tags, geom FROM osm_relations WHERE tags ? 'landuse'"
         }
     ],
 }

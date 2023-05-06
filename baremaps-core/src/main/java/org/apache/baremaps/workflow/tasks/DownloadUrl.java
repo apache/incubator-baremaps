@@ -32,8 +32,6 @@ public record DownloadUrl(String url, Path path, boolean replaceExisting) implem
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    logger.info("Downloading {} to {}", url, path);
-
     var targetUrl = new URL(url);
     var targetPath = path.toAbsolutePath();
 
@@ -49,14 +47,14 @@ public record DownloadUrl(String url, Path path, boolean replaceExisting) implem
       }
     }
 
-    var connection = (HttpURLConnection) targetUrl.openConnection();
-    connection.setFollowRedirects(true);
-    connection.setRequestMethod("GET");
-    try (var inputStream = connection.getInputStream()) {
+    var get = (HttpURLConnection) targetUrl.openConnection();
+    get.setFollowRedirects(true);
+    get.setRequestMethod("GET");
+    try (var inputStream = get.getInputStream()) {
       var downloadFile = targetPath.toAbsolutePath();
       Files.createDirectories(downloadFile.getParent());
       Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
-      logger.info("Finished downloading {} to {}", url, path);
     }
+    get.disconnect();
   }
 }

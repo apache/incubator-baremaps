@@ -53,7 +53,12 @@ public class TileCache implements TileStore {
   public ByteBuffer read(Tile tile) throws TileStoreException {
     return cache.get(tile, t -> {
       try {
-        return tileStore.read(t).duplicate();
+        var buffer = tileStore.read(t);
+        if (buffer == null) {
+          return null;
+        } else {
+          return buffer.duplicate();
+        }
       } catch (TileStoreException e) {
         logger.error("Unable to read the tile.", e);
         return null;

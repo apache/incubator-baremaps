@@ -17,13 +17,15 @@
   <parent>
     <groupId>org.apache.baremaps</groupId>
     <artifactId>baremaps</artifactId>
-    <version>0.7.1-SNAPSHOT</version>
+    <version>0.7.2-SNAPSHOT</version>
   </parent>
   <artifactId>baremaps-ogcapi</artifactId>
   <packaging>jar</packaging>
   <name>baremaps-ogcapi</name>
 
   <dependencies>
+    <!-- This dependency is the recommended artifact when using the openapi-generator.
+    See: https://openapi-generator.tech/docs/plugins/#dependencies-->
     <dependency>
       <groupId>io.swagger.parser.v3</groupId>
       <artifactId>swagger-parser</artifactId>
@@ -70,12 +72,10 @@
     <dependency>
       <groupId>org.graalvm.js</groupId>
       <artifactId>js</artifactId>
-      <version>${version.lib.graalvm}</version>
     </dependency>
     <dependency>
       <groupId>org.graalvm.js</groupId>
       <artifactId>js-scriptengine</artifactId>
-      <version>${version.lib.graalvm}</version>
     </dependency>
     <dependency>
       <groupId>org.jdbi</groupId>
@@ -84,6 +84,10 @@
     <dependency>
       <groupId>org.jdbi</groupId>
       <artifactId>jdbi3-jackson2</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jdbi</groupId>
+      <artifactId>jdbi3-postgis</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jdbi</groupId>
@@ -150,6 +154,8 @@
                 <sortParamsByRequiredFlag>false</sortParamsByRequiredFlag>
                 <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
                 <sourceFolder>src/gen/java/main</sourceFolder>
+                <!-- defaults to true, which requires org.openapitools.jackson.nullable -->
+                <openApiNullable>false</openApiNullable>
               </configOptions>
             </configuration>
           </execution>
