@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.database.tile;
+package org.apache.baremaps.tilestore;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -42,5 +42,5 @@ public abstract class TileStoreTest {
     assertThrows(TileStoreException.class, () -> tileStore.read(tileCoord));
   }
 
-  abstract TileStore createTileStore() throws Exception;
+  public abstract TileStore createTileStore() throws Exception;
 }

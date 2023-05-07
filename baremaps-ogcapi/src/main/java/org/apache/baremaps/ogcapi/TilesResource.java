@@ -26,12 +26,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.database.tile.TileCoord;
-import org.apache.baremaps.database.tile.TileStore;
-import org.apache.baremaps.database.tile.TileStoreException;
 import org.apache.baremaps.ogcapi.api.TilesApi;
 import org.apache.baremaps.ogcapi.model.TileSetItem;
 import org.apache.baremaps.ogcapi.model.TileSets;
+import org.apache.baremaps.tilestore.TileCoord;
+import org.apache.baremaps.tilestore.TileStore;
+import org.apache.baremaps.tilestore.TileStoreException;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 
 @Singleton

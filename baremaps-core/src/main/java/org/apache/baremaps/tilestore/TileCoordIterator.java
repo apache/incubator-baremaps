@@ -10,10 +10,10 @@
  * the License.
  */
 
-package org.apache.baremaps.database.tile;
+package org.apache.baremaps.tilestore;
 
-import static org.apache.baremaps.database.tile.TileCoord.max;
-import static org.apache.baremaps.database.tile.TileCoord.min;
+import static org.apache.baremaps.tilestore.TileCoord.max;
+import static org.apache.baremaps.tilestore.TileCoord.min;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
