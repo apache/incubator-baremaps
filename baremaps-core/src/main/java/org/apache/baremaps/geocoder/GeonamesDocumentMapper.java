@@ -15,6 +15,7 @@ package org.apache.baremaps.geocoder;
 
 
 import java.util.function.Function;
+import org.apache.baremaps.utils.IsoCountriesUtils;
 import org.apache.lucene.document.*;
 
 /**

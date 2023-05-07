@@ -17,7 +17,7 @@ package org.apache.baremaps.workflow;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
-import org.apache.baremaps.database.PostgresUtils;
+import org.apache.baremaps.postgres.PostgresUtils;
 
 /**
  * A context that is passed to the tasks of a workflow and used to share data between tasks.

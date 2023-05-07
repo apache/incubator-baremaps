@@ -13,7 +13,7 @@
 package org.apache.baremaps.cli.ogcapi;
 
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.newContextResolver;
-import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
+import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
@@ -26,8 +26,8 @@ import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.database.PostgresUtils;
 import org.apache.baremaps.ogcapi.*;
+import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.tilestore.TileCache;
 import org.apache.baremaps.tilestore.TileStore;
@@ -74,7 +74,7 @@ public class OgcApi implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     // Configure serialization
-    var objectMapper = defaultObjectMapper();
+    var objectMapper = objectMapper();
     var configReader = new ConfigReader();
     var config = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
     var caffeineSpec = CaffeineSpec.parse(cache);

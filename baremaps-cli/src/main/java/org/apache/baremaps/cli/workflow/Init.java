@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.cli.workflow;
 
-import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
+import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,7 +40,7 @@ public class Init implements Callable<Integer> {
     org.apache.baremaps.workflow.Workflow workflowObject = new Workflow(
         List.of(new Step("hello", List.of(), List.of(new LogMessage("Hello World!")))));
     Files.write(workflow,
-        defaultObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(workflowObject));
+        objectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(workflowObject));
     logger.info("Workflow initialized");
     return 0;
   }

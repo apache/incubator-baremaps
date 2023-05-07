@@ -15,8 +15,8 @@ package org.apache.baremaps.workflow.tasks;
 
 
 import java.nio.file.Files;
-import org.apache.baremaps.collection.utils.FileUtils;
 import org.apache.baremaps.testing.TestFiles;
+import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;

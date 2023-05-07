@@ -13,7 +13,7 @@
 package org.apache.baremaps.cli.map;
 
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
-import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
+import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.netty.HttpServers;
@@ -22,7 +22,7 @@ import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
-import org.apache.baremaps.database.PostgresUtils;
+import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.server.DevResources;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -67,7 +67,7 @@ public class Dev implements Callable<Integer> {
     try (var dataSource = PostgresUtils.dataSource(database)) {
 
       // Configure serialization
-      var objectMapper = defaultObjectMapper();
+      var objectMapper = objectMapper();
 
       // Configure the application
       var application = new ResourceConfig().register(CorsFilter.class).register(DevResources.class)

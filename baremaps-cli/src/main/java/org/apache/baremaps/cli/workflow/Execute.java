@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.cli.workflow;
 
-import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
+import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
@@ -41,7 +41,7 @@ public class Execute implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     logger.info("Executing the workflow {}", file);
-    var mapper = defaultObjectMapper();
+    var mapper = objectMapper();
     var configReader = new ConfigReader();
     var workflow = mapper.readValue(configReader.read(file.toAbsolutePath()), Workflow.class);
     try (var executor = new WorkflowExecutor(workflow)) {

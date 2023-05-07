@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.workflow.tasks;
 
-import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
+import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.openstreetmap.utils.StreamProgress;
+import org.apache.baremaps.stream.ProgressLogger;
 import org.apache.baremaps.stream.StreamUtils;
 import org.apache.baremaps.tilestore.*;
 import org.apache.baremaps.tilestore.file.FileTileStore;
@@ -53,7 +53,7 @@ public record ExportVectorTiles(
     var datasource = context.getDataSource(database);
 
     var configReader = new ConfigReader();
-    var objectMapper = defaultObjectMapper();
+    var objectMapper = objectMapper();
     var tileset = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
     var sourceTileStore = sourceTileStore(tileset, datasource);
     var targetTileStore = targetTileStore(tileset);
@@ -67,7 +67,7 @@ public record ExportVectorTiles(
 
     var stream =
         StreamUtils.stream(TileCoord.iterator(envelope, tileset.getMinzoom(), tileset.getMaxzoom()))
-            .peek(new StreamProgress<>(count, 5000));
+            .peek(new ProgressLogger<>(count, 5000));
 
     StreamUtils.batch(stream, 10).forEach(new TileChannel(sourceTileStore, targetTileStore));
   }

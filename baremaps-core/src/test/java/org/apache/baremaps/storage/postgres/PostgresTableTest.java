@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.storage.postgres;
 
-import static org.apache.baremaps.database.database.Constants.GEOMETRY_FACTORY;
+import static org.apache.baremaps.openstreetmap.repository.Constants.GEOMETRY_FACTORY;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;

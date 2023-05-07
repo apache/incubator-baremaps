@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.storage;
 
-import static org.apache.baremaps.database.database.Constants.GEOMETRY_FACTORY;
+import static org.apache.baremaps.openstreetmap.repository.Constants.GEOMETRY_FACTORY;
 
 import java.util.Iterator;
 import java.util.List;
