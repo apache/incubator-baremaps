@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.iploc.database;
+package org.apache.baremaps.utils;
 
 
 

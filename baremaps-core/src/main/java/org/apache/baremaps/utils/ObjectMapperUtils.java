@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.config;
+package org.apache.baremaps.utils;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -19,9 +19,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.baremaps.vectortile.expression.Expressions;
 
-public class DefaultObjectMapper {
+public class ObjectMapperUtils {
 
-  public static ObjectMapper defaultObjectMapper() {
+  public static ObjectMapper objectMapper() {
     return new ObjectMapper()
         .registerModule(Expressions.jacksonModule())
         .configure(Feature.IGNORE_UNKNOWN, true)

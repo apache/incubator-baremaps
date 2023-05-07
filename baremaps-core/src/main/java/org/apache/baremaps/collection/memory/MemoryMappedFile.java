@@ -21,7 +21,7 @@ import java.nio.channels.FileChannel.MapMode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import org.apache.baremaps.collection.utils.MappedByteBufferUtils;
+import org.apache.baremaps.utils.MappedByteBufferUtils;
 
 /** A memory that stores segments on-disk using mapped byte buffers in a file. */
 public class MemoryMappedFile extends Memory<MappedByteBuffer> {

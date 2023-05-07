@@ -12,7 +12,7 @@
 
 package org.apache.baremaps.cli.map;
 
-import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
+import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,7 +53,7 @@ public class Init implements Callable<Integer> {
       sources.setUrl("http://localhost:9000/tiles.json");
       styleObject.setSources(Map.of("baremaps", sources));
       Files.write(style,
-          defaultObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(styleObject));
+          objectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(styleObject));
       logger.info("Style initialized: {}", style);
     }
     if (tileset != null) {
@@ -62,7 +62,7 @@ public class Init implements Callable<Integer> {
       tilesetObject.setName("Baremaps");
       tilesetObject.setTiles(Arrays.asList("http://localhost:9000/tiles.json"));
       Files.write(tileset,
-          defaultObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(tilesetObject));
+          objectMapper().writerWithDefaultPrettyPrinter().writeValueAsBytes(tilesetObject));
       logger.info("Tileset initialized: {}", tileset);
     }
     return 0;

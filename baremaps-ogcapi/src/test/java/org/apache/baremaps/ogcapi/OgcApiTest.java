@@ -13,7 +13,7 @@
 package org.apache.baremaps.ogcapi;
 
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.newContextResolver;
-import static org.apache.baremaps.config.DefaultObjectMapper.defaultObjectMapper;
+import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -59,7 +59,7 @@ public abstract class OgcApiTest extends JerseyTest {
     var style = Paths.get("../examples/openstreetmap/style.json").toAbsolutePath();
     var tileset = Paths.get("../examples/openstreetmap/tileset.json").toAbsolutePath();
 
-    var objectMapper = defaultObjectMapper();
+    var objectMapper = objectMapper();
 
     Tileset config = null;
     try {

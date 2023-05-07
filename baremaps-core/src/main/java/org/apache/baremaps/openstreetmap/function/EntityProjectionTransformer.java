@@ -16,7 +16,7 @@ package org.apache.baremaps.openstreetmap.function;
 
 import java.util.function.Consumer;
 import org.apache.baremaps.openstreetmap.model.*;
-import org.apache.baremaps.openstreetmap.utils.ProjectionTransformer;
+import org.apache.baremaps.utils.ProjectionTransformer;
 import org.locationtech.jts.geom.Geometry;
 
 /** Changes the projection of the geometry of an entity via side-effects. */

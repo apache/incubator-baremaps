@@ -10,18 +10,25 @@
  * the License.
  */
 
-package org.apache.baremaps.openstreetmap.utils;
+package org.apache.baremaps.stream;
 
 
 
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** A consumer that accepts progress indications and periodically logs its state. */
-public class ProgressLogger implements Consumer<Long> {
+/**
+ * A utility class for peeking progress when processing a {@code Stream}.
+ *
+ * @param <T>
+ */
+public class ProgressLogger<T> implements Consumer<T> {
 
   private static final Logger logger = LoggerFactory.getLogger(ProgressLogger.class);
+
+  private final AtomicLong position = new AtomicLong(0);
 
   private final long size;
 
@@ -31,24 +38,25 @@ public class ProgressLogger implements Consumer<Long> {
   private volatile long timestamp;
 
   /**
-   * Construcs a progress logger.
+   * Constructs a {@code StreamProgress} that periodically logs progress.
    *
-   * @param size the maximal progress value
+   * @param size the size of the stream
    * @param tick the tick in milliseconds at with progress is logged
    */
-  public ProgressLogger(long size, int tick) {
+  public ProgressLogger(Long size, Integer tick) {
     this.size = size;
     this.tick = tick;
     this.timestamp = System.currentTimeMillis();
   }
 
   /**
-   * Accepts an indication of progress and periodically logs it.
+   * Accepts stream element and increments progress.
    *
-   * @param progress the progress value
+   * @param e the element
    */
   @Override
-  public void accept(Long progress) {
+  public void accept(T e) {
+    long progress = position.incrementAndGet();
     long t = System.currentTimeMillis();
     long l = timestamp;
     if (size >= 0 && t - l >= tick) {
