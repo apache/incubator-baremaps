@@ -33,9 +33,9 @@ import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.database.tile.Tile;
 import org.apache.baremaps.database.tile.TileStore;
 import org.apache.baremaps.database.tile.TileStoreException;
-import org.apache.baremaps.mvt.style.Style;
-import org.apache.baremaps.mvt.tileset.Tileset;
-import org.apache.baremaps.mvt.tileset.TilesetLayer;
+import org.apache.baremaps.vectortile.style.Style;
+import org.apache.baremaps.vectortile.tileset.Tileset;
+import org.apache.baremaps.vectortile.tileset.TilesetLayer;
 
 @Singleton
 @javax.ws.rs.Path("/")

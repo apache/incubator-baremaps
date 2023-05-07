@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.mvt.style;
+package org.apache.baremaps.vectortile.style;
 
 
 

@@ -10,17 +10,17 @@
  * the License.
  */
 
-package org.apache.baremaps.mvt;
+package org.apache.baremaps.vectortile;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.apache.baremaps.mvt.expression.Expressions;
-import org.apache.baremaps.mvt.expression.Expressions.*;
 import org.apache.baremaps.storage.Row;
 import org.apache.baremaps.storage.Schema;
+import org.apache.baremaps.vectortile.expression.Expressions;
+import org.apache.baremaps.vectortile.expression.Expressions.*;
 import org.junit.jupiter.api.Test;
 
 class ExpressionsTest {

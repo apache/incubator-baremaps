@@ -42,8 +42,8 @@ import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.database.tile.PostgresTileStore;
 import org.apache.baremaps.database.tile.Tile;
 import org.apache.baremaps.database.tile.TileStore;
-import org.apache.baremaps.mvt.style.Style;
-import org.apache.baremaps.mvt.tileset.Tileset;
+import org.apache.baremaps.vectortile.style.Style;
+import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
