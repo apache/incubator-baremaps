@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.database.tile;
+package org.apache.baremaps.tilestore.file;
 
 
 
@@ -19,6 +19,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.apache.baremaps.collection.utils.FileUtils;
+import org.apache.baremaps.tilestore.TileStore;
+import org.apache.baremaps.tilestore.TileStoreTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -37,7 +39,7 @@ class FileTileStoreTest extends TileStoreTest {
   }
 
   @Override
-  TileStore createTileStore() {
+  public TileStore createTileStore() {
     return new FileTileStore(directory);
   }
 }

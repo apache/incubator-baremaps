@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.database.tile;
+package org.apache.baremaps.tilestore;
 
 /** Signals that an exception occurred in a {@code TileStore}. */
 public class TileStoreException extends Exception {

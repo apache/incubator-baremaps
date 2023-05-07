@@ -10,12 +10,13 @@
  * the License.
  */
 
-package org.apache.baremaps.database.tile;
+package org.apache.baremaps.tilestore.postgres;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
+import org.apache.baremaps.tilestore.TileCoord;
 import org.junit.jupiter.api.Test;
 
 class PostgresTileStoreTest {

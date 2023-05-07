@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.database.tile;
+package org.apache.baremaps.tilestore.file;
 
 
 
@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.apache.baremaps.tilestore.TileCoord;
+import org.apache.baremaps.tilestore.TileStore;
+import org.apache.baremaps.tilestore.TileStoreException;
 
 /** Represents a {@code TileStore} baked by a directory. */
 public class FileTileStore implements TileStore {

@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.database.tile;
+package org.apache.baremaps.tilestore.postgres;
 
 
 
@@ -33,6 +33,10 @@ import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.Join;
+import org.apache.baremaps.tilestore.TileCoord;
+import org.apache.baremaps.tilestore.TileStore;
+import org.apache.baremaps.tilestore.TileStoreException;
+import org.apache.baremaps.tilestore.VariableUtils;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

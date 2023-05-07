@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.database.tile;
+package org.apache.baremaps.tilestore.mbtiles;
 
 
 
@@ -23,6 +23,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.baremaps.tilestore.TileCoord;
+import org.apache.baremaps.tilestore.TileStore;
+import org.apache.baremaps.tilestore.TileStoreException;
 
 /**
  * A {@code TileStore} implementation that uses the
