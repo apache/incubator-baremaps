@@ -12,26 +12,20 @@
 
 package org.apache.baremaps.ogcapi;
 
+import static org.junit.Assert.assertEquals;
 
+import javax.ws.rs.core.MediaType;
+import org.junit.Test;
+import org.junit.jupiter.api.Tag;
 
-import com.google.common.io.Resources;
-import java.io.IOException;
-import java.io.InputStream;
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+public class ConformanceResourceTest extends OgcApiTest {
 
-@Singleton
-@Path("/swagger")
-public class SwaggerResource {
-
-  public static final String SWAGGER_HTML = "swagger.html";
-
-  @GET
-  public Response get() throws IOException {
-    try (InputStream inputStream = Resources.getResource(SWAGGER_HTML).openStream()) {
-      return Response.ok().entity(inputStream.readAllBytes()).build();
-    }
+  @Test
+  @Tag("integration")
+  public void getConformance() {
+    var response = target().path("/conformance").request().get();
+    assertEquals(200, response.getStatus());
+    assertEquals(MediaType.APPLICATION_JSON_TYPE, response.getMediaType());
   }
+
 }

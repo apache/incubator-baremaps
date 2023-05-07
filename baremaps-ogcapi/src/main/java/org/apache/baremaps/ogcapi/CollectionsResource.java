@@ -12,86 +12,88 @@
 
 package org.apache.baremaps.ogcapi;
 
-
-
-import java.net.URI;
+import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.sql.DataSource;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import org.apache.baremaps.api.CollectionsApi;
-import org.apache.baremaps.model.Collection;
-import org.apache.baremaps.model.Collections;
-import org.apache.baremaps.model.Link;
-import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.qualifier.QualifiedType;
-import org.jdbi.v3.json.Json;
+import org.apache.baremaps.ogcapi.api.CollectionsApi;
+import org.apache.baremaps.ogcapi.model.Collection;
+import org.apache.baremaps.ogcapi.model.Collections;
+import org.apache.baremaps.ogcapi.model.Link;
+import org.apache.baremaps.storage.Table;
+import org.apache.baremaps.storage.postgres.PostgresStore;
 
+/**
+ * A resource that provides access to collections.
+ */
 @Singleton
 public class CollectionsResource implements CollectionsApi {
 
   @Context
   UriInfo uriInfo;
 
-  private static final QualifiedType<Collection> COLLECTION =
-      QualifiedType.of(Collection.class).with(Json.class);
+  private final PostgresStore store;
 
-  private final Jdbi jdbi;
-
+  /**
+   * Constructs a {@code CollectionsResource}.
+   *
+   * @param dataSource the datasource
+   */
   @Inject
-  public CollectionsResource(Jdbi jdbi) {
-    this.jdbi = jdbi;
+  public CollectionsResource(DataSource dataSource) {
+    this.store = new PostgresStore(dataSource);
   }
 
-  @Override
-  public Response addCollection(Collection collection) {
-    collection.setId(UUID.randomUUID().toString());
-    jdbi.useHandle(handle -> handle
-        .createUpdate(
-            "insert into collections (id, collection) values (:id, CAST(:collection AS JSONB))")
-        .bind("id", UUID.fromString(collection.getId()))
-        .bindByType("collection", collection, COLLECTION).execute());
-    return Response.created(URI.create("collections/" + collection.getId())).build();
-  }
-
-  @Override
-  public Response deleteCollection(UUID collectionId) {
-    jdbi.useHandle(handle -> handle.execute(
-        String.format("drop table if exists \"%s\"; delete from collections where id = (?)",
-            collectionId),
-        collectionId));
-    return Response.noContent().build();
-  }
-
-  @Override
-  public Response getCollection(UUID collectionId) {
-    Collection collection = jdbi.withHandle(
-        handle -> handle.createQuery("select collection from collections where id = :id")
-            .bind("id", collectionId).mapTo(COLLECTION).one());
-    collection.getLinks().add(new Link().href(uriInfo.getRequestUri().toString()).rel("self"));
-    return Response.ok(collection).build();
-  }
-
+  /**
+   * Returns the collections.
+   *
+   * @return the collections
+   */
   @Override
   public Response getCollections() {
-    List<Collection> collectionList = jdbi.withHandle(handle -> handle
-        .createQuery("select collection from collections").mapTo(COLLECTION).list());
-    collectionList.forEach(collection -> collection.getLinks().add(new Link()
-        .href(uriInfo.getRequestUri().toString() + "/" + collection.getId()).rel("self")));
-    Collections collections = new Collections().collections(collectionList);
-    collections.getLinks().add(new Link().href(uriInfo.getRequestUri().toString()).rel("self"));
-    return Response.ok(collections).build();
+    Collections collections = new Collections();
+    collections.setTimeStamp(new Date());
+    collections.setCollections(store.list().stream()
+        .map(store::get)
+        .map(this::getCollection)
+        .toList());
+    return Response.ok().entity(collections).build();
   }
 
+  /**
+   * Returns the collection with the specified id.
+   *
+   * @param collectionId the collection id
+   * @return the collection
+   */
   @Override
-  public Response updateCollection(UUID collectionId, Collection collection) {
-    jdbi.useHandle(handle -> handle
-        .createUpdate(
-            "update collections set collection = CAST(:collection AS JSONB) where id = :id")
-        .bind("id", collectionId).bindByType("collection", collection, COLLECTION).execute());
-    return Response.noContent().build();
+  public Response getCollection(String collectionId) {
+    var table = store.get(collectionId);
+    var collectionInfo = getCollection(table);
+    return Response.ok().entity(collectionInfo).build();
+  }
+
+  /**
+   * Returns the collection info for the specified table.
+   *
+   * @param table the table
+   * @return the collection info
+   */
+  private Collection getCollection(Table table) {
+    var name = table.schema().name();
+    var collection = new Collection();
+    collection.setId(name);
+    collection.setTitle(name);
+    collection.setDescription(name);
+    collection.setLinks(List.of(
+        new Link()
+            .href(uriInfo.getBaseUriBuilder().path("collections").path(name).build().toString())
+            .rel("items")
+            .type("application/json")));
+    return collection;
   }
 }

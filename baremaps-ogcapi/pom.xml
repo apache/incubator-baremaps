@@ -24,6 +24,31 @@
   <name>baremaps-ogcapi</name>
 
   <dependencies>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-data-jackson</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-data-jackson-jersey</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-http-netty</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-http-router-jersey</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-transport-netty</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- This dependency is the recommended artifact when using the openapi-generator.
     See: https://openapi-generator.tech/docs/plugins/#dependencies-->
     <dependency>
@@ -78,22 +103,6 @@
       <artifactId>js-scriptengine</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jdbi</groupId>
-      <artifactId>jdbi3-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jdbi</groupId>
-      <artifactId>jdbi3-jackson2</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jdbi</groupId>
-      <artifactId>jdbi3-postgis</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jdbi</groupId>
-      <artifactId>jdbi3-postgres</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.junit.vintage</groupId>
       <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
@@ -121,7 +130,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${version.plugin.maven-surefire-plugin}</version>
         <configuration>
-          <excludes>**/*IntegrationTest.java</excludes>
+          <excludes>**/ogcapi/*Test.java</excludes>
           <excludedGroups>integration</excludedGroups>
         </configuration>
         <dependencies>
@@ -143,12 +152,12 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/ogcapi-openapi.yaml</inputSpec>
+              <inputSpec>${project.basedir}/src/main/resources/ogcapi.yaml</inputSpec>
               <generatorName>jaxrs-spec</generatorName>
               <configOptions>
-                <apiPackage>org.apache.baremaps.api</apiPackage>
+                <apiPackage>org.apache.baremaps.ogcapi.api</apiPackage>
                 <interfaceOnly>true</interfaceOnly>
-                <modelPackage>org.apache.baremaps.model</modelPackage>
+                <modelPackage>org.apache.baremaps.ogcapi.model</modelPackage>
                 <returnResponse>true</returnResponse>
                 <sortModelPropertiesByRequiredFlag>false</sortModelPropertiesByRequiredFlag>
                 <sortParamsByRequiredFlag>false</sortParamsByRequiredFlag>

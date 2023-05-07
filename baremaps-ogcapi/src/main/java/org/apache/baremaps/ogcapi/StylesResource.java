@@ -13,98 +13,74 @@
 package org.apache.baremaps.ogcapi;
 
 
-
-import java.net.URI;
-import java.util.ArrayList;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import org.apache.baremaps.api.StylesApi;
-import org.apache.baremaps.model.Link;
-import org.apache.baremaps.model.MbStyle;
-import org.apache.baremaps.model.StyleSet;
-import org.apache.baremaps.model.StyleSetEntry;
-import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.core.qualifier.QualifiedType;
-import org.jdbi.v3.json.Json;
+import org.apache.baremaps.config.ConfigReader;
+import org.apache.baremaps.mvt.style.Style;
+import org.apache.baremaps.mvt.style.StyleSource;
+import org.apache.baremaps.ogcapi.api.StylesApi;
+import org.apache.baremaps.ogcapi.model.StyleSet;
+import org.apache.baremaps.ogcapi.model.StyleSetEntry;
 
+/**
+ * The styles resource.
+ */
 @Singleton
 public class StylesResource implements StylesApi {
 
-  private static final QualifiedType<MbStyle> MBSTYLE =
-      QualifiedType.of(MbStyle.class).with(Json.class);
+  private final Style style;
 
-  private final Jdbi jdbi;
-
-  @Context
-  UriInfo uriInfo;
-
+  /**
+   * Constructs a {@code StylesResource}.
+   *
+   * @param style
+   * @param objectMapper
+   * @throws IOException
+   */
   @Inject
-  public StylesResource(Jdbi jdbi) {
-    this.jdbi = jdbi;
+  public StylesResource(@Context UriInfo uriInfo, @Named("style") Path style,
+      ObjectMapper objectMapper) throws IOException {
+    this.style = objectMapper.readValue(new ConfigReader().read(style), Style.class);
+    var source = new StyleSource();
+    source.setType("vector");
+    source.setUrl(uriInfo.getBaseUri().toString() + "tiles/default");
+    this.style.setSources(Map.of("baremaps", source));
   }
 
-  @Override
-  public Response addStyle(MbStyle mbStyle) {
-    UUID styleId = UUID.randomUUID(); // TODO: Read from body
-    jdbi.useHandle(handle -> handle
-        .createUpdate("insert into styles (id, style) values (:id, CAST(:json AS jsonb))")
-        .bindByType("json", mbStyle, MBSTYLE).bind("id", styleId).execute());
-    return Response.created(URI.create("styles/" + styleId)).build();
-  }
-
-  @Override
-  public Response deleteStyle(UUID styleId) {
-    jdbi.useHandle(handle -> handle.execute("delete from styles where id = (?)", styleId));
-
-    return Response.noContent().build();
-  }
-
-  @Override
-  public Response getStyle(UUID styleId) {
-    MbStyle style =
-        jdbi.withHandle(handle -> handle.createQuery("select style from styles where id = :id")
-            .bind("id", styleId).mapTo(MBSTYLE).one());
-
-    return Response.ok(style).build();
-  }
-
+  /**
+   * Get the style set.
+   */
   @Override
   public Response getStyleSet() {
-    List<UUID> ids = jdbi
-        .withHandle(handle -> handle.createQuery("select id from styles").mapTo(UUID.class).list());
-
-    StyleSet styleSet = new StyleSet();
-    List<StyleSetEntry> entries = new ArrayList<>();
-
-    String address = uriInfo.getRequestUri().toString();
-    for (UUID id : ids) {
-      Link link = new Link();
-      link.setHref(address + id);
-      link.setType("application/vnd.mapbox.style+json");
-      link.setRel("stylesheet");
-
-      StyleSetEntry entry = new StyleSetEntry();
-      entry.setId(id);
-      entry.setLinks(List.of(link));
-
-      entries.add(entry);
-    }
-
-    styleSet.setStyles(entries);
-
+    var styleSetEntry = new StyleSetEntry();
+    styleSetEntry.setId("default");
+    var styleSet = new StyleSet();
+    styleSet.setStyles(List.of(styleSetEntry));
     return Response.ok(styleSet).build();
   }
 
+  /**
+   * Get the style.
+   */
   @Override
-  public Response updateStyle(UUID styleId, MbStyle mbStyle) {
-    jdbi.useHandle(handle -> handle.createUpdate("update styles set style = :json where id = :id")
-        .bindByType("json", mbStyle, MBSTYLE).bind("id", styleId).execute());
+  public Response getStyle(String styleId) {
+    return Response.ok(style).build();
+  }
 
-    return Response.noContent().build();
+  /**
+   * Get the style metadata.
+   */
+  @Override
+  public Response getStyleMetadata(String styleId) {
+    throw new UnsupportedOperationException();
   }
 }

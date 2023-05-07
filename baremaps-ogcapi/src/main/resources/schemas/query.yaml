@@ -1,9 +1,0 @@
-# Extension to TileJSON 3.0
-type: object
-properties:
-  minzoom:
-    type: integer
-  maxzoom:
-    type: integer
-  sql:
-    type: string

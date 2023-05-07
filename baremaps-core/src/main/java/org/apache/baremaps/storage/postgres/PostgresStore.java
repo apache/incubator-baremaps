@@ -41,6 +41,8 @@ public class PostgresStore implements Store {
 
   private static final Logger logger = LoggerFactory.getLogger(PostgresStore.class);
 
+  private static final String[] TYPES = new String[] {"TABLE", "VIEW"};
+
   protected static final Map<Class, String> typeToName = Map.ofEntries(
       Map.entry(String.class, "varchar"),
       Map.entry(Short.class, "int2"),
@@ -110,7 +112,7 @@ public class PostgresStore implements Store {
   @Override
   public Collection<String> list() throws TableException {
     DatabaseMetadata metadata = new DatabaseMetadata(dataSource);
-    return metadata.getTableMetaData(null, "public", null, null).stream()
+    return metadata.getTableMetaData(null, "public", null, TYPES).stream()
         .map(table -> table.table().tableName())
         .collect(Collectors.toList());
   }
@@ -121,7 +123,7 @@ public class PostgresStore implements Store {
   @Override
   public Table get(String name) throws TableException {
     var databaseMetadata = new DatabaseMetadata(dataSource);
-    var tableMetadata = databaseMetadata.getTableMetaData(null, null, name, null)
+    var tableMetadata = databaseMetadata.getTableMetaData(null, null, name, TYPES)
         .stream().findFirst();
     if (tableMetadata.isEmpty()) {
       throw new TableException("Table " + name + " does not exist.");

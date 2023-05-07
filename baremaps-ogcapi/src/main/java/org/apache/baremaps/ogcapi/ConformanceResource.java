@@ -17,24 +17,28 @@ package org.apache.baremaps.ogcapi;
 import java.util.Arrays;
 import javax.inject.Singleton;
 import javax.ws.rs.core.Response;
-import org.apache.baremaps.api.ConformanceApi;
-import org.apache.baremaps.model.ConfClasses;
+import org.apache.baremaps.ogcapi.api.ConformanceApi;
+import org.apache.baremaps.ogcapi.model.ConformanceClasses;
 
+/**
+ * The conformance resource.
+ */
 @Singleton
 public class ConformanceResource implements ConformanceApi {
 
+  /**
+   * Get the conformance classes.
+   */
   @Override
-  public Response getConformanceDeclaration() {
-    ConfClasses confClasses = new ConfClasses();
-    confClasses
-        .setConformsTo(Arrays.asList("http://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
-            "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/core",
-            "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/json",
-            "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/manage-styles",
-            "http://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/mapbox-styles",
-            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core",
-            "http://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset"));
-
+  public Response getConformance() {
+    ConformanceClasses confClasses = new ConformanceClasses();
+    confClasses.setConformsTo(Arrays.asList(
+        "https://www.opengis.net/spec/ogcapi-common-1/1.0/conf/core",
+        "https://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/core",
+        "https://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/json",
+        "https://www.opengis.net/spec/ogcapi-styles-1/1.0/conf/mapbox-styles",
+        "https://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/core",
+        "https://www.opengis.net/spec/ogcapi-tiles-1/1.0/conf/tileset"));
     return Response.ok().entity(confClasses).build();
   }
 }
