@@ -16,6 +16,8 @@ package org.apache.baremaps.testing;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import java.io.IOException;
+import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +31,7 @@ public abstract class PostgresContainerTest {
   private DataSource dataSource;
 
   @BeforeEach
-  public void startContainer() {
+  public void startContainer() throws SQLException, IOException {
     // start the container
     var postgis =
         DockerImageName.parse("ghcr.io/baosystems/postgis:14-3.3")
@@ -39,7 +41,6 @@ public abstract class PostgresContainerTest {
 
     // set the datasource
     HikariConfig config = new HikariConfig();
-    config.setPoolName("BaremapsDataSource");
     config.setJdbcUrl(jdbcUrl());
     dataSource = new HikariDataSource(config);
   }

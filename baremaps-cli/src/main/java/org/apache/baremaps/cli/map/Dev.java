@@ -22,7 +22,7 @@ import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
-import org.apache.baremaps.database.PostgresUtils;
+import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.server.DevResources;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;

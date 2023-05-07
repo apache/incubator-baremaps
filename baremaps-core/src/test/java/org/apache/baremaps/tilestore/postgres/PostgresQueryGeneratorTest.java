@@ -16,11 +16,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import javax.sql.DataSource;
-import org.apache.baremaps.database.database.DatabaseContainerTest;
+import org.apache.baremaps.openstreetmap.postgres.PostgresRepositoryTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-class PostgresQueryGeneratorTest extends DatabaseContainerTest {
+class PostgresQueryGeneratorTest extends PostgresRepositoryTest {
 
   @Test
   @Tag("integration")

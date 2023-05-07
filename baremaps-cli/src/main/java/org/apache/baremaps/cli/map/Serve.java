@@ -23,7 +23,7 @@ import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.database.PostgresUtils;
+import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.server.ServerResources;
 import org.apache.baremaps.tilestore.TileCache;

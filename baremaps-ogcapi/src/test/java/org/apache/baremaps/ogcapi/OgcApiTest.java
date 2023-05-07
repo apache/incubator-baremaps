@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.sql.DataSource;
-import org.apache.baremaps.database.PostgresUtils;
+import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.vectortile.tileset.Tileset;

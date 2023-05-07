@@ -22,21 +22,21 @@ import org.apache.baremaps.collection.IndexedDataMap;
 import org.apache.baremaps.collection.memory.OnHeapMemory;
 import org.apache.baremaps.collection.type.CoordinateDataType;
 import org.apache.baremaps.collection.type.LongListDataType;
-import org.apache.baremaps.database.DiffService;
-import org.apache.baremaps.database.collection.PostgresCoordinateMap;
-import org.apache.baremaps.database.collection.PostgresReferenceMap;
-import org.apache.baremaps.database.database.DatabaseContainerTest;
-import org.apache.baremaps.database.repository.PostgresHeaderRepository;
-import org.apache.baremaps.database.repository.PostgresNodeRepository;
-import org.apache.baremaps.database.repository.PostgresRelationRepository;
-import org.apache.baremaps.database.repository.PostgresWayRepository;
+import org.apache.baremaps.openstreetmap.DiffService;
 import org.apache.baremaps.openstreetmap.model.Header;
+import org.apache.baremaps.openstreetmap.postgres.PostgresCoordinateMap;
+import org.apache.baremaps.openstreetmap.postgres.PostgresHeaderRepository;
+import org.apache.baremaps.openstreetmap.postgres.PostgresNodeRepository;
+import org.apache.baremaps.openstreetmap.postgres.PostgresReferenceMap;
+import org.apache.baremaps.openstreetmap.postgres.PostgresRelationRepository;
+import org.apache.baremaps.openstreetmap.postgres.PostgresRepositoryTest;
+import org.apache.baremaps.openstreetmap.postgres.PostgresWayRepository;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 
-class ImportMonacoTest extends DatabaseContainerTest {
+class ImportMonacoTest extends PostgresRepositoryTest {
 
   @Test
   @Tag("integration")
