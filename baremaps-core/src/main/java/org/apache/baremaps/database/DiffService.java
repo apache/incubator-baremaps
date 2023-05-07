@@ -29,7 +29,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.baremaps.collection.DataMap;
 import org.apache.baremaps.database.repository.HeaderRepository;
 import org.apache.baremaps.database.repository.Repository;
-import org.apache.baremaps.database.tile.Tile;
+import org.apache.baremaps.database.tile.TileCoord;
 import org.apache.baremaps.openstreetmap.function.EntityGeometryBuilder;
 import org.apache.baremaps.openstreetmap.function.EntityToGeometryMapper;
 import org.apache.baremaps.openstreetmap.model.*;
@@ -41,7 +41,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DiffService implements Callable<List<Tile>> {
+public class DiffService implements Callable<List<TileCoord>> {
 
   private static final Logger logger = LoggerFactory.getLogger(DiffService.class);
 
@@ -69,7 +69,7 @@ public class DiffService implements Callable<List<Tile>> {
   }
 
   @Override
-  public List<Tile> call() throws Exception {
+  public List<TileCoord> call() throws Exception {
     logger.info("Importing changes");
 
     var header = headerRepository.selectLatest();
@@ -86,10 +86,10 @@ public class DiffService implements Callable<List<Tile>> {
     }
   }
 
-  private Stream<Tile> tilesForGeometry(Geometry geometry) {
+  private Stream<TileCoord> tilesForGeometry(Geometry geometry) {
     return StreamSupport.stream(
         Spliterators.spliteratorUnknownSize(
-            Tile.iterator(geometry.getEnvelopeInternal(), zoom, zoom), Spliterator.IMMUTABLE),
+            TileCoord.iterator(geometry.getEnvelopeInternal(), zoom, zoom), Spliterator.IMMUTABLE),
         false);
   }
 

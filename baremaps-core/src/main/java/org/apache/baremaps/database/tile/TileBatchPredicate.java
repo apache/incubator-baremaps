@@ -17,7 +17,7 @@ package org.apache.baremaps.database.tile;
 import java.util.function.Predicate;
 
 /** A predicate that filters tiles according to the index of a batch. */
-public class TileBatchPredicate implements Predicate<Tile> {
+public class TileBatchPredicate implements Predicate<TileCoord> {
 
   private final int batchArraySize;
 
@@ -37,11 +37,11 @@ public class TileBatchPredicate implements Predicate<Tile> {
   /**
    * Returns true if the tile belongs to the current batch.
    *
-   * @param tile the tile
+   * @param tileCoord the tile coordinate
    * @return the result
    */
   @Override
-  public boolean test(Tile tile) {
-    return batchArraySize <= 1 || tile.index() % batchArraySize == batchArrayIndex;
+  public boolean test(TileCoord tileCoord) {
+    return batchArraySize <= 1 || tileCoord.index() % batchArraySize == batchArrayIndex;
   }
 }

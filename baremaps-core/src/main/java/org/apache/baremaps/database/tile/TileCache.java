@@ -30,7 +30,7 @@ public class TileCache implements TileStore {
 
   private final TileStore tileStore;
 
-  private final Cache<Tile, ByteBuffer> cache;
+  private final Cache<TileCoord, ByteBuffer> cache;
 
   /**
    * Decorates the TileStore with a cache.
@@ -40,9 +40,9 @@ public class TileCache implements TileStore {
    */
   public TileCache(TileStore tileStore, CaffeineSpec spec) {
     this.tileStore = tileStore;
-    this.cache = Caffeine.from(spec).weigher(new Weigher<Tile, ByteBuffer>() {
+    this.cache = Caffeine.from(spec).weigher(new Weigher<TileCoord, ByteBuffer>() {
       @Override
-      public @NonNegative int weigh(Tile tile, ByteBuffer blob) {
+      public @NonNegative int weigh(TileCoord tileCoord, ByteBuffer blob) {
         return 28 + blob.capacity();
       }
     }).build();
@@ -50,8 +50,8 @@ public class TileCache implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public ByteBuffer read(Tile tile) throws TileStoreException {
-    return cache.get(tile, t -> {
+  public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
+    return cache.get(tileCoord, t -> {
       try {
         var buffer = tileStore.read(t);
         if (buffer == null) {
@@ -68,15 +68,15 @@ public class TileCache implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public void write(Tile tile, ByteBuffer bytes) throws TileStoreException {
-    tileStore.write(tile, bytes);
-    cache.invalidate(tile);
+  public void write(TileCoord tileCoord, ByteBuffer bytes) throws TileStoreException {
+    tileStore.write(tileCoord, bytes);
+    cache.invalidate(tileCoord);
   }
 
   /** {@inheritDoc} */
   @Override
-  public void delete(Tile tile) throws TileStoreException {
-    tileStore.delete(tile);
-    cache.invalidate(tile);
+  public void delete(TileCoord tileCoord) throws TileStoreException {
+    tileStore.delete(tileCoord);
+    cache.invalidate(tileCoord);
   }
 }

@@ -25,8 +25,8 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import org.locationtech.jts.geom.Envelope;
 
-/** A {@code Tile} represents data based on a square extent within a projection. */
-public final class Tile implements Comparable<Tile> {
+/** A {@code TileCoord} represents tile coordinate based on a square extent within a projection. */
+public final class TileCoord implements Comparable<TileCoord> {
 
   private static final double EPSILON = 0.0000001;
 
@@ -46,11 +46,11 @@ public final class Tile implements Comparable<Tile> {
   private final int z;
 
   /**
-   * Constructs a tile from its index.
+   * Constructs a tile coordinate from its index.
    *
    * @param index the index
    */
-  public Tile(int index) {
+  public TileCoord(int index) {
     int zoom = 0;
     long offset = 0;
     long count = 1;
@@ -66,44 +66,44 @@ public final class Tile implements Comparable<Tile> {
   }
 
   /**
-   * Constructs a tile from its coordinates.
+   * Constructs a tile coordinate from its coordinates.
    *
    * @param x the x coordinate
    * @param y the y coordinate
    * @param z the zoom level
    */
-  public Tile(int x, int y, int z) {
+  public TileCoord(int x, int y, int z) {
     this.x = x;
     this.y = y;
     this.z = z;
   }
 
   /**
-   * Return an iterator for the tiles that overlap with an envelope.
+   * Return an iterator for the tile coordinates that overlap with an envelope.
    *
    * @param envelope the envelope
    * @param minzoom the minimum zoom level
    * @param maxzoom the maximum zoom level
    * @return the iterator
    */
-  public static Iterator<Tile> iterator(Envelope envelope, int minzoom, int maxzoom) {
-    return new TileIterator(envelope, minzoom, maxzoom);
+  public static Iterator<TileCoord> iterator(Envelope envelope, int minzoom, int maxzoom) {
+    return new TileCoordIterator(envelope, minzoom, maxzoom);
   }
 
   /**
-   * Return a list for the tiles that overlap with an envelope.
+   * Return a list for the tile coordinates that overlap with an envelope.
    *
    * @param envelope the envelope
    * @param minzoom the minimum zoom level
    * @param maxzoom the maximum zoom level
    * @return the iterator
    */
-  public static List<Tile> list(Envelope envelope, int minzoom, int maxzoom) {
+  public static List<TileCoord> list(Envelope envelope, int minzoom, int maxzoom) {
     return ImmutableList.copyOf(iterator(envelope, minzoom, maxzoom));
   }
 
   /**
-   * Counts the tiles that overlap with an envelope.
+   * Counts the tile coordinates that overlap with an envelope.
    *
    * @param envelope the envelope
    * @param minzoom the minimum zoom level
@@ -113,31 +113,31 @@ public final class Tile implements Comparable<Tile> {
   public static long count(Envelope envelope, int minzoom, int maxzoom) {
     int count = 0;
     for (int zoom = minzoom; zoom <= maxzoom; zoom++) {
-      Tile min = min(envelope, zoom);
-      Tile max = max(envelope, zoom);
+      TileCoord min = min(envelope, zoom);
+      TileCoord max = max(envelope, zoom);
       count += (max.x() - min.x() + 1) * (max.y() - min.y() + 1);
     }
     return count;
   }
 
   /**
-   * Returns the tile at a given coordinate.
+   * Returns the tile coordinate at a given longitude, latitude, and zoom.
    *
    * @param lon the longitude
    * @param lat the latitude
    * @param z the zoom level
    * @return the tile
    */
-  public static Tile fromLonLat(double lon, double lat, int z) {
+  public static TileCoord fromLonLat(double lon, double lat, int z) {
     int x = (int) ((lon + 180.0) / 360.0 * (1 << z));
     int y = (int) ((1
         - Math.log(Math.tan(Math.toRadians(lat)) + 1 / Math.cos(Math.toRadians(lat))) / Math.PI)
         / 2.0 * (1 << z));
-    return new Tile(x, y, z);
+    return new TileCoord(x, y, z);
   }
 
   /**
-   * Returns the index of the tile.
+   * Returns the index of the tile coordinate.
    *
    * @return the index
    */
@@ -150,7 +150,7 @@ public final class Tile implements Comparable<Tile> {
   }
 
   /**
-   * Returns the x coordinate of the tile.
+   * Returns the x coordinate of the tile coordinate.
    *
    * @return the x coordinate
    */
@@ -159,7 +159,7 @@ public final class Tile implements Comparable<Tile> {
   }
 
   /**
-   * Returns the y coordinate of the tile.
+   * Returns the y coordinate of the tile coordinate.
    *
    * @return the y coordinate
    */
@@ -168,7 +168,7 @@ public final class Tile implements Comparable<Tile> {
   }
 
   /**
-   * Returns the zoom level of the tile.
+   * Returns the zoom level of the tile coordinate.
    *
    * @return the zoom level
    */
@@ -177,16 +177,16 @@ public final class Tile implements Comparable<Tile> {
   }
 
   /**
-   * Returns the parent tile in the hierarchy.
+   * Returns the parent tile coordinate in the pyramid.
    *
    * @return the parent tile
    */
-  public Tile parent() {
-    return new Tile(x / 2, y / 2, z - 1);
+  public TileCoord parent() {
+    return new TileCoord(x / 2, y / 2, z - 1);
   }
 
   /**
-   * Returns the envelope of the tile.
+   * Returns the envelope of the tile coordinate.
    *
    * @return the envelope
    */
@@ -198,21 +198,21 @@ public final class Tile implements Comparable<Tile> {
     return new Envelope(x1, x2, y1, y2);
   }
 
-  protected static double tile2lon(int x, int z) {
+  public static double tile2lon(int x, int z) {
     return x / Math.pow(2.0, z) * 360.0 - 180;
   }
 
-  protected static double tile2lat(int y, int z) {
+  public static double tile2lat(int y, int z) {
     double n = Math.PI - (2.0 * Math.PI * y) / Math.pow(2.0, z);
     return Math.toDegrees(Math.atan(Math.sinh(n)));
   }
 
-  protected static Tile min(Envelope envelope, int zoom) {
-    return Tile.fromLonLat(envelope.getMinX(), envelope.getMaxY(), zoom);
+  public static TileCoord min(Envelope envelope, int zoom) {
+    return TileCoord.fromLonLat(envelope.getMinX(), envelope.getMaxY(), zoom);
   }
 
-  protected static Tile max(Envelope envelope, int zoom) {
-    return Tile.fromLonLat(envelope.getMaxX() - EPSILON, envelope.getMinY() + EPSILON, zoom);
+  public static TileCoord max(Envelope envelope, int zoom) {
+    return TileCoord.fromLonLat(envelope.getMaxX() - EPSILON, envelope.getMinY() + EPSILON, zoom);
   }
 
   /** {@inheritDoc} */
@@ -224,7 +224,7 @@ public final class Tile implements Comparable<Tile> {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Tile that = (Tile) o;
+    TileCoord that = (TileCoord) o;
     return x == that.x && y == that.y && z == that.z;
   }
 
@@ -242,7 +242,7 @@ public final class Tile implements Comparable<Tile> {
 
   /** {@inheritDoc} */
   @Override
-  public int compareTo(Tile that) {
+  public int compareTo(TileCoord that) {
     return Long.compare(this.index(), that.index());
   }
 }

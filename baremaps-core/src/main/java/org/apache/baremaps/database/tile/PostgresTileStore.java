@@ -95,14 +95,14 @@ public class PostgresTileStore implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public ByteBuffer read(Tile tile) throws TileStoreException {
+  public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
     try (Connection connection = datasource.getConnection();
         Statement statement = connection.createStatement();
         ByteArrayOutputStream data = new ByteArrayOutputStream()) {
 
       int length = 0;
-      if (queries.stream().anyMatch(query -> zoomPredicate(query, tile.z()))) {
-        String sql = withQuery(tile);
+      if (queries.stream().anyMatch(query -> zoomPredicate(query, tileCoord.z()))) {
+        String sql = withQuery(tileCoord);
         logger.debug("Executing query: {}", sql);
         try (GZIPOutputStream gzip = new GZIPOutputStream(data);
             ResultSet resultSet = statement.executeQuery(sql)) {
@@ -127,16 +127,16 @@ public class PostgresTileStore implements TileStore {
   /**
    * Returns a WITH query for the provided tile.
    *
-   * @param tile the tile
+   * @param tileCoord the tile
    * @return the WITH query
    */
-  protected String withQuery(Tile tile) {
-    int zoom = tile.z();
+  protected String withQuery(TileCoord tileCoord) {
+    int zoom = tileCoord.z();
     String sourceQueries = ctes(queries, zoom);
     String targetQueries = statements(queries, zoom);
     String withQuery = String.format(WITH_QUERY, sourceQueries, targetQueries);
     Map<String, String> variables =
-        Map.of("envelope", tileEnvelope(tile), "zoom", String.valueOf(zoom));
+        Map.of("envelope", tileEnvelope(tileCoord), "zoom", String.valueOf(zoom));
     return VariableUtils.interpolate(variables, withQuery);
   }
 
@@ -228,17 +228,17 @@ public class PostgresTileStore implements TileStore {
         query.getAst().getJoins());
   }
 
-  protected String tileEnvelope(Tile tile) {
-    return String.format(TILE_ENVELOPE, tile.z(), tile.x(), tile.y());
+  protected String tileEnvelope(TileCoord tileCoord) {
+    return String.format(TILE_ENVELOPE, tileCoord.z(), tileCoord.x(), tileCoord.y());
   }
 
   /** This operation is not supported. */
-  public void write(Tile tile, ByteBuffer blob) {
+  public void write(TileCoord tileCoord, ByteBuffer blob) {
     throw new UnsupportedOperationException("The postgis tile store is read only");
   }
 
   /** This operation is not supported. */
-  public void delete(Tile tile) {
+  public void delete(TileCoord tileCoord) {
     throw new UnsupportedOperationException("The postgis tile store is read only");
   }
 

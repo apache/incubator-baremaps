@@ -23,13 +23,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.database.tile.FileTileStore;
-import org.apache.baremaps.database.tile.MBTiles;
-import org.apache.baremaps.database.tile.PostgresTileStore;
-import org.apache.baremaps.database.tile.Tile;
-import org.apache.baremaps.database.tile.TileChannel;
-import org.apache.baremaps.database.tile.TileStore;
-import org.apache.baremaps.database.tile.TileStoreException;
+import org.apache.baremaps.database.tile.*;
+import org.apache.baremaps.database.tile.TileCoord;
 import org.apache.baremaps.openstreetmap.utils.StreamProgress;
 import org.apache.baremaps.stream.StreamUtils;
 import org.apache.baremaps.vectortile.tileset.Tileset;
@@ -66,10 +61,10 @@ public record ExportVectorTiles(
             tileset.getBounds().get(0), tileset.getBounds().get(2),
             tileset.getBounds().get(1), tileset.getBounds().get(3));
 
-    var count = Tile.count(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
+    var count = TileCoord.count(envelope, tileset.getMinzoom(), tileset.getMaxzoom());
 
     var stream =
-        StreamUtils.stream(Tile.iterator(envelope, tileset.getMinzoom(), tileset.getMaxzoom()))
+        StreamUtils.stream(TileCoord.iterator(envelope, tileset.getMinzoom(), tileset.getMaxzoom()))
             .peek(new StreamProgress<>(count, 5000));
 
     StreamUtils.batch(stream, 10).forEach(new TileChannel(sourceTileStore, targetTileStore));

@@ -27,19 +27,19 @@ public abstract class TileStoreTest {
   @Tag("integration")
   void readWriteDeleteTile() throws Exception {
     TileStore tileStore = createTileStore();
-    Tile tile = new Tile(1, 2, 3);
+    TileCoord tileCoord = new TileCoord(1, 2, 3);
     ByteBuffer blob = ByteBuffer.wrap("tile_content".getBytes());
 
     // Write data
-    tileStore.write(tile, blob);
+    tileStore.write(tileCoord, blob);
 
     // Read the data
-    ByteBuffer inputStream = tileStore.read(tile);
+    ByteBuffer inputStream = tileStore.read(tileCoord);
     assertArrayEquals(blob.array(), inputStream.array());
 
     // Delete the data
-    tileStore.delete(tile);
-    assertThrows(TileStoreException.class, () -> tileStore.read(tile));
+    tileStore.delete(tileCoord);
+    assertThrows(TileStoreException.class, () -> tileStore.read(tileCoord));
   }
 
   abstract TileStore createTileStore() throws Exception;

@@ -68,12 +68,12 @@ public class MBTiles implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public ByteBuffer read(Tile tile) throws TileStoreException {
+  public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_TILE)) {
-      statement.setInt(1, tile.z());
-      statement.setInt(2, tile.x());
-      statement.setInt(3, reverseY(tile.y(), tile.z()));
+      statement.setInt(1, tileCoord.z());
+      statement.setInt(2, tileCoord.x());
+      statement.setInt(3, reverseY(tileCoord.y(), tileCoord.z()));
       try (ResultSet resultSet = statement.executeQuery()) {
         if (resultSet.next()) {
           return ByteBuffer.wrap(resultSet.getBytes("tile_data"));
@@ -88,12 +88,12 @@ public class MBTiles implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public void write(Tile tile, ByteBuffer blob) throws TileStoreException {
+  public void write(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
-      statement.setInt(1, tile.z());
-      statement.setInt(2, tile.x());
-      statement.setInt(3, reverseY(tile.y(), tile.z()));
+      statement.setInt(1, tileCoord.z());
+      statement.setInt(2, tileCoord.x());
+      statement.setInt(3, reverseY(tileCoord.y(), tileCoord.z()));
       statement.setBytes(4, blob.array());
       statement.executeUpdate();
     } catch (SQLException e) {
@@ -103,12 +103,12 @@ public class MBTiles implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public void delete(Tile tile) throws TileStoreException {
+  public void delete(TileCoord tileCoord) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(DELETE_TILE)) {
-      statement.setInt(1, tile.z());
-      statement.setInt(2, tile.x());
-      statement.setInt(3, reverseY(tile.y(), tile.z()));
+      statement.setInt(1, tileCoord.z());
+      statement.setInt(2, tileCoord.x());
+      statement.setInt(3, reverseY(tileCoord.y(), tileCoord.z()));
       statement.execute();
     } catch (SQLException e) {
       throw new TileStoreException(e);

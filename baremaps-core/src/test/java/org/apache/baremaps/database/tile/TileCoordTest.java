@@ -17,23 +17,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Envelope;
 
-class TileTest {
+class TileCoordTest {
 
   @Test
   void getTile() {
     double lon = 0, lat = 0;
     for (int z = 0; z <= 14; z += 1) {
-      Tile tile = Tile.fromLonLat(lon, lat, z);
+      TileCoord tileCoord = TileCoord.fromLonLat(lon, lat, z);
       int value = (int) Math.pow(2, z - 1);
-      assertEquals(value, tile.x());
-      assertEquals(value, tile.y());
+      assertEquals(value, tileCoord.x());
+      assertEquals(value, tileCoord.y());
     }
   }
 
   @Test
   void count() {
-    Envelope envelope = new Tile(0, 0, 0).envelope();
-    assertEquals(Tile.count(envelope, 0, 2), Tile.list(envelope, 0, 2).size());
+    Envelope envelope = new TileCoord(0, 0, 0).envelope();
+    assertEquals(TileCoord.count(envelope, 0, 2), TileCoord.list(envelope, 0, 2).size());
   }
 
   @Test
@@ -45,7 +45,7 @@ class TileTest {
     int minZoom = 12;
     int maxZoom = 14;
     Envelope envelope = new Envelope(minLon, maxLon, minLat, maxLat);
-    assertEquals(Tile.count(envelope, minZoom, maxZoom),
-        Tile.list(envelope, minZoom, maxZoom).size());
+    assertEquals(TileCoord.count(envelope, minZoom, maxZoom),
+        TileCoord.list(envelope, minZoom, maxZoom).size());
   }
 }
