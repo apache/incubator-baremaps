@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.mvt.tileset;
+package org.apache.baremaps.vectortile.tileset;
 
 
 

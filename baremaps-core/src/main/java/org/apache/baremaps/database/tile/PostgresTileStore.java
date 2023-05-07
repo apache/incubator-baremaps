@@ -33,7 +33,7 @@ import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.Join;
-import org.apache.baremaps.mvt.tileset.Tileset;
+import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

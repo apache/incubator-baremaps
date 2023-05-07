@@ -38,7 +38,6 @@ public record CreateGeonamesIndex(Path dataFile, Path indexDirectory) implements
   public void execute(WorkflowContext context) throws Exception {
     var directory = MMapDirectory.open(indexDirectory);
     var config = new IndexWriterConfig(GeocoderConstants.ANALYZER);
-
     try (var indexWriter = new IndexWriter(directory, config);
         var inputStream = Files.newInputStream(dataFile)) {
       indexWriter.deleteAll();

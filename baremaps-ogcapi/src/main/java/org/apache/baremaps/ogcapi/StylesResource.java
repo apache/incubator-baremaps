@@ -25,11 +25,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.mvt.style.Style;
-import org.apache.baremaps.mvt.style.StyleSource;
 import org.apache.baremaps.ogcapi.api.StylesApi;
 import org.apache.baremaps.ogcapi.model.StyleSet;
 import org.apache.baremaps.ogcapi.model.StyleSetEntry;
+import org.apache.baremaps.vectortile.style.Style;
+import org.apache.baremaps.vectortile.style.StyleSource;
 
 /**
  * The styles resource.

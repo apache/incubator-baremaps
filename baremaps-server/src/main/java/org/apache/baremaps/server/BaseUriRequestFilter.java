@@ -14,7 +14,6 @@ package org.apache.baremaps.server;
 
 
 
-import java.io.IOException;
 import javax.inject.Singleton;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -29,7 +28,7 @@ import javax.ws.rs.ext.Provider;
 public class BaseUriRequestFilter implements ContainerRequestFilter {
 
   @Override
-  public void filter(ContainerRequestContext requestContext) throws IOException {
+  public void filter(ContainerRequestContext requestContext) {
     UriBuilder baseUri = UriBuilder.fromUri(requestContext.getUriInfo().getBaseUri());
     MultivaluedMap<String, String> headers = requestContext.getHeaders();
     if (headers.get("X-Forwarded-Proto") != null) {

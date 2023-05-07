@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.mvt.expression;
+package org.apache.baremaps.vectortile.expression;
 
 
 

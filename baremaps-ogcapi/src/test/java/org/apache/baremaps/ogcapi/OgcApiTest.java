@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 import org.apache.baremaps.database.PostgresUtils;
 import org.apache.baremaps.database.tile.PostgresTileStore;
 import org.apache.baremaps.database.tile.TileStore;
-import org.apache.baremaps.mvt.tileset.Tileset;
+import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
