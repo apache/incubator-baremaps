@@ -26,7 +26,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.database.tile.Tile;
+import org.apache.baremaps.database.tile.TileCoord;
 import org.apache.baremaps.database.tile.TileStore;
 import org.apache.baremaps.database.tile.TileStoreException;
 import org.apache.baremaps.ogcapi.api.TilesApi;
@@ -98,9 +98,9 @@ public class TilesResource implements TilesApi {
     int z = Integer.parseInt(tileMatrix);
     int x = tileRow;
     int y = tileCol;
-    Tile tile = new Tile(x, y, z);
+    TileCoord tileCoord = new TileCoord(x, y, z);
     try {
-      ByteBuffer blob = tileStore.read(tile);
+      ByteBuffer blob = tileStore.read(tileCoord);
       if (blob != null) {
         return Response.status(200) // lgtm [java/xss]
             .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")

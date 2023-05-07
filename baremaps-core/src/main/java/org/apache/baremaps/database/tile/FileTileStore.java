@@ -35,9 +35,9 @@ public class FileTileStore implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public ByteBuffer read(Tile tile) throws TileStoreException {
+  public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
     try {
-      return ByteBuffer.wrap(Files.readAllBytes(resolve(tile)));
+      return ByteBuffer.wrap(Files.readAllBytes(resolve(tileCoord)));
     } catch (IOException e) {
       throw new TileStoreException(e);
     }
@@ -45,9 +45,9 @@ public class FileTileStore implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public void write(Tile tile, ByteBuffer blob) throws TileStoreException {
+  public void write(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException {
     try {
-      var file = resolve(tile);
+      var file = resolve(tileCoord);
       Files.createDirectories(file.getParent());
       Files.write(file, blob.array());
     } catch (IOException e) {
@@ -57,16 +57,16 @@ public class FileTileStore implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public void delete(Tile tile) throws TileStoreException {
+  public void delete(TileCoord tileCoord) throws TileStoreException {
     try {
-      Files.deleteIfExists(resolve(tile));
+      Files.deleteIfExists(resolve(tileCoord));
     } catch (IOException e) {
       throw new TileStoreException(e);
     }
   }
 
   /** {@inheritDoc} */
-  public Path resolve(Tile tile) {
-    return path.resolve(String.format("%s/%s/%s.mvt", tile.z(), tile.x(), tile.y()));
+  public Path resolve(TileCoord tileCoord) {
+    return path.resolve(String.format("%s/%s/%s.mvt", tileCoord.z(), tileCoord.x(), tileCoord.y()));
   }
 }

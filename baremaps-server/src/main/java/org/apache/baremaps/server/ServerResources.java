@@ -30,7 +30,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.database.tile.Tile;
+import org.apache.baremaps.database.tile.TileCoord;
 import org.apache.baremaps.database.tile.TileStore;
 import org.apache.baremaps.database.tile.TileStoreException;
 import org.apache.baremaps.vectortile.style.Style;
@@ -82,9 +82,9 @@ public class ServerResources {
   @GET
   @javax.ws.rs.Path("/tiles/{z}/{x}/{y}.mvt")
   public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
-    Tile tile = new Tile(x, y, z);
+    TileCoord tileCoord = new TileCoord(x, y, z);
     try {
-      ByteBuffer blob = tileStore.read(tile);
+      ByteBuffer blob = tileStore.read(tileCoord);
       if (blob != null) {
         byte[] bytes = new byte[blob.remaining()];
         blob.get(bytes);

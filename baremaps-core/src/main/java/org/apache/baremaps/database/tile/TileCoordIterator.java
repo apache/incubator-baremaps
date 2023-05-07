@@ -12,15 +12,15 @@
 
 package org.apache.baremaps.database.tile;
 
-import static org.apache.baremaps.database.tile.Tile.max;
-import static org.apache.baremaps.database.tile.Tile.min;
+import static org.apache.baremaps.database.tile.TileCoord.max;
+import static org.apache.baremaps.database.tile.TileCoord.min;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import org.locationtech.jts.geom.Envelope;
 
-/** An iterator over the tiles that overlaps with an envelope. */
-class TileIterator implements Iterator<Tile> {
+/** An iterator over the tile coordinates that overlaps with an envelope. */
+class TileCoordIterator implements Iterator<TileCoord> {
 
   private final Envelope envelope;
 
@@ -35,19 +35,19 @@ class TileIterator implements Iterator<Tile> {
   private int y;
 
   /**
-   * Constructs a {@code TileGeometryIterator}.
+   * Constructs a {@code TileCoordIterator}.
    *
    * @param envelope the envelope
    * @param minZoom the min zoom
    * @param maxZoom the max zoom
    */
-  public TileIterator(Envelope envelope, int minZoom, int maxZoom) {
+  public TileCoordIterator(Envelope envelope, int minZoom, int maxZoom) {
     this.envelope = envelope;
     this.minZoom = minZoom;
     this.maxZoom = maxZoom;
 
     this.z = this.minZoom;
-    Tile min = min(envelope, this.z);
+    TileCoord min = min(envelope, this.z);
     this.x = min.x();
     this.y = min.y();
   }
@@ -55,15 +55,15 @@ class TileIterator implements Iterator<Tile> {
   /** {@inheritDoc} */
   @Override
   public boolean hasNext() {
-    Tile max = max(envelope, this.z);
+    TileCoord max = max(envelope, this.z);
     return x <= max.x() && y <= max.y() && z <= maxZoom;
   }
 
   /** {@inheritDoc} */
   @Override
-  public Tile next() {
-    Tile tile = new Tile(x, y, z);
-    Tile max = max(envelope, this.z);
+  public TileCoord next() {
+    TileCoord tileCoord = new TileCoord(x, y, z);
+    TileCoord max = max(envelope, this.z);
     if (z > max.z()) {
       throw new NoSuchElementException();
     }
@@ -71,14 +71,14 @@ class TileIterator implements Iterator<Tile> {
       x++;
     } else if (y < max.y()) {
       y++;
-      Tile min = min(envelope, this.z);
+      TileCoord min = min(envelope, this.z);
       x = min.x();
     } else {
       z++;
-      Tile min = min(envelope, this.z);
+      TileCoord min = min(envelope, this.z);
       x = min.x();
       y = min.y();
     }
-    return tile;
+    return tileCoord;
   }
 }

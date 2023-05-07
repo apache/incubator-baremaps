@@ -26,26 +26,26 @@ class TileBatcherTest {
   void testFiltering() {
     // Compute all the tiles for zoom levels 0 to 3
     final int streamSize = 85;
-    final List<Tile> tiles = new ArrayList<>();
+    final List<TileCoord> tileCoords = new ArrayList<>();
     for (int z = 0; z <= 3; z++) {
       for (int x = 0; x < IntMath.pow(2, z); x++) {
         for (int y = 0; y < IntMath.pow(2, z); y++) {
-          tiles.add(new Tile(x, y, z));
+          tileCoords.add(new TileCoord(x, y, z));
         }
       }
     }
-    assertEquals(streamSize, tiles.size());
+    assertEquals(streamSize, tileCoords.size());
 
     // ensures that the batches have the correct size and retain de correct tiles
     final int batchArraySize = 5;
     for (int batchArrayIndex = 0; batchArrayIndex < batchArraySize; batchArrayIndex++) {
-      List<Tile> batch =
-          tiles.stream().filter(new TileBatchPredicate(batchArraySize, batchArrayIndex))
-              .sorted(Comparator.comparingLong(Tile::index)).toList();
+      List<TileCoord> batch =
+          tileCoords.stream().filter(new TileBatchPredicate(batchArraySize, batchArrayIndex))
+              .sorted(Comparator.comparingLong(TileCoord::index)).toList();
       assertEquals(streamSize / batchArraySize, batch.size());
       int tileIndex = batchArrayIndex;
-      for (Tile tile : batch) {
-        assertEquals(tileIndex, tile.index());
+      for (TileCoord tileCoord : batch) {
+        assertEquals(tileIndex, tileCoord.index());
         tileIndex += batchArraySize;
       }
     }

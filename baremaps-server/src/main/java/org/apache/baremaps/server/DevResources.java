@@ -40,7 +40,7 @@ import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.database.tile.PostgresTileStore;
-import org.apache.baremaps.database.tile.Tile;
+import org.apache.baremaps.database.tile.TileCoord;
 import org.apache.baremaps.database.tile.TileStore;
 import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tileset.Tileset;
@@ -134,8 +134,8 @@ public class DevResources {
   public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
     try {
       TileStore tileStore = new PostgresTileStore(dataSource, getTileset());
-      Tile tile = new Tile(x, y, z);
-      ByteBuffer blob = tileStore.read(tile);
+      TileCoord tileCoord = new TileCoord(x, y, z);
+      ByteBuffer blob = tileStore.read(tileCoord);
       if (blob != null) {
         return Response.status(200).header(CONTENT_TYPE, TILE_TYPE)
             .header(CONTENT_ENCODING, TILE_ENCODING).entity(blob.array()).build();

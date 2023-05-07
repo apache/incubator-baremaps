@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 import java.util.function.Consumer;
 
 /** A channel that conveys tiles from a source to a target. */
-public class TileChannel implements Consumer<Tile> {
+public class TileChannel implements Consumer<TileCoord> {
 
   public final TileStore source;
 
@@ -51,13 +51,13 @@ public class TileChannel implements Consumer<Tile> {
 
   /** {@inheritDoc} */
   @Override
-  public void accept(Tile tile) {
+  public void accept(TileCoord tileCoord) {
     try {
-      ByteBuffer blob = source.read(tile);
+      ByteBuffer blob = source.read(tileCoord);
       if (blob != null) {
-        target.write(tile, blob);
+        target.write(tileCoord, blob);
       } else if (deleteEmptyTiles) {
-        target.delete(tile);
+        target.delete(tileCoord);
       }
     } catch (TileStoreException ex) {
       throw new RuntimeException("An error occurred while creating the tiles", ex);

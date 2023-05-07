@@ -22,26 +22,26 @@ public interface TileStore {
   /**
    * Reads the content of a tile.
    *
-   * @param tile the tile
+   * @param tileCoord the tile coordinate
    * @return the content of the tile
    * @throws TileStoreException
    */
-  ByteBuffer read(Tile tile) throws TileStoreException;
+  ByteBuffer read(TileCoord tileCoord) throws TileStoreException;
 
   /**
    * Writes the content of a tile.
    *
-   * @param tile the tile
+   * @param tileCoord the tile coordinate
    * @param blob the content of the tile
    * @throws TileStoreException
    */
-  void write(Tile tile, ByteBuffer blob) throws TileStoreException;
+  void write(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException;
 
   /**
    * Deletes the content of a tile.
    *
-   * @param tile the tile
+   * @param tileCoord the tile coordinate
    * @throws TileStoreException
    */
-  void delete(Tile tile) throws TileStoreException;
+  void delete(TileCoord tileCoord) throws TileStoreException;
 }
