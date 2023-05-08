@@ -15,16 +15,21 @@ package org.apache.baremaps.server;
 import static com.google.common.net.HttpHeaders.*;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import com.google.common.net.InetAddresses;
+import io.servicetalk.http.api.StreamingHttpRequest;
+import io.servicetalk.transport.api.ConnectionContext;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.apache.baremaps.iploc.data.InetnumLocation;
-import org.apache.baremaps.iploc.data.Ipv4;
 import org.apache.baremaps.iploc.database.InetnumLocationDao;
 import org.apache.baremaps.iploc.dto.InetnumLocationDto;
 
@@ -39,14 +44,40 @@ public class IplocResources {
     this.inetnumLocationDao = inetnumLocationDao;
   }
 
+  public record IP(String ip) {
+  }
+
   @GET
-  @javax.ws.rs.Path("/api/ip/{ip}")
-  public Response getIpToLocation(@PathParam("ip") String ip) {
+  @javax.ws.rs.Path("/api/ip")
+  public Response ip(@Context ConnectionContext context,
+      @Context StreamingHttpRequest request, @QueryParam("ip") String ip) {
     try {
-      Ipv4 ipv4 = new Ipv4(ip); // TODO : If the IP is ipv6, it will not throw an error on IPV4 but
-                                // contain the wrong
-                                // bytes...
-      List<InetnumLocation> inetnumLocations = inetnumLocationDao.findByIp(ipv4.getIp());
+      var address = InetAddresses.forString(
+          Optional.ofNullable((CharSequence) ip)
+              .or(() -> Optional.ofNullable(request.headers().get("X-Forwarded-For")))
+              .or(() -> Optional.ofNullable(request.headers().get("X-Real-IP")))
+              .orElse(((InetSocketAddress) context.remoteAddress()).getAddress().getHostAddress())
+              .toString().split(",")[0].trim());
+      return Response.status(200) // lgtm [java/xss]
+          .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(CONTENT_TYPE, APPLICATION_JSON)
+          .entity(new IP(address.toString())).build();
+    } catch (IllegalArgumentException e) {
+      return Response.status(400).entity(e.getMessage()).build();
+    }
+  }
+
+  @GET
+  @javax.ws.rs.Path("/api/iploc")
+  public Response iploc(@Context ConnectionContext context,
+      @Context StreamingHttpRequest request, @QueryParam("ip") String ip) {
+    try {
+      var address = InetAddresses.forString(
+          Optional.ofNullable((CharSequence) ip)
+              .or(() -> Optional.ofNullable(request.headers().get("X-Forwarded-For")))
+              .or(() -> Optional.ofNullable(request.headers().get("X-Real-IP")))
+              .orElse(((InetSocketAddress) context.remoteAddress()).getAddress().getHostAddress())
+              .toString().split(",")[0].trim());
+      List<InetnumLocation> inetnumLocations = inetnumLocationDao.findByIp(address.getAddress());
       List<InetnumLocationDto> inetnumLocationDtos =
           inetnumLocations.stream().map(InetnumLocationDto::new).toList();
       return Response.status(200) // lgtm [java/xss]

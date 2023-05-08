@@ -14,6 +14,9 @@ package org.apache.baremaps.storage.postgres;
 
 
 import de.bytefish.pgbulkinsert.pgsql.handlers.*;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,6 +62,8 @@ public class PostgresStore implements Store {
       Map.entry(MultiPolygon.class, "geometry"),
       Map.entry(LinearRing.class, "geometry"),
       Map.entry(GeometryCollection.class, "geometry"),
+      Map.entry(Inet4Address.class, "inet"),
+      Map.entry(Inet6Address.class, "inet"),
       Map.entry(LocalDate.class, "date"),
       Map.entry(LocalTime.class, "time"),
       Map.entry(LocalDateTime.class, "timestamp"));
@@ -71,6 +76,7 @@ public class PostgresStore implements Store {
       Map.entry("float4", Float.class),
       Map.entry("float8", Double.class),
       Map.entry("geometry", Geometry.class),
+      Map.entry("inet", InetAddress.class),
       Map.entry("date", LocalDate.class),
       Map.entry("time", LocalTime.class),
       Map.entry("timestamp", LocalDateTime.class));
@@ -91,6 +97,8 @@ public class PostgresStore implements Store {
       Map.entry(MultiPolygon.class, new PostgisGeometryValueHandler()),
       Map.entry(LinearRing.class, new PostgisGeometryValueHandler()),
       Map.entry(GeometryCollection.class, new PostgisGeometryValueHandler()),
+      Map.entry(Inet4Address.class, new Inet4AddressValueHandler()),
+      Map.entry(Inet6Address.class, new Inet6AddressValueHandler()),
       Map.entry(LocalDate.class, new LocalDateValueHandler()),
       Map.entry(LocalTime.class, new LocalTimeValueHandler()),
       Map.entry(LocalDateTime.class, new LocalDateTimeValueHandler()));

@@ -65,12 +65,14 @@ public class IpLoc {
    * @param nicObjects the stream of nic objects to import
    */
   public void insertNicObjects(Stream<NicObject> nicObjects) {
-    StreamUtils.partition(nicObjects.filter(this::isInetnum).map(this::nicObjectToInetnumLocation)
-        // TODO: we should probably not filter, i.e., even in the worst case we should have
-        // the country
-        // Cache the list of country
-        .filter(Optional::isPresent).map(Optional::get), 100)
-        .map(partition -> partition.collect(Collectors.toList())).forEach(inetnumLocationDao::save);
+    var inetnumObjects = nicObjects
+        .filter(this::isInetnum)
+        .map(this::nicObjectToInetnumLocation)
+        .filter(Optional::isPresent)
+        .map(Optional::get);
+    StreamUtils.partition(inetnumObjects, 100)
+        .map(partition -> partition.collect(Collectors.toList()))
+        .forEach(inetnumLocationDao::save);
   }
 
   private boolean isInetnum(NicObject nicObject) {
@@ -111,6 +113,7 @@ public class IpLoc {
               network, attributes.get("country")));
         }
       }
+
       // If there is an address we use that address to query the geocoder
       if (attributes.containsKey("address")) {
         Optional<Location> location =
@@ -121,6 +124,7 @@ public class IpLoc {
               network, attributes.get("country")));
         }
       }
+
       // If there is a description we use that description to query the geocoder
       if (attributes.containsKey("descr")) {
         Optional<Location> location =
@@ -131,6 +135,7 @@ public class IpLoc {
               network, attributes.get("country")));
         }
       }
+
       // If there is a name we use that name to query the geocoder
       if (attributes.containsKey("name")) {
         Optional<Location> location =
@@ -141,7 +146,8 @@ public class IpLoc {
               network, attributes.get("country")));
         }
       }
-      // If there is a country that is follow the ISO format we use that country's actual name from
+
+      // If there is a country that follows the ISO format we use that country's actual name from
       // the iso country map to query the geocoder
       if (attributes.containsKey("country")
           && IsoCountriesUtils.containsCountry(attributes.get("country").toUpperCase())) {
