@@ -22,6 +22,14 @@
 
   <dependencies>
     <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-http-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.servicetalk</groupId>
+      <artifactId>servicetalk-transport-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>jakarta.ws.rs</groupId>
       <artifactId>jakarta.ws.rs-api</artifactId>
     </dependency>

@@ -31,8 +31,6 @@
     </style>
 </head>
 <body>
-    <!-- Show my IP address-->
-    <p>Your IP address is <span id="my-ip"></span></p>
     <!-- A form to submit the IP address -->
     <form onsubmit="searchByIp(event)">
         <label for="ip">IP address:</label>
@@ -42,11 +40,6 @@
     <!-- The table of retrieved locations -->
     <table id="results"></table>
     <script>
-        function getIP(json) {
-            // Write my IP address to the my-ip span
-            document.getElementById('my-ip').textContent = json.ip;
-        }
-
         function searchByIp(event) {
             event.preventDefault();
 
@@ -55,7 +48,7 @@
 
             // Make a http request on localhost:9100/api/ip/:ip to retrieve the IP address
             const request = new XMLHttpRequest();
-            request.open('GET', `http://localhost:9000/api/ip/${ip}`, true);
+            request.open('GET', `http://localhost:9000/api/iploc?ip=${ip}`, true);
 
             // Set request Accept header to application/json
             request.setRequestHeader('Accept', 'application/json');
@@ -99,6 +92,5 @@
             request.send();
         }
     </script>
-    <script src="https://api.ipify.org?format=jsonp&callback=getIP"></script>
 </body>
 </html>
