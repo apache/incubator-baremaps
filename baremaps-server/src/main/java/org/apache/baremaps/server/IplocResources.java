@@ -30,8 +30,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.apache.baremaps.iploc.data.InetnumLocation;
+import org.apache.baremaps.iploc.data.Ipv4;
 import org.apache.baremaps.iploc.database.InetnumLocationDao;
-import org.apache.baremaps.iploc.dto.InetnumLocationDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,6 +106,34 @@ public class IplocResources {
       return Response.ok().entity(bytes).build();
     } catch (NullPointerException | IOException e) {
       return Response.status(404).build();
+    }
+  }
+
+  public record InetnumLocationDto(
+      String address,
+      String ipv4Start,
+      String ipv4End,
+      double latitude,
+      double longitude,
+      String network,
+      String country) {
+
+    public InetnumLocationDto(InetnumLocation inetnumLocation) {
+      this(inetnumLocation.getAddress(),
+          Ipv4.format(inetnumLocation.getIpv4Range().getStart()),
+          Ipv4.format(inetnumLocation.getIpv4Range().getEnd()),
+          inetnumLocation.getLocation().getLatitude(),
+          inetnumLocation.getLocation().getLongitude(),
+          inetnumLocation.getNetwork(),
+          inetnumLocation.getCountry());
+    }
+
+    @Override
+    public String toString() {
+      return "InetnumLocationDto{" + "address='" + address + '\'' + ", ipv4Start='" + ipv4Start
+          + '\''
+          + ", ipv4End='" + ipv4End + '\'' + ", latitude=" + latitude + ", longitude=" + longitude
+          + ", network='" + network + '\'' + ", country='" + country + '\'' + '}';
     }
   }
 }

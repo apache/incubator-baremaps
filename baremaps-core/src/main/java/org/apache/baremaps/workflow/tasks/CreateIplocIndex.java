@@ -19,7 +19,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import org.apache.baremaps.iploc.IpLoc;
-import org.apache.baremaps.iploc.data.IpLocStats;
 import org.apache.baremaps.iploc.nic.NicParser;
 import org.apache.baremaps.stream.StreamException;
 import org.apache.baremaps.utils.SqliteUtils;
