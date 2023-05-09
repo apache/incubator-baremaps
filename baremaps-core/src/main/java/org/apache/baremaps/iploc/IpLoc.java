@@ -23,11 +23,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
-import org.apache.baremaps.iploc.data.InetnumLocation;
 import org.apache.baremaps.iploc.data.Ipv4Range;
 import org.apache.baremaps.iploc.data.Location;
-import org.apache.baremaps.iploc.database.InetnumLocationDao;
-import org.apache.baremaps.iploc.database.InetnumLocationDaoSqliteImpl;
+import org.apache.baremaps.iploc.database.IpLocRepository;
 import org.apache.baremaps.iploc.nic.NicAttribute;
 import org.apache.baremaps.iploc.nic.NicObject;
 import org.apache.baremaps.stream.StreamUtils;
@@ -41,17 +39,17 @@ public class IpLoc {
 
   private final float SCORE_THRESHOLD = 0.1f;
 
-  private final InetnumLocationDao inetnumLocationDao;
+  private final IpLocRepository iplocRepository;
   private final SearcherManager searcherManager;
 
   /**
    * Create a new IpLoc object
    *
-   * @param databaseUrl the jdbc url to the sqlite database
+   * @param iplocRepository the jdbc url to the sqlite database
    * @param searcherManager the geocoder that will be used to find the locations of the objects
    */
-  public IpLoc(String databaseUrl, SearcherManager searcherManager) {
-    this.inetnumLocationDao = new InetnumLocationDaoSqliteImpl(databaseUrl);
+  public IpLoc(IpLocRepository iplocRepository, SearcherManager searcherManager) {
+    this.iplocRepository = iplocRepository;
     this.searcherManager = searcherManager;
   }
 
@@ -69,7 +67,7 @@ public class IpLoc {
         .map(Optional::get);
     StreamUtils.partition(inetnumObjects, 100)
         .map(partition -> partition.collect(Collectors.toList()))
-        .forEach(inetnumLocationDao::save);
+        .forEach(iplocRepository::save);
   }
 
   private boolean isInetnum(NicObject nicObject) {
@@ -84,7 +82,8 @@ public class IpLoc {
    * @throws IOException
    * @throws ParseException
    */
-  private Optional<InetnumLocation> nicObjectToInetnumLocation(NicObject nicObject) {
+  private Optional<org.apache.baremaps.iploc.data.IpLoc> nicObjectToInetnumLocation(
+      NicObject nicObject) {
     try {
       if (nicObject.attributes().isEmpty()) {
         return Optional.empty();
@@ -105,7 +104,8 @@ public class IpLoc {
       if (attributes.containsKey("geoloc")) {
         Optional<Location> location = stringToLocation(attributes.get("geoloc"));
         if (location.isPresent()) {
-          return Optional.of(new InetnumLocation(attributes.get("geoloc"), ipRange, location.get(),
+          return Optional.of(new org.apache.baremaps.iploc.data.IpLoc(attributes.get("geoloc"),
+              ipRange, location.get(),
               network, attributes.get("country")));
         }
       }
@@ -115,7 +115,8 @@ public class IpLoc {
         Optional<Location> location =
             findLocation(attributes.get("address"), attributes.get("country"));
         if (location.isPresent()) {
-          return Optional.of(new InetnumLocation(attributes.get("address"), ipRange, location.get(),
+          return Optional.of(new org.apache.baremaps.iploc.data.IpLoc(attributes.get("address"),
+              ipRange, location.get(),
               network, attributes.get("country")));
         }
       }
@@ -125,7 +126,8 @@ public class IpLoc {
         Optional<Location> location =
             findLocation(attributes.get("descr"), attributes.get("country"));
         if (location.isPresent()) {
-          return Optional.of(new InetnumLocation(attributes.get("descr"), ipRange, location.get(),
+          return Optional.of(new org.apache.baremaps.iploc.data.IpLoc(attributes.get("descr"),
+              ipRange, location.get(),
               network, attributes.get("country")));
         }
       }
@@ -135,7 +137,8 @@ public class IpLoc {
         Optional<Location> location =
             findLocation(attributes.get("name"), attributes.get("country"));
         if (location.isPresent()) {
-          return Optional.of(new InetnumLocation(attributes.get("name"), ipRange, location.get(),
+          return Optional.of(new org.apache.baremaps.iploc.data.IpLoc(attributes.get("name"),
+              ipRange, location.get(),
               network, attributes.get("country")));
         }
       }
@@ -148,7 +151,8 @@ public class IpLoc {
         Optional<Location> location =
             findLocation(IsoCountriesUtils.getCountry(countryUppercase), countryUppercase);
         if (location.isPresent()) {
-          return Optional.of(new InetnumLocation(IsoCountriesUtils.getCountry(countryUppercase),
+          return Optional.of(new org.apache.baremaps.iploc.data.IpLoc(
+              IsoCountriesUtils.getCountry(countryUppercase),
               ipRange, location.get(), network, countryUppercase));
         }
       }
@@ -158,7 +162,8 @@ public class IpLoc {
       if (attributes.containsKey("country")) {
         Optional<Location> location = findLocation(attributes.get("country"), "");
         if (location.isPresent()) {
-          return Optional.of(new InetnumLocation(attributes.get("country"), ipRange, location.get(),
+          return Optional.of(new org.apache.baremaps.iploc.data.IpLoc(attributes.get("country"),
+              ipRange, location.get(),
               network, attributes.get("country")));
         }
       }

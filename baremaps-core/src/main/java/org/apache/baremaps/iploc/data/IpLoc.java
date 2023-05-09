@@ -13,7 +13,7 @@
 package org.apache.baremaps.iploc.data;
 
 /** Contains an IP range along with its position in the world */
-public class InetnumLocation {
+public class IpLoc {
   private final String address;
   private final Ipv4Range ipv4Range;
   private final Location location;
@@ -29,7 +29,7 @@ public class InetnumLocation {
    * @param network name of the network
    * @param country country code
    */
-  public InetnumLocation(String address, Ipv4Range ipv4Range, Location location, String network,
+  public IpLoc(String address, Ipv4Range ipv4Range, Location location, String network,
       String country) {
     this.address = address;
     this.ipv4Range = ipv4Range;

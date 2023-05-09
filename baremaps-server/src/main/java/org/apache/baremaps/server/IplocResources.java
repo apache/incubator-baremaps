@@ -29,9 +29,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
-import org.apache.baremaps.iploc.data.InetnumLocation;
+import org.apache.baremaps.iploc.data.IpLoc;
 import org.apache.baremaps.iploc.data.Ipv4;
-import org.apache.baremaps.iploc.database.InetnumLocationDao;
+import org.apache.baremaps.iploc.database.IpLocRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,11 +41,11 @@ public class IplocResources {
 
   private static final Logger logger = LoggerFactory.getLogger(DirectoryWatcher.class);
 
-  private final InetnumLocationDao inetnumLocationDao;
+  private final IpLocRepository iplocRepository;
 
   @Inject
-  public IplocResources(InetnumLocationDao inetnumLocationDao) {
-    this.inetnumLocationDao = inetnumLocationDao;
+  public IplocResources(IpLocRepository iplocRepository) {
+    this.iplocRepository = iplocRepository;
   }
 
   public record IP(String ip) {
@@ -82,7 +82,7 @@ public class IplocResources {
               .or(() -> Optional.ofNullable(request.headers().get("X-Real-IP")))
               .orElse(((InetSocketAddress) context.remoteAddress()).getAddress().getHostAddress())
               .toString().split(",")[0].trim());
-      List<InetnumLocation> inetnumLocations = inetnumLocationDao.findByIp(address.getAddress());
+      List<IpLoc> inetnumLocations = iplocRepository.findByIp(address.getAddress());
       List<InetnumLocationDto> inetnumLocationDtos =
           inetnumLocations.stream().map(InetnumLocationDto::new).toList();
       return Response.status(200) // lgtm [java/xss]
@@ -118,7 +118,7 @@ public class IplocResources {
       String network,
       String country) {
 
-    public InetnumLocationDto(InetnumLocation inetnumLocation) {
+    public InetnumLocationDto(IpLoc inetnumLocation) {
       this(inetnumLocation.getAddress(),
           Ipv4.format(inetnumLocation.getIpv4Range().getStart()),
           Ipv4.format(inetnumLocation.getIpv4Range().getEnd()),

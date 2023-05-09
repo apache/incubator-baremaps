@@ -21,17 +21,15 @@ import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.baremaps.iploc.data.InetnumLocation;
+import org.apache.baremaps.iploc.data.IpLoc;
 import org.apache.baremaps.iploc.data.Ipv4;
 import org.apache.baremaps.iploc.data.Ipv4Range;
 import org.apache.baremaps.iploc.data.Location;
-import org.apache.baremaps.iploc.database.InetnumLocationDao;
-import org.apache.baremaps.iploc.database.InetnumLocationDaoSqliteImpl;
+import org.apache.baremaps.iploc.database.IpLocRepository;
 import org.apache.baremaps.iploc.nic.NicData;
 import org.apache.baremaps.iploc.nic.NicObject;
 import org.apache.baremaps.testing.TestFiles;
 import org.apache.baremaps.utils.FileUtils;
-import org.apache.baremaps.utils.SqliteUtils;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.baremaps.workflow.tasks.CreateGeonamesIndex;
 import org.apache.lucene.search.SearcherFactory;
@@ -41,6 +39,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sqlite.SQLiteConfig;
+import org.sqlite.SQLiteDataSource;
 
 /**
  * Test the IPLoc SQLite database generation using a stream of NIC Objects from a sample NIC txt
@@ -49,10 +49,10 @@ import org.junit.jupiter.api.Test;
 class IpLocTest {
 
   private static List<NicObject> nicObjects;
-  private static IpLoc ipLoc;
-  private static InetnumLocationDao inetnumLocationDao;
+  private static org.apache.baremaps.iploc.IpLoc ipLoc;
+  private static IpLocRepository iplocRepository;
   private static Path directory;
-  private static String databaseUrl;
+  private static String jdbcUrl;
 
   @BeforeAll
   public static void beforeAll() throws Exception {
@@ -68,13 +68,16 @@ class IpLocTest {
     task.execute(new WorkflowContext());
 
     // Create the IPLoc service
-    databaseUrl = String.format("JDBC:sqlite:%s", directory.resolve("test.db"));
+    jdbcUrl = String.format("JDBC:sqlite:%s", directory.resolve("test.db"));
+    var config = new SQLiteConfig();
+    var dataSource = new SQLiteDataSource(config);
+    dataSource.setUrl(jdbcUrl);
+
     var dir = MMapDirectory.open(directory);
     var searcherManager = new SearcherManager(dir, new SearcherFactory());
-    ipLoc = new IpLoc(databaseUrl, searcherManager);
 
-    // Accessor for the database
-    inetnumLocationDao = new InetnumLocationDaoSqliteImpl(databaseUrl);
+    iplocRepository = new IpLocRepository(dataSource);
+    ipLoc = new org.apache.baremaps.iploc.IpLoc(iplocRepository, searcherManager);
   }
 
   @AfterAll
@@ -84,49 +87,51 @@ class IpLocTest {
 
   @BeforeEach
   public void beforeEach() throws IOException, SQLException {
-    SqliteUtils.executeResource(databaseUrl, "iploc_init.sql");
+    iplocRepository.dropTable();
+    iplocRepository.createTable();
+    iplocRepository.createIndex();
   }
 
   @Test
   void findAll() {
     ipLoc.insertNicObjects(nicObjects.stream());
-    List<InetnumLocation> inetnumLocations = inetnumLocationDao.findAll();
+    List<IpLoc> inetnumLocations = iplocRepository.findAll();
     assertEquals(7, inetnumLocations.size());
   }
 
   @Test
   void findByIpWithZeroes() {
     ipLoc.insertNicObjects(nicObjects.stream());
-    List<InetnumLocation> inetnumLocations =
-        inetnumLocationDao.findByIp(new Ipv4("0.0.0.5").getIp());
+    List<IpLoc> inetnumLocations =
+        iplocRepository.findByIp(new Ipv4("0.0.0.5").getIp());
     assertEquals(4, inetnumLocations.size());
   }
 
   @Test
   void findByIp() {
     ipLoc.insertNicObjects(nicObjects.stream());
-    List<InetnumLocation> inetnumLocations =
-        inetnumLocationDao.findByIp(new Ipv4("255.22.22.2").getIp());
+    List<IpLoc> inetnumLocations =
+        iplocRepository.findByIp(new Ipv4("255.22.22.2").getIp());
     assertEquals(1, inetnumLocations.size());
   }
 
   @Test
   void save() {
-    inetnumLocationDao.save(new InetnumLocation("Test", new Ipv4Range("192.168.0.0/24"),
+    iplocRepository.save(new IpLoc("Test", new Ipv4Range("192.168.0.0/24"),
         new Location(1, 1), "Test", null));
-    List<InetnumLocation> getAllInetnumLocations = inetnumLocationDao.findAll();
+    List<IpLoc> getAllInetnumLocations = iplocRepository.findAll();
     assertEquals(1, getAllInetnumLocations.size());
   }
 
   @Test
   void saveMultiple() {
-    List<InetnumLocation> inetnumLocations = new ArrayList<>();
+    List<IpLoc> inetnumLocations = new ArrayList<>();
     for (int i = 0; i < 30; i++) {
-      inetnumLocations.add(new InetnumLocation("Test", new Ipv4Range("192.168.0.0/24"),
+      inetnumLocations.add(new IpLoc("Test", new Ipv4Range("192.168.0.0/24"),
           new Location(1, 1), "Test", null));
     }
-    inetnumLocationDao.save(inetnumLocations);
-    List<InetnumLocation> getAllInetnumLocations = inetnumLocationDao.findAll();
+    iplocRepository.save(inetnumLocations);
+    List<IpLoc> getAllInetnumLocations = iplocRepository.findAll();
     assertEquals(30, getAllInetnumLocations.size());
   }
 }

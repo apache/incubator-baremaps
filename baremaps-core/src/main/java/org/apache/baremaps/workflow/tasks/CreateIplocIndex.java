@@ -19,9 +19,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import org.apache.baremaps.iploc.IpLoc;
+import org.apache.baremaps.iploc.database.IpLocRepository;
 import org.apache.baremaps.iploc.nic.NicParser;
 import org.apache.baremaps.stream.StreamException;
-import org.apache.baremaps.utils.SqliteUtils;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
 import org.apache.lucene.search.SearcherFactory;
@@ -29,6 +29,8 @@ import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.store.MMapDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sqlite.SQLiteConfig;
+import org.sqlite.SQLiteDataSource;
 
 public record CreateIplocIndex(
     Path geonamesIndexPath,
@@ -45,8 +47,16 @@ public record CreateIplocIndex(
       logger.info("Creating the Iploc database");
       String jdbcUrl = String.format("JDBC:sqlite:%s", targetIplocIndexPath);
 
-      SqliteUtils.executeResource(jdbcUrl, "iploc_init.sql");
-      IpLoc ipLoc = new IpLoc(jdbcUrl, searcherManager);
+      SQLiteConfig config = new SQLiteConfig();
+      SQLiteDataSource dataSource = new SQLiteDataSource(config);
+      dataSource.setUrl(jdbcUrl);
+
+      IpLocRepository ipLocRepository = new IpLocRepository(dataSource);
+      ipLocRepository.dropTable();
+      ipLocRepository.createTable();
+      ipLocRepository.createIndex();
+
+      IpLoc ipLoc = new IpLoc(ipLocRepository, searcherManager);
 
       logger.info("Generating NIC objects stream");
       nicPaths.stream().parallel().forEach(path -> {
