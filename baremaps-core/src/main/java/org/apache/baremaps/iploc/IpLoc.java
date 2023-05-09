@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
 import org.apache.baremaps.iploc.data.InetnumLocation;
-import org.apache.baremaps.iploc.data.IpLocStats;
 import org.apache.baremaps.iploc.data.Ipv4Range;
 import org.apache.baremaps.iploc.data.Location;
 import org.apache.baremaps.iploc.database.InetnumLocationDao;
@@ -44,7 +43,6 @@ public class IpLoc {
 
   private final InetnumLocationDao inetnumLocationDao;
   private final SearcherManager searcherManager;
-  private IpLocStats iplocStats;
 
   /**
    * Create a new IpLoc object
@@ -54,7 +52,6 @@ public class IpLoc {
    */
   public IpLoc(String databaseUrl, SearcherManager searcherManager) {
     this.inetnumLocationDao = new InetnumLocationDaoSqliteImpl(databaseUrl);
-    this.iplocStats = new IpLocStats();
     this.searcherManager = searcherManager;
   }
 
@@ -108,7 +105,6 @@ public class IpLoc {
       if (attributes.containsKey("geoloc")) {
         Optional<Location> location = stringToLocation(attributes.get("geoloc"));
         if (location.isPresent()) {
-          iplocStats.incrementInsertedByGeolocCount();
           return Optional.of(new InetnumLocation(attributes.get("geoloc"), ipRange, location.get(),
               network, attributes.get("country")));
         }
@@ -119,7 +115,6 @@ public class IpLoc {
         Optional<Location> location =
             findLocation(attributes.get("address"), attributes.get("country"));
         if (location.isPresent()) {
-          iplocStats.incrementInsertedByAddressCount();
           return Optional.of(new InetnumLocation(attributes.get("address"), ipRange, location.get(),
               network, attributes.get("country")));
         }
@@ -130,7 +125,6 @@ public class IpLoc {
         Optional<Location> location =
             findLocation(attributes.get("descr"), attributes.get("country"));
         if (location.isPresent()) {
-          iplocStats.incrementInsertedByDescrCount();
           return Optional.of(new InetnumLocation(attributes.get("descr"), ipRange, location.get(),
               network, attributes.get("country")));
         }
@@ -141,7 +135,6 @@ public class IpLoc {
         Optional<Location> location =
             findLocation(attributes.get("name"), attributes.get("country"));
         if (location.isPresent()) {
-          iplocStats.incrementInsertedByDescrCount();
           return Optional.of(new InetnumLocation(attributes.get("name"), ipRange, location.get(),
               network, attributes.get("country")));
         }
@@ -155,7 +148,6 @@ public class IpLoc {
         Optional<Location> location =
             findLocation(IsoCountriesUtils.getCountry(countryUppercase), countryUppercase);
         if (location.isPresent()) {
-          iplocStats.incrementInsertedByCountryCodeCount();
           return Optional.of(new InetnumLocation(IsoCountriesUtils.getCountry(countryUppercase),
               ipRange, location.get(), network, countryUppercase));
         }
@@ -166,13 +158,11 @@ public class IpLoc {
       if (attributes.containsKey("country")) {
         Optional<Location> location = findLocation(attributes.get("country"), "");
         if (location.isPresent()) {
-          iplocStats.incrementInsertedByCountryCount();
           return Optional.of(new InetnumLocation(attributes.get("country"), ipRange, location.get(),
               network, attributes.get("country")));
         }
       }
 
-      iplocStats.incrementNotInsertedCount();
       return Optional.empty();
 
     } catch (IOException | ParseException e) {
@@ -228,9 +218,5 @@ public class IpLoc {
       return Optional.of(new Location(latitude, longitude));
     }
     return Optional.empty();
-  }
-
-  public IpLocStats getIplocStats() {
-    return iplocStats;
   }
 }

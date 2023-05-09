@@ -59,21 +59,6 @@ public record CreateIplocIndex(
           throw new StreamException(e);
         }
       });
-
-      IpLocStats ipLocStats = ipLoc.getIplocStats();
-      logger.info(
-          """
-              IpLoc measure
-              -----------
-              inetnumInsertedByAddress : {}
-              inetnumInsertedByDescr : {}
-              inetnumInsertedByCountry : {}
-              inetnumInsertedByCountryCode : {}
-              inetnumInsertedByGeoloc : {}
-              inetnumNotInserted : {}""",
-          ipLocStats.getInsertedByAddressCount(), ipLocStats.getInsertedByDescrCount(),
-          ipLocStats.getInsertedByCountryCount(), ipLocStats.getInsertedByCountryCodeCount(),
-          ipLocStats.getInsertedByGeolocCount(), ipLocStats.getNotInsertedCount());
     }
   }
 }
