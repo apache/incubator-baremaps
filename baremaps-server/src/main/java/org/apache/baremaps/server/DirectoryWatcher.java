@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 public class DirectoryWatcher implements Runnable {
 
-  private static final Logger logger = LoggerFactory.getLogger(DevResources.class);
+  private static final Logger logger = LoggerFactory.getLogger(DirectoryWatcher.class);
 
   private final Set<Path> directories;
 

@@ -32,10 +32,14 @@ import javax.ws.rs.core.*;
 import org.apache.baremaps.iploc.data.InetnumLocation;
 import org.apache.baremaps.iploc.database.InetnumLocationDao;
 import org.apache.baremaps.iploc.dto.InetnumLocationDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 @javax.ws.rs.Path("/")
 public class IplocResources {
+
+  private static final Logger logger = LoggerFactory.getLogger(DirectoryWatcher.class);
 
   private final InetnumLocationDao inetnumLocationDao;
 
@@ -62,7 +66,8 @@ public class IplocResources {
           .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(CONTENT_TYPE, APPLICATION_JSON)
           .entity(new IP(address.toString())).build();
     } catch (IllegalArgumentException e) {
-      return Response.status(400).entity(e.getMessage()).build();
+      logger.error("Error while processing request", e);
+      return Response.serverError().build();
     }
   }
 
@@ -84,7 +89,8 @@ public class IplocResources {
           .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(CONTENT_TYPE, APPLICATION_JSON)
           .entity(inetnumLocationDtos).build();
     } catch (IllegalArgumentException e) {
-      return Response.status(400).entity(e.getMessage()).build();
+      logger.error("Error while processing request", e);
+      return Response.serverError().build();
     }
   }
 
