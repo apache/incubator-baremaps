@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
 import org.apache.baremaps.iploc.data.Ipv4Range;
 import org.apache.baremaps.iploc.data.Location;
-import org.apache.baremaps.iploc.database.IpLocRepository;
 import org.apache.baremaps.iploc.nic.NicAttribute;
 import org.apache.baremaps.iploc.nic.NicObject;
 import org.apache.baremaps.stream.StreamUtils;
@@ -35,7 +34,7 @@ import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TopDocs;
 
 /** Generating pairs of IP address ranges and their locations into an SQLite database */
-public class IpLoc {
+public class IpLocManager {
 
   private final float SCORE_THRESHOLD = 0.1f;
 
@@ -48,7 +47,7 @@ public class IpLoc {
    * @param iplocRepository the jdbc url to the sqlite database
    * @param searcherManager the geocoder that will be used to find the locations of the objects
    */
-  public IpLoc(IpLocRepository iplocRepository, SearcherManager searcherManager) {
+  public IpLocManager(IpLocRepository iplocRepository, SearcherManager searcherManager) {
     this.iplocRepository = iplocRepository;
     this.searcherManager = searcherManager;
   }

@@ -18,8 +18,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import org.apache.baremaps.iploc.IpLoc;
-import org.apache.baremaps.iploc.database.IpLocRepository;
+import org.apache.baremaps.iploc.IpLocManager;
+import org.apache.baremaps.iploc.IpLocRepository;
 import org.apache.baremaps.iploc.nic.NicParser;
 import org.apache.baremaps.stream.StreamException;
 import org.apache.baremaps.workflow.Task;
@@ -56,14 +56,14 @@ public record CreateIplocIndex(
       ipLocRepository.createTable();
       ipLocRepository.createIndex();
 
-      IpLoc ipLoc = new IpLoc(ipLocRepository, searcherManager);
+      IpLocManager ipLocBuilder = new IpLocManager(ipLocRepository, searcherManager);
 
       logger.info("Generating NIC objects stream");
       nicPaths.stream().parallel().forEach(path -> {
         try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
           var nicObjects = NicParser.parse(inputStream);
           logger.info("Inserting the nic objects into the Iploc database");
-          ipLoc.insertNicObjects(nicObjects);
+          ipLocBuilder.insertNicObjects(nicObjects);
         } catch (IOException e) {
           throw new StreamException(e);
         }

@@ -25,7 +25,6 @@ import org.apache.baremaps.iploc.data.IpLoc;
 import org.apache.baremaps.iploc.data.Ipv4;
 import org.apache.baremaps.iploc.data.Ipv4Range;
 import org.apache.baremaps.iploc.data.Location;
-import org.apache.baremaps.iploc.database.IpLocRepository;
 import org.apache.baremaps.iploc.nic.NicData;
 import org.apache.baremaps.iploc.nic.NicObject;
 import org.apache.baremaps.testing.TestFiles;
@@ -46,10 +45,10 @@ import org.sqlite.SQLiteDataSource;
  * Test the IPLoc SQLite database generation using a stream of NIC Objects from a sample NIC txt
  * file and a geocoder from a sample Geonames txt file.
  */
-class IpLocTest {
+class IpLocBuilderTest {
 
   private static List<NicObject> nicObjects;
-  private static org.apache.baremaps.iploc.IpLoc ipLoc;
+  private static IpLocManager ipLocBuilder;
   private static IpLocRepository iplocRepository;
   private static Path directory;
   private static String jdbcUrl;
@@ -77,7 +76,7 @@ class IpLocTest {
     var searcherManager = new SearcherManager(dir, new SearcherFactory());
 
     iplocRepository = new IpLocRepository(dataSource);
-    ipLoc = new org.apache.baremaps.iploc.IpLoc(iplocRepository, searcherManager);
+    ipLocBuilder = new IpLocManager(iplocRepository, searcherManager);
   }
 
   @AfterAll
@@ -94,14 +93,14 @@ class IpLocTest {
 
   @Test
   void findAll() {
-    ipLoc.insertNicObjects(nicObjects.stream());
+    ipLocBuilder.insertNicObjects(nicObjects.stream());
     List<IpLoc> inetnumLocations = iplocRepository.findAll();
     assertEquals(7, inetnumLocations.size());
   }
 
   @Test
   void findByIpWithZeroes() {
-    ipLoc.insertNicObjects(nicObjects.stream());
+    ipLocBuilder.insertNicObjects(nicObjects.stream());
     List<IpLoc> inetnumLocations =
         iplocRepository.findByIp(new Ipv4("0.0.0.5").getIp());
     assertEquals(4, inetnumLocations.size());
@@ -109,7 +108,7 @@ class IpLocTest {
 
   @Test
   void findByIp() {
-    ipLoc.insertNicObjects(nicObjects.stream());
+    ipLocBuilder.insertNicObjects(nicObjects.stream());
     List<IpLoc> inetnumLocations =
         iplocRepository.findByIp(new Ipv4("255.22.22.2").getIp());
     assertEquals(1, inetnumLocations.size());

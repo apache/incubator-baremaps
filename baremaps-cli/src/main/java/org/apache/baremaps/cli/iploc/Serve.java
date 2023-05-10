@@ -21,7 +21,7 @@ import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import javax.sql.DataSource;
-import org.apache.baremaps.iploc.database.IpLocRepository;
+import org.apache.baremaps.iploc.IpLocRepository;
 import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.server.IplocResources;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;

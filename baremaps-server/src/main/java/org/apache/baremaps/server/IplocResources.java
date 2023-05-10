@@ -31,7 +31,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.apache.baremaps.iploc.data.IpLoc;
 import org.apache.baremaps.iploc.data.Ipv4;
-import org.apache.baremaps.iploc.database.IpLocRepository;
+import org.apache.baremaps.iploc.IpLocRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
