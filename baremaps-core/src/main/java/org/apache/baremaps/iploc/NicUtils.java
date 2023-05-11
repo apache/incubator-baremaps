@@ -10,21 +10,28 @@
  * the License.
  */
 
-package org.apache.baremaps.iploc.nic;
+package org.apache.baremaps.iploc;
 
-
-
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/** Static methods for processing NIC data. */
+/**
+ * Utility methods for NIC objects.
+ */
 public class NicUtils {
 
   private NicUtils() {}
+
+  /**
+   * Returns true if the NIC object is an inetnum.
+   *
+   * @param nicObject
+   * @return
+   */
+  public static boolean isInetnum(NicObject nicObject) {
+    return "inetnum".equals(nicObject.type());
+  }
 
   /**
    * Writes a NIC object into a text file.

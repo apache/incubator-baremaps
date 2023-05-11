@@ -18,9 +18,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import org.apache.baremaps.iploc.IpLocManager;
+import org.apache.baremaps.iploc.IpLocReader;
 import org.apache.baremaps.iploc.IpLocRepository;
-import org.apache.baremaps.iploc.nic.NicParser;
 import org.apache.baremaps.stream.StreamException;
 import org.apache.baremaps.workflow.Task;
 import org.apache.baremaps.workflow.WorkflowContext;
@@ -44,26 +43,24 @@ public record CreateIplocIndex(
     try (
         var directory = MMapDirectory.open(geonamesIndexPath);
         var searcherManager = new SearcherManager(directory, new SearcherFactory())) {
-      logger.info("Creating the Iploc database");
-      String jdbcUrl = String.format("JDBC:sqlite:%s", targetIplocIndexPath);
 
-      SQLiteConfig config = new SQLiteConfig();
-      SQLiteDataSource dataSource = new SQLiteDataSource(config);
+      logger.info("Creating the Iploc database");
+      var jdbcUrl = String.format("JDBC:sqlite:%s", targetIplocIndexPath);
+
+      var config = new SQLiteConfig();
+      var dataSource = new SQLiteDataSource(config);
       dataSource.setUrl(jdbcUrl);
 
-      IpLocRepository ipLocRepository = new IpLocRepository(dataSource);
+      var ipLocRepository = new IpLocRepository(dataSource);
       ipLocRepository.dropTable();
       ipLocRepository.createTable();
       ipLocRepository.createIndex();
 
-      IpLocManager ipLocBuilder = new IpLocManager(ipLocRepository, searcherManager);
-
-      logger.info("Generating NIC objects stream");
-      nicPaths.stream().parallel().forEach(path -> {
+      var ipLocReader = new IpLocReader(searcherManager);
+      nicPaths.parallelStream().forEach(path -> {
         try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(path))) {
-          var nicObjects = NicParser.parse(inputStream);
-          logger.info("Inserting the nic objects into the Iploc database");
-          ipLocBuilder.insertNicObjects(nicObjects);
+          var ipLocStream = ipLocReader.read(inputStream);
+          ipLocRepository.save(ipLocStream);
         } catch (IOException e) {
           throw new StreamException(e);
         }

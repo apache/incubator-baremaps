@@ -12,27 +12,24 @@
 
 package org.apache.baremaps.iploc;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.apache.baremaps.iploc.data.Ipv4;
+import java.io.IOException;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
-/**
- * Test the IP class which can generate 32 bits byte arrays representing IPv4 addresses from a
- * string
- */
-class Ipv4Test {
+class NicParserTest {
 
   @Test
-  void testRange() {
-    Ipv4 ipv4Range = new Ipv4("0.0.0.0");
-    assertArrayEquals(new byte[] {0x0, 0x0, 0x0, 0x0}, ipv4Range.getIp());
+  void parseObjects() throws IOException {
+    List<NicObject> nicObjects = NicData.sample("ripe/sample.txt");
+    assertEquals(11, nicObjects.size());
   }
 
   @Test
-  void testRangeMaxValue() {
-    Ipv4 ipv4Range = new Ipv4("255.255.255.255");
-    assertArrayEquals(new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF},
-        ipv4Range.getIp());
+  void parseAttributes() throws IOException {
+    List<NicAttribute> nicAttributes = NicData.sample("ripe/sample.txt").stream()
+        .map(NicObject::attributes).flatMap(List::stream).toList();
+    assertEquals(233, nicAttributes.size());
   }
 }

@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.iploc.nic;
+package org.apache.baremaps.iploc;
 
 /** Represents a NIC attribute. */
 public class NicAttribute {

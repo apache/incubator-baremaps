@@ -21,6 +21,8 @@ import io.servicetalk.transport.api.ConnectionContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
@@ -29,9 +31,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
-import org.apache.baremaps.iploc.data.IpLoc;
-import org.apache.baremaps.iploc.data.Ipv4;
+import org.apache.baremaps.iploc.IpLocObject;
 import org.apache.baremaps.iploc.IpLocRepository;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +84,7 @@ public class IplocResources {
               .or(() -> Optional.ofNullable(request.headers().get("X-Real-IP")))
               .orElse(((InetSocketAddress) context.remoteAddress()).getAddress().getHostAddress())
               .toString().split(",")[0].trim());
-      List<IpLoc> inetnumLocations = iplocRepository.findByIp(address.getAddress());
+      List<IpLocObject> inetnumLocations = iplocRepository.findByIp(address.getAddress());
       List<InetnumLocationDto> inetnumLocationDtos =
           inetnumLocations.stream().map(InetnumLocationDto::new).toList();
       return Response.status(200) // lgtm [java/xss]
@@ -111,28 +113,28 @@ public class IplocResources {
 
   public record InetnumLocationDto(
       String address,
-      String ipv4Start,
-      String ipv4End,
-      double latitude,
+      String inetStart,
+      String inetEnd,
       double longitude,
+      double latitude,
       String network,
       String country) {
 
-    public InetnumLocationDto(IpLoc inetnumLocation) {
-      this(inetnumLocation.getAddress(),
-          Ipv4.format(inetnumLocation.getIpv4Range().getStart()),
-          Ipv4.format(inetnumLocation.getIpv4Range().getEnd()),
-          inetnumLocation.getLocation().getLatitude(),
-          inetnumLocation.getLocation().getLongitude(),
-          inetnumLocation.getNetwork(),
-          inetnumLocation.getCountry());
+    public InetnumLocationDto(IpLocObject inetnumLocation) {
+      this(inetnumLocation.address(),
+          inetnumLocation.start().toString(),
+          inetnumLocation.end().toString(),
+          inetnumLocation.coordinate().getX(),
+          inetnumLocation.coordinate().getY(),
+          inetnumLocation.network(),
+          inetnumLocation.country());
     }
 
     @Override
     public String toString() {
-      return "InetnumLocationDto{" + "address='" + address + '\'' + ", ipv4Start='" + ipv4Start
+      return "InetnumLocationDto{" + "address='" + address + '\'' + ", inetStart='" + inetStart
           + '\''
-          + ", ipv4End='" + ipv4End + '\'' + ", latitude=" + latitude + ", longitude=" + longitude
+          + ", inetEnd='" + inetEnd + '\'' + ", latitude=" + latitude + ", longitude=" + longitude
           + ", network='" + network + '\'' + ", country='" + country + '\'' + '}';
     }
   }

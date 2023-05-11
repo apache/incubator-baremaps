@@ -56,7 +56,7 @@ public class Serve implements Callable<Integer> {
     config.addDataSourceProperty("cachePrepStmts", "true");
     config.addDataSourceProperty("prepStmtCacheSize", "250");
     config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-    config.setReadOnly(true);
+    // config.setReadOnly(true);
     DataSource dataSource = new HikariDataSource(config);
 
     IpLocRepository iplocRepository = new IpLocRepository(dataSource);

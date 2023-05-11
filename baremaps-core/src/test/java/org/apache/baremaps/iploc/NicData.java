@@ -10,26 +10,23 @@
  * the License.
  */
 
-package org.apache.baremaps.iploc.nic;
+package org.apache.baremaps.iploc;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
-import org.junit.jupiter.api.Test;
+import org.apache.baremaps.testing.TestFiles;
 
-class NicParserTest {
+public class NicData {
 
-  @Test
-  void parseObjects() throws IOException {
-    List<NicObject> nicObjects = NicData.sample("ripe/sample.txt");
-    assertEquals(11, nicObjects.size());
-  }
+  private static final String SAMPLE = "sample.txt";
 
-  @Test
-  void parseAttributes() throws IOException {
-    List<NicAttribute> nicAttributes = NicData.sample("ripe/sample.txt").stream()
-        .map(NicObject::attributes).flatMap(List::stream).toList();
-    assertEquals(233, nicAttributes.size());
+  public static List<NicObject> sample(String resource) throws IOException {
+    try (InputStream input = Files.newInputStream(TestFiles.resolve(resource))) {
+      return new NicReader().read(input).toList();
+    }
   }
 }

@@ -14,21 +14,23 @@ package org.apache.baremaps.iploc;
 
 
 
+import static org.apache.baremaps.iploc.InetUtils.fromByteArray;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 import javax.sql.DataSource;
-import org.apache.baremaps.iploc.data.IpLoc;
-import org.apache.baremaps.iploc.data.Ipv4Range;
-import org.apache.baremaps.iploc.data.Location;
+import org.apache.baremaps.stream.StreamUtils;
+import org.locationtech.jts.geom.Coordinate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A repository for {@link IpLoc} objects.
+ * A repository for {@link IpLocObject} objects.
  */
 public final class IpLocRepository {
 
@@ -41,8 +43,8 @@ public final class IpLocRepository {
           address text NOT NULL,
           ip_start blob,
           ip_end blob,
-          latitude real,
           longitude real,
+          latitude real,
           network text,
           country text
       )""";
@@ -52,15 +54,15 @@ public final class IpLocRepository {
 
   private static final String INSERT_SQL =
       """
-          INSERT INTO inetnum_locations(address, ip_start, ip_end, latitude, longitude, network, country)
+          INSERT INTO inetnum_locations(address, ip_start, ip_end, longitude, latitude, network, country)
           VALUES(?,?,?,?,?,?,?)""";
 
   private static final String SELECT_ALL_SQL = """
-      SELECT id, address, ip_start, ip_end, latitude, longitude, network, country
+      SELECT id, address, ip_start, ip_end, longitude, latitude, network, country
       FROM inetnum_locations;""";
 
   private static final String SELECT_ALL_BY_IP_SQL = """
-      SELECT id, address, ip_start, ip_end, latitude, longitude, network, country
+      SELECT id, address, ip_start, ip_end, longitude, latitude, network, country
       FROM inetnum_locations
       WHERE ip_start <= ? AND ip_end >= ?
       ORDER BY ip_start DESC, ip_end ASC;""";
@@ -101,17 +103,20 @@ public final class IpLocRepository {
   }
 
   /** {@inheritDoc} */
-  public List<IpLoc> findAll() {
-    List<IpLoc> results = new ArrayList<>();
+  public List<IpLocObject> findAll() {
+    List<IpLocObject> results = new ArrayList<>();
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(SELECT_ALL_SQL);
         ResultSet rs = stmt.executeQuery()) {
       // loop through the result set
       while (rs.next()) {
-        results.add(new IpLoc(rs.getString("address"),
-            new Ipv4Range(rs.getBytes("ip_start"), rs.getBytes("ip_end")),
-            new Location(rs.getDouble("latitude"), rs.getDouble("longitude")),
-            rs.getString("network"), rs.getString("country")));
+        results.add(new IpLocObject(
+            rs.getString("address"),
+            fromByteArray(rs.getBytes("ip_start")),
+            fromByteArray(rs.getBytes("ip_end")),
+            new Coordinate(rs.getDouble("latitude"), rs.getDouble("longitude")),
+            rs.getString("network"),
+            rs.getString("country")));
       }
     } catch (SQLException e) {
       logger.error("Unable to select inetnum locations", e);
@@ -120,18 +125,21 @@ public final class IpLocRepository {
   }
 
   /** {@inheritDoc} */
-  public List<IpLoc> findByIp(byte[] ip) {
-    List<IpLoc> results = new ArrayList<>();
+  public List<IpLocObject> findByIp(byte[] ip) {
+    List<IpLocObject> results = new ArrayList<>();
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(SELECT_ALL_BY_IP_SQL)) {
       stmt.setBytes(1, ip);
       stmt.setBytes(2, ip);
       try (ResultSet rs = stmt.executeQuery();) {
         while (rs.next()) {
-          results.add(new IpLoc(rs.getString("address"),
-              new Ipv4Range(rs.getBytes("ip_start"), rs.getBytes("ip_end")),
-              new Location(rs.getDouble("latitude"), rs.getDouble("longitude")),
-              rs.getString("network"), rs.getString("country")));
+          results.add(new IpLocObject(
+              rs.getString("address"),
+              fromByteArray(rs.getBytes("ip_start")),
+              fromByteArray(rs.getBytes("ip_end")),
+              new Coordinate(rs.getDouble("latitude"), rs.getDouble("longitude")),
+              rs.getString("network"),
+              rs.getString("country")));
         }
       }
     } catch (SQLException e) {
@@ -141,16 +149,16 @@ public final class IpLocRepository {
   }
 
   /** {@inheritDoc} */
-  public void save(IpLoc inetnumLocation) {
+  public void save(IpLocObject inetnumLocation) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(INSERT_SQL)) {
-      stmt.setString(1, inetnumLocation.getAddress());
-      stmt.setBytes(2, inetnumLocation.getIpv4Range().getStart());
-      stmt.setBytes(3, inetnumLocation.getIpv4Range().getEnd());
-      stmt.setDouble(4, inetnumLocation.getLocation().getLatitude());
-      stmt.setDouble(5, inetnumLocation.getLocation().getLongitude());
-      stmt.setString(6, inetnumLocation.getNetwork());
-      stmt.setString(7, inetnumLocation.getCountry());
+      stmt.setString(1, inetnumLocation.address());
+      stmt.setBytes(2, inetnumLocation.start().getAddress());
+      stmt.setBytes(3, inetnumLocation.end().getAddress());
+      stmt.setDouble(4, inetnumLocation.coordinate().getX());
+      stmt.setDouble(5, inetnumLocation.coordinate().getY());
+      stmt.setString(6, inetnumLocation.network());
+      stmt.setString(7, inetnumLocation.country());
       stmt.executeUpdate();
     } catch (SQLException e) {
       logger.error("Unable to save data", e);
@@ -158,18 +166,18 @@ public final class IpLocRepository {
   }
 
   /** {@inheritDoc} */
-  public void save(List<IpLoc> inetnumLocations) {
+  public void save(List<IpLocObject> inetnumLocations) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(INSERT_SQL);) {
       connection.setAutoCommit(false);
-      for (IpLoc inetnumLocation : inetnumLocations) {
-        stmt.setString(1, inetnumLocation.getAddress());
-        stmt.setBytes(2, inetnumLocation.getIpv4Range().getStart());
-        stmt.setBytes(3, inetnumLocation.getIpv4Range().getEnd());
-        stmt.setDouble(4, inetnumLocation.getLocation().getLatitude());
-        stmt.setDouble(5, inetnumLocation.getLocation().getLongitude());
-        stmt.setString(6, inetnumLocation.getNetwork());
-        stmt.setString(7, inetnumLocation.getCountry());
+      for (IpLocObject inetnumLocation : inetnumLocations) {
+        stmt.setString(1, inetnumLocation.address());
+        stmt.setBytes(2, inetnumLocation.start().getAddress());
+        stmt.setBytes(3, inetnumLocation.end().getAddress());
+        stmt.setDouble(4, inetnumLocation.coordinate().getX());
+        stmt.setDouble(5, inetnumLocation.coordinate().getY());
+        stmt.setString(6, inetnumLocation.network());
+        stmt.setString(7, inetnumLocation.country());
         stmt.addBatch();
       }
       stmt.executeBatch();
@@ -177,5 +185,11 @@ public final class IpLocRepository {
     } catch (SQLException e) {
       logger.error("Unable to save data", e);
     }
+  }
+
+  public void save(Stream<IpLocObject> ipLocStream) {
+    StreamUtils.partition(ipLocStream, 100)
+        .map(Stream::toList)
+        .forEach(this::save);
   }
 }

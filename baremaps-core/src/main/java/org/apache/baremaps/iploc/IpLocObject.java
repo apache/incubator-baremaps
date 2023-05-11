@@ -10,23 +10,18 @@
  * the License.
  */
 
-package org.apache.baremaps.iploc.nic;
+package org.apache.baremaps.iploc;
 
+import java.net.InetAddress;
+import org.locationtech.jts.geom.Coordinate;
 
+/** Contains an IP range along with its position in the world */
+public record IpLocObject(
+    String address,
+    InetAddress start,
+    InetAddress end,
+    Coordinate coordinate,
+    String network,
+    String country) {
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.List;
-import org.apache.baremaps.testing.TestFiles;
-
-public class NicData {
-
-  private static final String SAMPLE = "sample.txt";
-
-  public static List<NicObject> sample(String resource) throws IOException {
-    try (InputStream input = Files.newInputStream(TestFiles.resolve(resource))) {
-      return NicParser.parse(input).toList();
-    }
-  }
 }
