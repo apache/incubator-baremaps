@@ -15,8 +15,15 @@ package org.apache.baremaps.iploc;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class InetUtils {
+/** Utility methods for {@code InetAddress}. */
+public class InetAddressUtils {
 
+  /**
+   * Returns the {@code InetAddress} having the given address.
+   *
+   * @param address the address
+   * @return the {@code InetAddress}
+   */
   public static InetAddress fromByteArray(byte[] address) {
     try {
       return InetAddress.getByAddress(address);

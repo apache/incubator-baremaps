@@ -14,7 +14,7 @@ package org.apache.baremaps.iploc;
 
 
 
-import static org.apache.baremaps.iploc.InetUtils.fromByteArray;
+import static org.apache.baremaps.iploc.InetAddressUtils.fromByteArray;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -71,10 +71,18 @@ public final class IpLocRepository {
 
   private final DataSource dataSource;
 
+  /**
+   * Constructs an {@code IpLocRepository} with the specified {@code DataSource}.
+   *
+   * @param dataSource the data source
+   */
   public IpLocRepository(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
+    /**
+     * Drops the table.
+     */
   public void dropTable() {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(DROP_TABLE)) {
@@ -84,6 +92,9 @@ public final class IpLocRepository {
     }
   }
 
+  /**
+   * Creates the table.
+   */
   public void createTable() {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(CREATE_TABLE)) {
@@ -93,6 +104,9 @@ public final class IpLocRepository {
     }
   }
 
+  /**
+   * Creates the index.
+   */
   public void createIndex() {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(CREATE_INDEX)) {
@@ -102,7 +116,11 @@ public final class IpLocRepository {
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * Returns all the {@code IpLocObject} objects in the repository.
+   *
+   * @return the list of {@code IpLocObject} objects
+   */
   public List<IpLocObject> findAll() {
     List<IpLocObject> results = new ArrayList<>();
     try (Connection connection = dataSource.getConnection();
@@ -124,7 +142,12 @@ public final class IpLocRepository {
     return results;
   }
 
-  /** {@inheritDoc} */
+  /**
+   * Returns the {@code IpLocObject} objects in the repository that contain the specified IP.
+   *
+   * @param ip the IP
+   * @return the list of {@code IpLocObject} objects
+   */
   public List<IpLocObject> findByIp(byte[] ip) {
     List<IpLocObject> results = new ArrayList<>();
     try (Connection connection = dataSource.getConnection();
@@ -148,24 +171,32 @@ public final class IpLocRepository {
     return results;
   }
 
-  /** {@inheritDoc} */
-  public void save(IpLocObject inetnumLocation) {
+  /**
+   * Saves the {@code IpLocObject} object in the repository.
+   *
+   * @param ipLocObject the {@code IpLocObject} object
+   */
+  public void save(IpLocObject ipLocObject) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(INSERT_SQL)) {
-      stmt.setString(1, inetnumLocation.address());
-      stmt.setBytes(2, inetnumLocation.start().getAddress());
-      stmt.setBytes(3, inetnumLocation.end().getAddress());
-      stmt.setDouble(4, inetnumLocation.coordinate().getX());
-      stmt.setDouble(5, inetnumLocation.coordinate().getY());
-      stmt.setString(6, inetnumLocation.network());
-      stmt.setString(7, inetnumLocation.country());
+      stmt.setString(1, ipLocObject.address());
+      stmt.setBytes(2, ipLocObject.start().getAddress());
+      stmt.setBytes(3, ipLocObject.end().getAddress());
+      stmt.setDouble(4, ipLocObject.coordinate().getX());
+      stmt.setDouble(5, ipLocObject.coordinate().getY());
+      stmt.setString(6, ipLocObject.network());
+      stmt.setString(7, ipLocObject.country());
       stmt.executeUpdate();
     } catch (SQLException e) {
       logger.error("Unable to save data", e);
     }
   }
 
-  /** {@inheritDoc} */
+  /**
+   * Saves the {@code IpLocObject} objects in the repository.
+   *
+   * @param inetnumLocations the list of {@code IpLocObject} objects
+   */
   public void save(List<IpLocObject> inetnumLocations) {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(INSERT_SQL);) {
@@ -187,6 +218,11 @@ public final class IpLocRepository {
     }
   }
 
+  /**
+   * Saves the {@code IpLocObject} objects in the repository.
+   *
+   * @param ipLocStream the stream of {@code IpLocObject} objects
+   */
   public void save(Stream<IpLocObject> ipLocStream) {
     StreamUtils.partition(ipLocStream, 100)
         .map(Stream::toList)

@@ -26,22 +26,31 @@ class NicSpliterator implements Spliterator<NicObject> {
 
   private String line;
 
-  NicSpliterator(Spliterator<String> lineSpliterator) {
+  /**
+   * Constructs a {@code NicSpliterator}.
+   *
+   * @param lineSpliterator the line spliterator
+   */
+  public NicSpliterator(Spliterator<String> lineSpliterator) {
     this.lineSpliterator = lineSpliterator;
   }
 
+  /** {@inheritDoc} */
   public long estimateSize() {
     return lineSpliterator.estimateSize();
   }
 
+  /** {@inheritDoc} */
   public int characteristics() {
     return lineSpliterator.characteristics();
   }
 
+  /** {@inheritDoc} */
   public Spliterator<NicObject> trySplit() {
     return null;
   }
 
+  /** {@inheritDoc} */
   public boolean tryAdvance(Consumer<? super NicObject> consumer) {
     StringBuilder keyBuilder = new StringBuilder();
     StringBuilder valBuilder = new StringBuilder();

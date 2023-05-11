@@ -17,14 +17,27 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import org.apache.lucene.search.SearcherManager;
 
+/** A reader for IP location data. */
 public class IpLocReader {
 
   private final SearcherManager searcherManager;
 
+  /**
+   * Constructs an {@code IpLocReader} with the specified {@code SearcherManager} used to lookup
+   * locations.
+   *
+   * @param searcherManager the {@code SearcherManager}
+   */
   public IpLocReader(SearcherManager searcherManager) {
     this.searcherManager = searcherManager;
   }
 
+  /**
+   * Creates an ordered stream of IP location objects.
+   *
+   * @param inputStream a {@link InputStream} containing IP location objects
+   * @return a {@link Stream} of IP location objects
+   */
   public Stream<IpLocObject> read(InputStream inputStream) {
     var nicReader = new NicReader();
     return nicReader.read(inputStream)
