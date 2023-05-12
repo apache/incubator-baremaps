@@ -153,14 +153,14 @@ public final class IpLocRepository {
    * @return the list of {@code IpLocObject} objects
    */
   public List<IpLocObject> findByInetAddress(InetAddress inetAddress) {
-    List<IpLocObject> results = new ArrayList<>();
+    List<IpLocObject> ipLocObjects = new ArrayList<>();
     try (Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(SELECT_ALL_BY_IP_SQL)) {
       statement.setBytes(1, inetAddress.getAddress());
       statement.setBytes(2, inetAddress.getAddress());
       try (ResultSet resultSet = statement.executeQuery();) {
         while (resultSet.next()) {
-          results.add(new IpLocObject(
+          ipLocObjects.add(new IpLocObject(
               resultSet.getString("address"),
               new InetRange(
                   fromByteArray(resultSet.getBytes("ip_start")),
@@ -175,7 +175,7 @@ public final class IpLocRepository {
     } catch (SQLException e) {
       logger.error("Unable to select inetnum locations", e);
     }
-    return results;
+    return ipLocObjects;
   }
 
   /**
@@ -185,15 +185,15 @@ public final class IpLocRepository {
    */
   public void save(IpLocObject ipLocObject) {
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(INSERT_SQL)) {
-      stmt.setString(1, ipLocObject.address());
-      stmt.setBytes(2, ipLocObject.inetRange().start().getAddress());
-      stmt.setBytes(3, ipLocObject.inetRange().end().getAddress());
-      stmt.setDouble(4, ipLocObject.coordinate().getX());
-      stmt.setDouble(5, ipLocObject.coordinate().getY());
-      stmt.setString(6, ipLocObject.network());
-      stmt.setString(7, ipLocObject.country());
-      stmt.executeUpdate();
+        PreparedStatement statement = connection.prepareStatement(INSERT_SQL)) {
+      statement.setString(1, ipLocObject.address());
+      statement.setBytes(2, ipLocObject.inetRange().start().getAddress());
+      statement.setBytes(3, ipLocObject.inetRange().end().getAddress());
+      statement.setDouble(4, ipLocObject.coordinate().getX());
+      statement.setDouble(5, ipLocObject.coordinate().getY());
+      statement.setString(6, ipLocObject.network());
+      statement.setString(7, ipLocObject.country());
+      statement.executeUpdate();
     } catch (SQLException e) {
       logger.error("Unable to save data", e);
     }
@@ -202,23 +202,23 @@ public final class IpLocRepository {
   /**
    * Saves the {@code IpLocObject} objects in the repository.
    *
-   * @param inetnumLocations the list of {@code IpLocObject} objects
+   * @param ipLocObjects the list of {@code IpLocObject} objects
    */
-  public void save(List<IpLocObject> inetnumLocations) {
+  public void save(List<IpLocObject> ipLocObjects) {
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(INSERT_SQL);) {
+        PreparedStatement statement = connection.prepareStatement(INSERT_SQL);) {
       connection.setAutoCommit(false);
-      for (IpLocObject inetnumLocation : inetnumLocations) {
-        stmt.setString(1, inetnumLocation.address());
-        stmt.setBytes(2, inetnumLocation.inetRange().start().getAddress());
-        stmt.setBytes(3, inetnumLocation.inetRange().end().getAddress());
-        stmt.setDouble(4, inetnumLocation.coordinate().getX());
-        stmt.setDouble(5, inetnumLocation.coordinate().getY());
-        stmt.setString(6, inetnumLocation.network());
-        stmt.setString(7, inetnumLocation.country());
-        stmt.addBatch();
+      for (IpLocObject ipLocObject : ipLocObjects) {
+        statement.setString(1, ipLocObject.address());
+        statement.setBytes(2, ipLocObject.inetRange().start().getAddress());
+        statement.setBytes(3, ipLocObject.inetRange().end().getAddress());
+        statement.setDouble(4, ipLocObject.coordinate().getX());
+        statement.setDouble(5, ipLocObject.coordinate().getY());
+        statement.setString(6, ipLocObject.network());
+        statement.setString(7, ipLocObject.country());
+        statement.addBatch();
       }
-      stmt.executeBatch();
+      statement.executeBatch();
       connection.commit();
     } catch (SQLException e) {
       logger.error("Unable to save data", e);
@@ -228,10 +228,10 @@ public final class IpLocRepository {
   /**
    * Saves the {@code IpLocObject} objects in the repository.
    *
-   * @param ipLocStream the stream of {@code IpLocObject} objects
+   * @param ipLocObjects the stream of {@code IpLocObject} objects
    */
-  public void save(Stream<IpLocObject> ipLocStream) {
-    StreamUtils.partition(ipLocStream, 100)
+  public void save(Stream<IpLocObject> ipLocObjects) {
+    StreamUtils.partition(ipLocObjects, 100)
         .map(Stream::toList)
         .forEach(this::save);
   }

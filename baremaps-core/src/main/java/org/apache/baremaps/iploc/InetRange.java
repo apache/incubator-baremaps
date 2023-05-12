@@ -14,7 +14,7 @@ package org.apache.baremaps.iploc;
 
 import java.net.InetAddress;
 
-/** A record representing an IP inetRange. */
+/** A record representing an inet address range. */
 public record InetRange(InetAddress start, InetAddress end) {
 
 }

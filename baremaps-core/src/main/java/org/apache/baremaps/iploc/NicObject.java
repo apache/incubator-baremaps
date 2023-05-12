@@ -72,7 +72,7 @@ public class NicObject {
    */
   public Optional<String> first(String name) {
     return attributes.stream()
-        .filter(attr -> attr.name().equals(name))
+        .filter(attribute -> attribute.name().equals(name))
         .map(NicAttribute::value)
         .findFirst();
   }
@@ -85,7 +85,7 @@ public class NicObject {
    */
   public List<String> all(String name) {
     return attributes.stream()
-        .filter(attr -> attr.name().equals(name))
+        .filter(attribute -> attribute.name().equals(name))
         .map(NicAttribute::value)
         .toList();
   }
