@@ -123,8 +123,8 @@ public class IpLocResources {
 
     public InetnumLocationDto(IpLocObject ipLocObject) {
       this(ipLocObject.address(),
-          ipLocObject.inetRange().start().toString(),
-          ipLocObject.inetRange().end().toString(),
+          ipLocObject.inetRange().start().toString().substring(1),
+          ipLocObject.inetRange().end().toString().substring(1),
           ipLocObject.coordinate().getX(),
           ipLocObject.coordinate().getY(),
           ipLocObject.network(),

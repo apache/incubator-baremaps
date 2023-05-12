@@ -135,8 +135,8 @@ public final class IpLocRepository {
                 fromByteArray(resultSet.getBytes("ip_start")),
                 fromByteArray(resultSet.getBytes("ip_end"))),
             new Coordinate(
-                resultSet.getDouble("latitude"),
-                resultSet.getDouble("longitude")),
+                resultSet.getDouble("longitude"),
+                resultSet.getDouble("latitude")),
             resultSet.getString("network"),
             resultSet.getString("country")));
       }
@@ -166,8 +166,8 @@ public final class IpLocRepository {
                   fromByteArray(resultSet.getBytes("ip_start")),
                   fromByteArray(resultSet.getBytes("ip_end"))),
               new Coordinate(
-                  resultSet.getDouble("latitude"),
-                  resultSet.getDouble("longitude")),
+                  resultSet.getDouble("longitude"),
+                  resultSet.getDouble("latitude")),
               resultSet.getString("network"),
               resultSet.getString("country")));
         }

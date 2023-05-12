@@ -213,7 +213,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
     if (matcher.find()) {
       double latitude = Double.parseDouble(matcher.group(1));
       double longitude = Double.parseDouble(matcher.group(2));
-      return Optional.of(new Coordinate(latitude, longitude));
+      return Optional.of(new Coordinate(longitude, latitude));
     }
     return Optional.empty();
   }
