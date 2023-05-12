@@ -23,7 +23,7 @@ import java.util.concurrent.Callable;
 import javax.sql.DataSource;
 import org.apache.baremaps.iploc.IpLocRepository;
 import org.apache.baremaps.server.CorsFilter;
-import org.apache.baremaps.server.IplocResources;
+import org.apache.baremaps.server.IpLocResources;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -59,14 +59,14 @@ public class Serve implements Callable<Integer> {
     // config.setReadOnly(true);
     DataSource dataSource = new HikariDataSource(config);
 
-    IpLocRepository iplocRepository = new IpLocRepository(dataSource);
+    IpLocRepository ipLocRepository = new IpLocRepository(dataSource);
 
     // Configure the application
-    var application = new ResourceConfig().register(CorsFilter.class).register(IplocResources.class)
+    var application = new ResourceConfig().register(CorsFilter.class).register(IpLocResources.class)
         .register(new AbstractBinder() {
           @Override
           protected void configure() {
-            bind(iplocRepository).to(IpLocRepository.class).named("iplocRepository");
+            bind(ipLocRepository).to(IpLocRepository.class).named("iplocRepository");
           }
         });
 

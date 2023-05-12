@@ -37,7 +37,8 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
   private final SearcherManager searcherManager;
 
   /**
-   * Create a new IpLoc object
+   * Constructs an IpLocMapper with the specified geocoder used to find the locations of the
+   * objects.
    *
    * @param searcherManager the geocoder that will be used to find the locations of the objects
    */
@@ -46,11 +47,14 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
   }
 
   /**
-   * Process an NicObject of type Inetnum the score is above a threshold the database
+   * Returns an {@code Optional} containing the {@code IpLocObject} associated with the specified
+   * {@code NicObject} if it is an inetnum object, or an empty {@code Optional} otherwise.
    *
-   * @param nicObject the nicObject
-   * @return the optional inetnum location
+   * @param nicObject the {@code NicObject}
+   * @return an {@code Optional} containing the {@code IpLocObject} corresponding to the
+   *         {@code NicObject}
    */
+  @Override
   public Optional<IpLocObject> apply(NicObject nicObject) {
     try {
       if (nicObject.attributes().isEmpty()) {
@@ -65,7 +69,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
       IpResourceRange ipRange = IpResourceRange.parse(firstAttribute.value());
       var start = InetAddresses.forString(ipRange.getStart().toString());
       var end = InetAddresses.forString(ipRange.getEnd().toString());
-
+      var inetRange = new InetRange(start, end);
 
       Map<String, String> attributes = nicObject.toMap();
 
@@ -78,8 +82,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
         if (location.isPresent()) {
           return Optional.of(new IpLocObject(
               attributes.get("geoloc"),
-              start,
-              end,
+              inetRange,
               location.get(),
               network,
               attributes.get("country")));
@@ -93,8 +96,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
         if (location.isPresent()) {
           return Optional.of(new IpLocObject(
               attributes.get("address"),
-              start,
-              end,
+              inetRange,
               location.get(),
               network,
               attributes.get("country")));
@@ -108,8 +110,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
         if (location.isPresent()) {
           return Optional.of(new IpLocObject(
               attributes.get("descr"),
-              start,
-              end,
+              inetRange,
               location.get(),
               network,
               attributes.get("country")));
@@ -122,8 +123,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
             findLocation(attributes.get("name"), attributes.get("country"));
         if (location.isPresent()) {
           return Optional.of(new IpLocObject(attributes.get("name"),
-              start,
-              end,
+              inetRange,
               location.get(),
               network, attributes.get("country")));
         }
@@ -139,8 +139,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
         if (location.isPresent()) {
           return Optional.of(new IpLocObject(
               IsoCountriesUtils.getCountry(countryUppercase),
-              start,
-              end,
+              inetRange,
               location.get(),
               network,
               countryUppercase));
@@ -154,8 +153,7 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
         if (location.isPresent()) {
           return Optional.of(new IpLocObject(
               attributes.get("country"),
-              start,
-              end,
+              inetRange,
               location.get(),
               network,
               attributes.get("country")));
@@ -170,13 +168,13 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
   }
 
   /**
-   * Use the geocoder to find a latitude/longitude with the given query.
+   * Uses the geocoder to find the location of the specified search terms.
    *
    * @param searchTerms the search terms
-   * @param countryCode the country code filter
-   * @return an optional of the location
-   * @throws IOException
-   * @throws ParseException
+   * @param countryCode the country code
+   * @return an {@code Optional} containing the location of the search terms
+   * @throws IOException if an I/O error occurs
+   * @throws ParseException if a parse error occurs
    */
   private Optional<Coordinate> findLocation(String searchTerms, String countryCode)
       throws IOException, ParseException {
@@ -195,9 +193,10 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
     }
 
     var document = indexSearcher.doc(scoreDoc.doc);
-    double latitude = document.getField("latitude").numericValue().doubleValue();
     double longitude = document.getField("longitude").numericValue().doubleValue();
-    return Optional.of(new Coordinate(latitude, longitude));
+    double latitude = document.getField("latitude").numericValue().doubleValue();
+
+    return Optional.of(new Coordinate(longitude, latitude));
   }
 
   /**

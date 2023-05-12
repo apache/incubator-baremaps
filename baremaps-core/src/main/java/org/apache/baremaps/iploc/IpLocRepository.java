@@ -16,6 +16,7 @@ package org.apache.baremaps.iploc;
 
 import static org.apache.baremaps.iploc.InetAddressUtils.fromByteArray;
 
+import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -85,8 +86,8 @@ public final class IpLocRepository {
    */
   public void dropTable() {
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(DROP_TABLE)) {
-      stmt.execute();
+        PreparedStatement statement = connection.prepareStatement(DROP_TABLE)) {
+      statement.execute();
     } catch (SQLException e) {
       logger.error("Unable to drop inetnum locations table", e);
     }
@@ -97,8 +98,8 @@ public final class IpLocRepository {
    */
   public void createTable() {
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(CREATE_TABLE)) {
-      stmt.execute();
+        PreparedStatement statement = connection.prepareStatement(CREATE_TABLE)) {
+      statement.execute();
     } catch (SQLException e) {
       logger.error("Unable to create inetnum locations table", e);
     }
@@ -109,8 +110,8 @@ public final class IpLocRepository {
    */
   public void createIndex() {
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(CREATE_INDEX)) {
-      stmt.execute();
+        PreparedStatement statement = connection.prepareStatement(CREATE_INDEX)) {
+      statement.execute();
     } catch (SQLException e) {
       logger.error("Unable to create inetnum locations index", e);
     }
@@ -124,17 +125,20 @@ public final class IpLocRepository {
   public List<IpLocObject> findAll() {
     List<IpLocObject> results = new ArrayList<>();
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(SELECT_ALL_SQL);
-        ResultSet rs = stmt.executeQuery()) {
+        PreparedStatement statement = connection.prepareStatement(SELECT_ALL_SQL);
+        ResultSet resultSet = statement.executeQuery()) {
       // loop through the result set
-      while (rs.next()) {
+      while (resultSet.next()) {
         results.add(new IpLocObject(
-            rs.getString("address"),
-            fromByteArray(rs.getBytes("ip_start")),
-            fromByteArray(rs.getBytes("ip_end")),
-            new Coordinate(rs.getDouble("latitude"), rs.getDouble("longitude")),
-            rs.getString("network"),
-            rs.getString("country")));
+            resultSet.getString("address"),
+            new InetRange(
+                fromByteArray(resultSet.getBytes("ip_start")),
+                fromByteArray(resultSet.getBytes("ip_end"))),
+            new Coordinate(
+                resultSet.getDouble("latitude"),
+                resultSet.getDouble("longitude")),
+            resultSet.getString("network"),
+            resultSet.getString("country")));
       }
     } catch (SQLException e) {
       logger.error("Unable to select inetnum locations", e);
@@ -145,24 +149,27 @@ public final class IpLocRepository {
   /**
    * Returns the {@code IpLocObject} objects in the repository that contain the specified IP.
    *
-   * @param ip the IP
+   * @param inetAddress the IP address
    * @return the list of {@code IpLocObject} objects
    */
-  public List<IpLocObject> findByIp(byte[] ip) {
+  public List<IpLocObject> findByInetAddress(InetAddress inetAddress) {
     List<IpLocObject> results = new ArrayList<>();
     try (Connection connection = dataSource.getConnection();
-        PreparedStatement stmt = connection.prepareStatement(SELECT_ALL_BY_IP_SQL)) {
-      stmt.setBytes(1, ip);
-      stmt.setBytes(2, ip);
-      try (ResultSet rs = stmt.executeQuery();) {
-        while (rs.next()) {
+        PreparedStatement statement = connection.prepareStatement(SELECT_ALL_BY_IP_SQL)) {
+      statement.setBytes(1, inetAddress.getAddress());
+      statement.setBytes(2, inetAddress.getAddress());
+      try (ResultSet resultSet = statement.executeQuery();) {
+        while (resultSet.next()) {
           results.add(new IpLocObject(
-              rs.getString("address"),
-              fromByteArray(rs.getBytes("ip_start")),
-              fromByteArray(rs.getBytes("ip_end")),
-              new Coordinate(rs.getDouble("latitude"), rs.getDouble("longitude")),
-              rs.getString("network"),
-              rs.getString("country")));
+              resultSet.getString("address"),
+              new InetRange(
+                  fromByteArray(resultSet.getBytes("ip_start")),
+                  fromByteArray(resultSet.getBytes("ip_end"))),
+              new Coordinate(
+                  resultSet.getDouble("latitude"),
+                  resultSet.getDouble("longitude")),
+              resultSet.getString("network"),
+              resultSet.getString("country")));
         }
       }
     } catch (SQLException e) {
@@ -180,8 +187,8 @@ public final class IpLocRepository {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(INSERT_SQL)) {
       stmt.setString(1, ipLocObject.address());
-      stmt.setBytes(2, ipLocObject.start().getAddress());
-      stmt.setBytes(3, ipLocObject.end().getAddress());
+      stmt.setBytes(2, ipLocObject.inetRange().start().getAddress());
+      stmt.setBytes(3, ipLocObject.inetRange().end().getAddress());
       stmt.setDouble(4, ipLocObject.coordinate().getX());
       stmt.setDouble(5, ipLocObject.coordinate().getY());
       stmt.setString(6, ipLocObject.network());
@@ -203,8 +210,8 @@ public final class IpLocRepository {
       connection.setAutoCommit(false);
       for (IpLocObject inetnumLocation : inetnumLocations) {
         stmt.setString(1, inetnumLocation.address());
-        stmt.setBytes(2, inetnumLocation.start().getAddress());
-        stmt.setBytes(3, inetnumLocation.end().getAddress());
+        stmt.setBytes(2, inetnumLocation.inetRange().start().getAddress());
+        stmt.setBytes(3, inetnumLocation.inetRange().end().getAddress());
         stmt.setDouble(4, inetnumLocation.coordinate().getX());
         stmt.setDouble(5, inetnumLocation.coordinate().getY());
         stmt.setString(6, inetnumLocation.network());

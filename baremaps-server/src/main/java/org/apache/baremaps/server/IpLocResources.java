@@ -36,15 +36,15 @@ import org.slf4j.LoggerFactory;
 
 @Singleton
 @javax.ws.rs.Path("/")
-public class IplocResources {
+public class IpLocResources {
 
   private static final Logger logger = LoggerFactory.getLogger(DirectoryWatcher.class);
 
-  private final IpLocRepository iplocRepository;
+  private final IpLocRepository ipLocRepository;
 
   @Inject
-  public IplocResources(IpLocRepository iplocRepository) {
-    this.iplocRepository = iplocRepository;
+  public IpLocResources(IpLocRepository ipLocRepository) {
+    this.ipLocRepository = ipLocRepository;
   }
 
   public record IP(String ip) {
@@ -52,8 +52,10 @@ public class IplocResources {
 
   @GET
   @javax.ws.rs.Path("/api/ip")
-  public Response ip(@Context ConnectionContext context,
-      @Context StreamingHttpRequest request, @QueryParam("ip") String ip) {
+  public Response ip(
+          @Context ConnectionContext context,
+      @Context StreamingHttpRequest request,
+          @QueryParam("ip") String ip) {
     try {
       var address = InetAddresses.forString(
           Optional.ofNullable((CharSequence) ip)
@@ -72,8 +74,10 @@ public class IplocResources {
 
   @GET
   @javax.ws.rs.Path("/api/iploc")
-  public Response iploc(@Context ConnectionContext context,
-      @Context StreamingHttpRequest request, @QueryParam("ip") String ip) {
+  public Response iploc(
+          @Context ConnectionContext context,
+      @Context StreamingHttpRequest request,
+                        @QueryParam("ip") String ip) {
     try {
       var address = InetAddresses.forString(
           Optional.ofNullable((CharSequence) ip)
@@ -81,7 +85,7 @@ public class IplocResources {
               .or(() -> Optional.ofNullable(request.headers().get("X-Real-IP")))
               .orElse(((InetSocketAddress) context.remoteAddress()).getAddress().getHostAddress())
               .toString().split(",")[0].trim());
-      List<IpLocObject> inetnumLocations = iplocRepository.findByIp(address.getAddress());
+      List<IpLocObject> inetnumLocations = ipLocRepository.findByInetAddress(address);
       List<InetnumLocationDto> inetnumLocationDtos =
           inetnumLocations.stream().map(InetnumLocationDto::new).toList();
       return Response.status(200) // lgtm [java/xss]
@@ -117,22 +121,14 @@ public class IplocResources {
       String network,
       String country) {
 
-    public InetnumLocationDto(IpLocObject inetnumLocation) {
-      this(inetnumLocation.address(),
-          inetnumLocation.start().toString(),
-          inetnumLocation.end().toString(),
-          inetnumLocation.coordinate().getX(),
-          inetnumLocation.coordinate().getY(),
-          inetnumLocation.network(),
-          inetnumLocation.country());
-    }
-
-    @Override
-    public String toString() {
-      return "InetnumLocationDto{" + "address='" + address + '\'' + ", inetStart='" + inetStart
-          + '\''
-          + ", inetEnd='" + inetEnd + '\'' + ", latitude=" + latitude + ", longitude=" + longitude
-          + ", network='" + network + '\'' + ", country='" + country + '\'' + '}';
+    public InetnumLocationDto(IpLocObject ipLocObject) {
+      this(ipLocObject.address(),
+          ipLocObject.inetRange().start().toString(),
+          ipLocObject.inetRange().end().toString(),
+          ipLocObject.coordinate().getX(),
+          ipLocObject.coordinate().getY(),
+          ipLocObject.network(),
+          ipLocObject.country());
     }
   }
 }

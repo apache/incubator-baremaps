@@ -13,22 +13,8 @@
 package org.apache.baremaps.iploc;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
-/** Utility methods for {@code InetAddress}. */
-public class InetAddressUtils {
+/** A record representing an IP inetRange. */
+public record InetRange(InetAddress start, InetAddress end) {
 
-  /**
-   * Returns the {@code InetAddress} having the given address.
-   *
-   * @param address the byte array representation of the address
-   * @return the {@code InetAddress}
-   */
-  public static InetAddress fromByteArray(byte[] address) {
-    try {
-      return InetAddress.getByAddress(address);
-    } catch (UnknownHostException e) {
-      throw new IllegalArgumentException("Invalid address");
-    }
-  }
 }

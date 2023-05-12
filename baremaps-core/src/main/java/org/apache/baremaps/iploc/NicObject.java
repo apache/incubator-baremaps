@@ -71,7 +71,9 @@ public class NicObject {
    * @return the attribute value
    */
   public Optional<String> first(String name) {
-    return attributes.stream().filter(attr -> attr.name().equals(name)).map(NicAttribute::value)
+    return attributes.stream()
+        .filter(attr -> attr.name().equals(name))
+        .map(NicAttribute::value)
         .findFirst();
   }
 
@@ -82,7 +84,9 @@ public class NicObject {
    * @return the attribute values
    */
   public List<String> all(String name) {
-    return attributes.stream().filter(attr -> attr.name().equals(name)).map(NicAttribute::value)
+    return attributes.stream()
+        .filter(attr -> attr.name().equals(name))
+        .map(NicAttribute::value)
         .toList();
   }
 
@@ -93,9 +97,10 @@ public class NicObject {
    */
   public Map<String, String> toMap() {
     Map<String, String> map = new HashMap<>();
-    for (NicAttribute attr : attributes()) {
-      map.put(attr.name(),
-          (map.containsKey(attr.name()) ? map.get(attr.name()) + ", " : "") + attr.value());
+    for (NicAttribute attribute : attributes()) {
+      map.put(attribute.name(),
+          (map.containsKey(attribute.name()) ? map.get(attribute.name()) + ", " : "")
+              + attribute.value());
     }
     return map;
   }
@@ -103,10 +108,10 @@ public class NicObject {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    StringBuilder str = new StringBuilder();
-    for (NicAttribute attr : attributes()) {
-      str.append(attr.name()).append(": ").append(attr.value()).append("\n");
+    StringBuilder stringBuilder = new StringBuilder();
+    for (NicAttribute attribute : attributes()) {
+      stringBuilder.append(attribute.name()).append(": ").append(attribute.value()).append("\n");
     }
-    return str.toString();
+    return stringBuilder.toString();
   }
 }

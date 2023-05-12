@@ -105,7 +105,7 @@ class IpLocObjectTest {
   void findByIpWithZeroes() {
     iplocRepository.save(ipLocObjects);
     List<IpLocObject> inetnumLocations =
-        iplocRepository.findByIp(InetAddresses.forString("0.0.0.5").getAddress());
+        iplocRepository.findByInetAddress(InetAddresses.forString("0.0.0.5"));
     assertEquals(4, inetnumLocations.size());
   }
 
@@ -113,7 +113,7 @@ class IpLocObjectTest {
   void findByIp() {
     iplocRepository.save(ipLocObjects);
     List<IpLocObject> inetnumLocations =
-        iplocRepository.findByIp(InetAddresses.forString("255.22.22.2").getAddress());
+        iplocRepository.findByInetAddress(InetAddresses.forString("255.22.22.2"));
     assertEquals(1, inetnumLocations.size());
   }
 
@@ -122,8 +122,9 @@ class IpLocObjectTest {
     var range = IpResourceRange.parse("192.168.0.0/24");
     iplocRepository.save(new IpLocObject(
         "Test",
-        InetAddresses.forString(range.getStart().toString()),
-        InetAddresses.forString(range.getEnd().toString()),
+        new InetRange(
+            InetAddresses.forString(range.getStart().toString()),
+            InetAddresses.forString(range.getEnd().toString())),
         new Coordinate(1, 1),
         "Test",
         null));
@@ -138,8 +139,9 @@ class IpLocObjectTest {
       var range = IpResourceRange.parse("192.168.0.0/24");
       inetnumLocations.add(new IpLocObject(
           "Test",
-          InetAddresses.forString(range.getStart().toString()),
-          InetAddresses.forString(range.getEnd().toString()),
+          new InetRange(
+              InetAddresses.forString(range.getStart().toString()),
+              InetAddresses.forString(range.getEnd().toString())),
           new Coordinate(1, 1),
           "Test",
           null));

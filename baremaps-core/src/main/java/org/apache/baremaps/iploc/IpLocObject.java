@@ -12,14 +12,12 @@
 
 package org.apache.baremaps.iploc;
 
-import java.net.InetAddress;
 import org.locationtech.jts.geom.Coordinate;
 
 /** A record representing an IP associated with a location. */
 public record IpLocObject(
     String address,
-    InetAddress start,
-    InetAddress end,
+    InetRange inetRange,
     Coordinate coordinate,
     String network,
     String country) {
