@@ -50,8 +50,6 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
    *
    * @param nicObject the nicObject
    * @return the optional inetnum location
-   * @throws IOException
-   * @throws ParseException
    */
   public Optional<IpLocObject> apply(NicObject nicObject) {
     try {
