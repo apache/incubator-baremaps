@@ -34,68 +34,45 @@ const nics = [
     {url: "https://ftp.ripe.net/ripe/dbase/ripe.db.gz", filename: "ripe.db"},
 ];
 
-// Iterate over nic urls to create a list of downloads and ungzip
-const fetchAndUnzipNic = nics.map((nic, index) => ({
-    id: `fetch-nic-${nic.filename.replace(".", "-")}`,
-    needs: [],
-    tasks: [
-        {
-            type: "DownloadUrl",
-            url: nic.url,
-            path: `downloads/${nic.filename}.gz`
-        },
-        {
-            type: "UngzipFile",
-            file: `downloads/${nic.filename}.gz`,
-            directory: "archives"
-        }
-    ]
-}));
-
-// Fetch and unzip Geonames
-const fetchAndUnzipGeonames = {
-    id: "fetch-geonames-allcountries",
-    needs: [],
-    tasks: [
-        {
-            type: "DownloadUrl",
-            url: "https://download.geonames.org/export/dump/allCountries.zip",
-            path: "downloads/geonames-allcountries.zip",
-            force: true
-        },
-        {
-            type: "UnzipFile",
-            file: "downloads/geonames-allcountries.zip",
-            directory: "archives"
-        }
-    ]
-};
-
-// Create the Geocoder index
-const createGeonamesIndex = {
-    id: "geocoder-index",
-    needs: [fetchAndUnzipGeonames.id],
-    tasks: [
-        {
-            type: "CreateGeonamesIndex",
-            dataFile: "archives/allCountries.txt",
-            indexDirectory: "geocoder-index"
-        }
-    ]
-};
-
-// Create the iploc database
-const createIplocIndex = {
-    id: "iploc-index",
-    needs: [createGeonamesIndex.id, ...fetchAndUnzipNic.map(e => e.id)],
-    tasks: [
-        {
-            type: "CreateIplocIndex",
-            geonamesIndexPath: "geocoder-index",
-            nicPaths: nics.map(nic => `archives/${nic.filename}`),
-            targetIplocIndexPath: "iploc.db"
-        }
-    ]
-};
-
-export default {"steps": [...fetchAndUnzipNic, fetchAndUnzipGeonames, createGeonamesIndex, createIplocIndex]};
+export default {"steps": [
+    {
+        id: `iploc`,
+        needs: [],
+        tasks: [
+            ...nics.flatMap(nic => [
+                {
+                    type: "DownloadUrl",
+                    url: nic.url,
+                    path: `downloads/${nic.filename}.gz`
+                },
+                {
+                    type: "UngzipFile",
+                    file: `downloads/${nic.filename}.gz`,
+                    directory: "archives"
+                }
+            ]),
+            {
+                type: "DownloadUrl",
+                url: "https://download.geonames.org/export/dump/allCountries.zip",
+                path: "downloads/geonames-allcountries.zip",
+                force: true
+            },
+            {
+                type: "UnzipFile",
+                file: "downloads/geonames-allcountries.zip",
+                directory: "archives"
+            },
+            {
+                type: "CreateGeonamesIndex",
+                dataFile: "archives/allCountries.txt",
+                indexDirectory: "geocoder-index"
+            },
+            {
+                type: "CreateIplocIndex",
+                geonamesIndexPath: "geocoder-index",
+                nicPaths: nics.map(nic => `archives/${nic.filename}`),
+                targetIplocIndexPath: "iploc.db"
+            }
+        ]
+    }
+]};
