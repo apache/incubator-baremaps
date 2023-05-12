@@ -53,9 +53,9 @@ public class IpLocResources {
   @GET
   @javax.ws.rs.Path("/api/ip")
   public Response ip(
-          @Context ConnectionContext context,
+      @Context ConnectionContext context,
       @Context StreamingHttpRequest request,
-          @QueryParam("ip") String ip) {
+      @QueryParam("ip") String ip) {
     try {
       var address = InetAddresses.forString(
           Optional.ofNullable((CharSequence) ip)
@@ -75,9 +75,9 @@ public class IpLocResources {
   @GET
   @javax.ws.rs.Path("/api/iploc")
   public Response iploc(
-          @Context ConnectionContext context,
+      @Context ConnectionContext context,
       @Context StreamingHttpRequest request,
-                        @QueryParam("ip") String ip) {
+      @QueryParam("ip") String ip) {
     try {
       var address = InetAddresses.forString(
           Optional.ofNullable((CharSequence) ip)
