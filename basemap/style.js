@@ -70,6 +70,7 @@ export default {
     "layers": [
         background,
         power_background,
+        aeroway_polygon,
         landuse_background,
         natural_background,
         amenity_background,
@@ -98,7 +99,6 @@ export default {
         highway_bridge_line,
         highway_label,
         aeroway_line,
-        aeroway_polygon,
         route_line,
         power_cable,
         power_tower,

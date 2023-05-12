@@ -14,7 +14,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 let directives = [
     {
         filter: ['==', ['geometry-type'], 'Polygon'],
-        'fill-color': 'rgba(187, 187, 204, 1.0)',
+        'fill-color': 'rgba(213, 213, 220, 1.0)',
     },
 ];
 
