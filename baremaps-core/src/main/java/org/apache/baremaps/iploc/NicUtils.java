@@ -10,35 +10,42 @@
  * the License.
  */
 
-package org.apache.baremaps.iploc.nic;
+package org.apache.baremaps.iploc;
 
-
-
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/** Static methods for processing NIC data. */
+/**
+ * Utility methods for NIC objects.
+ */
 public class NicUtils {
 
   private NicUtils() {}
 
   /**
+   * Returns true if the NIC object is an inetnum.
+   *
+   * @param nicObject
+   * @return
+   */
+  public static boolean isInetnum(NicObject nicObject) {
+    return "inetnum".equals(nicObject.type());
+  }
+
+  /**
    * Writes a NIC object into a text file.
    *
-   * @param file the path of a text file
+   * @param path the path of a text file
    */
-  public static void writeToFile(Path file, NicObject object) throws IOException {
-    if (Files.notExists(file)) {
-      Files.createDirectories(file);
+  public static void writeToFile(Path path, NicObject nicObject) throws IOException {
+    if (Files.notExists(path)) {
+      Files.createDirectories(path);
     }
-    String fileName = object.type() + "-" + object.id() + ".txt";
-    FileOutputStream fos = new FileOutputStream(file + "/" + fileName);
+    String fileName = nicObject.type() + "-" + nicObject.id() + ".txt";
+    FileOutputStream fos = new FileOutputStream(path + "/" + fileName);
     try (DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(fos))) {
-      outStream.writeUTF(object.toString());
+      outStream.writeUTF(nicObject.toString());
     }
   }
 }

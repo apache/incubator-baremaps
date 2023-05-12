@@ -29,23 +29,22 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
-import org.apache.baremaps.iploc.data.InetnumLocation;
-import org.apache.baremaps.iploc.database.InetnumLocationDao;
-import org.apache.baremaps.iploc.dto.InetnumLocationDto;
+import org.apache.baremaps.iploc.IpLocObject;
+import org.apache.baremaps.iploc.IpLocRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
 @javax.ws.rs.Path("/")
-public class IplocResources {
+public class IpLocResources {
 
   private static final Logger logger = LoggerFactory.getLogger(DirectoryWatcher.class);
 
-  private final InetnumLocationDao inetnumLocationDao;
+  private final IpLocRepository ipLocRepository;
 
   @Inject
-  public IplocResources(InetnumLocationDao inetnumLocationDao) {
-    this.inetnumLocationDao = inetnumLocationDao;
+  public IpLocResources(IpLocRepository ipLocRepository) {
+    this.ipLocRepository = ipLocRepository;
   }
 
   public record IP(String ip) {
@@ -53,8 +52,10 @@ public class IplocResources {
 
   @GET
   @javax.ws.rs.Path("/api/ip")
-  public Response ip(@Context ConnectionContext context,
-      @Context StreamingHttpRequest request, @QueryParam("ip") String ip) {
+  public Response ip(
+      @Context ConnectionContext context,
+      @Context StreamingHttpRequest request,
+      @QueryParam("ip") String ip) {
     try {
       var address = InetAddresses.forString(
           Optional.ofNullable((CharSequence) ip)
@@ -73,8 +74,10 @@ public class IplocResources {
 
   @GET
   @javax.ws.rs.Path("/api/iploc")
-  public Response iploc(@Context ConnectionContext context,
-      @Context StreamingHttpRequest request, @QueryParam("ip") String ip) {
+  public Response iploc(
+      @Context ConnectionContext context,
+      @Context StreamingHttpRequest request,
+      @QueryParam("ip") String ip) {
     try {
       var address = InetAddresses.forString(
           Optional.ofNullable((CharSequence) ip)
@@ -82,7 +85,7 @@ public class IplocResources {
               .or(() -> Optional.ofNullable(request.headers().get("X-Real-IP")))
               .orElse(((InetSocketAddress) context.remoteAddress()).getAddress().getHostAddress())
               .toString().split(",")[0].trim());
-      List<InetnumLocation> inetnumLocations = inetnumLocationDao.findByIp(address.getAddress());
+      List<IpLocObject> inetnumLocations = ipLocRepository.findByInetAddress(address);
       List<InetnumLocationDto> inetnumLocationDtos =
           inetnumLocations.stream().map(InetnumLocationDto::new).toList();
       return Response.status(200) // lgtm [java/xss]
@@ -106,6 +109,26 @@ public class IplocResources {
       return Response.ok().entity(bytes).build();
     } catch (NullPointerException | IOException e) {
       return Response.status(404).build();
+    }
+  }
+
+  public record InetnumLocationDto(
+      String address,
+      String inetStart,
+      String inetEnd,
+      double longitude,
+      double latitude,
+      String network,
+      String country) {
+
+    public InetnumLocationDto(IpLocObject ipLocObject) {
+      this(ipLocObject.address(),
+          ipLocObject.inetRange().start().toString().substring(1),
+          ipLocObject.inetRange().end().toString().substring(1),
+          ipLocObject.coordinate().getX(),
+          ipLocObject.coordinate().getY(),
+          ipLocObject.network(),
+          ipLocObject.country());
     }
   }
 }

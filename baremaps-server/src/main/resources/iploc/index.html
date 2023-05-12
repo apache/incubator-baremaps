@@ -64,7 +64,7 @@
                     const table = document.getElementById('results');
                     table.innerHTML = '';
                     // Insert header row
-                    table.insertRow().innerHTML = '<th>#</th><th>Address</th><th>IP Range</th><th>Latitude</th><th>Longitude</th><th>Network</th><th>Country</th>';
+                    table.insertRow().innerHTML = '<th>#</th><th>Address</th><th>IP Range</th><th>Longitude</th><th>Latitude</th><th>Network</th><th>Country</th>';
                     for (let i = 0; i < geoLocations.length; i++) {
                         const row = table.insertRow(i + 1);
                         let pos = 0;
@@ -73,11 +73,11 @@
                         cell = row.insertCell(pos++);
                         cell.innerHTML = geoLocations[i].address;
                         cell = row.insertCell(pos++);
-                        cell.innerHTML = `${geoLocations[i].ipv4Start} - ${geoLocations[i].ipv4End}`;
-                        cell = row.insertCell(pos++);
-                        cell.innerHTML = geoLocations[i].latitude;
+                        cell.innerHTML = `${geoLocations[i].inetStart} - ${geoLocations[i].inetEnd}`;
                         cell = row.insertCell(pos++);
                         cell.innerHTML = geoLocations[i].longitude;
+                        cell = row.insertCell(pos++);
+                        cell.innerHTML = geoLocations[i].latitude;
                         cell = row.insertCell(pos++);
                         cell.innerHTML = geoLocations[i].network;
                         cell = row.insertCell(pos++);

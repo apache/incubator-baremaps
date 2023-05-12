@@ -14,14 +14,16 @@ package org.apache.baremaps.cli.iploc;
 
 
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import org.apache.baremaps.iploc.database.InetnumLocationDao;
-import org.apache.baremaps.iploc.database.InetnumLocationDaoSqliteImpl;
+import javax.sql.DataSource;
+import org.apache.baremaps.iploc.IpLocRepository;
 import org.apache.baremaps.server.CorsFilter;
-import org.apache.baremaps.server.IplocResources;
+import org.apache.baremaps.server.IpLocResources;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -48,14 +50,23 @@ public class Serve implements Callable<Integer> {
   public Integer call() throws Exception {
 
     String jdbcUrl = String.format("JDBC:sqlite:%s", database.toString());
-    InetnumLocationDao inetnumLocationDao = new InetnumLocationDaoSqliteImpl(jdbcUrl);
+
+    HikariConfig config = new HikariConfig();
+    config.setJdbcUrl(jdbcUrl);
+    config.addDataSourceProperty("cachePrepStmts", "true");
+    config.addDataSourceProperty("prepStmtCacheSize", "250");
+    config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+    // config.setReadOnly(true);
+    DataSource dataSource = new HikariDataSource(config);
+
+    IpLocRepository ipLocRepository = new IpLocRepository(dataSource);
 
     // Configure the application
-    var application = new ResourceConfig().register(CorsFilter.class).register(IplocResources.class)
+    var application = new ResourceConfig().register(CorsFilter.class).register(IpLocResources.class)
         .register(new AbstractBinder() {
           @Override
           protected void configure() {
-            bind(inetnumLocationDao).to(InetnumLocationDao.class).named("inetnumLocationDao");
+            bind(ipLocRepository).to(IpLocRepository.class).named("iplocRepository");
           }
         });
 

@@ -10,23 +10,11 @@
  * the License.
  */
 
-package org.apache.baremaps.iploc.nic;
+package org.apache.baremaps.iploc;
 
+import java.net.InetAddress;
 
+/** A record representing an inet address range. */
+public record InetRange(InetAddress start, InetAddress end) {
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.List;
-import org.apache.baremaps.testing.TestFiles;
-
-public class NicData {
-
-  private static final String SAMPLE = "sample.txt";
-
-  public static List<NicObject> sample(String resource) throws IOException {
-    try (InputStream input = Files.newInputStream(TestFiles.resolve(resource))) {
-      return NicParser.parse(input).toList();
-    }
-  }
 }
