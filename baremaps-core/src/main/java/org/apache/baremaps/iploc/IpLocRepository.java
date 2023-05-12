@@ -80,9 +80,9 @@ public final class IpLocRepository {
     this.dataSource = dataSource;
   }
 
-    /**
-     * Drops the table.
-     */
+  /**
+   * Drops the table.
+   */
   public void dropTable() {
     try (Connection connection = dataSource.getConnection();
         PreparedStatement stmt = connection.prepareStatement(DROP_TABLE)) {

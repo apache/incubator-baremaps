@@ -21,8 +21,6 @@ import io.servicetalk.transport.api.ConnectionContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.inject.Inject;
@@ -33,7 +31,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.*;
 import org.apache.baremaps.iploc.IpLocObject;
 import org.apache.baremaps.iploc.IpLocRepository;
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
