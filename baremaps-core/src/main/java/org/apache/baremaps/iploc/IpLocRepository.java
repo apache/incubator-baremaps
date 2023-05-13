@@ -17,8 +17,6 @@ package org.apache.baremaps.iploc;
 import static org.apache.baremaps.iploc.InetAddressUtils.fromByteArray;
 
 import java.net.InetAddress;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -85,8 +83,8 @@ public final class IpLocRepository {
    * Drops the table.
    */
   public void dropTable() {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(DROP_TABLE)) {
+    try (var connection = dataSource.getConnection();
+        var statement = connection.prepareStatement(DROP_TABLE)) {
       statement.execute();
     } catch (SQLException e) {
       logger.error("Unable to drop inetnum locations table", e);
@@ -97,8 +95,8 @@ public final class IpLocRepository {
    * Creates the table.
    */
   public void createTable() {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(CREATE_TABLE)) {
+    try (var connection = dataSource.getConnection();
+        var statement = connection.prepareStatement(CREATE_TABLE)) {
       statement.execute();
     } catch (SQLException e) {
       logger.error("Unable to create inetnum locations table", e);
@@ -109,8 +107,8 @@ public final class IpLocRepository {
    * Creates the index.
    */
   public void createIndex() {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(CREATE_INDEX)) {
+    try (var connection = dataSource.getConnection();
+        var statement = connection.prepareStatement(CREATE_INDEX)) {
       statement.execute();
     } catch (SQLException e) {
       logger.error("Unable to create inetnum locations index", e);
@@ -123,9 +121,9 @@ public final class IpLocRepository {
    * @return the list of {@code IpLocObject} objects
    */
   public List<IpLocObject> findAll() {
-    List<IpLocObject> results = new ArrayList<>();
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT_ALL_SQL);
+    var results = new ArrayList<IpLocObject>();
+    try (var connection = dataSource.getConnection();
+        var statement = connection.prepareStatement(SELECT_ALL_SQL);
         ResultSet resultSet = statement.executeQuery()) {
       // loop through the result set
       while (resultSet.next()) {
@@ -153,12 +151,12 @@ public final class IpLocRepository {
    * @return the list of {@code IpLocObject} objects
    */
   public List<IpLocObject> findByInetAddress(InetAddress inetAddress) {
-    List<IpLocObject> ipLocObjects = new ArrayList<>();
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(SELECT_ALL_BY_IP_SQL)) {
+    var ipLocObjects = new ArrayList<IpLocObject>();
+    try (var connection = dataSource.getConnection();
+        var statement = connection.prepareStatement(SELECT_ALL_BY_IP_SQL)) {
       statement.setBytes(1, inetAddress.getAddress());
       statement.setBytes(2, inetAddress.getAddress());
-      try (ResultSet resultSet = statement.executeQuery();) {
+      try (var resultSet = statement.executeQuery();) {
         while (resultSet.next()) {
           ipLocObjects.add(new IpLocObject(
               resultSet.getString("address"),
@@ -184,8 +182,8 @@ public final class IpLocRepository {
    * @param ipLocObject the {@code IpLocObject} object
    */
   public void save(IpLocObject ipLocObject) {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(INSERT_SQL)) {
+    try (var connection = dataSource.getConnection();
+        var statement = connection.prepareStatement(INSERT_SQL)) {
       statement.setString(1, ipLocObject.address());
       statement.setBytes(2, ipLocObject.inetRange().start().getAddress());
       statement.setBytes(3, ipLocObject.inetRange().end().getAddress());
@@ -205,8 +203,8 @@ public final class IpLocRepository {
    * @param ipLocObjects the list of {@code IpLocObject} objects
    */
   public void save(List<IpLocObject> ipLocObjects) {
-    try (Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(INSERT_SQL);) {
+    try (var connection = dataSource.getConnection();
+        var statement = connection.prepareStatement(INSERT_SQL);) {
       connection.setAutoCommit(false);
       for (IpLocObject ipLocObject : ipLocObjects) {
         statement.setString(1, ipLocObject.address());

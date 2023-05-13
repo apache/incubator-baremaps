@@ -30,7 +30,7 @@ public class NicUtils {
    * @return
    */
   public static boolean isInetnum(NicObject nicObject) {
-    return "inetnum".equals(nicObject.type());
+    return "inetnum".equals(nicObject.type()) || "inet6num".equals(nicObject.type());
   }
 
   /**
@@ -42,9 +42,9 @@ public class NicUtils {
     if (Files.notExists(path)) {
       Files.createDirectories(path);
     }
-    String fileName = nicObject.type() + "-" + nicObject.id() + ".txt";
-    FileOutputStream fos = new FileOutputStream(path + "/" + fileName);
-    try (DataOutputStream outStream = new DataOutputStream(new BufferedOutputStream(fos))) {
+    var fileName = nicObject.type() + "-" + nicObject.id() + ".txt";
+    var fileOutputStream = new FileOutputStream(path + "/" + fileName);
+    try (var outStream = new DataOutputStream(new BufferedOutputStream(fileOutputStream))) {
       outStream.writeUTF(nicObject.toString());
     }
   }

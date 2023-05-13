@@ -16,7 +16,6 @@ package org.apache.baremaps.iploc;
 
 import com.google.common.base.Charsets;
 import java.io.*;
-import java.util.Spliterator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -32,8 +31,8 @@ public class NicReader {
    * @return a {@link Stream} of NIC Object
    */
   public Stream<NicObject> read(InputStream inputStream) {
-    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, Charsets.UTF_8));
-    Spliterator<String> spliterator = reader.lines().spliterator();
+    var reader = new BufferedReader(new InputStreamReader(inputStream, Charsets.UTF_8));
+    var spliterator = reader.lines().spliterator();
     return StreamSupport.stream(new NicSpliterator(spliterator), false);
   }
 }

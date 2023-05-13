@@ -53,7 +53,8 @@ public class GeocoderResources {
 
   @GET
   @javax.ws.rs.Path("/api/geocoder")
-  public Response getIpToLocation(@QueryParam("queryText") String queryText,
+  public Response getIpToLocation(
+      @QueryParam("queryText") String queryText,
       @QueryParam("countryCode") @DefaultValue("") String countryCode,
       @QueryParam("limit") @DefaultValue("10") int limit) throws IOException {
     if (queryText == null) {

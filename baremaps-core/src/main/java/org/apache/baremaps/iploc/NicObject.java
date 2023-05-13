@@ -96,7 +96,7 @@ public class NicObject {
    * @return
    */
   public Map<String, String> toMap() {
-    Map<String, String> map = new HashMap<>();
+    var map = new HashMap<String, String>();
     for (NicAttribute attribute : attributes()) {
       map.put(attribute.name(),
           (map.containsKey(attribute.name()) ? map.get(attribute.name()) + ", " : "")
@@ -108,7 +108,7 @@ public class NicObject {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    StringBuilder stringBuilder = new StringBuilder();
+    var stringBuilder = new StringBuilder();
     for (NicAttribute attribute : attributes()) {
       stringBuilder.append(attribute.name()).append(": ").append(attribute.value()).append("\n");
     }
