@@ -18,7 +18,6 @@ import javax.inject.Singleton;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.ext.Provider;
 
@@ -29,8 +28,8 @@ public class BaseUriRequestFilter implements ContainerRequestFilter {
 
   @Override
   public void filter(ContainerRequestContext requestContext) {
-    UriBuilder baseUri = UriBuilder.fromUri(requestContext.getUriInfo().getBaseUri());
-    MultivaluedMap<String, String> headers = requestContext.getHeaders();
+    var baseUri = UriBuilder.fromUri(requestContext.getUriInfo().getBaseUri());
+    var headers = requestContext.getHeaders();
     if (headers.get("X-Forwarded-Proto") != null) {
       baseUri.scheme(headers.getFirst("X-Forwarded-Proto"));
     }

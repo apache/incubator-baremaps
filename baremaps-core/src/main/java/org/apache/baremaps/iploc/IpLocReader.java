@@ -41,7 +41,6 @@ public class IpLocReader {
   public Stream<IpLocObject> read(InputStream inputStream) {
     var nicReader = new NicReader();
     return nicReader.read(inputStream)
-        .filter(NicUtils::isInetnum)
         .map(new IpLocMapper(searcherManager))
         .filter(Optional::isPresent)
         .map(Optional::get);

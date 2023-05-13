@@ -34,7 +34,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
 
   @Override
   public void filter(ContainerRequestContext requestContext) {
-    String origin = requestContext.getHeaderString(ORIGIN);
+    var origin = requestContext.getHeaderString(ORIGIN);
     if (origin == null) {
       return;
     }
@@ -46,7 +46,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
   @Override
   public void filter(ContainerRequestContext requestContext,
       ContainerResponseContext responseContext) {
-    String origin = requestContext.getHeaderString(ORIGIN);
+    var origin = requestContext.getHeaderString(ORIGIN);
     if (origin == null || requestContext.getMethod().equalsIgnoreCase("OPTIONS")
         || requestContext.getProperty("cors.failure") != null) {
       return;
@@ -64,7 +64,7 @@ public class CorsFilter implements ContainerRequestFilter, ContainerResponseFilt
   protected void preflight(String origin, ContainerRequestContext requestContext) {
     // Respond with a 204 no content since we are returning an empty response with just the header
     // for preflight
-    Response.ResponseBuilder builder = Response.noContent();
+    var builder = Response.noContent();
     builder.header(ACCESS_CONTROL_ALLOW_ORIGIN, origin);
     builder.header(VARY, ORIGIN);
     builder.header(ACCESS_CONTROL_ALLOW_METHODS, "GET, POST, PUT, DELETE, OPTIONS, HEAD");

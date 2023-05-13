@@ -52,9 +52,9 @@ class NicSpliterator implements Spliterator<NicObject> {
 
   /** {@inheritDoc} */
   public boolean tryAdvance(Consumer<? super NicObject> consumer) {
-    StringBuilder keyBuilder = new StringBuilder();
-    StringBuilder valBuilder = new StringBuilder();
-    List<NicAttribute> attributes = new ArrayList<>();
+    var keyBuilder = new StringBuilder();
+    var valBuilder = new StringBuilder();
+    var attributes = new ArrayList<NicAttribute>();
 
     boolean tryAdvance;
     while ((tryAdvance = lineSpliterator.tryAdvance(this::acceptLine)) && !"".equals(line)) {

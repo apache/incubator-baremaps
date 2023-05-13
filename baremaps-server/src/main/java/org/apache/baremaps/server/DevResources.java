@@ -19,11 +19,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -40,7 +38,6 @@ import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.tilestore.TileCoord;
-import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tileset.Tileset;
@@ -85,7 +82,7 @@ public class DevResources {
     this.sseEventBuilder = sse.newEventBuilder();
 
     // Observe the file system for changes
-    Set<Path> directories = new HashSet<>(Arrays.asList(tileset.getParent(), style.getParent()));
+    var directories = new HashSet<Path>(Arrays.asList(tileset.getParent(), style.getParent()));
     new Thread(new DirectoryWatcher(directories, this::broadcastChanges)).start();
   }
 
@@ -133,12 +130,15 @@ public class DevResources {
   @javax.ws.rs.Path("/tiles/{z}/{x}/{y}.mvt")
   public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
     try {
-      TileStore tileStore = new PostgresTileStore(dataSource, getTileset());
-      TileCoord tileCoord = new TileCoord(x, y, z);
-      ByteBuffer blob = tileStore.read(tileCoord);
+      var tileStore = new PostgresTileStore(dataSource, getTileset());
+      var tileCoord = new TileCoord(x, y, z);
+      var blob = tileStore.read(tileCoord);
       if (blob != null) {
-        return Response.status(200).header(CONTENT_TYPE, TILE_TYPE)
-            .header(CONTENT_ENCODING, TILE_ENCODING).entity(blob.array()).build();
+        return Response.status(200)
+            .header(CONTENT_TYPE, TILE_TYPE)
+            .header(CONTENT_ENCODING, TILE_ENCODING)
+            .entity(blob.array())
+            .build();
       } else {
         return Response.status(204).build();
       }

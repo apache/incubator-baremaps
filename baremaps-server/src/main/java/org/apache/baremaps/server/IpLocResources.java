@@ -64,7 +64,8 @@ public class IpLocResources {
               .orElse(((InetSocketAddress) context.remoteAddress()).getAddress().getHostAddress())
               .toString().split(",")[0].trim());
       return Response.status(200) // lgtm [java/xss]
-          .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(CONTENT_TYPE, APPLICATION_JSON)
+          .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+          .header(CONTENT_TYPE, APPLICATION_JSON)
           .entity(new IP(address.toString())).build();
     } catch (IllegalArgumentException e) {
       logger.error("Error while processing request", e);
@@ -89,7 +90,8 @@ public class IpLocResources {
       List<InetnumLocationDto> inetnumLocationDtos =
           inetnumLocations.stream().map(InetnumLocationDto::new).toList();
       return Response.status(200) // lgtm [java/xss]
-          .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*").header(CONTENT_TYPE, APPLICATION_JSON)
+          .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")
+          .header(CONTENT_TYPE, APPLICATION_JSON)
           .entity(inetnumLocationDtos).build();
     } catch (IllegalArgumentException e) {
       logger.error("Error while processing request", e);
