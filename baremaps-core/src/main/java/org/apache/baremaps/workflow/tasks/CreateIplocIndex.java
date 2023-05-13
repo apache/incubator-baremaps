@@ -40,8 +40,7 @@ public record CreateIplocIndex(
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    try (
-        var directory = MMapDirectory.open(geonamesIndexPath);
+    try (var directory = MMapDirectory.open(geonamesIndexPath);
         var searcherManager = new SearcherManager(directory, new SearcherFactory())) {
 
       logger.info("Creating the Iploc database");

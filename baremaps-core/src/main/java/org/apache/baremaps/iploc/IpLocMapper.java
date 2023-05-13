@@ -21,12 +21,15 @@ import java.util.regex.Pattern;
 import net.ripe.ipresource.IpResourceRange;
 import org.apache.baremaps.geocoder.GeonamesQueryBuilder;
 import org.apache.baremaps.utils.IsoCountriesUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.SearcherManager;
 import org.locationtech.jts.geom.Coordinate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Generating pairs of IP address ranges and their locations into an SQLite database */
 public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
+
+  private static final Logger logger = LoggerFactory.getLogger(IpLocMapper.class);
 
   private final float SCORE_THRESHOLD = 0.1f;
 
@@ -155,7 +158,17 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
 
       return Optional.empty();
 
-    } catch (IOException | ParseException e) {
+    } catch (Exception e) {
+      logger.warn("Error while mapping nic object to ip loc object", e);
+      logger.warn("Nic object attributes:");
+      nicObject.attributes().forEach(attribute -> {
+        var name = attribute.name();
+        var value = attribute.value();
+        if (value.length() > 100) {
+          value = value.substring(0, 100).concat("...");
+        }
+        logger.warn("  {} = {}", name, value);
+      });
       return Optional.empty();
     }
   }
@@ -167,10 +180,9 @@ public class IpLocMapper implements Function<NicObject, Optional<IpLocObject>> {
    * @param countryCode the country code
    * @return an {@code Optional} containing the location of the search terms
    * @throws IOException if an I/O error occurs
-   * @throws ParseException if a parse error occurs
    */
   private Optional<Coordinate> findLocation(String searchTerms, String countryCode)
-      throws IOException, ParseException {
+      throws IOException {
     var indexSearcher = searcherManager.acquire();
     var geonamesQuery =
         new GeonamesQueryBuilder().queryText(searchTerms).countryCode(countryCode).build();
