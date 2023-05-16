@@ -37,6 +37,7 @@ import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 import org.apache.baremaps.config.ConfigReader;
+import org.apache.baremaps.server.TileJSON.TileJSON;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.vectortile.style.Style;
@@ -120,9 +121,9 @@ public class DevResources {
   @GET
   @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Tileset getTileset() throws IOException {
+  public TileJSON getTileset() throws IOException {
     var config = configReader.read(tileset);
-    var object = objectMapper.readValue(config, Tileset.class);
+    var object = objectMapper.readValue(config, TileJSON.class);
     return object;
   }
 
@@ -130,7 +131,8 @@ public class DevResources {
   @javax.ws.rs.Path("/tiles/{z}/{x}/{y}.mvt")
   public Response getTile(@PathParam("z") int z, @PathParam("x") int x, @PathParam("y") int y) {
     try {
-      var tileStore = new PostgresTileStore(dataSource, getTileset());
+      var tileStore = new PostgresTileStore(dataSource,
+          objectMapper.readValue(configReader.read(tileset), Tileset.class));
       var tileCoord = new TileCoord(x, y, z);
       var blob = tileStore.read(tileCoord);
       if (blob != null) {

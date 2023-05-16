@@ -6,6 +6,11 @@
     <module name="baremaps-cli" />
     <option name="PROGRAM_PARAMETERS" value="geocoder serve --index geocoder-index --port 9000" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examples/geocoding" />
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </extension>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

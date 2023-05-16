@@ -4,6 +4,11 @@
     <module name="baremaps-cli" />
     <option name="PROGRAM_PARAMETERS" value="workflow execute --file workflow.js" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/examples/ip-to-location" />
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </extension>
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

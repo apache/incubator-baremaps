@@ -2,7 +2,7 @@
   <configuration default="false" name="basemap-dev" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.apache.baremaps.cli.Baremaps" />
     <module name="baremaps-cli" />
-    <option name="PROGRAM_PARAMETERS" value="map dev --database jdbc:postgresql://localhost:5432/baremaps?user=baremaps&amp;password=baremaps --tileset tileset.js --style style.js" />
+    <option name="PROGRAM_PARAMETERS" value="map dev --tileset tileset.js --style style.js" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/basemap" />
     <extension name="coverage">
       <pattern>

@@ -25,6 +25,7 @@ import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.postgres.PostgresUtils;
 import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.server.DevResources;
+import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -40,11 +41,6 @@ public class Dev implements Callable<Integer> {
 
   @Mixin
   private Options options;
-
-  @Option(names = {"--database"}, paramLabel = "DATABASE",
-      description = "The JDBC url of Postgres.", required = true)
-  private String database;
-
   @Option(names = {"--cache"}, paramLabel = "CACHE", description = "The caffeine cache directive.")
   private String cache = "";
 
@@ -64,11 +60,13 @@ public class Dev implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
+    // Configure serialization
+    var objectMapper = objectMapper();
+
+    var tileSet = objectMapper.readValue(tileset.toFile(), Tileset.class);
+    var database = tileSet.getDatabase();
+
     try (var dataSource = PostgresUtils.dataSource(database)) {
-
-      // Configure serialization
-      var objectMapper = objectMapper();
-
       // Configure the application
       var application = new ResourceConfig().register(CorsFilter.class).register(DevResources.class)
           .register(contextResolverFor(objectMapper)).register(new AbstractBinder() {

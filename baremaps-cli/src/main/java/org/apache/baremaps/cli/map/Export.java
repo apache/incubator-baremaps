@@ -34,10 +34,6 @@ public class Export implements Callable<Integer> {
   @Mixin
   private Options options;
 
-  @Option(names = {"--database"}, paramLabel = "DATABASE",
-      description = "The JDBC url of Postgres.", required = true)
-  private String database;
-
   @Option(names = {"--tileset"}, paramLabel = "TILESET", description = "The tileset file.",
       required = true)
   private Path tileset;
@@ -63,7 +59,7 @@ public class Export implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    new ExportVectorTiles(database, tileset.toAbsolutePath(),
+    new ExportVectorTiles(tileset.toAbsolutePath(),
         repository.toAbsolutePath(), batchArraySize, batchArrayIndex, mbtiles)
             .execute(new WorkflowContext());
     return 0;

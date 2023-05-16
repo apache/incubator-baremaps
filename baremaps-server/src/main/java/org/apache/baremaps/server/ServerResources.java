@@ -30,12 +30,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.baremaps.config.ConfigReader;
+import org.apache.baremaps.server.TileJSON.TileJSON;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 import org.apache.baremaps.vectortile.style.Style;
-import org.apache.baremaps.vectortile.tileset.Tileset;
-import org.apache.baremaps.vectortile.tileset.TilesetLayer;
 
 @Singleton
 @javax.ws.rs.Path("/")
@@ -43,7 +42,7 @@ public class ServerResources {
 
   private final Style style;
 
-  private final Tileset tileset;
+  private final TileJSON tileJSON;
 
   private final TileStore tileStore;
 
@@ -57,12 +56,7 @@ public class ServerResources {
     this.tileStore = tileStore;
     var configReader = new ConfigReader();
     this.style = objectMapper.readValue(configReader.read(style), Style.class);
-    this.tileset = objectMapper.readValue(configReader.read(tileset), Tileset.class);
-
-    // Hide the SQL queries in production
-    for (TilesetLayer layer : this.tileset.getVectorLayers()) {
-      layer.setQueries(null);
-    }
+    this.tileJSON = objectMapper.readValue(configReader.read(tileset), TileJSON.class);
   }
 
   @GET
@@ -75,8 +69,8 @@ public class ServerResources {
   @GET
   @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
-  public Tileset getTileset() {
-    return tileset;
+  public TileJSON getTileset() {
+    return tileJSON;
   }
 
   @GET
