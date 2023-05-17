@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A loose implementation of the Mapbox TileJSON specification.
+ * A loose implementation of the Mapbox TileJSON specification. Extended with custom fields. Must be
+ * used inside baremaps componenent and not exposed to browser client.
  *
  * @see <a href=
  *      "https://docs.mapbox.com/help/glossary/tilejson/">https://docs.mapbox.com/help/glossary/tilejson/</a>

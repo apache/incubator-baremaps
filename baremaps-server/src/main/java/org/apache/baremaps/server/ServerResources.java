@@ -30,11 +30,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.server.tilejson.TileJSON;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
 import org.apache.baremaps.vectortile.style.Style;
+import org.apache.baremaps.vectortile.tilejson.TileJSON;
 
 @Singleton
 @javax.ws.rs.Path("/")

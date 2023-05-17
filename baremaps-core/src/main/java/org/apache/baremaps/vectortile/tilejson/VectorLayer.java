@@ -10,7 +10,15 @@
  * the License.
  */
 
-package org.apache.baremaps.server.tilejson;
+package org.apache.baremaps.vectortile.tilejson;
 
-public class Field {
+import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Map;
+
+public record VectorLayer(
+    @JsonProperty("id") String id,
+    @JsonProperty("fields") Map<String, String> fields,
+    @JsonProperty("description") String description,
+    @JsonProperty("maxzoom") Integer maxzoom,
+    @JsonProperty("minzoom") Integer minzoom) {
 }
