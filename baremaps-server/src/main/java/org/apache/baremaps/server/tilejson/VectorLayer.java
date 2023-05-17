@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.server.TileJSON;
+package org.apache.baremaps.server.tilejson;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.Valid;

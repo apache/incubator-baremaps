@@ -10,7 +10,7 @@
  * the License.
  */
 
-package org.apache.baremaps.server.TileJSON;
+package org.apache.baremaps.server.tilejson;
 
 public class Field {
 }

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
-import org.apache.baremaps.server.TileJSON.TileJSON;
+import org.apache.baremaps.server.tilejson.TileJSON;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.junit.Test;
 

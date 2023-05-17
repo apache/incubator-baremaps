@@ -37,7 +37,7 @@ import javax.ws.rs.sse.Sse;
 import javax.ws.rs.sse.SseBroadcaster;
 import javax.ws.rs.sse.SseEventSink;
 import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.server.TileJSON.TileJSON;
+import org.apache.baremaps.server.tilejson.TileJSON;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.vectortile.style.Style;
