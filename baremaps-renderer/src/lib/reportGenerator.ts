@@ -184,7 +184,7 @@ const FAILED_TEST_TEMPLATE = `<div class="result fail">
     <div class="images">
         <h4>Expected</h4>
         <h4>Actual</h4>
-        <h4>Difference</h4>
+        <h4>Difference ({{ DIFF }})</h4>
         <img src="{{ EXPECTED_IMG_PATH }}" />
         <img src="{{ ACTUAL_IMG_PATH }}" />
         <img src="{{ DIFF_IMG_PATH }}" />
@@ -205,7 +205,7 @@ const PASSED_TEST_TEMPLATE = `<div class="result pass">
     <div class="images">
         <h4>Expected</h4>
         <h4>Actual</h4>
-        <h4>Difference</h4>
+        <h4>Difference ({{ DIFF }})</h4>
         <img src="{{ EXPECTED_IMG_PATH }}" />
         <img src="{{ ACTUAL_IMG_PATH }}" />
         <img src="{{ DIFF_IMG_PATH }}" />
@@ -288,10 +288,12 @@ export class ReportGenerator {
       path: test.testPath,
       name: testName,
       metadata: test.metadata,
-      sucess: test.success,
+      success: test.success,
       expectedImagePath: path.join(testsRelativePath, Test.expectedFilename),
       actualImagePath: path.join(testsRelativePath, Test.actualFilename),
       diffImagePath: path.join(testsRelativePath, Test.diffFilename),
+      // The diff is not undefined because the test is completed
+      diff: test.diff as number,
     };
   }
 
@@ -330,7 +332,7 @@ export class ReportGenerator {
    */
   private formatHtmlTest(testData: TestData) {
     let template;
-    if (testData.sucess) {
+    if (testData.success) {
       template = PASSED_TEST_TEMPLATE;
     } else {
       template = FAILED_TEST_TEMPLATE;
@@ -349,7 +351,8 @@ export class ReportGenerator {
         '{{ ACTUAL_IMG_PATH }}',
         testData.actualImagePath + currTimeParam,
       )
-      .replace('{{ DIFF_IMG_PATH }}', testData.diffImagePath + currTimeParam);
+      .replace('{{ DIFF_IMG_PATH }}', testData.diffImagePath + currTimeParam)
+      .replace('{{ DIFF }}', testData.diff.toString());
   }
 
   /**

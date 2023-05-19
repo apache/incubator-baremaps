@@ -28,8 +28,9 @@ export interface TestData {
   path: string;
   name: string;
   metadata: Metadata;
-  sucess: boolean;
+  success: boolean;
   expectedImagePath: string;
   actualImagePath: string;
   diffImagePath: string;
+  diff: number;
 }
