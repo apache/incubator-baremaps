@@ -61,11 +61,18 @@ export class Test implements RunnableTask {
     this.refStyleUrl = refStyleUrl;
     this.testLogger = testLogger;
     this.threshold = threshold;
-    this._metadata = JSON.parse(
-      fs
-        .readFileSync(path.join(this.testPath, Test.metadataFilename))
-        .toString(),
-    );
+    try {
+      this._metadata = JSON.parse(
+        fs
+          .readFileSync(path.join(this.testPath, Test.metadataFilename))
+          .toString(),
+      );
+    } catch (e) {
+      throw new Error(
+        `Could not read metadata in test '${this.testPath}'. ` +
+          `Make sure the file '${Test.metadataFilename}' exists and is valid JSON`,
+      );
+    }
     // check if metadata is valid
     if (
       !this.metadata ||
@@ -75,7 +82,7 @@ export class Test implements RunnableTask {
       !this.metadata.zoom
     ) {
       throw new Error(
-        `ERROR: Invalid metadata in test '${this.testPath}'\n` +
+        `Invalid metadata in test '${this.testPath}'. ` +
           'Metadata must contain width, height, center and zoom',
       );
     }
@@ -151,19 +158,21 @@ export class Test implements RunnableTask {
       { threshold: this.threshold / (width * height) },
     );
     this._diff = diff;
+
+    // save actual image
+    fs.writeFileSync(path.join(this.testPath, Test.actualFilename), image);
+    // save expected image
+    fs.writeFileSync(
+      path.join(this.testPath, Test.expectedFilename),
+      refImage,
+    );
+    // save diff image
+    fs.writeFileSync(
+      path.join(this.testPath, Test.diffFilename),
+      PNG.sync.write(diffImg, { filterType: 4 }),
+    );
+
     if (diff > 0) {
-      // save expected image
-      fs.writeFileSync(
-        path.join(this.testPath, Test.expectedFilename),
-        refImage,
-      );
-      // save actual image
-      fs.writeFileSync(path.join(this.testPath, Test.actualFilename), image);
-      // save diff image
-      fs.writeFileSync(
-        path.join(this.testPath, Test.diffFilename),
-        PNG.sync.write(diffImg, { filterType: 4 }),
-      );
       return false;
     }
     return true;

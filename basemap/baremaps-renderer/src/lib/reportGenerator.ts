@@ -196,6 +196,9 @@ export class ReportGenerator {
    */
   constructor(testFolder: string, tests: Test[]) {
     this.testFolder = testFolder;
+    if (!path.isAbsolute(this.testFolder)) {
+      this.testFolder = path.join(process.cwd(), this.testFolder);
+    }
     this.tests = tests;
   }
 

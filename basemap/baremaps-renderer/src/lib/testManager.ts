@@ -41,13 +41,17 @@ export class TestManager {
     threshold: number,
   ) {
     this.testsPath = path.join(testsFolder, integrationFolder);
+    // check if this.testsPath is absolute
+    if (!path.isAbsolute(this.testsPath)) {
+      this.testsPath = path.join(process.cwd(), this.testsPath);
+    }
     this.tests = [] as Test[];
     const testNames = this.discoverTests();
     for (const testName of testNames) {
       try {
         this.tests.push(
           new Test(
-            path.join(process.cwd(), this.testsPath, testName),
+            path.join(this.testsPath, testName),
             styleUrl,
             refStyleUrl,
             testLogger,
@@ -64,19 +68,23 @@ export class TestManager {
     return this.tests;
   }
 
+  /**
+   * Discover tests in the tests folder
+   * @returns a list of test names
+   * @throws if the tests folder is not found
+   */
   public discoverTests() {
     let testNames: string[];
     try {
-      const basePath = path.join(process.cwd(), this.testsPath);
+      
       // filter by directories
       testNames = fs
-        .readdirSync(basePath)
-        .filter((file) => fs.statSync(path.join(basePath, file)).isDirectory());
+        .readdirSync(this.testsPath)
+        .filter((file) => fs.statSync(path.join(this.testsPath, file)).isDirectory());
     } catch (e) {
-      console.error(
-        `ERROR: Folder '${this.testsPath}' could not be found in current directory`,
+      throw new Error(
+        `Tests folder '${this.testsPath}' could not be found`,
       );
-      process.exit(1);
     }
     return testNames;
   }
