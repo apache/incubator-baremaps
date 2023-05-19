@@ -7,7 +7,7 @@
   },
   "scripts": {
     "format": "prettier --write .",
-    "build": "tsc && npm run chmod",
+    "build": "tsc && copyfiles ./assets/**/* ./bin && npm run chmod",
     "chmod": "chmod u+x ./bin/index.js"
   },
   "author": "Leonard Cseres <leonard.cseres@heig-vd.ch>",
@@ -27,6 +27,7 @@
     "@types/pixelmatch": "^5.2.4",
     "@types/pngjs": "^6.0.1",
     "@types/serve-handler": "^6.1.1",
+    "copyfiles": "^2.4.1",
     "prettier": "^2.8.8",
     "typescript": "^5.0.4"
   }
