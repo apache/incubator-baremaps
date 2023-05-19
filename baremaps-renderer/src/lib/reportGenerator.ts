@@ -93,6 +93,32 @@ const HTML_TEMPLATE = `<!DOCTYPE html>
         font-size: 1.25rem;
       }
 
+      button {
+        border: none;
+        background-color: transparent;
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.075);
+      }
+
+      .sort {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .sort p {
+        margin-right: 0.5rem;
+      }
+
+      .sort button.active {
+        box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+        background-color: rgba(0, 0, 0, 0.075);
+      }
+
       .results {
         display: flex;
         flex-direction: column;
@@ -155,62 +181,146 @@ const HTML_TEMPLATE = `<!DOCTYPE html>
       <h1>Baremaps Renderer</h1>
       <h2>Integration Testing Report</h2>
     </div>
-    <div class="results">
-      <div class="summary">
-        <h4>Summary</h4>
-        <p>Out of <strong>{{ TOT_TESTS }}</strong> tests:</p>
-        <ul>
-          <li><span class="p-pass">{{ TOT_PASS_TESTS }} tests passed</span></li>
-          <li><span class="p-fail">{{ TOT_FAIL_TESTS }} tests failed</span></li>
-        </ul>
+    <div>
+      <!-- Dropdown sort by test name, test status, test diff -->
+      <div class="sort">
+        <p><strong>Sort by:</strong></p>
+        <button onClick="sortBy(this, 'name')">Test name</button>
+        <button onClick="sortBy(this, 'status')">Test status</button>
+        <button onClick="sortBy(this, 'diff')">Test diff</button>
       </div>
-      {{ TESTS }}
+    </div>
+    <div class="results" id="testResults">
     </div>
   </body>
+  <script>
+    const SUMMARY_TEMPLATE = \`<div class="summary">
+<h4>Summary</h4>
+<p>Out of <strong>{{ TOT_TESTS }}</strong> tests:</p>
+<ul>
+  <li><span class="p-pass">{{ TOT_PASS_TESTS }} tests passed</span></li>
+  <li><span class="p-fail">{{ TOT_FAIL_TESTS }} tests failed</span></li>
+</ul>
+</div>\`;
+    /** HTML template for a single test */
+    const getTestTemplate = (passed, index) => {
+      const loading = index > 2 ? 'lazy' : 'eager';
+      return \`<div class="result \${passed ? "pass" : "fail"}">
+  <h4 class="\${passed ? "pass" : "fail"}">\${passed ? "PASSED" : "FAILED"}</h4>
+  <h3>{{ TEST_NAME }}</h3>
+  <p>
+      {{ TEST_PATH }}
+  </p>
+  <pre>
+      <code>
+{{ METADATA }}</code>
+  </pre>
+  <div class="images">
+      <h4>Expected</h4>
+      <h4>Actual</h4>
+      <h4>Difference ({{ DIFF }})</h4>
+      <img src="{{ EXPECTED_IMG_PATH }}" loading="\${loading}" />
+      <img src="{{ ACTUAL_IMG_PATH }}" loading="\${loading}" />
+      <img src="{{ DIFF_IMG_PATH }}" loading="\${loading}" />
+  </div>
+</div>\`;
+    };
+
+    const testData = JSON.parse(\`{{ TESTS_DATA }}\`);
+
+    const sortBy = (el, key) => {
+      if (!sortedBy[key].active) {
+        el.classList.add("active");
+        el.innerText = \`\${el.innerText} ▲\`;
+        sortedBy[key].asc = true;
+        sortedBy[key].active = true;
+      } else if (sortedBy[key].active && sortedBy[key].asc) {
+        el.classList.remove("asc");
+        el.innerText = \`\${el.innerText.replace(" ▲", "")} ▼\`;
+        sortedBy[key].asc = false;
+      } else if (sortedBy[key].active && !sortedBy[key].asc) {
+        el.classList.remove("active");
+        el.innerText = el.innerText.replace(" ▼", "");
+        sortedBy[key].active = false;
+      }
+      render();
+    };
+
+    let sortedBy = {
+      name: {
+        asc: false,
+        active: false,
+      },
+      status: {
+        asc: false,
+        active: false,
+      },
+      diff: {
+        asc: false,
+        active: false,
+      },
+    };
+
+    const render = () => {
+      const testResultsDiv = document.getElementById("testResults");
+      testResultsDiv.innerHTML = "";
+      const summary = document.createElement("div");
+      summary.innerHTML = SUMMARY_TEMPLATE.replace(
+        "{{ TOT_TESTS }}",
+        testData.length
+      )
+        .replace(
+          "{{ TOT_PASS_TESTS }}",
+          testData.filter((test) => test.success).length
+        )
+        .replace(
+          "{{ TOT_FAIL_TESTS }}",
+          testData.filter((test) => !test.success).length
+        );
+      testResultsDiv.appendChild(summary);
+      sortedTestData = [...testData];
+      // sort the test data
+      if (sortedBy.diff.active) {
+        sortedBy.diff.asc
+          ? sortedTestData.sort((a, b) => a.diff - b.diff)
+          : sortedTestData.sort((a, b) => b.diff - a.diff);
+      }
+      if (sortedBy.status.active) {
+        sortedBy.status.asc
+          ? sortedTestData.sort((a, b) =>
+              a.success === b.success ? 0 : a.success ? -1 : 1
+            )
+          : sortedTestData.sort((a, b) =>
+              a.success === b.success ? 0 : a.success ? 1 : -1
+            );
+      }
+      if (sortedBy.name.active) {
+        sortedBy.name.asc
+          ? sortedTestData.sort((a, b) => (a.name > b.name ? 1 : -1))
+          : sortedTestData.sort((a, b) => (a.name < b.name ? 1 : -1));
+      } 
+
+      // this prevent the browser from caching the images
+      const currTimeParam = '?time=' + Date.now();
+
+      sortedTestData.forEach((test, index) => {
+        const testDiv = document.createElement("div");
+        testDiv.innerHTML = getTestTemplate(test.success, index)
+        testDiv.innerHTML = testDiv.innerHTML
+          .replace("{{ TEST_NAME }}", test.name)
+          .replace("{{ TEST_PATH }}", test.path)
+          .replace("{{ METADATA }}", JSON.stringify(test.metadata, null, 4))
+          .replace("{{ DIFF }}", test.diff)
+          .replace("{{ EXPECTED_IMG_PATH }}", test.expectedImagePath + currTimeParam)
+          .replace("{{ ACTUAL_IMG_PATH }}", test.actualImagePath + currTimeParam)
+          .replace("{{ DIFF_IMG_PATH }}", test.diffImagePath + currTimeParam);
+        testResultsDiv.appendChild(testDiv);
+      });
+    };
+    render();
+  </script>
 </html>
 `;
-
-/** HTML template for a single failed test */
-const FAILED_TEST_TEMPLATE = `<div class="result fail">
-    <h4 class="fail">FAILED</h4>
-    <h3>{{ TEST_NAME }}</h3>
-    <p>
-        {{ TEST_PATH }}
-    </p>
-    <pre>
-        <code>
-{{ METADATA }}</code>
-    </pre>
-    <div class="images">
-        <h4>Expected</h4>
-        <h4>Actual</h4>
-        <h4>Difference ({{ DIFF }})</h4>
-        <img src="{{ EXPECTED_IMG_PATH }}" />
-        <img src="{{ ACTUAL_IMG_PATH }}" />
-        <img src="{{ DIFF_IMG_PATH }}" />
-    </div>
-</div>`;
-
-/** HTML template for a single passed test */
-const PASSED_TEST_TEMPLATE = `<div class="result pass">
-    <h4 class="pass">PASSED</h4>
-    <h3>{{ TEST_NAME }}</h3>
-    <p>
-        {{ TEST_PATH }}
-    </p>
-    <pre>
-        <code>
-{{ METADATA }}</code>
-    </pre>
-    <div class="images">
-        <h4>Expected</h4>
-        <h4>Actual</h4>
-        <h4>Difference ({{ DIFF }})</h4>
-        <img src="{{ EXPECTED_IMG_PATH }}" />
-        <img src="{{ ACTUAL_IMG_PATH }}" />
-        <img src="{{ DIFF_IMG_PATH }}" />
-    </div>
-</div>`;
 
 /**
  * ReportGenerator class
@@ -240,17 +350,14 @@ export class ReportGenerator {
 
   /** Generates and saves the HTML report */
   public generate() {
-    const baseHtml = this.formatHtmlBase();
-
     const testsData = this.tests
       .map((test) => this.getTestData(test))
       .filter((test) => test !== null);
 
-    const testsHtml = testsData
-      .map((testData) => this.formatHtmlTest(testData!))
-      .join('\n');
-
-    const html = baseHtml.replace('{{ TESTS }}', testsHtml);
+    const html = HTML_TEMPLATE.replace(
+      '{{ TESTS_DATA }}',
+      JSON.stringify(testsData, null, 2),
+    );
     this.writeHtml(html);
 
     console.log(
@@ -295,64 +402,6 @@ export class ReportGenerator {
       // The diff is not undefined because the test is completed
       diff: test.diff as number,
     };
-  }
-
-  /**
-   * Creates an object with the summary of the tests
-   *
-   * @returns An object with the summary of the tests
-   */
-  private getSummary() {
-    const failedTests = this.tests.filter((t) => t.success === false);
-    const summary = {
-      total: this.tests.length,
-      failed: failedTests.length,
-      passed: this.tests.length - failedTests.length,
-    };
-    return summary;
-  }
-
-  /**
-   * Returns the HTML template with the summary of the tests
-   *
-   * @returns The HTML template with the summary of the tests
-   */
-  private formatHtmlBase() {
-    const summary = this.getSummary();
-    return HTML_TEMPLATE.replace('{{ TOT_TESTS }}', summary.total.toString())
-      .replace('{{ TOT_PASS_TESTS }}', summary.passed.toString())
-      .replace('{{ TOT_FAIL_TESTS }}', summary.failed.toString());
-  }
-
-  /**
-   * Returns the HTML template for a single test
-   *
-   * @param testData The data spec for a test
-   * @returns The HTML template for a single test
-   */
-  private formatHtmlTest(testData: TestData) {
-    let template;
-    if (testData.success) {
-      template = PASSED_TEST_TEMPLATE;
-    } else {
-      template = FAILED_TEST_TEMPLATE;
-    }
-    // this prevent the browser from caching the images
-    const currTimeParam = '?time=' + Date.now();
-    return template
-      .replace('{{ TEST_NAME }}', testData.name)
-      .replace('{{ TEST_PATH }}', testData.path)
-      .replace('{{ METADATA }}', JSON.stringify(testData.metadata, null, 4))
-      .replace(
-        '{{ EXPECTED_IMG_PATH }}',
-        testData.expectedImagePath + currTimeParam,
-      )
-      .replace(
-        '{{ ACTUAL_IMG_PATH }}',
-        testData.actualImagePath + currTimeParam,
-      )
-      .replace('{{ DIFF_IMG_PATH }}', testData.diffImagePath + currTimeParam)
-      .replace('{{ DIFF }}', testData.diff.toString());
   }
 
   /**
