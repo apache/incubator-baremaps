@@ -335,13 +335,21 @@ export class ReportGenerator {
     } else {
       template = FAILED_TEST_TEMPLATE;
     }
+    // this prevent the browser from caching the images
+    const currTimeParam = '?time=' + Date.now();
     return template
       .replace('{{ TEST_NAME }}', testData.name)
       .replace('{{ TEST_PATH }}', testData.path)
       .replace('{{ METADATA }}', JSON.stringify(testData.metadata, null, 4))
-      .replace('{{ EXPECTED_IMG_PATH }}', testData.expectedImagePath)
-      .replace('{{ ACTUAL_IMG_PATH }}', testData.actualImagePath)
-      .replace('{{ DIFF_IMG_PATH }}', testData.diffImagePath);
+      .replace(
+        '{{ EXPECTED_IMG_PATH }}',
+        testData.expectedImagePath + currTimeParam,
+      )
+      .replace(
+        '{{ ACTUAL_IMG_PATH }}',
+        testData.actualImagePath + currTimeParam,
+      )
+      .replace('{{ DIFF_IMG_PATH }}', testData.diffImagePath + currTimeParam);
   }
 
   /**
