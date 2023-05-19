@@ -76,15 +76,14 @@ export class TestManager {
   public discoverTests() {
     let testNames: string[];
     try {
-      
       // filter by directories
       testNames = fs
         .readdirSync(this.testsPath)
-        .filter((file) => fs.statSync(path.join(this.testsPath, file)).isDirectory());
+        .filter((file) =>
+          fs.statSync(path.join(this.testsPath, file)).isDirectory(),
+        );
     } catch (e) {
-      throw new Error(
-        `Tests folder '${this.testsPath}' could not be found`,
-      );
+      throw new Error(`Tests folder '${this.testsPath}' could not be found`);
     }
     return testNames;
   }

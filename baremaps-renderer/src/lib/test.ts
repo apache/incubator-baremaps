@@ -163,10 +163,7 @@ export class Test implements RunnableTask {
     // save actual image
     fs.writeFileSync(path.join(this.testPath, Test.actualFilename), image);
     // save expected image
-    fs.writeFileSync(
-      path.join(this.testPath, Test.expectedFilename),
-      refImage,
-    );
+    fs.writeFileSync(path.join(this.testPath, Test.expectedFilename), refImage);
     // save diff image
     fs.writeFileSync(
       path.join(this.testPath, Test.diffFilename),

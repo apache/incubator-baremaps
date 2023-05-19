@@ -335,7 +335,8 @@ export class ReportGenerator {
     } else {
       template = FAILED_TEST_TEMPLATE;
     }
-    return template.replace('{{ TEST_NAME }}', testData.name)
+    return template
+      .replace('{{ TEST_NAME }}', testData.name)
       .replace('{{ TEST_PATH }}', testData.path)
       .replace('{{ METADATA }}', JSON.stringify(testData.metadata, null, 4))
       .replace('{{ EXPECTED_IMG_PATH }}', testData.expectedImagePath)
