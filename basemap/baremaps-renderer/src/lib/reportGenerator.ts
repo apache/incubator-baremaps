@@ -23,6 +23,7 @@ const HTML_TEMPLATE = `<!DOCTYPE html>
     <style>
       :root {
         --color-pass: rgb(40, 156, 40);
+        --color-pass-transparent: rgba(40, 156, 40, 0.05);
         --color-error: rgb(255, 59, 59);
         --color-error-transparent: rgba(255, 59, 59, 0.05);
       }
@@ -76,6 +77,12 @@ const HTML_TEMPLATE = `<!DOCTYPE html>
         color: var(--color-error);
       }
 
+      h4.pass {
+        margin-top: 0;
+        text-transform: uppercase;
+        color: var(--color-pass);
+      }
+
       a {
         position: relative;
         text-decoration: underline;
@@ -114,9 +121,17 @@ const HTML_TEMPLATE = `<!DOCTYPE html>
       }
 
       .result {
-        border-left: 3px solid var(--color-error);
         padding: 1rem 2rem;
+      }
+      
+      .result.fail {
+        border-left: 3px solid var(--color-error);
         background-color: var(--color-error-transparent);
+      }
+
+      .result.pass {
+        border-left: 3px solid var(--color-pass);
+        background-color: var(--color-pass-transparent);
       }
 
       pre {
@@ -155,9 +170,30 @@ const HTML_TEMPLATE = `<!DOCTYPE html>
 </html>
 `;
 
-/** HTML template for a single test */
-const TEST_TEMPLATE = `<div class="result">
+/** HTML template for a single failed test */
+const FAILED_TEST_TEMPLATE = `<div class="result fail">
     <h4 class="fail">FAILED</h4>
+    <h3>{{ TEST_NAME }}</h3>
+    <p>
+        {{ TEST_PATH }}
+    </p>
+    <pre>
+        <code>
+{{ METADATA }}</code>
+    </pre>
+    <div class="images">
+        <h4>Expected</h4>
+        <h4>Actual</h4>
+        <h4>Difference</h4>
+        <img src="{{ EXPECTED_IMG_PATH }}" />
+        <img src="{{ ACTUAL_IMG_PATH }}" />
+        <img src="{{ DIFF_IMG_PATH }}" />
+    </div>
+</div>`;
+
+/** HTML template for a single passed test */
+const PASSED_TEST_TEMPLATE = `<div class="result pass">
+    <h4 class="pass">PASSED</h4>
     <h3>{{ TEST_NAME }}</h3>
     <p>
         {{ TEST_PATH }}
@@ -207,7 +243,7 @@ export class ReportGenerator {
     const baseHtml = this.formatHtmlBase();
 
     const testsData = this.tests
-      .map((test) => this.getFailedTestData(test))
+      .map((test) => this.getTestData(test))
       .filter((test) => test !== null);
 
     const testsHtml = testsData
@@ -225,13 +261,14 @@ export class ReportGenerator {
   }
 
   /**
-   * Returns an object with the failed test images paths and metadata for a given test
+   * Returns an object with the test images paths and metadata for a given test
    *
    * @param test The test to get the data from
-   * @returns An object with the failed test images paths and metadata
+   * @returns An object with the test images paths and metadata
    */
-  private getFailedTestData(test: Test): TestData | null {
-    if (test.success !== false) {
+  private getTestData(test: Test): TestData | null {
+    // return if the test is not completed
+    if (test.success === undefined) {
       return null;
     }
     // check if the images exist
@@ -251,6 +288,7 @@ export class ReportGenerator {
       path: test.testPath,
       name: testName,
       metadata: test.metadata,
+      sucess: test.success,
       expectedImagePath: path.join(testsRelativePath, Test.expectedFilename),
       actualImagePath: path.join(testsRelativePath, Test.actualFilename),
       diffImagePath: path.join(testsRelativePath, Test.diffFilename),
@@ -263,7 +301,7 @@ export class ReportGenerator {
    * @returns An object with the summary of the tests
    */
   private getSummary() {
-    const failedTests = this.tests.filter((t) => !t.success);
+    const failedTests = this.tests.filter((t) => t.success === false);
     const summary = {
       total: this.tests.length,
       failed: failedTests.length,
@@ -291,7 +329,13 @@ export class ReportGenerator {
    * @returns The HTML template for a single test
    */
   private formatHtmlTest(testData: TestData) {
-    return TEST_TEMPLATE.replace('{{ TEST_NAME }}', testData.name)
+    let template;
+    if (testData.sucess) {
+      template = PASSED_TEST_TEMPLATE;
+    } else {
+      template = FAILED_TEST_TEMPLATE;
+    }
+    return template.replace('{{ TEST_NAME }}', testData.name)
       .replace('{{ TEST_PATH }}', testData.path)
       .replace('{{ METADATA }}', JSON.stringify(testData.metadata, null, 4))
       .replace('{{ EXPECTED_IMG_PATH }}', testData.expectedImagePath)

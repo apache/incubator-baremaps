@@ -121,6 +121,7 @@ export class Test implements RunnableTask {
         this.testLogger.logError(this.testPath, e);
         return false;
       });
+    this._success = success;
     return success;
   }
 

@@ -28,6 +28,7 @@ export interface TestData {
   path: string;
   name: string;
   metadata: Metadata;
+  sucess: boolean;
   expectedImagePath: string;
   actualImagePath: string;
   diffImagePath: string;
