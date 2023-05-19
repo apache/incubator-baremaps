@@ -114,22 +114,6 @@ export class Test implements RunnableTask {
         this.testLogger.logError(this.testPath, e);
         return false;
       });
-    // cleanup images if test was successful
-    if (success) {
-      const images = [
-        Test.expectedFilename,
-        Test.actualFilename,
-        Test.diffFilename,
-      ];
-      for (const image of images) {
-        try {
-          fs.unlinkSync(path.join(this.testPath, image));
-        } catch (e) {
-          // ignore if file does not exist
-        }
-      }
-    }
-    this._success = success;
     return success;
   }
 
