@@ -1,6 +1,6 @@
 {
   "name": "baremaps-renderer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Integration tests for pixel to pixel matching",
   "bin": {
     "baremaps-renderer": "./bin/index.js"

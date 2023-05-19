@@ -93,7 +93,7 @@ const viewReport = async (options: any) => {
 (async () => {
   const program = new commander.Command();
 
-  program.version('0.0.1').description('Baremaps renderer utility tool');
+  program.version('0.0.2').description('Baremaps renderer utility tool');
 
   program
     .command('run')
