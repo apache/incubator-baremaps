@@ -286,7 +286,7 @@
           testData.filter((test) => !test.success).length,
         );
       testResultsDiv.appendChild(summary);
-      sortedTestData = [...testData];
+      const sortedTestData = [...testData];
       // sort the test data
       if (sortedBy.name.active) {
         sortedBy.name.asc
