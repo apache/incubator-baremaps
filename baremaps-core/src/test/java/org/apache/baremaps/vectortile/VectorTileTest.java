@@ -20,7 +20,6 @@ package org.apache.baremaps.vectortile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.awt.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -28,7 +27,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
-import javax.swing.*;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -39,7 +37,7 @@ public class VectorTileTest {
 
   @Test
   public void endToEnd() {
-    var tile = new Tile(List.of(
+    var tile = new VectorTile(List.of(
         new Layer("layer", 256, List.of(
             new Feature(1l, Map.of("a", 1.0, "b", "2"),
                 GEOMETRY_FACTORY.createPoint(new Coordinate(1, 2))),

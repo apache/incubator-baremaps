@@ -92,11 +92,11 @@ public class VectorTileFunctions {
    * @param vectorTile The tile to transform
    * @return The transformed tile
    */
-  public static ByteBuffer asVectorTile(Tile vectorTile) {
+  public static ByteBuffer asVectorTile(VectorTile vectorTile) {
     ByteBuffer original = new VectorTileEncoder()
-            .encodeTile(vectorTile)
-            .toByteString()
-            .asReadOnlyByteBuffer();
+        .encodeTile(vectorTile)
+        .toByteString()
+        .asReadOnlyByteBuffer();
     ByteBuffer clone = ByteBuffer.allocate(original.capacity());
     original.rewind();// copy from the beginning
     clone.put(original);

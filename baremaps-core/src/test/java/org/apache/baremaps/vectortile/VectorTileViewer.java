@@ -53,11 +53,11 @@ public class VectorTileViewer {
 
   static class TilePanel extends JPanel {
 
-    private final Tile tile;
+    private final VectorTile tile;
 
     private final int extent;
 
-    public TilePanel(Tile tile, int extent) {
+    public TilePanel(VectorTile tile, int extent) {
       this.tile = tile;
       this.extent = extent;
     }

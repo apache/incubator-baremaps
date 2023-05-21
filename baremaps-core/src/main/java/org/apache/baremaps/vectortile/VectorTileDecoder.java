@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.apache.baremaps.mvt.binary.VectorTile;
+import org.apache.baremaps.mvt.binary.VectorTile.Tile;
 import org.apache.baremaps.mvt.binary.VectorTile.Tile.GeomType;
 import org.apache.baremaps.mvt.binary.VectorTile.Tile.Value;
 import org.locationtech.jts.geom.*;
@@ -57,9 +57,9 @@ public class VectorTileDecoder {
    * @return The decoded vector tile
    * @throws IOException If an error occurs while decoding the vector tile
    */
-  public Tile decodeTile(ByteBuffer buffer) throws IOException {
+  public VectorTile decodeTile(ByteBuffer buffer) throws IOException {
     try {
-      VectorTile.Tile tile = VectorTile.Tile.parseFrom(buffer);
+      org.apache.baremaps.mvt.binary.VectorTile.Tile tile = Tile.parseFrom(buffer);
       return decodeTile(tile);
     } catch (InvalidProtocolBufferException e) {
       throw new IOException(e);
@@ -72,11 +72,11 @@ public class VectorTileDecoder {
    * @param tile The vector tile to decode
    * @return The decoded vector tile
    */
-  public Tile decodeTile(VectorTile.Tile tile) {
+  public VectorTile decodeTile(Tile tile) {
     List<Layer> layers = tile.getLayersList().stream()
         .map(this::decodeLayer)
         .collect(Collectors.toList());
-    return new Tile(layers);
+    return new VectorTile(layers);
   }
 
   /**
@@ -88,7 +88,7 @@ public class VectorTileDecoder {
    */
   public Layer decodeLayer(ByteBuffer buffer) throws IOException {
     try {
-      VectorTile.Tile.Layer layer = VectorTile.Tile.Layer.parseFrom(buffer);
+      Tile.Layer layer = Tile.Layer.parseFrom(buffer);
       return decodeLayer(layer);
     } catch (InvalidProtocolBufferException e) {
       throw new IOException(e);
@@ -101,7 +101,7 @@ public class VectorTileDecoder {
    * @param layer The vector tile layer
    * @return The decoded layer
    */
-  public Layer decodeLayer(VectorTile.Tile.Layer layer) {
+  public Layer decodeLayer(Tile.Layer layer) {
     String name = layer.getName();
     int extent = layer.getExtent();
 
@@ -152,7 +152,7 @@ public class VectorTileDecoder {
    * @param feature The vector tile feature to decode
    * @return The decoded feature
    */
-  protected Feature decodeFeature(VectorTile.Tile.Feature feature) {
+  protected Feature decodeFeature(Tile.Feature feature) {
 
     cx = 0;
     cy = 0;
@@ -169,7 +169,7 @@ public class VectorTileDecoder {
    * @param feature The feature to decode
    * @return The tags of the feature
    */
-  protected Map<String, Object> decodeTags(VectorTile.Tile.Feature feature) {
+  protected Map<String, Object> decodeTags(Tile.Feature feature) {
     Map<String, Object> tags = new HashMap<>();
     List<Integer> encoding = feature.getTagsList();
     for (int i = 0; i < encoding.size(); i += 2) {
@@ -186,7 +186,7 @@ public class VectorTileDecoder {
    * @param feature The vector tile feature
    * @return The decoded geometry
    */
-  protected Geometry decodeGeometry(VectorTile.Tile.Feature feature) {
+  protected Geometry decodeGeometry(Tile.Feature feature) {
     GeomType type = feature.getType();
     List<Integer> encoding = feature.getGeometryList();
     switch (type) {

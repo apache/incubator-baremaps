@@ -24,6 +24,7 @@ import org.apache.baremaps.tilestore.TileStoreException;
 import org.apache.baremaps.utils.GeometryUtils;
 import org.apache.baremaps.vectortile.Feature;
 import org.apache.baremaps.vectortile.Layer;
+import org.apache.baremaps.vectortile.VectorTile;
 import org.apache.baremaps.vectortile.VectorTileFunctions;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.WarpOptions;
@@ -32,7 +33,6 @@ import org.gdal.gdalconst.gdalconstConstants;
 import org.gdal.ogr.ogr;
 import org.gdal.osr.SpatialReference;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.proj4j.ProjCoordinate;
 
 public class ContourTileStore implements TileStore, AutoCloseable {
@@ -45,7 +45,7 @@ public class ContourTileStore implements TileStore, AutoCloseable {
   private final Dataset sourceDataset;
 
   public ContourTileStore() {
-    var dem = Paths.get("examples/contour/dem.xml").toAbsolutePath().toString();
+    var dem = Paths.get("dem.xml").toAbsolutePath().toString();
     sourceDataset = gdal.Open(dem, gdalconstConstants.GA_ReadOnly);
   }
 
@@ -84,13 +84,13 @@ public class ContourTileStore implements TileStore, AutoCloseable {
         .mapToObj(vectorLayer::GetFeature)
         .map(feature -> feature.GetGeometryRef())
         .map(geometry -> GeometryUtils.deserialize(geometry.ExportToWkb()))
-        .map(geometry -> VectorTileFunctions.asVectorTileGeom(geometry, targetEnvelope, 4096, 0, true))
+        .map(geometry -> VectorTileFunctions.asVectorTileGeom(geometry, targetEnvelope, 4096, 0,
+            true))
         .map(geometry -> new Feature(null, Map.of(), geometry))
         .toList();
 
-    var vectorTile = VectorTileFunctions.asVectorTile(
-        new org.apache.baremaps.vectortile.Tile(List.of(new Layer("contours", 4096, features))));
-
+    var vectorTile = VectorTileFunctions
+        .asVectorTile(new VectorTile(List.of(new Layer("contours", 4096, features))));
 
     rasterBand.delete();
     rasterDataset.delete();
@@ -117,7 +117,6 @@ public class ContourTileStore implements TileStore, AutoCloseable {
   public static void main(String[] args) throws Exception {
     var store = new ContourTileStore();
     store.read(new TileCoord(8492, 5792, 14).parent());
-
   }
 
 }

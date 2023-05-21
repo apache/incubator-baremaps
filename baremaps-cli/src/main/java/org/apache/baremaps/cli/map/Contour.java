@@ -13,17 +13,17 @@
 package org.apache.baremaps.cli.map;
 
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.contextResolverFor;
-import static org.apache.baremaps.server.DefaultObjectMapper.defaultObjectMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
-import org.apache.baremaps.database.tile.TileStore;
 import org.apache.baremaps.raster.ContourTileStore;
 import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.server.ServerResources;
+import org.apache.baremaps.tilestore.TileStore;
+import org.apache.baremaps.utils.ObjectMapperUtils;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -55,7 +55,7 @@ public class Contour implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    var objectMapper = defaultObjectMapper();
+    var objectMapper = ObjectMapperUtils.objectMapper();
     var tileStore = new ContourTileStore();
 
     // Configure the application

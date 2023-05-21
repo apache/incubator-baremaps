@@ -23,14 +23,14 @@ import java.util.List;
 /**
  * A vector tile layer.
  */
-public class Tile {
+public class VectorTile {
 
   private List<Layer> layers;
 
   /**
    * Creates a new tile.
    */
-  public Tile(List<Layer> layers) {
+  public VectorTile(List<Layer> layers) {
     this.layers = layers;
   }
 
@@ -58,7 +58,7 @@ public class Tile {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    Tile tile = (Tile) o;
+    VectorTile tile = (VectorTile) o;
     return Objects.equal(layers, tile.layers);
   }
 

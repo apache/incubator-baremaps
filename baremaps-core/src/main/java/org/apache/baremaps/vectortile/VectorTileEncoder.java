@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
-import org.apache.baremaps.mvt.binary.VectorTile;
+import org.apache.baremaps.mvt.binary.VectorTile.Tile;
 import org.locationtech.jts.geom.*;
 
 /**
@@ -56,8 +56,8 @@ public class VectorTileEncoder {
    * @param tile The tile to encode
    * @return The vector tile
    */
-  public VectorTile.Tile encodeTile(Tile tile) {
-    VectorTile.Tile.Builder builder = VectorTile.Tile.newBuilder();
+  public Tile encodeTile(VectorTile tile) {
+    Tile.Builder builder = Tile.newBuilder();
     tile.getLayers().forEach(layer -> builder.addLayers(encodeLayer(layer)));
     return builder.build();
   }
@@ -68,11 +68,11 @@ public class VectorTileEncoder {
    * @param layer The layer to encode
    * @return The vector tile layer
    */
-  public VectorTile.Tile.Layer encodeLayer(Layer layer) {
+  public Tile.Layer encodeLayer(Layer layer) {
     keys = new ArrayList<>();
     values = new ArrayList<>();
 
-    VectorTile.Tile.Layer.Builder builder = VectorTile.Tile.Layer.newBuilder();
+    Tile.Layer.Builder builder = Tile.Layer.newBuilder();
     builder.setName(layer.getName());
     builder.setVersion(2);
     builder.setExtent(layer.getExtent());
@@ -94,8 +94,8 @@ public class VectorTileEncoder {
    * @param object The object to encode
    * @return The vector tile value
    */
-  protected VectorTile.Tile.Value encodeValue(Object object) {
-    VectorTile.Tile.Value.Builder builder = VectorTile.Tile.Value.newBuilder();
+  protected Tile.Value encodeValue(Object object) {
+    Tile.Value.Builder builder = Tile.Value.newBuilder();
 
     // Encode the value based on its type
     if (object instanceof String value) {
@@ -120,11 +120,11 @@ public class VectorTileEncoder {
    *
    * @param feature The feature to encode.
    */
-  protected void encodeFeature(Feature feature, Consumer<VectorTile.Tile.Feature> consumer) {
+  protected void encodeFeature(Feature feature, Consumer<Tile.Feature> consumer) {
     cx = 0;
     cy = 0;
 
-    VectorTile.Tile.Feature.Builder builder = VectorTile.Tile.Feature.newBuilder();
+    Tile.Feature.Builder builder = Tile.Feature.newBuilder();
     if (feature.getId() != null) {
       builder.setId(feature.getId());
     }
@@ -135,21 +135,21 @@ public class VectorTileEncoder {
     consumer.accept(builder.build());
   }
 
-  protected VectorTile.Tile.GeomType encodeGeometryType(Geometry geometry) {
+  protected Tile.GeomType encodeGeometryType(Geometry geometry) {
     if (geometry instanceof Point) {
-      return VectorTile.Tile.GeomType.POINT;
+      return Tile.GeomType.POINT;
     } else if (geometry instanceof MultiPoint) {
-      return VectorTile.Tile.GeomType.POINT;
+      return Tile.GeomType.POINT;
     } else if (geometry instanceof LineString) {
-      return VectorTile.Tile.GeomType.LINESTRING;
+      return Tile.GeomType.LINESTRING;
     } else if (geometry instanceof MultiLineString) {
-      return VectorTile.Tile.GeomType.LINESTRING;
+      return Tile.GeomType.LINESTRING;
     } else if (geometry instanceof Polygon) {
-      return VectorTile.Tile.GeomType.POLYGON;
+      return Tile.GeomType.POLYGON;
     } else if (geometry instanceof MultiPolygon) {
-      return VectorTile.Tile.GeomType.POLYGON;
+      return Tile.GeomType.POLYGON;
     } else {
-      return VectorTile.Tile.GeomType.UNKNOWN;
+      return Tile.GeomType.UNKNOWN;
     }
   }
 
