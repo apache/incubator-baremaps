@@ -77,6 +77,7 @@ public class Contour implements Callable<Integer> {
     logger.info("Listening on {}", serverContext.listenAddress());
 
     serverContext.awaitShutdown();
+
     return 0;
   }
 }
