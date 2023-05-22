@@ -597,6 +597,21 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>0.15</version>
+        <configuration>
+          <excludes>
+            <!-- not included in release, development tool -->
+            <exclude>.run/</exclude>
+            <!-- not included in release, experimental tool -->
+            <exclude>baremaps-renderer/</exclude>
+            <!-- not included in release, github actions -->
+            <exclude>.github/</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
         <version>${version.plugin.spotless-maven-plugin}</version>
