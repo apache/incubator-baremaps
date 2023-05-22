@@ -13,19 +13,18 @@
 package org.apache.baremaps.vectortile;
 
 
+import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.vectortile.tilejson.TileJSON;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-
-import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class TileSetTest {
 
