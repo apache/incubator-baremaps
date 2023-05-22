@@ -212,6 +212,11 @@
   <p>
       {{ TEST_PATH }}
   </p>
+  <p>
+      <a href="{{ MAP_URL }}" target="_bank">
+        <strong>{{ MAP_URL }}</strong>
+      </a>
+  </p>
   <pre>
       <code>
 {{ METADATA }}</code>
@@ -317,6 +322,11 @@
         testDiv.innerHTML = testDiv.innerHTML
           .replace('{{ TEST_NAME }}', test.name)
           .replace('{{ TEST_PATH }}', test.path)
+          .replace(
+            // replace all occurrences of the map url
+            new RegExp('{{ MAP_URL }}', 'g'),
+            `https://demo.baremaps.com/#${test.metadata.zoom}/${test.metadata.center[1]}/${test.metadata.center[0]}`,
+          )
           .replace('{{ METADATA }}', JSON.stringify(test.metadata, null, 4))
           .replace('{{ DIFF }}', test.diff)
           .replace(
