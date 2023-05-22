@@ -1,0 +1,42 @@
+{
+  "tilejson": "3.0.0",
+  "name": "OpenStreetMap",
+  "description": "A free editable map of the whole world.",
+  "version": "1.0.0",
+  "attribution": "(c) OpenStreetMap contributors, CC-BY-SA",
+  "scheme": "xyz",
+  "tiles": [
+    "https://a.tile.custom-osm-tiles.org/{z}/{x}/{y}.mvt",
+    "https://b.tile.custom-osm-tiles.org/{z}/{x}/{y}.mvt",
+    "https://c.tile.custom-osm-tiles.org/{z}/{x}/{y}.mvt"
+  ],
+  "minzoom": 0,
+  "maxzoom": 18,
+  "bounds": [ -180, -85, 180, 85 ],
+  "fillzoom": 6,
+  "something_custom": "this is my unique field",
+  "vector_layers": [
+    {
+      "id": "telephone",
+      "fields": {
+        "phone_number": "the phone number",
+        "payment": "how to pay"
+      }
+    },
+    {
+      "id": "bicycle_parking",
+      "fields": {
+        "type": "the type of bike parking",
+        "year_installed": "the year the bike parking was installed"
+      }
+    },
+    {
+      "id": "showers",
+      "fields": {
+        "water_temperature": "the maximum water temperature",
+        "wear_sandles": "whether you should wear sandles or not",
+        "wheelchair": "is the shower wheelchair friendly?"
+      }
+    }
+  ]
+}

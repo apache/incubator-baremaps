@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
 
 public record ExportVectorTiles(
-    String database,
     Path tileset,
     Path repository,
     int batchArraySize,
@@ -50,11 +49,12 @@ public record ExportVectorTiles(
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-    var datasource = context.getDataSource(database);
+
 
     var configReader = new ConfigReader();
     var objectMapper = objectMapper();
     var tileset = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
+    var datasource = context.getDataSource(tileset.getDatabase());
     var sourceTileStore = sourceTileStore(tileset, datasource);
     var targetTileStore = targetTileStore(tileset);
 

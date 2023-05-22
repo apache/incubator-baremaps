@@ -32,7 +32,7 @@ import org.apache.baremaps.ogcapi.model.TileSets;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
-import org.apache.baremaps.vectortile.tileset.Tileset;
+import org.apache.baremaps.vectortile.tilejson.TileJSON;
 
 @Singleton
 public class TilesResource implements TilesApi {
@@ -41,7 +41,7 @@ public class TilesResource implements TilesApi {
 
   public static final String TILE_TYPE = "application/vnd.mapbox-vector-tile";
 
-  private final Tileset tileset;
+  private final TileJSON tileJSON;
 
   private final TileStore tileStore;
 
@@ -54,10 +54,10 @@ public class TilesResource implements TilesApi {
    * @throws IOException
    */
   @Inject
-  public TilesResource(@Context UriInfo uriInfo, @Named("tileset") Path tileset,
+  public TilesResource(@Context UriInfo uriInfo, @Named("tileset") Path tilesetPath,
       ObjectMapper objectMapper, TileStore tileStore) throws IOException {
-    this.tileset = objectMapper.readValue(new ConfigReader().read(tileset), Tileset.class);
-    this.tileset.setTiles(List.of(uriInfo.getBaseUri().toString() + "tiles/default/{z}/{x}/{y}"));
+    this.tileJSON = objectMapper.readValue(new ConfigReader().read(tilesetPath), TileJSON.class);
+    this.tileJSON.setTiles(List.of(uriInfo.getBaseUri().toString() + "tiles/default/{z}/{x}/{y}"));
     this.tileStore = tileStore;
   }
 
@@ -81,7 +81,7 @@ public class TilesResource implements TilesApi {
    */
   @Override
   public Response getTileSet(String tileSetId) {
-    return Response.ok(tileset).build();
+    return Response.ok(tileJSON).build();
   }
 
   /**

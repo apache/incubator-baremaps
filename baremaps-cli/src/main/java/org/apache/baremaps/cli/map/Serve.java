@@ -46,10 +46,6 @@ public class Serve implements Callable<Integer> {
   @Mixin
   private Options options;
 
-  @Option(names = {"--database"}, paramLabel = "DATABASE",
-      description = "The JDBC url of Postgres.", required = true)
-  private String database;
-
   @Option(names = {"--cache"}, paramLabel = "CACHE", description = "The caffeine cache directive.")
   private String cache = "";
 
@@ -73,7 +69,7 @@ public class Serve implements Callable<Integer> {
     var configReader = new ConfigReader();
     var tileset = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
     var caffeineSpec = CaffeineSpec.parse(cache);
-    var datasource = PostgresUtils.dataSource(database);
+    var datasource = PostgresUtils.dataSource(tileset.getDatabase());
 
     var tileStore = new PostgresTileStore(datasource, tileset);
     var tileCache = new TileCache(tileStore, caffeineSpec);

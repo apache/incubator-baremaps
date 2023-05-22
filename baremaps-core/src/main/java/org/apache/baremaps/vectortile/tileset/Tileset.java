@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A loose implementation of the Mapbox TileJSON specification.
+ * A loose implementation of the Mapbox TileJSON specification. Extended with custom fields. Must be
+ * used inside baremaps componenent and not exposed to browser client.
  *
  * @see <a href=
  *      "https://docs.mapbox.com/help/glossary/tilejson/">https://docs.mapbox.com/help/glossary/tilejson/</a>
@@ -70,6 +71,9 @@ public class Tileset {
 
   @JsonProperty("center")
   private List<Double> center = new ArrayList<>();
+
+  @JsonProperty("database")
+  private String database;
 
   @JsonProperty("vector_layers")
   private List<TilesetLayer> vectorLayers = new ArrayList<>();
@@ -234,6 +238,14 @@ public class Tileset {
   public Tileset setCenter(List<Double> center) {
     this.center = center;
     return this;
+  }
+
+  public String getDatabase() {
+    return database;
+  }
+
+  public void setDatabase(String database) {
+    this.database = database;
   }
 
   public List<TilesetLayer> getVectorLayers() {
