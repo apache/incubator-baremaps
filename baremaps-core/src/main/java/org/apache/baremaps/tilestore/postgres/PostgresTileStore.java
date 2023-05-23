@@ -228,7 +228,9 @@ public class PostgresTileStore implements TileStore {
   }
 
   protected PostgresGroup commonTableExpression(PostgresQuery query) {
-    return new PostgresGroup(query.getAst().getSelectItems(), query.getAst().getFromItem(),
+    return new PostgresGroup(
+        query.getAst().getSelectItems(),
+        query.getAst().getFromItem(),
         query.getAst().getJoins());
   }
 
