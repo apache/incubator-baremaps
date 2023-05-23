@@ -49,7 +49,7 @@ public class TilesResource implements TilesApi {
    * Constructs a {@code StylesResource}.
    *
    * @param uriInfo
-   * @param tileset
+   * @param tilesetPath
    * @param objectMapper
    * @throws IOException
    */
