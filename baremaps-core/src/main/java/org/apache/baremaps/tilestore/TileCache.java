@@ -57,13 +57,13 @@ public class TileCache implements TileStore {
         if (buffer == null) {
           return null;
         } else {
-          return buffer.duplicate();
+          return buffer;
         }
       } catch (TileStoreException e) {
         logger.error("Unable to read the tile.", e);
         return null;
       }
-    });
+    }).duplicate();
   }
 
   /** {@inheritDoc} */
