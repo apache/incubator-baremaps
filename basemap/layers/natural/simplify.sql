@@ -53,40 +53,40 @@ WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 9), 2);
 
 CREATE MATERIALIZED VIEW osm_natural_z8 AS
 SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 8)) AS geom
-FROM osm_natural_medium
+FROM osm_natural_xl
 WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 8), 2);
 
 CREATE MATERIALIZED VIEW osm_natural_z7 AS
 SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 7)) AS geom
-FROM osm_natural_medium
+FROM osm_natural_xl
 WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 7), 2);
 
 CREATE MATERIALIZED VIEW osm_natural_z6 AS
 SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 6)) AS geom
-FROM osm_natural_medium
+FROM osm_natural_m
 WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 6), 2);
 
 CREATE MATERIALIZED VIEW osm_natural_z5 AS
 SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 5)) AS geom
-FROM osm_natural_medium
+FROM osm_natural_s
 WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 5), 2);
 
 CREATE MATERIALIZED VIEW osm_natural_z4 AS
 SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 4)) AS geom
-FROM osm_natural_small
+FROM osm_natural_s
 WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 4), 2);
 
 CREATE MATERIALIZED VIEW osm_natural_z3 AS
 SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 3)) AS geom
-FROM osm_natural_small
-WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 3), 2);
+FROM osm_natural_s
+WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 3), 2);
 
 CREATE MATERIALIZED VIEW osm_natural_z2 AS
 SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 2)) AS geom
-FROM osm_natural_small
-WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 2), 2);
+FROM osm_natural_s
+WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 2), 2);
 
 CREATE MATERIALIZED VIEW osm_natural_z1 AS
 SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 1)) AS geom
-FROM osm_natural_small
-WHERE st_area(st_envelope(geom)) > 10 * power(78270 / power(2, 1), 2);
+FROM osm_natural_s
+WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 1), 2);
