@@ -13,7 +13,7 @@ export default {
     id: 'landuse',
     queries: [
         {
-            minzoom: 3,
+            minzoom: 1,
             maxzoom: 8,
             sql:
                 "SELECT id, tags, geom FROM osm_landuse_z$zoom WHERE tags ->> 'landuse' IN ('farmland', 'forest', 'meadow')",

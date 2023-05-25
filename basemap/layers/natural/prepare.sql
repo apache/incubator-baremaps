@@ -59,98 +59,149 @@ FROM osm_natural_exploded;
 CREATE INDEX IF NOT EXISTS osm_natural_geom_idx ON osm_natural_filtered USING GIST (geom);
 CREATE INDEX IF NOT EXISTS osm_natural_tags_idx ON osm_natural_filtered USING GIN (natural_value);
 
-CREATE MATERIALIZED VIEW osm_natural_medium_filtered AS
+-- XTRA LARGE
+CREATE MATERIALIZED VIEW osm_natural_xl_filtered AS
 SELECT
     id,
     tags -> 'natural' as natural_value,
     st_buffer(st_simplifypreservetopology(geom, 78270 / power(2, 8)), 78270 / power(2, 8), 'join=mitre') AS geom
 FROM osm_natural
 WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 8), 2);
-CREATE INDEX IF NOT EXISTS osm_natural_medium_filtered_geom_idx ON osm_natural_medium_filtered USING GIST (geom);
-CREATE INDEX IF NOT EXISTS osm_natural_medium_filtered_tags_idx ON osm_natural_medium_filtered (natural_value);
+CREATE INDEX IF NOT EXISTS osm_natural_xl_filtered_geom_idx ON osm_natural_xl_filtered USING GIST (geom);
+CREATE INDEX IF NOT EXISTS osm_natural_xl_filtered_tags_idx ON osm_natural_xl_filtered (natural_value);
 
-CREATE MATERIALIZED VIEW osm_natural_medium_clustered AS
+CREATE MATERIALIZED VIEW osm_natural_xl_clustered AS
 SELECT
     natural_value,
     geom,
     st_clusterdbscan(geom, 0, 0) OVER(PARTITION BY natural_value) AS cluster
-FROM osm_natural_medium_filtered;
-CREATE INDEX IF NOT EXISTS osm_natural_medium_clustered_geom_idx ON osm_natural_medium_clustered USING GIST (geom);
-CREATE INDEX IF NOT EXISTS osm_natural_medium_clustered_tags_idx ON osm_natural_medium_clustered (natural_value);
+FROM osm_natural_xl_filtered;
+CREATE INDEX IF NOT EXISTS osm_natural_xl_clustered_geom_idx ON osm_natural_xl_clustered USING GIST (geom);
+CREATE INDEX IF NOT EXISTS osm_natural_xl_clustered_tags_idx ON osm_natural_xl_clustered (natural_value);
 
-CREATE MATERIALIZED VIEW osm_natural_medium_grouped AS
+CREATE MATERIALIZED VIEW osm_natural_xl_grouped AS
 SELECT
     natural_value,
     cluster,
     st_collect(geom) AS geom
-FROM osm_natural_medium_clustered
+FROM osm_natural_xl_clustered
 GROUP BY natural_value, cluster;
 
-CREATE MATERIALIZED VIEW osm_natural_medium_buffered AS
+CREATE MATERIALIZED VIEW osm_natural_xl_buffered AS
 SELECT
     natural_value,
     st_buffer(geom, -78270 / power(2, 8), 'join=mitre') AS geom
-FROM osm_natural_medium_grouped;
+FROM osm_natural_xl_grouped;
 
-CREATE MATERIALIZED VIEW osm_natural_medium_exploded AS
+CREATE MATERIALIZED VIEW osm_natural_xl_exploded AS
 SELECT
     natural_value,
     (st_dump(geom)).geom AS geom
-FROM osm_natural_medium_buffered;
+FROM osm_natural_xl_buffered;
 
-CREATE MATERIALIZED VIEW osm_natural_medium AS
+CREATE MATERIALIZED VIEW osm_natural_xl AS
 SELECT
     row_number() OVER () AS id,
     jsonb_build_object('natural', natural_value) AS tags,
     geom AS geom
-FROM osm_natural_medium_buffered;
-CREATE INDEX IF NOT EXISTS osm_natural_medium_geom_idx ON osm_natural_medium USING GIST (geom);
-CREATE INDEX IF NOT EXISTS osm_natural_medium_tags_idx ON osm_natural_medium USING GIN (tags);
+FROM osm_natural_xl_buffered;
+CREATE INDEX IF NOT EXISTS osm_natural_xl_geom_idx ON osm_natural_xl USING GIST (geom);
+CREATE INDEX IF NOT EXISTS osm_natural_xl_tags_idx ON osm_natural_xl USING GIN (tags);
 
-CREATE MATERIALIZED VIEW osm_natural_small_filtered AS
+-- MEDIUM
+CREATE MATERIALIZED VIEW osm_natural_m_filtered AS
 SELECT
     id,
     tags -> 'natural' as natural_value,
-    st_buffer(st_simplifypreservetopology(geom, 78270 / power(2, 4)), 78270 / power(2, 4), 'join=mitre') AS geom
+    st_buffer(st_simplifypreservetopology(geom, 78270 / power(2, 5)), 78270 / power(2, 6), 'join=mitre') AS geom
 FROM osm_natural
-WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 4), 2);
-CREATE INDEX IF NOT EXISTS osm_natural_small_filtered_geom_idx ON osm_natural_small_filtered USING GIST (geom);
-CREATE INDEX IF NOT EXISTS osm_natural_small_filtered_tags_idx ON osm_natural_small_filtered (natural_value);
+WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 6), 2);
+CREATE INDEX IF NOT EXISTS osm_natural_m_filtered_geom_idx ON osm_natural_m_filtered USING GIST (geom);
+CREATE INDEX IF NOT EXISTS osm_natural_m_filtered_tags_idx ON osm_natural_m_filtered (natural_value);
 
-CREATE MATERIALIZED VIEW osm_natural_small_clustered AS
+CREATE MATERIALIZED VIEW osm_natural_m_clustered AS
 SELECT
     natural_value,
     geom,
     st_clusterdbscan(geom, 0, 0) OVER(PARTITION BY natural_value) AS cluster
-FROM osm_natural_small_filtered;
-CREATE INDEX IF NOT EXISTS osm_natural_small_clustered_geom_idx ON osm_natural_small_clustered USING GIST (geom);
-CREATE INDEX IF NOT EXISTS osm_natural_small_clustered_tags_idx ON osm_natural_small_clustered (natural_value);
+FROM osm_natural_m_filtered;
+CREATE INDEX IF NOT EXISTS osm_natural_m_clustered_geom_idx ON osm_natural_m_clustered USING GIST (geom);
+CREATE INDEX IF NOT EXISTS osm_natural_m_clustered_tags_idx ON osm_natural_m_clustered (natural_value);
 
-CREATE MATERIALIZED VIEW osm_natural_small_grouped AS
+CREATE MATERIALIZED VIEW osm_natural_m_grouped AS
 SELECT
     natural_value,
     cluster,
     st_collect(geom) AS geom
-FROM osm_natural_small_clustered
+FROM osm_natural_m_clustered
 GROUP BY natural_value, cluster;
 
-CREATE MATERIALIZED VIEW osm_natural_small_buffered AS
+CREATE MATERIALIZED VIEW osm_natural_m_buffered AS
 SELECT
     natural_value,
-    st_buffer(geom, -78270 / power(2, 4), 'join=mitre') AS geom
-FROM osm_natural_small_grouped;
+    st_buffer(geom, 0.5 * -78270 / power(2, 6), 'join=mitre') AS geom
+FROM osm_natural_m_grouped;
 
-CREATE MATERIALIZED VIEW osm_natural_small_exploded AS
+CREATE MATERIALIZED VIEW osm_natural_m_exploded AS
 SELECT
     natural_value,
     (st_dump(geom)).geom AS geom
-FROM osm_natural_small_buffered;
+FROM osm_natural_m_buffered;
 
-CREATE MATERIALIZED VIEW osm_natural_small AS
+CREATE MATERIALIZED VIEW osm_natural_m AS
 SELECT
-            row_number() OVER () AS id,
-            jsonb_build_object('natural', natural_value) AS tags,
-            geom AS geom
-FROM osm_natural_small_buffered;
-CREATE INDEX IF NOT EXISTS osm_natural_small_geom_idx ON osm_natural_small USING GIST (geom);
-CREATE INDEX IF NOT EXISTS osm_natural_small_tags_idx ON osm_natural_small USING GIN (tags);
+    row_number() OVER () AS id,
+    jsonb_build_object('natural', natural_value) AS tags,
+    geom AS geom
+FROM osm_natural_m_buffered;
+CREATE INDEX IF NOT EXISTS osm_natural_m_geom_idx ON osm_natural_m USING GIST (geom);
+CREATE INDEX IF NOT EXISTS osm_natural_m_tags_idx ON osm_natural_m USING GIN (tags);
+
+-- SMALL
+CREATE MATERIALIZED VIEW osm_natural_s_filtered AS
+SELECT
+    id,
+    tags -> 'natural' as natural_value,
+    st_buffer(st_simplifypreservetopology(geom, 78270 / power(2, 5)), 78270 / power(2, 6), 'join=mitre') AS geom
+FROM osm_natural
+WHERE st_area(st_envelope(geom)) > 25 * power(78270 / power(2, 6), 2);
+CREATE INDEX IF NOT EXISTS osm_natural_s_filtered_geom_idx ON osm_natural_s_filtered USING GIST (geom);
+CREATE INDEX IF NOT EXISTS osm_natural_s_filtered_tags_idx ON osm_natural_s_filtered (natural_value);
+
+CREATE MATERIALIZED VIEW osm_natural_s_clustered AS
+SELECT
+    natural_value,
+    geom,
+    st_clusterdbscan(geom, 0, 0) OVER(PARTITION BY natural_value) AS cluster
+FROM osm_natural_s_filtered;
+CREATE INDEX IF NOT EXISTS osm_natural_s_clustered_geom_idx ON osm_natural_s_clustered USING GIST (geom);
+CREATE INDEX IF NOT EXISTS osm_natural_s_clustered_tags_idx ON osm_natural_s_clustered (natural_value);
+
+CREATE MATERIALIZED VIEW osm_natural_s_grouped AS
+SELECT
+    natural_value,
+    cluster,
+    st_collect(geom) AS geom
+FROM osm_natural_s_clustered
+GROUP BY natural_value, cluster;
+
+CREATE MATERIALIZED VIEW osm_natural_s_buffered AS
+SELECT
+    natural_value,
+    st_buffer(geom, 0.1 * -78270 / power(2, 6), 'join=mitre') AS geom
+FROM osm_natural_s_grouped;
+
+CREATE MATERIALIZED VIEW osm_natural_s_exploded AS
+SELECT
+    natural_value,
+    (st_dump(geom)).geom AS geom
+FROM osm_natural_s_buffered;
+
+CREATE MATERIALIZED VIEW osm_natural_s AS
+SELECT
+    row_number() OVER () AS id,
+    jsonb_build_object('natural', natural_value) AS tags,
+    geom AS geom
+FROM osm_natural_s_buffered;
+CREATE INDEX IF NOT EXISTS osm_natural_s_geom_idx ON osm_natural_s USING GIST (geom);
+CREATE INDEX IF NOT EXISTS osm_natural_s_tags_idx ON osm_natural_s USING GIN (tags);
