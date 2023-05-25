@@ -14,16 +14,15 @@ package org.apache.baremaps.storage.geopackage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import mil.nga.geopackage.GeoPackageManager;
 import org.apache.baremaps.testing.TestFiles;
 import org.junit.jupiter.api.Test;
 
-class GeoPackageTableTest {
+class GeoPackageStoreTest {
 
   @Test
   void schema() {
-    var featureDao = GeoPackageManager.open(TestFiles.resolve("countries.gpkg").toFile());
-    var table = new GeoPackageTable(featureDao.getFeatureDao("countries"));
+    var geoPackageStore = new GeoPackageStore(TestFiles.resolve("countries.gpkg"));
+    var table = geoPackageStore.get("countries");
     var schema = table.schema();
     assertEquals(schema.name(), "countries");
     assertEquals(schema.columns().size(), 4);
@@ -31,8 +30,8 @@ class GeoPackageTableTest {
 
   @Test
   void read() {
-    var featureDao = GeoPackageManager.open(TestFiles.resolve("countries.gpkg").toFile());
-    var table = new GeoPackageTable(featureDao.getFeatureDao("countries"));
+    var geoPackageStore = new GeoPackageStore(TestFiles.resolve("countries.gpkg"));
+    var table = geoPackageStore.get("countries");
     assertEquals(179, table.sizeAsLong());
     assertEquals(179, table.stream().count());
   }

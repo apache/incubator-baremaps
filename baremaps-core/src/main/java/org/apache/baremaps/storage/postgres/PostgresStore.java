@@ -81,28 +81,6 @@ public class PostgresStore implements Store {
       Map.entry("time", LocalTime.class),
       Map.entry("timestamp", LocalDateTime.class));
 
-  public static final Map<Class, BaseValueHandler> typeToHandler = Map.ofEntries(
-      Map.entry(String.class, new StringValueHandler()),
-      Map.entry(Short.class, new ShortValueHandler()),
-      Map.entry(Integer.class, new IntegerValueHandler()),
-      Map.entry(Long.class, new LongValueHandler()),
-      Map.entry(Float.class, new FloatValueHandler()),
-      Map.entry(Double.class, new DoubleValueHandler()),
-      Map.entry(Geometry.class, new GeometryValueHandler()),
-      Map.entry(MultiPoint.class, new GeometryValueHandler()),
-      Map.entry(Point.class, new GeometryValueHandler()),
-      Map.entry(LineString.class, new GeometryValueHandler()),
-      Map.entry(MultiLineString.class, new GeometryValueHandler()),
-      Map.entry(Polygon.class, new GeometryValueHandler()),
-      Map.entry(MultiPolygon.class, new GeometryValueHandler()),
-      Map.entry(LinearRing.class, new GeometryValueHandler()),
-      Map.entry(GeometryCollection.class, new GeometryValueHandler()),
-      Map.entry(Inet4Address.class, new Inet4AddressValueHandler()),
-      Map.entry(Inet6Address.class, new Inet6AddressValueHandler()),
-      Map.entry(LocalDate.class, new LocalDateValueHandler()),
-      Map.entry(LocalTime.class, new LocalTimeValueHandler()),
-      Map.entry(LocalDateTime.class, new LocalDateTimeValueHandler()));
-
   private final DataSource dataSource;
 
   /**
@@ -163,22 +141,23 @@ public class PostgresStore implements Store {
       }
 
       // Copy the data
-      PGConnection pgConnection = connection.unwrap(PGConnection.class);
+      var pgConnection = connection.unwrap(PGConnection.class);
       var copyQuery = copy(schema);
       logger.debug(copyQuery);
       try (var writer = new CopyWriter(new PGCopyOutputStream(pgConnection, copyQuery))) {
         writer.writeHeader();
-        var rowIterator = table.iterator();
-        while (rowIterator.hasNext()) {
-          var row = rowIterator.next();
-          var columns = getColumns(schema);
+        var columns = getColumns(schema);
+        var handlers = getHandlers(schema);
+        for (Row row : table) {
           writer.startRow(columns.size());
-          for (Column column : columns) {
+          for (int i = 0; i < columns.size(); i++) {
+            var column = columns.get(i);
+            var handler = handlers.get(i);
             var value = row.get(column.name());
             if (value == null) {
               writer.writeNull();
             } else {
-              writer.write(typeToHandler.get(value.getClass()), value);
+              writer.write(handler, value);
             }
           }
         }
@@ -288,6 +267,71 @@ public class PostgresStore implements Store {
     return schema.columns().stream()
         .filter(this::isSupported)
         .collect(Collectors.toList());
+  }
+
+  /**
+   * Get the handlers for the columns of the schema.
+   *
+   * @param schema the schema
+   * @return the handlers
+   */
+  protected List<BaseValueHandler> getHandlers(Schema schema) {
+    return getColumns(schema).stream()
+        .map(column -> getHandler(column.type()))
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Get the handler for a type. Handlers are used to write values to the copy stream. They are not
+   * thread safe and should not be reused or shared between threads.
+   *
+   * @param type the type
+   * @return the handler
+   */
+  protected BaseValueHandler getHandler(Class type) {
+    if (type == String.class) {
+      return new StringValueHandler();
+    } else if (type == Short.class) {
+      return new ShortValueHandler<Short>();
+    } else if (type == Integer.class) {
+      return new IntegerValueHandler<Integer>();
+    } else if (type == Long.class) {
+      return new LongValueHandler<Long>();
+    } else if (type == Float.class) {
+      return new FloatValueHandler<Float>();
+    } else if (type == Double.class) {
+      return new DoubleValueHandler<Double>();
+    } else if (type == Geometry.class) {
+      return new GeometryValueHandler();
+    } else if (type == MultiPoint.class) {
+      return new GeometryValueHandler();
+    } else if (type == Point.class) {
+      return new GeometryValueHandler();
+    } else if (type == LineString.class) {
+      return new GeometryValueHandler();
+    } else if (type == MultiLineString.class) {
+      return new GeometryValueHandler();
+    } else if (type == Polygon.class) {
+      return new GeometryValueHandler();
+    } else if (type == MultiPolygon.class) {
+      return new GeometryValueHandler();
+    } else if (type == LinearRing.class) {
+      return new GeometryValueHandler();
+    } else if (type == GeometryCollection.class) {
+      return new GeometryValueHandler();
+    } else if (type == Inet4Address.class) {
+      return new Inet4AddressValueHandler();
+    } else if (type == Inet6Address.class) {
+      return new Inet6AddressValueHandler();
+    } else if (type == LocalDate.class) {
+      return new LocalDateValueHandler();
+    } else if (type == LocalTime.class) {
+      return new LocalTimeValueHandler();
+    } else if (type == LocalDateTime.class) {
+      return new LocalDateTimeValueHandler();
+    } else {
+      throw new IllegalArgumentException("Unsupported type " + type);
+    }
   }
 
   /**

@@ -97,7 +97,7 @@ public class PostgresTable extends AbstractTable {
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(query)) {
       for (int i = 1; i <= schema.columns().size(); i++) {
-        var value = row.get(schema.columns().get(i).name());
+        var value = row.get(schema.columns().get(i - 1).name());
         if (value instanceof Geometry geometry) {
           statement.setBytes(i, GeometryUtils.serialize(geometry));
         } else {
@@ -119,7 +119,7 @@ public class PostgresTable extends AbstractTable {
         var statement = connection.prepareStatement(insert(schema))) {
       for (var row : rows) {
         for (int i = 1; i <= schema.columns().size(); i++) {
-          var value = row.get(schema.columns().get(i).name());
+          var value = row.get(schema.columns().get(i - 1).name());
           if (value instanceof Geometry geometry) {
             statement.setBytes(i, GeometryUtils.serialize(geometry));
           } else {
