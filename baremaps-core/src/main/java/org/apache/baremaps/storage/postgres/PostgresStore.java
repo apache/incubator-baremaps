@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.apache.baremaps.postgres.copy.CopyWriter;
-import org.apache.baremaps.postgres.copy.PostgisGeometryValueHandler;
+import org.apache.baremaps.postgres.copy.GeometryValueHandler;
 import org.apache.baremaps.postgres.metadata.DatabaseMetadata;
 import org.apache.baremaps.postgres.metadata.TableMetadata;
 import org.apache.baremaps.storage.*;
@@ -88,15 +88,15 @@ public class PostgresStore implements Store {
       Map.entry(Long.class, new LongValueHandler()),
       Map.entry(Float.class, new FloatValueHandler()),
       Map.entry(Double.class, new DoubleValueHandler()),
-      Map.entry(Geometry.class, new PostgisGeometryValueHandler()),
-      Map.entry(MultiPoint.class, new PostgisGeometryValueHandler()),
-      Map.entry(Point.class, new PostgisGeometryValueHandler()),
-      Map.entry(LineString.class, new PostgisGeometryValueHandler()),
-      Map.entry(MultiLineString.class, new PostgisGeometryValueHandler()),
-      Map.entry(Polygon.class, new PostgisGeometryValueHandler()),
-      Map.entry(MultiPolygon.class, new PostgisGeometryValueHandler()),
-      Map.entry(LinearRing.class, new PostgisGeometryValueHandler()),
-      Map.entry(GeometryCollection.class, new PostgisGeometryValueHandler()),
+      Map.entry(Geometry.class, new GeometryValueHandler()),
+      Map.entry(MultiPoint.class, new GeometryValueHandler()),
+      Map.entry(Point.class, new GeometryValueHandler()),
+      Map.entry(LineString.class, new GeometryValueHandler()),
+      Map.entry(MultiLineString.class, new GeometryValueHandler()),
+      Map.entry(Polygon.class, new GeometryValueHandler()),
+      Map.entry(MultiPolygon.class, new GeometryValueHandler()),
+      Map.entry(LinearRing.class, new GeometryValueHandler()),
+      Map.entry(GeometryCollection.class, new GeometryValueHandler()),
       Map.entry(Inet4Address.class, new Inet4AddressValueHandler()),
       Map.entry(Inet6Address.class, new Inet6AddressValueHandler()),
       Map.entry(LocalDate.class, new LocalDateValueHandler()),

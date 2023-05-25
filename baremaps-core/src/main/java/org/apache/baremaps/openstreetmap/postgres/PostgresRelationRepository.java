@@ -290,7 +290,7 @@ public class PostgresRelationRepository implements RelationRepository {
               .map(MemberType::ordinal).collect(Collectors.toList()));
           writer
               .write(value.getMembers().stream().map(Member::getRole).collect(Collectors.toList()));
-          writer.writePostgisGeometry(value.getGeometry());
+          writer.writeGeometry(value.getGeometry());
         }
       }
     } catch (IOException | SQLException ex) {

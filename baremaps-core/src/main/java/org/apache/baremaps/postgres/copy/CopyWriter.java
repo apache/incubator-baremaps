@@ -332,8 +332,8 @@ public class CopyWriter implements AutoCloseable {
    * @param value
    * @throws IOException
    */
-  public void writePostgisGeometry(Geometry value) throws IOException {
-    new PostgisGeometryValueHandler().handle(data, value);
+  public void writeGeometry(Geometry value) throws IOException {
+    new GeometryValueHandler().handle(data, value);
   }
 
   /** Close the writer. */

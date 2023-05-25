@@ -96,12 +96,12 @@ public class PostgresTable extends AbstractTable {
     var query = insert(schema);
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(query)) {
-      for (int i = 0; i < schema.columns().size(); i++) {
+      for (int i = 1; i <= schema.columns().size(); i++) {
         var value = row.get(schema.columns().get(i).name());
-        if (value instanceof Geometry) {
-          statement.setBytes(i + 1, GeometryUtils.serialize((Geometry) value));
+        if (value instanceof Geometry geometry) {
+          statement.setBytes(i, GeometryUtils.serialize(geometry));
         } else {
-          statement.setObject(i + 1, value);
+          statement.setObject(i, value);
         }
       }
       return statement.executeUpdate() > 0;
@@ -118,12 +118,12 @@ public class PostgresTable extends AbstractTable {
     try (var connection = dataSource.getConnection();
         var statement = connection.prepareStatement(insert(schema))) {
       for (var row : rows) {
-        for (int i = 0; i < schema.columns().size(); i++) {
+        for (int i = 1; i <= schema.columns().size(); i++) {
           var value = row.get(schema.columns().get(i).name());
-          if (value instanceof Geometry) {
-            statement.setBytes(i + 1, GeometryUtils.serialize((Geometry) value));
+          if (value instanceof Geometry geometry) {
+            statement.setBytes(i, GeometryUtils.serialize(geometry));
           } else {
-            statement.setObject(i + 1, value);
+            statement.setObject(i, value);
           }
         }
         statement.addBatch();

@@ -281,7 +281,7 @@ public class PostgresWayRepository implements WayRepository {
           writer.writeLong(value.getInfo().getChangeset());
           writer.writeJsonb(PostgresJsonbMapper.toJson(value.getTags()));
           writer.writeLongList(value.getNodes());
-          writer.writePostgisGeometry(value.getGeometry());
+          writer.writeGeometry(value.getGeometry());
         }
       }
     } catch (IOException | SQLException e) {
