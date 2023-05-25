@@ -101,5 +101,15 @@ make several smaller commits. This is much easier to review.
 Before making a pull request, check that your source code is formatted according to the rules defined in the `codestyle.xml` file. 
 This file can typically used to [configure](https://www.jetbrains.com/help/idea/settings-code-style.html) your favourite IDE.
 You can run `mvn spotless:apply` to format your code automatically.
+
+Execute a run of Apache Rat to check for compliance with [ ASF Source Header and Copyright Notice Policy](https://www.apache.org/legal/src-headers.html). A textual report is added in `target/rat.txt`.
+```
+mvn clean && mvn apache-rat:check
+```
+Notes: 
+ - It is required to do the `clean` separately in two commands given that the parent module scan submodules files.
+ - At the moment the check is failing as project is in progress of reaching compliance, please check for newly added content in Apache Rat report.
+
 Finally, verify that your contribution passes all the tests (integration included).
-Once your everything looks good, we'll merge it.
+Once everything looks good, we'll merge it.
+

@@ -664,6 +664,23 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <version>0.15</version>
+        <configuration>
+          <!-- This allows to manage exclusions in parent module.
+               This messes some default exclusions based on basedir for submodules (e.g target folder),
+               thus requiring a "clean" content in all modules. -->
+          <excludeSubProjects>false</excludeSubProjects>
+          <excludes>
+            <!-- not included in release, development tools -->
+            <exclude>.run/</exclude>
+            <exclude>.github/</exclude>
+            <exclude>.mvn/</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>${version.plugin.jacoco-maven-plugin}</version>
