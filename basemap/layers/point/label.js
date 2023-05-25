@@ -15,6 +15,15 @@ let directives = [
     {
         filter: [
             'all',
+            ['==', ['get', 'place'], 'country']
+        ],
+        'text-size': 18,
+        'text-color': 'rgb(25, 25, 25)',
+        'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
+    },
+    {
+        filter: [
+            'all',
             ['==', ['get', 'capital'], 'yes'],
             ['==', ['get', 'place'], 'city']
         ],
