@@ -73,8 +73,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
-    <sonar.organization>baremaps</sonar.organization>
-    <sonar.projectKey>baremaps_baremaps</sonar.projectKey>
+    <sonar.organization>apache</sonar.organization>
+    <sonar.projectKey>apache_baremaps</sonar.projectKey>
     <version.lib.activation>1.2.2</version.lib.activation>
     <version.lib.annotation-api>1.3.2</version.lib.annotation-api>
     <version.lib.awaitability>3.0.0</version.lib.awaitability>
