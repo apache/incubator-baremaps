@@ -280,7 +280,7 @@ public class PostgresNodeRepository implements NodeRepository {
           writer.writeJsonb(PostgresJsonbMapper.toJson(value.getTags()));
           writer.writeDouble(value.getLon());
           writer.writeDouble(value.getLat());
-          writer.writePostgisGeometry(value.getGeometry());
+          writer.writeGeometry(value.getGeometry());
         }
       }
     } catch (IOException | SQLException e) {

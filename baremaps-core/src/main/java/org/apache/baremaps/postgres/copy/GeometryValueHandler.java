@@ -20,7 +20,7 @@ import java.io.IOException;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKBWriter;
 
-public class PostgisGeometryValueHandler extends BaseValueHandler<Geometry> {
+public class GeometryValueHandler extends BaseValueHandler<Geometry> {
 
   private final WKBWriter writer = new WKBWriter(2, wkbNDR, true);
 
