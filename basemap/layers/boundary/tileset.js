@@ -20,12 +20,12 @@ export default {
         },
         {
             minzoom: 6,
-            maxzoom: 14,
+            maxzoom: 10,
             sql:
                 "SELECT fid as id, jsonb_build_object('boundary', 'administrative', 'admin_level', '1') as tags, geom FROM globaladm1_z$zoom",
         },
         {
-            minzoom: 14,
+            minzoom: 10,
             maxzoom: 20,
             sql:
                 "SELECT id, tags, geom FROM osm_ways WHERE tags ? 'boundary'",

@@ -15,15 +15,6 @@ let directives = [
     {
         filter: [
             'all',
-            ['==', ['get', 'place'], 'country']
-        ],
-        'text-size': 18,
-        'text-color': 'rgb(25, 25, 25)',
-        'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
-    },
-    {
-        filter: [
-            'all',
             ['==', ['get', 'capital'], 'yes'],
             ['==', ['get', 'place'], 'city']
         ],
@@ -77,10 +68,12 @@ let directives = [
 ];
 
 export default asLayerObject(withSymbolSortKeys(directives), {
-    id: 'label',
+    id: 'point_label',
     type: 'symbol',
     source: 'baremaps',
     'source-layer': 'point',
+    'minzoom': 4,
+    'maxzoom': 24,
     layout: {
         visibility: 'visible',
         'text-font': ['Noto Sans Regular'],

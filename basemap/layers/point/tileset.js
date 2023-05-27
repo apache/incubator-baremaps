@@ -20,7 +20,7 @@ export default {
         {
             "minzoom": 4,
             "maxzoom": 20,
-            "sql": "SELECT id, tags, geom FROM osm_point_z$zoom WHERE tags != '{}' AND (tags ->> 'place' != 'country')"
+            "sql": "SELECT id, tags, geom FROM osm_point_z$zoom WHERE tags != '{}'"
         }
     ]
 }
