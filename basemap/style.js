@@ -52,7 +52,8 @@ import waterway_label from "./layers/waterway/label.js"
 import waterway_tunnel_line from "./layers/waterway/tunnel_line.js"
 import waterway_tunnel_casing from "./layers/waterway/tunnel_casing.js"
 import icon from "./layers/point/icon.js";
-import label from './layers/point/label.js';
+import country_label from './layers/point/country_label.js';
+import point_label from './layers/point/point_label.js';
 
 export default {
     "version": 8,
@@ -109,6 +110,7 @@ export default {
         boundary_line,
         waterway_label,
         icon,
-        label,
+        country_label,
+        point_label,
     ],
 };
