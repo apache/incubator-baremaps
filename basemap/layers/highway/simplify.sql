@@ -36,7 +36,7 @@ CREATE MATERIALIZED VIEW osm_highway_z12 AS
 SELECT id, tags, geom
 FROM (SELECT id, tags, st_simplifypreservetopology(geom, 78270 / power(2, 12)) AS geom FROM osm_highway) AS osm_highway
 WHERE geom IS NOT NULL AND (st_area(st_envelope(geom)) > power((78270 / power(2, 12)), 2))
-  AND tags ->> 'highway' IN ( 'motorway', 'motorway_link',  'trunk', 'trunk_link',  'primary', 'primary_link',  'secondary', 'secondary_link',  'tertiary', 'tertiary_link', 'unclassified', 'residential');
+  AND tags ->> 'highway' IN ( 'motorway', 'motorway_link',  'trunk', 'trunk_link',  'primary', 'primary_link',  'secondary', 'secondary_link',  'tertiary', 'tertiary_link', 'unclassified', 'residential', 'construction');
 
 CREATE MATERIALIZED VIEW osm_highway_z11 AS
 SELECT id, tags, geom
