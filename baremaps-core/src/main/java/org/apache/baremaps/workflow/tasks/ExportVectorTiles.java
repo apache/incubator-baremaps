@@ -36,6 +36,11 @@ import org.apache.baremaps.workflow.WorkflowContext;
 import org.locationtech.jts.geom.Envelope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sqlite.SQLiteConfig;
+import org.sqlite.SQLiteConfig.JournalMode;
+import org.sqlite.SQLiteConfig.LockingMode;
+import org.sqlite.SQLiteConfig.SynchronousMode;
+import org.sqlite.SQLiteConfig.TempStore;
 import org.sqlite.SQLiteDataSource;
 
 public record ExportVectorTiles(
@@ -49,8 +54,6 @@ public record ExportVectorTiles(
 
   @Override
   public void execute(WorkflowContext context) throws Exception {
-
-
     var configReader = new ConfigReader();
     var objectMapper = objectMapper();
     var tileset = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
@@ -78,7 +81,15 @@ public record ExportVectorTiles(
 
   private TileStore targetTileStore(Tileset source) throws TileStoreException, IOException {
     if (mbtiles) {
+      var sqliteConfig = new SQLiteConfig();
+      sqliteConfig.setCacheSize(1000000);
+      sqliteConfig.setJournalMode(JournalMode.OFF);
+      sqliteConfig.setLockingMode(LockingMode.EXCLUSIVE);
+      sqliteConfig.setSynchronous(SynchronousMode.OFF);
+      sqliteConfig.setTempStore(TempStore.MEMORY);
+
       var dataSource = new SQLiteDataSource();
+      dataSource.setConfig(sqliteConfig);
       dataSource.setUrl("jdbc:sqlite:" + repository);
 
       var tilesStore = new MBTiles(dataSource);
