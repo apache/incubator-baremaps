@@ -34,7 +34,7 @@ jdbc:postgresql://localhost:5432/baremaps?user=baremaps&password=baremaps
 Assuming that the necessary requirements have been installed, the database can be populated with the following command.
 
 ```
-baremaps workflow execute --file workflow.js
+baremaps workflow execute --file workflow.js 
 ```
 
 The development server can be started with the following command.

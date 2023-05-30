@@ -10,18 +10,18 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
-import theme from "../../theme.js";
+import colorScheme from "../../colorScheme.js";
 
 
 let directives = [
     {
         'filter': ['==', ['get', 'aeroway'], 'runway'],
-        'line-color': theme.directiveLineColor,
+        'line-color': colorScheme.directiveLineColor,
         'road-width': 30,
     },
     {
         'filter': ['==', ['get', 'aeroway'], 'taxiway'],
-        'line-color': theme.directiveLineColor,
+        'line-color': colorScheme.directiveLineColor,
         'road-width': 14,
     },
 ];

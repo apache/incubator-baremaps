@@ -10,7 +10,8 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
-import theme from "../../theme.js";
+import colorScheme from "../../colorScheme.js";
+
 
 export let directives = [
     {
@@ -19,7 +20,7 @@ export let directives = [
             ['==', ['get', 'railway'], 'rail'],
             ['!', ['has', 'service']],
         ],
-        'line-color': theme.directivesRailLineColor,
+        'line-color': colorScheme.directivesRailLineColor,
         'road-width': 10,
     },
     {
@@ -27,62 +28,62 @@ export let directives = [
             ['==', ['get', 'railway'], 'rail'],
             ['has', 'service']
         ],
-        'line-color': theme.directivesAllRailsLineColor,
+        'line-color': colorScheme.directivesAllRailsLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'subway'],
-        'line-color': theme.directivesSubwayLineColor,
+        'line-color': colorScheme.directivesSubwayLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'tram'],
-        'line-color': theme.directivesTramLineColor,
+        'line-color': colorScheme.directivesTramLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'preserved'],
-        'line-color': theme.directivesPreservedLineColor,
+        'line-color': colorScheme.directivesPreservedLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'funicular'],
-        'line-color': theme.directivesFunicularLineColor,
+        'line-color': colorScheme.directivesFunicularLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'monorail'],
-        'line-color': theme.directivesMonorailLineColor,
+        'line-color': colorScheme.directivesMonorailLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'light_rail'],
-        'line-color': theme.directivesLigthRailLineColor,
+        'line-color': colorScheme.directivesLigthRailLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'construction'],
-        'line-color': theme.directivesConstructionLineColor,
+        'line-color': colorScheme.directivesConstructionLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'abandoned'],
-        'line-color': theme.directivesAbandonedLineColor,
+        'line-color': colorScheme.directivesAbandonedLineColor,
         'road-width': 2,
     },
     {
         'filter': ['==', ['get', 'railway'], 'disused'],
-        'line-color': theme.directivesDisuedLineColor,
+        'line-color': colorScheme.directivesDisuedLineColor,
         'road-width': 2,
     },
     {
         'filter': ['==', ['get', 'railway'], 'miniature'],
-        'line-color': theme.directivesMiniatureLineColor,
+        'line-color': colorScheme.directivesMiniatureLineColor,
         'road-width': 2,
     },
     {
         'filter': ['==', ['get', 'railway'], 'narrow_gauge'],
-        'line-color': theme.directivesMarrowGaugeLineColor,
+        'line-color': colorScheme.directivesMarrowGaugeLineColor,
         'road-width': 2,
     },
 ];

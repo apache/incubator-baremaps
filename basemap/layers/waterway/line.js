@@ -9,7 +9,8 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import theme from "../../theme.js";
+ import colorScheme from "../../colorScheme.js";
+
 
 export default {
     "id": "waterway",
@@ -33,6 +34,6 @@ export default {
             ["zoom"],
             4, 0, 20, 12
         ],
-        "line-color": theme.waterwayLineLineColor
+        "line-color": colorScheme.waterwayLineLineColor
     }
 }

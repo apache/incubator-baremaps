@@ -9,7 +9,8 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import theme from "../../theme.js";
+ import colorScheme from "../../colorScheme.js";
+
 
 export default {
     id: 'waterway_label',
@@ -36,8 +37,8 @@ export default {
         'symbol-placement': 'line',
     },
     paint: {
-        'text-color': theme.waterwayLabelTextColor,
-        'text-halo-color': theme.waterwayLabelTextHaloColor,
+        'text-color': colorScheme.waterwayLabelTextColor,
+        'text-halo-color': colorScheme.waterwayLabelTextHaloColor,
         'text-halo-width': 1.2,
     },
 }

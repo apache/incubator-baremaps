@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import theme from "../../theme.js";
+ import colorScheme from "../../colorScheme.js";
 
 export default {
     id: 'man_made_pier_line',
@@ -22,7 +22,7 @@ export default {
     },
     minzoom: 12,
     paint: {
-        'line-color': theme.manMadePierLineLineColor,
+        'line-color': colorScheme.manMadePierLineLineColor,
         'line-width': ['interpolate', ['exponential', 1], ['zoom'], 12, 0.5, 18, 2],
     },
 }

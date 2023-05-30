@@ -10,24 +10,23 @@
  the License.
  **/
 import {asLayerObject, withFillSortKey} from "../../utils/utils.js";
-import theme from "../../theme.js";
-
+import colorScheme from "../../colorScheme.js";
 let directives = [
     {
         filter: ['==', ['get', 'landuse'], 'grass'],
-        'fill-color': theme.directivesGrassFillColor,
+        'fill-color': colorScheme.directivesGrassFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'forest'],
-        'fill-color': theme.directivesForestFillColor,
+        'fill-color': colorScheme.directivesForestFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'greenhouse_horticulture'],
-        'fill-color': theme.directivesGreenhouseHorticultureFillColor,
+        'fill-color': colorScheme.directivesGreenhouseHorticultureFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'orchard'],
-        'fill-color': theme.directivesOrchardFillColor,
+        'fill-color': colorScheme.directivesOrchardFillColor,
     },
 ];
 

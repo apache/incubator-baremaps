@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import theme from "../../theme.js";
+import colorScheme from "../../colorScheme.js";
 
 export default {
     id: 'aerialway_line',
@@ -22,6 +22,6 @@ export default {
         visibility: 'visible',
     },
     paint: {
-        'line-color': theme.aerialwayLinePaintLineColor,
+        'line-color': colorScheme.aerialwayLinePaintLineColor,
     },
 }

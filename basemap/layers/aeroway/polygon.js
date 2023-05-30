@@ -10,12 +10,12 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
-import theme from "../../theme.js";
+import colorScheme from "../../colorScheme.js";
 
 let directives = [
     {
         filter: ['==', ['geometry-type'], 'Polygon'],
-        'fill-color': theme.directiveLineColor,
+        'fill-color': colorScheme.directiveLineColor,
     },
 ];
 

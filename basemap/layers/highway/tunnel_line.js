@@ -10,7 +10,7 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
-import theme from "../../theme.js";
+import colorScheme from "../../colorScheme.js";
 
 let directives = [
     {
@@ -19,7 +19,7 @@ let directives = [
             ['==', ['get', 'highway'], 'motorway'],
             ['==', ['get', 'highway'], 'motorway_link'],
         ],
-        'line-color': theme.tunnelLineMotorwayLineColor,
+        'line-color': colorScheme.tunnelLineMotorwayLineColor,
         'road-width': 12,
     },
     {
@@ -28,7 +28,7 @@ let directives = [
             ['==', ['get', 'highway'], 'trunk'],
             ['==', ['get', 'highway'], 'trunk_link'],
         ],
-        'line-color': theme.tunnelLineTrunkLineColor,
+        'line-color': colorScheme.tunnelLineTrunkLineColor,
         'road-width': 8,
     },
     {
@@ -37,7 +37,7 @@ let directives = [
             ['==', ['get', 'highway'], 'primary'],
             ['==', ['get', 'highway'], 'primary_link'],
         ],
-        'line-color': theme.tunnelLinePrimaryLineColor,
+        'line-color': colorScheme.tunnelLinePrimaryLineColor,
         'road-width': 10,
     },
     {
@@ -46,7 +46,7 @@ let directives = [
             ['==', ['get', 'highway'], 'secondary'],
             ['==', ['get', 'highway'], 'secondary_link'],
         ],
-        'line-color': theme.tunnelLineSecondaryLineColor,
+        'line-color': colorScheme.tunnelLineSecondaryLineColor,
         'road-width': 8,
     },
     {
@@ -55,27 +55,27 @@ let directives = [
             ['==', ['get', 'highway'], 'tertiary'],
             ['==', ['get', 'highway'], 'tertiary_link'],
         ],
-        'line-color': theme.tunnelLineTertiaryLineColor,
+        'line-color': colorScheme.tunnelLineTertiaryLineColor,
         'road-width': 8,
     },
     {
         filter: ['==', ['get', 'highway'], 'unclassified'],
-        'line-color': theme.tunnelLineUnclassifiedLineColor,
+        'line-color': colorScheme.tunnelLineUnclassifiedLineColor,
         'road-width': 4,
     },
     {
         filter: ['==', ['get', 'highway'], 'residential'],
-        'line-color': theme.tunnelLineResidentialLineColor,
+        'line-color': colorScheme.tunnelLineResidentialLineColor,
         'road-width': 4,
     },
     {
         filter: ['==', ['get', 'highway'], 'living_street'],
-        'line-color': theme.tunnelLineLivingStreetLineColor,
+        'line-color': colorScheme.tunnelLineLivingStreetLineColor,
         'road-width': 4,
     },
     {
         filter: ['==', ['get', 'highway'], 'service'],
-        'line-color': theme.tunnelLineServiceLineColor,
+        'line-color': colorScheme.tunnelLineServiceLineColor,
         'road-width': 4,
     },
     {
@@ -84,17 +84,17 @@ let directives = [
             ['==', ['get', 'highway'], 'pedestrian'],
             ['!=', ['get', '$type'], 'Polygon'],
         ],
-        'line-color': theme.tunnelLinePedestrianLineColor,
+        'line-color': colorScheme.tunnelLinePedestrianLineColor,
         'road-width': 2,
     },
     {
         filter: ['==', ['get', 'highway'], 'raceway'],
-        'line-color': theme.tunnelLineRacewayLineColor,
+        'line-color': colorScheme.tunnelLineRacewayLineColor,
         'road-width': 2,
     },
     {
         filter: ['==', ['get', 'highway'], 'track'],
-        'line-color': theme.tunnelLineTrackLineColor,
+        'line-color': colorScheme.tunnelLineTrackLineColor,
         'road-width': 2,
     },
 ];
