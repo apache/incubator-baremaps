@@ -400,6 +400,7 @@ export default {
     directivesNursingHomeIconColor: 'rgb(76, 76, 0)',
     directivesNursingHomeTextColor: 'rgb(76, 76, 0)',
     directivesPharmacieIconColor: 'rgb(191, 0, 0)',
+    /////////////////////////////////////
     directivesPharmacieTextColor: 'rgb(191, 0, 0)',
     directivesSocialFacilityIconColor: 'rgb(115, 74, 7)',
     directivesSocialFacilityTextColor: 'rgb(115, 74, 7)',

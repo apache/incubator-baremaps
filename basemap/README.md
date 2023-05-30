@@ -16,7 +16,7 @@
 This directory contains the configuration files for a general-purpose map.
 It is used to generate vector tiles and to produce a Mapbox style inspired by [OpenStreetMap Carto](https://github.com/gravitystorm/openstreetmap-carto).
 
-## Requirements
+## Requirements 
 
 * [Postgres](https://www.postgresql.org/) 13+
 * [PostGIS](https://postgis.net/) 3+
