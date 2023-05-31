@@ -167,6 +167,12 @@ let directives = [
         'icon-color': 'rgb(0, 146, 219)',
         'text-color': 'rgb(0, 146, 219)',
     },
+    {
+        filter: ['==', ['get', 'highway'], 'bus_stop'],
+        'icon-image': 'bus_stop',
+        'icon-color': 'rgb(0, 146, 219)',
+        'text-color': 'rgb(0, 146, 219)',
+    },
 
     // Amenity: financial
     {

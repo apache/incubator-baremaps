@@ -58,6 +58,11 @@ let directives = [
         'road-width': 8,
     },
     {
+        filter: ['==', ['get', 'highway'], 'busway'],
+        'line-color': 'rgb(254, 254, 254)',
+        'road-width': 8,
+    },
+    {
         filter: ['==', ['get', 'highway'], 'unclassified'],
         'line-color': 'rgb(254, 254, 254)',
         'road-width': 4,
