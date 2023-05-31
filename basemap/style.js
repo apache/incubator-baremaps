@@ -17,7 +17,7 @@ import aeroway_polygon from "./layers/aeroway/polygon.js";
 import amenity_background from "./layers/amenity/background.js";
 import amenity_fountain from "./layers/amenity/fountain.js";
 import amenity_overlay from "./layers/amenity/overlay.js";
-import boundary_line from "./layers/boundary/line.js"
+import boundary_line from "./layers/boundary/line.js";
 import landuse_background from "./layers/landuse/background.js";
 import landuse_overlay from "./layers/landuse/overlay.js";
 import natural_background from "./layers/natural/background.js";
@@ -31,6 +31,8 @@ import leisure_background from "./layers/leisure/background.js";
 import leisure_overlay from "./layers/leisure/overlay.js";
 import railway_tunnel from "./layers/railway/tunnel.js";
 import railway_line from "./layers/railway/line.js";
+
+
 import highway_line from './layers/highway/highway_line.js';
 import highway_outline from './layers/highway/highway_outline.js';
 import highway_dash from './layers/highway/highway_dash.js';
@@ -39,7 +41,10 @@ import highway_tunnel_outline from './layers/highway/tunnel_outline.js';
 import highway_pedestrian_area from './layers/highway/pedestrian_area.js';
 import highway_bridge_line from './layers/highway/bridge_line.js';
 import highway_bridge_outline from './layers/highway/bridge_outline.js';
+import highway_construction_line from "./layers/highway/construction_line.js";
+import highway_construction_dash from "./layers/highway/construction_dash.js";
 import highway_label from './layers/highway/highway_label.js';
+
 import ocean_overlay from './layers/ocean/overlay.js';
 import route_line from "./layers/route/style.js"
 import building_shape from "./layers/building/shape.js";
@@ -91,6 +96,8 @@ export default {
         railway_tunnel,
         building_shape,
         building_number,
+        highway_construction_dash,
+        highway_construction_line,
         highway_outline,
         highway_line,
         highway_dash,

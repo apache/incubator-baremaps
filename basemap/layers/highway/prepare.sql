@@ -15,14 +15,16 @@ WITH
     filtered AS (
         SELECT
                 tags -> 'highway' AS highway,
+                tags -> 'construction' AS construction,
                 geom AS geom
         FROM osm_linestring
-        WHERE tags ->> 'highway' IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary',  'tertiary_link', 'unclassified', 'residential')
+        WHERE tags ->> 'highway' IN ('motorway', 'motorway_link', 'trunk', 'trunk_link', 'primary', 'primary_link', 'secondary', 'secondary_link', 'tertiary',  'tertiary_link', 'unclassified', 'residential', 'construction')
     ),
     -- Cluster the linestrings by highway type
     clustered AS (
         SELECT
                 highway AS highway,
+                construction AS construction,
                 geom as geom,
                 ST_ClusterDBSCAN(geom, 0, 1) OVER (PARTITION BY highway) AS cluster
         FROM
@@ -32,23 +34,25 @@ WITH
     merged AS (
         SELECT
             highway AS highway,
+            construction AS construction,
             ST_LineMerge(ST_Collect(geom)) AS geom
         FROM
             clustered
         GROUP BY
-            highway, cluster
+            highway, construction, cluster
     ),
     -- Explode the merged linestrings into individual linestrings
     exploded AS (
         SELECT
             highway AS highway,
+            construction AS construction,
             (ST_Dump(geom)).geom AS geom
         FROM
             merged
     )
 SELECT
     row_number() OVER () AS id,
-    jsonb_build_object('highway', highway) AS tags,
+    jsonb_build_object('highway', highway, 'construction', construction) AS tags,
     geom AS geom
 FROM exploded;
 
