@@ -37,12 +37,22 @@
 <div id="map"></div>
 <script>
 
+  // Load the right-to-left plugin if necessary.
+  if (maplibregl.getRTLTextPluginStatus() === 'unavailable') {
+    maplibregl.setRTLTextPlugin(
+            'https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js',
+            null,
+            true
+    );
+  }
+
   // Initialize the map
   let map = new maplibregl.Map({
     container: 'map',
     style: '/style.json',
     hash: true
   });
+
 
   // Add the navigation control to the map
   map.addControl(new maplibregl.NavigationControl());
