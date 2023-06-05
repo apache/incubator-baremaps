@@ -1,2 +1,2 @@
-application=Baremapsdd
+application=Baremaps
 version=${project.version}
