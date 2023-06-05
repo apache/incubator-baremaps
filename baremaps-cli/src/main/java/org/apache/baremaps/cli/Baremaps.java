@@ -86,7 +86,7 @@ public class Baremaps implements Callable<Integer> {
   static class VersionProvider implements IVersionProvider {
 
     public String[] getVersion() throws Exception {
-      URL url = getClass().getResource("/version.txt");
+      URL url = Baremaps.class.getResource("version.txt");
       if (url == null) {
         return new String[] {"No version.txt file found in the classpath."};
       }
