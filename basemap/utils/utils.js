@@ -195,12 +195,12 @@ function roadGapWidth(directives) {
 }
 
 function labelColor(directives) {
-    return mergeInterpolatedDupletColorDirective(directives, 'label-color', 'text-color', 6, 8, 'rgb(0, 0, 0)')
+    return mergeInterpolatedColorDirective(directives, 'label-color', 'text-color', 6, 8, 'rgb(0, 0, 0)')
 }
 
 
 function labelSize(directives) {
-    return mergeInterpolatedDupletNumberDirective(directives, 'label-size', 'text-size', 6, 8, 4, 14)
+    return mergeInterpolatedNumberDirective(directives, 'label-size', 'text-size', 6, 8, 4, 14)
 }
 
 function mergeInterpolatedDirective(directives, property, alias, value) {
@@ -227,15 +227,13 @@ function mergeInterpolatedDirective(directives, property, alias, value) {
     }
 }
 
-function mergeInterpolatedDupletColorDirective(directives, property, alias, startZoom, endZoom, fallback) {
-    let cases = []
-    directives.forEach((rule) => {
-        if (rule[property]) {
-            if (rule[property] instanceof Array) {
-                cases.push([rule['filter'], rule[property]])
-            } else {
-                cases.push([rule['filter'], [rule[property], rule[property]]])
-            }
+function mergeInterpolatedColorDirective(directives, property, alias, startZoom, endZoom, fallback) {
+    const cases = directives.filter((rule) => rule[property]).map((rule) => {
+        const propertyValue = rule[property]
+        if (propertyValue instanceof Array) {
+            return [rule['filter'], propertyValue]
+        } else {
+            return [rule['filter'], [propertyValue, propertyValue]]
         }
     })
     if (cases.length == 0) {
@@ -254,7 +252,7 @@ function mergeInterpolatedDupletColorDirective(directives, property, alias, star
     }
 }
 
-function mergeInterpolatedDupletNumberDirective(directives, property, alias, startZoom, endZoom, offset, fallback) {
+function mergeInterpolatedNumberDirective(directives, property, alias, startZoom, endZoom, offset, fallback) {
     let cases = []
     directives.forEach((rule) => {
         if (rule[property]) {
