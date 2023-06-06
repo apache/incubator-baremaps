@@ -17,8 +17,8 @@ let directives = [
             'all',
             ['==', ['get', 'place'], 'country']
         ],
-        'text-size': 18,
-        'text-color': 'rgb(25, 25, 25)',
+        'text-size': 16,
+        'text-color': 'rgb(90, 56, 90)',
         'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
     },
 ];

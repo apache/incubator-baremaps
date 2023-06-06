@@ -18,8 +18,8 @@ let directives = [
             ['==', ['get', 'capital'], 'yes'],
             ['==', ['get', 'place'], 'city']
         ],
-        'text-size': 16,
-        'text-color': 'rgb(25, 25, 25)',
+        'label-color': 'rgb(25, 25, 25)',
+        'label-size': 16,
         'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
     },
     {
@@ -28,24 +28,25 @@ let directives = [
             ['!=', ['get', 'capital'], 'yes'],
             ['==', ['get', 'place'], 'city']
         ],
-        'text-size': 16,
-        'text-color': 'rgb(25, 25, 25)',
+        'label-color': ['rgb(100, 100, 100)', 'rgb(50, 50, 50)'],
+        'label-size': 12,
         'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
     },
     {
         filter: ['==', ['get', 'place'], 'town'],
-        'text-size': 14,
-        'text-color': 'rgb(50,50,50)',
+        'label-size': 10,
+        'label-color': ['rgb(100, 100, 100)', 'rgb(75, 75, 75)'],
+
     },
     {
         filter: ['==', ['get', 'place'], 'village'],
-        'text-size': 12,
-        'text-color': 'rgb(75,75,75)',
+        'label-size': 10,
+        'label-color': 'rgb(100, 100, 100)',
     },
     {
         filter: ['==', ['get', 'place'], 'locality'],
-        'text-size': 12,
-        'text-color': 'rgb(75,75,75)',
+        'label-size': 8,
+        'label-color': 'rgb(100, 100, 100)',
     },
     // {
     //     filter: [
