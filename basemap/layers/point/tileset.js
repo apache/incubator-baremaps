@@ -14,13 +14,13 @@ export default {
     "queries": [
         {
             "minzoom": 1,
-            "maxzoom": 4,
+            "maxzoom": 2,
             "sql": "SELECT id, jsonb_build_object('name', tags -> 'name', 'population', tags -> 'population', 'place', tags -> 'place') as tags, geom FROM osm_point_z$zoom WHERE tags != '{}' AND (tags ->> 'place' = 'country')"
         },
         {
-            "minzoom": 4,
+            "minzoom": 2,
             "maxzoom": 8,
-            "sql": "SELECT id, jsonb_build_object('name', tags -> 'name', 'population', tags -> 'population', 'place', tags -> 'place') as tags, geom FROM osm_point_z$zoom WHERE tags != '{}'"
+            "sql": "SELECT id, jsonb_build_object('name', tags -> 'name', 'population', tags -> 'population', 'place', tags -> 'place', 'capital', tags -> 'capital') as tags, geom FROM osm_point_z$zoom WHERE tags != '{}'"
         },
         {
             "minzoom": 8,

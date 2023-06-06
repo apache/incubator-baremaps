@@ -29,7 +29,7 @@ export default asLayerObject(withSymbolSortKeys(directives), {
     source: 'baremaps',
     'source-layer': 'point',
     'minzoom': 1,
-    'maxzoom': 4,
+    'maxzoom': 6,
     layout: {
         visibility: 'visible',
         'text-font': ['Noto Sans Regular'],

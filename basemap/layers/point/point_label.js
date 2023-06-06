@@ -72,7 +72,7 @@ export default asLayerObject(withSymbolSortKeys(directives), {
     type: 'symbol',
     source: 'baremaps',
     'source-layer': 'point',
-    'minzoom': 4,
+    'minzoom': 2,
     'maxzoom': 24,
     layout: {
         visibility: 'visible',
