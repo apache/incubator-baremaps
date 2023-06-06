@@ -60,6 +60,7 @@ export function asLayoutProperty(directives = [], baseLayout = {}) {
             ...lineSortKey(directives),
             ...fillSortKey(directives),
             ...symbolSortKey(directives),
+            ...labelSize(directives),
         },
         baseLayout,
     )
@@ -79,6 +80,7 @@ export function asPaintProperty(directives = [], basePaint = {}) {
             ...lineGapWidth(directives),
             ...roadWidth(directives),
             ...roadGapWidth(directives),
+            ...labelColor(directives),
         },
         basePaint,
     )
@@ -192,6 +194,15 @@ function roadGapWidth(directives) {
     return mergeInterpolatedDirective(directives, 'road-gap-width', 'line-gap-width', 1)
 }
 
+function labelColor(directives) {
+    return mergeInterpolatedColorDirective(directives, 'label-color', 'text-color', 6, 8, 'rgb(0, 0, 0)')
+}
+
+
+function labelSize(directives) {
+    return mergeInterpolatedNumberDirective(directives, 'label-size', 'text-size', 6, 8, 4, 14)
+}
+
 function mergeInterpolatedDirective(directives, property, alias, value) {
     let cases = directives.flatMap((rule) => {
         if (rule[property]) {
@@ -212,6 +223,54 @@ function mergeInterpolatedDirective(directives, property, alias, value) {
             0.2,
             20,
             ['case', ...cases, value],
+        ],
+    }
+}
+
+function mergeInterpolatedColorDirective(directives, property, alias, startZoom, endZoom, fallback) {
+    const cases = directives.filter((rule) => rule[property]).map((rule) => {
+        const propertyValue = rule[property]
+        if (propertyValue instanceof Array) {
+            return [rule['filter'], propertyValue]
+        } else {
+            return [rule['filter'], [propertyValue, propertyValue]]
+        }
+    })
+    if (cases.length == 0) {
+        return {}
+    }
+    return {
+        [alias]: [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            startZoom,
+            ['case', ...(cases.flatMap((c) => ([c[0], c[1][0]]))), fallback],
+            endZoom,
+            ['case', ...(cases.flatMap((c) => ([c[0], c[1][1]]))), fallback],
+        ],
+    }
+}
+
+function mergeInterpolatedNumberDirective(directives, property, alias, startZoom, endZoom, offset, fallback) {
+    let cases = []
+    directives.forEach((rule) => {
+        if (rule[property]) {
+            cases.push([rule['filter'], rule[property]])
+        }
+    })
+    if (cases.length == 0) {
+        return {}
+    }
+    return {
+        [alias]: [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            startZoom,
+            ['case', ...(cases.flatMap((c) => ([c[0], c[1]]))), fallback],
+            endZoom,
+            ['case', ...(cases.flatMap((c) => ([c[0], c[1] + offset]))), fallback],
         ],
     }
 }
