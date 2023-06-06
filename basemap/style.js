@@ -117,7 +117,7 @@ export default {
         boundary_line,
         waterway_label,
         icon,
-        country_label,
         point_label,
+        country_label,
     ],
 };
