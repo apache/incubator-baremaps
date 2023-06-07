@@ -9,7 +9,9 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import {asLayerObject, withSortKeys} from "../../utils/utils.js";
+ import colorScheme from "../../colorScheme.js";
+import {asLayerObject, withSortKeys} from "../../utils/utils.js";
+
 
  let directives =[
      {
@@ -18,7 +20,7 @@
              ['==', ['get', 'highway'], 'construction'],
              ['==', ['get', 'construction'], 'motorway'],
          ],
-         'line-color': 'rgb(254, 254, 254)',
+         'line-color': colorScheme.directivesConstructionMotorwayLineColor,
          'road-width': 16,
      },
      {
@@ -27,7 +29,7 @@
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'trunk'],
          ],
-         'line-color': 'rgb(254, 254, 254)',
+         'line-color': colorScheme.directivesConstructionTrunkLineColor,
          'road-width': 12,
      },
      {
@@ -36,7 +38,7 @@
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'primary'],
          ],
-         'line-color': 'rgb(254, 254, 254)',
+         'line-color': colorScheme.directivesConstructionPrimaryLineColor,
          'road-width': 14,
      },
      {
@@ -45,7 +47,7 @@
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'secondary'],
          ],
-         'line-color': 'rgb(254, 254, 254)',
+         'line-color': colorScheme.directivesConstructionSecondaryLineColor,
          'road-width': 12,
      },
      {
@@ -54,7 +56,7 @@
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'tertiary'],
          ],
-         'line-color': 'rgb(254, 254, 254)',
+         'line-color': colorScheme.directivesConstructionTertiaryLineColor,
          'road-width': 12,
      },
      {
@@ -63,7 +65,7 @@
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'unclassified'],
          ],
-         'line-color': 'rgb(254, 254, 254)',
+         'line-color': colorScheme.directivesConstructionUnclassifiedLineColor,
          'road-width': 8,
      },
      {
@@ -72,7 +74,7 @@
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'residential'],
          ],
-         'line-color': 'rgb(254, 254, 254)',
+         'line-color': colorScheme.directivesConstructionResidentialLineColor,
          'road-width': 8,
      },
      {
@@ -81,7 +83,7 @@
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'living_street'],
          ],
-         'line-color': 'rgb(254, 254, 254)',
+         'line-color': colorScheme.directivesConstructionLivingStreetLineColor,
          'road-width': 8,
      },
      {
@@ -90,7 +92,7 @@
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'service'],
          ],
-         'line-color': 'rgb(254, 254, 254)',
+         'line-color': colorScheme.directivesConstructionServiceLineColor,
          'road-width': 8,
      },
  ]

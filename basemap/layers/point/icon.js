@@ -67,8 +67,8 @@ let directives = [
     // {
     //     filter: ['==', ['get', 'amenity'], 'driving_school'],
     //     'icon-image': 'driving_school',
-    //     'icon-color': 'rgb(172, 58, 173)',
-    //     'text-color': 'rgb(172, 58, 173)',
+    //     'icon-color': colorScheme.directivesAmenityEducationDrivingSchool,
+    //     'text-color': colorScheme.directivesAmenityEducationDrivingSchoolTextColor,
     // },
     {
         filter: ['==', ['get', 'amenity'], 'library'],
@@ -171,8 +171,8 @@ let directives = [
     {
         filter: ['==', ['get', 'highway'], 'bus_stop'],
         'icon-image': 'bus_stop',
-        'icon-color': 'rgb(0, 146, 219)',
-        'text-color': 'rgb(0, 146, 219)',
+        'icon-color': colorScheme.directivesBusStopIconColor,
+        'text-color': colorScheme.directivesBusStopTextColo,
     },
 
     // Amenity: financial

@@ -60,7 +60,7 @@ let directives = [
     },
     {
         filter: ['==', ['get', 'highway'], 'busway'],
-        'line-color': 'rgb(254, 254, 254)',
+        'line-color': colorScheme.highwayLineBuswayLineColor,
         'road-width': 8,
     },
     {
