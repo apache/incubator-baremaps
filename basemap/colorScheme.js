@@ -1,15 +1,19 @@
 
-//thene ä disposition: 'positron'
+//thene ä disposition: 'positron' 'moreRed' 
 
 const theme="positron";
 
-
+const min=0;
+const max=255;
 
 function colorScheme(string){
     //trouver comment choisir quelle methode on souhaite appliquer
     switch(theme){
         case 'positron':
             return positronScheme(string);
+            break;
+        case 'moreRed':
+            return moreRedScheme(string);
             break;
         default: return string;
     }
@@ -18,7 +22,6 @@ function colorScheme(string){
 function positronScheme(string){
 
     const table=cutRgbString(string)
-    console.log(table);
     let newColor= positronColorCalculator(table);
     return giveNewColorString(table, newColor, newColor, newColor);
 };
@@ -27,15 +30,21 @@ function positronScheme(string){
 function positronColorCalculator(table){
     return Math.round((parseInt(table[0])+parseInt(table[1])+parseInt(table[2]))/3);
 };
+function moreRedScheme(string){
+    const table=cutRgbString(string);
+    let redElement= Math.min(Math.max(table[0]+50, min), max);
+    return giveNewColorString(table, redElement, table[1], table[2]);
+}
 
 //Fonctionnalites
 function giveNewColorString(table, newRed, newGreen, newBlue){
-    if(table[3]!=="1"){
-        let opacity=table[3];
-        return `rgba(${newRed},${newGreen},${newBlue},${opacity})`;
+    if(table[3]==1){
+        return `rgb(${newRed},${newGreen},${newBlue})`;
+        
     }
     else{
-        return `rgb(${newRed},${newGreen},${newBlue})`
+        let opacity=table[3];
+        return `rgba(${newRed},${newGreen},${newBlue},${opacity})`;
     }
 };
 
@@ -54,16 +63,20 @@ function cutRgbString(string){
     if(hasOpacity(string)){
         let blueSubstring=greenSubstring.substring(greenSubstring.indexOf(middleSeparationCharacter)+1, greenSubstring.length);
         blueElement=blueSubstring.substring(0, blueSubstring.indexOf(middleSeparationCharacter));
-        opacity=blueSubstring.substring(blueSubstring.indexOf(middleSeparationCharacter+1), blueSubstring.length)}
+        opacity=blueSubstring.substring(blueSubstring.indexOf(middleSeparationCharacter)+1, blueSubstring.length-1)
+        console.log("opa "+opacity);
+    }
+        
 
     else{
         blueElement=greenSubstring.substring(greenSubstring.indexOf(middleSeparationCharacter)+1, greenSubstring.indexOf(lastSeparationCharacter));
         opacity="1"}
+        
 
     return [redElement,greenElement,blueElement, opacity];
 };
 function hasOpacity(string){
-    return(string.substring(0,4)==="rgba(");
+    return(string.substring(0,5)==="rgba(");
  };
 
 
