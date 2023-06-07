@@ -1,55 +1,72 @@
 
+//thene ä disposition: 'positron'
 
-let firstSeparationCharacter="(";
-let middleSeparationCharacter=",";
-let lastSeparationCharacter=")";
-
-function positronScheme(string){
-
-    let positronColor;
-
-    let redElement=string.substring(string.indexOf(firstSeparationCharacter)+1,string.indexOf(middleSeparationCharacter));
-
-    let greenSubstring= string.substring(string.indexOf(middleSeparationCharacter)+1, string.length);
-
-    let greenElement = greenSubstring.substring(0,greenSubstring.indexOf(middleSeparationCharacter));
-
-    let blueElement;
-
-    if(hasOpacity(string)){
-        let blueSubstring=greenSubstring.substring(greenSubstring.indexOf(middleSeparationCharacter)+1, greenSubstring.length);
-    blueElement=blueSubstring.substring(0, blueSubstring.indexOf(middleSeparationCharacter));
-    
-    let opacity=blueSubstring.substring(blueSubstring.indexOf(middleSeparationCharacter+1), blueSubstring.length)
-
-    positronColor= positronColorCalculator(redElement, greenElement, blueElement)
-
-    return `rgba(${positronColor},${positronColor},${positronColor},${opacity}`;
-}
-   
-    else{
-        blueElement=greenSubstring.substring(greenSubstring.indexOf(middleSeparationCharacter)+1, greenSubstring.indexOf(lastSeparationCharacter));
-
-        positronColor= positronColorCalculator(redElement,greenElement, blueElement)
-
-        return `rgb(${positronColor},${positronColor},${positronColor})`
-    }
-    
+const theme="positron";
 
 
-};
-function hasOpacity(string){
-   return(string.substring(0,4)==="rgba(");
-}
-function positronColorCalculator(red, green, blue){
-    return Math.round((parseInt(red)+parseInt(green)+parseInt(blue))/3);
-}
 
 function colorScheme(string){
     //trouver comment choisir quelle methode on souhaite appliquer
-    return positronScheme(string);
-    //return string;
-}
+    switch(theme){
+        case 'positron':
+            return positronScheme(string);
+            break;
+        default: return string;
+    }
+};
+//themes de couleur
+function positronScheme(string){
+
+    const table=cutRgbString(string)
+    console.log(table);
+    let newColor= positronColorCalculator(table);
+    return giveNewColorString(table, newColor, newColor, newColor);
+};
+
+
+function positronColorCalculator(table){
+    return Math.round((parseInt(table[0])+parseInt(table[1])+parseInt(table[2]))/3);
+};
+
+//Fonctionnalites
+function giveNewColorString(table, newRed, newGreen, newBlue){
+    if(table[3]!=="1"){
+        let opacity=table[3];
+        return `rgba(${newRed},${newGreen},${newBlue},${opacity})`;
+    }
+    else{
+        return `rgb(${newRed},${newGreen},${newBlue})`
+    }
+};
+
+function cutRgbString(string){
+    const firstSeparationCharacter="(";
+    const middleSeparationCharacter=",";
+    const lastSeparationCharacter=")";
+
+    let greenSubstring= string.substring(string.indexOf(middleSeparationCharacter)+1, string.length);
+
+    let redElement=string.substring(string.indexOf(firstSeparationCharacter)+1,string.indexOf(middleSeparationCharacter));
+    let greenElement = greenSubstring.substring(0,greenSubstring.indexOf(middleSeparationCharacter));
+    let blueElement;
+    let opacity;
+
+    if(hasOpacity(string)){
+        let blueSubstring=greenSubstring.substring(greenSubstring.indexOf(middleSeparationCharacter)+1, greenSubstring.length);
+        blueElement=blueSubstring.substring(0, blueSubstring.indexOf(middleSeparationCharacter));
+        opacity=blueSubstring.substring(blueSubstring.indexOf(middleSeparationCharacter+1), blueSubstring.length)}
+
+    else{
+        blueElement=greenSubstring.substring(greenSubstring.indexOf(middleSeparationCharacter)+1, greenSubstring.indexOf(lastSeparationCharacter));
+        opacity="1"}
+
+    return [redElement,greenElement,blueElement, opacity];
+};
+function hasOpacity(string){
+    return(string.substring(0,4)==="rgba(");
+ };
+
+
 
 
 // This file describes a theme for a map. Its style follows the OpenStreetMap-Carto conventions. Can you generate a new style that respect the exact same sementic but with a positron style.
@@ -68,6 +85,29 @@ export default {
     highwayLineServiceLineColor: colorScheme('rgb(254, 254, 254)'),
     highwayLineRacewayLineColor: colorScheme('rgb(255, 192, 203)'),
     highwayLinePedestrianLineColor: colorScheme('rgb(221, 221, 231)'),
+    highwayLineBuswayLineColor: colorScheme('rgb(254, 254, 254)'),
+    //Construction_dash
+    directivesConstructionMotorwayLineColor: colorScheme('rgb(254, 254, 254)'),
+    directivesConstructionTrunkLineColor: colorScheme('rgb(254, 254, 254)'),
+    directivesConstructionPrimaryLineColor: colorScheme('rgb(254, 254, 254)'),
+    directivesConstructionSecondaryLineColor: colorScheme('rgb(254, 254, 254)'),
+    directivesConstructionTertiaryLineColor: colorScheme('rgb(254, 254, 254)'),
+    directivesConstructionUnclassifiedLineColor: colorScheme('rgb(254, 254, 254)'),
+    directivesConstructionResidentialLineColor: colorScheme('rgb(254, 254, 254)'),
+    directivesConstructionLivingStreetLineColor: colorScheme('rgb(254, 254, 254)'),
+    directivesConstructionServiceLineColor: colorScheme('rgb(254, 254, 254)'),
+    //Construction_line
+    directivesConstructionMotorwaLinkLineColor: colorScheme('rgb(233, 144, 161)'),
+    directivesConstructionTrunkLinkLineColor: colorScheme('rgb(250, 193, 172)'),
+    directivesConstructionPrimaryLinkLineColor: colorScheme('rgb(253, 221, 179)'),
+    directivesConstructionSecondaryLinkLineColor: colorScheme('rgb(248, 250, 202)'),
+    directivesConstructionTertiaryLinkLineColor: colorScheme('rgb(190, 189, 188)'),
+    directivesConstructionAllUnclassifiedLineColor: colorScheme('rgb(211, 207, 206)'),
+    directivesConstructionAllResidentialLineColor: colorScheme('rgb(211, 207, 206)'),
+    directivesConstructionAllLivingStreetLineColor: colorScheme('rgb(207, 207, 207)'),
+    directivesConstructionAllServiceLineColor: colorScheme('rgb(213, 211, 211)'),
+    directivesConstructionRacewayLineColor: colorScheme('rgb(213, 211, 211)'),
+    
     //BridgeLine
     bridgeLineMotorwayLineColor: colorScheme('rgb(227, 113, 134)'),
     bridgeLineTrunkLineColor: colorScheme('rgb(248, 163, 132)'),
@@ -94,6 +134,7 @@ export default {
     bridgeOutlinePedestrianLineColor: colorScheme('rgb(166, 165, 163)'),
     //HighwayDash
     highwayDashBridlewayLineColor: colorScheme('rgb(68, 159, 66)'),
+    highwayDashBuswayLineColor: colorScheme('rgb(0, 146, 219)'),
     highwayDashCyclewayLineColor: colorScheme('rgba(28, 27, 254, 1)'),
     highwayDashFootwayLineColor: colorScheme('rgb(192, 192, 192)'),
     highwayDashHighwayLineColor: colorScheme('rgb(250, 132, 117)'),
@@ -104,6 +145,7 @@ export default {
     highwayOutlinePrimaryLineColor: colorScheme('rgb(192, 147, 62)'),
     highwayOutlineSecondaryLineColor: colorScheme('rgb(154, 166, 67)'),
     highwayOutlineTertiaryLineColor: colorScheme('rgb(190, 189, 188)'),
+    highwayOutlineBuswayLineColor: colorScheme('rgb(190, 189, 188)'),
     highwayOutlineUnclassifiedLineColor: colorScheme('rgb(211, 207, 206)'),
     highwayOutlineResidentialLineColor: colorScheme('rgb(211, 207, 206)'),
     highwayOutlineLivingStreetLineColor: colorScheme('rgb(207, 207, 207)'),
@@ -326,7 +368,10 @@ export default {
     directivesForestFillColor: colorScheme('rgb(171, 210, 156)'),
     directivesGreenhouseHorticultureFillColor: colorScheme('rgb(237, 240, 214)'),
     directivesOrchardFillColor: colorScheme('rgb(172, 225, 161)'),
-
+    //Point
+    //Country_label
+    countryLabelCountryTextColor: colorScheme('rgb(90, 56, 90)'),
+    CountryLabelPaintTextHaloColor: colorScheme('rgba(255, 255, 255, 0.8)'),
     //Leisure
     //background
     directivesSwimmingPoolFillColor: colorScheme('rgb(170, 211, 223)'),
@@ -387,6 +432,16 @@ export default {
     //Overlay
     waterFillColor: colorScheme('rgb(170, 211, 223)'),
 
+    //Point_label
+    pointLabelCityLabelColor: colorScheme('rgb(25, 25, 25)'),
+    pointLabelCityFilterOneLabelColor: colorScheme('rgb(100, 100, 100)'),
+    pointLabelCityFilterTwoLabelColor: colorScheme('rgb(50, 50, 50)'),
+    pointLabelTownFilterOneLabelColor: colorScheme('rgb(100, 100, 100)'),
+    pointLabelTownFilterTwoLabelColor: colorScheme('rgb(75, 75, 75)'),
+    pointLabelVillageLabelColor: colorScheme('rgb(100, 100, 100)'),
+    pointLabelLocalityLabelColor: colorScheme('rgb(100, 100, 100)'),
+    pointLabelPlaceTextColor: colorScheme('rgba(100, 100, 100, 1)'),
+    pointLabelPaintTextHaloColor: colorScheme('rgba(255, 255, 255, 0.8)'),
     //Point
     //Icon
     directivesBarIconColor: colorScheme('rgb(199, 116, 0)'),
@@ -405,6 +460,8 @@ export default {
     directivesPubTextColor: colorScheme('rgb(199, 116, 0)'),
     directivesRestaurantIconColor: colorScheme('rgb(199, 116, 0)'),
     directivesRestaurantTextColor: colorScheme('rgb(199, 116, 0)'),
+    directivesAmenityEducationDrivingSchoolIconColor: colorScheme('rgb(172, 58, 173)'),
+    directivesAmenityEducationDrivingSchoolTextColor: colorScheme('rgb(172, 58, 173)'),
     directivesLibraryIconColor: colorScheme('rgb(115, 74, 7)'),
     directivesLibraryTextColor: colorScheme('rgb(115, 74, 7)'),
     directivesBicycleParkingIconColor: colorScheme('rgb(0, 146, 219)'),
@@ -437,6 +494,8 @@ export default {
     directivesParkingEntranceTextColor: colorScheme('rgb(0, 146, 219)'),
     directivesTaxiIconColor: colorScheme('rgb(0, 146, 219)'),
     directivesTaxiTextColor: colorScheme('rgb(0, 146, 219)'),
+    directivesBusStopIconColor: colorScheme('rgb(0, 146, 219)'),
+    directivesBusStopTextColo: colorScheme('rgb(0, 146, 219)'),
     directivesAtmIconColor: colorScheme('rgb(115, 74, 7)'),
     directivesAtmTextColor: colorScheme('rgb(115, 74, 7)'),
     directivesBankIconColor: colorScheme('rgb(115, 74, 7)'),
