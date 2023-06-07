@@ -1,5 +1,57 @@
 
 
+let firstSeparationCharacter="(";
+let middleSeparationCharacter=",";
+let lastSeparationCharacter=")";
+
+function positronScheme(string){
+
+    let positronColor;
+
+    let redElement=string.substring(string.indexOf(firstSeparationCharacter)+1,string.indexOf(middleSeparationCharacter));
+
+    let greenSubstring= string.substring(string.indexOf(middleSeparationCharacter)+1, string.length);
+
+    let greenElement = greenSubstring.substring(0,greenSubstring.indexOf(middleSeparationCharacter));
+
+    let blueElement;
+
+    if(hasOpacity(string)){
+        let blueSubstring=greenSubstring.substring(greenSubstring.indexOf(middleSeparationCharacter)+1, greenSubstring.length);
+    blueElement=blueSubstring.substring(0, blueSubstring.indexOf(middleSeparationCharacter));
+    
+    let opacity=blueSubstring.substring(blueSubstring.indexOf(middleSeparationCharacter+1), blueSubstring.length)
+
+    positronColor= positronColorCalculator(redElement, greenElement, blueElement)
+
+    return `rgba(${positronColor},${positronColor},${positronColor},${opacity}`;
+}
+   
+    else{
+        blueElement=greenSubstring.substring(greenSubstring.indexOf(middleSeparationCharacter)+1, greenSubstring.indexOf(lastSeparationCharacter));
+
+        positronColor= positronColorCalculator(redElement,greenElement, blueElement)
+
+        return `rgb(${positronColor},${positronColor},${positronColor})`
+    }
+    
+
+
+};
+function hasOpacity(string){
+   return(string.substring(0,4)==="rgba(");
+}
+function positronColorCalculator(red, green, blue){
+    return Math.round((parseInt(red)+parseInt(green)+parseInt(blue))/3);
+}
+
+function colorScheme(string){
+    //trouver comment choisir quelle methode on souhaite appliquer
+    return positronScheme(string);
+    //return string;
+}
+
+
 // This file describes a theme for a map. Its style follows the OpenStreetMap-Carto conventions. Can you generate a new style that respect the exact same sementic but with a positron style.
 
 export default {
