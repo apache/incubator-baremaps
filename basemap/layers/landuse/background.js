@@ -10,108 +10,108 @@
  the License.
  **/
 import {withFillSortKey, asLayoutProperty, asPaintProperty} from "../../utils/utils.js";
-import colorScheme from "../../colorScheme.js";
+import colorScheme from "../../themes/default.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'landuse'], 'village_green'],
-        'fill-color': colorScheme.directivesVillageGreenFillColor,
+        'fill-color': colorScheme.landuseBackgroundVillageGreenFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'salt_pond'],
-        'fill-color': colorScheme.directivesSaltPondFillColor,
+        'fill-color': colorScheme.landuseBackgroundSaltPondFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'religious'],
-        'fill-color': colorScheme.directivesReligiousFillColor,
+        'fill-color': colorScheme.landuseBackgroundReligiousFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'recreation_ground'],
-        'fill-color': colorScheme.directivesRecreationGroundFillColor,
+        'fill-color': colorScheme.landuseBackgroundRecreationGroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'railway'],
-        'fill-color': colorScheme.directivesRailwayFillColor,
+        'fill-color': colorScheme.landuseBackgroundRailwayFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'quarry'],
-        'fill-color': colorScheme.directivesQuarryFillColor,
+        'fill-color': colorScheme.landuseBackgroundQuarryFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'plant_nursery'],
-        'fill-color': colorScheme.directivesPlantNurseryFillColor,
+        'fill-color': colorScheme.landuseBackgroundPlantNurseryFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'military'],
-        'fill-color': colorScheme.directivesMilitaryFillColor,
+        'fill-color': colorScheme.landuseBackgroundMilitaryFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'landfill'],
-        'fill-color': colorScheme.directivesLandfillFillColor,
+        'fill-color': colorScheme.landuseBackgroundLandfillFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'greenfield'],
-        'fill-color': colorScheme.directivesGreenfieldFillColor,
+        'fill-color': colorScheme.landuseBackgroundGreenfieldFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'garages'],
-        'fill-color': colorScheme.directivesGaragesFillColor,
+        'fill-color': colorScheme.landuseBackgroundGaragesFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'cemetery'],
-        'fill-color': colorScheme.directivesCemeteryFillColor,
+        'fill-color': colorScheme.landuseBackgroundCemeteryFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'brownfield'],
-        'fill-color': colorScheme.directivesBrowmfieldFillColor,
+        'fill-color': colorScheme.landuseBackgroundBrowmfieldFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'basin'],
-        'fill-color': colorScheme.directivesBasinFillColor,
+        'fill-color': colorScheme.landuseBackgroundBasinFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'vineyard'],
-        'fill-color': colorScheme.directivesVineyardFillColor,
+        'fill-color': colorScheme.landuseBackgroundVineyardFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'meadow'],
-        'fill-color': colorScheme.directivesMeadowFillColor,
+        'fill-color': colorScheme.landuseBackgroundMeadowFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'farmyard'],
-        'fill-color': colorScheme.directivesFarmyardFillColor,
+        'fill-color': colorScheme.landuseBackgroundFarmyardFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'farmland'],
-        'fill-color': colorScheme.directivesFarmlandFillColor,
+        'fill-color': colorScheme.landuseBackgroundFarmlandFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'allotments'],
-        'fill-color': colorScheme.directivesAllotmentsFillColor,
+        'fill-color': colorScheme.landuseBackgroundAllotmentsFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'retail'],
-        'fill-color': colorScheme.directivesRetailFillColor,
+        'fill-color': colorScheme.landuseBackgroundRetailFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'industrial'],
-        'fill-color': colorScheme.directivesIndustrialFillColor,
+        'fill-color': colorScheme.landuseBackgroundIndustrialFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'residential'],
-        'fill-color': colorScheme.directivesResidentialFillColor,
+        'fill-color': colorScheme.landuseBackgroundResidentialFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'construction'],
-        'fill-color': colorScheme.directivesConstructionFillColor,
+        'fill-color': colorScheme.landuseBackgroundConstructionFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'commercial'],
-        'fill-color': colorScheme.directivesCommercialFillColor,
+        'fill-color': colorScheme.landuseBackgroundCommercialFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'pedestrian'],
-        'fill-color': colorScheme.directivesPedestrianFillColor,
+        'fill-color': colorScheme.landuseBackgroundPedestrianFillColor,
     },
 ].map(withFillSortKey);
 

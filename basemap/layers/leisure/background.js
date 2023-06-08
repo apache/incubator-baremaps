@@ -10,61 +10,61 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
-import colorScheme from "../../colorScheme.js";
+import colorScheme from "../../themes/default.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'leisure'], 'swimming_pool'],
-        'fill-color': colorScheme.directivesSwimmingPoolFillColor,
-        'fill-outline-color': colorScheme.directivesSwimmingPoolFillOutlineColor,
+        'fill-color': colorScheme.LeisureBackgroundSwimmingPoolFillColor,
+        'fill-outline-color': colorScheme.LeisureBackgroundSwimmingPoolFillOutlineColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'miniature_golf'],
-        'fill-color': colorScheme.directivesMiniatureGolfFillColor,
+        'fill-color': colorScheme.LeisureBackgroundMiniatureGolfFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'ice_rink'],
-        'fill-color': colorScheme.directivesIceRinkFillColor,
-        'fill-outline-color': colorScheme.directivesIceRinkFillOutlineColor,
+        'fill-color': colorScheme.LeisureBackgroundIceRinkFillColor,
+        'fill-outline-color': colorScheme.LeisureBackgroundIceRinkFillOutlineColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'golf_course'],
-        'fill-color': colorScheme.directivesGolfCourseFillColor,
+        'fill-color': colorScheme.LeisureBackgroundGolfCourseFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'garden'],
-        'fill-color': colorScheme.directivesGardenFillColor,
+        'fill-color': colorScheme.LeisureBackgroundGardenFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'dog_park'],
-        'fill-color': colorScheme.directivesDogParkFillColor,
+        'fill-color': colorScheme.LeisureBackgroundDogParkFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'playground'],
-        'fill-color': colorScheme.directivesPlayGroundFillColor,
-        'fill-outline-color': colorScheme.directivesPlayGroundFillOutlineColor,
+        'fill-color': colorScheme.LeisureBackgroundPlayGroundFillColor,
+        'fill-outline-color': colorScheme.LeisureBackgroundPlayGroundFillOutlineColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'pitch'],
-        'fill-color': colorScheme.directivesPitchFillColor,
-        'fill-outline-color': colorScheme.directivesPitchFillOutlineColor,
+        'fill-color': colorScheme.LeisureBackgroundPitchFillColor,
+        'fill-outline-color': colorScheme.LeisureBackgroundPitchFillOutlineColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'track'],
-        'fill-color': colorScheme.directivesTrackFillColor,
-        'fill-outline-color': colorScheme.directivesTrackFillOutlineColor,
+        'fill-color': colorScheme.LeisureBackgroundTrackFillColor,
+        'fill-outline-color': colorScheme.LeisureBackgroundTrackFillOutlineColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'sports_centre'],
-        'fill-color': colorScheme.directivesSportsCentreFillColor,
+        'fill-color': colorScheme.LeisureBackgroundSportsCentreFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'stadium'],
-        'fill-color': colorScheme.directivesStadiumFillColor,
+        'fill-color': colorScheme.LeisureBackgroundStadiumFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'park'],
-        'fill-color': colorScheme.directivesParkFillColor,
+        'fill-color': colorScheme.LeisureBackgroundParkFillColor,
     },
 ];
 

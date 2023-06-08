@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../colorScheme";
+ import colorScheme from "../../themes/default";
 
 export default [
     {
@@ -37,7 +37,7 @@ export default [
         source: 'baremaps',
         'source-layer': 'attraction',
         paint: {
-            'line-color': colorScheme.attractionWaterSlideLineColor,
+            'line-color': colorScheme.attractionStyleWaterSlideLineColor,
             'line-width': [
                 'interpolate',
                 ['exponential', 1],

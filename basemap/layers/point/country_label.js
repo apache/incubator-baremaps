@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
-import colorScheme from "../../colorScheme.js";
+import colorScheme from "../../themes/default.js";
 import {asLayerObject, withSymbolSortKeys} from "../../utils/utils.js";
 
 let directives = [
@@ -19,7 +19,7 @@ let directives = [
             ['==', ['get', 'place'], 'country']
         ],
         'text-size': 16,
-        'text-color': colorScheme.countryLabelCountryTextColor,
+        'text-color': colorScheme.pointCountryLabelCountryTextColor,
         'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
     },
 ];
@@ -37,7 +37,7 @@ export default asLayerObject(withSymbolSortKeys(directives), {
         'text-field': ['get', 'name'],
     },
     paint: {
-        'text-halo-color': colorScheme.CountryLabelPaintTextHaloColor,
+        'text-halo-color': colorScheme.pointCountryLabelPaintTextHaloColor,
         'text-halo-width': 1,
     },
 });

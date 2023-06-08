@@ -14,19 +14,19 @@ import colorScheme from "../../colorScheme.js";
 let directives = [
     {
         filter: ['==', ['get', 'landuse'], 'grass'],
-        'fill-color': colorScheme.directivesGrassFillColor,
+        'fill-color': colorScheme.landuseOverlayGrassFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'forest'],
-        'fill-color': colorScheme.directivesForestFillColor,
+        'fill-color': colorScheme.landuseOverlayForestFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'greenhouse_horticulture'],
-        'fill-color': colorScheme.directivesGreenhouseHorticultureFillColor,
+        'fill-color': colorScheme.landuseOverlayGreenhouseHorticultureFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'orchard'],
-        'fill-color': colorScheme.directivesOrchardFillColor,
+        'fill-color': colorScheme.landuseOverlayOrchardFillColor,
     },
 ];
 

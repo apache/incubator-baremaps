@@ -10,16 +10,16 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
-import colorScheme from "../../colorScheme.js";
+import colorScheme from "../../themes/default.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'amenity'], 'motorcycle_parking'],
-        'fill-color': colorScheme.directivesMotorcycleParkingFillColor,
+        'fill-color': colorScheme.amenityOverlayMotorcycleParkingFillColor,
     },
     {
         filter: ['==', ['get', 'amenity'], 'parking'],
-        'fill-color': colorScheme.directivesParkingFillColor,
+        'fill-color': colorScheme.amenityOverlayParkingFillColor,
     },
 ];
 

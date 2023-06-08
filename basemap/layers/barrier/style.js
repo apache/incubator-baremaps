@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../colorScheme.js";
+ import colorScheme from "../../themes/default.js";
 
 export default [
     {
@@ -19,7 +19,7 @@ export default [
         source: 'baremaps',
         'source-layer': 'barrier',
         paint: {
-            'line-color': colorScheme.barrierGuardRailLineColor,
+            'line-color': colorScheme.barrierStyleGuardRailLineColor,
         },
     },
 ]

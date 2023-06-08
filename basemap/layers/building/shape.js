@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../colorScheme.js";
+ import colorScheme from "../../themes/default.js";
 
 export default {
     id: 'building',
@@ -20,8 +20,8 @@ export default {
         visibility: 'visible',
     },
     paint: {
-        'fill-color': colorScheme.buildingFillColor,
+        'fill-color': colorScheme.buildingShapeFillColor,
         'fill-antialias': true,
-        'fill-outline-color': colorScheme.buildingFillOutlineColor,
+        'fill-outline-color': colorScheme.buildingShapeFillOutlineColor,
     },
 }

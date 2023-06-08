@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../colorScheme.js";
+ import colorScheme from "../../themes/default.js";
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 
 
@@ -20,7 +20,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
              ['==', ['get', 'highway'], 'construction'],
              ['==', ['get', 'construction'], 'motorway'],
          ],
-         'line-color': colorScheme.directivesConstructionMotorwayLineColor,
+         'line-color': colorScheme.constructionDashConstructionMotorwayLineColor,
          'road-width': 16,
      },
      {
@@ -29,7 +29,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'trunk'],
          ],
-         'line-color': colorScheme.directivesConstructionTrunkLineColor,
+         'line-color': colorScheme.constructionDashConstructionTrunkLineColor,
          'road-width': 12,
      },
      {
@@ -38,7 +38,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'primary'],
          ],
-         'line-color': colorScheme.directivesConstructionPrimaryLineColor,
+         'line-color': colorScheme.constructionDashConstructionPrimaryLineColor,
          'road-width': 14,
      },
      {
@@ -47,7 +47,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'secondary'],
          ],
-         'line-color': colorScheme.directivesConstructionSecondaryLineColor,
+         'line-color': colorScheme.constructionDashConstructionSecondaryLineColor,
          'road-width': 12,
      },
      {
@@ -56,7 +56,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'tertiary'],
          ],
-         'line-color': colorScheme.directivesConstructionTertiaryLineColor,
+         'line-color': colorScheme.constructionDashConstructionTertiaryLineColor,
          'road-width': 12,
      },
      {
@@ -65,7 +65,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'unclassified'],
          ],
-         'line-color': colorScheme.directivesConstructionUnclassifiedLineColor,
+         'line-color': colorScheme.constructionDashConstructionUnclassifiedLineColor,
          'road-width': 8,
      },
      {
@@ -74,7 +74,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'residential'],
          ],
-         'line-color': colorScheme.directivesConstructionResidentialLineColor,
+         'line-color': colorScheme.constructionDashConstructionResidentialLineColor,
          'road-width': 8,
      },
      {
@@ -83,7 +83,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'living_street'],
          ],
-         'line-color': colorScheme.directivesConstructionLivingStreetLineColor,
+         'line-color': colorScheme.constructionDashConstructionLivingStreetLineColor,
          'road-width': 8,
      },
      {
@@ -92,7 +92,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'service'],
          ],
-         'line-color': colorScheme.directivesConstructionServiceLineColor,
+         'line-color': colorScheme.constructionDashConstructionServiceLineColor,
          'road-width': 8,
      },
  ]

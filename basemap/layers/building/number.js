@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../colorScheme.js";
+ import colorScheme from "../../themes/default.js";
 
 export default {
     id: 'building_number',
@@ -37,7 +37,7 @@ export default {
     },
     paint: {
         'text-color': colorScheme.buildingNumberTextColor,
-        'text-halo-color': colorScheme.buildingNUmberTextHaloColor,
+        'text-halo-color': colorScheme.buildingNumberTextHaloColor,
         'text-halo-width': 1.2,
     },
 }
