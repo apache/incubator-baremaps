@@ -1,13 +1,12 @@
 
-//thene ä disposition: 'positron' 'moreRed' 
+//themes: 'positron' 'moreRed' 'light'
 
-const theme="positron";
+const theme="light";
 
 const min=0;
 const max=255;
 
 function colorScheme(string){
-    //trouver comment choisir quelle methode on souhaite appliquer
     switch(theme){
         case 'positron':
             return positronScheme(string);
@@ -15,10 +14,13 @@ function colorScheme(string){
         case 'moreRed':
             return moreRedScheme(string);
             break;
+        case 'light':
+            return lightScheme(string);
+            break;
         default: return string;
     }
 };
-//themes de couleur
+
 function positronScheme(string){
 
     const table=cutRgbString(string)
@@ -36,7 +38,14 @@ function moreRedScheme(string){
     return giveNewColorString(table, redElement, table[1], table[2]);
 }
 
-//Fonctionnalites
+function lightScheme(string){
+    const table=cutRgbString(string);
+    let newColor=max-Math.min(Math.max(positronColorCalculator(table)/4.7, min),max);
+    return giveNewColorString(table, newColor, newColor, newColor);
+
+}
+
+
 function giveNewColorString(table, newRed, newGreen, newBlue){
     if(table[3]==1){
         return `rgb(${newRed},${newGreen},${newBlue})`;
@@ -64,7 +73,7 @@ function cutRgbString(string){
         let blueSubstring=greenSubstring.substring(greenSubstring.indexOf(middleSeparationCharacter)+1, greenSubstring.length);
         blueElement=blueSubstring.substring(0, blueSubstring.indexOf(middleSeparationCharacter));
         opacity=blueSubstring.substring(blueSubstring.indexOf(middleSeparationCharacter)+1, blueSubstring.length-1)
-        console.log("opa "+opacity);
+       
     }
         
 
@@ -78,7 +87,9 @@ function cutRgbString(string){
 function hasOpacity(string){
     return(string.substring(0,5)==="rgba(");
  };
-
+function inverseNameColor(string){
+    return max-colorScheme(string);
+}
 
 
 
@@ -100,15 +111,15 @@ export default {
     highwayLinePedestrianLineColor: colorScheme('rgb(221, 221, 231)'),
     highwayLineBuswayLineColor: colorScheme('rgb(254, 254, 254)'),
     //Construction_dash
-    directivesConstructionMotorwayLineColor: colorScheme('rgb(254, 254, 254)'),
-    directivesConstructionTrunkLineColor: colorScheme('rgb(254, 254, 254)'),
-    directivesConstructionPrimaryLineColor: colorScheme('rgb(254, 254, 254)'),
-    directivesConstructionSecondaryLineColor: colorScheme('rgb(254, 254, 254)'),
-    directivesConstructionTertiaryLineColor: colorScheme('rgb(254, 254, 254)'),
-    directivesConstructionUnclassifiedLineColor: colorScheme('rgb(254, 254, 254)'),
-    directivesConstructionResidentialLineColor: colorScheme('rgb(254, 254, 254)'),
-    directivesConstructionLivingStreetLineColor: colorScheme('rgb(254, 254, 254)'),
-    directivesConstructionServiceLineColor: colorScheme('rgb(254, 254, 254)'),
+    constructionDashConstructionMotorwayLineColor: colorScheme('rgb(254, 254, 254)'),
+    constructionDashConstructionTrunkLineColor: colorScheme('rgb(254, 254, 254)'),
+    constructionDashConstructionPrimaryLineColor: colorScheme('rgb(254, 254, 254)'),
+    constructionDashConstructionSecondaryLineColor: colorScheme('rgb(254, 254, 254)'),
+    constructionDashConstructionTertiaryLineColor: colorScheme('rgb(254, 254, 254)'),
+    constructionDashConstructionUnclassifiedLineColor: colorScheme('rgb(254, 254, 254)'),
+    constructionDashConstructionResidentialLineColor: colorScheme('rgb(254, 254, 254)'),
+    constructionDashConstructionLivingStreetLineColor: colorScheme('rgb(254, 254, 254)'),
+    constructionDashConstructionServiceLineColor: colorScheme('rgb(254, 254, 254)'),
     //Construction_line
     directivesConstructionMotorwaLinkLineColor: colorScheme('rgb(233, 144, 161)'),
     directivesConstructionTrunkLinkLineColor: colorScheme('rgb(250, 193, 172)'),
@@ -383,8 +394,8 @@ export default {
     directivesOrchardFillColor: colorScheme('rgb(172, 225, 161)'),
     //Point
     //Country_label
-    countryLabelCountryTextColor: colorScheme('rgb(90, 56, 90)'),
-    CountryLabelPaintTextHaloColor: colorScheme('rgba(255, 255, 255, 0.8)'),
+    countryLabelCountryTextColor: inverseNameColor('rgb(90, 56, 90)'),
+    CountryLabelPaintTextHaloColor: inverseNameColor('rgba(255, 255, 255, 0.8)'),
     //Leisure
     //background
     directivesSwimmingPoolFillColor: colorScheme('rgb(170, 211, 223)'),
@@ -446,7 +457,7 @@ export default {
     waterFillColor: colorScheme('rgb(170, 211, 223)'),
 
     //Point_label
-    pointLabelCityLabelColor: colorScheme('rgb(25, 25, 25)'),
+    pointLabelCityLabelColor: inverseNameColor('rgb(25, 25, 25)'),
     pointLabelCityFilterOneLabelColor: colorScheme('rgb(100, 100, 100)'),
     pointLabelCityFilterTwoLabelColor: colorScheme('rgb(50, 50, 50)'),
     pointLabelTownFilterOneLabelColor: colorScheme('rgb(100, 100, 100)'),
