@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
+import javax.sql.DataSource;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.TileStoreException;
@@ -58,14 +59,14 @@ public class MBTiles implements TileStore {
 
   private static final String DELETE_METADATA = "DELETE FROM metadata";
 
-  private final org.sqlite.SQLiteDataSource dataSource;
+  private final DataSource dataSource;
 
   /**
    * Constructs an {@code MBTiles} with the provided SQLite datasource.
    *
    * @param dataSource the SQLite datasource
    */
-  public MBTiles(org.sqlite.SQLiteDataSource dataSource) {
+  public MBTiles(DataSource dataSource) {
     this.dataSource = dataSource;
   }
 
