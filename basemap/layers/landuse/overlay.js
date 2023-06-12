@@ -10,7 +10,7 @@
  the License.
  **/
 import {asLayerObject, withFillSortKey} from "../../utils/utils.js";
-import colorScheme from "../../colorScheme.js";
+import colorScheme from "../../themes/default.js";
 let directives = [
     {
         filter: ['==', ['get', 'landuse'], 'grass'],

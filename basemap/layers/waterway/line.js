@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../colorScheme.js";
+ import colorScheme from "../../themes/default.js";
 
 
 export default {
@@ -34,6 +34,6 @@ export default {
             ["zoom"],
             4, 0, 20, 12
         ],
-        "line-color": colorScheme.waterwayLineLineColor
+        "line-color": colorScheme.waterwayLineWaterwayLineColor
     }
 }

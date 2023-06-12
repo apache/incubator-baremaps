@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../colorScheme.js";
+ import colorScheme from "../../themes/default.js";
 
 
 export default {
@@ -22,7 +22,7 @@ export default {
         "visibility": "visible"
     },
     "paint": {
-        "line-color": colorScheme.tourismZooLineColor,
+        "line-color": colorScheme.tourismStyleZooLineTourismZooLineColor,
         "line-width": [
             "interpolate", ["exponential", 1.2], ["zoom"], 13, 1, 16,
             2, 19, 3
