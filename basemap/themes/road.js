@@ -3,7 +3,7 @@ import * as importedTools from "./tools.js";
 
 function roadScheme(string) {
     const table = importedTools.cutRgbString(string);
-    let redElement = Math.min(Math.max(table[0] + 50, importedTools.min), importedTools.max);
+    let redElement = importedTools.clamp(table[0] + 50);
     return importedTools.giveNewColorString(table, redElement, table[1], table[2]);
 }
 

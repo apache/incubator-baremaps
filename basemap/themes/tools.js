@@ -29,3 +29,7 @@ export function cutRgbString(color) {
     };
     return null;
 }
+
+export function clamp(value){
+    return Math.min(Math.max(value, min),max);
+}
