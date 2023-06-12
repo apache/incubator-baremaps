@@ -9,6 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
+// Based on https://www.irr.net/docs/list.html
 const nics = [
     {url: "https://ftp.afrinic.net/pub/dbase/afrinic.db.gz", filename: "afrinic.db"},
     {url: "https://ftp.apnic.net/apnic/whois/apnic.db.as-block.gz", filename: "apnic.db.as-block.db"},
@@ -32,6 +33,19 @@ const nics = [
     {url: "https://ftp.arin.net/pub/rr/arin.db.gz", filename: "arin.db"},
     {url: "https://ftp.lacnic.net/lacnic/dbase/lacnic.db.gz", filename: "lacnic.db"},
     {url: "https://ftp.ripe.net/ripe/dbase/ripe.db.gz", filename: "ripe.db"},
+    {url: "ftp://ftp.altdb.net/pub/altdb/altdb.db.gz", filename: "altdb.db"},
+    {url: "ftp://whois.in.bell.ca/bell.db.gz", filename: "bell.db"},
+    {url: "ftp://irr.bboi.net/bboi.db.gz", filename: "bboi.db"},
+    {url: "https://whois.canarie.ca/dbase/canarie.db.gz", filename: "canarie.db"},
+    {url: "ftp://irr-mirror.idnic.net/idnic.db.gz", filename: "idnic.db"},
+    {url: "ftp://ftp.nic.ad.jp/jpirr/jpirr.db.gz", filename: "jpirr.db"},
+    {url: "ftp://rr.Level3.net/level3.db.gz", filename: "level3.db"},
+    {url: "ftp://ftp.nestegg.net/irr/nestegg.db.gz", filename: "nestegg.db"},
+    {url: "ftp://rr1.ntt.net/nttcomRR/nttcom.db.gz", filename: "nttcom.db"},
+    {url: "ftp://ftp.panix.com/pub/rrdb/panix.db.gz", filename: "panix.db"},
+    {url: "ftp://ftp.radb.net/radb/dbase/radb.db.gz", filename: "radb.db"},
+    {url: "ftp://ftp.radb.net/radb/dbase/reach.db.gz", filename: "reach.db"},
+    {url: "ftp://ftp.bgp.net.br/tc.db.gz", filename: "tc.db"}
 ];
 
 export default {"steps": [
