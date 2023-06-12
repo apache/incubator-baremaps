@@ -89,6 +89,7 @@ public record ExportVectorTiles(
 
       var sqliteConfig = new SQLiteConfig();
       sqliteConfig.setCacheSize(1000000);
+      sqliteConfig.setPageSize(65536);
       sqliteConfig.setJournalMode(JournalMode.OFF);
       sqliteConfig.setLockingMode(LockingMode.EXCLUSIVE);
       sqliteConfig.setSynchronous(SynchronousMode.OFF);
