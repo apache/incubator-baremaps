@@ -10,7 +10,7 @@ or implied. See the License for the specific language governing permissions and 
 the License.
 **/
 
-import colorScheme from '../../themes/default.js';
+import colorScheme from '../../theme.js';
 
 export default {
     id: 'background',
