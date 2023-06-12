@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.WorkflowContext;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +37,7 @@ class DownloadUrlTest {
     assertTrue(Files.readString(file.toPath()).contains("Baremaps"));
   }
 
+  @Disabled("Test relies on third party resource, see TODO comment.")
   @Test
   @Tag("integration")
   void testDownloadFtp() throws Exception {
