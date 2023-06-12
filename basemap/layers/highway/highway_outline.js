@@ -10,7 +10,7 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
-import colorScheme from "../../colorScheme.js";
+import colorScheme from "../../theme.js";
 
 let directives =[
     {
