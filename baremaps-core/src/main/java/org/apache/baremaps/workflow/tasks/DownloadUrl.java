@@ -12,8 +12,10 @@
 
 package org.apache.baremaps.workflow.tasks;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -23,6 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public record DownloadUrl(String url, Path path, boolean replaceExisting) implements Task {
+
+  private static final String PROTOCOL_FTP = "ftp";
+  private static final String PROTOCOL_HTTP = "http";
+  private static final String PROTOCOL_HTTPS = "https";
 
   public DownloadUrl(String url, Path path) {
     this(url, path, false);
@@ -35,26 +41,48 @@ public record DownloadUrl(String url, Path path, boolean replaceExisting) implem
     var targetUrl = new URL(url);
     var targetPath = path.toAbsolutePath();
 
-    if (Files.exists(targetPath) && !replaceExisting) {
-      var head = (HttpURLConnection) targetUrl.openConnection();
-      head.setFollowRedirects(true);
-      head.setRequestMethod("HEAD");
-      var contentLength = head.getContentLengthLong();
-      head.disconnect();
-      if (Files.size(targetPath) == contentLength) {
+    if (isHttp(targetUrl)) {
+      if (Files.exists(targetPath) && !replaceExisting) {
+        var head = (HttpURLConnection) targetUrl.openConnection();
+        head.setInstanceFollowRedirects(true);
+        head.setRequestMethod("HEAD");
+        var contentLength = head.getContentLengthLong();
+        head.disconnect();
+        if (Files.size(targetPath) == contentLength) {
+          logger.info("Skipping download of {} to {}", url, path);
+          return;
+        }
+      }
+
+      var get = (HttpURLConnection) targetUrl.openConnection();
+      get.setInstanceFollowRedirects(true);
+      get.setRequestMethod("GET");
+      urlDownloadToFile(get, targetPath);
+      get.disconnect();
+    } else if (isFtp(targetUrl)) {
+      if (Files.exists(targetPath) && !replaceExisting) {
         logger.info("Skipping download of {} to {}", url, path);
         return;
       }
+      urlDownloadToFile(targetUrl.openConnection(), targetPath);
+    } else {
+      throw new IllegalArgumentException("Unsupported URL protocol (supported: http(s)/ftp)");
     }
+  }
 
-    var get = (HttpURLConnection) targetUrl.openConnection();
-    get.setFollowRedirects(true);
-    get.setRequestMethod("GET");
-    try (var inputStream = get.getInputStream()) {
-      var downloadFile = targetPath.toAbsolutePath();
-      Files.createDirectories(downloadFile.getParent());
+  private static boolean isHttp(URL url) {
+    return url.getProtocol().equalsIgnoreCase(PROTOCOL_HTTP) ||
+        url.getProtocol().equalsIgnoreCase(PROTOCOL_HTTPS);
+  }
+
+  private static boolean isFtp(URL url) {
+    return url.getProtocol().equalsIgnoreCase(PROTOCOL_FTP);
+  }
+
+  private static void urlDownloadToFile(URLConnection url, Path targetPath) throws IOException {
+    try (var inputStream = url.getInputStream()) {
+      Files.createDirectories(targetPath.toAbsolutePath().getParent());
       Files.copy(inputStream, targetPath, StandardCopyOption.REPLACE_EXISTING);
     }
-    get.disconnect();
   }
 }
