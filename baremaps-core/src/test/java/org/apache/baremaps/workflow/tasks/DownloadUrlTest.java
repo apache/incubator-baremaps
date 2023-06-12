@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import org.apache.baremaps.utils.FileUtils;
 import org.apache.baremaps.workflow.WorkflowContext;
@@ -56,7 +55,7 @@ class DownloadUrlTest {
   void testDownloadUnsupportedProtocol() throws Exception {
     var directory = Files.createTempDirectory("tmp_");
     var file = directory.resolve("file");
-    assertThrows(IOException.class, () -> {
+    assertThrows(IllegalArgumentException.class, () -> {
       var task = new DownloadUrl("file://not-existing-file-243jhks",
           file);
       task.execute(new WorkflowContext());

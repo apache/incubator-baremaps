@@ -66,7 +66,7 @@ public record DownloadUrl(String url, Path path, boolean replaceExisting) implem
       }
       urlDownloadToFile(targetUrl.openConnection(), targetPath);
     } else {
-      throw new IOException("Unsupported URL protocol (supported: http(s)/ftp)");
+      throw new IllegalArgumentException("Unsupported URL protocol (supported: http(s)/ftp)");
     }
   }
 
