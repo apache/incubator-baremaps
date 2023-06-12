@@ -601,9 +601,7 @@ export default {
     waterwayLabelTextColor: 'rgba(26, 109, 187, 1)',
     waterwayLabelTextHaloColor: 'rgba(255, 255, 255, 0.8)',
     waterwayLineWaterwayLineColor: 'rgb(170, 211, 223)',
-    //tunnelCasing
     waterwayTunnelCasingLineColor: 'rgb(170, 211, 223)',
-    //TunnelLine
     waterwayTunnelLineLineColor: 'rgb(243, 247, 247)'
 
 
