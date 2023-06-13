@@ -142,6 +142,7 @@ public record ExportVectorTiles(
 
   /**
    * Create a SQLite data source.
+   * 
    * @param path the path to the SQLite database
    * @return the SQLite data source
    */

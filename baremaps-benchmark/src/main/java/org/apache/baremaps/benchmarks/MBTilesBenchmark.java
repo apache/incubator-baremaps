@@ -18,7 +18,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStoreException;
 import org.apache.baremaps.tilestore.mbtiles.MBTiles;
@@ -34,59 +33,59 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @Fork(value = 1, warmups = 1)
 public class MBTilesBenchmark {
 
-    public Random random = new Random(0);
+  public Random random = new Random(0);
 
-    @Param({"10", "100", "1000"})
-    public int iterations;
+  @Param({"10", "100", "1000"})
+  public int iterations;
 
-    private MBTiles mbTiles;
+  private MBTiles mbTiles;
 
-    @Setup
-    public void setup() throws IOException, TileStoreException {
-        var sqliteFile = File.createTempFile("baremaps", ".sqlite");
-        sqliteFile.deleteOnExit();
-        var sqliteDataSource = ExportVectorTiles.createDataSource(sqliteFile.toPath());
-        mbTiles = new MBTiles(sqliteDataSource);
-        mbTiles.initializeDatabase();
+  @Setup
+  public void setup() throws IOException, TileStoreException {
+    var sqliteFile = File.createTempFile("baremaps", ".sqlite");
+    sqliteFile.deleteOnExit();
+    var sqliteDataSource = ExportVectorTiles.createDataSource(sqliteFile.toPath());
+    mbTiles = new MBTiles(sqliteDataSource);
+    mbTiles.initializeDatabase();
+  }
+
+  @Benchmark
+  @BenchmarkMode(Mode.SingleShotTime)
+  public void writeMBTiles(MBTilesBenchmark benchmark) throws TileStoreException {
+    for (int i = 0; i < benchmark.iterations; i++) {
+      var bytes = new byte[1 << 16];
+      random.nextBytes(bytes);
+      mbTiles.put(new TileCoord(0, 0, i), ByteBuffer.wrap(bytes));
     }
+  }
 
-    @Benchmark
-    @BenchmarkMode(Mode.SingleShotTime)
-    public void writeMBTiles(MBTilesBenchmark benchmark) throws TileStoreException {
-        for (int i = 0; i < benchmark.iterations; i++) {
-            var bytes = new byte[1 << 16];
-            random.nextBytes(bytes);
-            mbTiles.put(new TileCoord(0, 0, i), ByteBuffer.wrap(bytes));
-        }
-    }
-
-    @Benchmark
-    @BenchmarkMode(Mode.SingleShotTime)
-    public void writeMBTilesBatch(MBTilesBenchmark benchmark) throws TileStoreException {
-        var coords = new ArrayList<TileCoord>();
-        var buffers = new ArrayList<ByteBuffer>();
-        for (int i = 0; i < benchmark.iterations; i++) {
-            var bytes = new byte[1 << 16];
-            random.nextBytes(bytes);
-            coords.add(new TileCoord(0, 0, i));
-            buffers.add(ByteBuffer.wrap(bytes));
-            if (coords.size() == 100) {
-                random.nextBytes(bytes);
-                mbTiles.put(coords, buffers);
-                coords.clear();
-                buffers.clear();
-            }
-        }
+  @Benchmark
+  @BenchmarkMode(Mode.SingleShotTime)
+  public void writeMBTilesBatch(MBTilesBenchmark benchmark) throws TileStoreException {
+    var coords = new ArrayList<TileCoord>();
+    var buffers = new ArrayList<ByteBuffer>();
+    for (int i = 0; i < benchmark.iterations; i++) {
+      var bytes = new byte[1 << 16];
+      random.nextBytes(bytes);
+      coords.add(new TileCoord(0, 0, i));
+      buffers.add(ByteBuffer.wrap(bytes));
+      if (coords.size() == 100) {
+        random.nextBytes(bytes);
         mbTiles.put(coords, buffers);
         coords.clear();
         buffers.clear();
+      }
     }
+    mbTiles.put(coords, buffers);
+    coords.clear();
+    buffers.clear();
+  }
 
-    public static void main(String[] args) throws RunnerException {
-        Options opt =
-                new OptionsBuilder().include(MBTilesBenchmark.class.getSimpleName()).forks(1).build();
-        new Runner(opt).run();
-    }
+  public static void main(String[] args) throws RunnerException {
+    Options opt =
+        new OptionsBuilder().include(MBTilesBenchmark.class.getSimpleName()).forks(1).build();
+    new Runner(opt).run();
+  }
 
 
 }

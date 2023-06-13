@@ -110,7 +110,7 @@ public class MBTiles implements TileStore {
   @Override
   public void put(List<TileCoord> tileCoords, List<ByteBuffer> blobs) throws TileStoreException {
     try (Connection connection = dataSource.getConnection();
-         PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
+        PreparedStatement statement = connection.prepareStatement(INSERT_TILE)) {
       for (int i = 0; i < tileCoords.size(); i++) {
         TileCoord tileCoord = tileCoords.get(i);
         ByteBuffer blob = blobs.get(i);
