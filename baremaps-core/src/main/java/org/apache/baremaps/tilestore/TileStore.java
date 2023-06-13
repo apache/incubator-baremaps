@@ -15,27 +15,57 @@ package org.apache.baremaps.tilestore;
 
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Represents a store for tiles. */
 public interface TileStore {
 
   /**
-   * Reads the content of a tile.
+   * Gets the content of a tile.
    *
    * @param tileCoord the tile coordinate
    * @return the content of the tile
    * @throws TileStoreException
    */
-  ByteBuffer read(TileCoord tileCoord) throws TileStoreException;
+  ByteBuffer get(TileCoord tileCoord) throws TileStoreException;
 
   /**
-   * Writes the content of a tile.
+   * Gets the content of several tiles.
+   *
+   * @param tileCoords the tile coordinates
+   * @return the content of the tiles
+   * @throws TileStoreException
+   */
+  default List<ByteBuffer> get(List<TileCoord> tileCoords) throws TileStoreException {
+    var blobs = new ArrayList<ByteBuffer>(tileCoords.size());
+    for (var tileCoord : tileCoords) {
+      blobs.add(get(tileCoord));
+    }
+    return blobs;
+  }
+
+  /**
+   * Puts the content of a tile.
    *
    * @param tileCoord the tile coordinate
    * @param blob the content of the tile
    * @throws TileStoreException
    */
-  void write(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException;
+  void put(TileCoord tileCoord, ByteBuffer blob) throws TileStoreException;
+
+  /**
+   * Puts the content of several tiles.
+   *
+   * @param tileCoords the tile coordinates
+   * @param blobs the content of the tiles
+   * @throws TileStoreException
+   */
+  default void put(List<TileCoord> tileCoords, List<ByteBuffer> blobs) throws TileStoreException {
+    for (int i = 0; i < tileCoords.size(); i++) {
+      put(tileCoords.get(i), blobs.get(i));
+    }
+  }
 
   /**
    * Deletes the content of a tile.

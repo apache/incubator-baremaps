@@ -50,10 +50,10 @@ public class TileCache implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
+  public ByteBuffer get(TileCoord tileCoord) throws TileStoreException {
     var buffer = cache.get(tileCoord, t -> {
       try {
-        return tileStore.read(t);
+        return tileStore.get(t);
       } catch (TileStoreException e) {
         logger.error("Unable to read the tile.", e);
         return null;
@@ -68,8 +68,8 @@ public class TileCache implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public void write(TileCoord tileCoord, ByteBuffer bytes) throws TileStoreException {
-    tileStore.write(tileCoord, bytes);
+  public void put(TileCoord tileCoord, ByteBuffer bytes) throws TileStoreException {
+    tileStore.put(tileCoord, bytes);
     cache.invalidate(tileCoord);
   }
 

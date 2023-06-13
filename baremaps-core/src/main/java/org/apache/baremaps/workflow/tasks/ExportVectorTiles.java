@@ -87,17 +87,7 @@ public record ExportVectorTiles(
     if (mbtiles) {
       Files.deleteIfExists(repository);
 
-      var sqliteConfig = new SQLiteConfig();
-      sqliteConfig.setCacheSize(1000000);
-      sqliteConfig.setPageSize(65536);
-      sqliteConfig.setJournalMode(JournalMode.OFF);
-      sqliteConfig.setLockingMode(LockingMode.EXCLUSIVE);
-      sqliteConfig.setSynchronous(SynchronousMode.OFF);
-      sqliteConfig.setTempStore(TempStore.MEMORY);
-
-      var sqliteDataSource = new SQLiteDataSource();
-      sqliteDataSource.setConfig(sqliteConfig);
-      sqliteDataSource.setUrl("jdbc:sqlite:" + repository);
+      var sqliteDataSource = createDataSource(repository);
 
       var hikariConfig = new HikariConfig();
       hikariConfig.setDataSource(sqliteDataSource);
@@ -112,6 +102,22 @@ public record ExportVectorTiles(
     } else {
       return new FileTileStore(repository);
     }
+  }
+
+  public static SQLiteDataSource createDataSource(Path path) {
+    var sqliteConfig = new SQLiteConfig();
+    sqliteConfig.setCacheSize(1000000);
+    sqliteConfig.setPageSize(65536);
+    sqliteConfig.setJournalMode(JournalMode.OFF);
+    sqliteConfig.setLockingMode(LockingMode.EXCLUSIVE);
+    sqliteConfig.setSynchronous(SynchronousMode.OFF);
+    sqliteConfig.setTempStore(TempStore.MEMORY);
+
+    var sqliteDataSource = new SQLiteDataSource();
+    sqliteDataSource.setConfig(sqliteConfig);
+    sqliteDataSource.setUrl("jdbc:sqlite:" + path);
+
+    return sqliteDataSource;
   }
 
   private Map<String, String> metadata(Tileset tileset) throws JsonProcessingException {

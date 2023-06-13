@@ -100,7 +100,7 @@ public class TilesResource implements TilesApi {
     int y = tileCol;
     TileCoord tileCoord = new TileCoord(x, y, z);
     try {
-      ByteBuffer blob = tileStore.read(tileCoord);
+      ByteBuffer blob = tileStore.get(tileCoord);
       if (blob != null) {
         return Response.status(200) // lgtm [java/xss]
             .header(ACCESS_CONTROL_ALLOW_ORIGIN, "*")

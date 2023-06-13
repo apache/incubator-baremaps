@@ -31,15 +31,15 @@ public abstract class TileStoreTest {
     ByteBuffer blob = ByteBuffer.wrap("tile_content".getBytes());
 
     // Write data
-    tileStore.write(tileCoord, blob);
+    tileStore.put(tileCoord, blob);
 
     // Read the data
-    ByteBuffer inputStream = tileStore.read(tileCoord);
+    ByteBuffer inputStream = tileStore.get(tileCoord);
     assertArrayEquals(blob.array(), inputStream.array());
 
     // Delete the data
     tileStore.delete(tileCoord);
-    assertThrows(TileStoreException.class, () -> tileStore.read(tileCoord));
+    assertThrows(TileStoreException.class, () -> tileStore.get(tileCoord));
   }
 
   public abstract TileStore createTileStore() throws Exception;

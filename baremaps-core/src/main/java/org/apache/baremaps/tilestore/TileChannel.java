@@ -53,9 +53,9 @@ public class TileChannel implements Consumer<TileCoord> {
   @Override
   public void accept(TileCoord tileCoord) {
     try {
-      ByteBuffer blob = source.read(tileCoord);
+      ByteBuffer blob = source.get(tileCoord);
       if (blob != null) {
-        target.write(tileCoord, blob);
+        target.put(tileCoord, blob);
       } else if (deleteEmptyTiles) {
         target.delete(tileCoord);
       }

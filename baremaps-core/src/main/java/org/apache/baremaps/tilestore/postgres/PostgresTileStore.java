@@ -99,7 +99,7 @@ public class PostgresTileStore implements TileStore {
 
   /** {@inheritDoc} */
   @Override
-  public ByteBuffer read(TileCoord tileCoord) throws TileStoreException {
+  public ByteBuffer get(TileCoord tileCoord) throws TileStoreException {
     try (Connection connection = datasource.getConnection();
         Statement statement = connection.createStatement();
         ByteArrayOutputStream data = new ByteArrayOutputStream()) {
@@ -239,7 +239,7 @@ public class PostgresTileStore implements TileStore {
   }
 
   /** This operation is not supported. */
-  public void write(TileCoord tileCoord, ByteBuffer blob) {
+  public void put(TileCoord tileCoord, ByteBuffer blob) {
     throw new UnsupportedOperationException("The postgis tile store is read only");
   }
 
