@@ -87,14 +87,8 @@ public record ExportVectorTiles(
     if (mbtiles) {
       Files.deleteIfExists(repository);
 
-      var sqliteDataSource = createDataSource(repository);
-
-      var hikariConfig = new HikariConfig();
-      hikariConfig.setDataSource(sqliteDataSource);
-      hikariConfig.setMaximumPoolSize(1);
-      var hikariDataSource = new HikariDataSource(hikariConfig);
-
-      var tilesStore = new MBTiles(hikariDataSource);
+      var dataSource = createDataSource(repository);
+      var tilesStore = new MBTiles(dataSource);
       tilesStore.initializeDatabase();
       tilesStore.writeMetadata(metadata(source));
 
@@ -102,22 +96,6 @@ public record ExportVectorTiles(
     } else {
       return new FileTileStore(repository);
     }
-  }
-
-  public static SQLiteDataSource createDataSource(Path path) {
-    var sqliteConfig = new SQLiteConfig();
-    sqliteConfig.setCacheSize(1000000);
-    sqliteConfig.setPageSize(65536);
-    sqliteConfig.setJournalMode(JournalMode.OFF);
-    sqliteConfig.setLockingMode(LockingMode.EXCLUSIVE);
-    sqliteConfig.setSynchronous(SynchronousMode.OFF);
-    sqliteConfig.setTempStore(TempStore.MEMORY);
-
-    var sqliteDataSource = new SQLiteDataSource();
-    sqliteDataSource.setConfig(sqliteConfig);
-    sqliteDataSource.setUrl("jdbc:sqlite:" + path);
-
-    return sqliteDataSource;
   }
 
   private Map<String, String> metadata(Tileset tileset) throws JsonProcessingException {
@@ -160,5 +138,31 @@ public record ExportVectorTiles(
     metadata.put("json", new ObjectMapper().writeValueAsString(layers));
 
     return metadata;
+  }
+
+  /**
+   * Create a SQLite data source.
+   * @param path the path to the SQLite database
+   * @return the SQLite data source
+   */
+  public static DataSource createDataSource(Path path) {
+    var sqliteConfig = new SQLiteConfig();
+    sqliteConfig.setCacheSize(1000000);
+    sqliteConfig.setPageSize(65536);
+    sqliteConfig.setJournalMode(JournalMode.OFF);
+    sqliteConfig.setLockingMode(LockingMode.EXCLUSIVE);
+    sqliteConfig.setSynchronous(SynchronousMode.OFF);
+    sqliteConfig.setTempStore(TempStore.MEMORY);
+
+    var sqliteDataSource = new SQLiteDataSource();
+    sqliteDataSource.setConfig(sqliteConfig);
+    sqliteDataSource.setUrl("jdbc:sqlite:" + path);
+
+    var hikariConfig = new HikariConfig();
+    hikariConfig.setDataSource(sqliteDataSource);
+    hikariConfig.setMaximumPoolSize(1);
+    var hikariDataSource = new HikariDataSource(hikariConfig);
+
+    return hikariDataSource;
   }
 }
