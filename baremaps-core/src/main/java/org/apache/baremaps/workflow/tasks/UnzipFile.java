@@ -41,19 +41,20 @@ public record UnzipFile(Path file, Path directory) implements Task {
 
       while (entries.hasMoreElements()) {
         var ze = entries.nextElement();
-        var file = directoryPath.resolve(ze.getName());
+        var path = directoryPath.resolve(ze.getName());
 
-        if (!file.toFile().getCanonicalPath()
-            .startsWith(directoryPath.toFile().getCanonicalPath())) {
+        var file = path.toFile().getCanonicalFile();
+        var directory = directoryPath.toFile().getCanonicalFile();
+        if (!file.toPath().startsWith(directory.toPath())) {
           throw new IOException("Entry is outside of the target directory");
         }
 
-        Files.createDirectories(file.getParent());
-        Files.write(file, new byte[] {}, StandardOpenOption.CREATE,
+        Files.createDirectories(path.getParent());
+        Files.write(path, new byte[] {}, StandardOpenOption.CREATE,
             StandardOpenOption.TRUNCATE_EXISTING);
 
         try (var input = new BufferedInputStream(zipFile.getInputStream(ze));
-            var output = new BufferedOutputStream(new FileOutputStream(file.toFile()))) {
+            var output = new BufferedOutputStream(new FileOutputStream(path.toFile()))) {
 
           totalEntryArchive++;
 
