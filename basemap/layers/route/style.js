@@ -10,13 +10,13 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
-import colorScheme from "../../theme.js";
+import theme from "../../theme.js";
 
 
 let directives = [
     {
         filter: ['==', ['get', 'route'], 'ferry'],
-        'line-color': colorScheme.routeStyleFerryLineColor,
+        'line-color': theme.routeStyleFerryLineColor,
         'line-width': 1
     },
 ];

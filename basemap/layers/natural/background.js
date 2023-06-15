@@ -10,36 +10,36 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
-import colorScheme from "../../theme.js";
+import theme from "../../theme.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'natural'], 'glacier'],
-        'fill-color': colorScheme.naturalBackgroundGlacierFillColor
+        'fill-color': theme.naturalBackgroundGlacierFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'wood'],
-        'fill-color': colorScheme.naturalBackgroundWoodFillColor
+        'fill-color': theme.naturalBackgroundWoodFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'heath'],
-        'fill-color': colorScheme.naturalBackgroundHeathFillColor
+        'fill-color': theme.naturalBackgroundHeathFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'grassland'],
-        'fill-color': colorScheme.naturalBackgroundGrasslandFillColor
+        'fill-color': theme.naturalBackgroundGrasslandFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'bare_rock'],
-        'fill-color': colorScheme.naturalBackgroundBareRockFillColor
+        'fill-color': theme.naturalBackgroundBareRockFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'scree'],
-        'fill-color': colorScheme.naturalBackgroundScreeFillColor
+        'fill-color': theme.naturalBackgroundScreeFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'shingle'],
-        'fill-color': colorScheme.naturalBackgroundShingleFillColor
+        'fill-color': theme.naturalBackgroundShingleFillColor
     },
     {
         filter: [
@@ -47,7 +47,7 @@ let directives = [
             ['==', ['get', 'natural'], 'water'],
             ['==', ['get', 'water'], 'lake'],
         ],
-        'fill-color': colorScheme.naturalBackgroundWaterFillColor,
+        'fill-color': theme.naturalBackgroundWaterFillColor,
     },
 ];
 

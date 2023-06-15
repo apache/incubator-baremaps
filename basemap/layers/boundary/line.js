@@ -10,28 +10,28 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
-import colorScheme from "../../theme.js";
+import theme from "../../theme.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'admin_level'], "0"],
-        'line-color': colorScheme.boundaryLineAdminLevelLineColor,
+        'line-color': theme.boundaryLineAdminLevelLineColor,
     },
     {
         filter: ['==', ['get', 'admin_level'], "1"],
-        'line-color': colorScheme.boundaryLineAdminLevelLineColor,
+        'line-color': theme.boundaryLineAdminLevelLineColor,
     },
     {
         filter: ['==', ['get', 'admin_level'], "2"],
-        'line-color': colorScheme.boundaryLineAdminLevelLineColor,
+        'line-color': theme.boundaryLineAdminLevelLineColor,
     },
     {
         filter: ['==', ['get', 'admin_level'], "3"],
-        'line-color': colorScheme.boundaryLineAdminLevelLineColor,
+        'line-color': theme.boundaryLineAdminLevelLineColor,
     },
     {
         filter: ['==', ['get', 'admin_level'], "4"],
-        'line-color': colorScheme.boundaryLineAdminLevelLineColor,
+        'line-color': theme.boundaryLineAdminLevelLineColor,
     },
 ];
 

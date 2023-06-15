@@ -10,13 +10,13 @@
  the License.
  **/
 import {asLayerObject} from "../../utils/utils.js";
-import colorScheme from "../../theme.js";
+import theme from "../../theme.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'amenity'], 'fountain'],
-        'fill-color': colorScheme.amenityFountainFillColor,
-        'fill-outline-color': colorScheme.amenityFountainFillOutlineColor,
+        'fill-color': theme.amenityFountainFillColor,
+        'fill-outline-color': theme.amenityFountainFillOutlineColor,
     },
 ];
 

@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../theme.js";
+ import theme from "../../theme.js";
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 
 
@@ -20,7 +20,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
              ['==', ['get', 'highway'], 'construction'],
              ['==', ['get', 'construction'], 'motorway'],
          ],
-         'line-color': colorScheme.constructionDashConstructionMotorwayLineColor,
+         'line-color': theme.constructionDashConstructionMotorwayLineColor,
          'road-width': 16,
      },
      {
@@ -29,7 +29,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'trunk'],
          ],
-         'line-color': colorScheme.constructionDashConstructionTrunkLineColor,
+         'line-color': theme.constructionDashConstructionTrunkLineColor,
          'road-width': 12,
      },
      {
@@ -38,7 +38,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'primary'],
          ],
-         'line-color': colorScheme.constructionDashConstructionPrimaryLineColor,
+         'line-color': theme.constructionDashConstructionPrimaryLineColor,
          'road-width': 14,
      },
      {
@@ -47,7 +47,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'secondary'],
          ],
-         'line-color': colorScheme.constructionDashConstructionSecondaryLineColor,
+         'line-color': theme.constructionDashConstructionSecondaryLineColor,
          'road-width': 12,
      },
      {
@@ -56,7 +56,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'tertiary'],
          ],
-         'line-color': colorScheme.constructionDashConstructionTertiaryLineColor,
+         'line-color': theme.constructionDashConstructionTertiaryLineColor,
          'road-width': 12,
      },
      {
@@ -65,7 +65,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'unclassified'],
          ],
-         'line-color': colorScheme.constructionDashConstructionUnclassifiedLineColor,
+         'line-color': theme.constructionDashConstructionUnclassifiedLineColor,
          'road-width': 8,
      },
      {
@@ -74,7 +74,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'residential'],
          ],
-         'line-color': colorScheme.constructionDashConstructionResidentialLineColor,
+         'line-color': theme.constructionDashConstructionResidentialLineColor,
          'road-width': 8,
      },
      {
@@ -83,7 +83,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'living_street'],
          ],
-         'line-color': colorScheme.constructionDashConstructionLivingStreetLineColor,
+         'line-color': theme.constructionDashConstructionLivingStreetLineColor,
          'road-width': 8,
      },
      {
@@ -92,7 +92,7 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
             ['==', ['get', 'highway'], 'construction'],
             ['==', ['get', 'construction'], 'service'],
          ],
-         'line-color': colorScheme.constructionDashConstructionServiceLineColor,
+         'line-color': theme.constructionDashConstructionServiceLineColor,
          'road-width': 8,
      },
  ]
@@ -108,4 +108,3 @@ import {asLayerObject, withSortKeys} from "../../utils/utils.js";
          'line-join': 'round',
      },
  });
- 

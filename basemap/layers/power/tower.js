@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../theme.js";
+ import theme from "../../theme.js";
 
 
 export default {
@@ -29,7 +29,7 @@ export default {
     },
     "paint": {
         'circle-pitch-alignment': 'map',
-        "circle-color": colorScheme.powerTowerCircleColor,
+        "circle-color": theme.powerTowerCircleColor,
         "circle-radius": [
             "interpolate",
             ["exponential", 1],

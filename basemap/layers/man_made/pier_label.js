@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../theme.js";
+ import theme from "../../theme.js";
 
 export default {
     id: 'man_made_pier_label',
@@ -36,7 +36,7 @@ export default {
     },
     minzoom: 15,
     paint: {
-        'text-halo-color': colorScheme.manMadePierLabelTextHaloColor,
+        'text-halo-color': theme.manMadePierLabelTextHaloColor,
         'text-halo-width': 1.2,
     },
 }

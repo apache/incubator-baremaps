@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../theme.js";
+ import theme from "../../theme.js";
 
 
 export default {
@@ -30,7 +30,7 @@ export default {
             "interpolate", ["exponential", 1.2], ["zoom"], 4, 0, 20,
             12
         ],
-        "line-color": colorScheme.waterwayTunnelCasingLineColor,
+        "line-color": theme.waterwayTunnelCasingLineColor,
         "line-dasharray": [0.3, 0.15]
     }
 }

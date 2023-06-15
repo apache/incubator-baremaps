@@ -10,17 +10,17 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
-import colorScheme from "../../theme.js";
+import theme from "../../theme.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'highway'], 'bridleway'],
-        'line-color': colorScheme.highwayDashBridlewayLineColor,
+        'line-color': theme.highwayDashBridlewayLineColor,
         'road-width': 1,
     },
     {
         filter: ['==', ['get', 'highway'], 'busway'],
-        'line-color': colorScheme.highwayDashBuswayLineColor,
+        'line-color': theme.highwayDashBuswayLineColor,
         'road-width': 1,
     },
     {
@@ -33,7 +33,7 @@ let directives = [
                 ['==', ['get', 'bicycle'], 'designated'],
             ],
         ],
-        'line-color': colorScheme.highwayDashCyclewayLineColor,
+        'line-color': theme.highwayDashCyclewayLineColor,
         'road-width': 1,
     },
     {
@@ -50,7 +50,7 @@ let directives = [
                 ['in', ['get', 'access'], ['literal', ['private', 'no']]],
             ],
         ],
-        'line-color': colorScheme.highwayDashFootwayLineColor,
+        'line-color': theme.highwayDashFootwayLineColor,
         'road-width': 1,
     },
     {
@@ -72,12 +72,12 @@ let directives = [
                 ['!=', ['get', 'bicycle'], 'designated'],
             ],
         ],
-        'line-color': colorScheme.highwayDashHighwayLineColor,
+        'line-color': theme.highwayDashHighwayLineColor,
         'road-width': 1,
     },
     {
         filter: ['all', ['==', ['get', 'highway'], 'track']],
-        'line-color': colorScheme.highwayDashTrackLineColor,
+        'line-color': theme.highwayDashTrackLineColor,
         'road-width': 1,
     },
 ];

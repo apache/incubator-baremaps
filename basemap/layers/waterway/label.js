@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../theme.js";
+ import theme from "../../theme.js";
 
 
 export default {
@@ -37,8 +37,8 @@ export default {
         'symbol-placement': 'line',
     },
     paint: {
-        'text-color': colorScheme.waterwayLabelTextColor,
-        'text-halo-color': colorScheme.waterwayLabelTextHaloColor,
+        'text-color': theme.waterwayLabelTextColor,
+        'text-halo-color': theme.waterwayLabelTextHaloColor,
         'text-halo-width': 1.2,
     },
 }

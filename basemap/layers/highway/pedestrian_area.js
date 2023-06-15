@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../theme.js";
+ import theme from "../../theme.js";
 
 export default {
     id: 'pedestrian_area',
@@ -33,7 +33,7 @@ export default {
         ],
     ],
     paint: {
-        'fill-color': colorScheme.pedestrianAreaPaintFillColor,
+        'fill-color': theme.pedestrianAreaPaintFillColor,
         'fill-antialias': true,
     },
 }

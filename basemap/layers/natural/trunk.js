@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../theme.js";
+ import theme from "../../theme.js";
 
 export default {
     id: 'natural_trunk',
@@ -22,7 +22,7 @@ export default {
     },
     paint: {
         'circle-pitch-alignment': 'map',
-        'circle-color': colorScheme.naturalTrunkCircleColor,
+        'circle-color': theme.naturalTrunkCircleColor,
         'circle-radius': [
             'interpolate',
             ['exponential', 2],

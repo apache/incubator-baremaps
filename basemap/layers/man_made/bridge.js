@@ -10,12 +10,12 @@
  the License.
  **/
 import {asLayerObject} from "../../utils/utils.js";
-import colorScheme from "../../theme.js";
+import theme from "../../theme.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'man_made'], 'bridge'],
-        'fill-color': colorScheme.manMadeBridgeFillColor,
+        'fill-color': theme.manMadeBridgeFillColor,
     },
 ];
 

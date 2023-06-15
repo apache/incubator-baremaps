@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
-import colorScheme from "../../theme.js";
+import theme from "../../theme.js";
 import {asLayerObject, withSymbolSortKeys} from "../../utils/utils.js";
 
 let directives = [
@@ -19,7 +19,7 @@ let directives = [
             ['==', ['get', 'capital'], 'yes'],
             ['==', ['get', 'place'], 'city']
         ],
-        'label-color': colorScheme.pointLabelCityLabelColor,
+        'label-color': theme.pointLabelCityLabelColor,
         'label-size': 16,
         'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
     },
@@ -29,25 +29,25 @@ let directives = [
             ['!=', ['get', 'capital'], 'yes'],
             ['==', ['get', 'place'], 'city']
         ],
-        'label-color': [colorScheme.pointLabelCityFilterOneLabelColor,colorScheme.pointLabelCityFilterTwoLabelColor],
+        'label-color': [theme.pointLabelCityFilterOneLabelColor,theme.pointLabelCityFilterTwoLabelColor],
         'label-size': 12,
         'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
     },
     {
         filter: ['==', ['get', 'place'], 'town'],
         'label-size': 10,
-        'label-color': [colorScheme.pointLabelTownFilterOneLabelColor,colorScheme.pointLabelTownFilterTwoLabelColor ],
+        'label-color': [theme.pointLabelTownFilterOneLabelColor,theme.pointLabelTownFilterTwoLabelColor ],
 
     },
     {
         filter: ['==', ['get', 'place'], 'village'],
         'label-size': 10,
-        'label-color': colorScheme.pointLabelVillageLabelColor,
+        'label-color': theme.pointLabelVillageLabelColor,
     },
     {
         filter: ['==', ['get', 'place'], 'locality'],
         'label-size': 8,
-        'label-color': colorScheme.pointLabelLocalityLabelColor,
+        'label-color': theme.pointLabelLocalityLabelColor,
     },
     // {
     //     filter: [
@@ -64,7 +64,7 @@ let directives = [
     //         ]
     //     ],
     //     'text-size': 11,
-    //     'text-color': colorScheme.pointLabelPlaceTextColor,
+    //     'text-color': theme.pointLabelPlaceTextColor,
     // },
 
 ];
@@ -82,7 +82,7 @@ export default asLayerObject(withSymbolSortKeys(directives), {
         'text-field': ['get', 'name'],
     },
     paint: {
-        'text-halo-color': colorScheme.pointLabelPaintTextHaloColor,
+        'text-halo-color': theme.pointLabelPaintTextHaloColor,
         'text-halo-width': 1,
     },
 });

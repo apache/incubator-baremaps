@@ -10,13 +10,13 @@
  the License.
  **/
 import {withFillSortKey} from "../../utils/utils.js";
-import colorScheme from "../../theme.js";
+import theme from "../../theme.js";
 
 let directives =  [
     {
         filter: ['==', 'leisure', 'nature_reserve'],
         'line-width': 5,
-        'line-color': colorScheme.LeisureNatureReserveLineColor,
+        'line-color': theme.leisureNatureReserveLineColor,
     },
 ];
 

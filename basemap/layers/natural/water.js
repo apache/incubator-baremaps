@@ -9,7 +9,7 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
- import colorScheme from "../../theme.js";
+ import theme from "../../theme.js";
 
 export default {
     id: 'natural_water',
@@ -25,7 +25,7 @@ export default {
     directives: [
         {
             filter: ['==', ['get', 'natural'], 'water'],
-            'fill-color': colorScheme.naturalWaterFillColor,
+            'fill-color': theme.naturalWaterFillColor,
             'fill-sort-key': 10,
         }
     ]
