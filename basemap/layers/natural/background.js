@@ -22,6 +22,10 @@ let directives = [
         'fill-color': theme.naturalBackgroundWoodFillColor
     },
     {
+        filter: ['==', ['get', 'natural'], 'scrub'],
+        'fill-color': theme.naturalOverlayScrubFillColor
+    },
+    {
         filter: ['==', ['get', 'natural'], 'heath'],
         'fill-color': theme.naturalBackgroundHeathFillColor
     },
@@ -54,7 +58,6 @@ let directives = [
 export default asLayerObject(withSortKeys(directives), {
     id: 'natural',
     type: 'fill',
-    //filter: ['==', ['get', 'type'], 'Polygon'],
     source: 'baremaps',
     'source-layer': 'natural',
     layout: {

@@ -18,6 +18,43 @@ let directives = [
         'fill-color': theme.leisureOverlayMarinaFillColor,
         'fill-outline-color': theme.leisureOverlayMarinaFillOutlineColor,
     },
+    {
+        filter: ['==', ['get', 'leisure'], 'swimming_pool'],
+        'fill-color': theme.leisureBackgroundSwimmingPoolFillColor,
+        'fill-outline-color': theme.leisureBackgroundSwimmingPoolFillOutlineColor,
+    },
+    {
+        filter: ['==', ['get', 'leisure'], 'fitness_station'],
+        'fill-color': theme.leisureBackgroundFitnessStationFillColor,
+        'fill-outline-color': theme.leisureBackgroundFitnessStationFillOutlineColor,
+    },
+    {
+        filter: ['==', ['get', 'leisure'], 'miniature_golf'],
+        'fill-color': theme.leisureBackgroundMiniatureGolfFillColor,
+    },
+    {
+        filter: ['==', ['get', 'leisure'], 'ice_rink'],
+        'fill-color': theme.leisureBackgroundIceRinkFillColor,
+        'fill-outline-color': theme.leisureBackgroundIceRinkFillOutlineColor,
+    },
+    {
+        filter: ['==', ['get', 'leisure'], 'dog_park'],
+        'fill-color': theme.leisureBackgroundDogParkFillColor,
+    },
+    {
+        filter: ['==', ['get', 'leisure'], 'playground'],
+        'fill-color': theme.leisureBackgroundPlayGroundFillColor,
+        'fill-outline-color': theme.leisureBackgroundPlayGroundFillOutlineColor,
+    },
+    {
+        filter: ['==', ['get', 'leisure'], 'pitch'],
+        'fill-color': theme.leisureBackgroundPitchFillColor,
+        'fill-outline-color': theme.leisureBackgroundPitchFillOutlineColor,
+    },
+    {
+        filter: ['==', ['get', 'leisure'], 'stadium'],
+        'fill-color': theme.leisureBackgroundStadiumFillColor,
+    },
 ];
 
 export default asLayerObject(withSortKeys(directives), {
