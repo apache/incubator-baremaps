@@ -16,6 +16,7 @@ export default {
     type: 'fill',
     source: 'baremaps',
     'source-layer': 'building',
+    filter: ['!=', ['get', 'building'], 'no'],
     layout: {
         visibility: 'visible',
     },
