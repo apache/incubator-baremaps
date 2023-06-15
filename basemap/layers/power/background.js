@@ -9,6 +9,9 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
+import theme from "../../theme.js";
+
+
 export default {
     id: 'power_plant',
     type: 'fill',
@@ -19,8 +22,8 @@ export default {
         visibility: 'visible',
     },
     paint: {
-        'fill-color': 'rgb(226, 203, 222)',
+        'fill-color': theme.powerBackgroundPowerPlantFillColor,
         'fill-antialias': true,
-        'fill-outline-color': 'rgb(171, 171, 171)',
+        'fill-outline-color': theme.powerBackgroundPowerPlantFillOutlineColor,
     },
 }

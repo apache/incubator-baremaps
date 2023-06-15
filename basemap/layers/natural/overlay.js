@@ -10,19 +10,20 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
+import theme from "../../theme.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'natural'], 'beach'],
-        'fill-color': 'rgb(255, 241, 186)'
+        'fill-color': theme.naturalOverlayBeachFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'sand'],
-        'fill-color': 'rgb(240, 229, 196)'
+        'fill-color': theme.naturalOverlaySandFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'scrub'],
-        'fill-color': 'rgb(201, 216, 173)'
+        'fill-color': theme.naturalOverlayScrubFillColor
     },
     {
         filter: [
@@ -30,11 +31,11 @@ let directives = [
             ['==', ['get', 'natural'], 'water'],
             ['!=', ['get', 'water'], 'lake'],
         ],
-        'fill-color': 'rgb(170, 211, 223)',
+        'fill-color': theme.naturalOverlayLakeFillColor
     },
     {
         filter: ['==', ['get', 'natural'], 'wetland'],
-        'fill-color': 'rgb(213, 231, 211)'
+        'fill-color': theme.naturalOverlayWetlandFillColor
     },
 ];
 

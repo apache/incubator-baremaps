@@ -10,107 +10,108 @@
  the License.
  **/
 import {withFillSortKey, asLayoutProperty, asPaintProperty} from "../../utils/utils.js";
+import theme from "../../theme.js";
 
 let directives = [
     {
         filter: ['==', ['get', 'landuse'], 'village_green'],
-        'fill-color': 'rgb(205, 235, 176)',
+        'fill-color': theme.landuseBackgroundVillageGreenFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'salt_pond'],
-        'fill-color': 'rgb(170, 211, 223)',
+        'fill-color': theme.landuseBackgroundSaltPondFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'religious'],
-        'fill-color': 'rgb(205, 204, 201)',
+        'fill-color': theme.landuseBackgroundReligiousFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'recreation_ground'],
-        'fill-color': 'rgb(223, 252, 226)',
+        'fill-color': theme.landuseBackgroundRecreationGroundFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'railway'],
-        'fill-color': 'rgb(236, 218, 233)',
+        'fill-color': theme.landuseBackgroundRailwayFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'quarry'],
-        'fill-color': 'rgb(195, 194, 194)',
+        'fill-color': theme.landuseBackgroundQuarryFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'plant_nursery'],
-        'fill-color': 'rgb(174, 223, 162)',
+        'fill-color': theme.landuseBackgroundPlantNurseryFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'military'],
-        'fill-color': 'rgb(242, 228, 221)',
+        'fill-color': theme.landuseBackgroundMilitaryFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'landfill'],
-        'fill-color': 'rgb(182, 182, 144)',
+        'fill-color': theme.landuseBackgroundLandfillFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'greenfield'],
-        'fill-color': 'rgb(242, 238, 232)',
+        'fill-color': theme.landuseBackgroundGreenfieldFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'garages'],
-        'fill-color': 'rgb(222, 221, 204)',
+        'fill-color': theme.landuseBackgroundGaragesFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'cemetery'],
-        'fill-color': 'rgb(170, 203, 175)',
+        'fill-color': theme.landuseBackgroundCemeteryFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'brownfield'],
-        'fill-color': 'rgb(182, 182, 144)',
+        'fill-color': theme.landuseBackgroundBrowmfieldFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'basin'],
-        'fill-color': 'rgb(170, 211, 223)',
+        'fill-color': theme.landuseBackgroundBasinFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'vineyard'],
-        'fill-color': 'rgb(172, 225, 161)',
+        'fill-color': theme.landuseBackgroundVineyardFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'meadow'],
-        'fill-color': 'rgb(205, 235, 176)',
+        'fill-color': theme.landuseBackgroundMeadowFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'farmyard'],
-        'fill-color': 'rgb(238, 213, 179)',
+        'fill-color': theme.landuseBackgroundFarmyardFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'farmland'],
-        'fill-color': 'rgb(237, 240, 214)',
+        'fill-color': theme.landuseBackgroundFarmlandFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'allotments'],
-        'fill-color': 'rgb(202, 224, 191)',
+        'fill-color': theme.landuseBackgroundAllotmentsFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'retail'],
-        'fill-color': 'rgb(254, 213, 208)',
+        'fill-color': theme.landuseBackgroundRetailFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'industrial'],
-        'fill-color': 'rgb(235, 219, 232)',
+        'fill-color': theme.landuseBackgroundIndustrialFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'residential'],
-        'fill-color': 'rgb(225, 225, 225)',
+        'fill-color': theme.landuseBackgroundResidentialFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'construction'],
-        'fill-color': 'rgb(199, 199, 180)',
+        'fill-color': theme.landuseBackgroundConstructionFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'commercial'],
-        'fill-color': 'rgb(242, 216, 217)',
+        'fill-color': theme.landuseBackgroundCommercialFillColor,
     },
     {
         filter: ['==', ['get', 'landuse'], 'pedestrian'],
-        'fill-color': 'rgb(221, 221, 233)',
+        'fill-color': theme.landuseBackgroundPedestrianFillColor,
     },
 ].map(withFillSortKey);
 

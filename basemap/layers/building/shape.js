@@ -9,6 +9,8 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
+import theme from "../../theme.js";
+
 export default {
     id: 'building',
     type: 'fill',
@@ -18,8 +20,8 @@ export default {
         visibility: 'visible',
     },
     paint: {
-        'fill-color': 'rgb(216, 208, 201)',
+        'fill-color': theme.buildingShapeFillColor,
         'fill-antialias': true,
-        'fill-outline-color': 'rgb(199, 185, 174)',
+        'fill-outline-color': theme.buildingShapeFillOutlineColor,
     },
 }

@@ -10,6 +10,7 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
+import theme from "../../theme.js";
 
 let directives = [
     {
@@ -18,7 +19,7 @@ let directives = [
             ['==', ['get', 'highway'], 'motorway'],
             ['==', ['get', 'highway'], 'motorway_link'],
         ],
-        'line-color': 'rgb(223, 55, 106)',
+        'line-color': theme.bridgeOutlineMotorwayLineColor,
         'road-gap-width': 12,
         'road-width': 2,
     },
@@ -28,7 +29,7 @@ let directives = [
             ['==', ['get', 'highway'], 'trunk'],
             ['==', ['get', 'highway'], 'trunk_link'],
         ],
-        'line-color': 'rgb(212, 91, 54)',
+        'line-color': theme.bridgeOutlineTrunkLineColor,
         'road-gap-width': 8,
         'road-width': 2,
     },
@@ -38,7 +39,7 @@ let directives = [
             ['==', ['get', 'highway'], 'primary'],
             ['==', ['get', 'highway'], 'primary_link'],
         ],
-        'line-color': 'rgb(173, 132, 56)',
+        'line-color': theme.bridgeOutlinePrimaryLineColor,
         'road-gap-width': 10,
         'road-width': 2,
     },
@@ -48,7 +49,7 @@ let directives = [
             ['==', ['get', 'highway'], 'secondary'],
             ['==', ['get', 'highway'], 'secondary_link'],
         ],
-        'line-color': 'rgb(139, 149, 60)',
+        'line-color': theme.bridgeOutlineSecondaryLineColor,
         'road-gap-width': 8,
         'road-width': 2,
     },
@@ -58,31 +59,31 @@ let directives = [
             ['==', ['get', 'highway'], 'tertiary'],
             ['==', ['get', 'highway'], 'tertiary_link'],
         ],
-        'line-color': 'rgb(171, 170, 169)',
+        'line-color': theme.bridgeOutlineTertiaryLineColor,
         'road-gap-width': 8,
         'road-width': 2,
     },
     {
         filter: ['==', ['get', 'highway'], 'unclassified'],
-        'line-color': 'rgb(191, 185, 184)',
+        'line-color': theme.bridgeOutlineUnclassifiedLineColor,
         'road-gap-width': 4,
         'road-width': 2,
     },
     {
         filter: ['==', ['get', 'highway'], 'residential'],
-        'line-color': 'rgb(191, 185, 184)',
+        'line-color': theme.bridgeOutlineResidentialLineColor,
         'road-gap-width': 4,
         'road-width': 2,
     },
     {
         filter: ['==', ['get', 'highway'], 'living_street'],
-        'line-color': 'rgb(186, 186, 186)',
+        'line-color': theme.bridgeOutlineLivingStreetLineColor,
         'road-gap-width': 4,
         'road-width': 2,
     },
     {
         filter: ['==', ['get', 'highway'], 'service'],
-        'line-color': 'rgb(192, 189, 189)',
+        'line-color': theme.bridgeOutlineServiceLineColor,
         'road-gap-width': 4,
         'road-width': 2,
     },
@@ -92,7 +93,7 @@ let directives = [
             ['==', ['get', 'highway'], 'pedestrian'],
             ['!=', ['get', '$type'], 'Polygon'],
         ],
-        'line-color': 'rgb(166, 165, 163)',
+        'line-color': theme.bridgeOutlinePedestrianLineColor,
         'road-gap-width': 2,
         'road-width': 2,
     },

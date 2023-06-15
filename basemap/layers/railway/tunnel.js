@@ -11,6 +11,7 @@
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 
+
 import {directives} from './line.js'
 
 export default asLayerObject(withSortKeys(directives), {
@@ -25,6 +26,6 @@ export default asLayerObject(withSortKeys(directives), {
         'line-join': 'round',
     },
     'paint': {
-        'line-dasharray': [1,2]
+        'line-dasharray': [1, 2]
     },
 });

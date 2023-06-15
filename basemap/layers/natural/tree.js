@@ -9,6 +9,8 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
+import theme from "../../theme.js";
+
 export default {
     id: 'natural_tree',
     type: 'circle',
@@ -20,7 +22,7 @@ export default {
     },
     paint: {
         'circle-pitch-alignment': 'map',
-        'circle-color': 'rgb(113, 205, 111)',
+        'circle-color': theme.naturalTreeCircleColor,
         'circle-radius': [
             'interpolate',
             ['exponential', 2],

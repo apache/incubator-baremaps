@@ -9,6 +9,9 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
+import theme from "../../theme.js";
+
+
 export default {
     "id": "tourism_zoo_casing",
     "type": "line",
@@ -19,7 +22,7 @@ export default {
         "visibility": "visible"
     },
     "paint": {
-        "line-color": "rgba(182, 145, 156, 1)",
+        "line-color": theme.tourismStyleZooFillTourismZooCasingLineColor,
         "line-width": [
             "interpolate", ["exponential", 1.2], ["zoom"], 13, 3, 16,
             3, 19, 10

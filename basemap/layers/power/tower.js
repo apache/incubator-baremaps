@@ -9,6 +9,9 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
+import theme from "../../theme.js";
+
+
 export default {
     "id": "power_tower",
     "type": "circle",
@@ -26,7 +29,7 @@ export default {
     },
     "paint": {
         'circle-pitch-alignment': 'map',
-        "circle-color": "rgb(171, 171, 171)",
+        "circle-color": theme.powerTowerCircleColor,
         "circle-radius": [
             "interpolate",
             ["exponential", 1],

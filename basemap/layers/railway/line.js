@@ -10,6 +10,8 @@
  the License.
  **/
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
+import theme from "../../theme.js";
+
 
 export let directives = [
     {
@@ -18,7 +20,7 @@ export let directives = [
             ['==', ['get', 'railway'], 'rail'],
             ['!', ['has', 'service']],
         ],
-        'line-color': 'rgb(112,112,112)',
+        'line-color': theme.railwayLineRailLineColor,
         'road-width': 10,
     },
     {
@@ -26,62 +28,62 @@ export let directives = [
             ['==', ['get', 'railway'], 'rail'],
             ['has', 'service']
         ],
-        'line-color': 'rgb(160,160,160)',
+        'line-color': theme.railwayLineAllRailsLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'subway'],
-        'line-color': 'rgb(160,160,160)',
+        'line-color': theme.railwayLineSubwayLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'tram'],
-        'line-color': 'rgb(77,77,77)',
+        'line-color': theme.railwayLineTramLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'preserved'],
-        'line-color': 'rgb(220,220,220)',
+        'line-color': theme.railwayLinePreservedLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'funicular'],
-        'line-color': 'rgb(100,100,100)',
+        'line-color': theme.railwayLineFunicularLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'monorail'],
-        'line-color': 'rgb(126,126,126)',
+        'line-color': theme.railwayLineMonorailLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'light_rail'],
-        'line-color': 'rgb(100,100,100)',
+        'line-color': theme.railwayLineLigthRailLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'construction'],
-        'line-color': 'rgb(170,170,170)',
+        'line-color': theme.railwayLineConstructionLineColor,
         'road-width': 6,
     },
     {
         'filter': ['==', ['get', 'railway'], 'abandoned'],
-        'line-color': 'rgb(100,100,100)',
+        'line-color': theme.railwayLineAbandonedLineColor,
         'road-width': 2,
     },
     {
         'filter': ['==', ['get', 'railway'], 'disused'],
-        'line-color': 'rgb(100,100,100)',
+        'line-color': theme.railwayLineisuedLineColor,
         'road-width': 2,
     },
     {
         'filter': ['==', ['get', 'railway'], 'miniature'],
-        'line-color': 'rgb(158,158,158)',
+        'line-color': theme.railwayLineMiniatureLineColor,
         'road-width': 2,
     },
     {
         'filter': ['==', ['get', 'railway'], 'narrow_gauge'],
-        'line-color': 'rgb(100,100,100)',
+        'line-color': theme.railwayLineMarrowGaugeLineColor,
         'road-width': 2,
     },
 ];

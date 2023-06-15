@@ -9,6 +9,8 @@
  or implied. See the License for the specific language governing permissions and limitations under
  the License.
  **/
+import theme from "../../theme.js";
+
 export default {
     id: 'aerialway_line',
     type: 'line',
@@ -20,6 +22,6 @@ export default {
         visibility: 'visible',
     },
     paint: {
-        'line-color': 'rgb(177, 177, 175)',
+        'line-color': theme.aerialwayStyleLinePaintLineColor,
     },
 }

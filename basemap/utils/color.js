@@ -37,7 +37,7 @@ function darkenValue(value, percent) {
     return Math.round(value + (255 - value) * percent);
 }
 
-function readColor(color) {
+export function readColor(color) {
     let rgb = color.replace(/\s*/g, '').match(/rgb\((\d*)\,(\d*)\,(\d*)\)/)
     if (rgb != null) {
         return {
