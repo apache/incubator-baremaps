@@ -15,7 +15,7 @@ import theme from "../../theme.js";
 let directives = [
     {
         filter: ['==', ['get', 'ocean'], 'water'],
-        'fill-color': theme.OceanWaterFillColor,
+        'fill-color': theme.oceanWaterFillColor,
         'fill-sort-key': 10,
     },
 ];
