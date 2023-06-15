@@ -14,6 +14,7 @@ export default {
     amenityFountainFillOutlineColor: 'rgb(170, 211, 223)',
     amenityOverlayMotorcycleParkingFillColor: 'rgb(238, 238, 238)',
     amenityOverlayParkingFillColor: 'rgb(238, 238, 238)',
+    amenityOverlayParkingFillOutlineColor: 'rgb(205, 203, 199)',
     attractionStyleWaterSlideLineColor: 'rgba(170, 224, 203, 1)',
     backgroundStyleBackgroundColor: 'rgb(242, 239, 233)',
     barrierStyleGuardRailLineColor: 'rgba(139, 177, 162, 1)',
