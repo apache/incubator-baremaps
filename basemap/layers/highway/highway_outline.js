@@ -12,7 +12,7 @@
 import {asLayerObject, withSortKeys} from "../../utils/utils.js";
 import theme from "../../theme.js";
 
-let directives =[
+let directives = [
     {
         filter: [
             'any',

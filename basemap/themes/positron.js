@@ -3,7 +3,7 @@ import * as importedTools from "./tools.js";
 
 export function positronScheme(string) {
     const table = importedTools.cutRgbString(string)
-    let newColor = positronColorCalculator(table);    
+    let newColor = positronColorCalculator(table);
 
     return importedTools.giveNewColorString(table, newColor, newColor, newColor);
 };

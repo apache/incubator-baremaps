@@ -1,4 +1,3 @@
-
 export const min = 0;
 export const max = 255;
 
@@ -16,7 +15,8 @@ export function cutRgbString(color) {
             parseInt(rgb[3]),
             1,
         ]
-    };
+    }
+    ;
     let rgba = color.replace(/\s*/g, '').match(/rgba\((\d*)\,(\d*)\,(\d*)\,(.*)\)/)
     if (rgba != null) {
 
@@ -26,10 +26,11 @@ export function cutRgbString(color) {
             parseInt(rgba[3]),
             parseFloat(rgba[4]),
         ]
-    };
+    }
+    ;
     return null;
 }
 
-export function clamp(value){
-    return Math.min(Math.max(value, min),max);
+export function clamp(value) {
+    return Math.min(Math.max(value, min), max);
 }

@@ -11,6 +11,7 @@
  **/
 import {asLayerObject, withFillSortKey} from "../../utils/utils.js";
 import theme from "../../theme.js";
+
 let directives = [
     {
         filter: ['==', ['get', 'landuse'], 'grass'],

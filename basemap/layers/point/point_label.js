@@ -29,14 +29,14 @@ let directives = [
             ['!=', ['get', 'capital'], 'yes'],
             ['==', ['get', 'place'], 'city']
         ],
-        'label-color': [theme.pointLabelCityFilterOneLabelColor,theme.pointLabelCityFilterTwoLabelColor],
+        'label-color': [theme.pointLabelCityFilterOneLabelColor, theme.pointLabelCityFilterTwoLabelColor],
         'label-size': 12,
         'symbol-sort-key': ["-", ["to-number", ['get', 'population'], 0]],
     },
     {
         filter: ['==', ['get', 'place'], 'town'],
         'label-size': 10,
-        'label-color': [theme.pointLabelTownFilterOneLabelColor,theme.pointLabelTownFilterTwoLabelColor ],
+        'label-color': [theme.pointLabelTownFilterOneLabelColor, theme.pointLabelTownFilterTwoLabelColor],
 
     },
     {
