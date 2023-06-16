@@ -1,3 +1,3 @@
-import theme from "./themes/light.js";
+import theme from "./themes/default.js";
 
 export default theme;
