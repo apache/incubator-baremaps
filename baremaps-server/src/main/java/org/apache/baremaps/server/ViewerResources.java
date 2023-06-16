@@ -94,15 +94,6 @@ public class ViewerResources {
   }
 
   @GET
-  @javax.ws.rs.Path("style.json")
-  @Produces(MediaType.APPLICATION_JSON)
-  public Style getStyle() throws IOException {
-    var config = configReader.read(style);
-    var object = objectMapper.readValue(config, Style.class);
-    return object;
-  }
-
-  @GET
   @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
   public TileJSON getTileset() throws IOException {

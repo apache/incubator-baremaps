@@ -25,13 +25,11 @@ import java.util.function.Supplier;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.postgres.PostgresUtils;
-import org.apache.baremaps.server.ClassPathResources;
-import org.apache.baremaps.server.CorsFilter;
-import org.apache.baremaps.server.ServerResources;
-import org.apache.baremaps.server.TileResources;
+import org.apache.baremaps.server.*;
 import org.apache.baremaps.tilestore.TileCache;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
+import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -55,11 +53,11 @@ public class Serve implements Callable<Integer> {
 
   @Option(names = {"--tileset"}, paramLabel = "TILESET", description = "The tileset file.",
       required = true)
-  private Path tileset;
+  private Path tilesetPath;
 
   @Option(names = {"--style"}, paramLabel = "STYLE", description = "The style file.",
       required = true)
-  private Path style;
+  private Path stylePath;
 
   @Option(names = {"--host"}, paramLabel = "HOST", description = "The host of the server.")
   private String host = "localhost";
@@ -71,20 +69,24 @@ public class Serve implements Callable<Integer> {
   public Integer call() throws Exception {
     var objectMapper = objectMapper();
     var configReader = new ConfigReader();
-    var tileset = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
+    var tileset = objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
     var caffeineSpec = CaffeineSpec.parse(cache);
     var datasource = PostgresUtils.dataSource(tileset.getDatabase());
 
-    var tileStoreType = new TypeLiteral<Supplier<TileStore>>() {};
+    var tileStoreSupplierType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStore = new PostgresTileStore(datasource, tileset);
     var tileCache = new TileCache(tileStore, caffeineSpec);
     var tileStoreSupplier = (Supplier<TileStore>) () -> tileCache;
 
-    // Configure the application
+    var styleSupplierType = new TypeLiteral<Supplier<Style>>() {};
+    var style = objectMapper.readValue(configReader.read(this.stylePath), Style.class);
+    var styleSupplier = (Supplier<Style>) () -> style;
+
     var application =
         new ResourceConfig()
             .register(CorsFilter.class)
             .register(ServerResources.class)
+            .register(StyleRessources.class)
             .register(TileResources.class)
             .register(ClassPathResources.class)
             .register(newContextResolver(objectMapper))
@@ -93,11 +95,11 @@ public class Serve implements Callable<Integer> {
               protected void configure() {
                 bind("assets").to(String.class).named("directory");
                 bind("server.html").to(String.class).named("index");
-                bind(Serve.this.tileset).to(Path.class).named("tileset");
-                bind(style).to(Path.class).named("style");
+                bind(tilesetPath).to(Path.class).named("tileset");
                 bind(tileCache).to(TileStore.class);
                 bind(objectMapper).to(ObjectMapper.class);
-                bind(tileStoreSupplier).to(tileStoreType);
+                bind(tileStoreSupplier).to(tileStoreSupplierType);
+                bind(styleSupplier).to(styleSupplierType);
               }
             });
 

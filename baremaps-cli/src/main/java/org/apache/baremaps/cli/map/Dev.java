@@ -25,12 +25,10 @@ import java.util.function.Supplier;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.postgres.PostgresUtils;
-import org.apache.baremaps.server.ClassPathResources;
-import org.apache.baremaps.server.CorsFilter;
-import org.apache.baremaps.server.TileResources;
-import org.apache.baremaps.server.ViewerResources;
+import org.apache.baremaps.server.*;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
+import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -53,11 +51,11 @@ public class Dev implements Callable<Integer> {
 
   @Option(names = {"--tileset"}, paramLabel = "TILESET", description = "The tileset file.",
       required = true)
-  private Path tileset;
+  private Path tilesetPath;
 
   @Option(names = {"--style"}, paramLabel = "STYLE", description = "The style file.",
       required = true)
-  private Path style;
+  private Path stylePath;
 
   @Option(names = {"--host"}, paramLabel = "HOST", description = "The host of the server.")
   private String host = "localhost";
@@ -69,15 +67,26 @@ public class Dev implements Callable<Integer> {
   public Integer call() throws Exception {
     var configReader = new ConfigReader();
     var objectMapper = objectMapper();
-    var tileset = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
+    var tileset = objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
     var datasource = PostgresUtils.dataSource(tileset.getDatabase());
 
     // Configure the tile store
     var tileStoreType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStoreSupplier = (Supplier<TileStore>) () -> {
       try {
-        var tilesetObject = objectMapper.readValue(configReader.read(this.tileset), Tileset.class);
+        var tilesetObject = objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
         return new PostgresTileStore(datasource, tilesetObject);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    };
+
+    var styleSupplierType = new TypeLiteral<Supplier<Style>>() {};
+    var styleSupplier = (Supplier<Style>) () -> {
+      try {
+        var config = configReader.read(stylePath);
+        var object = objectMapper.readValue(config, Style.class);
+        return object;
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -87,6 +96,7 @@ public class Dev implements Callable<Integer> {
     var application = new ResourceConfig()
         .register(CorsFilter.class)
         .register(ViewerResources.class)
+        .register(StyleRessources.class)
         .register(TileResources.class)
         .register(ClassPathResources.class)
         .register(newContextResolver(objectMapper))
@@ -95,10 +105,10 @@ public class Dev implements Callable<Integer> {
           protected void configure() {
             bind("assets").to(String.class).named("directory");
             bind("viewer.html").to(String.class).named("index");
-            bind(Dev.this.tileset.toAbsolutePath()).to(Path.class).named("tileset");
-            bind(style.toAbsolutePath()).to(Path.class).named("style");
+            bind(tilesetPath.toAbsolutePath()).to(Path.class).named("tileset");
             bind(objectMapper).to(ObjectMapper.class);
             bind(tileStoreSupplier).to(tileStoreType);
+            bind(styleSupplier).to(styleSupplierType);
           }
         });
 
