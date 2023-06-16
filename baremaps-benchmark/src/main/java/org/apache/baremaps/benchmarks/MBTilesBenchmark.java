@@ -12,11 +12,13 @@
 
 package org.apache.baremaps.benchmarks;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import org.apache.baremaps.tilestore.TileCoord;
 import org.apache.baremaps.tilestore.TileStoreException;
@@ -33,20 +35,25 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @Fork(value = 1, warmups = 1)
 public class MBTilesBenchmark {
 
-  public Random random = new Random(0);
+  public SecureRandom random = new SecureRandom();
 
   @Param({"10", "100", "1000"})
   public int iterations;
+
+  private Path file;
 
   private MBTiles mbTiles;
 
   @Setup
   public void setup() throws IOException, TileStoreException {
-    var sqliteFile = File.createTempFile("baremaps", ".sqlite");
-    sqliteFile.deleteOnExit();
-    var sqliteDataSource = ExportVectorTiles.createDataSource(sqliteFile.toPath());
-    mbTiles = new MBTiles(sqliteDataSource);
+    file = Files.createTempFile(Paths.get("."), "baremaps", ".mbtiles");
+    mbTiles = new MBTiles(ExportVectorTiles.createDataSource(file));
     mbTiles.initializeDatabase();
+  }
+
+  @TearDown
+  public void tearDown() throws IOException, TileStoreException {
+    Files.delete(file);
   }
 
   @Benchmark

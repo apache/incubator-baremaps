@@ -86,12 +86,10 @@ public record ExportVectorTiles(
   private TileStore targetTileStore(Tileset source) throws TileStoreException, IOException {
     if (mbtiles) {
       Files.deleteIfExists(repository);
-
       var dataSource = createDataSource(repository);
       var tilesStore = new MBTiles(dataSource);
       tilesStore.initializeDatabase();
       tilesStore.writeMetadata(metadata(source));
-
       return tilesStore;
     } else {
       return new FileTileStore(repository);
@@ -162,8 +160,7 @@ public record ExportVectorTiles(
     var hikariConfig = new HikariConfig();
     hikariConfig.setDataSource(sqliteDataSource);
     hikariConfig.setMaximumPoolSize(1);
-    var hikariDataSource = new HikariDataSource(hikariConfig);
 
-    return hikariDataSource;
+    return new HikariDataSource(hikariConfig);
   }
 }
