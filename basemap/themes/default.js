@@ -3,7 +3,7 @@ export default {
     aerialwayStyleLinePaintLineColor: 'rgb(177, 177, 175)',
     aerowayLineRunwayLineColor: 'rgba(187, 187, 204, 1.0)',
     aerowayLineTaxiwayLineColor: 'rgba(187, 187, 204, 1.0)',
-    aerowayPolygonLineColor: 'rgba(187, 187, 204, 1.0)',
+    aerowayPolygonLineColor: 'rgba(213, 213, 220, 1.0)',
     amenityBackgroundCollegeFillColor: 'rgb(255, 255, 228)',
     amenityBackgroundGraveYardFillColor: 'rgb(170, 203, 175)',
     amenityBackgroundHospitalFillColor: 'rgb(255, 255, 228)',
