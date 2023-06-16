@@ -15,7 +15,6 @@ package org.apache.baremaps.cli.map;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.newContextResolver;
 import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
@@ -30,6 +29,7 @@ import org.apache.baremaps.tilestore.TileCache;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.vectortile.style.Style;
+import org.apache.baremaps.vectortile.tilejson.TileJSON;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -79,13 +79,16 @@ public class Serve implements Callable<Integer> {
     var tileStoreSupplier = (Supplier<TileStore>) () -> tileCache;
 
     var styleSupplierType = new TypeLiteral<Supplier<Style>>() {};
-    var style = objectMapper.readValue(configReader.read(this.stylePath), Style.class);
+    var style = objectMapper.readValue(configReader.read(stylePath), Style.class);
     var styleSupplier = (Supplier<Style>) () -> style;
+
+    var tileJSONSupplierType = new TypeLiteral<Supplier<TileJSON>>() {};
+    var tileJSON = objectMapper.readValue(configReader.read(tilesetPath), TileJSON.class);
+    var tileJSONSupplier = (Supplier<TileJSON>) () -> tileJSON;
 
     var application =
         new ResourceConfig()
             .register(CorsFilter.class)
-            .register(ServerResources.class)
             .register(StyleRessources.class)
             .register(TileResources.class)
             .register(ClassPathResources.class)
@@ -95,11 +98,9 @@ public class Serve implements Callable<Integer> {
               protected void configure() {
                 bind("assets").to(String.class).named("directory");
                 bind("server.html").to(String.class).named("index");
-                bind(tilesetPath).to(Path.class).named("tileset");
-                bind(tileCache).to(TileStore.class);
-                bind(objectMapper).to(ObjectMapper.class);
                 bind(tileStoreSupplier).to(tileStoreSupplierType);
                 bind(styleSupplier).to(styleSupplierType);
+                bind(tileJSONSupplier).to(tileJSONSupplierType);
               }
             });
 

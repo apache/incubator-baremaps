@@ -15,7 +15,6 @@ package org.apache.baremaps.cli.map;
 import static io.servicetalk.data.jackson.jersey.ServiceTalkJacksonSerializerFeature.newContextResolver;
 import static org.apache.baremaps.utils.ObjectMapperUtils.objectMapper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.servicetalk.http.netty.HttpServers;
 import io.servicetalk.http.router.jersey.HttpJerseyRouterBuilder;
 import java.io.IOException;
@@ -29,6 +28,7 @@ import org.apache.baremaps.server.*;
 import org.apache.baremaps.tilestore.TileStore;
 import org.apache.baremaps.tilestore.postgres.PostgresTileStore;
 import org.apache.baremaps.vectortile.style.Style;
+import org.apache.baremaps.vectortile.tilejson.TileJSON;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -70,11 +70,11 @@ public class Dev implements Callable<Integer> {
     var tileset = objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
     var datasource = PostgresUtils.dataSource(tileset.getDatabase());
 
-    // Configure the tile store
     var tileStoreType = new TypeLiteral<Supplier<TileStore>>() {};
     var tileStoreSupplier = (Supplier<TileStore>) () -> {
       try {
-        var tilesetObject = objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
+        var tilesetObject =
+            objectMapper.readValue(configReader.read(this.tilesetPath), Tileset.class);
         return new PostgresTileStore(datasource, tilesetObject);
       } catch (IOException e) {
         throw new RuntimeException(e);
@@ -86,6 +86,17 @@ public class Dev implements Callable<Integer> {
       try {
         var config = configReader.read(stylePath);
         var object = objectMapper.readValue(config, Style.class);
+        return object;
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    };
+
+    var tileJSONSupplierType = new TypeLiteral<Supplier<TileJSON>>() {};
+    var tileJSONSupplier = (Supplier<TileJSON>) () -> {
+      try {
+        var config = configReader.read(tilesetPath);
+        var object = objectMapper.readValue(config, TileJSON.class);
         return object;
       } catch (IOException e) {
         throw new RuntimeException(e);
@@ -105,10 +116,9 @@ public class Dev implements Callable<Integer> {
           protected void configure() {
             bind("assets").to(String.class).named("directory");
             bind("viewer.html").to(String.class).named("index");
-            bind(tilesetPath.toAbsolutePath()).to(Path.class).named("tileset");
-            bind(objectMapper).to(ObjectMapper.class);
             bind(tileStoreSupplier).to(tileStoreType);
             bind(styleSupplier).to(styleSupplierType);
+            bind(tileJSONSupplier).to(tileJSONSupplierType);
           }
         });
 

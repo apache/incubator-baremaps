@@ -12,42 +12,30 @@
 
 package org.apache.baremaps.server;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.nio.file.Path;
+import java.util.function.Supplier;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.apache.baremaps.config.ConfigReader;
-import org.apache.baremaps.vectortile.style.Style;
 import org.apache.baremaps.vectortile.tilejson.TileJSON;
 
 @Singleton
 @javax.ws.rs.Path("/")
-public class ServerResources {
+public class TilesetRessources {
 
-  private final Style style;
-
-  private final TileJSON tileJSON;
+  private final Supplier<TileJSON> tileJSONSupplier;
 
   @Inject
-  public ServerResources(
-      @Named("tileset") Path tileset,
-      @Named("style") Path style,
-      ObjectMapper objectMapper) throws IOException {
-    ConfigReader configReader = new ConfigReader();
-    this.style = objectMapper.readValue(configReader.read(style), Style.class);
-    this.tileJSON = objectMapper.readValue(configReader.read(tileset), TileJSON.class);
+  public TilesetRessources(Supplier<TileJSON> tileJSONSupplier) {
+    this.tileJSONSupplier = tileJSONSupplier;
   }
 
   @GET
   @javax.ws.rs.Path("tiles.json")
   @Produces(MediaType.APPLICATION_JSON)
   public TileJSON getTileset() {
-    return tileJSON;
+    return tileJSONSupplier.get();
   }
+
 }

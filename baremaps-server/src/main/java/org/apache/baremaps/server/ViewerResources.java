@@ -92,13 +92,4 @@ public class ViewerResources {
   public void changes(@Context SseEventSink sseEventSink) {
     sseBroadcaster.register(sseEventSink);
   }
-
-  @GET
-  @javax.ws.rs.Path("tiles.json")
-  @Produces(MediaType.APPLICATION_JSON)
-  public TileJSON getTileset() throws IOException {
-    var config = configReader.read(tileset);
-    var object = objectMapper.readValue(config, TileJSON.class);
-    return object;
-  }
 }
