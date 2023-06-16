@@ -47,9 +47,9 @@ import org.slf4j.LoggerFactory;
 
 @Singleton
 @javax.ws.rs.Path("/")
-public class DevResources {
+public class ViewerResources {
 
-  private static final Logger logger = LoggerFactory.getLogger(DevResources.class);
+  private static final Logger logger = LoggerFactory.getLogger(ViewerResources.class);
 
   private final ConfigReader configReader = new ConfigReader();
 
@@ -72,7 +72,7 @@ public class DevResources {
   public static final String TILE_TYPE = "application/vnd.mapbox-vector-tile";
 
   @Inject
-  public DevResources(@Named("tileset") Path tileset, @Named("style") Path style,
+  public ViewerResources(@Named("tileset") Path tileset, @Named("style") Path style,
       DataSource dataSource, ObjectMapper objectMapper, Sse sse) {
     this.tileset = tileset.toAbsolutePath();
     this.style = style.toAbsolutePath();
@@ -146,21 +146,6 @@ public class DevResources {
       }
     } catch (Exception ex) {
       logger.error("Tile error", ex);
-      return Response.status(404).build();
-    }
-  }
-
-  @GET
-  @javax.ws.rs.Path("{path:.*}")
-  public Response get(@PathParam("path") String path) throws IOException {
-    if (path.equals("") || path.endsWith("/")) {
-      path += "viewer.html";
-    }
-    path = String.format("assets/%s", path);
-    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
-      var bytes = inputStream.readAllBytes();
-      return Response.ok().entity(bytes).build();
-    } catch (NullPointerException | IOException e) {
       return Response.status(404).build();
     }
   }

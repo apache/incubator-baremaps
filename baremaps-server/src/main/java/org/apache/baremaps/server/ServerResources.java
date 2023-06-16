@@ -95,19 +95,4 @@ public class ServerResources {
       return Response.status(404).build();
     }
   }
-
-  @GET
-  @javax.ws.rs.Path("{path:.*}")
-  public Response get(@PathParam("path") String path) throws IOException {
-    if (path.equals("") || path.endsWith("/")) {
-      path += "server.html";
-    }
-    path = String.format("assets/%s", path);
-    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
-      var bytes = inputStream.readAllBytes();
-      return Response.ok().entity(bytes).build();
-    } catch (NullPointerException | IOException e) {
-      return Response.status(404).build();
-    }
-  }
 }

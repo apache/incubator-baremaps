@@ -24,6 +24,7 @@ import java.util.concurrent.Callable;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.postgres.PostgresUtils;
+import org.apache.baremaps.server.ClassPathResources;
 import org.apache.baremaps.server.CorsFilter;
 import org.apache.baremaps.server.ServerResources;
 import org.apache.baremaps.tilestore.TileCache;
@@ -76,10 +77,16 @@ public class Serve implements Callable<Integer> {
 
     // Configure the application
     var application =
-        new ResourceConfig().register(CorsFilter.class).register(ServerResources.class)
-            .register(contextResolverFor(objectMapper)).register(new AbstractBinder() {
+        new ResourceConfig()
+            .register(CorsFilter.class)
+            .register(ServerResources.class)
+            .register(ClassPathResources.class)
+            .register(contextResolverFor(objectMapper))
+            .register(new AbstractBinder() {
               @Override
               protected void configure() {
+                bind("assets").to(String.class).named("directory");
+                bind("server.html").to(String.class).named("index");
                 bind(Serve.this.tileset).to(Path.class).named("tileset");
                 bind(style).to(Path.class).named("style");
                 bind(tileCache).to(TileStore.class);

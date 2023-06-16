@@ -24,8 +24,9 @@ import javax.sql.DataSource;
 import org.apache.baremaps.cli.Options;
 import org.apache.baremaps.config.ConfigReader;
 import org.apache.baremaps.postgres.PostgresUtils;
+import org.apache.baremaps.server.ClassPathResources;
 import org.apache.baremaps.server.CorsFilter;
-import org.apache.baremaps.server.DevResources;
+import org.apache.baremaps.server.ViewerResources;
 import org.apache.baremaps.vectortile.tileset.Tileset;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -70,11 +71,16 @@ public class Dev implements Callable<Integer> {
 
     try (var dataSource = PostgresUtils.dataSource(database)) {
       // Configure the application
-      var application = new ResourceConfig().register(CorsFilter.class).register(DevResources.class)
-          .register(contextResolverFor(objectMapper)).register(new AbstractBinder() {
+      var application = new ResourceConfig()
+          .register(CorsFilter.class)
+          .register(ViewerResources.class)
+          .register(ClassPathResources.class)
+          .register(contextResolverFor(objectMapper))
+          .register(new AbstractBinder() {
             @Override
             protected void configure() {
-              bind("viewer").to(String.class).named("assets");
+              bind("assets").to(String.class).named("directory");
+              bind("viewer.html").to(String.class).named("index");
               bind(tileset.toAbsolutePath()).to(Path.class).named("tileset");
               bind(style.toAbsolutePath()).to(Path.class).named("style");
               bind(dataSource).to(DataSource.class);
