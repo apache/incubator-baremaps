@@ -18,8 +18,13 @@ let directives = [
         'fill-color': theme.amenityOverlayMotorcycleParkingFillColor,
     },
     {
-        filter: ['==', ['get', 'amenity'], 'parking'],
+        filter: [
+            'all',
+            ['!=', ['get', 'layer'], '-1'],
+            ['==', ['get', 'amenity'], 'parking']
+        ],
         'fill-color': theme.amenityOverlayParkingFillColor,
+        'fill-outline-color': theme.amenityOverlayParkingFillOutlineColor
     },
 ];
 

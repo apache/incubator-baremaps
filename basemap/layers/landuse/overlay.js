@@ -29,6 +29,10 @@ let directives = [
         filter: ['==', ['get', 'landuse'], 'orchard'],
         'fill-color': theme.landuseOverlayOrchardFillColor,
     },
+    {
+        filter: ['==', ['get', 'landuse'], 'meadow'],
+        'fill-color': theme.landuseOverlayMeadowFillColor,
+    },
 ];
 
 export default asLayerObject(withFillSortKey(directives), {

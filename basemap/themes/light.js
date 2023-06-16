@@ -20,7 +20,7 @@ export default Object.entries(positronScheme).reduce((acc, [key, value]) => {
         attractionStyleWaterSlideLineColor: 'rgb(175,175,175)',
         landuseBackgroundBasinFillColor: 'rgb(175,175,175)',
         leisureBackgroundSwimmingPoolFillColor: 'rgb(175,175,175)',
-        leisureBackgroundSwimmingPoolFillOutlineColor: 'rgb(175,175,175)',
+        leisureOverlaySwimmingPoolFillOutlineColor: 'rgb(175,175,175)',
         naturalBackgroundWaterFillColor: 'rgb(175,175,175)',
         naturalOverlayLakeFillColor: 'rgb(175,175,175)',
         naturalWaterFillColor: 'rgb(175,175,175)',

@@ -14,40 +14,8 @@ import theme from "../../theme.js";
 
 let directives = [
     {
-        filter: ['==', ['get', 'leisure'], 'swimming_pool'],
-        'fill-color': theme.leisureBackgroundSwimmingPoolFillColor,
-        'fill-outline-color': theme.leisureBackgroundSwimmingPoolFillOutlineColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'miniature_golf'],
-        'fill-color': theme.leisureBackgroundMiniatureGolfFillColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'ice_rink'],
-        'fill-color': theme.leisureBackgroundIceRinkFillColor,
-        'fill-outline-color': theme.leisureBackgroundIceRinkFillOutlineColor,
-    },
-    {
         filter: ['==', ['get', 'leisure'], 'golf_course'],
         'fill-color': theme.leisureBackgroundGolfCourseFillColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'garden'],
-        'fill-color': theme.leisureBackgroundGardenFillColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'dog_park'],
-        'fill-color': theme.leisureBackgroundDogParkFillColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'playground'],
-        'fill-color': theme.leisureBackgroundPlayGroundFillColor,
-        'fill-outline-color': theme.leisureBackgroundPlayGroundFillOutlineColor,
-    },
-    {
-        filter: ['==', ['get', 'leisure'], 'pitch'],
-        'fill-color': theme.leisureBackgroundPitchFillColor,
-        'fill-outline-color': theme.leisureBackgroundPitchFillOutlineColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'track'],
@@ -59,8 +27,8 @@ let directives = [
         'fill-color': theme.leisureBackgroundSportsCentreFillColor,
     },
     {
-        filter: ['==', ['get', 'leisure'], 'stadium'],
-        'fill-color': theme.leisureBackgroundStadiumFillColor,
+        filter: ['==', ['get', 'leisure'], 'garden'],
+        'fill-color': theme.leisureBackgroundGardenFillColor,
     },
     {
         filter: ['==', ['get', 'leisure'], 'park'],
@@ -73,7 +41,6 @@ export default asLayerObject(withSortKeys(directives), {
     type: 'fill',
     source: 'baremaps',
     'source-layer': 'leisure',
-    filter: ['==', ['geometry-type'], 'Polygon'],
     layout: {
         visibility: 'visible',
     },

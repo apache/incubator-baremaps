@@ -14,6 +14,18 @@ import theme from "../../theme.js";
 
 let directives = [
     {
+        filter: ['==', ['get', 'natural'], 'wetland'],
+        'fill-color': theme.naturalOverlayWetlandFillColor
+    },
+    {
+        filter: [
+            'all',
+            ['==', ['get', 'natural'], 'beach'],
+            ['==', ['get', 'surface'], 'gravel']
+        ],
+        'fill-color': theme.naturalOverlayBeachGravelFillColor
+    },
+    {
         filter: ['==', ['get', 'natural'], 'beach'],
         'fill-color': theme.naturalOverlayBeachFillColor
     },
@@ -22,20 +34,12 @@ let directives = [
         'fill-color': theme.naturalOverlaySandFillColor
     },
     {
-        filter: ['==', ['get', 'natural'], 'scrub'],
-        'fill-color': theme.naturalOverlayScrubFillColor
-    },
-    {
         filter: [
             'all',
             ['==', ['get', 'natural'], 'water'],
             ['!=', ['get', 'water'], 'lake'],
         ],
         'fill-color': theme.naturalOverlayLakeFillColor
-    },
-    {
-        filter: ['==', ['get', 'natural'], 'wetland'],
-        'fill-color': theme.naturalOverlayWetlandFillColor
     },
 ];
 

@@ -74,10 +74,6 @@ let directives = [
         'fill-color': theme.landuseBackgroundVineyardFillColor,
     },
     {
-        filter: ['==', ['get', 'landuse'], 'meadow'],
-        'fill-color': theme.landuseBackgroundMeadowFillColor,
-    },
-    {
         filter: ['==', ['get', 'landuse'], 'farmyard'],
         'fill-color': theme.landuseBackgroundFarmyardFillColor,
     },
